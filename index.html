@@ -93,20 +93,6 @@
 <header><div class="logo">PhysiQ <span>CIF-AFTA v4.0</span></div></header>
 <main>
 
-  <!-- APIs -->
-  <div class="card">
-    <div class="card-header" onclick="toggleCard('apis')">
-      <div class="section-title">🔑 APIs de IA</div>
-      <span class="chevron open" id="chevron-apis">▼</span>
-    </div>
-    <div class="card-body open" id="body-apis">
-      <div class="grid-2">
-        <div class="field"><label>OpenAI API Key (Whisper)</label><input type="password" id="openai-key" placeholder="sk-..." autocomplete="off"></div>
-        <div class="field"><label>Anthropic API Key (Claude)</label><input type="password" id="anthropic-key" placeholder="sk-ant-..." autocomplete="off"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- Clinic + Style config -->
   <div class="card">
     <div class="card-header" onclick="toggleCard('clinic')">
@@ -475,12 +461,10 @@ Para proporcionar una visión integral y holística de su situación, la estruct
     const f = e.dataTransfer.files[0];
     if (f) { selectedFile = f; document.getElementById('file-name').textContent = '✓ ' + f.name; checkReady(); }
   });
-  ['openai-key','anthropic-key'].forEach(id => document.getElementById(id).addEventListener('input', checkReady));
+  document.getElementById('patient-name').addEventListener('input', checkReady);
 
   function checkReady() {
-    const ok = document.getElementById('openai-key').value.trim() &&
-               document.getElementById('anthropic-key').value.trim() &&
-               document.getElementById('patient-name').value.trim() && selectedFile;
+    const ok = document.getElementById('patient-name').value.trim() && selectedFile;
     document.getElementById('generate-btn').disabled = !ok;
   }
 
@@ -554,10 +538,14 @@ Para proporcionar una visión integral y holística de su situación, la estruct
   }
 
   // ========= TRANSCRIBE =========
-  async function transcribeAudio(file, key) {
+  // ========= TRANSCRIBE (via Cloudflare Worker) =========
+  async function transcribeAudio(file) {
     const fd = new FormData();
-    fd.append('file', file); fd.append('model', 'whisper-1'); fd.append('language', 'es');
-    const res = await fetch('https://api.openai.com/v1/audio/transcriptions', { method:'POST', headers:{'Authorization':'Bearer '+key}, body:fd });
+    fd.append('file', file);
+    const res = await fetch('https://physiq-whisper.edu-gamboa-rodriguez.workers.dev', {
+      method: 'POST',
+      body: fd
+    });
     if (!res.ok) { const e = await res.json(); throw new Error('Whisper: '+(e.error?.message||res.status)); }
     return (await res.json()).text;
   }
@@ -682,12 +670,17 @@ RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CON
   }
 
   // ========= ANALYZE =========
-  async function analyzeWithClaude(transcript, info, key) {
+  // ========= ANALYZE (via Cloudflare Worker) =========
+  async function analyzeWithClaude(transcript, info) {
     const prompt = buildPrompt(transcript, info, selectedTemplate);
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body: JSON.stringify({ model:'claude-sonnet-4-5', max_tokens:getTokens(), messages:[{role:'user',content:prompt}] })
+    const res = await fetch('https://physiq-claude.edu-gamboa-rodriguez.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: getTokens(),
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
     if (!res.ok) { const e = await res.json(); throw new Error('Claude: '+(e.error?.message||res.status)); }
     return (await res.json()).content[0].text;
@@ -802,8 +795,6 @@ RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CON
 
   // ========= GENERATE =========
   async function generateReport() {
-    const openaiKey = document.getElementById('openai-key').value.trim();
-    const anthropicKey = document.getElementById('anthropic-key').value.trim();
     const info = {
       name:       document.getElementById('patient-name').value.trim(),
       date:       document.getElementById('session-date').value.trim() || new Date().toLocaleDateString('es-ES'),
@@ -818,9 +809,9 @@ RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CON
     [1,2,3].forEach(i => setStep(i,''));
     try {
       setStep(1,'active');
-      transcriptText = await transcribeAudio(selectedFile, openaiKey);
+      transcriptText = await transcribeAudio(selectedFile);
       setStep(1,'done'); setStep(2,'active');
-      const report = await analyzeWithClaude(transcriptText, info, anthropicKey);
+      const report = await analyzeWithClaude(transcriptText, info);
       setStep(2,'done'); setStep(3,'active');
       await new Promise(r => setTimeout(r, 350));
       setStep(3,'done');
