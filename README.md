@@ -1,51 +1,51 @@
-# PhysiQ — Informes CIF-AFTA
+# PhysiQ — ICF-APTA Reports
 
-Herramienta clínica para fisioterapeutas que genera informes de sesión estructurados a partir de audio. Transcribe la grabación con Whisper y redacta el informe en español siguiendo el marco CIF-AFTA mediante Claude.
+A clinical tool for physiotherapists that generates structured session reports from audio. It transcribes the recording with Whisper and drafts the report in Spanish following the ICF-APTA framework using Claude.
 
 ## Demo
 
-Abre `index.html` directamente en el navegador. No requiere instalación, servidor ni build.
+Open `index.html` directly in the browser. No installation, server, or build step required.
 
-## Flujo de trabajo
+## Workflow
 
-1. Configura los datos del centro (nombre, logotipo, colores) — se guardan en localStorage.
-2. Introduce los datos del paciente (nombre, fecha, diagnóstico, nº sesión).
-3. Sube el audio de la sesión (drag & drop o selector de archivo).
-4. Elige la plantilla:
-   - **Ficha breve** — nota de sesión concisa.
-   - **Narrativo institucional** — informe completo con estructura biopsicosocial CIF.
-5. Genera el informe → previsualiza en pantalla → descarga como `.docx` con cabecera clínica personalizada.
+1. Configure your clinic details (name, logo, colors) — saved to localStorage.
+2. Enter patient data (name, date, diagnosis, session number).
+3. Upload the session audio (drag & drop or file picker).
+4. Choose a template:
+   - **Brief note** — concise session note.
+   - **Institutional narrative** — full report with ICF biopsychosocial structure.
+5. Generate the report → preview on screen → download as `.docx` with a custom clinical header.
 
-## Requisitos externos
+## External requirements
 
-La aplicación necesita dos **Cloudflare Workers** activos:
+The app requires two active **Cloudflare Workers**:
 
-| Worker | Función |
+| Worker | Role |
 |---|---|
-| `physiq-whisper` | Proxy hacia la API de Whisper (transcripción de audio) |
-| `physiq-claude` | Proxy hacia la API de Anthropic (generación del informe, modelo `claude-sonnet-4-5`) |
+| `physiq-whisper` | Proxy to the Whisper API (audio transcription) |
+| `physiq-claude` | Proxy to the Anthropic API (report generation, model `claude-sonnet-4-5`) |
 
-Las URLs de los workers están definidas directamente en el bloque `<script>` de `index.html`. Cámbiala si despliegas tus propios workers.
+Worker URLs are hardcoded in the `<script>` block of `index.html`. Update them if you deploy your own workers.
 
-## Despliegue propio
+## Self-hosting
 
-1. Crea los dos workers en [Cloudflare](https://workers.cloudflare.com/) con acceso a las APIs de Whisper y Anthropic.
-2. Actualiza las URLs de los workers en `index.html`.
-3. Sirve `index.html` desde cualquier hosting estático (Cloudflare Pages, GitHub Pages, etc.) o úsalo localmente.
+1. Create both workers on [Cloudflare](https://workers.cloudflare.com/) with access to the Whisper and Anthropic APIs.
+2. Update the worker URLs in `index.html`.
+3. Serve `index.html` from any static host (Cloudflare Pages, GitHub Pages, etc.) or use it locally.
 
-## Personalización del informe
+## Report customization
 
-Desde el panel de configuración (colapsable en la app) puedes ajustar:
+From the configuration panel (collapsible in the app) you can adjust:
 
-- Logotipo del centro (PNG/JPG, se incrusta en el `.docx`)
-- Colores, tipografía y estilo de cabecera del documento Word
-- Texto de introducción con sustitución automática del nombre del paciente
-- Cláusula RGPD
+- Clinic logo (PNG/JPG, embedded in the `.docx`)
+- Colors, typography, and header style of the Word document
+- Intro text with automatic patient name substitution
+- GDPR clause
 
-Toda la configuración persiste en `localStorage` del navegador.
+All settings persist in the browser's `localStorage`.
 
-## Tecnologías
+## Tech stack
 
-- HTML/CSS/JS puro — sin frameworks ni bundler
-- [`docx`](https://github.com/dolanmiu/docx) v8.5.0 (cargado desde CDN en tiempo de ejecución)
+- Plain HTML/CSS/JS — no framework, no bundler
+- [`docx`](https://github.com/dolanmiu/docx) v8.5.0 (loaded from CDN at runtime)
 - Cloudflare Workers (Whisper + Anthropic Claude)
