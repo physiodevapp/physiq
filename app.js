@@ -818,4 +818,45 @@ function resetApp() {
   [1,2,3].forEach(i=>setStep(i,''));
 }
 
+// ========= PHYSIQ-ASSESSMENT INTEGRATION =========
+function loadFromPhysiQAssessment() {
+  const params = new URLSearchParams(location.search);
+  const v = params.get('v');
+  if (!v) return null;
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(v))));
+  } catch(e) {
+    console.warn('PhysiQ-Assessment payload inválido', e);
+    return null;
+  }
+}
+
+function showImportedBadge(data) {
+  const badge = document.createElement('div');
+  badge.style.cssText = `
+    background:rgba(79,195,161,0.1); border:1px solid rgba(79,195,161,0.3);
+    border-radius:8px; padding:10px 14px; font-size:12px;
+    color:var(--accent); font-family:'DM Mono',monospace; margin-bottom:12px;
+  `;
+  badge.innerHTML = `✓ Valoración importada desde PhysiQ-Assessment · ${data.r || ''} · ${data.p || ''}`;
+  const main = document.querySelector('main');
+  if (main) main.prepend(badge);
+}
+
+function applyPhysiQAssessmentContext(data) {
+  if (!data) return;
+  const name = document.getElementById('patient-name');
+  if (name && data.p) name.value = data.p;
+
+  const date = document.getElementById('session-date');
+  if (date && data.d) date.value = data.d;
+
+  const diag = document.getElementById('diagnosis');
+  if (diag && data.r) diag.value = data.r;
+
+  window._physiqVContext = data;
+  showImportedBadge(data);
+}
+
 loadConfig();
+applyPhysiQAssessmentContext(loadFromPhysiQAssessment());
