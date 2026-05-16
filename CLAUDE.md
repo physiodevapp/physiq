@@ -33,7 +33,7 @@ There is no framework, no bundler, no modules.
 - `transcriptText` — transcript returned by Whisper
 - `lastReportText` — generated report text (also used for `.docx`)
 - `selectedTemplate` — `'brief'` or `'narrative'`
-- `window._physiqVContext` — structured assessment payload from PhysiQ-V (added as part of integration)
+- `window._physiqVContext` — structured assessment payload from PhysiQ-Assessment (added as part of integration)
 
 ## Core pipeline
 
@@ -76,9 +76,9 @@ The two workers are external to this repo. They proxy requests to the Whisper AP
 
 ---
 
-## Sibling repo: physiq-v
+## Sibling repo: physiq-assessment
 
-`physiq-v-standalone.html` (separate repo, also GitHub Pages) is an assessment assistant that guides the physiotherapist through 5 phases:
+`physiq-assessment-standalone.html` (separate repo, also GitHub Pages) is an assessment assistant that guides the physiotherapist through 5 phases:
 
 - **Phase 1** — Triage and header (patient, mechanism, red flags)
 - **Phase 2** — Systemic screening by anatomical region
@@ -91,11 +91,11 @@ All data accumulates in a global `state` object (declared around line 3815 of th
 
 ---
 
-## Planned integration: PhysiQ-V → PhysiQ
+## Planned integration: PhysiQ-Assessment → PhysiQ
 
 ### Mechanism: URL param with Base64
 
-At the end of Phase 5, PhysiQ-V will add a **"Generar informe CIF-AFTA"** button that:
+At the end of Phase 5, PhysiQ-Assessment will add a **"Generar informe CIF-AFTA"** button that:
 
 1. Builds a JSON payload with the relevant fields from `state`
 2. Encodes it as Base64
@@ -107,7 +107,7 @@ PhysiQ detects `?v=` on load, decodes it, and:
 
 **Measured payload size:** worst case ~3.2 KB in Base64. nginx GitHub Pages limit: 8 KB. No issue.
 
-### Payload (function `buildPhysiQPayload()` — to add in PhysiQ-V, Phase 5)
+### Payload (function `buildPhysiQPayload()` — to add in PhysiQ-Assessment, Phase 5)
 
 ```js
 function buildPhysiQPayload() {
@@ -142,19 +142,19 @@ function exportToPhysiQ() {
 ### Reception in PhysiQ (to add in `app.js`)
 
 ```js
-function loadFromPhysiQV() {
+function loadFromPhysiQAssessment() {
   const params = new URLSearchParams(location.search);
   const v = params.get('v');
   if (!v) return null;
   try {
     return JSON.parse(decodeURIComponent(escape(atob(v))));
   } catch(e) {
-    console.warn('PhysiQ-V payload inválido', e);
+    console.warn('PhysiQ-Assessment payload inválido', e);
     return null;
   }
 }
 
-function applyPhysiQVContext(data) {
+function applyPhysiQAssessmentContext(data) {
   if (!data) return;
   const name = document.getElementById('patient-name');
   if (name && data.p) name.value = data.p;
@@ -176,7 +176,7 @@ function showImportedBadge(data) {
     border-radius:8px; padding:10px 14px; font-size:12px;
     color:var(--accent); font-family:'DM Mono',monospace; margin-bottom:12px;
   `;
-  badge.innerHTML = `✓ Valoración importada desde PhysiQ-V · ${data.r || ''} · ${data.p || ''}`;
+  badge.innerHTML = `✓ Valoración importada desde PhysiQ-Assessment · ${data.r || ''} · ${data.p || ''}`;
   const main = document.querySelector('main');
   if (main) main.prepend(badge);
 }
@@ -194,7 +194,7 @@ function buildClinicalContext(data) {
     .join('\n');
   const flags = data.si ? '⚠️ Banderas sistémicas positivas detectadas' : 'Sin banderas sistémicas';
   return `
-## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-V)
+## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
 Paciente: ${data.p || '—'} · Región: ${data.r || '—'} · Fecha: ${data.d || '—'}
 Motivo de consulta: ${data.mo || '—'}
 NRS: reposo ${data.nr?.[0] ?? '—'}/10 · movimiento ${data.nr?.[1] ?? '—'}/10
@@ -231,9 +231,9 @@ If there is no transcript (assessment-only flow), replace the transcript section
 
 ## Pending integration tasks
 
-- [ ] Add `buildPhysiQPayload()` and `exportToPhysiQ()` in PhysiQ-V (Phase 5, button after summary)
-- [ ] Add `loadFromPhysiQV()` and `applyPhysiQVContext()` in PhysiQ `app.js` (called at startup)
+- [ ] Add `buildPhysiQPayload()` and `exportToPhysiQ()` in PhysiQ-Assessment (Phase 5, button after summary)
+- [ ] Add `loadFromPhysiQAssessment()` and `applyPhysiQAssessmentContext()` in PhysiQ `app.js` (called at startup)
 - [ ] Add `buildClinicalContext()` in `app.js` and wire it into `buildPrompt()`
 - [ ] Handle no-audio flow: if `_physiqVContext` exists and no `selectedFile`, allow report generation without transcript
-- [ ] Add "Copiar contexto clínico" button as fallback in PhysiQ-V Phase 5
+- [ ] Add "Copiar contexto clínico" button as fallback in PhysiQ-Assessment Phase 5
 - [ ] Update the CIF-AFTA prompt to leverage structured context (instruct Claude that assessment data is more reliable than the transcript)
