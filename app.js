@@ -249,14 +249,42 @@ async function transcribeAudio(file) {
 }
 
 // ========= PROMPTS =========
+// ========= CLINICAL CONTEXT BUILDER =========
+function buildClinicalContext(data) {
+  if (!data) return '';
+  const hyps = (data.h || [])
+    .map(h => `  · ${h.name} — ${h.sc || 'sin evaluar'}`)
+    .join('\n');
+  const flags = data.si ? '⚠️ Banderas sistémicas positivas detectadas' : 'Sin banderas sistémicas';
+  return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
+NOTA: estos datos proceden de una valoración clínica estructurada y son más fiables que la transcripción. Úsalos como fuente prioritaria cuando haya discrepancias.
+Paciente: ${data.p || '—'} · Región: ${data.r || '—'} · Fecha: ${data.d || '—'}
+Motivo de consulta: ${data.mo || '—'}
+NRS: reposo ${data.nr?.[0] ?? '—'}/10 · movimiento ${data.nr?.[1] ?? '—'}/10
+Irritabilidad: ${data.ir || '—'} · Comportamiento: ${data.co || '—'}
+Cribado sistémico: ${flags}
+
+Hipótesis diagnósticas (por peso diagnóstico):
+${hyps || '  (sin hipótesis registradas)'}
+
+Notas del plan terapéutico:
+  · Variable de control: ${data.pn?.variableControl || '—'}
+  · Ventana de recuperación: ${data.pn?.ventanaRecuperacion || '—'}
+  · Anclaje de hábito: ${data.pn?.anclajeHabito || '—'}
+
+---`;
+}
+
 function buildPrompt(transcript, info, template) {
+  const clinicalCtx = buildClinicalContext(window._physiqVContext);
+
   if (template === 'brief') {
     return `Eres un fisioterapeuta clínico experto en documentación CIF y formato APTA.
 Analiza la transcripción de sesión y genera un informe clínico CIF-APTA breve en español, tipo ficha de sesión.
 
 PACIENTE: ${info.name} | Fecha: ${info.date} | Diagnóstico: ${info.diagnosis} | Sesión: ${info.sessionNum}
 
-TRANSCRIPCIÓN:
+${clinicalCtx ? clinicalCtx + '\n\n' : ''}TRANSCRIPCIÓN:
 ${transcript}
 
 Genera el informe con EXACTAMENTE estas secciones (usa ## como prefijo):
@@ -279,7 +307,7 @@ Sé clínico, preciso y conciso. Si un dato no aparece, indica "No evaluado en e
 
 PACIENTE: ${info.name} | Fecha: ${info.date} | Diagnóstico médico: ${info.diagnosis} | Sesión nº: ${info.sessionNum}
 
-TRANSCRIPCIÓN DE LA SESIÓN:
+${clinicalCtx ? clinicalCtx + '\n\n' : ''}TRANSCRIPCIÓN DE LA SESIÓN:
 ${transcript}
 
 INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
