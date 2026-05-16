@@ -900,6 +900,7 @@ function applyPhysiQAssessmentContext(data) {
 
   window._physiqVContext = data;
   showImportedBadge(data);
+  checkReady();
 }
 
 loadConfig();

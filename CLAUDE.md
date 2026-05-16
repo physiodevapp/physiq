@@ -244,14 +244,3 @@ If there is no transcript (assessment-only flow), replace the transcript section
 ## TRANSCRIPCIÓN DE LA SESIÓN
 (No disponible — informe basado exclusivamente en los datos de la valoración estructurada)
 ```
-
----
-
-## Pending integration tasks
-
-- [ ] Add `buildPhysiQPayload()` and `exportToPhysiQ()` in PhysiQ-Assessment (Phase 5, button after summary)
-- [x] Add `loadFromPhysiQAssessment()` and `applyPhysiQAssessmentContext()` in PhysiQ-Report `app.js` (called at startup)
-- [x] Add `buildClinicalContext()` in `app.js` and wire it into `buildPrompt()`
-- [x] Handle no-audio flow: if `_physiqVContext` exists and no `selectedFile`, allow report generation without transcript
-- [ ] Add "Copiar contexto clínico" button as fallback in PhysiQ-Assessment Phase 5
-- [x] Update the CIF-AFTA prompt to leverage structured context (instruct Claude that assessment data is more reliable than the transcript)
