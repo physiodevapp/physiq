@@ -163,7 +163,8 @@ az.addEventListener('drop', e => {
 document.getElementById('patient-name').addEventListener('input', checkReady);
 
 function checkReady() {
-  const ok = document.getElementById('patient-name').value.trim() && selectedFile;
+  const hasName = !!document.getElementById('patient-name').value.trim();
+  const ok = hasName && (selectedFile || window._physiqVContext);
   document.getElementById('generate-btn').disabled = !ok;
 }
 
@@ -528,9 +529,15 @@ async function generateReport() {
   document.getElementById('progress-wrap').style.display = 'block';
   [1,2,3].forEach(i => setStep(i,''));
   try {
-    setStep(1,'active');
-    transcriptText = await transcribeAudio(selectedFile);
-    setStep(1,'done'); setStep(2,'active');
+    if (selectedFile) {
+      setStep(1,'active');
+      transcriptText = await transcribeAudio(selectedFile);
+      setStep(1,'done');
+    } else {
+      transcriptText = '(No disponible — informe basado exclusivamente en los datos de la valoración estructurada)';
+      setStep(1,'done');
+    }
+    setStep(2,'active');
     const report = await analyzeWithClaude(transcriptText, info);
     setStep(2,'done'); setStep(3,'active');
     await new Promise(r => setTimeout(r, 350));
