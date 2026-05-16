@@ -256,8 +256,12 @@ function buildClinicalContext(data) {
   const hyps = (data.h || [])
     .map(h => `  · ${h.name} — ${h.sc || 'sin evaluar'}`)
     .join('\n');
-  const flags = data.si ? '⚠️ Banderas sistémicas positivas detectadas' : 'Sin banderas sistémicas';
-  const br = data.br && Object.values(data.br).some(v => v === 'SI') ? '⚠️ Presentes' : 'Negativas';
+  const brText = data.br?.length > 0
+    ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
+    : '  Negativas';
+  const sqText = data.sq?.length > 0
+    ? '\nAlertas sistémicas positivas:\n' + data.sq.map(s => `  · ${s}`).join('\n')
+    : '';
   return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
 NOTA: estos datos proceden de una valoración clínica estructurada y son más fiables que la transcripción. Úsalos como fuente prioritaria cuando haya discrepancias.
 Paciente: ${data.p || '—'} · Región: ${data.r || '—'} · Fecha: ${data.d || '—'}
@@ -265,7 +269,10 @@ Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
 NRS: ${data.nr ?? '—'}/10
 Irritabilidad: ${data.ir || '—'} · Naturaleza: ${data.na || '—'}
-Riesgo psicosocial: ${data.rp || '—'} · Banderas rojas: ${br} · Cribado sistémico: ${flags}
+Riesgo psicosocial: ${data.rp || '—'}
+Banderas rojas:
+${brText}
+Cribado sistémico: ${data.si ? '⚠️ Positivo' : 'Negativo'}${sqText}
 
 Hipótesis diagnósticas (por peso diagnóstico):
 ${hyps || '  (sin hipótesis registradas)'}

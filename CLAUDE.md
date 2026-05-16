@@ -126,14 +126,17 @@ function buildPhysiQPayload() {
     nr: state.severidad ?? 0,            // NRS general (0–10) — único campo NRS en state
     ir: state.irritabilidadNivel,        // 'Baja' | 'Moderada' | 'Alta'
     na: state.naturaleza,
-    si: state.sistemicoAlerta,           // boolean — flag only, not detail
-    br: state.banderasRojas,             // { br1, br2, br3, br4 } — 'SI'|'NO'
+    si: state.sistemicoAlerta,           // boolean
+    br: Object.entries(state.banderasRojas)
+          .filter(([, v]) => v === 'SI')
+          .map(([k]) => BR_LABELS[k]),   // string[] — labels of positive red flags only
+    sq: getSistemicoAffirmativeTexts(),  // string[] — systemic screening questions answered 'SI'
     h:  state.activeHypotheses.map(id => ({
           id,
-          name: HYPOTHESES[id]?.name,
-          sc:   state.hypothesisScores[id]?.label,
-          lr:   state.hypothesisScores[id]?.totalLR,
-          tests: (state.testResults[id] || {})
+          name: HYPOTHESES[id]?.name ?? id,
+          sc:   state.hypothesisScores[id]?.label ?? 'Sin evaluar',
+          lr:   state.hypothesisScores[id]?.totalLR ?? null,
+          tr:   state.testResults[id] ?? {}
         })),
     pn: state.planNotes                  // { variableControl, ventanaRecuperacion, anclajeHabito }
   };
@@ -199,8 +202,12 @@ function buildClinicalContext(data) {
   const hyps = (data.h || [])
     .map(h => `  · ${h.name} — ${h.sc || 'sin evaluar'}`)
     .join('\n');
-  const flags = data.si ? '⚠️ Banderas sistémicas positivas detectadas' : 'Sin banderas sistémicas';
-  const br = data.br && Object.values(data.br).some(v => v === 'SI') ? '⚠️ Presentes' : 'Negativas';
+  const brText = data.br?.length > 0
+    ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
+    : '  Negativas';
+  const sqText = data.sq?.length > 0
+    ? '\nAlertas sistémicas positivas:\n' + data.sq.map(s => `  · ${s}`).join('\n')
+    : '';
   return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
 NOTA: estos datos proceden de una valoración clínica estructurada y son más fiables que la transcripción. Úsalos como fuente prioritaria cuando haya discrepancias.
 Paciente: ${data.p || '—'} · Región: ${data.r || '—'} · Fecha: ${data.d || '—'}
@@ -208,7 +215,10 @@ Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
 NRS: ${data.nr ?? '—'}/10
 Irritabilidad: ${data.ir || '—'} · Naturaleza: ${data.na || '—'}
-Riesgo psicosocial: ${data.rp || '—'} · Banderas rojas: ${br} · Cribado sistémico: ${flags}
+Riesgo psicosocial: ${data.rp || '—'}
+Banderas rojas:
+${brText}
+Cribado sistémico: ${data.si ? '⚠️ Positivo' : 'Negativo'}${sqText}
 
 Hipótesis diagnósticas (por peso diagnóstico):
 ${hyps || '  (sin hipótesis registradas)'}
