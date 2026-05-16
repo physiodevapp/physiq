@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-**PhysiQ Report** (CIF-AFTA v4.0) is a single-file clinical documentation tool for physiotherapists. It takes audio recordings of sessions, transcribes them via a Cloudflare Worker backed by Whisper, and generates structured clinical reports (in Spanish) via another Cloudflare Worker backed by Claude.
+**PhysiQ-Report** (CIF-AFTA v4.0) is a single-file clinical documentation tool for physiotherapists. It takes audio recordings of sessions, transcribes them via a Cloudflare Worker backed by Whisper, and generates structured clinical reports (in Spanish) via another Cloudflare Worker backed by Claude.
 
 ## Running the app
 
@@ -48,11 +48,15 @@ There is no framework, no bundler, no modules.
 | Function | Purpose |
 |---|---|
 | `buildPrompt()` | Constructs the Claude prompt; switches between `brief` and `narrative` templates with explicit CIF instructions |
+| `buildClinicalContext()` | Formats `window._physiqVContext` into a structured text block injected before the transcript |
 | `renderReport()` | Parses markdown sections into collapsible HTML; calls `parseTablesInText()` and `parseHyperlinks()` |
 | `downloadWord()` | Builds `.docx` with custom header (logo + clinic info), footer (page numbers), and section-aware styling |
 | `loadDocx()` | Dynamic CDN loader with 3 fallbacks; must resolve before `downloadWord()` is called |
 | `saveConfig()` / `loadConfig()` | Serializes the entire UI state to/from `physiq_config` in localStorage |
-| `generateReport()` | Orchestrates the full pipeline; updates a 3-step progress indicator |
+| `generateReport()` | Orchestrates the full pipeline; skips transcription step if no audio and `_physiqVContext` is present |
+| `loadFromPhysiQAssessment()` | Reads and decodes `?v=<base64>` from the URL on startup |
+| `applyPhysiQAssessmentContext()` | Prefills form fields from payload and stores it in `window._physiqVContext` |
+| `showImportedBadge()` | Injects a green confirmation banner in `<main>` when a payload is detected |
 
 ## Report templates
 
@@ -91,7 +95,7 @@ All data accumulates in a global `state` object (declared around line 3815 of th
 
 ---
 
-## Planned integration: PhysiQ-Assessment → PhysiQ
+## Integration: PhysiQ-Assessment → PhysiQ-Report
 
 ### Mechanism: URL param with Base64
 
@@ -99,9 +103,9 @@ At the end of Phase 5, PhysiQ-Assessment will add a **"Generar informe CIF-AFTA"
 
 1. Builds a JSON payload with the relevant fields from `state`
 2. Encodes it as Base64
-3. Opens PhysiQ with `?v=<base64>` in the URL
+3. Opens PhysiQ-Report with `?v=<base64>` in the URL
 
-PhysiQ detects `?v=` on load, decodes it, and:
+PhysiQ-Report detects `?v=` on load, decodes it, and:
 - Pre-fills form fields (name, date, diagnosis)
 - Injects the structured clinical context into the Claude prompt
 
@@ -112,15 +116,18 @@ PhysiQ detects `?v=` on load, decodes it, and:
 ```js
 function buildPhysiQPayload() {
   return {
-    p:  state.patient,
+    p:  state.patient,                   // always '' until Phase 1 UI input is added
     r:  state.region,
     d:  new Date().toLocaleDateString('es-ES'),
     mo: state.motivoConsulta,
-    oc: state.occupation ?? '',
-    nr: [state.severidad ?? 0, state.nrsMovimiento ?? 0, state.nrsNocturno ?? 0],
-    ir: state.irritabilidadNivel,
-    co: state.naturaleza,
-    si: state.sistemicoAlerta,   // boolean — flag only, not detail
+    me: state.mecanismo,                 // 'Traumático' | 'Insidioso' | 'Post-quirúrgico'
+    cr: state.cronologia,                // 'Agudo (<6 semanas)' | 'Subagudo' | 'Crónico (>3 meses)'
+    rp: state.riesgoPsico,               // 'Bajo' | 'Medio' | 'Alto'
+    nr: state.severidad ?? 0,            // NRS general (0–10) — único campo NRS en state
+    ir: state.irritabilidadNivel,        // 'Baja' | 'Moderada' | 'Alta'
+    na: state.naturaleza,
+    si: state.sistemicoAlerta,           // boolean — flag only, not detail
+    br: state.banderasRojas,             // { br1, br2, br3, br4 } — 'SI'|'NO'
     h:  state.activeHypotheses.map(id => ({
           id,
           name: HYPOTHESES[id]?.name,
@@ -128,7 +135,7 @@ function buildPhysiQPayload() {
           lr:   state.hypothesisScores[id]?.totalLR,
           tests: (state.testResults[id] || {})
         })),
-    pn: state.planNotes          // { variableControl, ventanaRecuperacion, anclajeHabito }
+    pn: state.planNotes                  // { variableControl, ventanaRecuperacion, anclajeHabito }
   };
 }
 
@@ -139,7 +146,7 @@ function exportToPhysiQ() {
 }
 ```
 
-### Reception in PhysiQ (to add in `app.js`)
+### Reception in PhysiQ-Report (`app.js` — implemented)
 
 ```js
 function loadFromPhysiQAssessment() {
@@ -184,7 +191,7 @@ function showImportedBadge(data) {
 
 ### Clinical context injected into the prompt
 
-In `buildPrompt()` in `app.js`, add before the transcript block:
+In `buildPrompt()` in `app.js` — implemented:
 
 ```js
 function buildClinicalContext(data) {
@@ -193,13 +200,15 @@ function buildClinicalContext(data) {
     .map(h => `  · ${h.name} — ${h.sc || 'sin evaluar'}`)
     .join('\n');
   const flags = data.si ? '⚠️ Banderas sistémicas positivas detectadas' : 'Sin banderas sistémicas';
-  return `
-## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
+  const br = data.br && Object.values(data.br).some(v => v === 'SI') ? '⚠️ Presentes' : 'Negativas';
+  return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
+NOTA: estos datos proceden de una valoración clínica estructurada y son más fiables que la transcripción. Úsalos como fuente prioritaria cuando haya discrepancias.
 Paciente: ${data.p || '—'} · Región: ${data.r || '—'} · Fecha: ${data.d || '—'}
 Motivo de consulta: ${data.mo || '—'}
-NRS: reposo ${data.nr?.[0] ?? '—'}/10 · movimiento ${data.nr?.[1] ?? '—'}/10
-Irritabilidad: ${data.ir || '—'} · Comportamiento: ${data.co || '—'}
-Cribado sistémico: ${flags}
+Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
+NRS: ${data.nr ?? '—'}/10
+Irritabilidad: ${data.ir || '—'} · Naturaleza: ${data.na || '—'}
+Riesgo psicosocial: ${data.rp || '—'} · Banderas rojas: ${br} · Cribado sistémico: ${flags}
 
 Hipótesis diagnósticas (por peso diagnóstico):
 ${hyps || '  (sin hipótesis registradas)'}
@@ -209,8 +218,7 @@ Notas del plan terapéutico:
   · Ventana de recuperación: ${data.pn?.ventanaRecuperacion || '—'}
   · Anclaje de hábito: ${data.pn?.anclajeHabito || '—'}
 
----
-`.trim();
+---`;
 }
 ```
 
@@ -232,8 +240,8 @@ If there is no transcript (assessment-only flow), replace the transcript section
 ## Pending integration tasks
 
 - [ ] Add `buildPhysiQPayload()` and `exportToPhysiQ()` in PhysiQ-Assessment (Phase 5, button after summary)
-- [ ] Add `loadFromPhysiQAssessment()` and `applyPhysiQAssessmentContext()` in PhysiQ `app.js` (called at startup)
-- [ ] Add `buildClinicalContext()` in `app.js` and wire it into `buildPrompt()`
-- [ ] Handle no-audio flow: if `_physiqVContext` exists and no `selectedFile`, allow report generation without transcript
+- [x] Add `loadFromPhysiQAssessment()` and `applyPhysiQAssessmentContext()` in PhysiQ-Report `app.js` (called at startup)
+- [x] Add `buildClinicalContext()` in `app.js` and wire it into `buildPrompt()`
+- [x] Handle no-audio flow: if `_physiqVContext` exists and no `selectedFile`, allow report generation without transcript
 - [ ] Add "Copiar contexto clínico" button as fallback in PhysiQ-Assessment Phase 5
-- [ ] Update the CIF-AFTA prompt to leverage structured context (instruct Claude that assessment data is more reliable than the transcript)
+- [x] Update the CIF-AFTA prompt to leverage structured context (instruct Claude that assessment data is more reliable than the transcript)
