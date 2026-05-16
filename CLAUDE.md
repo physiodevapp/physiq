@@ -33,7 +33,7 @@ There is no framework, no bundler, no modules.
 - `transcriptText` — transcript returned by Whisper
 - `lastReportText` — generated report text (also used for `.docx`)
 - `selectedTemplate` — `'brief'` or `'narrative'`
-- `window._physiqVContext` — structured assessment payload from PhysiQ-Assessment (added as part of integration)
+- `window._physiqAssessmentContext` — structured assessment payload from PhysiQ-Assessment (added as part of integration)
 
 ## Core pipeline
 
@@ -48,14 +48,14 @@ There is no framework, no bundler, no modules.
 | Function | Purpose |
 |---|---|
 | `buildPrompt()` | Constructs the Claude prompt; switches between `brief` and `narrative` templates with explicit CIF instructions |
-| `buildClinicalContext()` | Formats `window._physiqVContext` into a structured text block injected before the transcript |
+| `buildClinicalContext()` | Formats `window._physiqAssessmentContext` into a structured text block injected before the transcript |
 | `renderReport()` | Parses markdown sections into collapsible HTML; calls `parseTablesInText()` and `parseHyperlinks()` |
 | `downloadWord()` | Builds `.docx` with custom header (logo + clinic info), footer (page numbers), and section-aware styling |
 | `loadDocx()` | Dynamic CDN loader with 3 fallbacks; must resolve before `downloadWord()` is called |
 | `saveConfig()` / `loadConfig()` | Serializes the entire UI state to/from `physiq_config` in localStorage |
-| `generateReport()` | Orchestrates the full pipeline; skips transcription step if no audio and `_physiqVContext` is present |
+| `generateReport()` | Orchestrates the full pipeline; skips transcription step if no audio and `_physiqAssessmentContext` is present |
 | `loadFromPhysiQAssessment()` | Reads and decodes `?v=<base64>` from the URL on startup |
-| `applyPhysiQAssessmentContext()` | Prefills form fields from payload and stores it in `window._physiqVContext` |
+| `applyPhysiQAssessmentContext()` | Prefills form fields from payload and stores it in `window._physiqAssessmentContext` |
 | `showImportedBadge()` | Injects a green confirmation banner in `<main>` when a payload is detected |
 
 ## Report templates
@@ -175,7 +175,7 @@ function applyPhysiQAssessmentContext(data) {
   const diag = document.getElementById('diagnosis');
   if (diag && data.r) diag.value = data.r;
 
-  window._physiqVContext = data;
+  window._physiqAssessmentContext = data;
   showImportedBadge(data);
 }
 
@@ -235,7 +235,7 @@ Notas del plan terapéutico:
 And in `buildPrompt(transcript, info, template)`:
 
 ```js
-const clinicalCtx = buildClinicalContext(window._physiqVContext);
+const clinicalCtx = buildClinicalContext(window._physiqAssessmentContext);
 const prompt = `${systemPrompt}\n\n${clinicalCtx}\n\n## TRANSCRIPCIÓN DE LA SESIÓN\n${transcript}`;
 ```
 

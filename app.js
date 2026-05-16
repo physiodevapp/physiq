@@ -164,7 +164,7 @@ document.getElementById('patient-name').addEventListener('input', checkReady);
 
 function checkReady() {
   const hasName = !!document.getElementById('patient-name').value.trim();
-  const ok = hasName && (selectedFile || window._physiqVContext);
+  const ok = hasName && (selectedFile || window._physiqAssessmentContext);
   document.getElementById('generate-btn').disabled = !ok;
 }
 
@@ -286,7 +286,7 @@ Notas del plan terapéutico:
 }
 
 function buildPrompt(transcript, info, template) {
-  const clinicalCtx = buildClinicalContext(window._physiqVContext);
+  const clinicalCtx = buildClinicalContext(window._physiqAssessmentContext);
 
   if (template === 'brief') {
     return `Eres un fisioterapeuta clínico experto en documentación CIF y formato APTA.
@@ -898,7 +898,7 @@ function applyPhysiQAssessmentContext(data) {
   const diag = document.getElementById('diagnosis');
   if (diag && data.r) diag.value = data.r;
 
-  window._physiqVContext = data;
+  window._physiqAssessmentContext = data;
   showImportedBadge(data);
   checkReady();
 }
