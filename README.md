@@ -2,6 +2,8 @@
 
 A clinical tool for physiotherapists that generates structured session reports from audio. It transcribes the recording with Whisper and drafts the report in Spanish following the ICF-APTA framework using Claude.
 
+**[→ Open app](https://physiodevapp.github.io/physiq-report/)**
+
 ## Demo
 
 Open `index.html` directly in the browser. No installation, server, or build step required.
