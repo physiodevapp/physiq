@@ -78,6 +78,17 @@ The two workers are external to this repo. They proxy requests to the Whisper AP
 - Fonts: DM Serif Display (headings), DM Mono (code/labels), DM Sans (body)
 - `localStorage` key: `physiq_config` — clinic configuration and style
 
+## Commit format
+
+```
+git commit -m "título corto en imperativo" -m "descripción cuando sea necesario"
+```
+
+- El primer `-m` es el título (máx ~72 caracteres)
+- El segundo `-m` solo se incluye cuando hay contexto relevante que añadir
+- Nunca usar `git commit` sin flags ni editores interactivos
+- No añadir co-autoría (`Co-Authored-By`) en ningún caso
+
 ---
 
 ## Sibling repo: physiq-assessment
