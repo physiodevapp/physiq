@@ -251,39 +251,7 @@ async function transcribeAudio(file) {
 
 // ========= PROMPTS =========
 // ========= CLINICAL CONTEXT BUILDER =========
-function buildClinicalContext(data) {
-  if (!data) return '';
-  const hyps = (data.h || [])
-    .map(h => `  · ${h.name} — ${h.sc || 'sin evaluar'}`)
-    .join('\n');
-  const brText = data.br?.length > 0
-    ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
-    : '  Negativas';
-  const sqText = data.sq?.length > 0
-    ? '\nAlertas sistémicas positivas:\n' + data.sq.map(s => `  · ${s}`).join('\n')
-    : '';
-  return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
-NOTA: estos datos proceden de una valoración clínica estructurada y son más fiables que la transcripción. Úsalos como fuente prioritaria cuando haya discrepancias.
-Paciente: ${data.p || '—'} · Región: ${data.r || '—'} · Fecha: ${data.d || '—'}
-Motivo de consulta: ${data.mo || '—'}
-Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
-NRS: ${data.nr ?? '—'}/10
-Irritabilidad: ${data.ir || '—'} · Naturaleza: ${data.na || '—'}
-Riesgo psicosocial: ${data.rp || '—'}
-Banderas rojas:
-${brText}
-Cribado sistémico: ${data.si ? '⚠️ Positivo' : 'Negativo'}${sqText}
-
-Hipótesis diagnósticas (por peso diagnóstico):
-${hyps || '  (sin hipótesis registradas)'}
-
-Notas del plan terapéutico:
-  · Variable de control: ${data.pn?.variableControl || '—'}
-  · Ventana de recuperación: ${data.pn?.ventanaRecuperacion || '—'}
-  · Anclaje de hábito: ${data.pn?.anclajeHabito || '—'}
-
----`;
-}
+// buildClinicalContext() lives in lib/payload.js (loaded via <script> in index.html)
 
 function buildPrompt(transcript, info, template) {
   const clinicalCtx = buildClinicalContext(window._physiqAssessmentContext);
@@ -863,12 +831,13 @@ function resetApp() {
 }
 
 // ========= PHYSIQ-ASSESSMENT INTEGRATION =========
+// decodePayload() lives in lib/payload.js (loaded via <script> in index.html)
 function loadFromPhysiQAssessment() {
   const params = new URLSearchParams(location.search);
   const v = params.get('v');
   if (!v) return null;
   try {
-    return JSON.parse(decodeURIComponent(escape(atob(v))));
+    return decodePayload(v);
   } catch(e) {
     console.warn('PhysiQ-Assessment payload inválido', e);
     return null;
