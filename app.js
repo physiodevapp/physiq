@@ -865,7 +865,7 @@ function applyPhysiQAssessmentContext(data) {
   if (date && data.d) date.value = data.d;
 
   const diag = document.getElementById('diagnosis');
-  if (diag && data.r) diag.value = data.r;
+  if (diag && data.mo) diag.value = data.mo;
 
   window._physiqAssessmentContext = data;
   showImportedBadge(data);
