@@ -872,5 +872,45 @@ function applyPhysiQAssessmentContext(data) {
   checkReady();
 }
 
+// ─── INDEXEDDB AUDIO (recepción desde physiq-assessment) ─────
+function _loadAudioFromIDB() {
+  return new Promise(resolve => {
+    const req = indexedDB.open('physiq', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('audio');
+    req.onsuccess = e => {
+      const db = e.target.result;
+      const tx = db.transaction('audio', 'readwrite');
+      const store = tx.objectStore('audio');
+      const get = store.get('pending');
+      get.onsuccess = () => {
+        const entry = get.result;
+        if (entry) store.delete('pending');
+        resolve(entry || null);
+      };
+      get.onerror = () => resolve(null);
+    };
+    req.onerror = () => resolve(null);
+  });
+}
+
+function _applyImportedAudio(entry) {
+  if (!entry) return;
+  selectedFile = new File([entry.blob], entry.name, { type: entry.type });
+  document.getElementById('file-name').textContent = '✓ ' + entry.name;
+  const mins = Math.floor(entry.duration / 60);
+  const secs = (entry.duration % 60).toString().padStart(2, '0');
+  const badge = document.createElement('div');
+  badge.style.cssText = `
+    background:rgba(79,195,161,0.08); border:1px solid rgba(79,195,161,0.25);
+    border-radius:8px; padding:8px 14px; font-size:12px;
+    color:var(--accent); font-family:'DM Mono',monospace; margin-bottom:8px;
+  `;
+  badge.textContent = `🎙 Audio importado desde PhysiQ-Assessment · ${mins}m ${secs}s`;
+  const main = document.querySelector('main');
+  if (main) main.prepend(badge);
+  checkReady();
+}
+
 loadConfig();
 applyPhysiQAssessmentContext(loadFromPhysiQAssessment());
+_loadAudioFromIDB().then(_applyImportedAudio);
