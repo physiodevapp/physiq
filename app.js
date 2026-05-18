@@ -544,7 +544,7 @@ async function _buildAndDownloadWord() {
   const bodySize    = parseInt(c.bodySize    || '22');
   const bodyColor   = (c.bodyColor   || '#222222').replace('#','');
   const headerStyle = c.headerStyle  || 'line';
-  const headerColor = (c.headerColor || '#4fc3a1').replace('#','');
+  const headerColor = (c.headerColor || '#38d9a9').replace('#','');
   const clinicName  = c.clinicName  || '';
   const clinicCol   = c.clinicCol   || '';
   const clinicUnit  = c.clinicUnit  || '';
