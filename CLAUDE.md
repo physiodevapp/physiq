@@ -81,13 +81,13 @@ The two workers are external to this repo. They proxy requests to the Whisper AP
 ## Commit format
 
 ```
-git commit -m "título corto en imperativo" -m "descripción cuando sea necesario"
+git commit -m "short imperative title" -m "description when necessary"
 ```
 
-- El primer `-m` es el título (máx ~72 caracteres)
-- El segundo `-m` solo se incluye cuando hay contexto relevante que añadir
-- Nunca usar `git commit` sin flags ni editores interactivos
-- No añadir co-autoría (`Co-Authored-By`) en ningún caso
+- The first `-m` is the title (max ~72 characters)
+- The second `-m` is only included when there is relevant context to add
+- Never use `git commit` without flags or interactive editors
+- Never add co-authorship (`Co-Authored-By`) under any circumstances
 
 ---
 
