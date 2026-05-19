@@ -14,6 +14,8 @@
   .logo{display:flex;align-items:baseline;gap:6px;}
   .logo-main{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--text);letter-spacing:-0.5px;}
   .logo-sub{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--accent);letter-spacing:-0.5px;}
+  .logo-sub-initial{display:none;}
+  @media(max-width:360px){.logo-sub-word{display:none;}.logo-sub-initial{display:inline;}}
   main{padding-top:calc(64px + 18px);}
   main{flex:1;padding:18px 14px;display:flex;flex-direction:column;gap:12px;max-width:800px;width:100%;margin:0 auto;}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
@@ -93,7 +95,7 @@
 </style>
 </head>
 <body>
-<header><div class="logo"><span class="logo-main">PhysiQ</span><span class="logo-sub">— Report</span></div></header>
+<header><div class="logo"><span class="logo-main">PhysiQ</span><span class="logo-sub">— <span class="logo-sub-word">Report</span><span class="logo-sub-initial">R</span></span></div></header>
 <main>
 
   <!-- Clinic + Style config -->
