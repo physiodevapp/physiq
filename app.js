@@ -237,10 +237,34 @@ function showError(msg) {
   document.getElementById('generate-btn').innerHTML = 'Generar Informe CIF-AFTA';
 }
 
+// ========= WHISPER REGION PROMPTS =========
+const WHISPER_PROMPTS = {
+  hombro:   'Fisioterapia. Hombro. Síndrome subacromial, capsulitis adhesiva, SLAP, rotura manguito rotador, inestabilidad glenohumeral, artropatía acromioclavicular, discinesia escapular, primera costilla. Supraespinoso, infraespinoso, subescapular, redondo menor, labrum glenoideo, bursa subdeltoidea. Test de Neer, Hawkins-Kennedy, lata vacía, lata llena, aprehensión anterior, recolocación, surprise test, external rotation lag sign, drop arm, arco doloroso, aducción cruzada, O\'Brien, Speed, Yergason. SPADI, DASH, ASES. ROM glenohumeral, elevación, rotación interna, rotación externa.',
+  cadera:   'Fisioterapia. Cadera. Artrosis, pinzamiento femoroacetabular, SIFA, desgarro labrum acetabular, tendinopatía glútea, síndrome piriforme, síndrome glúteo profundo, tendinopatía proximal isquiotibiales, pinzamiento isquiofemoral, dolor sacroilíaco, debilidad abductores. Trocánter mayor, acetábulo, fosa isquiática, nervio ciático, glúteo medio. FADDIR, FABER, test de Arlington, test de torsión, Trendelenburg, apoyo monopodal, sentadilla monopodal, step-down, compresión pélvica. HOOS, iHOT-12, LEFS.',
+  cervical: 'Fisioterapia. Columna cervical. Radiculopatía cervical, mielopatía espondilótica, cefalea cervicogénica, disfunción articular cervical, WAD, latigazo cervical, disfunción postural cérvico-torácica, disfunción primera costilla, costo-vertebral. Nervio occipital mayor, arteria vertebral, disco intervertebral, uncovertebral. Test de Spurling, CFRT, flexión-rotación cervical, CCFT, biofeedback, ULNT1, PAIVM C0-C3, CROM. NDI, cervicalgia, cervicobraquialgia.',
+  lumbar:   'Fisioterapia. Columna lumbar. Disfunción segmentaria lumbosacra, inestabilidad espinal lumbar, dolor radicular lumbar, estenosis espinal, claudicación neurogénica. Disco intervertebral, protrusión discal, hernia discal, nervio ciático, raíz nerviosa L4 L5 S1, articulación facetaria, sacroilíaca. SLR, elevación pierna recta, Lasègue, Lasègue cruzado, test de Slump, PAIVM lumbar, Kemp. ODI, Oswestry, RMDQ, Roland-Morris, lumbalgia, lumbociática.',
+  rodilla:  'Fisioterapia. Rodilla. Artrosis, síndrome patelofemoral, lesión meniscal, LCA, ligamento cruzado anterior, tendinopatía rotuliana, síndrome banda iliotibial, bursitis pata de ganso. Menisco medial, menisco lateral, cartílago articular, ligamento colateral medial, ligamento colateral lateral, LCP, rótula, tendón rotuliano. Test de Lachman, cajón anterior, pivot shift, McMurray, Thessaly, Ober, Noble, lever sign. KOOS, IKDC, LEFS.',
+  codo:     'Fisioterapia. Codo. Epicondilalgia lateral, codo de tenista, epicondilalgia medial, codo de golfista, neuropatía cubital, túnel cubital, síndrome túnel radial, nervio interóseo posterior, rotura distal bíceps, capsulitis codo, inestabilidad rotatoria posterolateral IRPL, ligamento colateral cubital LCC, plica radiocapitelar. Test de Cozen, Thomsen, Tinel cubital, hook test, valgo dinámico, maniobra ordeño. DASH, QuickDASH, PRTEE. Epicóndilo, epitróclea.',
+  default:  'Fisioterapia musculoesquelética. Hombro: subacromial, capsulitis, SLAP, manguito rotador, Neer, Hawkins-Kennedy. Cadera: femoroacetabular, labrum, tendinopatía glútea, FADDIR, FABER. Cervical: radiculopatía, mielopatía, WAD, Spurling, ULNT. Lumbar: estenosis espinal, claudicación, SLR, Lasègue, Slump. Rodilla: LCA, menisco, patelofemoral, Lachman, McMurray. Codo: epicondilalgia, túnel cubital, IRPL, Cozen, Tinel.'
+};
+
+function getWhisperPrompt(region) {
+  if (!region) return WHISPER_PROMPTS.default;
+  const r = region.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (r.includes('hombro'))   return WHISPER_PROMPTS.hombro;
+  if (r.includes('cadera'))   return WHISPER_PROMPTS.cadera;
+  if (r.includes('cervical')) return WHISPER_PROMPTS.cervical;
+  if (r.includes('lumbar'))   return WHISPER_PROMPTS.lumbar;
+  if (r.includes('rodilla'))  return WHISPER_PROMPTS.rodilla;
+  if (r.includes('codo'))     return WHISPER_PROMPTS.codo;
+  return WHISPER_PROMPTS.default;
+}
+
 // ========= TRANSCRIBE (via Cloudflare Worker) =========
-async function transcribeAudio(file) {
+async function transcribeAudio(file, region) {
   const fd = new FormData();
   fd.append('file', file);
+  fd.append('prompt', getWhisperPrompt(region));
   const res = await fetch('https://physiq-whisper.edu-gamboa-rodriguez.workers.dev', {
     method: 'POST',
     body: fd
@@ -255,6 +279,7 @@ async function transcribeAudio(file) {
 
 function buildPrompt(transcript, info, template) {
   const clinicalCtx = buildClinicalContext(window._physiqAssessmentContext);
+  const hasHypotheses = (window._physiqAssessmentContext?.h || []).length > 0;
 
   if (template === 'brief') {
     return `Eres un fisioterapeuta clínico experto en documentación CIF y formato APTA.
@@ -277,7 +302,7 @@ Genera el informe con EXACTAMENTE estas secciones (usa ## como prefijo):
 ## EVOLUCIÓN Y RESPUESTA AL TRATAMIENTO
 ## PLAN PARA PRÓXIMA SESIÓN
 
-Sé clínico, preciso y conciso. Si un dato no aparece, indica "No evaluado en esta sesión".`;
+Sé clínico, preciso y conciso. Si un dato no aparece, indica "No evaluado en esta sesión".${hasHypotheses ? '\nSi el contexto estructurado incluye hipótesis diagnósticas, en la sección ## EVOLUCIÓN Y RESPUESTA AL TRATAMIENTO señala brevemente si los hallazgos de sesión son coherentes con dichas hipótesis. Si la transcripción contiene hallazgos explícitos que sugieran hipótesis no consideradas, menciónalos citando el hallazgo que los sustenta.' : ''}`;
   }
 
   // NARRATIVE INSTITUTIONAL TEMPLATE
@@ -301,7 +326,9 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 3. NO uses ** para negrita ni símbolos markdown, salvo en tablas markdown estándar.
 4. Tablas: cuando haya datos numéricos cuantificables (ROM, fuerza, escalas), genera tablas markdown estándar con sintaxis | columna | columna |. Si no hay datos suficientes, omite la tabla y describe en prosa.
 5. Si una subsección no aplica o no hay datos, omítela limpiamente (no escribas "no evaluado" en cada subsección menor).
-6. Usa la terminología CIF cuando proceda (códigos b, s, d, e si emergen del contexto).
+6. Usa la terminología CIF cuando proceda (códigos b, s, d, e si emergen del contexto).${hasHypotheses ? `
+7. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". Contrasta los hallazgos de la transcripción con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante. No propongas hipótesis nuevas en esta subsección.
+8. Si en la transcripción aparecen hallazgos clínicos explícitos (tests especiales, signos, síntomas objetivos) que sugieran condiciones no cubiertas por las hipótesis recibidas, inclúyelos en "### Hipótesis adicionales a valorar", citando el hallazgo exacto que justifica cada una. Limita el alcance a la región anatómica del contexto estructurado. Omite esta subsección si no hay evidencia explícita.` : ''}
 
 ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin títulos previos:
 
@@ -365,7 +392,13 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [EQ-5D-5L, ICL, impacto laboral y social]
 
 ## CONCLUSIONES Y PLAN DE TRATAMIENTO
-[Síntesis clínica integradora con problema primario, hallazgos clave, y enfoque terapéutico propuesto en prosa]
+[Síntesis clínica integradora con problema primario, hallazgos clave y enfoque terapéutico propuesto en prosa]${hasHypotheses ? `
+
+### Coherencia con hipótesis de valoración
+[Indica si los hallazgos de la sesión refuerzan, matizan o contradicen las hipótesis recibidas, sin proponer diagnósticos nuevos]
+
+### Hipótesis adicionales a valorar
+[Solo si la transcripción contiene hallazgos explícitos que lo justifiquen: lista cada hipótesis adicional citando el hallazgo exacto. Omite si no hay evidencia explícita]` : ''}
 
 ## SEGUIMIENTO FUNCIONAL
 [Espacio para registrar reevaluaciones futuras. Si no procede en esta sesión, escribir: "Pendiente de reevaluaciones programadas."]
@@ -508,7 +541,7 @@ async function generateReport() {
   try {
     if (selectedFile) {
       setStep(1,'active');
-      transcriptText = await transcribeAudio(selectedFile);
+      transcriptText = await transcribeAudio(selectedFile, window._physiqAssessmentContext?.r);
       setStep(1,'done');
     } else {
       transcriptText = '(No disponible — informe basado exclusivamente en los datos de la valoración estructurada)';
