@@ -1,9 +1,12 @@
-const CACHE_NAME = 'physiq-hub-v1';
+const CACHE_NAME = 'physiq-hub-v2';
 
 const HUB_SHELL = [
   '/physiq/',
   '/physiq/index.html',
   '/physiq/manifest.json',
+  '/physiq/favicon.svg',
+  '/physiq/icons/icon-192.png',
+  '/physiq/icons/icon-512.png',
 ];
 
 self.addEventListener('install', event => {

@@ -10,6 +10,12 @@
   "background_color": "#1e2d3d",
   "icons": [
     {
+      "src": "/physiq/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
       "src": "/physiq/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
