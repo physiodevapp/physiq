@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhysiQ</title>
+  <link rel="manifest" href="/physiq/manifest.json">
+  <meta name="theme-color" content="#1e2d3d">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #1e2d3d;
+      color: #e8edf2;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding: 3rem 1.5rem 2rem;
+    }
+
+    header {
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    h1 span {
+      color: #64a8d4;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    a.app {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.1rem 1.25rem;
+      border-radius: 10px;
+      background: #243547;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+    }
+
+    a.app:active { background: #2c4159; }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .app-info { display: flex; flex-direction: column; gap: 0.2rem; }
+
+    .app-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .app-desc {
+      font-size: 0.78rem;
+      color: #8aa4bc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Physi<span>Q</span></h1>
+  </header>
+
+  <nav>
+    <a class="app" href="/physiq/motion/">
+      <span class="dot" style="background:#8b5cf6"></span>
+      <div class="app-info">
+        <span class="app-name">ROM · Inclinómetro</span>
+        <span class="app-desc">Medición de rango articular</span>
+      </div>
+    </a>
+
+    <a class="app" href="/physiq/assessment/">
+      <span class="dot" style="background:#3b82f6"></span>
+      <div class="app-info">
+        <span class="app-name">Valoración clínica</span>
+        <span class="app-desc">Exploración y registro de hallazgos</span>
+      </div>
+    </a>
+
+    <a class="app" href="/physiq/report/">
+      <span class="dot" style="background:#10b981"></span>
+      <div class="app-info">
+        <span class="app-name">Informe con IA</span>
+        <span class="app-desc">Generación de informes asistida</span>
+      </div>
+    </a>
+  </nav>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/physiq/sw.js', { scope: '/physiq/' });
+    }
+  </script>
+</body>
+</html>
