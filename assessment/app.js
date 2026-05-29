@@ -156,7 +156,7 @@ function goToPhase(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (!_handlingPopState) {
-    history.pushState({ phase: n }, '');
+    history.replaceState({ phase: n }, '');
   }
   saveSession();
 }
@@ -2045,10 +2045,7 @@ document.addEventListener('DOMContentLoaded', () => {
       _handlingPopState = true;
       goToPhase(targetPhase);
       _handlingPopState = false;
-      const phaseSeq = [1, 2, 3, 4, '4b', 5];
-      const idx = phaseSeq.indexOf(targetPhase);
-      history.replaceState({ phase: 1 }, '');
-      for (let i = 1; i <= idx; i++) history.pushState({ phase: phaseSeq[i] }, '');
+      history.replaceState({ phase: targetPhase }, '');
     } else {
       const patientEl = document.getElementById('patientName');
       if (session.patient && patientEl && !patientEl.value) {
