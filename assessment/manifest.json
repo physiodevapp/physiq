@@ -1,0 +1,25 @@
+{
+  "name": "PhysiQ Assessment",
+  "short_name": "PhysiQ-A",
+  "description": "Asistente de valoración en fisioterapia",
+  "start_url": "/physiq/assessment/",
+  "scope": "/physiq/assessment/",
+  "display": "standalone",
+  "background_color": "#0a0d12",
+  "theme_color": "#4f9cf9",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
