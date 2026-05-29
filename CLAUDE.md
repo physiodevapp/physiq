@@ -60,6 +60,3 @@ git commit -m "short imperative title" -m "description when necessary"
 - Never use `git commit` without flags or interactive editors
 - Never add co-authorship (`Co-Authored-By`) under any circumstances
 
-## Pending
-
-- **PWA icons**: add `icons/icon-192.png` and `icons/icon-512.png`. Once created, restore them to `HUB_SHELL` in `sw.js` and bump `CACHE_NAME` to `physiq-hub-v2`.
