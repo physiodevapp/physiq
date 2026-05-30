@@ -90,9 +90,11 @@
       75%{transform:translateX(calc(-50% + 5px))}
     }
 
-    /* State-driven visibility — explicit per element (avoids universal-selector cascade edge cases) */
-    .rw-status, .rw-sep, .rw-pause, .rw-resume,
-    .rw-stop, .rw-export, .rw-trash, .rw-confirm { display: none; }
+    /* State-driven visibility — explicit per element */
+    #rec-widget .rw-status, #rec-widget .rw-sep,
+    #rec-widget .rw-pause,  #rec-widget .rw-resume,
+    #rec-widget .rw-stop,   #rec-widget .rw-export,
+    #rec-widget .rw-trash,  #rec-widget .rw-confirm { display: none; }
 
     #rec-widget:not([data-state="idle"]) > .rw-start { display: none; }
 
