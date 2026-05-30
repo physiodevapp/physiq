@@ -6,24 +6,17 @@
   <title>PhysiQ</title>
   <link rel="icon" href="/physiq/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/physiq/manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#1e2d3d">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: system-ui, sans-serif;
-      background: #1e2d3d;
-      color: #e8edf2;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      padding: 3rem 1.5rem 2rem;
-    }
+    body { font-family: system-ui, sans-serif; background: #1e2d3d; color: #e8edf2; }
 
-    header {
-      margin-bottom: 3rem;
-    }
+    /* ── Home view ─────────────────────────────────── */
+    #home { display: flex; flex-direction: column; padding: 3rem 1.5rem 5rem; min-height: 100dvh; }
+
+    header { margin-bottom: 3rem; }
 
     h1 {
       font-family: 'DM Serif Display', serif;
@@ -32,7 +25,6 @@
       letter-spacing: -0.02em;
       color: #fff;
     }
-
     h1 span {
       background: linear-gradient(135deg, #4f9cf9, #38d9a9);
       -webkit-background-clip: text;
@@ -40,82 +32,400 @@
       background-clip: text;
     }
 
-    nav {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
+    nav { display: flex; flex-direction: column; gap: 0.75rem; }
 
-    a.app {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1.1rem 1.25rem;
-      border-radius: 10px;
-      background: #243547;
-      text-decoration: none;
-      color: inherit;
+    .app-card {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.1rem 1.25rem; border-radius: 10px;
+      background: #243547; color: inherit;
+      border: none; cursor: pointer; width: 100%; text-align: left;
       transition: background 0.15s;
     }
+    .app-card:active { background: #2c4159; }
 
-    a.app:active { background: #2c4159; }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .app-info { display: flex; flex-direction: column; gap: 0.2rem; }
+    .app-name { font-size: 1rem; font-weight: 600; color: #fff; }
+    .app-desc { font-size: 0.78rem; color: #8aa4bc; }
 
-    .app-name {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #fff;
+    /* ── Satellite shell ────────────────────────────── */
+    #sat-shell { position: fixed; inset: 0; z-index: 10; }
+    .sat-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+
+    /* ── Back button ────────────────────────────────── */
+    #back-btn {
+      position: fixed; top: 0.75rem; left: 0.75rem; z-index: 200;
+      display: flex; align-items: center; gap: 0.3rem;
+      background: rgba(19,30,45,0.88); border: 1px solid #2d3f55;
+      color: #8aa4bc; border-radius: 8px;
+      padding: 0.4rem 0.8rem; font-size: 0.78rem; cursor: pointer;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      transition: color 0.15s;
+    }
+    #back-btn:active { color: #e8edf2; }
+
+    /* ── Recorder widget ────────────────────────────── */
+    #rec-widget {
+      position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 300;
+      display: flex; align-items: center; gap: 0.4rem;
+      background: #111b28; border: 1px solid #2d3f55; border-radius: 40px;
+      padding: 0.55rem 0.9rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      font-family: system-ui, sans-serif; font-size: 0.82rem;
+      white-space: nowrap; user-select: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    #rec-widget.recording {
+      border-color: rgba(239,68,68,0.45);
+      box-shadow: 0 4px 24px rgba(239,68,68,0.22);
+    }
+    #rec-widget.paused {
+      border-color: rgba(251,146,60,0.45);
+      box-shadow: 0 4px 24px rgba(251,146,60,0.18);
+    }
+    #rec-widget.stopped {
+      border-color: rgba(79,156,249,0.4);
+      box-shadow: 0 4px 24px rgba(79,156,249,0.18);
     }
 
-    .app-desc {
-      font-size: 0.78rem;
-      color: #8aa4bc;
+    #rec-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+      background: #ef4444;
     }
+    .recording #rec-dot { animation: rec-blink 1.1s ease-in-out infinite; }
+    .paused    #rec-dot { background: #fb923c; opacity: 0.8; }
+    .stopped   #rec-dot { background: #4f9cf9; }
+    @keyframes rec-blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    #rec-timer {
+      font-variant-numeric: tabular-nums; color: #c8d8e8;
+      min-width: 2.6rem; text-align: center; font-size: 0.8rem;
+    }
+
+    .rec-sep { width: 1px; height: 13px; background: #2d3f55; flex-shrink: 0; }
+
+    .rec-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 0.2rem 0.3rem; border-radius: 4px;
+      display: flex; align-items: center; gap: 0.3rem;
+      line-height: 1; transition: opacity 0.15s;
+    }
+    .rec-btn:active { opacity: 0.55; }
+
+    #rec-btn-start   { color: #e8edf2; font-size: 0.82rem; }
+    #rec-btn-pause,
+    #rec-btn-resume,
+    #rec-btn-stop    { color: #8aa4bc; font-size: 1rem; }
+    #rec-btn-discard { color: #4a607a; font-size: 0.9rem; }
+    #rec-btn-export  { color: #4f9cf9; font-size: 0.8rem; }
+    #rec-btn-export:active { color: #38d9a9; opacity: 1; }
+
+    #rec-confirm { display: flex; align-items: center; gap: 0.4rem; }
+    #rec-confirm > span { color: #8aa4bc; font-size: 0.78rem; }
+    #rec-confirm-yes { color: #ef4444 !important; font-weight: 600; }
+    #rec-confirm-no  { color: #8aa4bc !important; }
   </style>
 </head>
 <body>
+
+<!-- ── Home view ───────────────────────────────────────── -->
+<div id="home">
   <header>
     <h1>Physi<span>Q</span></h1>
   </header>
-
   <nav>
-    <a class="app" href="/physiq/motion/">
+    <button class="app-card" onclick="openSat('motion')">
       <span class="dot" style="background:#8b5cf6"></span>
       <div class="app-info">
         <span class="app-name">ROM · Inclinómetro</span>
         <span class="app-desc">Medición de rango articular</span>
       </div>
-    </a>
-
-    <a class="app" href="/physiq/assessment/">
+    </button>
+    <button class="app-card" onclick="openSat('assessment')">
       <span class="dot" style="background:#3b82f6"></span>
       <div class="app-info">
         <span class="app-name">Valoración clínica</span>
         <span class="app-desc">Exploración y registro de hallazgos</span>
       </div>
-    </a>
-
-    <a class="app" href="/physiq/report/">
+    </button>
+    <button class="app-card" onclick="openSat('report')">
       <span class="dot" style="background:#10b981"></span>
       <div class="app-info">
         <span class="app-name">Informe con IA</span>
         <span class="app-desc">Generación de informes asistida</span>
       </div>
-    </a>
+    </button>
   </nav>
+</div>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/physiq/sw.js', { scope: '/physiq/' });
-    }
-  </script>
+<!-- ── Satellite shell ──────────────────────────────────── -->
+<div id="sat-shell" hidden>
+  <iframe id="sat-motion"     class="sat-frame" allow="microphone" hidden></iframe>
+  <iframe id="sat-assessment" class="sat-frame" allow="microphone" hidden></iframe>
+  <iframe id="sat-report"     class="sat-frame" allow="microphone" hidden></iframe>
+</div>
+
+<!-- ── Back button ─────────────────────────────────────── -->
+<button id="back-btn" hidden onclick="goHome()">
+  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+    <path d="M7.5 1.5L3.5 5.5l4 4" stroke="currentColor" stroke-width="1.6"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  PhysiQ
+</button>
+
+<!-- ── Recorder widget ─────────────────────────────────── -->
+<div id="rec-widget" class="idle">
+  <span id="rec-dot"   hidden></span>
+  <span id="rec-timer" hidden>00:00</span>
+
+  <button id="rec-btn-start" class="rec-btn" onclick="recCmd('start')">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <rect x="9" y="2" width="6" height="12" rx="3"/>
+      <path d="M5 10a7 7 0 0 0 14 0"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+    </svg>
+    Grabar
+  </button>
+
+  <button id="rec-btn-pause"   class="rec-btn" hidden onclick="recCmd('pause')">⏸</button>
+  <button id="rec-btn-resume"  class="rec-btn" hidden onclick="recCmd('resume')">▶</button>
+  <span   id="rec-sep-stop"    class="rec-sep" hidden></span>
+  <button id="rec-btn-stop"    class="rec-btn" hidden onclick="recCmd('stop')">⏹</button>
+  <span   id="rec-sep-discard" class="rec-sep" hidden></span>
+  <button id="rec-btn-discard" class="rec-btn" hidden onclick="showDiscardConfirm()">✕</button>
+  <span   id="rec-sep-export"  class="rec-sep" hidden></span>
+  <button id="rec-btn-export"  class="rec-btn" hidden onclick="recCmd('export')">Informe →</button>
+
+  <div id="rec-confirm" hidden>
+    <span>¿Descartar?</span>
+    <button id="rec-confirm-yes" class="rec-btn" onclick="recCmd('discard')">Sí</button>
+    <button id="rec-confirm-no"  class="rec-btn" onclick="hideDiscardConfirm()">No</button>
+  </div>
+</div>
+
+<script>
+// ── Navigation ───────────────────────────────────────────
+const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/' };
+
+function openSat(name) {
+  if (!SATS[name]) return;
+  const frame = document.getElementById('sat-' + name);
+  if (!frame.src) frame.src = SATS[name];
+  Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = k !== name; });
+  document.getElementById('sat-shell').hidden = false;
+  document.getElementById('home').hidden = true;
+  document.getElementById('back-btn').hidden = false;
+  history.pushState({ sat: name }, '', '/physiq/?sat=' + name);
+}
+
+function goHome() {
+  document.getElementById('sat-shell').hidden = true;
+  document.getElementById('home').hidden = false;
+  document.getElementById('back-btn').hidden = true;
+  Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = true; });
+  history.pushState({}, '', '/physiq/');
+}
+
+window.addEventListener('popstate', e => {
+  if (e.state?.sat) openSat(e.state.sat);
+  else goHome();
+});
+
+window.addEventListener('message', e => {
+  if (e.data?.type === 'PHYSIQ_NAVIGATE') openSat(e.data.to);
+});
+
+(function restoreState() {
+  const sat = new URLSearchParams(location.search).get('sat');
+  if (sat && SATS[sat]) openSat(sat);
+}());
+
+// ── Recorder engine ──────────────────────────────────────
+const _ch = new BroadcastChannel('physiq-recorder');
+let _mr = null, _stream = null, _chunks = [], _blob = null;
+let _mimeType = '', _duration = 0, _timer = null;
+let _discarding = false, _recState = 'idle';
+
+_ch.onmessage = e => { if (e.data?.cmd) _handleCmd(e.data.cmd); };
+
+function recCmd(cmd) { _handleCmd(cmd); }
+
+async function _handleCmd(cmd) {
+  switch (cmd) {
+    case 'start':   await _start(); break;
+    case 'pause':   _pause();       break;
+    case 'resume':  _resume();      break;
+    case 'stop':    _stop();        break;
+    case 'discard': _discard();     break;
+    case 'export':  _export();      break;
+  }
+}
+
+async function _start() {
+  if (_recState !== 'idle') return;
+  try {
+    _stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    _mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? 'audio/webm;codecs=opus' : 'audio/mp4';
+    _mr = new MediaRecorder(_stream, { mimeType: _mimeType });
+    _chunks = []; _duration = 0; _discarding = false;
+    _mr.ondataavailable = e => { if (e.data.size) _chunks.push(e.data); };
+    _mr.onstop = _onStop;
+    _mr.start(1000);
+    _startTimer();
+    _setState('recording');
+  } catch (err) {
+    console.warn('Micrófono no disponible:', err);
+  }
+}
+
+function _startTimer() {
+  clearInterval(_timer);
+  _timer = setInterval(() => {
+    _duration++;
+    document.getElementById('rec-timer').textContent = _fmt(_duration);
+    _broadcast();
+  }, 1000);
+}
+
+function _pause() {
+  if (_recState !== 'recording') return;
+  _mr.pause();
+  clearInterval(_timer);
+  _setState('paused');
+}
+
+function _resume() {
+  if (_recState !== 'paused') return;
+  _mr.resume();
+  _startTimer();
+  _setState('recording');
+}
+
+function _stop() {
+  if (_recState !== 'recording' && _recState !== 'paused') return;
+  clearInterval(_timer);
+  if (_mr && _mr.state !== 'inactive') _mr.stop();
+}
+
+function _onStop() {
+  if (_discarding) { _discarding = false; return; }
+  _blob = new Blob(_chunks, { type: _mimeType });
+  if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
+  _mr = null;
+  _saveToIDB();
+  _setState('stopped');
+}
+
+function _discard() {
+  clearInterval(_timer);
+  if (_mr) {
+    _discarding = true;
+    if (_mr.state !== 'inactive') _mr.stop();
+    _mr = null;
+  }
+  if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
+  _chunks = []; _blob = null; _duration = 0;
+  _openIDB().then(db => {
+    try {
+      db.transaction('audio', 'readwrite').objectStore('audio').delete('pending');
+    } catch (_) {}
+    db.close();
+  }).catch(() => {});
+  hideDiscardConfirm();
+  _setState('idle');
+}
+
+function _export() {
+  if (!_blob) return;
+  openSat('report');
+}
+
+function _setState(s) {
+  _recState = s;
+  _broadcast();
+  _updateWidget();
+}
+
+function _broadcast() {
+  _ch.postMessage({ type: 'RECORDER_STATE', state: _recState, duration: _duration, hasAudio: !!_blob });
+}
+
+// ── IDB ──────────────────────────────────────────────────
+function _openIDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open('physiq', 2);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('audio'))   db.createObjectStore('audio');
+      if (!db.objectStoreNames.contains('session')) db.createObjectStore('session');
+    };
+    req.onsuccess = e => res(e.target.result);
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+
+async function _saveToIDB() {
+  const ext = _mimeType.includes('mp4') ? 'mp4' : 'webm';
+  const db  = await _openIDB();
+  const tx  = db.transaction('audio', 'readwrite');
+  tx.objectStore('audio').put(
+    { blob: _blob, name: 'physiq-recording.' + ext, type: _mimeType, duration: _duration },
+    'pending'
+  );
+  db.close();
+}
+
+// ── Widget UI ─────────────────────────────────────────────
+function _fmt(s) {
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+function _vis(id, show) { document.getElementById(id).hidden = !show; }
+
+function _updateWidget() {
+  const idle = _recState === 'idle';
+  const rec  = _recState === 'recording';
+  const pau  = _recState === 'paused';
+  const stop = _recState === 'stopped';
+
+  document.getElementById('rec-widget').className = _recState;
+  document.getElementById('rec-timer').textContent = _fmt(_duration);
+
+  _vis('rec-dot',         !idle);
+  _vis('rec-timer',       !idle);
+  _vis('rec-btn-start',    idle);
+  _vis('rec-btn-pause',    rec);
+  _vis('rec-btn-resume',   pau);
+  _vis('rec-sep-stop',     rec || pau);
+  _vis('rec-btn-stop',     rec || pau);
+  _vis('rec-sep-discard',  rec || pau);
+  _vis('rec-btn-discard', !idle);
+  _vis('rec-sep-export',   stop);
+  _vis('rec-btn-export',   stop);
+  _vis('rec-confirm',      false);
+}
+
+function showDiscardConfirm() {
+  _vis('rec-btn-pause',   false); _vis('rec-btn-resume',  false);
+  _vis('rec-sep-stop',    false); _vis('rec-btn-stop',    false);
+  _vis('rec-sep-discard', false); _vis('rec-btn-discard', false);
+  _vis('rec-sep-export',  false); _vis('rec-btn-export',  false);
+  _vis('rec-confirm',     true);
+}
+
+function hideDiscardConfirm() {
+  _vis('rec-confirm', false);
+  _updateWidget();
+}
+
+// ── SW ────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/physiq/sw.js', { scope: '/physiq/' });
+}
+</script>
 </body>
 </html>
