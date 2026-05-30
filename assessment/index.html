@@ -1885,13 +1885,6 @@
   </div>
   <div class="header-right">
     <span class="phase-indicator" id="phaseIndicator">FASE 1 / 5</span>
-    <button class="btn-record" id="btnRecord" onclick="toggleRecording()" aria-label="Grabar sesión">
-      <span class="btn-record-dot" id="recordDot"></span>
-      <span class="btn-record-text" id="recordLabel">Grabar</span>
-      <span class="btn-record-timer" id="recordTimer" style="display:none"></span>
-    </button>
-    <button class="btn-pause" id="btnPause" onclick="togglePause()" style="display:none" aria-label="Pausar grabación">⏸</button>
-    <button class="btn-discard" id="btnDiscard" onclick="discardRecording()" style="display:none" aria-label="Descartar grabación">✕</button>
     <button class="btn-translate" onclick="handleTranslateClick()" aria-label="View in English">
       🌐
       <span class="translate-tooltip">View in English<br>Right-click → Translate to English</span>
@@ -1969,7 +1962,7 @@
     <div class="asi-icon">📤</div>
     <div class="asi-info">
       <div class="asi-name">Generar informe en PhysiQ-Report</div>
-      <div class="asi-desc">Abre el informe CIF-AFTA en una nueva pestaña<span id="asiAudioStatus" style="display:none;color:var(--accent2);"> · 🎙 <span id="asiAudioDuration"></span></span></div>
+      <div class="asi-desc">Abre el informe CIF-AFTA en una nueva pestaña</div>
     </div>
   </div>
   <div class="asi-item asi-copy" onclick="copyContextToClipboard(); closeActionsSheet()">
@@ -2412,7 +2405,7 @@
     <button class="btn btn-secondary" onclick="goToPhase('4b')">← Anterior</button>
     <button class="btn btn-secondary btn-export-desktop" onclick="window.print()">🖨️ Imprimir</button>
     <button class="btn btn-secondary btn-export-desktop" onclick="copyContextToClipboard()">📋 Copiar contexto</button>
-    <button class="btn btn-primary btn-export-desktop" onclick="exportToPhysiQ()">📤 Generar en PhysiQ-Report<span id="btnExportAudioBadge" style="display:none;font-size:0.7em;margin-left:6px;opacity:0.85;">🎙 <span id="btnExportAudioDuration"></span></span></button>
+    <button class="btn btn-primary btn-export-desktop" onclick="exportToPhysiQ()">📤 Generar en PhysiQ-Report</button>
     <button class="btn btn-primary btn-export-toggle" onclick="toggleActionsSheet()">↑ Exportar</button>
   </div>
 </div>
