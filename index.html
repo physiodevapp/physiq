@@ -54,64 +54,119 @@
 
     /* ── Recorder widget ────────────────────────────── */
     #rec-widget {
-      position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 300;
-      display: flex; align-items: center; gap: 0.4rem;
-      background: #111b28; border: 1px solid #2d3f55; border-radius: 40px;
-      padding: 0.55rem 0.9rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      font-family: system-ui, sans-serif; font-size: 0.82rem;
-      white-space: nowrap; user-select: none;
-      transition: border-color 0.25s, box-shadow 0.25s;
+      position: fixed;
+      bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+      left: 50%; transform: translateX(-50%);
+      z-index: 300;
+      display: flex; align-items: center; gap: 2px;
+      background: rgba(13,21,33,0.97);
+      border: 1px solid #283849; border-radius: 999px;
+      padding: 5px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.3);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      font-family: system-ui, sans-serif;
+      user-select: none; white-space: nowrap;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
-    #rec-widget.recording {
+    #rec-widget[data-state="recording"] {
       border-color: rgba(239,68,68,0.45);
-      box-shadow: 0 4px 24px rgba(239,68,68,0.22);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 4px 24px rgba(239,68,68,0.2);
     }
-    #rec-widget.paused {
+    #rec-widget[data-state="paused"] {
       border-color: rgba(251,146,60,0.45);
-      box-shadow: 0 4px 24px rgba(251,146,60,0.18);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 4px 24px rgba(251,146,60,0.16);
     }
-    #rec-widget.stopped {
-      border-color: rgba(79,156,249,0.4);
-      box-shadow: 0 4px 24px rgba(79,156,249,0.18);
+    #rec-widget[data-state="stopped"] {
+      border-color: rgba(56,217,169,0.4);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 4px 24px rgba(56,217,169,0.14);
+    }
+    #rec-widget[data-error] {
+      border-color: rgba(239,68,68,0.7);
+      animation: rw-shake 0.4s ease-in-out;
+    }
+    @keyframes rw-shake {
+      0%,100%{transform:translateX(-50%)}
+      25%{transform:translateX(calc(-50% - 5px))}
+      75%{transform:translateX(calc(-50% + 5px))}
     }
 
-    #rec-dot {
-      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-      background: #ef4444;
+    /* State-driven visibility */
+    #rec-widget > * { display: none; }
+
+    #rec-widget[data-state="idle"] > .rw-start { display: flex; }
+
+    #rec-widget[data-state="recording"] > .rw-status,
+    #rec-widget[data-state="paused"]    > .rw-status,
+    #rec-widget[data-state="stopped"]   > .rw-status { display: flex; }
+
+    #rec-widget[data-state="recording"] > .rw-sep,
+    #rec-widget[data-state="paused"]    > .rw-sep,
+    #rec-widget[data-state="stopped"]   > .rw-sep { display: block; }
+
+    #rec-widget[data-state="recording"] > .rw-pause  { display: flex; }
+    #rec-widget[data-state="paused"]    > .rw-resume { display: flex; }
+
+    #rec-widget[data-state="recording"] > .rw-stop,
+    #rec-widget[data-state="paused"]    > .rw-stop   { display: flex; }
+
+    #rec-widget[data-state="stopped"]   > .rw-export { display: flex; }
+
+    #rec-widget[data-state="recording"] > .rw-trash,
+    #rec-widget[data-state="paused"]    > .rw-trash,
+    #rec-widget[data-state="stopped"]   > .rw-trash  { display: flex; }
+
+    #rec-widget[data-confirm] > *           { display: none !important; }
+    #rec-widget[data-confirm] > .rw-confirm { display: flex; }
+
+    /* Buttons */
+    .rw-btn {
+      width: 42px; height: 42px; border-radius: 50%;
+      border: none; background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #c8d8e8; flex-shrink: 0;
+      transition: background 0.15s, color 0.15s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .recording #rec-dot { animation: rec-blink 1.1s ease-in-out infinite; }
-    .paused    #rec-dot { background: #fb923c; opacity: 0.8; }
-    .stopped   #rec-dot { background: #4f9cf9; }
-    @keyframes rec-blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+    .rw-btn:hover  { background: rgba(255,255,255,0.09); }
+    .rw-btn:active { background: rgba(255,255,255,0.16); transform: scale(0.88); }
+
+    .rw-start { color: #d8e8f4; }
+    .rw-start:hover { background: rgba(79,156,249,0.14); color: #4f9cf9; }
+
+    .rw-export {
+      width: auto; border-radius: 999px;
+      padding: 0 14px 0 10px; gap: 6px;
+      color: #38d9a9; font-size: 0.82rem; font-weight: 500;
+    }
+    .rw-export:hover { background: rgba(56,217,169,0.13); }
+
+    .rw-stop  { color: #7a95b0; }
+    .rw-stop:hover  { background: rgba(239,68,68,0.1); color: #f87171; }
+
+    .rw-trash { color: #4a6580; }
+    .rw-trash:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
+
+    /* Status */
+    .rw-status { display: flex; align-items: center; gap: 7px; padding: 0 6px 0 10px; }
+    .rw-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    [data-state="recording"] .rw-dot { background: #ef4444; animation: rw-blink 1.1s ease-in-out infinite; }
+    [data-state="paused"]    .rw-dot { background: #fb923c; }
+    [data-state="stopped"]   .rw-dot { background: #38d9a9; }
+    @keyframes rw-blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 
     #rec-timer {
-      font-variant-numeric: tabular-nums; color: #c8d8e8;
-      min-width: 2.6rem; text-align: center; font-size: 0.8rem;
+      font-size: 0.82rem; font-variant-numeric: tabular-nums;
+      color: #c8d8e8; min-width: 2.8rem; text-align: center;
     }
 
-    .rec-sep { width: 1px; height: 13px; background: #2d3f55; flex-shrink: 0; }
+    .rw-sep { width: 1px; height: 20px; background: #283849; margin: 0 3px; flex-shrink: 0; }
 
-    .rec-btn {
-      background: none; border: none; cursor: pointer;
-      padding: 0.2rem 0.3rem; border-radius: 4px;
-      display: flex; align-items: center; gap: 0.3rem;
-      line-height: 1; transition: opacity 0.15s;
-    }
-    .rec-btn:active { opacity: 0.55; }
-
-    #rec-btn-start   { color: #e8edf2; font-size: 0.82rem; }
-    #rec-btn-pause,
-    #rec-btn-resume,
-    #rec-btn-stop    { color: #8aa4bc; font-size: 1rem; }
-    #rec-btn-discard { color: #4a607a; font-size: 0.9rem; }
-    #rec-btn-export  { color: #4f9cf9; font-size: 0.8rem; }
-    #rec-btn-export:active { color: #38d9a9; opacity: 1; }
-
-    #rec-confirm { display: flex; align-items: center; gap: 0.4rem; }
-    #rec-confirm > span { color: #8aa4bc; font-size: 0.78rem; }
-    #rec-confirm-yes { color: #ef4444 !important; font-weight: 600; }
-    #rec-confirm-no  { color: #8aa4bc !important; }
+    /* Confirm */
+    .rw-confirm { align-items: center; gap: 2px; padding: 0 4px; }
+    .rw-confirm-label { font-size: 0.8rem; color: #8aa4bc; padding: 0 6px; }
+    .rw-confirm-yes { color: #ef4444 !important; font-size: 0.85rem; font-weight: 600; }
+    .rw-confirm-no  { color: #8aa4bc  !important; font-size: 0.85rem; }
+    .rw-confirm-yes, .rw-confirm-no { width: auto; height: auto; padding: 8px 14px; border-radius: 999px; }
   </style>
 </head>
 <body>
@@ -154,35 +209,72 @@
 </div>
 
 <!-- ── Recorder widget ─────────────────────────────────── -->
-<div id="rec-widget" class="idle">
-  <span id="rec-dot"   hidden></span>
-  <span id="rec-timer" hidden>00:00</span>
+<div id="rec-widget" data-state="idle">
 
-  <button id="rec-btn-start" class="rec-btn" onclick="recCmd('start')">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round">
-      <rect x="9" y="2" width="6" height="12" rx="3"/>
-      <path d="M5 10a7 7 0 0 0 14 0"/>
+  <!-- idle -->
+  <button class="rw-btn rw-start" onclick="recCmd('start')" title="Iniciar grabación" aria-label="Iniciar grabación">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
       <line x1="12" y1="19" x2="12" y2="22"/>
     </svg>
-    Grabar
   </button>
 
-  <button id="rec-btn-pause"   class="rec-btn" hidden onclick="recCmd('pause')">⏸</button>
-  <button id="rec-btn-resume"  class="rec-btn" hidden onclick="recCmd('resume')">▶</button>
-  <span   id="rec-sep-stop"    class="rec-sep" hidden></span>
-  <button id="rec-btn-stop"    class="rec-btn" hidden onclick="recCmd('stop')">⏹</button>
-  <span   id="rec-sep-discard" class="rec-sep" hidden></span>
-  <button id="rec-btn-discard" class="rec-btn" hidden onclick="showDiscardConfirm()">✕</button>
-  <span   id="rec-sep-export"  class="rec-sep" hidden></span>
-  <button id="rec-btn-export"  class="rec-btn" hidden onclick="recCmd('export')">Informe →</button>
-
-  <div id="rec-confirm" hidden>
-    <span>¿Descartar?</span>
-    <button id="rec-confirm-yes" class="rec-btn" onclick="recCmd('discard')">Sí</button>
-    <button id="rec-confirm-no"  class="rec-btn" onclick="hideDiscardConfirm()">No</button>
+  <!-- status: dot + timer -->
+  <div class="rw-status">
+    <span class="rw-dot"></span>
+    <span id="rec-timer">00:00</span>
   </div>
+
+  <span class="rw-sep"></span>
+
+  <!-- recording: pause -->
+  <button class="rw-btn rw-pause" onclick="recCmd('pause')" title="Pausar" aria-label="Pausar grabación">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+      <rect x="6" y="4" width="4" height="16" rx="1"/>
+      <rect x="14" y="4" width="4" height="16" rx="1"/>
+    </svg>
+  </button>
+
+  <!-- paused: resume -->
+  <button class="rw-btn rw-resume" onclick="recCmd('resume')" title="Reanudar" aria-label="Reanudar grabación">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 5v14l11-7z"/>
+    </svg>
+  </button>
+
+  <!-- recording + paused: stop -->
+  <button class="rw-btn rw-stop" onclick="recCmd('stop')" title="Detener" aria-label="Detener grabación">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+      <rect x="4" y="4" width="16" height="16" rx="2"/>
+    </svg>
+  </button>
+
+  <!-- stopped: export -->
+  <button class="rw-btn rw-export" onclick="recCmd('export')" title="Enviar al informe" aria-label="Enviar al informe">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="22" y1="2" x2="11" y2="13"/>
+      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+    </svg>
+    <span>Informe</span>
+  </button>
+
+  <!-- recording + paused + stopped: discard -->
+  <button class="rw-btn rw-trash" onclick="showDiscardConfirm()" title="Descartar grabación" aria-label="Descartar grabación">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+    </svg>
+  </button>
+
+  <!-- confirm discard -->
+  <div class="rw-confirm">
+    <span class="rw-confirm-label">¿Descartar?</span>
+    <button class="rw-btn rw-confirm-yes" onclick="recCmd('discard')" aria-label="Confirmar descarte">Sí</button>
+    <button class="rw-btn rw-confirm-no"  onclick="hideDiscardConfirm()" aria-label="Cancelar">No</button>
+  </div>
+
 </div>
 
 <script>
@@ -257,6 +349,9 @@ async function _start() {
     _setState('recording');
   } catch (err) {
     console.warn('Micrófono no disponible:', err);
+    const w = document.getElementById('rec-widget');
+    w.dataset.error = '1';
+    setTimeout(() => delete w.dataset.error, 2500);
   }
 }
 
@@ -362,42 +457,19 @@ function _fmt(s) {
   return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
 }
 
-function _vis(id, show) { document.getElementById(id).hidden = !show; }
-
 function _updateWidget() {
-  const idle = _recState === 'idle';
-  const rec  = _recState === 'recording';
-  const pau  = _recState === 'paused';
-  const stop = _recState === 'stopped';
-
-  document.getElementById('rec-widget').className = _recState;
+  const w = document.getElementById('rec-widget');
+  w.dataset.state = _recState;
+  delete w.dataset.confirm;
   document.getElementById('rec-timer').textContent = _fmt(_duration);
-
-  _vis('rec-dot',         !idle);
-  _vis('rec-timer',       !idle);
-  _vis('rec-btn-start',    idle);
-  _vis('rec-btn-pause',    rec);
-  _vis('rec-btn-resume',   pau);
-  _vis('rec-sep-stop',     rec || pau);
-  _vis('rec-btn-stop',     rec || pau);
-  _vis('rec-sep-discard',  rec || pau);
-  _vis('rec-btn-discard', !idle);
-  _vis('rec-sep-export',   stop);
-  _vis('rec-btn-export',   stop);
-  _vis('rec-confirm',      false);
 }
 
 function showDiscardConfirm() {
-  _vis('rec-btn-pause',   false); _vis('rec-btn-resume',  false);
-  _vis('rec-sep-stop',    false); _vis('rec-btn-stop',    false);
-  _vis('rec-sep-discard', false); _vis('rec-btn-discard', false);
-  _vis('rec-sep-export',  false); _vis('rec-btn-export',  false);
-  _vis('rec-confirm',     true);
+  document.getElementById('rec-widget').dataset.confirm = '1';
 }
 
 function hideDiscardConfirm() {
-  _vis('rec-confirm', false);
-  _updateWidget();
+  delete document.getElementById('rec-widget').dataset.confirm;
 }
 
 // ── SW ────────────────────────────────────────────────────
