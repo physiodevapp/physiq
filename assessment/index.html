@@ -90,6 +90,8 @@
     color: var(--text);
     letter-spacing: -0.5px;
   }
+  .in-hub .logo-main { cursor: pointer; opacity: 0.8; transition: opacity 0.15s; }
+  .in-hub .logo-main:hover { opacity: 1; }
 
   .logo-sub {
     font-family: 'DM Serif Display', serif;
@@ -2428,5 +2430,13 @@
 <script src="data.js"></script>
 <script src="lib/session.js"></script>
 <script src="app.js"></script>
+<script>
+if (window.self !== window.top) {
+  document.body.classList.add('in-hub');
+  document.querySelector('.logo-main').addEventListener('click', () => {
+    window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+  });
+}
+</script>
 </body>
 </html>
