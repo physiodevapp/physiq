@@ -90,10 +90,11 @@
       75%{transform:translateX(calc(-50% + 5px))}
     }
 
-    /* State-driven visibility */
-    #rec-widget > * { display: none; }
+    /* State-driven visibility — explicit per element (avoids universal-selector cascade edge cases) */
+    .rw-status, .rw-sep, .rw-pause, .rw-resume,
+    .rw-stop, .rw-export, .rw-trash, .rw-confirm { display: none; }
 
-    #rec-widget[data-state="idle"] > .rw-start { display: flex; }
+    #rec-widget:not([data-state="idle"]) > .rw-start { display: none; }
 
     #rec-widget[data-state="recording"] > .rw-status,
     #rec-widget[data-state="paused"]    > .rw-status,
@@ -115,7 +116,14 @@
     #rec-widget[data-state="paused"]    > .rw-trash,
     #rec-widget[data-state="stopped"]   > .rw-trash  { display: flex; }
 
-    #rec-widget[data-confirm] > *           { display: none !important; }
+    /* confirm — misma especificidad (1,2,0) pero posterior → gana sobre las reglas de estado */
+    #rec-widget[data-confirm] > .rw-status  { display: none; }
+    #rec-widget[data-confirm] > .rw-sep     { display: none; }
+    #rec-widget[data-confirm] > .rw-pause   { display: none; }
+    #rec-widget[data-confirm] > .rw-resume  { display: none; }
+    #rec-widget[data-confirm] > .rw-stop    { display: none; }
+    #rec-widget[data-confirm] > .rw-export  { display: none; }
+    #rec-widget[data-confirm] > .rw-trash   { display: none; }
     #rec-widget[data-confirm] > .rw-confirm { display: flex; }
 
     /* Buttons */
