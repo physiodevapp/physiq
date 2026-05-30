@@ -6,6 +6,7 @@
   <title>PhysiQ</title>
   <link rel="icon" href="/physiq/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/physiq/manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#1e2d3d">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,14 +26,18 @@
     }
 
     h1 {
+      font-family: 'DM Serif Display', serif;
       font-size: 2rem;
-      font-weight: 700;
+      font-weight: 400;
       letter-spacing: -0.02em;
       color: #fff;
     }
 
     h1 span {
-      color: #64a8d4;
+      background: linear-gradient(135deg, #4f9cf9, #38d9a9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     nav {
