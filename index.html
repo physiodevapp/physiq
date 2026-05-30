@@ -48,27 +48,8 @@
     .app-name { font-size: 1rem; font-weight: 600; color: #fff; }
     .app-desc { font-size: 0.78rem; color: #8aa4bc; }
 
-    /* ── Hub nav bar ────────────────────────────────── */
-    #hub-nav {
-      position: fixed; top: 0; left: 0; right: 0; height: 40px;
-      z-index: 200;
-      display: flex; align-items: center; padding: 0 8px;
-      background: rgba(14,20,32,0.96);
-      border-bottom: 1px solid #2d3f55;
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    }
-
-    #back-btn {
-      display: flex; align-items: center; gap: 0.3rem;
-      background: none; border: none;
-      color: #8aa4bc; border-radius: 6px;
-      padding: 0.3rem 0.6rem; font-size: 0.78rem; cursor: pointer;
-      transition: color 0.15s;
-    }
-    #back-btn:active { color: #e8edf2; }
-
     /* ── Satellite shell ────────────────────────────── */
-    #sat-shell { position: fixed; top: 40px; bottom: 0; left: 0; right: 0; z-index: 10; }
+    #sat-shell { position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 10; }
     .sat-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 
     /* ── Recorder widget ────────────────────────────── */
@@ -172,17 +153,6 @@
   <iframe id="sat-report"     class="sat-frame" allow="microphone" hidden></iframe>
 </div>
 
-<!-- ── Hub nav bar ──────────────────────────────────────── -->
-<div id="hub-nav" hidden>
-  <button id="back-btn" onclick="goHome()">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-      <path d="M7.5 1.5L3.5 5.5l4 4" stroke="currentColor" stroke-width="1.6"
-            stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    PhysiQ
-  </button>
-</div>
-
 <!-- ── Recorder widget ─────────────────────────────────── -->
 <div id="rec-widget" class="idle">
   <span id="rec-dot"   hidden></span>
@@ -226,14 +196,12 @@ function openSat(name) {
   Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = k !== name; });
   document.getElementById('sat-shell').hidden = false;
   document.getElementById('home').hidden = true;
-  document.getElementById('hub-nav').hidden = false;
   history.pushState({ sat: name }, '', '/physiq/?sat=' + name);
 }
 
 function goHome() {
   document.getElementById('sat-shell').hidden = true;
   document.getElementById('home').hidden = false;
-  document.getElementById('hub-nav').hidden = true;
   Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = true; });
   history.pushState({}, '', '/physiq/');
 }
@@ -245,6 +213,7 @@ window.addEventListener('popstate', e => {
 
 window.addEventListener('message', e => {
   if (e.data?.type === 'PHYSIQ_NAVIGATE') openSat(e.data.to);
+  if (e.data?.type === 'PHYSIQ_GO_HOME') goHome();
 });
 
 (function restoreState() {
