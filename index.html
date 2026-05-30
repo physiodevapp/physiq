@@ -93,7 +93,7 @@
     /* State-driven visibility — explicit per element */
     #rec-widget .rw-status, #rec-widget .rw-sep,
     #rec-widget .rw-pause,  #rec-widget .rw-resume,
-    #rec-widget .rw-stop,   #rec-widget .rw-export,
+    #rec-widget .rw-stop,
     #rec-widget .rw-trash,  #rec-widget .rw-confirm { display: none; }
 
     #rec-widget:not([data-state="idle"]) > .rw-start { display: none; }
@@ -112,8 +112,6 @@
     #rec-widget[data-state="recording"] > .rw-stop,
     #rec-widget[data-state="paused"]    > .rw-stop   { display: flex; }
 
-    #rec-widget[data-state="stopped"]   > .rw-export { display: flex; }
-
     #rec-widget[data-state="recording"] > .rw-trash,
     #rec-widget[data-state="paused"]    > .rw-trash,
     #rec-widget[data-state="stopped"]   > .rw-trash  { display: flex; }
@@ -124,7 +122,6 @@
     #rec-widget[data-confirm] > .rw-pause   { display: none; }
     #rec-widget[data-confirm] > .rw-resume  { display: none; }
     #rec-widget[data-confirm] > .rw-stop    { display: none; }
-    #rec-widget[data-confirm] > .rw-export  { display: none; }
     #rec-widget[data-confirm] > .rw-trash   { display: none; }
     #rec-widget[data-confirm] > .rw-confirm { display: flex; }
 
@@ -142,13 +139,6 @@
 
     .rw-start { color: #d8e8f4; }
     .rw-start:hover { background: rgba(79,156,249,0.14); color: #4f9cf9; }
-
-    .rw-export {
-      width: auto; border-radius: 999px;
-      padding: 0 14px 0 10px; gap: 6px;
-      color: #38d9a9; font-size: 0.82rem; font-weight: 500;
-    }
-    .rw-export:hover { background: rgba(56,217,169,0.13); }
 
     .rw-stop  { color: #7a95b0; }
     .rw-stop:hover  { background: rgba(239,68,68,0.1); color: #f87171; }
@@ -176,7 +166,7 @@
     .rw-confirm-label { font-size: 0.8rem; color: #8aa4bc; padding: 0 6px; }
     .rw-confirm-yes { color: #ef4444 !important; font-size: 0.85rem; font-weight: 600; }
     .rw-confirm-no  { color: #8aa4bc  !important; font-size: 0.85rem; }
-    .rw-confirm-yes, .rw-confirm-no { width: auto; height: auto; padding: 8px 14px; border-radius: 999px; }
+    .rw-confirm-yes, .rw-confirm-no { width: auto; height: 42px; padding: 0 14px; border-radius: 999px; }
   </style>
 </head>
 <body>
@@ -260,15 +250,6 @@
     </svg>
   </button>
 
-  <!-- stopped: export -->
-  <button class="rw-btn rw-export" onclick="recCmd('export')" title="Enviar al informe" aria-label="Enviar al informe">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13"/>
-      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-    </svg>
-    <span>Informe</span>
-  </button>
-
   <!-- recording + paused + stopped: discard -->
   <button class="rw-btn rw-trash" onclick="showDiscardConfirm()" title="Descartar grabación" aria-label="Descartar grabación">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -340,7 +321,6 @@ async function _handleCmd(cmd) {
     case 'resume':  _resume();      break;
     case 'stop':    _stop();        break;
     case 'discard': _discard();     break;
-    case 'export':  _export();      break;
   }
 }
 
@@ -420,11 +400,6 @@ function _discard() {
   }).catch(() => {});
   hideDiscardConfirm();
   _setState('idle');
-}
-
-function _export() {
-  if (!_blob) return;
-  openSat('report');
 }
 
 function _setState(s) {
