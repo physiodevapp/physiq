@@ -1815,8 +1815,8 @@
     .header-right.recording-active .btn-record { padding: 4px 6px; }
     .header-right.recording-active .btn-reset { padding: 4px 6px; }
   }
-  .session-btn{display:none;background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent2);padding:6px;line-height:1;flex-shrink:0;}
-  .session-btn.active{display:block;}
+  .session-btn{display:none;background:none;border:none;cursor:pointer;color:var(--accent2);padding:6px;flex-shrink:0;}
+  .session-btn.active{display:flex;align-items:center;justify-content:center;}
 </style>
 </head>
 <body>
@@ -1827,7 +1827,7 @@
     <span class="logo-main">PhysiQ</span>
     <span class="logo-sub">— <span class="logo-sub-word">Assessment</span><span class="logo-sub-initial">A</span></span>
   </div>
-  <button id="sessionBtn" class="session-btn" onclick="promptClearSession()" aria-label="Sesión activa" title="Sesión activa">◉</button>
+  <button id="sessionBtn" class="session-btn" onclick="promptClearSession()" aria-label="Sesión activa" title="Sesión activa"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
   <div class="header-right">
     <span class="phase-indicator" id="phaseIndicator">FASE 1 / 5</span>
     <button class="btn-translate" onclick="handleTranslateClick()" aria-label="View in English">
