@@ -1581,15 +1581,15 @@ function showConfirmBanner(title, text, actionLabel, onConfirm) {
       <div class="confirm-box-title">${title}</div>
       <div class="confirm-box-text">${text}</div>
       <div class="confirm-box-btns">
-        <button class="btn btn-secondary" onclick="document.getElementById('confirmBanner').remove()" style="font-size:0.85rem; padding:9px 18px;">Cancelar</button>
+        <button class="btn btn-secondary" id="confirmCancel" style="font-size:0.85rem; padding:9px 18px;">Cancelar</button>
         <button class="btn btn-primary" id="confirmAction" style="font-size:0.85rem; padding:9px 18px;">${actionLabel}</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
-  document.getElementById('confirmAction').onclick = () => {
-    overlay.remove();
-    onConfirm();
-  };
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  const dismiss = () => { overlay.remove(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
+  document.getElementById('confirmCancel').onclick = dismiss;
+  document.getElementById('confirmAction').onclick = () => { dismiss(); onConfirm(); };
 }
 
 
