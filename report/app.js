@@ -1133,7 +1133,7 @@ function showConfirmBanner(title, text, actionLabel, onConfirm) {
 
 function promptClearSession() {
   showConfirmBanner(
-    '◉ Sesión en curso',
+    'Nueva sesión',
     `${_sessionLabel}<br>¿Borrar? Se perderán los datos importados.`,
     'Borrar sesión',
     () => {
