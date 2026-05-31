@@ -1480,6 +1480,9 @@ function buildResults() {
   <div style="text-align:center; padding:1rem 0; color:var(--text3); font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:1px;">
     PhysiQ-Assessment · Valoración generada el ${now.toLocaleDateString('es-ES')} a las ${now.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}
   </div>`;
+
+  writeSession({ assessment: buildPhysiQPayload(), patient: state.patient || '', date: now.toLocaleDateString('es-ES') })
+    .then(session => { if (session) updateSessionChip(session); });
 }
 
 // ─── PHASE 2 VALIDATION ──────────────────────────────────────
@@ -1514,20 +1517,6 @@ function closePhaseSheet() {
   document.body.style.overflow = '';
 }
 
-function toggleActionsSheet() {
-  const sheet = document.getElementById('actionsSheet');
-  const overlay = document.getElementById('actionsSheetOverlay');
-  const isOpen = sheet.classList.contains('open');
-  sheet.classList.toggle('open');
-  overlay.classList.toggle('open');
-  document.body.style.overflow = isOpen ? '' : 'hidden';
-}
-
-function closeActionsSheet() {
-  document.getElementById('actionsSheet').classList.remove('open');
-  document.getElementById('actionsSheetOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
 
 function buildPhaseSheetList() {
   const list = document.getElementById('phaseSheetList');
@@ -1662,18 +1651,6 @@ function buildPhysiQPayload() {
   };
 }
 
-async function exportToPhysiQ() {
-  const payload = buildPhysiQPayload();
-  const date = new Date().toLocaleDateString('es-ES');
-  await writeSession({ assessment: payload, patient: state.patient || '', date }).then(session => {
-    if (session) updateSessionChip(session);
-  });
-  if (window.parent !== window) {
-    window.parent.postMessage({ type: 'PHYSIQ_NAVIGATE', to: 'report' }, '*');
-  } else {
-    window.open('https://physiodevapp.github.io/physiq-report/', '_blank');
-  }
-}
 
 function copyContextToClipboard() {
   const d = buildPhysiQPayload();

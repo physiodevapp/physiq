@@ -393,8 +393,6 @@
     margin-top: 2rem;
     justify-content: flex-end;
   }
-  .btn-export-toggle { display: none; }
-
   .btn {
     padding: 12px 28px;
     border-radius: 10px;
@@ -1222,52 +1220,6 @@
   .phase-sheet-item.psi-completed .phase-sheet-status { color: var(--green); }
   .phase-sheet-item.psi-active .phase-sheet-status { color: var(--accent); }
 
-  /* ── ACTIONS SHEET (exportar valoración) ─────────────────── */
-  .actions-sheet-overlay {
-    display: none; position: fixed; inset: 0;
-    z-index: 400; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
-  }
-  .actions-sheet-overlay.open { display: block; }
-  .actions-sheet {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    z-index: 401; background: var(--surface);
-    border-radius: 20px 20px 0 0; padding: 12px 0 24px;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
-  }
-  .actions-sheet.open { transform: translateY(0); }
-  .asi-handle {
-    width: 36px; height: 4px; background: var(--border2);
-    border-radius: 2px; margin: 0 auto 14px;
-  }
-  .asi-title {
-    font-family: 'DM Mono', monospace; font-size: 0.6rem;
-    letter-spacing: 2px; text-transform: uppercase;
-    color: var(--text3); padding: 0 1.2rem 10px;
-    border-bottom: 1px solid var(--border); margin-bottom: 6px;
-  }
-  .asi-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 1.2rem; cursor: pointer; transition: background 0.15s;
-    border-bottom: 1px solid rgba(35,45,69,0.3);
-  }
-  .asi-item:last-of-type { border-bottom: none; }
-  .asi-item:active { background: var(--surface2); }
-  .asi-icon {
-    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-  }
-  .asi-physiq .asi-icon { background: rgba(56,217,169,0.12); }
-  .asi-copy .asi-icon { background: rgba(79,156,249,0.1); }
-  .asi-print .asi-icon { background: var(--surface2); }
-  .asi-info { flex: 1; }
-  .asi-name { font-size: 0.9rem; font-weight: 500; color: var(--text); line-height: 1.3; }
-  .asi-physiq .asi-name { color: var(--accent2); }
-  .asi-desc { font-size: 0.72rem; color: var(--text3); margin-top: 2px; }
-  .asi-close {
-    display: block; margin: 10px 1.2rem 0; width: calc(100% - 2.4rem); text-align: center;
-  }
-
   /* ── ACORDEÓN MÓVIL — Sistema tabs ───────────────────────── */
   .sistema-accordion {
     display: none;
@@ -1587,8 +1539,6 @@
     .form-input { font-size: 0.85rem; }
     .form-label { font-size: 0.85rem; }
     /* Nav buttons fijos en la parte inferior */
-    .btn-export-desktop { display: none !important; }
-    .btn-export-toggle { display: block; }
     .nav-buttons {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -1946,35 +1896,6 @@
   <div class="phase-sheet-handle"></div>
   <div class="phase-sheet-title">Navegación por fases</div>
   <div class="phase-sheet-list" id="phaseSheetList"></div>
-</div>
-
-<!-- ACTIONS SHEET — Phase 5 export options -->
-<div class="actions-sheet-overlay" id="actionsSheetOverlay" onclick="closeActionsSheet()"></div>
-<div class="actions-sheet" id="actionsSheet">
-  <div class="asi-handle"></div>
-  <div class="asi-title">Exportar valoración</div>
-  <div class="asi-item asi-physiq" onclick="exportToPhysiQ(); closeActionsSheet()">
-    <div class="asi-icon">📤</div>
-    <div class="asi-info">
-      <div class="asi-name">Generar informe en PhysiQ-Report</div>
-      <div class="asi-desc">Abre el informe CIF-AFTA en una nueva pestaña</div>
-    </div>
-  </div>
-  <div class="asi-item asi-copy" onclick="copyContextToClipboard(); closeActionsSheet()">
-    <div class="asi-icon">📋</div>
-    <div class="asi-info">
-      <div class="asi-name">Copiar contexto clínico</div>
-      <div class="asi-desc">Copia un resumen de texto al portapapeles</div>
-    </div>
-  </div>
-  <div class="asi-item asi-print" onclick="window.print(); closeActionsSheet()">
-    <div class="asi-icon">🖨️</div>
-    <div class="asi-info">
-      <div class="asi-name">Imprimir / Guardar PDF</div>
-      <div class="asi-desc">Abre el diálogo de impresión del navegador</div>
-    </div>
-  </div>
-  <button class="btn btn-secondary asi-close" onclick="closeActionsSheet()">Cerrar</button>
 </div>
 
 <main class="main">
@@ -2392,16 +2313,15 @@
 <!-- ==================== FASE 5: RESULTADOS ==================== -->
 <div class="phase-container" id="phase5">
   <div class="phase-header">
-    <h1 class="phase-title">Informe de Valoración</h1>
-    <p class="phase-subtitle">Resumen clínico completo generado a partir de la valoración. Puede imprimirlo o guardarlo.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0.5rem;">
+      <h1 class="phase-title" style="margin-bottom:0;">Informe de Valoración</h1>
+      <button onclick="copyContextToClipboard()" title="Copiar contexto clínico" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:6px 10px;font-size:0.75rem;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:'DM Mono',monospace;flex-shrink:0;">📋 Copiar</button>
+    </div>
+    <p class="phase-subtitle">Resumen clínico completo generado a partir de la valoración.</p>
   </div>
   <div id="resultsContent"></div>
   <div class="nav-buttons">
-    <button class="btn btn-secondary" onclick="goToPhase('4b')">← Anterior</button>
-    <button class="btn btn-secondary btn-export-desktop" onclick="window.print()">🖨️ Imprimir</button>
-    <button class="btn btn-secondary btn-export-desktop" onclick="copyContextToClipboard()">📋 Copiar contexto</button>
-    <button class="btn btn-primary btn-export-desktop" onclick="exportToPhysiQ()">📤 Generar en PhysiQ-Report</button>
-    <button class="btn btn-primary btn-export-toggle" onclick="toggleActionsSheet()">↑ Exportar</button>
+    <button class="btn btn-secondary" onclick="goToPhase('4b')" style="width:100%;">← Anterior</button>
   </div>
 </div>
 
