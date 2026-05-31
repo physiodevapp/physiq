@@ -346,6 +346,8 @@ window.addEventListener('popstate', e => {
 window.addEventListener('message', e => {
   if (e.data?.type === 'PHYSIQ_NAVIGATE') openSat(e.data.to);
   if (e.data?.type === 'PHYSIQ_GO_HOME') goHome();
+  if (e.data?.type === 'PHYSIQ_WIDGET_HIDE') document.getElementById('rec-widget').style.visibility = 'hidden';
+  if (e.data?.type === 'PHYSIQ_WIDGET_SHOW') document.getElementById('rec-widget').style.visibility = '';
 });
 
 (function restoreState() {
