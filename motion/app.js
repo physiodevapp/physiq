@@ -1052,8 +1052,8 @@ function updateSessionChip(session) {
 
 function promptClearSession() {
   showConfirmBanner(
-    'Nueva sesión',
-    `● ${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
+    '◉ Sesión en curso',
+    `${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
     'Borrar sesión',
     () => {
       Object.values(state.measurements).forEach(r => Object.keys(r).forEach(k => { r[k] = null; }));

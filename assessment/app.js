@@ -1619,8 +1619,8 @@ function updateSessionChip(session) {
 
 function promptClearSession() {
   showConfirmBanner(
-    'Nueva sesión',
-    `● ${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
+    '◉ Sesión en curso',
+    `${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
     'Borrar sesión',
     () => { _softResetApp(); goToPhase(1); clearSession().then(() => updateSessionChip(null)); }
   );
