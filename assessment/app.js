@@ -168,6 +168,10 @@ function goToPhase(n) {
   if (!_handlingPopState) {
     history.replaceState({ phase: n }, '');
   }
+  if (n !== 5) {
+    const _phaseLabels = [1, 2, 3, 4, '4b', 5];
+    _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx] });
+  }
   saveSession();
 }
 
@@ -1717,7 +1721,8 @@ function saveSession() {
         if (session) updateSessionChip(session);
         _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient || '' });
         if (state.currentPhase !== 5) {
-          _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: state.currentPhase });
+          const _phaseLabels = [1, 2, 3, 4, '4b', 5];
+          _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx] });
         }
       });
   }
