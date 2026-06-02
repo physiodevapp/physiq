@@ -981,6 +981,7 @@ function loadFromPhysiQAssessment() {
 
 function applyROMContext(romData) {
   if (!romData) return;
+  document.getElementById('romBadge')?.remove();
   window._physiqROMContext = romData;
 
   let summary;
@@ -1010,6 +1011,8 @@ function applyROMContext(romData) {
 }
 
 function showImportedBadge(data) {
+  document.getElementById('assessmentIncompleteBadge')?.remove();
+  document.getElementById('assessmentBadge')?.remove();
   const badge = document.createElement('div');
   badge.id = 'assessmentBadge';
   badge.style.cssText = `
@@ -1088,12 +1091,46 @@ function _useSessionRecording() {
 const _recCh = new BroadcastChannel('physiq-recorder');
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
-  if (data.type !== 'SESSION_PATIENT') return;
-  const el = document.getElementById('patient-name');
-  if (!el || document.activeElement === el) return;
-  el.value = data.patient || '';
-  writeSession({ patient: data.patient || '' });
-  checkReady();
+  if (data.type === 'SESSION_PATIENT') {
+    const el = document.getElementById('patient-name');
+    if (!el || document.activeElement === el) return;
+    el.value = data.patient || '';
+    writeSession({ patient: data.patient || '' });
+    checkReady();
+    return;
+  }
+  if (data.type === 'SESSION_ROM') {
+    if (data.rom && Object.keys(data.rom.regions || {}).length > 0) {
+      applyROMContext(data.rom);
+    } else {
+      document.getElementById('romBadge')?.remove();
+      window._physiqROMContext = null;
+    }
+    checkReady();
+    return;
+  }
+  if (data.type === 'SESSION_ASSESSMENT') {
+    applyPhysiQAssessmentContext(data.assessment);
+    return;
+  }
+  if (data.type === 'SESSION_ASSESSMENT_PARTIAL') {
+    document.getElementById('assessmentBadge')?.remove();
+    let badge = document.getElementById('assessmentIncompleteBadge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'assessmentIncompleteBadge';
+      badge.style.cssText = `
+        background:rgba(255,176,58,0.08); border:1px solid rgba(255,176,58,0.3);
+        border-radius:8px; padding:10px 14px; font-size:12px;
+        color:var(--text2); font-family:'DM Mono',monospace; margin-bottom:12px;
+      `;
+      const main = document.querySelector('main');
+      if (main) main.prepend(badge);
+    }
+    const phaseLabel = data.phase === '4b' ? '4b' : data.phase;
+    badge.innerHTML = `⏳ Valoración en curso · Fase ${phaseLabel} de 5`;
+    return;
+  }
 };
 let _lastRecState = 'idle';
 _recCh.onmessage = ({ data }) => {
@@ -1150,7 +1187,7 @@ function promptClearSession() {
     () => {
       resetApp();
       window._physiqROMContext = null;
-      ['romBadge', 'assessmentBadge', 'audioBadge'].forEach(id => document.getElementById(id)?.remove());
+      ['romBadge', 'assessmentBadge', 'assessmentIncompleteBadge', 'audioBadge'].forEach(id => document.getElementById(id)?.remove());
       clearSession().then(() => updateSessionChip(null));
     }
   );
