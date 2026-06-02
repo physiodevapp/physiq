@@ -1491,8 +1491,12 @@ function buildResults() {
     PhysiQ-Assessment · Valoración generada el ${now.toLocaleDateString('es-ES')} a las ${now.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}
   </div>`;
 
-  writeSession({ assessment: buildPhysiQPayload(), patient: state.patient || '', date: now.toLocaleDateString('es-ES') })
-    .then(session => { if (session) updateSessionChip(session); });
+  const _assessmentPayload = buildPhysiQPayload();
+  writeSession({ assessment: _assessmentPayload, patient: state.patient || '', date: now.toLocaleDateString('es-ES') })
+    .then(session => {
+      if (session) updateSessionChip(session);
+      _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT', assessment: _assessmentPayload });
+    });
 }
 
 // ─── PHASE 2 VALIDATION ──────────────────────────────────────
@@ -1712,6 +1716,9 @@ function saveSession() {
       .then(session => {
         if (session) updateSessionChip(session);
         _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient || '' });
+        if (state.currentPhase !== 5) {
+          _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: state.currentPhase });
+        }
       });
   }
 }
