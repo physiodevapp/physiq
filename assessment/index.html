@@ -307,6 +307,12 @@
   }
   .form-input:focus { border-color: var(--accent); }
   .form-input::placeholder { color: var(--text3); }
+  .form-input:-webkit-autofill,
+  .form-input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px var(--surface2) inset;
+    -webkit-text-fill-color: var(--text);
+    transition: background-color 5000s ease-in-out 0s;
+  }
 
   textarea.form-input { resize: vertical; min-height: 80px; }
 

@@ -52,6 +52,15 @@ const state = {
 // ─── HISTORY / BACK-BUTTON NAVIGATION ────────────────────────
 let _handlingPopState = false;
 
+const _sessionCh = new BroadcastChannel('physiq-session');
+_sessionCh.onmessage = ({ data }) => {
+  if (data.type !== 'SESSION_PATIENT') return;
+  const el = document.getElementById('patientName');
+  if (!el || document.activeElement === el) return;
+  el.value = data.patient || '';
+  state.patient = data.patient || '';
+};
+
 window.addEventListener('popstate', e => {
   if (!e.state || e.state.phase === undefined) return;
   _handlingPopState = true;
@@ -1699,7 +1708,10 @@ function saveSession() {
   if (state.patient || state.maxVisitedIdx > 0) {
     const date = new Date().toLocaleDateString('es-ES');
     writeSession({ patient: state.patient, date, assessmentState: { ...state } })
-      .then(session => { if (session) updateSessionChip(session); });
+      .then(session => {
+        if (session) updateSessionChip(session);
+        _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient || '' });
+      });
   }
 }
 
@@ -1822,6 +1834,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') saveSession();
   });
+
+  document.getElementById('patientName')?.addEventListener('blur', saveSession);
 
   loadROMFromURL();
   readSession().then(session => {
