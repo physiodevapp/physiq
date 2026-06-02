@@ -59,6 +59,7 @@ _sessionCh.onmessage = ({ data }) => {
   if (!el || document.activeElement === el) return;
   el.value = data.patient || '';
   state.patient = data.patient || '';
+  writeSession({ patient: data.patient || '' });
 };
 
 window.addEventListener('popstate', e => {
@@ -281,7 +282,7 @@ function resetApp() {
     '↺ Reiniciar valoración completa',
     text,
     'Reiniciar',
-    hasRecording ? _softResetApp : () => { location.reload(); }
+    hasRecording ? () => { _softResetApp(); goToPhase(1); clearSession().then(() => updateSessionChip(null)); } : () => { location.reload(); }
   );
 }
 
