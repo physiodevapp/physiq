@@ -322,36 +322,51 @@
 const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/' };
 
 let _hubPopLock = false;
+let _prevHubState = null;
+
 function _activeSat() {
   return Object.keys(SATS).find(k => !document.getElementById('sat-' + k).hidden) || null;
 }
 
-function openSat(name) {
-  if (!SATS[name]) return;
+function _showSat(name) {
   const frame = document.getElementById('sat-' + name);
   if (!frame.src) frame.src = SATS[name];
   Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = k !== name; });
   document.getElementById('sat-shell').hidden = false;
   document.getElementById('home').hidden = true;
+}
+
+function _showHome() {
+  document.getElementById('sat-shell').hidden = true;
+  document.getElementById('home').hidden = false;
+  Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = true; });
+}
+
+function openSat(name) {
+  if (!SATS[name]) return;
+  _showSat(name);
+  _prevHubState = history.state;
   history.pushState({ sat: name }, '', '/physiq/?sat=' + name);
 }
 
 function goHome() {
-  document.getElementById('sat-shell').hidden = true;
-  document.getElementById('home').hidden = false;
-  Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = true; });
+  _showHome();
+  _prevHubState = history.state;
   history.pushState({}, '', '/physiq/');
 }
 
 window.addEventListener('popstate', e => {
+  const fromState = _prevHubState;
+  _prevHubState = e.state;
   if (_hubPopLock) { _hubPopLock = false; return; }
-  if (e.state?.sat && e.state?.back) {
+  if (fromState?.back && e.state?.sat) {
+    // Venimos de un estado back: propagar hacia atrás en el satélite
     const frame = document.getElementById('sat-' + e.state.sat);
     if (frame) frame.contentWindow.postMessage({ type: 'PHYSIQ_INTERNAL_BACK' }, '*');
   } else if (e.state?.sat) {
-    openSat(e.state.sat);
+    _showSat(e.state.sat);
   } else {
-    goHome();
+    _showHome();
   }
 });
 
@@ -362,14 +377,15 @@ window.addEventListener('message', e => {
   if (e.data?.type === 'PHYSIQ_WIDGET_SHOW') document.getElementById('rec-widget').style.visibility = '';
   if (e.data?.type === 'PHYSIQ_HISTORY_PUSH') {
     const sat = _activeSat();
-    if (sat) history.pushState({ sat, back: true }, '');
+    if (sat) { _prevHubState = history.state; history.pushState({ sat, back: true }, ''); }
   }
   if (e.data?.type === 'PHYSIQ_HISTORY_POP') {
-    if (history.state?.back) { _hubPopLock = true; history.back(); }
+    if (history.state?.back) { _prevHubState = history.state; _hubPopLock = true; history.back(); }
   }
 });
 
 (function restoreState() {
+  _prevHubState = history.state;
   const sat = new URLSearchParams(location.search).get('sat');
   if (sat && SATS[sat]) openSat(sat);
 }());
