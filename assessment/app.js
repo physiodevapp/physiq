@@ -72,14 +72,10 @@ window.addEventListener('popstate', e => {
 
 window.addEventListener('message', e => {
   if (e.data?.type !== 'PHYSIQ_INTERNAL_BACK') return;
-  const phaseLabels = [1, 2, 3, 4, '4b', 5];
   const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
   const curIdx = phaseMap[state.currentPhase] ?? 0;
-  if (curIdx > 0) {
-    _handlingPopState = true;
-    goToPhase(phaseLabels[curIdx - 1]);
-    _handlingPopState = false;
-  }
+  // history.back() dispara popstate que llama goToPhase manteniendo la pila sincronizada
+  if (curIdx > 0) history.back();
 });
 
 // ─── NAVIGATION ──────────────────────────────────────────────
@@ -298,14 +294,11 @@ function _softResetApp() {
 }
 
 function resetApp() {
-  const hasRecording = (_mediaRecorder && (_mediaRecorder.state === 'recording' || _mediaRecorder.state === 'paused')) || _audioBlobRecorded;
-  const text = 'Se perderán todos los datos introducidos y la aplicación volverá al inicio.' +
-    (hasRecording ? ' La grabación de audio no se verá afectada.' : '');
   showConfirmBanner(
     '↺ Reiniciar valoración completa',
-    text,
+    'Se perderán todos los datos introducidos y la aplicación volverá al inicio.',
     'Reiniciar',
-    hasRecording ? () => { _softResetApp(); goToPhase(1); clearSession().then(() => updateSessionChip(null)); } : () => { location.reload(); }
+    () => { _softResetApp(); goToPhase(1); clearSession().then(() => updateSessionChip(null)); }
   );
 }
 
