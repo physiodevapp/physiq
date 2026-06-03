@@ -51,6 +51,7 @@ const state = {
 
 // ─── HISTORY / BACK-BUTTON NAVIGATION ────────────────────────
 let _handlingPopState = false;
+const _inFrame = window !== window.parent;
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
@@ -67,6 +68,18 @@ window.addEventListener('popstate', e => {
   _handlingPopState = true;
   goToPhase(e.state.phase);
   _handlingPopState = false;
+});
+
+window.addEventListener('message', e => {
+  if (e.data?.type !== 'PHYSIQ_INTERNAL_BACK') return;
+  const phaseLabels = [1, 2, 3, 4, '4b', 5];
+  const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
+  const curIdx = phaseMap[state.currentPhase] ?? 0;
+  if (curIdx > 0) {
+    _handlingPopState = true;
+    goToPhase(phaseLabels[curIdx - 1]);
+    _handlingPopState = false;
+  }
 });
 
 // ─── NAVIGATION ──────────────────────────────────────────────
@@ -126,6 +139,7 @@ function goToPhase(n) {
   if (state.currentPhase === 3) collectPhase3();
 
   const idx = phaseMap[n];
+  const prevIdx = phaseMap[state.currentPhase] ?? 0;
 
   // Actualizar índice máximo visitado
   if (idx > state.maxVisitedIdx) state.maxVisitedIdx = idx;
@@ -166,7 +180,12 @@ function goToPhase(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (!_handlingPopState) {
-    history.replaceState({ phase: n }, '');
+    if (idx > prevIdx) {
+      history.pushState({ phase: n }, '');
+      if (_inFrame) window.parent.postMessage({ type: 'PHYSIQ_HISTORY_PUSH' }, '*');
+    } else {
+      history.replaceState({ phase: n }, '');
+    }
   }
   if (n !== 5) {
     const _phaseLabels = [1, 2, 3, 4, '4b', 5];
