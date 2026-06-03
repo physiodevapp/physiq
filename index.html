@@ -321,6 +321,11 @@
 // ── Navigation ───────────────────────────────────────────
 const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/' };
 
+let _hubPopLock = false;
+function _activeSat() {
+  return Object.keys(SATS).find(k => !document.getElementById('sat-' + k).hidden) || null;
+}
+
 function openSat(name) {
   if (!SATS[name]) return;
   const frame = document.getElementById('sat-' + name);
@@ -339,8 +344,15 @@ function goHome() {
 }
 
 window.addEventListener('popstate', e => {
-  if (e.state?.sat) openSat(e.state.sat);
-  else goHome();
+  if (_hubPopLock) { _hubPopLock = false; return; }
+  if (e.state?.sat && e.state?.back) {
+    const frame = document.getElementById('sat-' + e.state.sat);
+    if (frame) frame.contentWindow.postMessage({ type: 'PHYSIQ_INTERNAL_BACK' }, '*');
+  } else if (e.state?.sat) {
+    openSat(e.state.sat);
+  } else {
+    goHome();
+  }
 });
 
 window.addEventListener('message', e => {
@@ -348,6 +360,13 @@ window.addEventListener('message', e => {
   if (e.data?.type === 'PHYSIQ_GO_HOME') goHome();
   if (e.data?.type === 'PHYSIQ_WIDGET_HIDE') document.getElementById('rec-widget').style.visibility = 'hidden';
   if (e.data?.type === 'PHYSIQ_WIDGET_SHOW') document.getElementById('rec-widget').style.visibility = '';
+  if (e.data?.type === 'PHYSIQ_HISTORY_PUSH') {
+    const sat = _activeSat();
+    if (sat) history.pushState({ sat, back: true }, '');
+  }
+  if (e.data?.type === 'PHYSIQ_HISTORY_POP') {
+    if (history.state?.back) { _hubPopLock = true; history.back(); }
+  }
 });
 
 (function restoreState() {
