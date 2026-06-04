@@ -51,7 +51,6 @@ const state = {
 
 // ─── HISTORY / BACK-BUTTON NAVIGATION ────────────────────────
 let _handlingPopState = false;
-const _inFrame = window !== window.parent;
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
@@ -70,13 +69,6 @@ window.addEventListener('popstate', e => {
   _handlingPopState = false;
 });
 
-window.addEventListener('message', e => {
-  if (e.data?.type !== 'PHYSIQ_INTERNAL_BACK') return;
-  const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
-  const curIdx = phaseMap[state.currentPhase] ?? 0;
-  // history.back() dispara popstate que llama goToPhase manteniendo la pila sincronizada
-  if (curIdx > 0) history.back();
-});
 
 // ─── NAVIGATION ──────────────────────────────────────────────
 function navStepClick(n) {
@@ -178,7 +170,6 @@ function goToPhase(n) {
   if (!_handlingPopState) {
     if (idx > prevIdx) {
       history.pushState({ phase: n }, '');
-      if (_inFrame) window.parent.postMessage({ type: 'PHYSIQ_HISTORY_PUSH' }, '*');
     } else {
       history.replaceState({ phase: n }, '');
     }
@@ -1874,7 +1865,12 @@ document.addEventListener('DOMContentLoaded', () => {
       _handlingPopState = true;
       goToPhase(targetPhase);
       _handlingPopState = false;
-      history.replaceState({ phase: targetPhase }, '');
+      // Rebuild history stack so swipe-back steps through each phase
+      const _phaseOrder = [1, 2, 3, 4, '4b', 5];
+      const _phaseIdx = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
+      const targetIdx = _phaseIdx[targetPhase] ?? 0;
+      history.replaceState({ phase: 1 }, '');
+      for (let i = 1; i <= targetIdx; i++) history.pushState({ phase: _phaseOrder[i] }, '');
     } else {
       const patientEl = document.getElementById('patientName');
       if (session.patient && patientEl && !patientEl.value) {
