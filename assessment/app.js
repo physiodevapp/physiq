@@ -287,7 +287,7 @@ function resetApp() {
     '↺ Reiniciar valoración completa',
     'Se perderán todos los datos introducidos y la aplicación volverá al inicio.',
     'Reiniciar',
-    () => { _softResetApp(); goToPhase(1); writeSession({ assessmentState: null }).then(session => { if (session) updateSessionChip(session); }); }
+    () => { _softResetApp(); goToPhase(1); writeSession({ assessmentState: null, patient: '' }).then(session => { if (session) updateSessionChip(session); _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: '' }); }); }
   );
 }
 
