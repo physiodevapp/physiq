@@ -337,7 +337,11 @@ function _showHome() {
 
 function openSat(name) {
   if (!SATS[name]) return;
-  _showSat(name);
+  const frame = document.getElementById('sat-' + name);
+  frame.src = SATS[name];
+  Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = k !== name; });
+  document.getElementById('sat-shell').hidden = false;
+  document.getElementById('home').hidden = true;
   history.pushState({ hub: 'sat', sat: name }, '', '/physiq/?sat=' + name);
 }
 
