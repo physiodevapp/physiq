@@ -174,10 +174,8 @@ function goToPhase(n) {
       history.replaceState({ phase: n }, '');
     }
   }
-  if (n !== 5) {
-    const _phaseLabels = [1, 2, 3, 4, '4b', 5];
-    _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
-  }
+  const _phaseLabels = [1, 2, 3, 4, '4b', 5];
+  _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
   saveSession();
 }
 
@@ -1495,15 +1493,24 @@ function buildResults() {
   const now = new Date();
   container.innerHTML += `
   <div style="text-align:center; padding:1rem 0; color:var(--text3); font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:1px;">
-    PhysiQ-Assessment · Valoración generada el ${now.toLocaleDateString('es-ES')} a las ${now.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}
+    PhysiQ-Assessment · ${now.toLocaleDateString('es-ES')} a las ${now.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}
   </div>`;
+}
 
+function finalizarValoracion() {
+  const btn = document.getElementById('btnFinalizar');
   const _assessmentPayload = buildPhysiQPayload();
+  const now = new Date();
   writeSession({ assessment: _assessmentPayload, patient: state.patient || '', date: now.toLocaleDateString('es-ES') })
     .then(session => {
       if (session) updateSessionChip(session);
       _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT', assessment: _assessmentPayload });
     });
+  if (btn) {
+    btn.textContent = '✓ Enviado al informe';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = 'Finalizar valoración →'; btn.disabled = false; }, 3000);
+  }
 }
 
 // ─── PHASE 2 VALIDATION ──────────────────────────────────────
