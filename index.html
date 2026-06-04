@@ -321,13 +321,6 @@
 // ── Navigation ───────────────────────────────────────────
 const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/' };
 
-let _hubPopLock = false;
-let _prevHubState = null;
-
-function _activeSat() {
-  return Object.keys(SATS).find(k => !document.getElementById('sat-' + k).hidden) || null;
-}
-
 function _showSat(name) {
   const frame = document.getElementById('sat-' + name);
   if (!frame.src) frame.src = SATS[name];
@@ -345,29 +338,17 @@ function _showHome() {
 function openSat(name) {
   if (!SATS[name]) return;
   _showSat(name);
-  _prevHubState = history.state;
-  history.pushState({ sat: name }, '', '/physiq/?sat=' + name);
+  history.pushState({ hub: 'sat', sat: name }, '', '/physiq/?sat=' + name);
 }
 
 function goHome() {
   _showHome();
-  _prevHubState = history.state;
-  history.pushState({}, '', '/physiq/');
+  history.pushState({ hub: 'home' }, '', '/physiq/');
 }
 
 window.addEventListener('popstate', e => {
-  const fromState = _prevHubState;
-  _prevHubState = e.state;
-  if (_hubPopLock) { _hubPopLock = false; return; }
-  if (fromState?.back && e.state?.sat) {
-    // Venimos de un estado back: propagar hacia atrás en el satélite
-    const frame = document.getElementById('sat-' + e.state.sat);
-    if (frame) frame.contentWindow.postMessage({ type: 'PHYSIQ_INTERNAL_BACK' }, '*');
-  } else if (e.state?.sat) {
-    _showSat(e.state.sat);
-  } else {
-    _showHome();
-  }
+  if (e.state?.hub === 'sat') _showSat(e.state.sat);
+  else _showHome();
 });
 
 window.addEventListener('message', e => {
@@ -375,17 +356,10 @@ window.addEventListener('message', e => {
   if (e.data?.type === 'PHYSIQ_GO_HOME') goHome();
   if (e.data?.type === 'PHYSIQ_WIDGET_HIDE') document.getElementById('rec-widget').style.visibility = 'hidden';
   if (e.data?.type === 'PHYSIQ_WIDGET_SHOW') document.getElementById('rec-widget').style.visibility = '';
-  if (e.data?.type === 'PHYSIQ_HISTORY_PUSH') {
-    const sat = _activeSat();
-    if (sat) { _prevHubState = history.state; history.pushState({ sat, back: true }, ''); }
-  }
-  if (e.data?.type === 'PHYSIQ_HISTORY_POP') {
-    if (history.state?.back) { _prevHubState = history.state; _hubPopLock = true; history.back(); }
-  }
 });
 
 (function restoreState() {
-  _prevHubState = history.state;
+  history.replaceState({ hub: 'home' }, '', '/physiq/');
   const sat = new URLSearchParams(location.search).get('sat');
   if (sat && SATS[sat]) openSat(sat);
 }());
