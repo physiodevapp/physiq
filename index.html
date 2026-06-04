@@ -343,7 +343,7 @@ function openSat(name) {
 
 function goHome() {
   _showHome();
-  history.pushState({ hub: 'home' }, '', '/physiq/');
+  history.replaceState({ hub: 'home' }, '', '/physiq/');
 }
 
 window.addEventListener('popstate', e => {
