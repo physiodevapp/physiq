@@ -1641,7 +1641,7 @@ function promptClearSession() {
     'Sesión en curso',
     `${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
     'Borrar sesión',
-    () => { _softResetApp(); goToPhase(1); clearSession().then(() => updateSessionChip(null)); }
+    () => { _softResetApp(); goToPhase(1); clearSession().then(() => { updateSessionChip(null); _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); }); }
   );
 }
 
