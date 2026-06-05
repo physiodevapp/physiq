@@ -238,6 +238,13 @@
         <span class="app-desc">Medición de rango articular</span>
       </div>
     </button>
+    <button class="app-card" onclick="openSat('force')">
+      <span class="dot" style="background:#fb923c"></span>
+      <div class="app-info">
+        <span class="app-name">Force · Dinamómetro</span>
+        <span class="app-desc">Fuerza isométrica y asimetría</span>
+      </div>
+    </button>
   </nav>
 </div>
 
@@ -246,6 +253,7 @@
   <iframe id="sat-motion"     class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-assessment" class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-report"     class="sat-frame" allow="microphone" hidden></iframe>
+  <iframe id="sat-force"      class="sat-frame" allow="bluetooth" hidden></iframe>
 </div>
 
 <!-- ── Recorder widget ─────────────────────────────────── -->
@@ -319,7 +327,7 @@
 
 <script>
 // ── Navigation ───────────────────────────────────────────
-const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/' };
+const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/' };
 
 function _showSat(name) {
   const frame = document.getElementById('sat-' + name);
