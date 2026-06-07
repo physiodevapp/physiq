@@ -54,6 +54,7 @@ let _handlingPopState = false;
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
+  if (data.type === 'SESSION_CLEAR') { updateSessionChip(null); return; }
   if (data.type !== 'SESSION_PATIENT') return;
   const el = document.getElementById('patientName');
   if (!el || document.activeElement === el) return;
