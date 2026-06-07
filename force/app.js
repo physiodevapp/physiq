@@ -193,6 +193,7 @@ async function startMeasurement() {
   _measuring    = true;
   _measureStart = performance.now();
 
+  document.querySelector('.app-header').classList.add('measuring');
   _renderLiveReset();
   if (_currentTest !== 'peak') {
     _initCanvas(`${_currentTest}-canvas`);
@@ -204,6 +205,7 @@ async function startMeasurement() {
 async function _stopMeasurement() {
   if (!_measuring) return;
   _measuring = false;
+  document.querySelector('.app-header').classList.remove('measuring');
   clearTimeout(_debTimer);
   if (_cState === 'active' || _cState === 'debounce') _finalizeContraction();
   _cState = 'idle';
@@ -238,6 +240,7 @@ async function _startLive() {
   _liveChartPoints  = [];
   _liveMeasureStart = performance.now();
   _liveMode         = true;
+  document.querySelector('.app-header').classList.add('measuring');
   _initCanvas('force-canvas-live');
   _startLiveChartLoop();
   _doSoftTare();
@@ -246,6 +249,7 @@ async function _startLive() {
 async function _stopLive() {
   if (!_liveMode) return;
   _liveMode = false;
+  document.querySelector('.app-header').classList.remove('measuring');
   _stopLiveChartLoop();
 }
 
@@ -793,9 +797,11 @@ function _startTest() {
     const toggle    = document.getElementById('peak-measure-toggle');
     const barSingle = document.getElementById('peak-bar-single');
     const barsComp  = document.getElementById('peak-bars-comparison');
+    const readout   = document.querySelector('#peak-section-measure .force-meter-readout');
     if (toggle)    toggle.hidden    = !isComp;
     if (barSingle) barSingle.hidden = isComp;
     if (barsComp)  barsComp.hidden  = !isComp;
+    if (readout)   readout.hidden   = isComp;
     if (isComp) {
       document.querySelectorAll('.peak-side-btn').forEach(b =>
         b.classList.toggle('active', b.dataset.side === 'left')
