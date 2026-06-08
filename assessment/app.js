@@ -51,6 +51,8 @@ const state = {
 
 // ─── HISTORY / BACK-BUTTON NAVIGATION ────────────────────────
 let _handlingPopState = false;
+let _historyDepth = 0;       // número de pushState realizados sobre el replaceState inicial
+let _pendingBackNav = null;  // { phase, idx } mientras history.go() asíncrono está en vuelo
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
@@ -64,7 +66,19 @@ _sessionCh.onmessage = ({ data }) => {
 };
 
 window.addEventListener('popstate', e => {
+  if (_pendingBackNav) {
+    // history.go() de limpieza de stack aterrizó; reemplazar y actualizar profundidad
+    const { phase: p, idx: i } = _pendingBackNav;
+    _pendingBackNav = null;
+    history.replaceState({ phase: p }, '');
+    _historyDepth = i;
+    return;
+  }
   if (!e.state || e.state.phase === undefined) return;
+  // Swipe-back nativo: sincronizar _historyDepth con la posición real del stack
+  const _pm = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
+  const naturalIdx = _pm[e.state.phase];
+  if (naturalIdx !== undefined) _historyDepth = naturalIdx;
   _handlingPopState = true;
   goToPhase(e.state.phase);
   _handlingPopState = false;
@@ -171,8 +185,18 @@ function goToPhase(n) {
   if (!_handlingPopState) {
     if (idx > prevIdx) {
       history.pushState({ phase: n }, '');
-    } else {
-      history.replaceState({ phase: n }, '');
+      _historyDepth++;
+    } else if (idx < prevIdx) {
+      // Retroceder el puntero del stack para que swipe-back llegue al hub,
+      // no a entradas intermedias que quedaron de la navegación forward anterior
+      const stepsBack = _historyDepth - idx;
+      if (stepsBack > 0) {
+        _pendingBackNav = { phase: n, idx };
+        history.go(-stepsBack);
+      } else {
+        history.replaceState({ phase: n }, '');
+        _historyDepth = idx;
+      }
     }
   }
   const _phaseLabels = [1, 2, 3, 4, '4b', 5];
@@ -1879,6 +1903,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetIdx = _phaseIdx[targetPhase] ?? 0;
       history.replaceState({ phase: 1 }, '');
       for (let i = 1; i <= targetIdx; i++) history.pushState({ phase: _phaseOrder[i] }, '');
+      _historyDepth = targetIdx;
     } else {
       const patientEl = document.getElementById('patientName');
       if (session.patient && patientEl && !patientEl.value) {
