@@ -9,26 +9,15 @@ const TURNSTILE_SITEKEY = '0x4AAAAAADU3dzE5Tw_whVks';
 let _turnstileToken = null, _turnstileResolve = null, _turnstileWidgetId = null;
 let _isProcessing = false;
 
-function _openTurnstileOverlay() {
-  document.getElementById('turnstile-overlay').classList.add('open');
+function _showTurnstile() {
+  if (_isProcessing) return;
+  document.getElementById('turnstile-wrap').style.display = '';
+  document.getElementById('generate-btn').style.display = 'none';
 }
 
-function _closeTurnstileOverlay() {
-  document.getElementById('turnstile-overlay').classList.remove('open');
-}
-
-// Get a Turnstile token: use pre-verified one if available, otherwise show overlay.
-// Always resets the widget afterwards so it re-verifies in background for the next call.
-async function _getToken() {
-  if (!_turnstileToken) _openTurnstileOverlay();
-  try {
-    return await getTurnstileToken();
-  } finally {
-    _closeTurnstileOverlay();
-    if (typeof turnstile !== 'undefined' && _turnstileWidgetId != null) {
-      turnstile.reset(_turnstileWidgetId);
-    }
-  }
+function _showGenerateBtn() {
+  document.getElementById('turnstile-wrap').style.display = 'none';
+  document.getElementById('generate-btn').style.display = '';
 }
 
 function initTurnstile() {
@@ -38,6 +27,7 @@ function initTurnstile() {
     callback: (token) => {
       _turnstileToken = token;
       if (_turnstileResolve) { _turnstileResolve(token); _turnstileResolve = null; }
+      else if (!_isProcessing) { _showGenerateBtn(); }
     },
   });
 }
@@ -51,6 +41,8 @@ function getTurnstileToken() {
     if (_turnstileToken) {
       const t = _turnstileToken;
       _turnstileToken = null;
+      turnstile.reset(_turnstileWidgetId);
+      _showTurnstile();
       resolve(t);
       return;
     }
@@ -192,7 +184,15 @@ function selectTemplate(t) {
 function toggleCard(id) {
   const body = document.getElementById('body-'+id), chev = document.getElementById('chevron-'+id);
   const open = body.classList.contains('open');
-  body.classList.toggle('open', !open); chev.classList.toggle('open', !open);
+  if (!open) {
+    document.querySelectorAll('.card-body.open').forEach(el => {
+      el.classList.remove('open');
+      const c = document.getElementById('chevron-' + el.id.replace('body-', ''));
+      if (c) c.classList.remove('open');
+    });
+  }
+  body.classList.toggle('open', !open);
+  chev.classList.toggle('open', !open);
 }
 
 function _syncImportedCard() {
@@ -751,9 +751,7 @@ async function generateReport() {
   [1,2,3].forEach(i => setStep(i,''));
   _isProcessing = true;
   try {
-    document.getElementById('generate-btn').innerHTML = '<div class="spinner"></div> Verificando...';
-    const claudeToken = await _getToken();
-    document.getElementById('generate-btn').innerHTML = '<div class="spinner"></div> Procesando...';
+    const claudeToken = await getTurnstileToken();
     document.getElementById('processing-overlay').classList.add('open');
     if (selectedFile) {
       setStep(1,'active');
@@ -773,7 +771,7 @@ async function generateReport() {
     renderReport(report, transcriptText, info);
     document.getElementById('generate-btn').innerHTML = '✓ Informe generado';
   } catch(err) { console.error('[PhysiQ] generateReport error:', err); showError(err.message); }
-  finally { _isProcessing = false; _closeTurnstileOverlay(); }
+  finally { _isProcessing = false; setTimeout(_showTurnstile, 2000); }
 }
 
 // ========= DOWNLOAD / SHARE WORD =========
@@ -836,7 +834,7 @@ async function _buildWordBlob() {
     alignment: AlignmentType.RIGHT, spacing:{after:30},
     children:[new TextRun({text: 'Paciente: ' + patientName, size:20, font, color:bodyColor})]
   }));
-  const _physioLine = [clinicName || null, clinicCol ? `N. col. ${clinicCol}` : null].filter(Boolean).join(' | ');
+  const _physioLine = [clinicName.trim() || null, clinicCol ? `N. col. ${clinicCol}` : null].filter(Boolean).join(' | ');
   if (_physioLine) _rightLines.push(new Paragraph({
     alignment: AlignmentType.RIGHT, spacing:{after:30},
     children:[new TextRun({text: _physioLine, size:18, font, color:'ADADAD'})]
