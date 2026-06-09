@@ -278,6 +278,11 @@ function checkReady() {
   document.getElementById('generate-btn').disabled = !ok;
 }
 
+function setHstyle(btn) {
+  document.querySelectorAll('.hstyle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 // ========= CONFIG SAVE/LOAD =========
 function saveConfig(silent) {
   const cfg = {
@@ -294,7 +299,7 @@ function saveConfig(silent) {
     titleItalic: document.getElementById('style-title-italic').value,
     bodySize:    document.getElementById('style-body-size').value,
     bodyColor:   document.getElementById('style-body-color').value,
-    headerStyle: document.querySelector('input[name="hstyle"]:checked').value,
+    headerStyle: document.querySelector('.hstyle-btn.active')?.dataset.value || 'line',
     headerColor:    document.getElementById('style-header-color').value,
     seguimientoUrl: document.getElementById('clinic-seguimiento-url').value.trim(),
     tokens:         document.getElementById('token-slider').value,
@@ -324,7 +329,7 @@ function loadConfig() {
   if (c.titleItalic) document.getElementById('style-title-italic').value= c.titleItalic;
   if (c.bodySize)    document.getElementById('style-body-size').value   = c.bodySize;
   if (c.bodyColor)   document.getElementById('style-body-color').value  = c.bodyColor;
-  if (c.headerStyle) document.querySelector(`input[name="hstyle"][value="${c.headerStyle}"]`).checked = true;
+  if (c.headerStyle) { const b = document.querySelector(`.hstyle-btn[data-value="${c.headerStyle}"]`); if (b) setHstyle(b); }
   if (c.headerColor)    document.getElementById('style-header-color').value    = c.headerColor;
   if (c.seguimientoUrl) document.getElementById('clinic-seguimiento-url').value = c.seguimientoUrl;
   if (c.tokens) { document.getElementById('token-slider').value = c.tokens; }
@@ -813,6 +818,25 @@ async function _buildWordBlob() {
     })]
   });
 
+  const _rightLines = [];
+  if (clinicUnit) _rightLines.push(new Paragraph({
+    alignment: AlignmentType.RIGHT, spacing:{after:30},
+    children:[new TextRun({text: clinicUnit, bold:true, size:22, font, color:titleColor})]
+  }));
+  _rightLines.push(new Paragraph({
+    alignment: AlignmentType.RIGHT, spacing:{after:30},
+    children:[new TextRun({text: 'Paciente: ' + patientName, size:20, font, color:bodyColor})]
+  }));
+  const _physioLine = [clinicName || null, clinicCol ? `N. col. ${clinicCol}` : null].filter(Boolean).join(' | ');
+  if (_physioLine) _rightLines.push(new Paragraph({
+    alignment: AlignmentType.RIGHT, spacing:{after:30},
+    children:[new TextRun({text: _physioLine, size:18, font, color:'ADADAD'})]
+  }));
+  if (clinicCity || sessionDate) _rightLines.push(new Paragraph({
+    alignment: AlignmentType.RIGHT, spacing:{after:0},
+    children:[new TextRun({text: [clinicCity, sessionDate ? `a ${sessionDate}` : null].filter(Boolean).join(', '), size:18, font, color:'ADADAD'})]
+  }));
+
   const headerRightCell = new TableCell({
     width: {size: 5886, type: WidthType.DXA},
     borders: {
@@ -822,17 +846,7 @@ async function _buildWordBlob() {
       right:  {style: BorderStyle.NONE},
     },
     verticalAlign: VerticalAlign.CENTER,
-    children: [
-      new Paragraph({
-        alignment: AlignmentType.RIGHT,
-        spacing: {after: 40},
-        children: [new TextRun({text: clinicUnit || '', bold:true, size:22, font, color: titleColor})]
-      }),
-      new Paragraph({
-        alignment: AlignmentType.RIGHT,
-        children: [new TextRun({text: 'Paciente: ' + patientName, size:20, font, color: bodyColor})]
-      })
-    ]
+    children: _rightLines
   });
 
   const headerTable = new Table({
@@ -878,8 +892,6 @@ async function _buildWordBlob() {
       alignment: AlignmentType.JUSTIFIED,
     }));
   });
-
-  children.push(new Paragraph({spacing:{after:200}}));
 
   // ── SECTIONS (parse ##, ###, ####, tables) ──
   const sections = lastReportText.split(/^## /m).filter(s => s.trim());
@@ -927,31 +939,14 @@ async function _buildWordBlob() {
     });
   });
 
-  // ── RGPD on new page, justified, dynamically pushed toward bottom ──
+  // ── RGPD: flows naturally after last section, no forced page break ──
   if (rgpd.trim()) {
-    children.push(new Paragraph({children:[new PageBreak()]}));
-
-    const rgpdText = rgpd.trim();
-    const charsPerLine = 100;
-    const estimatedRgpdLines = rgpdText.split('\n').reduce((acc, line) => {
-      const trimmed = line.trim();
-      if (!trimmed) return acc;
-      return acc + Math.max(1, Math.ceil(trimmed.length / charsPerLine));
-    }, 0);
-
-    const linesPerPage = 59;
-    const spacersNeeded = Math.max(0, linesPerPage - estimatedRgpdLines - 1);
-
-    for (let i = 0; i < spacersNeeded; i++) {
-      children.push(new Paragraph({children:[new TextRun({text:'', size:bodySize, font})], spacing:{after:0}}));
-    }
-
-    rgpdText.split('\n').filter(l=>l.trim()).forEach(line => {
-      const rgpdSize = Math.max(bodySize-4,16);
+    const rgpdSize = Math.max(bodySize - 4, 16);
+    rgpd.trim().split('\n').filter(l => l.trim()).forEach((line, i) => {
       const runs = buildRunsFromLine(line.trim(), {size:rgpdSize, font, color:'ADADAD', italics:true}, {TextRun, ExternalHyperlink});
       children.push(new Paragraph({
         children: runs,
-        spacing:{after:80, line:276, lineRule:'auto'},
+        spacing:{before: i === 0 ? 400 : 0, after:80, line:276, lineRule:'auto'},
         alignment: AlignmentType.JUSTIFIED,
       }));
     });
@@ -983,13 +978,18 @@ async function _buildAndShareWord() {
   const { blob, filename, patientName } = await _buildWordBlob();
   const file = new File([blob], filename, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    await navigator.share({ files: [file], title: `Informe de Fisioterapia — ${patientName}` });
-  } else {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename; a.click();
-    URL.revokeObjectURL(url);
+    try {
+      await navigator.share({ files: [file], title: `Informe de Fisioterapia — ${patientName}` });
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      // share failed (e.g. MIME not supported at runtime) — fall through to download
+    }
   }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
 }
 
 // Build TextRun array (and ExternalHyperlink) from a line that may contain links
@@ -1066,7 +1066,9 @@ function copyReport() {
   });
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.querySelector('.result-actions .btn-secondary');
-    btn.textContent = '✓ Copiado'; setTimeout(()=>btn.textContent='Copiar',2000);
+    const label = btn.querySelector('.btn-label');
+    if (label) { label.textContent = ' Copiado'; setTimeout(() => label.textContent = ' Copiar', 2000); }
+    else { btn.textContent = '✓ Copiado'; setTimeout(() => btn.textContent = 'Copiar', 2000); }
   });
 }
 

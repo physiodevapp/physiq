@@ -78,8 +78,14 @@
   #session-rec-hint button{background:rgba(79,195,161,0.08);border:1px solid rgba(79,195,161,0.25);border-radius:999px;padding:5px 14px;font-size:11px;color:var(--accent);cursor:pointer;font-family:'DM Mono',monospace;transition:background 0.15s;}
   #session-rec-hint button:hover{background:rgba(79,195,161,0.16);}
   .logo-preview{max-height:50px;max-width:160px;border-radius:6px;margin-top:8px;display:none;}
-  .radio-group{display:flex;gap:16px;margin-top:4px;flex-wrap:wrap;}
-  .radio-group label{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'DM Mono',monospace;}
+  .hstyle-group{display:inline-flex;margin-top:6px;}
+  .hstyle-btn{background:transparent;color:var(--accent);border:1px solid var(--accent);padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .hstyle-btn:first-child{border-radius:10px 0 0 10px;}
+  .hstyle-btn:last-child{border-radius:0 10px 10px 0;}
+  .hstyle-btn:not(:first-child){border-left:none;}
+  .hstyle-btn.active{background:var(--accent);color:#0e1117;}
+  .hstyle-btn:hover:not(.active){background:rgba(79,195,161,0.1);}
+  @media(max-width:768px){.hstyle-group{display:flex;width:100%;} .hstyle-group .hstyle-btn{flex:1;}}
   .sep{border:none;border-top:1px solid var(--border);margin:14px 0;}
   .subsection{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px;}
   .btn-save{background:var(--accent);color:#0e1117;border:none;border-radius:8px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;cursor:pointer;margin-top:12px;transition:all 0.2s;}
@@ -109,8 +115,9 @@
   .result-title-toggle:hover{opacity:0.8;}
   .result-title{font-family:'DM Serif Display',serif;font-size:15px;color:var(--accent);}
   .result-actions{display:flex;gap:8px;flex-wrap:wrap;}
-  @media(max-width:540px){.result-actions{width:100%;}.result-actions button{flex:1;justify-content:center;}}
-  @media(max-width:540px){.config-actions button{flex:1;}}
+  @media(max-width:540px){.result-actions{width:100%;}.result-actions button{flex:1;justify-content:center;white-space:nowrap;padding-left:8px;padding-right:8px;}}
+  @media(max-width:540px){.config-actions button{flex:1;white-space:nowrap;padding-left:8px;padding-right:8px;}}
+  @media(max-width:320px){.result-actions button .btn-label,.config-actions button .btn-label{display:none;} .result-actions button,.config-actions button{font-size:18px;} .btn-word svg{width:20px;height:20px;}}
   .result-chips{padding:10px 16px 12px;}
   .result-body{padding:16px;border-top:1px solid var(--border);}
   .result-body.collapsed{display:none;}
@@ -286,10 +293,10 @@
 
       <div class="field" style="margin-bottom:10px;">
         <label>Estilo del encabezado</label>
-        <div class="radio-group">
-          <label><input type="radio" name="hstyle" value="line" checked> Línea de color</label>
-          <label><input type="radio" name="hstyle" value="bg"> Fondo de color</label>
-          <label><input type="radio" name="hstyle" value="none"> Sin estilo</label>
+        <div class="hstyle-group">
+          <button type="button" class="hstyle-btn active" data-value="line" onclick="setHstyle(this)">Línea</button>
+          <button type="button" class="hstyle-btn" data-value="bg" onclick="setHstyle(this)">Fondo</button>
+          <button type="button" class="hstyle-btn" data-value="none" onclick="setHstyle(this)">Sin estilo</button>
         </div>
       </div>
       <div class="field" style="margin-bottom:12px;">
@@ -298,9 +305,9 @@
       </div>
 
       <div class="config-actions" style="display:flex;gap:8px;align-items:center;">
-        <button class="btn-save" style="margin-top:0;" onclick="saveConfig()">⚙️ Guardar</button>
-        <button class="btn-secondary" onclick="exportConfig()">📤 Exportar</button>
-        <button class="btn-secondary" onclick="importConfig()">📥 Importar</button>
+        <button class="btn-save" style="margin-top:0;" onclick="saveConfig()">⚙️<span class="btn-label"> Guardar</span></button>
+        <button class="btn-secondary" onclick="exportConfig()">⬆️<span class="btn-label"> Exportar</span></button>
+        <button class="btn-secondary" onclick="importConfig()">⬇️<span class="btn-label"> Importar</span></button>
       </div>
       <div class="saved-ok" id="saved-ok">✓ Configuración guardada</div>
     </div>
@@ -411,10 +418,10 @@
         <span class="chevron" id="chevron-result">▼</span>
       </div>
       <div class="result-actions">
-        <button class="btn-secondary" onclick="copyReport()">Copiar</button>
-        <button class="btn-word" onclick="downloadWord()"><svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:5px;"><rect width="24" height="24" rx="3" fill="#2b579a"/><text x="12" y="17" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">W</text></svg>Word</button>
-        <button class="btn-secondary" id="btn-share" onclick="shareReport()" style="display:none;">📤 Compartir</button>
-        <button class="btn-seguimiento" id="btn-seguimiento" onclick="openSeguimiento()" style="display:none;">📅 Crear seguimiento</button>
+        <button class="btn-secondary" onclick="copyReport()">📋<span class="btn-label"> Copiar</span></button>
+        <button class="btn-word" onclick="downloadWord()"><svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:5px;"><rect width="24" height="24" rx="3" fill="#2b579a"/><text x="12" y="17" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">W</text></svg><span class="btn-label">Word</span></button>
+        <button class="btn-secondary" id="btn-share" onclick="shareReport()" style="display:none;">🔗<span class="btn-label"> Compartir</span></button>
+        <button class="btn-seguimiento" id="btn-seguimiento" onclick="openSeguimiento()" style="display:none;">📅<span class="btn-label"> Crear seguimiento</span></button>
       </div>
     </div>
     <div class="result-chips" id="result-chips"></div>
