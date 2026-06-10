@@ -402,7 +402,7 @@ async function _start() {
     _stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     _mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
       ? 'audio/webm;codecs=opus' : 'audio/mp4';
-    _mr = new MediaRecorder(_stream, { mimeType: _mimeType });
+    _mr = new MediaRecorder(_stream, { mimeType: _mimeType, audioBitsPerSecond: 32000 });
     _chunks = []; _duration = 0; _discarding = false;
     _mr.ondataavailable = e => { if (e.data.size) _chunks.push(e.data); };
     _mr.onstop = _onStop;
