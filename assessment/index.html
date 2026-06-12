@@ -1156,6 +1156,7 @@
     transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
     max-height: 80vh;
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .phase-sheet.open { transform: translateY(0); }
   .phase-sheet-handle {
@@ -1163,6 +1164,7 @@
     background: var(--border2);
     border-radius: 2px;
     margin: 0 auto 14px;
+    touch-action: none;
   }
   .phase-sheet-title {
     font-family: 'DM Mono', monospace;
@@ -1173,6 +1175,7 @@
     padding: 0 1.2rem 10px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 6px;
+    touch-action: none;
   }
   .phase-sheet-item {
     display: flex;
