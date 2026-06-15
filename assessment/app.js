@@ -56,7 +56,7 @@ let _pendingBackNav = null;  // { phase, idx } mientras history.go() asíncrono 
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
-  if (data.type === 'SESSION_CLEAR') { updateSessionChip(null); return; }
+  if (data.type === 'SESSION_CLEAR') { _softResetApp(); goToPhase(1); updateSessionChip(null); return; }
   if (data.type !== 'SESSION_PATIENT') return;
   const el = document.getElementById('patientName');
   if (!el || document.activeElement === el) return;
