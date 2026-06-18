@@ -51,6 +51,47 @@ The pipeline requires a PAT with `repo` scope stored as `PHYSIQ_DEPLOY_TOKEN` in
 | physiq-assessment | /physiq/assessment/ | Clinical assessment |
 | physiq-report | /physiq/report/ | AI-assisted clinical reports |
 
+## Recorder engine (`index.html`)
+
+The hub contains a `RecorderEngine` — the only audio recording component in the ecosystem. Satellites have no microphone access of their own.
+
+**BroadcastChannel `physiq-recorder`** — the hub both listens (for commands from satellites) and emits (state updates):
+
+| Direction | Message | Meaning |
+|-----------|---------|---------|
+| satellite → hub | `{ cmd: 'start' \| 'pause' \| 'resume' \| 'stop' \| 'discard' }` | Control the recorder |
+| hub → all | `{ type: 'RECORDER_STATE', state, duration, hasAudio }` | State broadcast (every second while recording, and on every state change) |
+
+`state` values: `'idle'` → `'recording'` → `'paused'` → `'stopped'` → `'idle'` (after discard or new start).
+
+`hasAudio: true` means a blob is ready in IDB (set when `stopped`; cleared on `discard`).
+
+## IDB usage
+
+The hub opens DB `'physiq'` **v2** (not v3 — satellites own v3). It creates two stores on `upgradeneeded` but only writes to one:
+
+| Store | Key | Written by hub | Read/deleted by |
+|-------|-----|---------------|-----------------|
+| `audio` | `'pending'` | After `stop` — `{ blob, name, type, duration }` | physiq-report (`_consumeAudioFromIDB`) |
+| `session` | — | Never | Satellites only |
+
+The hub never reads or writes the `session` store. Session management is entirely the satellites' responsibility.
+
+On `discard`, the hub deletes the `'pending'` key from the `audio` store.
+
+## postMessage protocol (hub ↔ satellite iframes)
+
+Satellites send messages to the hub via `window.parent.postMessage(msg, '*')`. The hub listens on `window.addEventListener('message', ...)`.
+
+| Type | Sender | Hub action |
+|------|--------|------------|
+| `PHYSIQ_GO_HOME` | any satellite | Closes the iframe, shows hub home |
+| `PHYSIQ_NAVIGATE` | any satellite | `openSat(e.data.to)` — navigate to another satellite |
+| `PHYSIQ_WIDGET_HIDE` | any satellite | Sets `#rec-widget` `visibility: hidden` (during modals) |
+| `PHYSIQ_WIDGET_SHOW` | any satellite | Restores `#rec-widget` visibility |
+
+The hub never posts messages back to satellites — communication is one-way (satellite → hub).
+
 ## Commit format
 
 ```
