@@ -53,11 +53,12 @@ const state = {
 let _handlingPopState = false;
 let _historyDepth = 0;       // número de pushState realizados sobre el replaceState inicial
 let _pendingBackNav = null;  // { phase, idx } mientras history.go() asíncrono está en vuelo
-let _sessionGen = 0;        // incremented on clear; stale writeSession .then() calls detect mismatch
+let _sessionGen     = 0;    // incremented on clear; stale writeSession .then() calls detect mismatch
+let _sessionCleared = false; // true after a clear; blocks new writes until new session data appears
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
-  if (data.type === 'SESSION_CLEAR') { _sessionGen++; clearSession(); _softResetApp(); goToPhase(1); updateSessionChip(null); return; }
+  if (data.type === 'SESSION_CLEAR') { _sessionGen++; _sessionCleared = true; clearSession(); _softResetApp(); goToPhase(1); updateSessionChip(null); return; }
   if (data.type !== 'SESSION_PATIENT') return;
   const el = document.getElementById('patientName');
   if (!el || document.activeElement === el) return;
@@ -1668,7 +1669,7 @@ function promptClearSession() {
     'Sesión en curso',
     `${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
     'Borrar sesión',
-    () => { _sessionGen++; _softResetApp(); goToPhase(1); clearSession().then(() => { updateSessionChip(null); _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); }); }
+    () => { _sessionGen++; _sessionCleared = true; _softResetApp(); goToPhase(1); clearSession().then(() => { updateSessionChip(null); _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); }); }
   );
 }
 
@@ -1746,13 +1747,17 @@ function showCopyFeedback() {
 // ─── SESSION PERSISTENCE ─────────────────────────────────────
 
 function saveSession() {
-  // Flush live DOM fields into state before serialising
   const patientEl = document.getElementById('patientName');
   if (patientEl) state.patient = patientEl.value;
   const motivoEl = document.getElementById('motivoConsulta');
   if (motivoEl) state.motivoConsulta = motivoEl.value;
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) state.signoComparable = signoEl.value;
+  // After a clear, block writes until new session data genuinely appears
+  if (_sessionCleared) {
+    if (!state.patient && state.maxVisitedIdx === 0) return;
+    _sessionCleared = false; // new session is starting — release the lock
+  }
   if (state.patient || state.maxVisitedIdx > 0) {
     const date = new Date().toLocaleDateString('es-ES');
     const gen = _sessionGen;
