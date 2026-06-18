@@ -53,10 +53,11 @@ const state = {
 let _handlingPopState = false;
 let _historyDepth = 0;       // número de pushState realizados sobre el replaceState inicial
 let _pendingBackNav = null;  // { phase, idx } mientras history.go() asíncrono está en vuelo
+let _sessionGen = 0;        // incremented on clear; stale writeSession .then() calls detect mismatch
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
-  if (data.type === 'SESSION_CLEAR') { clearSession(); _softResetApp(); goToPhase(1); updateSessionChip(null); return; }
+  if (data.type === 'SESSION_CLEAR') { _sessionGen++; clearSession(); _softResetApp(); goToPhase(1); updateSessionChip(null); return; }
   if (data.type !== 'SESSION_PATIENT') return;
   const el = document.getElementById('patientName');
   if (!el || document.activeElement === el) return;
@@ -1667,7 +1668,7 @@ function promptClearSession() {
     'Sesión en curso',
     `${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
     'Borrar sesión',
-    () => { _softResetApp(); goToPhase(1); clearSession().then(() => { updateSessionChip(null); _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); }); }
+    () => { _sessionGen++; _softResetApp(); goToPhase(1); clearSession().then(() => { updateSessionChip(null); _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); }); }
   );
 }
 
@@ -1754,8 +1755,10 @@ function saveSession() {
   if (signoEl) state.signoComparable = signoEl.value;
   if (state.patient || state.maxVisitedIdx > 0) {
     const date = new Date().toLocaleDateString('es-ES');
+    const gen = _sessionGen;
     writeSession({ patient: state.patient, date, assessmentState: { ...state } })
       .then(session => {
+        if (_sessionGen !== gen) { clearSession(); return; }
         if (session) updateSessionChip(session);
         _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient || '' });
         if (state.currentPhase !== 5) {
