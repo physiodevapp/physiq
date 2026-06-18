@@ -63,7 +63,7 @@ _sessionCh.onmessage = ({ data }) => {
   el.value = data.patient || '';
   state.patient = data.patient || '';
   if (!data.patient) return;
-  writeSession({ patient: data.patient || '' }).then(session => {
+  updateSession({ patient: data.patient }).then(session => {
     if (session) updateSessionChip(session);
   });
 };
