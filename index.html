@@ -245,6 +245,13 @@
         <span class="app-desc">Fuerza isométrica y asimetría</span>
       </div>
     </button>
+    <button class="app-card" onclick="openSat('balance')">
+      <span class="dot" style="background:#38d9a9"></span>
+      <div class="app-info">
+        <span class="app-name">Balance · Posturografía</span>
+        <span class="app-desc">Evaluación de equilibrio postural</span>
+      </div>
+    </button>
   </nav>
 </div>
 
@@ -254,6 +261,7 @@
   <iframe id="sat-assessment" class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-report"     class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-force"      class="sat-frame" allow="bluetooth" hidden></iframe>
+  <iframe id="sat-balance"    class="sat-frame" hidden></iframe>
 </div>
 
 <!-- ── Recorder widget ─────────────────────────────────── -->
@@ -327,7 +335,7 @@
 
 <script>
 // ── Navigation ───────────────────────────────────────────
-const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/' };
+const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/' };
 
 function _showSat(name) {
   const frame = document.getElementById('sat-' + name);
