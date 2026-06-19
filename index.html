@@ -246,10 +246,10 @@
       </div>
     </button>
     <button class="app-card" onclick="openSat('balance')">
-      <span class="dot" style="background:#38d9a9"></span>
+      <span class="dot" style="background:#22d3ee"></span>
       <div class="app-info">
-        <span class="app-name">Balance · Posturografía</span>
-        <span class="app-desc">Evaluación de equilibrio postural</span>
+        <span class="app-name">Equilibrio · Acelerómetro</span>
+        <span class="app-desc">Evaluación de equilibrio estático</span>
       </div>
     </button>
   </nav>
@@ -261,7 +261,7 @@
   <iframe id="sat-assessment" class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-report"     class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-force"      class="sat-frame" allow="bluetooth" hidden></iframe>
-  <iframe id="sat-balance"    class="sat-frame" hidden></iframe>
+  <iframe id="sat-balance"    class="sat-frame" allow="accelerometer; gyroscope" hidden></iframe>
 </div>
 
 <!-- ── Recorder widget ─────────────────────────────────── -->
