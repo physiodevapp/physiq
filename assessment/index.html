@@ -317,6 +317,14 @@
 
   textarea.form-input { resize: vertical; min-height: 80px; }
 
+  /* Patient field — compact identity row matching other satellites */
+  .info-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 1.5rem; }
+  .field { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .field-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+  .field-input { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 9px 12px; font-family: 'DM Mono', monospace; font-size: 12px; outline: none; transition: border-color 0.2s; width: 100%; }
+  .field-input:focus { border-color: var(--accent); }
+  .field-input:-webkit-autofill, .field-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset; -webkit-text-fill-color: var(--text); transition: background-color 5000s ease-in-out 0s; }
+
   /* Option buttons */
   .option-group {
     display: flex;
@@ -1920,11 +1928,10 @@
     <p class="phase-subtitle">Recogida de información básica y filtros de seguridad antes de iniciar la valoración mecánica.</p>
   </div>
 
-  <div class="card">
-    <div class="card-title">Datos del Paciente</div>
-    <div class="form-group">
-      <label class="form-label">Nombre del paciente <span style="color:var(--text3); font-weight:300;">(opcional)</span></label>
-      <input class="form-input" type="text" id="patientName" placeholder="Ej: Juan García" oninput="state.patient=this.value">
+  <div class="info-row">
+    <div class="field">
+      <label class="field-label" for="patientName">Paciente</label>
+      <input class="field-input" type="text" id="patientName" placeholder="Nombre (opcional)" oninput="state.patient=this.value;saveSession()">
     </div>
   </div>
 
