@@ -218,8 +218,8 @@
     margin-top: 115px;
     min-height: calc(100vh - 115px);
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding: 1rem 1rem 4rem;
     position: relative;
     z-index: 1;
@@ -324,6 +324,24 @@
   .field-input { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 9px 12px; font-family: 'DM Mono', monospace; font-size: 12px; outline: none; transition: border-color 0.2s; width: 100%; }
   .field-input:focus { border-color: var(--accent); }
   .field-input:-webkit-autofill, .field-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset; -webkit-text-fill-color: var(--text); transition: background-color 5000s ease-in-out 0s; }
+
+  /* Sticky patient bar */
+  .patient-sticky {
+    position: sticky;
+    top: 115px;
+    z-index: 97;
+    background: rgba(10,13,18,0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    width: 100%;
+    max-width: 780px;
+    padding: 8px 0;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 768px) {
+    .patient-sticky { top: 64px; }
+  }
 
   /* Option buttons */
   .option-group {
@@ -1921,18 +1939,18 @@
 
 <main class="main">
 
+<div class="info-row patient-sticky">
+  <div class="field">
+    <label class="field-label" for="patientName">Paciente</label>
+    <input class="field-input" type="text" id="patientName" placeholder="Nombre (opcional)" oninput="state.patient=this.value;saveSession()">
+  </div>
+</div>
+
 <!-- ==================== FASE 1: TRIAGE ==================== -->
 <div class="phase-container active" id="phase1">
   <div class="phase-header">
     <h1 class="phase-title">Datos Iniciales del Paciente</h1>
     <p class="phase-subtitle">Recogida de información básica y filtros de seguridad antes de iniciar la valoración mecánica.</p>
-  </div>
-
-  <div class="info-row">
-    <div class="field">
-      <label class="field-label" for="patientName">Paciente</label>
-      <input class="field-input" type="text" id="patientName" placeholder="Nombre (opcional)" oninput="state.patient=this.value;saveSession()">
-    </div>
   </div>
 
   <div class="card">
