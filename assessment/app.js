@@ -163,6 +163,7 @@ function goToPhase(n) {
   // Resetear flags de invalidación al avanzar por botones normales
   // (si llegamos a fase 4 el árbol ya se restaura — regionChanged resuelto)
   if (n === 4 || n === '4b' || n === 5) state.regionChanged = false;
+  const _4bNeedsRebuild = (n === '4b') && state.treeModified;
   if (n === '4b' || n === 5) state.treeModified = false;
 
   phases.forEach(p => document.getElementById(p).classList.remove('active'));
@@ -187,7 +188,8 @@ function goToPhase(n) {
   if (n === 4) initCIFTree();
   if (n === '4b') {
     const hypContainer = document.getElementById('hypothesisCards');
-    if (!hypContainer || hypContainer.children.length === 0) {
+    if (!hypContainer || hypContainer.children.length === 0 || _4bNeedsRebuild) {
+      if (hypContainer) hypContainer.innerHTML = '';
       buildHypothesisCards();
     }
     // Observer is restored via restoreHypObserver called above
@@ -671,11 +673,15 @@ function toggleAccordionRow(sisId, sisIdsStr) {
   const isOpen = clickedRow.classList.contains('open');
 
   if (isOpen) {
-    // Scroll header into view before collapsing
     const header = clickedRow.querySelector('.sistema-accordion-header');
     const navbarH = window.innerWidth <= 768 ? 94 : 60;
-    const top = header.getBoundingClientRect().top + window.scrollY - navbarH - 8;
-    window.scrollTo({ top, behavior: 'smooth' });
+    const patientBar = document.querySelector('.patient-sticky');
+    const patientBarH = patientBar ? patientBar.offsetHeight : 0;
+    const headerTop = header.getBoundingClientRect().top;
+    if (headerTop < navbarH + patientBarH) {
+      const top = headerTop + window.scrollY - navbarH - patientBarH - 8;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
     setTimeout(() => {
       clickedRow.classList.remove('open');
       teardownSisObserver();
@@ -1195,13 +1201,15 @@ function toggleHypCard(hId) {
   const isOpen = card.classList.contains('open');
 
   if (isOpen) {
-    // Close this card
     const header = card.querySelector('.hypothesis-header');
     const navbarH = window.innerWidth <= 768 ? 94 : 60;
     const patientBar = document.querySelector('.patient-sticky');
     const patientBarH = patientBar ? patientBar.offsetHeight : 0;
-    const top = header.getBoundingClientRect().top + window.scrollY - navbarH - patientBarH - 8;
-    window.scrollTo({ top, behavior: 'smooth' });
+    const headerTop = header.getBoundingClientRect().top;
+    if (headerTop < navbarH + patientBarH) {
+      const top = headerTop + window.scrollY - navbarH - patientBarH - 8;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
     setTimeout(() => {
       card.classList.remove('open');
       teardownHypObserver();
