@@ -53,6 +53,7 @@ const state = {
 let _handlingPopState = false;
 let _historyDepth = 0;       // número de pushState realizados sobre el replaceState inicial
 let _pendingBackNav = null;  // { phase, idx } mientras history.go() asíncrono está en vuelo
+let _pendingReshow  = null;  // targetIdx to push after collapse when PHYSIQ_SAT_VISIBLE fires
 let _sessionGen     = 0;    // incremented on clear; stale writeSession .then() calls detect mismatch
 let _sessionCleared = false; // true after a clear; blocks new writes until new session data appears
 
@@ -85,6 +86,14 @@ window.addEventListener('popstate', e => {
     _pendingBackNav = null;
     history.replaceState({ phase: p }, '');
     _historyDepth = i;
+    // Si hay un reshow pendiente, reconstruir la pila de fases encima
+    if (_pendingReshow !== null) {
+      const _phaseOrder = [1, 2, 3, 4, '4b', 5];
+      const targetIdx = _pendingReshow;
+      _pendingReshow = null;
+      for (let j = 1; j <= targetIdx; j++) history.pushState({ phase: _phaseOrder[j] }, '');
+      _historyDepth = targetIdx;
+    }
     return;
   }
   if (!e.state || e.state.phase === undefined) return;
