@@ -736,7 +736,9 @@ function scrollToActiveSisHeader() {
   if (!row) return;
   const header = row.querySelector('.sistema-accordion-header');
   const navbarH = window.innerWidth <= 768 ? 94 : 60;
-  const top = header.getBoundingClientRect().top + window.scrollY - navbarH - 8;
+  const patientBar = document.querySelector('.patient-sticky');
+  const patientBarH = patientBar ? patientBar.offsetHeight : 0;
+  const top = header.getBoundingClientRect().top + window.scrollY - navbarH - patientBarH - 8;
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
@@ -1196,7 +1198,9 @@ function toggleHypCard(hId) {
     // Close this card
     const header = card.querySelector('.hypothesis-header');
     const navbarH = window.innerWidth <= 768 ? 94 : 60;
-    const top = header.getBoundingClientRect().top + window.scrollY - navbarH - 8;
+    const patientBar = document.querySelector('.patient-sticky');
+    const patientBarH = patientBar ? patientBar.offsetHeight : 0;
+    const top = header.getBoundingClientRect().top + window.scrollY - navbarH - patientBarH - 8;
     window.scrollTo({ top, behavior: 'smooth' });
     setTimeout(() => {
       card.classList.remove('open');
@@ -1274,7 +1278,9 @@ function scrollToActiveHypHeader() {
   const card = document.getElementById(`hypcard_${_activeHypId}`);
   const header = card.querySelector('.hypothesis-header');
   const navbarH = window.innerWidth <= 768 ? 94 : 60;
-  const top = header.getBoundingClientRect().top + window.scrollY - navbarH - 8;
+  const patientBar = document.querySelector('.patient-sticky');
+  const patientBarH = patientBar ? patientBar.offsetHeight : 0;
+  const top = header.getBoundingClientRect().top + window.scrollY - navbarH - patientBarH - 8;
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
