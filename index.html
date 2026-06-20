@@ -343,6 +343,8 @@ function _showSat(name) {
   Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = k !== name; });
   document.getElementById('sat-shell').hidden = false;
   document.getElementById('home').hidden = true;
+  // Notify the satellite so it can rebuild its swipe-back history stack
+  try { frame.contentWindow?.postMessage({ type: 'PHYSIQ_SAT_VISIBLE' }, '*'); } catch(_) {}
 }
 
 function _showHome() {
@@ -353,11 +355,7 @@ function _showHome() {
 
 function openSat(name) {
   if (!SATS[name]) return;
-  const frame = document.getElementById('sat-' + name);
-  if (!frame.src) frame.src = SATS[name];
-  Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = k !== name; });
-  document.getElementById('sat-shell').hidden = false;
-  document.getElementById('home').hidden = true;
+  _showSat(name);
   history.pushState({ hub: 'sat', sat: name }, '', '/physiq/?sat=' + name);
 }
 
