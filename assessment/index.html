@@ -341,9 +341,11 @@
   }
   @media (max-width: 768px) {
     .patient-sticky { top: 94px; }
+    body:has(#sisContextBanner.visible) .patient-sticky { top: 134px; }
   }
   @media (max-width: 480px) {
     .patient-sticky { top: 88px; }
+    body:has(#sisContextBanner.visible) .patient-sticky { top: 128px; }
   }
 
   /* Option buttons */
