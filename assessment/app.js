@@ -198,9 +198,13 @@ function goToPhase(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (!_handlingPopState) {
+    const _phaseOrder = [1, 2, 3, 4, '4b', 5];
     if (idx > prevIdx) {
-      history.pushState({ phase: n }, '');
-      _historyDepth++;
+      // Push one entry per skipped phase so swipe-back steps through each one
+      for (let i = prevIdx + 1; i <= idx; i++) {
+        history.pushState({ phase: _phaseOrder[i] }, '');
+      }
+      _historyDepth += (idx - prevIdx);
     } else if (idx < prevIdx) {
       // Retroceder el puntero del stack para que swipe-back llegue al hub,
       // no a entradas intermedias que quedaron de la navegación forward anterior
