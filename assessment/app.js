@@ -58,7 +58,15 @@ let _sessionCleared = false; // true after a clear; blocks new writes until new 
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 _sessionCh.onmessage = ({ data }) => {
-  if (data.type === 'SESSION_CLEAR') { _sessionGen++; _sessionCleared = true; clearSession(); _softResetApp(); goToPhase(1); updateSessionChip(null); return; }
+  if (data.type === 'SESSION_CLEAR') {
+    _sessionGen++; _sessionCleared = true;
+    state.patient = '';
+    const _patEl = document.getElementById('patientName');
+    if (_patEl) _patEl.value = '';
+    updateSessionChip(null);
+    clearSession(); _softResetApp(); goToPhase(1);
+    return;
+  }
   if (data.type !== 'SESSION_PATIENT') return;
   const el = document.getElementById('patientName');
   if (!el || document.activeElement === el) return;
@@ -306,7 +314,14 @@ function _softResetApp() {
   document.getElementById('phaseIndicator').textContent = 'FASE 1 / 5';
   updateMobilePhaseBar(1);
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  history.replaceState({ phase: 1 }, '');
+  // Collapse history stack so swipe-back exits the app instead of re-entering a cleared phase
+  if (_historyDepth > 0) {
+    _pendingBackNav = { phase: 1, idx: 0 };
+    history.go(-_historyDepth);
+    _historyDepth = 0;
+  } else {
+    history.replaceState({ phase: 1 }, '');
+  }
 }
 
 function resetApp() {
@@ -1666,7 +1681,15 @@ function promptClearSession() {
     'Sesión en curso',
     `${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
     'Borrar sesión',
-    () => { _sessionGen++; _sessionCleared = true; _softResetApp(); goToPhase(1); clearSession().then(() => { updateSessionChip(null); _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); }); }
+    () => {
+      _sessionGen++; _sessionCleared = true;
+      state.patient = '';
+      const _patEl = document.getElementById('patientName');
+      if (_patEl) _patEl.value = '';
+      updateSessionChip(null);
+      _softResetApp(); goToPhase(1);
+      clearSession().then(() => { _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); });
+    }
   );
 }
 
