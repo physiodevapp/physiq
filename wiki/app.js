@@ -452,7 +452,11 @@ function showHome() {
 }
 
 window.addEventListener('popstate', () => {
-  if (currentRegion) showHome();
+  if (currentRegion) {
+    showHome();
+  } else if (document.body.classList.contains('in-hub')) {
+    window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+  }
 });
 
 // ─── FILTER ───────────────────────────────────────────────────────────────────────────────────────
@@ -543,6 +547,9 @@ try {
     document.querySelector('.logo-main').addEventListener('click', () => {
       window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
     });
+    // Two sentinel entries so swipe-back chain is: region → home → hub
+    history.replaceState({ view: 'hub-exit' }, '');
+    history.pushState({ view: 'home' }, '');
   }
 } catch (_) {
   document.body.classList.add('in-hub');
