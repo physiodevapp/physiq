@@ -371,7 +371,6 @@ function renderHome() {
     const green = r.categories.reduce((s, c) => s + c.tests.filter(t => t.ev === 'green').length, 0);
     return `
       <div class="region-card" onclick="showRegion('${r.id}')">
-        <div class="region-card-icon">${r.icon}</div>
         <div class="region-card-name">${r.name}</div>
         <div class="region-card-count">${total} tests</div>
         <div class="region-card-green">✓ ${green} verdes</div>
@@ -537,3 +536,14 @@ document.getElementById('region-content').addEventListener('contextmenu', e => {
 
 // ─── INIT ───────────────────────────────────────────────────────────────────────────────────────────
 renderHome();
+
+try {
+  if (window.self !== window.top) {
+    document.body.classList.add('in-hub');
+    document.querySelector('.logo-main').addEventListener('click', () => {
+      window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+    });
+  }
+} catch (_) {
+  document.body.classList.add('in-hub');
+}
