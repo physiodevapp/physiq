@@ -277,22 +277,66 @@ const REGIONS = [
       {
         name: 'Meniscos',
         tests: [
-          { id: 'ro-009', name: 'McMurray test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=sNH7Og8VUeQ' },
-          { id: 'ro-010', name: 'Apley’s compression test', ev: 'red', link: '' },
-          { id: 'ro-011', name: 'Thessaly test', ev: 'green', link: '' },
+          { id: 'ro-009', name: 'McMurray test', ev: 'green', link: 'https://www.youtube.com/watch?v=sNH7Og8VUeQ' },
+          { id: 'ro-010', name: 'Apley’s test', ev: 'green', link: '' },
+          { id: 'ro-014', name: '"Bounce home" test', ev: 'yellow', link: '' },
+          { id: 'ro-013', name: 'Childress’ sign (squat and duck walk test)', ev: 'yellow', link: '' },
+          { id: 'ro-024', name: 'Dynamic knee test', ev: 'yellow', link: '' },
+          { id: 'ro-025', name: 'Ege’s test', ev: 'yellow', link: '' },
+          { id: 'ro-027', name: 'O’Donohue’s test', ev: 'yellow', link: '' },
+          { id: 'ro-011', name: 'Thessaly test', ev: 'yellow', link: '' },
           { id: 'ro-012', name: 'Joint line tenderness', ev: 'yellow', link: '' },
-          { id: 'ro-013', name: 'Squat test', ev: 'yellow', link: '' },
-          { id: 'ro-014', name: 'Bounce home test', ev: 'yellow', link: '' },
+          { id: 'ro-026', name: 'Figure-of-four meniscal stress maneuver', ev: 'red', link: '' },
         ]
       },
       {
-        name: 'Rotüla / aparato extensor',
+        name: 'Plica sinovial',
         tests: [
-          { id: 'ro-015', name: 'Clarke’s test (patellar grind)', ev: 'red', link: '' },
+          { id: 'ro-028', name: 'Hughston’s plica test', ev: 'yellow', link: '' },
+          { id: 'ro-029', name: 'Mediopatellar plica test', ev: 'yellow', link: '' },
+          { id: 'ro-030', name: 'Patellar bowstring test', ev: 'yellow', link: '' },
+          { id: 'ro-031', name: 'Plica “stutter” test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Derrame articular',
+        tests: [
+          { id: 'ro-032', name: 'Brush, stroke or bulge test (minimal swelling)', ev: 'green', link: '' },
+          { id: 'ro-035', name: 'Patellar tap test (moderate swelling)', ev: 'green', link: '' },
+          { id: 'ro-033', name: 'Fluctuation test (moderate swelling)', ev: 'yellow', link: '' },
+          { id: 'ro-034', name: 'Indentation test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Síndrome femoropatelar',
+        tests: [
+          { id: 'ro-018', name: 'Fairbank’s apprehension test', ev: 'green', link: '' },
+          { id: 'ro-015', name: 'Clarke’s sign (patellar grind)', ev: 'yellow', link: '' },
+          { id: 'ro-036', name: 'Eccentric step (lateral step down) test', ev: 'yellow', link: '' },
+          { id: 'ro-037', name: 'McConnell test', ev: 'yellow', link: '' },
+          { id: 'ro-038', name: 'Motion palpation test', ev: 'yellow', link: '' },
+          { id: 'ro-039', name: 'Step up test', ev: 'yellow', link: '' },
           { id: 'ro-016', name: 'Patellar glide / tilt test', ev: 'yellow', link: '' },
-          { id: 'ro-017', name: 'Vastus medialis coordination test', ev: 'yellow', link: '' },
-          { id: 'ro-018', name: 'Patellar apprehension test', ev: 'green', link: '' },
+          { id: 'ro-046', name: 'Moving patellar apprehension test', ev: 'yellow', link: '' },
           { id: 'ro-019', name: 'J-sign (lateral tracking)', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Cuádriceps / coactivación',
+        tests: [
+          { id: 'ro-017', name: 'Vastus medialis coordination test', ev: 'yellow', link: '' },
+          { id: 'ro-040', name: 'Q-angle', ev: 'yellow', link: '' },
+          { id: 'ro-041', name: 'Tubercle sulcus test', ev: 'yellow', link: '' },
+          { id: 'ro-042', name: 'Single-limb dead-lift', ev: 'yellow', link: '' },
+          { id: 'ro-043', name: 'Lateral hop', ev: 'yellow', link: '' },
+          { id: 'ro-044', name: 'Transverse hop', ev: 'yellow', link: '' },
+          { id: 'ro-045', name: 'Lateral band walks', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Banda iliotibial',
+        tests: [
+          { id: 'ro-047', name: 'Noble compression test', ev: 'yellow', link: '' },
         ]
       },
       {
