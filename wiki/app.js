@@ -56,51 +56,86 @@ const REGIONS = [
     icon: '🔶',
     categories: [
       {
-        name: 'Tendinopatía del manguito',
+        name: 'Pinzamiento anterior',
         tests: [
-          { id: 'ho-001', name: 'Neer’s impingement sign', ev: 'yellow', link: 'https://www.youtube.com/watch?v=hm_WrN1DQFA' },
+          { id: 'ho-001', name: 'Neer test and modification', ev: 'green', link: 'https://www.youtube.com/watch?v=hm_WrN1DQFA' },
           { id: 'ho-002', name: 'Hawkins-Kennedy test', ev: 'green', link: 'https://www.youtube.com/watch?v=UFCiQq9mDpQ' },
-          { id: 'ho-003', name: 'Empty Can test (Jobe)', ev: 'green', link: 'https://www.youtube.com/watch?v=iT2Cj0fCH4w' },
-          { id: 'ho-004', name: 'Full Can test', ev: 'yellow', link: '' },
+          { id: 'ho-029', name: 'Coracoid impingement sign', ev: 'green', link: '' },
+          { id: 'ho-030', name: 'Supine impingement test', ev: 'green', link: '' },
+          { id: 'ho-031', name: 'Yokum test', ev: 'green', link: '' },
+          { id: 'ho-032', name: 'Zaslav test (IRRST)', ev: 'green', link: '' },
           { id: 'ho-005', name: 'Painful arc (60–120°)', ev: 'green', link: '' },
-          { id: 'ho-006', name: 'External rotation lag sign', ev: 'green', link: '' },
-          { id: 'ho-007', name: 'Lift-off test', ev: 'green', link: '' },
-          { id: 'ho-008', name: 'Bear-hug test', ev: 'green', link: 'https://www.youtube.com/watch?v=9BNJt_r7-i4' },
-          { id: 'ho-009', name: 'Belly-press test', ev: 'green', link: 'https://www.youtube.com/watch?v=Vp11X6DUJ3k' },
+          { id: 'ho-004', name: 'Full Can test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Manguito rotador',
+        tests: [
+          { id: 'ho-003', name: 'Empty Can test (Jobe)', ev: 'green', link: 'https://www.youtube.com/watch?v=iT2Cj0fCH4w' },
+          { id: 'ho-033', name: 'Champagne toast position', ev: 'green', link: '' },
+          { id: 'ho-034', name: 'Rent test', ev: 'green', link: '' },
+          { id: 'ho-006', name: 'External rotation lag sign (ERLS)', ev: 'green', link: '' },
+          { id: 'ho-007', name: 'Lift-off test (Gerber’s)', ev: 'green', link: '' },
+          { id: 'ho-035', name: 'Medial rotation lag or ‘spring back’ test', ev: 'green', link: '' },
+          { id: 'ho-036', name: 'Infraspinatus test', ev: 'green', link: '' },
+          { id: 'ho-037', name: 'Lateral rotation lag sign', ev: 'green', link: '' },
+          { id: 'ho-038', name: 'Hornblower’s sign (Patte’s test)', ev: 'green', link: '' },
+          { id: 'ho-009', name: 'Belly-press test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=Vp11X6DUJ3k' },
           { id: 'ho-010', name: 'Napoleon test', ev: 'yellow', link: '' },
           { id: 'ho-011', name: 'External rotation resistance test', ev: 'yellow', link: '' },
+          { id: 'ho-039', name: 'Dropping sign', ev: 'yellow', link: '' },
+          { id: 'ho-008', name: 'Bear-hug test', ev: 'red', link: 'https://www.youtube.com/watch?v=9BNJt_r7-i4' },
         ]
       },
       {
-        name: 'SLAP / Bicípital',
+        name: 'SLAP / Lesiones labrales',
         tests: [
+          { id: 'ho-014', name: 'Active compression test of O’Brien', ev: 'green', link: 'https://www.youtube.com/watch?v=iF7RfPuZJsA' },
+          { id: 'ho-017', name: 'Kim test I (Biceps load test II)', ev: 'green', link: '' },
+          { id: 'ho-040', name: 'Porcellini test', ev: 'green', link: '' },
+          { id: 'ho-041', name: 'Whipple test', ev: 'green', link: '' },
+          { id: 'ho-042', name: 'Crank test', ev: 'green', link: '' },
           { id: 'ho-012', name: 'Speed’s test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=yvnnKVIJGNE' },
           { id: 'ho-013', name: 'Yergason’s test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=HxTmxJSZfLM' },
-          { id: 'ho-014', name: 'O’Brien active compression test', ev: 'green', link: 'https://www.youtube.com/watch?v=iF7RfPuZJsA' },
-          { id: 'ho-015', name: 'Anterior slide test', ev: 'red', link: '' },
           { id: 'ho-016', name: 'Compression-rotation test', ev: 'yellow', link: '' },
-          { id: 'ho-017', name: 'Biceps load test II', ev: 'green', link: '' },
-          { id: 'ho-018', name: 'SLAP prehension test', ev: 'yellow', link: '' },
+          { id: 'ho-015', name: 'Anterior slide test', ev: 'yellow', link: '' },
+          { id: 'ho-018', name: 'SLAP prehension test', ev: 'red', link: '' },
         ]
       },
       {
-        name: 'Inestabilidad',
+        name: 'Inestabilidad anterior',
         tests: [
           { id: 'ho-019', name: 'Anterior apprehension test', ev: 'green', link: 'https://www.youtube.com/watch?v=3tSfKBrZjlU' },
           { id: 'ho-020', name: 'Relocation test (Jobe)', ev: 'green', link: 'https://www.youtube.com/watch?v=3tSfKBrZjlU' },
           { id: 'ho-021', name: 'Anterior release (surprise) test', ev: 'green', link: '' },
-          { id: 'ho-022', name: 'Posterior apprehension test', ev: 'yellow', link: '' },
           { id: 'ho-023', name: 'Load and shift test', ev: 'yellow', link: '' },
-          { id: 'ho-024', name: 'Sulcus sign', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'AC / SLAP / Otras',
+        name: 'Inestabilidad posterior / multidireccional',
         tests: [
-          { id: 'ho-025', name: 'Cross-body adduction test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=B1EB6p8aYcM' },
-          { id: 'ho-026', name: 'Piano key sign (AC joint)', ev: 'yellow', link: '' },
-          { id: 'ho-027', name: 'Paxinos test', ev: 'green', link: '' },
+          { id: 'ho-043', name: 'Jerk (Jahnke) test', ev: 'green', link: '' },
+          { id: 'ho-024', name: 'Sulcus sign', ev: 'green', link: '' },
+          { id: 'ho-022', name: 'Posterior apprehension or stress test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'AC joint',
+        tests: [
+          { id: 'ho-025', name: 'Horizontal adduction (cross-body adduction) test', ev: 'green', link: 'https://www.youtube.com/watch?v=B1EB6p8aYcM' },
+          { id: 'ho-027', name: 'Paxinos sign', ev: 'green', link: '' },
           { id: 'ho-028', name: 'Glenohumeral internal rotation deficit (GIRD)', ev: 'green', link: '' },
+          { id: 'ho-026', name: 'Piano key sign (AC joint)', ev: 'yellow', link: '' },
+          { id: 'ho-044', name: 'Acromioclavicular shear test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Neurológico',
+        tests: [
+          { id: 'ho-045', name: 'ULNT – Median nerve (ULNT I)', ev: 'green', link: '' },
+          { id: 'ho-046', name: 'ULNT – Median nerve (ULNT II)', ev: 'green', link: '' },
+          { id: 'ho-047', name: 'ULNT – Radial nerve (ULNT III)', ev: 'green', link: '' },
+          { id: 'ho-048', name: 'ULNT – Ulnar nerve (ULNT IV)', ev: 'green', link: '' },
         ]
       },
     ]
