@@ -363,8 +363,7 @@
     content: '‹';
     display: inline-block;
     margin-right: 8px;
-    color: var(--wiki-accent);
-    opacity: 0.7;
+    opacity: 0.55;
     animation: hub-back-hint 0.7s ease-out 0.5s 1 both;
   }
   .in-hub .logo-main:hover { opacity: 0.75; }
@@ -446,7 +445,7 @@ const REGIONS = [
         ]
       },
       {
-        name: 'Mieloпатия',
+        name: 'Mielопатия',
         tests: [
           { id: 'cx-009', name: 'Romberg test', ev: 'green', link: '' },
         ]
@@ -1253,7 +1252,7 @@ function setFilter(filter, btn) {
   });
 }
 
-// ─── LINK EDIT ────────────────────────────────────────────────────────────────────────────────────────────
+// ─── LINK EDIT ───────────────────────────────────────────────────────────────────────────────────────────
 function _findTestById(id) {
   for (const r of REGIONS) {
     for (const c of r.categories) {
@@ -1292,7 +1291,7 @@ function saveLinkOverride() {
   renderRegion();
 }
 
-// ─── HUB INTEGRATION ─────────────────────────────────────────────────────────────────────────────────────────
+// ─── HUB INTEGRATION ───────────────────────────────────────────────────────────────────────────────────────
 try {
   if (window.self !== window.top) {
     document.body.classList.add('in-hub');
@@ -1304,7 +1303,7 @@ try {
   document.body.classList.add('in-hub');
 }
 
-// ─── LONG-PRESS TO EDIT LINK ──────────────────────────────────────────────────────────────────────────────────────
+// ─── LONG-PRESS TO EDIT LINK ───────────────────────────────────────────────────────────────────────────────────────
 document.getElementById('region-content').addEventListener('pointerdown', e => {
   const item = e.target.closest('.test-item');
   if (!item) return;
