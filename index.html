@@ -13,7 +13,7 @@
 
     body { font-family: system-ui, sans-serif; background: #0a0d12; color: #e8edf2; }
 
-    /* ── Home view ─────────────────────────────────── */
+    /* ── Home view ──────────────────────────────────────── */
     #home { display: flex; flex-direction: column; padding: 3rem 1.5rem 5rem; min-height: 100dvh; }
 
     header { margin-bottom: 3rem; }
@@ -48,11 +48,11 @@
     .app-name { font-size: 1rem; font-weight: 600; color: #fff; }
     .app-desc { font-size: 0.78rem; color: #8aa4bc; }
 
-    /* ── Satellite shell ────────────────────────────── */
+    /* ── Satellite shell ──────────────────────────────── */
     #sat-shell { position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 10; }
     .sat-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 
-    /* ── Recorder widget ────────────────────────────── */
+    /* ── Recorder widget ─────────────────────────────── */
     #rec-widget {
       position: fixed;
       z-index: 300;
@@ -88,7 +88,7 @@
       75%{transform:translateX(6px)}
     }
 
-    /* ── Drag handle ────────────────────────────────── */
+    /* ── Drag handle ───────────────────────────────── */
     .rw-handle {
       display: flex; align-items: center; justify-content: center;
       width: 20px; height: 42px; flex-shrink: 0;
@@ -188,7 +188,7 @@
     .rw-confirm-no  { color: #8aa4bc  !important; font-size: 0.85rem; }
     .rw-confirm-yes, .rw-confirm-no { width: auto; height: 42px; padding: 0 14px; border-radius: 999px; }
 
-    /* ── Vertical (side) layout ──────────────────────── */
+    /* ── Vertical (side) layout ──────────────────────────── */
     #rec-widget.rw-vertical { flex-direction: column; }
     #rec-widget.rw-vertical .rw-handle { width: 36px; height: 16px; }
     #rec-widget.rw-vertical .rw-btn    { width: 36px; height: 36px; }
@@ -211,7 +211,7 @@
 </head>
 <body>
 
-<!-- ── Home view ───────────────────────────────────────── -->
+<!-- ── Home view ─────────────────────────────────────────────── -->
 <div id="home">
   <header>
     <h1>Physi<span>Q</span></h1>
@@ -252,19 +252,27 @@
         <span class="app-desc">Evaluación de equilibrio estático</span>
       </div>
     </button>
+    <button class="app-card" onclick="openSat('wiki')">
+      <span class="dot" style="background:#6366f1"></span>
+      <div class="app-info">
+        <span class="app-name">Wiki · Magee</span>
+        <span class="app-desc">Key tests por evidencia diagnóstica</span>
+      </div>
+    </button>
   </nav>
 </div>
 
-<!-- ── Satellite shell ──────────────────────────────────── -->
+<!-- ── Satellite shell ────────────────────────────────────────────── -->
 <div id="sat-shell" hidden>
   <iframe id="sat-motion"     class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-assessment" class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-report"     class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-force"      class="sat-frame" allow="bluetooth" hidden></iframe>
   <iframe id="sat-balance"    class="sat-frame" allow="accelerometer; gyroscope" hidden></iframe>
+  <iframe id="sat-wiki"       class="sat-frame" hidden></iframe>
 </div>
 
-<!-- ── Recorder widget ─────────────────────────────────── -->
+<!-- ── Recorder widget ────────────────────────────────────────────── -->
 <div id="rec-widget" data-state="idle">
 
   <!-- drag handle -->
@@ -334,8 +342,8 @@
 </div>
 
 <script>
-// ── Navigation ───────────────────────────────────────────
-const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/' };
+// ── Navigation ───────────────────────────────────────────────
+const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', wiki: '/physiq/wiki/' };
 
 function _showSat(name) {
   const frame = document.getElementById('sat-' + name);
@@ -382,7 +390,7 @@ window.addEventListener('message', e => {
   if (sat && SATS[sat]) openSat(sat);
 }());
 
-// ── Recorder engine ──────────────────────────────────────
+// ── Recorder engine ─────────────────────────────────────────────
 const _ch = new BroadcastChannel('physiq-recorder');
 let _mr = null, _stream = null, _chunks = [], _blob = null;
 let _mimeType = '', _duration = 0, _timer = null;
@@ -490,7 +498,7 @@ function _broadcast() {
   _ch.postMessage({ type: 'RECORDER_STATE', state: _recState, duration: _duration, hasAudio: !!_blob });
 }
 
-// ── IDB ──────────────────────────────────────────────────
+// ── IDB ──────────────────────────────────────────────────────
 function _openIDB() {
   return new Promise((res, rej) => {
     const req = indexedDB.open('physiq', 2);
@@ -515,7 +523,7 @@ async function _saveToIDB() {
   db.close();
 }
 
-// ── Widget UI ─────────────────────────────────────────────
+// ── Widget UI ───────────────────────────────────────────────────────
 function _setTimer(s) {
   document.querySelector('.rw-timer-mm').textContent = String(Math.floor(s / 60)).padStart(2, '0');
   document.querySelector('.rw-timer-ss').textContent = String(s % 60).padStart(2, '0');
@@ -541,12 +549,12 @@ requestIdleCallback
   ? requestIdleCallback(() => { Object.entries(SATS).forEach(([k, url]) => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = url; }); })
   : setTimeout(() => { Object.entries(SATS).forEach(([k, url]) => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = url; }); }, 1000);
 
-// ── SW ────────────────────────────────────────────────────
+// ── SW ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/physiq/sw.js', { scope: '/physiq/' });
 }
 
-// ── Draggable widget ──────────────────────────────────────
+// ── Draggable widget ───────────────────────────────────────────────
 (function () {
   const w      = document.getElementById('rec-widget');
   const handle = w.querySelector('.rw-handle');
