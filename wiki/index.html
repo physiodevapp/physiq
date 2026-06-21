@@ -17,6 +17,7 @@
     --text3: #5a6478;
     --accent: #4f9cf9;
     --accent2: #38d9a9;
+    --wiki-accent: #6366f1;
     --green: #38d9a9;
     --green-bg: rgba(56,217,169,0.12);
     --yellow: #fb923c;
@@ -76,7 +77,20 @@
     color: var(--text);
     line-height: 1.1;
   }
-  .logo-main .logo-accent { color: var(--accent); }
+  .logo-main .logo-accent { color: var(--wiki-accent); }
+  .logo-main::before {
+    content: '\2039 ';
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    color: var(--wiki-accent);
+    opacity: 0;
+    display: inline-block;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: baseline;
+    transition: opacity 0.3s, max-width 0.3s;
+  }
   .logo-sub {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
@@ -140,7 +154,7 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: var(--accent);
+    background: var(--wiki-accent);
     opacity: 0.6;
   }
   .region-card:active { transform: scale(0.97); }
@@ -194,8 +208,8 @@
     font-family: 'Outfit', sans-serif;
   }
   .filter-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--wiki-accent);
+    border-color: var(--wiki-accent);
     color: #fff;
   }
 
@@ -223,6 +237,8 @@
     padding: 9px 8px;
     border-radius: var(--radius-sm);
     transition: background 0.1s;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
   .test-item:active { background: var(--surface2); }
   .test-item.hidden { display: none; }
@@ -275,13 +291,84 @@
   }
   .test-link-btn.has-link:active { opacity: 0.75; }
 
+  .no-green-notice {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    padding: 4px 8px 2px;
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  /* LINK EDIT SHEET */
+  #link-sheet {
+    position: fixed; inset: 0; z-index: 200;
+    display: none;
+  }
+  #link-sheet-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5);
+  }
+  .link-sheet-panel {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    max-width: 480px; margin: 0 auto;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    padding: 20px 20px 40px;
+  }
+  .link-sheet-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .link-sheet-name {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+  .link-sheet-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    outline: none;
+    margin-bottom: 6px;
+  }
+  .link-sheet-input:focus { border-color: var(--wiki-accent); }
+  .link-sheet-hint {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 16px;
+  }
+  .link-sheet-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .link-sheet-cancel, .link-sheet-save {
+    flex: 1;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+  }
+  .link-sheet-cancel { background: var(--surface2); color: var(--text2); }
+  .link-sheet-save { background: var(--wiki-accent); color: #fff; }
+
   /* IN-HUB */
   .in-hub .logo-main { cursor: pointer; }
   .in-hub .logo-main::before {
-    content: '‹ ';
-    opacity: 0.45;
-    font-family: 'Outfit', sans-serif;
-    font-size: 18px;
+    opacity: 0.65;
+    max-width: 28px;
   }
 </style>
 </head>
@@ -291,7 +378,7 @@
 <header class="app-header">
   <button class="header-back" id="btn-back" onclick="showHome()">‹</button>
   <div class="logo-wrap">
-    <div class="logo-main" id="header-title">PhysiQ <span class="logo-accent">—</span> Wiki</div>
+    <div class="logo-main" id="header-title">PhysiQ <span class="logo-accent">— Wiki</span></div>
     <div class="logo-sub" id="header-subtitle">Magee · Key Tests</div>
   </div>
 </header>
@@ -319,8 +406,23 @@
   <div class="region-content" id="region-content"></div>
 </div>
 
+<!-- LINK EDIT SHEET -->
+<div id="link-sheet">
+  <div id="link-sheet-backdrop" onclick="closeLinkSheet()"></div>
+  <div class="link-sheet-panel">
+    <div class="link-sheet-title">Enlace del test</div>
+    <div class="link-sheet-name" id="link-sheet-name"></div>
+    <input id="link-input" type="url" class="link-sheet-input" placeholder="https://youtube.com/watch?v=..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="link-sheet-hint">Deja vacío para restaurar el enlace original</div>
+    <div class="link-sheet-actions">
+      <button class="link-sheet-cancel" onclick="closeLinkSheet()">Cancelar</button>
+      <button class="link-sheet-save" onclick="saveLinkOverride()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ─── DATA ────────────────────────────────────────────────────────────────────────────
+// ─── DATA ───────────────────────────────────────────────────────────────────────────
 const REGIONS = [
   {
     id: 'cervical',
@@ -346,7 +448,7 @@ const REGIONS = [
         ]
       },
       {
-        name: 'Mielопатía',
+        name: 'Mielопатия',
         tests: [
           { id: 'cx-009', name: 'Romberg test', ev: 'green', link: '' },
         ]
@@ -1047,11 +1149,15 @@ const REGIONS = [
   },
 ];
 
-// ─── STATE ────────────────────────────────────────────────────────────────────────────
+// ─── STATE ───────────────────────────────────────────────────────────────────────────
 let currentRegion = null;
 let currentFilter = 'all';
+let _linkOverrides = JSON.parse(localStorage.getItem('physiq-wiki-links') || '{}');
+let _editingTestId = null;
+let _lpTimer = null;
+let _lpX = 0, _lpY = 0;
 
-// ─── RENDER HOME ──────────────────────────────────────────────────────────────────────────
+// ─── RENDER HOME ────────────────────────────────────────────────────────────────────────────
 function renderHome() {
   const grid = document.getElementById('regions-grid');
   grid.innerHTML = REGIONS.map(region => {
@@ -1068,7 +1174,7 @@ function renderHome() {
   }).join('');
 }
 
-// ─── NAVIGATION ──────────────────────────────────────────────────────────────────────────
+// ─── NAVIGATION ────────────────────────────────────────────────────────────────────────────
 function showRegion(regionId) {
   currentRegion = REGIONS.find(r => r.id === regionId);
   currentFilter = 'all';
@@ -1076,7 +1182,7 @@ function showRegion(regionId) {
   document.getElementById('view-home').style.display = 'none';
   document.getElementById('view-region').style.display = 'block';
   document.getElementById('btn-back').style.display = 'block';
-  document.getElementById('header-title').innerHTML = 'PhysiQ <span class="logo-accent">—</span> Wiki';
+  document.getElementById('header-title').innerHTML = 'PhysiQ <span class="logo-accent">— Wiki</span>';
   document.getElementById('header-subtitle').textContent = currentRegion.name;
 
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1090,16 +1196,17 @@ function showHome() {
   document.getElementById('view-home').style.display = 'block';
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('btn-back').style.display = 'none';
-  document.getElementById('header-title').innerHTML = 'PhysiQ <span class="logo-accent">—</span> Wiki';
+  document.getElementById('header-title').innerHTML = 'PhysiQ <span class="logo-accent">— Wiki</span>';
   document.getElementById('header-subtitle').textContent = 'Magee · Key Tests';
   currentRegion = null;
   window.scrollTo(0, 0);
 }
 
-// ─── RENDER REGION ─────────────────────────────────────────────────────────────────────────
+// ─── RENDER REGION ─────────────────────────────────────────────────────────────────────────────
 function renderRegion() {
   const content = document.getElementById('region-content');
   content.innerHTML = currentRegion.categories.map(cat => {
+    const hasGreen = cat.tests.some(t => t.ev === 'green');
     const testsHTML = cat.tests.map(test => {
       const ev = test.ev;
       const badgeClass  = ev === 'green' ? 'ev-green'  : ev === 'yellow' ? 'ev-yellow' : 'ev-red';
@@ -1107,12 +1214,13 @@ function renderRegion() {
       const rowClass    = ev === 'green' ? 'ev-green-row' : '';
       const hidden      = currentFilter === 'green' && ev !== 'green' ? 'hidden' : '';
 
-      const linkBtn = test.link
-        ? `<a class="test-link-btn has-link" href="${test.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">▶</a>`
-        : `<span class="test-link-btn no-link">–</span>`;
+      const effectiveLink = _linkOverrides[test.id] !== undefined ? _linkOverrides[test.id] : test.link;
+      const linkBtn = effectiveLink
+        ? `<a class="test-link-btn has-link" href="${effectiveLink}" target="_blank" rel="noopener" onclick="event.stopPropagation()">▶</a>`
+        : `<span class="test-link-btn no-link">&ndash;</span>`;
 
       return `
-        <div class="test-item ${rowClass} ${hidden}" data-ev="${ev}">
+        <div class="test-item ${rowClass} ${hidden}" data-ev="${ev}" data-id="${test.id}">
           <span class="evidence-badge ${badgeClass}">${badgeSymbol}</span>
           <span class="test-name">${test.name}</span>
           ${linkBtn}
@@ -1120,16 +1228,19 @@ function renderRegion() {
       `;
     }).join('');
 
+    const noGreenNotice = hasGreen ? '' : '<div class="no-green-notice">Sin tests de alta evidencia</div>';
+
     return `
       <div class="category-section">
         <div class="category-title">${cat.name}</div>
         ${testsHTML}
+        ${noGreenNotice}
       </div>
     `;
   }).join('');
 }
 
-// ─── FILTER ───────────────────────────────────────────────────────────────────────────
+// ─── FILTER ──────────────────────────────────────────────────────────────────────────────
 function setFilter(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1144,7 +1255,46 @@ function setFilter(filter, btn) {
   });
 }
 
-// ─── HUB INTEGRATION ────────────────────────────────────────────────────────────────────────
+// ─── LINK EDIT ────────────────────────────────────────────────────────────────────────────
+function _findTestById(id) {
+  for (const r of REGIONS) {
+    for (const c of r.categories) {
+      const t = c.tests.find(t => t.id === id);
+      if (t) return t;
+    }
+  }
+  return null;
+}
+
+function openLinkSheet(testId) {
+  _editingTestId = testId;
+  const test = _findTestById(testId);
+  const current = _linkOverrides[testId] !== undefined ? _linkOverrides[testId] : (test?.link || '');
+  document.getElementById('link-sheet-name').textContent = test?.name || '';
+  document.getElementById('link-input').value = current;
+  document.getElementById('link-sheet').style.display = 'block';
+  setTimeout(() => document.getElementById('link-input').focus(), 80);
+}
+
+function closeLinkSheet() {
+  document.getElementById('link-sheet').style.display = 'none';
+  _editingTestId = null;
+}
+
+function saveLinkOverride() {
+  if (!_editingTestId) return;
+  const url = document.getElementById('link-input').value.trim();
+  if (url === '') {
+    delete _linkOverrides[_editingTestId];
+  } else {
+    _linkOverrides[_editingTestId] = url;
+  }
+  localStorage.setItem('physiq-wiki-links', JSON.stringify(_linkOverrides));
+  closeLinkSheet();
+  renderRegion();
+}
+
+// ─── HUB INTEGRATION ─────────────────────────────────────────────────────────────────────────
 try {
   if (window.self !== window.top) {
     document.body.classList.add('in-hub');
@@ -1156,7 +1306,37 @@ try {
   document.body.classList.add('in-hub');
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────────────────────────
+// ─── LONG-PRESS TO EDIT LINK ─────────────────────────────────────────────────────────────────
+document.getElementById('region-content').addEventListener('pointerdown', e => {
+  const item = e.target.closest('.test-item');
+  if (!item) return;
+  const testId = item.dataset.id;
+  if (!testId) return;
+
+  _lpX = e.clientX; _lpY = e.clientY;
+  _lpTimer = setTimeout(() => {
+    _lpTimer = null;
+    navigator.vibrate?.(50);
+    openLinkSheet(testId);
+  }, 500);
+
+  const cancel = () => { if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; } };
+  document.addEventListener('pointerup',     cancel, { once: true });
+  document.addEventListener('pointercancel', cancel, { once: true });
+});
+
+document.addEventListener('pointermove', e => {
+  if (!_lpTimer) return;
+  if (Math.hypot(e.clientX - _lpX, e.clientY - _lpY) > 8) {
+    clearTimeout(_lpTimer); _lpTimer = null;
+  }
+});
+
+document.getElementById('region-content').addEventListener('contextmenu', e => {
+  if (e.target.closest('.test-item')) e.preventDefault();
+});
+
+// ─── INIT ───────────────────────────────────────────────────────────────────────────────────
 renderHome();
 </script>
 </body>
