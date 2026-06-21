@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PhysiQ · Wiki</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d12;
+    --surface: #111620;
+    --surface2: #171e2e;
+    --border: #232d45;
+    --border2: #2d3a56;
+    --text: #e8eaf0;
+    --text2: #8892a4;
+    --text3: #5a6478;
+    --accent: #4f9cf9;
+    --accent2: #38d9a9;
+    --green: #38d9a9;
+    --green-bg: rgba(56,217,169,0.12);
+    --yellow: #fb923c;
+    --yellow-bg: rgba(251,146,60,0.12);
+    --red: #ef4444;
+    --red-bg: rgba(239,68,68,0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --header-h: 64px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: rgba(10,13,18,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    height: var(--header-h);
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-back {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    display: none;
+    transition: color 0.15s;
+    font-weight: 300;
+  }
+  .header-back:hover { color: var(--text); }
+
+  .logo-wrap { flex: 1; }
+  .logo-main {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .logo-main .logo-accent { color: var(--accent); }
+  .logo-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* HOME */
+  .home-intro {
+    padding: 24px 20px 6px;
+  }
+  .home-intro h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.25;
+  }
+  .home-intro p {
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 6px;
+    line-height: 1.55;
+  }
+
+  .legend {
+    display: flex;
+    gap: 10px;
+    padding: 12px 20px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .regions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 8px 20px 40px;
+  }
+
+  .region-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+  .region-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+  .region-card:active { transform: scale(0.97); }
+  .region-card:hover { border-color: var(--border2); }
+
+  .region-card-icon { font-size: 22px; margin-bottom: 8px; }
+  .region-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .region-card-count {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+  .region-card-green {
+    font-size: 11px;
+    color: var(--accent2);
+    font-weight: 500;
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* REGION VIEW */
+  .filter-bar {
+    padding: 10px 20px;
+    background: rgba(10,13,18,0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    position: sticky;
+    top: var(--header-h);
+    z-index: 90;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+    font-family: 'Outfit', sans-serif;
+  }
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .region-content {
+    padding: 12px 20px 48px;
+  }
+
+  .category-section { margin-bottom: 20px; }
+  .category-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    padding: 4px 0 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  .test-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 8px;
+    border-radius: var(--radius-sm);
+    transition: background 0.1s;
+  }
+  .test-item:active { background: var(--surface2); }
+  .test-item.hidden { display: none; }
+
+  .evidence-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+  .ev-green  { background: var(--green-bg);  color: var(--green); }
+  .ev-yellow { background: var(--yellow-bg); color: var(--yellow); }
+  .ev-red    { background: var(--red-bg);    color: var(--red); }
+
+  .test-name {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--text);
+  }
+  .test-item.ev-green-row .test-name { font-weight: 500; }
+
+  .test-link-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    text-decoration: none;
+    font-size: 12px;
+    transition: opacity 0.15s;
+  }
+  .test-link-btn.has-link {
+    background: #ff0000;
+    color: #fff;
+  }
+  .test-link-btn.no-link {
+    background: var(--surface2);
+    color: var(--text3);
+    font-size: 11px;
+    cursor: default;
+  }
+  .test-link-btn.has-link:active { opacity: 0.75; }
+
+  /* IN-HUB */
+  .in-hub .logo-main { cursor: pointer; }
+  .in-hub .logo-main::before {
+    content: '‹ ';
+    opacity: 0.45;
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <button class="header-back" id="btn-back" onclick="showHome()">‹</button>
+  <div class="logo-wrap">
+    <div class="logo-main" id="header-title">PhysiQ <span class="logo-accent">—</span> Wiki</div>
+    <div class="logo-sub" id="header-subtitle">Magee · Key Tests</div>
+  </div>
+</header>
+
+<!-- HOME VIEW -->
+<div id="view-home">
+  <div class="home-intro">
+    <h1>Key Tests por región</h1>
+    <p>Tests clasificados por nivel de evidencia diagnóstica según Magee — Orthopaedic Physical Assessment.</p>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><span class="evidence-badge ev-green">✓</span> Alta evidencia</div>
+    <div class="legend-item"><span class="evidence-badge ev-yellow">!</span> Moderada</div>
+    <div class="legend-item"><span class="evidence-badge ev-red">?</span> Dudosa</div>
+  </div>
+  <div class="regions-grid" id="regions-grid"></div>
+</div>
+
+<!-- REGION VIEW -->
+<div id="view-region" style="display:none">
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('all', this)">Todos</button>
+    <button class="filter-btn" onclick="setFilter('green', this)">✓ Solo verdes</button>
+  </div>
+  <div class="region-content" id="region-content"></div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────────────
+const REGIONS = [
+  {
+    id: 'cervical',
+    name: 'Columna Cervical',
+    icon: '🔵',
+    categories: [
+      {
+        name: 'Fuerza musculatura cervical profunda',
+        tests: [
+          { id: 'cx-001', name: 'Craniocervical flexion test', ev: 'green', link: 'https://www.youtube.com/watch?v=cAfcQIRm9Ew' },
+          { id: 'cx-002', name: 'Deep neck flexor endurance test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Síntomas neurológicos',
+        tests: [
+          { id: 'cx-003', name: 'Brachial plexus tension test', ev: 'green', link: 'https://www.youtube.com/watch?v=rir6x6Iiqc4' },
+          { id: 'cx-004', name: 'Brachial plexus provocation test', ev: 'green', link: 'https://www.youtube.com/watch?v=rir6x6Iiqc4' },
+          { id: 'cx-005', name: 'Doorbell sign', ev: 'yellow', link: '' },
+          { id: 'cx-006', name: 'Distraction test (if symptoms severe)', ev: 'green', link: 'https://www.youtube.com/watch?v=P5ib_KBlJug' },
+          { id: 'cx-007', name: 'Foraminal compression test (three stages)', ev: 'green', link: 'https://www.youtube.com/watch?v=3ZSNdv0o0yk' },
+          { id: 'cx-008', name: 'Upper limb neurodynamic tests', ev: 'green', link: 'https://www.youtube.com/watch?v=rir6x6Iiqc4' },
+        ]
+      },
+      {
+        name: 'Mielопатía',
+        tests: [
+          { id: 'cx-009', name: 'Romberg test', ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Signos vasculares',
+        tests: [
+          { id: 'cx-010', name: 'Hold planned mobilization/manipulation position ≥30s (vertebro-basilar)', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Inestabilidad cervical',
+        tests: [
+          { id: 'cx-011', name: 'Anterior shear stress test', ev: 'red', link: '' },
+          { id: 'cx-012', name: 'Lateral flexion alar ligament stress test', ev: 'red', link: '' },
+          { id: 'cx-013', name: 'Lateral shear test', ev: 'yellow', link: '' },
+          { id: 'cx-014', name: 'Posterior atlanto-occipital membrane test', ev: 'yellow', link: '' },
+          { id: 'cx-015', name: 'Rotational alar ligament stress test', ev: 'red', link: '' },
+          { id: 'cx-016', name: 'Transverse ligament stress test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Movilidad columna cervical',
+        tests: [
+          { id: 'cx-017', name: 'Cervical flexion rotation test', ev: 'green', link: 'https://www.youtube.com/shorts/Lg38Wmo1WkA' },
+        ]
+      },
+      {
+        name: 'Movilidad primera costilla',
+        tests: [
+          { id: 'cx-018', name: 'First rib mobility', ev: 'green', link: '' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'lumbar',
+    name: 'Columna Lumbar',
+    icon: '🟤',
+    categories: [
+      {
+        name: 'Disfunción neurológica',
+        tests: [
+          { id: 'lx-001', name: 'Centralization/peripheralization', ev: 'green', link: '' },
+          { id: 'lx-002', name: 'Cross straight leg raise test', ev: 'yellow', link: '' },
+          { id: 'lx-003', name: 'Femoral nerve traction test', ev: 'yellow', link: '' },
+          { id: 'lx-004', name: 'Prone knee bending test or variant', ev: 'yellow', link: '' },
+          { id: 'lx-005', name: 'Slump test or variant', ev: 'green', link: '' },
+          { id: 'lx-006', name: 'Straight leg raise or variant', ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Inestabilidad lumbar',
+        tests: [
+          { id: 'lx-007', name: 'H and I test', ev: 'red', link: '' },
+          { id: 'lx-008', name: 'Passive lumbar extension test', ev: 'green', link: '' },
+          { id: 'lx-009', name: 'Posterior shear test', ev: 'red', link: '' },
+          { id: 'lx-010', name: 'Prone hip extension test', ev: 'yellow', link: '' },
+          { id: 'lx-011', name: 'Prone segmental instability test', ev: 'red', link: '' },
+          { id: 'lx-012', name: 'Specific lumbar torsion test', ev: 'red', link: '' },
+          { id: 'lx-013', name: 'Test for anterior lumbar spine instability', ev: 'yellow', link: '' },
+          { id: 'lx-014', name: 'Test for posterior lumbar spine instability', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Disfunción articular',
+        tests: [
+          { id: 'lx-015', name: 'Bilateral straight leg raise test', ev: 'red', link: '' },
+          { id: 'lx-016', name: 'Clinical prediction rule for facet joint involvement', ev: 'yellow', link: '' },
+          { id: 'lx-017', name: 'One-leg standing (stork) lumbar extension test', ev: 'yellow', link: '' },
+          { id: 'lx-018', name: 'Quadrant test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Tensión muscular',
+        tests: [
+          { id: 'lx-019', name: '90-90 straight leg raise test', ev: 'green', link: '' },
+          { id: 'lx-020', name: 'Ober test', ev: 'yellow', link: '' },
+          { id: 'lx-021', name: 'Rectus femoris test', ev: 'yellow', link: '' },
+          { id: 'lx-022', name: 'Thomas test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Disfunción muscular',
+        tests: [
+          { id: 'lx-023', name: 'Prone bridge test', ev: 'green', link: '' },
+          { id: 'lx-024', name: 'Supine bridge test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Otros',
+        tests: [
+          { id: 'lx-025', name: "Gower's sign", ev: 'yellow', link: '' },
+          { id: 'lx-026', name: 'Heel-tap test', ev: 'red', link: '' },
+          { id: 'lx-027', name: 'Sign of the buttock', ev: 'red', link: '' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'shoulder',
+    name: 'Hombro',
+    icon: '🔴',
+    categories: [
+      {
+        name: 'Inestabilidad anterior glenohumeral',
+        tests: [
+          { id: 'sh-001', name: 'Apprehension (crank) release ("surprise") test and Jobe relocation', ev: 'green', link: '' },
+          { id: 'sh-002', name: 'Anterior drawer test of the shoulder', ev: 'yellow', link: '' },
+          { id: 'sh-003', name: 'Bony apprehension test', ev: 'yellow', link: '' },
+          { id: 'sh-004', name: 'Load and shift test', ev: 'yellow', link: '' },
+          { id: 'sh-005', name: 'Andrews anterior instability test', ev: 'yellow', link: '' },
+          { id: 'sh-006', name: "Anterior instability (Leffert's) test", ev: 'red', link: '' },
+          { id: 'sh-007', name: 'Dugas test', ev: 'red', link: '' },
+          { id: 'sh-008', name: 'Fulcrum test', ev: 'red', link: '' },
+          { id: 'sh-009', name: 'Protzman test', ev: 'red', link: '' },
+          { id: 'sh-010', name: 'Rockwood test', ev: 'red', link: '' },
+          { id: 'sh-011', name: 'Rowe test', ev: 'red', link: '' },
+          { id: 'sh-012', name: 'Supine apprehension test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Inestabilidad posterior glenohumeral',
+        tests: [
+          { id: 'sh-013', name: 'Jerk (Jahnke) test', ev: 'green', link: '' },
+          { id: 'sh-014', name: 'Load and shift test', ev: 'yellow', link: '' },
+          { id: 'sh-015', name: 'Norwood test', ev: 'yellow', link: '' },
+          { id: 'sh-016', name: 'Circumduction test', ev: 'red', link: '' },
+          { id: 'sh-017', name: 'Miniaci test', ev: 'red', link: '' },
+          { id: 'sh-018', name: 'Posterior apprehension or stress test', ev: 'red', link: '' },
+          { id: 'sh-019', name: 'Posterior drawer test', ev: 'red', link: '' },
+          { id: 'sh-020', name: 'Posterior subluxation test', ev: 'red', link: '' },
+          { id: 'sh-021', name: 'Push-pull test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Inestabilidad inferior y multidireccional',
+        tests: [
+          { id: 'sh-022', name: 'Sulcus sign', ev: 'green', link: '' },
+          { id: 'sh-023', name: 'Feagin test (abduction inferior stability test)', ev: 'yellow', link: '' },
+          { id: 'sh-024', name: 'Hyperabduction test (Gagey hyperabduction test)', ev: 'yellow', link: '' },
+          { id: 'sh-025', name: 'Hyperextension-internal rotation (HERI) test', ev: 'yellow', link: '' },
+          { id: 'sh-026', name: 'Knee-shoulder test', ev: 'yellow', link: '' },
+          { id: 'sh-027', name: 'Rowe test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Impingement anterior',
+        tests: [
+          { id: 'sh-028', name: 'Coracoid impingement sign', ev: 'green', link: '' },
+          { id: 'sh-029', name: 'Hawkins-Kennedy test', ev: 'green', link: '' },
+          { id: 'sh-030', name: 'Neer test and modification', ev: 'green', link: '' },
+          { id: 'sh-031', name: 'Supine impingement test', ev: 'green', link: '' },
+          { id: 'sh-032', name: 'Yokum test', ev: 'green', link: '' },
+          { id: 'sh-033', name: 'Zaslav test (IRRST)', ev: 'green', link: '' },
+          { id: 'sh-034', name: 'Impingement sign', ev: 'red', link: '' },
+          { id: 'sh-035', name: 'Reverse impingement (relief) test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Impingement posterior',
+        tests: [
+          { id: 'sh-036', name: 'Posterior internal impingement test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Lesiones labrales',
+        tests: [
+          { id: 'sh-037', name: "Active compression test of O'Brien", ev: 'green', link: '' },
+          { id: 'sh-038', name: 'Kim test I (biceps load test II)', ev: 'green', link: '' },
+          { id: 'sh-039', name: 'Porcellini test', ev: 'green', link: '' },
+          { id: 'sh-040', name: 'Anterior slide test', ev: 'yellow', link: '' },
+          { id: 'sh-041', name: 'Biceps load test (Kim test II)', ev: 'yellow', link: '' },
+          { id: 'sh-042', name: 'Biceps tension test', ev: 'yellow', link: '' },
+          { id: 'sh-043', name: 'Clunk test', ev: 'yellow', link: '' },
+          { id: 'sh-044', name: 'Compression rotation test', ev: 'yellow', link: '' },
+          { id: 'sh-045', name: 'Forced shoulder abduction and elbow flexion test', ev: 'yellow', link: '' },
+          { id: 'sh-046', name: 'Mayo shear test', ev: 'yellow', link: '' },
+          { id: 'sh-047', name: 'Pain provocation (Minori) test', ev: 'yellow', link: '' },
+          { id: 'sh-048', name: 'Passive distraction test', ev: 'yellow', link: '' },
+          { id: 'sh-049', name: 'Resisted supination external rotation test (RSERT)', ev: 'yellow', link: '' },
+          { id: 'sh-050', name: 'Supine flexion resistance test', ev: 'yellow', link: '' },
+          { id: 'sh-051', name: 'Throwing test', ev: 'yellow', link: '' },
+          { id: 'sh-052', name: 'Labral crank test', ev: 'red', link: '' },
+          { id: 'sh-053', name: 'Labral tension test', ev: 'red', link: '' },
+          { id: 'sh-054', name: "O'Driscoll SLAP (dynamic labral shear) test", ev: 'red', link: '' },
+          { id: 'sh-055', name: 'Passive compression test', ev: 'red', link: '' },
+          { id: 'sh-056', name: 'SLAP prehension test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Diskinesia escapular',
+        tests: [
+          { id: 'sh-057', name: 'Scapular dyskinesia test', ev: 'green', link: '' },
+          { id: 'sh-058', name: 'Scapular load test', ev: 'green', link: '' },
+          { id: 'sh-059', name: 'Lateral scapular slide test', ev: 'yellow', link: '' },
+          { id: 'sh-060', name: 'Scapular retraction test (SRT)', ev: 'yellow', link: '' },
+          { id: 'sh-061', name: 'Wall/floor push-up', ev: 'yellow', link: '' },
+          { id: 'sh-062', name: 'Kinetic medial rotation test', ev: 'red', link: '' },
+          { id: 'sh-063', name: 'Scapular assistance test', ev: 'red', link: '' },
+          { id: 'sh-064', name: 'Scapular isometric pinch or squeeze test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Patología AC',
+        tests: [
+          { id: 'sh-065', name: 'Horizontal adduction (cross body adduction) test', ev: 'green', link: '' },
+          { id: 'sh-066', name: 'Paxinos sign', ev: 'green', link: '' },
+          { id: 'sh-067', name: 'Acromioclavicular shear test', ev: 'yellow', link: '' },
+          { id: 'sh-068', name: "Ellman's compression rotation test", ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Ligamentos y cápsula',
+        tests: [
+          { id: 'sh-069', name: 'Crank test', ev: 'green', link: '' },
+          { id: 'sh-070', name: 'Low flexion test', ev: 'yellow', link: '' },
+          { id: 'sh-071', name: 'Coracoclavicular ligament test', ev: 'red', link: '' },
+          { id: 'sh-072', name: 'Posterior inferior glenohumeral ligament test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Patología muscular — Manguito (general)',
+        tests: [
+          { id: 'sh-073', name: 'Rent test', ev: 'green', link: '' },
+          { id: 'sh-074', name: 'Whipple test', ev: 'green', link: '' },
+          { id: 'sh-075', name: "Drop-arm (Codman's) test", ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Supraespinoso',
+        tests: [
+          { id: 'sh-076', name: 'Champagne toast position', ev: 'green', link: '' },
+          { id: 'sh-077', name: '"Empty can" test (Jobe or supraspinatus test)', ev: 'green', link: '' },
+          { id: 'sh-078', name: 'Drop-arm test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Subescapular',
+        tests: [
+          { id: 'sh-079', name: 'External rotation lag sign (ERLS)', ev: 'green', link: '' },
+          { id: 'sh-080', name: "Lift-off sign (Gerber's test)", ev: 'green', link: '' },
+          { id: 'sh-081', name: 'Medial rotation lag or "spring back" test', ev: 'green', link: '' },
+          { id: 'sh-082', name: 'Belly-off sign', ev: 'yellow', link: '' },
+          { id: 'sh-083', name: 'Belly press test (Napoleon test)', ev: 'yellow', link: '' },
+          { id: 'sh-084', name: 'Bear-hug test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Infraespinoso',
+        tests: [
+          { id: 'sh-085', name: 'Infraspinatus test', ev: 'green', link: '' },
+          { id: 'sh-086', name: 'Lateral rotation lag sign', ev: 'green', link: '' },
+          { id: 'sh-087', name: 'Dropping sign', ev: 'yellow', link: '' },
+          { id: 'sh-088', name: 'Infraspinatus scapula retraction test (ISRT)', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Teres minor / Trapecio / Romboides',
+        tests: [
+          { id: 'sh-089', name: "Hornblower's sign (Patte's test)", ev: 'green', link: '' },
+          { id: 'sh-090', name: 'Lateral rotation lag sign', ev: 'green', link: '' },
+          { id: 'sh-091', name: 'Trapezius test (three positions)', ev: 'green', link: '' },
+          { id: 'sh-092', name: 'Teres minor test', ev: 'red', link: '' },
+          { id: 'sh-093', name: 'Rhomboid weakness', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Función neurológica',
+        tests: [
+          { id: 'sh-094', name: 'Upper limb neurodynamic test (ULNT)', ev: 'green', link: 'https://www.youtube.com/watch?v=rir6x6Iiqc4' },
+        ]
+      },
+      {
+        name: 'Síndrome outlet torácico',
+        tests: [
+          { id: 'sh-095', name: 'Roos test', ev: 'yellow', link: '' },
+          { id: 'sh-096', name: 'Adson maneuver', ev: 'red', link: '' },
+          { id: 'sh-097', name: 'Costoclavicular (military thrust) syndrome', ev: 'red', link: '' },
+          { id: 'sh-098', name: 'Halstead maneuver', ev: 'red', link: '' },
+          { id: 'sh-099', name: 'Provocative elevation test', ev: 'red', link: '' },
+          { id: 'sh-100', name: 'Shoulder girdle passive elevation', ev: 'red', link: '' },
+          { id: 'sh-101', name: 'Wright test', ev: 'red', link: '' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'elbow',
+    name: 'Codo',
+    icon: '🟠',
+    categories: [
+      {
+        name: 'Inestabilidad ligamentosa',
+        tests: [
+          { id: 'el-001', name: 'Lateral pivot shift test of the elbow', ev: 'green', link: '' },
+          { id: 'el-002', name: 'Ligamentous valgus instability test', ev: 'green', link: '' },
+          { id: 'el-003', name: 'Ligamentous varus instability test', ev: 'green', link: '' },
+          { id: 'el-004', name: 'Moving valgus stress test', ev: 'green', link: '' },
+          { id: 'el-005', name: 'Posterolateral rotary drawer test', ev: 'green', link: '' },
+          { id: 'el-006', name: 'Capitellar shear test', ev: 'red', link: '' },
+          { id: 'el-007', name: 'Chair push-up test', ev: 'yellow', link: '' },
+          { id: 'el-008', name: 'Gravity-assisted varus stress test', ev: 'yellow', link: '' },
+          { id: 'el-009', name: 'Milking maneuver', ev: 'yellow', link: '' },
+          { id: 'el-010', name: 'Posterolateral rotary apprehension test', ev: 'yellow', link: '' },
+          { id: 'el-011', name: 'Prone push-up test', ev: 'yellow', link: '' },
+          { id: 'el-012', name: 'Tabletop relocation test', ev: 'yellow', link: '' },
+          { id: 'el-013', name: 'Trochlear shear test', ev: 'yellow', link: '' },
+          { id: 'el-014', name: 'Valgus extension overload test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Lesión muscular (tercer grado)',
+        tests: [
+          { id: 'el-015', name: 'Bicipital aponeurosis flex test', ev: 'green', link: '' },
+          { id: 'el-016', name: 'Popeye sign (distal biceps tendon)', ev: 'green', link: '' },
+          { id: 'el-017', name: 'Triceps squeeze test', ev: 'green', link: '' },
+          { id: 'el-018', name: 'Biceps crease interval', ev: 'yellow', link: '' },
+          { id: 'el-019', name: 'Biceps squeeze test', ev: 'yellow', link: '' },
+          { id: 'el-020', name: 'Flexion initiation test', ev: 'yellow', link: '' },
+          { id: 'el-021', name: 'Hook (distal biceps) test', ev: 'yellow', link: '' },
+          { id: 'el-022', name: 'Supination-pronation test', ev: 'yellow', link: '' },
+          { id: 'el-023', name: 'TILT sign', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Epicondilalgia',
+        tests: [
+          { id: 'el-024', name: "Cozen's test", ev: 'yellow', link: '' },
+          { id: 'el-025', name: "Golfer's elbow test", ev: 'red', link: '' },
+          { id: 'el-026', name: "Kaplan's test", ev: 'yellow', link: '' },
+          { id: 'el-027', name: "Maudsley's (middle finger) test", ev: 'red', link: '' },
+          { id: 'el-028', name: "Mill's test", ev: 'yellow', link: '' },
+          { id: 'el-029', name: 'Polk test', ev: 'yellow', link: '' },
+          { id: 'el-030', name: 'Tennis elbow shear test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Disfunción neurológica',
+        tests: [
+          { id: 'el-031', name: 'Pinch grip test (anterior interosseous branch of median nerve)', ev: 'green', link: '' },
+          { id: 'el-032', name: 'Wadsworth elbow flexion test (ulnar nerve)', ev: 'green', link: '' },
+          { id: 'el-033', name: 'Rule-of-nine (RON) test', ev: 'yellow', link: '' },
+          { id: 'el-034', name: 'Scratch collapse test for ulnar, median and/or radial nerve', ev: 'yellow', link: '' },
+          { id: 'el-035', name: 'Tinel sign at elbow (ulnar nerve)', ev: 'yellow', link: '' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'wrist',
+    name: 'Muñeca y Mano',
+    icon: '🟡',
+    categories: [
+      {
+        name: 'Tests generales muñeca',
+        tests: [
+          { id: 'wr-001', name: 'Sitting hands (press) test', ev: 'yellow', link: '' },
+          { id: 'wr-002', name: 'Carpal shake test', ev: 'red', link: '' },
+          { id: 'wr-003', name: 'Windmill test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Hueso, ligamento, cápsula e inestabilidad articular',
+        tests: [
+          { id: 'wr-004', name: 'Derby relocation test', ev: 'yellow', link: '' },
+          { id: 'wr-005', name: 'Distal radioulnar joint stability (ballottement) test', ev: 'yellow', link: '' },
+          { id: 'wr-006', name: "Lunotriquetral ballottement (Reagan's) test", ev: 'yellow', link: '' },
+          { id: 'wr-007', name: 'Lunotriquetral compression test', ev: 'yellow', link: '' },
+          { id: 'wr-008', name: "Murphy's sign", ev: 'yellow', link: '' },
+          { id: 'wr-009', name: 'Pisiform boost test', ev: 'yellow', link: '' },
+          { id: 'wr-010', name: 'Pisotriquetral grind test', ev: 'yellow', link: '' },
+          { id: 'wr-011', name: 'Radioulnar shift test', ev: 'yellow', link: '' },
+          { id: 'wr-012', name: 'Scaphoid compression test', ev: 'yellow', link: '' },
+          { id: 'wr-013', name: 'Scapholunate ligament test', ev: 'yellow', link: '' },
+          { id: 'wr-014', name: 'Thumb ulnar collateral ligament laxity or instability test', ev: 'yellow', link: '' },
+          { id: 'wr-015', name: 'Ulnar fovea sign (ulnar snuff box) test', ev: 'green', link: '' },
+          { id: 'wr-016', name: 'Ulnomeniscotriquetral dorsal glide test', ev: 'green', link: '' },
+          { id: 'wr-017', name: 'Watson (scaphoid shift) test', ev: 'green', link: '' },
+          { id: 'wr-018', name: 'Ulnar styloid triquetral impaction (USTI) provocation test', ev: 'yellow', link: '' },
+          { id: 'wr-019', name: 'Ulnocarpal stress test', ev: 'yellow', link: '' },
+          { id: 'wr-020', name: "Kleinman's shear test", ev: 'yellow', link: '' },
+          { id: 'wr-021', name: 'Ligamentous instability test (fingers)', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Tendones y músculos',
+        tests: [
+          { id: 'wr-022', name: 'Finkelstein (Eichhoff) test', ev: 'green', link: '' },
+          { id: 'wr-023', name: 'Wrist hanging test', ev: 'yellow', link: '' },
+          { id: 'wr-024', name: 'Extensor carpi ulnaris synergy test', ev: 'yellow', link: '' },
+          { id: 'wr-025', name: 'Sweater finger sign', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Disfunción neurológica',
+        tests: [
+          { id: 'wr-026', name: 'Carpal compression test', ev: 'green', link: '' },
+          { id: 'wr-027', name: 'Hand elevation test', ev: 'green', link: '' },
+          { id: 'wr-028', name: 'Okutsu test', ev: 'green', link: '' },
+          { id: 'wr-029', name: "Phalen's (wrist flexion) test", ev: 'green', link: '' },
+          { id: 'wr-030', name: 'Tinel sign at wrist', ev: 'yellow', link: '' },
+          { id: 'wr-031', name: 'Abductor pollicis brevis weakness', ev: 'yellow', link: '' },
+          { id: 'wr-032', name: 'Crossed finger test', ev: 'yellow', link: '' },
+          { id: 'wr-033', name: "Froment's paper sign", ev: 'yellow', link: '' },
+          { id: 'wr-034', name: 'Finger flexion sign', ev: 'yellow', link: '' },
+          { id: 'wr-035', name: 'First dorsal interossei screening test', ev: 'yellow', link: '' },
+          { id: 'wr-036', name: 'Flick maneuver', ev: 'yellow', link: '' },
+          { id: 'wr-037', name: 'Pollock sign', ev: 'yellow', link: '' },
+          { id: 'wr-038', name: "Reverse Phalen's (prayer) test", ev: 'yellow', link: '' },
+          { id: 'wr-039', name: 'Tethered median nerve stress test', ev: 'yellow', link: '' },
+          { id: 'wr-040', name: "Weber's (Moberg's) two-point discrimination test", ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Circulación y edema',
+        tests: [
+          { id: 'wr-041', name: 'Allen test', ev: 'green', link: '' },
+          { id: 'wr-042', name: 'Digital blood flow', ev: 'green', link: '' },
+          { id: 'wr-043', name: 'Figure-of-eight measurement for swelling', ev: 'green', link: '' },
+          { id: 'wr-044', name: 'Hand volume test', ev: 'green', link: '' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'pelvis',
+    name: 'Pelvis / SI',
+    icon: '🟣',
+    categories: [
+      {
+        name: 'Afectación neurológica',
+        tests: [
+          { id: 'pe-001', name: 'Prone active straight leg raise test (three parts)', ev: 'green', link: '' },
+          { id: 'pe-002', name: 'Straight leg raise test', ev: 'green', link: '' },
+          { id: 'pe-003', name: 'Supine active straight leg raise test (three parts)', ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Afectación articular',
+        tests: [
+          { id: 'pe-004', name: 'Drop test', ev: 'yellow', link: '' },
+          { id: 'pe-005', name: 'Flamingo test', ev: 'green', link: '' },
+          { id: 'pe-006', name: "Gaenslen's test", ev: 'green', link: '' },
+          { id: 'pe-007', name: 'Gillet test', ev: 'yellow', link: '' },
+          { id: 'pe-008', name: 'Patrick test', ev: 'green', link: '' },
+          { id: 'pe-009', name: "Piedallu's sign", ev: 'yellow', link: '' },
+          { id: 'pe-010', name: 'Posterior superior iliac spine distraction test', ev: 'yellow', link: '' },
+          { id: 'pe-011', name: 'Supine-to-sit test', ev: 'yellow', link: '' },
+          { id: 'pe-012', name: "Yeoman's test", ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Longitud de pierna',
+        tests: [
+          { id: 'pe-013', name: 'Leg length measurement', ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Disfunción muscular',
+        tests: [
+          { id: 'pe-014', name: '90-90 straight leg raise test', ev: 'green', link: '' },
+          { id: 'pe-015', name: 'Trendelenburg test', ev: 'green', link: '' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'hip',
+    name: 'Cadera',
+    icon: '🟢',
+    categories: [
+      {
+        name: 'Patología de cadera',
+        tests: [
+          { id: 'hi-001', name: 'Hip scour test', ev: 'green', link: '' },
+          { id: 'hi-002', name: 'Log roll test', ev: 'green', link: '' },
+          { id: 'hi-003', name: "Patrick's test", ev: 'green', link: '' },
+          { id: 'hi-004', name: 'Abduction, extension, and lateral rotation test', ev: 'yellow', link: '' },
+          { id: 'hi-005', name: 'Anterior apprehension test', ev: 'yellow', link: '' },
+          { id: 'hi-006', name: 'Drehmann sign', ev: 'yellow', link: '' },
+          { id: 'hi-007', name: 'Flexion-adduction test', ev: 'yellow', link: '' },
+          { id: 'hi-008', name: 'Internal rotation overpressure test', ev: 'yellow', link: '' },
+          { id: 'hi-009', name: 'Lateral FABER test', ev: 'yellow', link: '' },
+          { id: 'hi-010', name: 'Ligamentum teres test', ev: 'yellow', link: '' },
+          { id: 'hi-011', name: 'McCarthy hip extension sign', ev: 'yellow', link: '' },
+          { id: 'hi-012', name: 'Posterior apprehension test', ev: 'yellow', link: '' },
+          { id: 'hi-013', name: 'Prone external rotation test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Impingement',
+        tests: [
+          { id: 'hi-014', name: 'Anteroposterior impingement test', ev: 'yellow', link: '' },
+          { id: 'hi-015', name: '"Gear stick" sign', ev: 'yellow', link: '' },
+          { id: 'hi-016', name: 'Impingement provocation test', ev: 'yellow', link: '' },
+          { id: 'hi-017', name: 'Ischiofemoral impingement test', ev: 'yellow', link: '' },
+          { id: 'hi-018', name: 'Lateral FADDIR test', ev: 'yellow', link: '' },
+          { id: 'hi-019', name: 'Lateral rim impingement test', ev: 'yellow', link: '' },
+          { id: 'hi-020', name: 'Posteroinferior impingement test', ev: 'yellow', link: '' },
+          { id: 'hi-021', name: 'Squat test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Lesiones labrales',
+        tests: [
+          { id: 'hi-022', name: 'Anterior labral tear test', ev: 'green', link: '' },
+          { id: 'hi-023', name: 'External rotation test', ev: 'yellow', link: '' },
+          { id: 'hi-024', name: 'Flexion-internal rotation test', ev: 'yellow', link: '' },
+          { id: 'hi-025', name: 'Posterior labral tear test', ev: 'yellow', link: '' },
+          { id: 'hi-026', name: 'THIRD test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Patología pediátrica de cadera',
+        tests: [
+          { id: 'hi-027', name: "Barlow's test", ev: 'green', link: '' },
+          { id: 'hi-028', name: 'Galleazzi sign', ev: 'green', link: '' },
+          { id: 'hi-029', name: "Ortolani's sign", ev: 'green', link: '' },
+          { id: 'hi-030', name: 'Telescoping sign', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Tensión/acortamiento muscular',
+        tests: [
+          { id: 'hi-031', name: 'Hip lag sign', ev: 'green', link: '' },
+          { id: 'hi-032', name: '90-90 straight leg raising test', ev: 'green', link: '' },
+          { id: 'hi-033', name: 'Trendelenburg sign', ev: 'green', link: '' },
+          { id: 'hi-034', name: 'Eccentric hip flexion', ev: 'red', link: '' },
+          { id: 'hi-035', name: "Beatty's test", ev: 'yellow', link: '' },
+          { id: 'hi-036', name: 'Bent-knee stretch test for proximal hamstrings', ev: 'yellow', link: '' },
+          { id: 'hi-037', name: "Ely's test", ev: 'yellow', link: '' },
+          { id: 'hi-038', name: 'External de-rotation test', ev: 'yellow', link: '' },
+          { id: 'hi-039', name: "Freiberg's maneuver", ev: 'yellow', link: '' },
+          { id: 'hi-040', name: 'Hamstring syndrome test', ev: 'yellow', link: '' },
+          { id: 'hi-041', name: 'Heel contralateral knee maneuver', ev: 'yellow', link: '' },
+          { id: 'hi-042', name: 'Hip rotator tightness', ev: 'yellow', link: '' },
+          { id: 'hi-043', name: 'Long stride heel-strike test', ev: 'yellow', link: '' },
+          { id: 'hi-044', name: 'Noble compression test', ev: 'yellow', link: '' },
+          { id: 'hi-045', name: "Ober's test", ev: 'yellow', link: '' },
+          { id: 'hi-046', name: "Pace's maneuver", ev: 'yellow', link: '' },
+          { id: 'hi-047', name: 'Puranen-Orava test', ev: 'yellow', link: '' },
+          { id: 'hi-048', name: 'Rectus femoris contracture test', ev: 'yellow', link: '' },
+          { id: 'hi-049', name: 'Seated piriformis stretch test', ev: 'yellow', link: '' },
+          { id: 'hi-050', name: 'Thomas test', ev: 'yellow', link: '' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'knee',
+    name: 'Rodilla',
+    icon: '🔷',
+    categories: [
+      {
+        name: 'Lesiones meniscales',
+        tests: [
+          { id: 'kn-001', name: "Apley's test", ev: 'green', link: '' },
+          { id: 'kn-002', name: 'McMurray test', ev: 'green', link: '' },
+          { id: 'kn-003', name: '"Bounce home" test', ev: 'yellow', link: '' },
+          { id: 'kn-004', name: "Childress' sign (squat and duck walk test)", ev: 'yellow', link: '' },
+          { id: 'kn-005', name: 'Dynamic knee test', ev: 'yellow', link: '' },
+          { id: 'kn-006', name: "Ege's test", ev: 'yellow', link: '' },
+          { id: 'kn-007', name: "O'Donohue's test", ev: 'yellow', link: '' },
+          { id: 'kn-008', name: 'Thessaly test', ev: 'yellow', link: '' },
+          { id: 'kn-009', name: 'Figure-of-four meniscal stress maneuver', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Lesiones de plica',
+        tests: [
+          { id: 'kn-010', name: "Hughston's plica test", ev: 'yellow', link: '' },
+          { id: 'kn-011', name: 'Mediopatellar plica test', ev: 'yellow', link: '' },
+          { id: 'kn-012', name: 'Patellar bowstring test', ev: 'yellow', link: '' },
+          { id: 'kn-013', name: 'Plica "stutter" test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Derrame articular',
+        tests: [
+          { id: 'kn-014', name: 'Brush, stroke or bulge test (minimal swelling)', ev: 'green', link: '' },
+          { id: 'kn-015', name: 'Patellar tap test (moderate swelling)', ev: 'green', link: '' },
+          { id: 'kn-016', name: 'Fluctuation test (moderate swelling)', ev: 'yellow', link: '' },
+          { id: 'kn-017', name: 'Indentation test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Síndrome patelofemoral',
+        tests: [
+          { id: 'kn-018', name: "Clarke's sign", ev: 'yellow', link: '' },
+          { id: 'kn-019', name: 'Eccentric step (lateral step down) test', ev: 'yellow', link: '' },
+          { id: 'kn-020', name: 'McConnell test', ev: 'yellow', link: '' },
+          { id: 'kn-021', name: 'Motion palpation test', ev: 'yellow', link: '' },
+          { id: 'kn-022', name: 'Step up test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Cuádriceps y coactivación',
+        tests: [
+          { id: 'kn-023', name: 'Q-angle', ev: 'yellow', link: '' },
+          { id: 'kn-024', name: 'Tubercle sulcus test', ev: 'yellow', link: '' },
+          { id: 'kn-025', name: 'Single-limb dead-lift', ev: 'yellow', link: '' },
+          { id: 'kn-026', name: 'Lateral hop', ev: 'yellow', link: '' },
+          { id: 'kn-027', name: 'Transverse hop', ev: 'yellow', link: '' },
+          { id: 'kn-028', name: 'Lateral band walks', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Inestabilidad patelar',
+        tests: [
+          { id: 'kn-029', name: "Fairbank's apprehension test", ev: 'green', link: '' },
+          { id: 'kn-030', name: 'Moving patellar apprehension test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Síndrome de la cintilla iliotibial',
+        tests: [
+          { id: 'kn-031', name: 'Noble compression test', ev: 'yellow', link: '' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'ankle',
+    name: 'Tobillo y Pie',
+    icon: '⬛',
+    categories: [
+      {
+        name: 'Posición del talo',
+        tests: [
+          { id: 'an-001', name: 'Navicular drop test', ev: 'red', link: '' },
+          { id: 'an-002', name: 'Talar neutral position (non-weight-bearing)', ev: 'yellow', link: '' },
+          { id: 'an-003', name: 'Talar neutral position (weight-bearing)', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Alineación',
+        tests: [
+          { id: 'an-004', name: 'Forefoot-heel alignment', ev: 'yellow', link: '' },
+          { id: 'an-005', name: 'Leg-heel alignment', ev: 'yellow', link: '' },
+          { id: 'an-006', name: 'Tibial torsion (prone)', ev: 'yellow', link: '' },
+          { id: 'an-007', name: 'Tibial torsion (sitting)', ev: 'yellow', link: '' },
+          { id: 'an-008', name: 'Tibial torsion (supine)', ev: 'yellow', link: '' },
+          { id: 'an-009', name: '"Too many toes" sign', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Inestabilidad ligamentosa',
+        tests: [
+          { id: 'an-010', name: 'Anterior drawer test (supine and prone)', ev: 'green', link: '' },
+          { id: 'an-011', name: 'Talar tilt', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Inestabilidad articular (sindesmosis)',
+        tests: [
+          { id: 'an-012', name: 'Cotton test', ev: 'yellow', link: '' },
+          { id: 'an-013', name: 'External rotation stress test', ev: 'green', link: '' },
+          { id: 'an-014', name: 'Fibular translation test', ev: 'yellow', link: '' },
+          { id: 'an-015', name: 'Medial subtalar glide test', ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Síndrome tibial medial de estrés',
+        tests: [
+          { id: 'an-016', name: 'Shin oedema test (SOT)', ev: 'yellow', link: '' },
+          { id: 'an-017', name: 'Shin palpation test (SPT)', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Rotura de tercer grado',
+        tests: [
+          { id: 'an-018', name: 'Matles (knee flexion) test', ev: 'yellow', link: '' },
+          { id: 'an-019', name: "Thompson's (Simmonds') test", ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Edema',
+        tests: [
+          { id: 'an-020', name: 'Figure-of-eight measurement', ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Otros',
+        tests: [
+          { id: 'an-021', name: "Tinel's sign (3 positions)", ev: 'green', link: '' },
+          { id: 'an-022', name: 'Dorsiflexion-eversion test for tarsal tunnel syndrome', ev: 'yellow', link: '' },
+          { id: 'an-023', name: 'Functional hallux limitus test', ev: 'yellow', link: '' },
+          { id: 'an-024', name: 'Leg length discrepancy/functional leg length', ev: 'yellow', link: '' },
+          { id: 'an-025', name: "Morton's (squeeze) test", ev: 'yellow', link: '' },
+          { id: 'an-026', name: 'Synovial impingement test', ev: 'yellow', link: '' },
+          { id: 'an-027', name: 'Tests for peroneal tendon dislocation', ev: 'yellow', link: '' },
+          { id: 'an-028', name: 'Triple compression test', ev: 'yellow', link: '' },
+          { id: 'an-029', name: 'Windlass test (great toe extension)', ev: 'yellow', link: '' },
+        ]
+      },
+    ]
+  },
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────────────
+let currentRegion = null;
+let currentFilter = 'all';
+
+// ─── RENDER HOME ──────────────────────────────────────────────────────────────────────────
+function renderHome() {
+  const grid = document.getElementById('regions-grid');
+  grid.innerHTML = REGIONS.map(region => {
+    const allTests = region.categories.flatMap(c => c.tests);
+    const greenCount = allTests.filter(t => t.ev === 'green').length;
+    return `
+      <div class="region-card" onclick="showRegion('${region.id}')">
+        <div class="region-card-icon">${region.icon}</div>
+        <div class="region-card-name">${region.name}</div>
+        <div class="region-card-count">${allTests.length} tests</div>
+        <div class="region-card-green">✓ ${greenCount} alta evidencia</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────────────────
+function showRegion(regionId) {
+  currentRegion = REGIONS.find(r => r.id === regionId);
+  currentFilter = 'all';
+
+  document.getElementById('view-home').style.display = 'none';
+  document.getElementById('view-region').style.display = 'block';
+  document.getElementById('btn-back').style.display = 'block';
+  document.getElementById('header-title').innerHTML = 'PhysiQ <span class="logo-accent">—</span> Wiki';
+  document.getElementById('header-subtitle').textContent = currentRegion.name;
+
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.filter-btn')[0].classList.add('active');
+
+  renderRegion();
+  window.scrollTo(0, 0);
+}
+
+function showHome() {
+  document.getElementById('view-home').style.display = 'block';
+  document.getElementById('view-region').style.display = 'none';
+  document.getElementById('btn-back').style.display = 'none';
+  document.getElementById('header-title').innerHTML = 'PhysiQ <span class="logo-accent">—</span> Wiki';
+  document.getElementById('header-subtitle').textContent = 'Magee · Key Tests';
+  currentRegion = null;
+  window.scrollTo(0, 0);
+}
+
+// ─── RENDER REGION ─────────────────────────────────────────────────────────────────────────
+function renderRegion() {
+  const content = document.getElementById('region-content');
+  content.innerHTML = currentRegion.categories.map(cat => {
+    const testsHTML = cat.tests.map(test => {
+      const ev = test.ev;
+      const badgeClass  = ev === 'green' ? 'ev-green'  : ev === 'yellow' ? 'ev-yellow' : 'ev-red';
+      const badgeSymbol = ev === 'green' ? '✓' : ev === 'yellow' ? '!' : '?';
+      const rowClass    = ev === 'green' ? 'ev-green-row' : '';
+      const hidden      = currentFilter === 'green' && ev !== 'green' ? 'hidden' : '';
+
+      const linkBtn = test.link
+        ? `<a class="test-link-btn has-link" href="${test.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">▶</a>`
+        : `<span class="test-link-btn no-link">–</span>`;
+
+      return `
+        <div class="test-item ${rowClass} ${hidden}" data-ev="${ev}">
+          <span class="evidence-badge ${badgeClass}">${badgeSymbol}</span>
+          <span class="test-name">${test.name}</span>
+          ${linkBtn}
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="category-section">
+        <div class="category-title">${cat.name}</div>
+        ${testsHTML}
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── FILTER ───────────────────────────────────────────────────────────────────────────
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.test-item').forEach(item => {
+    if (filter === 'green') {
+      item.classList.toggle('hidden', item.dataset.ev !== 'green');
+    } else {
+      item.classList.remove('hidden');
+    }
+  });
+}
+
+// ─── HUB INTEGRATION ────────────────────────────────────────────────────────────────────────
+try {
+  if (window.self !== window.top) {
+    document.body.classList.add('in-hub');
+    document.querySelector('.logo-main').addEventListener('click', () => {
+      window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+    });
+  }
+} catch (_) {
+  document.body.classList.add('in-hub');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────────────────
+renderHome();
+</script>
+</body>
+</html>
