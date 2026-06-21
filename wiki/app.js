@@ -541,13 +541,28 @@ document.getElementById('region-content').addEventListener('contextmenu', e => {
 // ─── INIT ───────────────────────────────────────────────────────────────────────────────────────────
 renderHome();
 
+function _rebuildHubHistory() {
+  // Replaces current entry with hub-exit sentinel then pushes current view,
+  // so swipe-back chain is always: view → home → hub (exactly 2 swipes).
+  history.replaceState({ view: 'hub-exit' }, '');
+  history.pushState({ view: currentRegion ? 'region' : 'home' }, '');
+}
+
+let _firstVisible = true;
+window.addEventListener('message', e => {
+  if (e.data?.type === 'PHYSIQ_SAT_VISIBLE' && document.body.classList.contains('in-hub')) {
+    if (_firstVisible) { _firstVisible = false; return; }
+    _rebuildHubHistory();
+  }
+});
+
 try {
   if (window.self !== window.top) {
     document.body.classList.add('in-hub');
     document.querySelector('.logo-main').addEventListener('click', () => {
       window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
     });
-    // Two sentinel entries so swipe-back chain is: region → home → hub
+    // First visit: push sentinels here; subsequent visits handled by PHYSIQ_SAT_VISIBLE above.
     history.replaceState({ view: 'hub-exit' }, '');
     history.pushState({ view: 'home' }, '');
   }
