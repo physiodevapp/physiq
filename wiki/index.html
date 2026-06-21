@@ -78,19 +78,6 @@
     line-height: 1.1;
   }
   .logo-main .logo-accent { color: var(--wiki-accent); }
-  .logo-main::before {
-    content: '\2039 ';
-    font-family: 'Outfit', sans-serif;
-    font-size: 18px;
-    color: var(--wiki-accent);
-    opacity: 0;
-    display: inline-block;
-    max-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    vertical-align: baseline;
-    transition: opacity 0.3s, max-width 0.3s;
-  }
   .logo-sub {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
@@ -365,32 +352,43 @@
   .link-sheet-save { background: var(--wiki-accent); color: #fff; }
 
   /* IN-HUB */
-  .in-hub .logo-main { cursor: pointer; }
-  .in-hub .logo-main::before {
-    opacity: 0.65;
-    max-width: 28px;
+  @keyframes hub-back-hint {
+    0%   { transform: translateX(0); }
+    35%  { transform: translateX(-5px); }
+    65%  { transform: translateX(1px); }
+    100% { transform: translateX(0); }
   }
+  .in-hub .logo-main { cursor: pointer; transition: opacity 0.15s; }
+  .in-hub .logo-main::before {
+    content: '‹';
+    display: inline-block;
+    margin-right: 8px;
+    color: var(--wiki-accent);
+    opacity: 0.7;
+    animation: hub-back-hint 0.7s ease-out 0.5s 1 both;
+  }
+  .in-hub .logo-main:hover { opacity: 0.75; }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <header class="app-header">
-  <button class="header-back" id="btn-back" onclick="showHome()">‹</button>
+  <button class="header-back" id="btn-back" onclick="showHome()">&#x2039;</button>
   <div class="logo-wrap">
-    <div class="logo-main" id="header-title">PhysiQ <span class="logo-accent">— Wiki</span></div>
-    <div class="logo-sub" id="header-subtitle">Magee · Key Tests</div>
+    <div class="logo-main" id="header-title">PhysiQ <span class="logo-accent">&mdash; Wiki</span></div>
+    <div class="logo-sub" id="header-subtitle"></div>
   </div>
 </header>
 
 <!-- HOME VIEW -->
 <div id="view-home">
   <div class="home-intro">
-    <h1>Key Tests por región</h1>
-    <p>Tests clasificados por nivel de evidencia diagnóstica según Magee — Orthopaedic Physical Assessment.</p>
+    <h1>Key Tests por regi&oacute;n</h1>
+    <p>Tests clasificados por nivel de evidencia diagn&oacute;stica seg&uacute;n Magee &mdash; Orthopaedic Physical Assessment.</p>
   </div>
   <div class="legend">
-    <div class="legend-item"><span class="evidence-badge ev-green">✓</span> Alta evidencia</div>
+    <div class="legend-item"><span class="evidence-badge ev-green">&#x2713;</span> Alta evidencia</div>
     <div class="legend-item"><span class="evidence-badge ev-yellow">!</span> Moderada</div>
     <div class="legend-item"><span class="evidence-badge ev-red">?</span> Dudosa</div>
   </div>
@@ -401,7 +399,7 @@
 <div id="view-region" style="display:none">
   <div class="filter-bar">
     <button class="filter-btn active" onclick="setFilter('all', this)">Todos</button>
-    <button class="filter-btn" onclick="setFilter('green', this)">✓ Solo verdes</button>
+    <button class="filter-btn" onclick="setFilter('green', this)">&#x2713; Solo verdes</button>
   </div>
   <div class="region-content" id="region-content"></div>
 </div>
@@ -413,7 +411,7 @@
     <div class="link-sheet-title">Enlace del test</div>
     <div class="link-sheet-name" id="link-sheet-name"></div>
     <input id="link-input" type="url" class="link-sheet-input" placeholder="https://youtube.com/watch?v=..." autocomplete="off" autocorrect="off" spellcheck="false">
-    <div class="link-sheet-hint">Deja vacío para restaurar el enlace original</div>
+    <div class="link-sheet-hint">Deja vac&iacute;o para restaurar el enlace original</div>
     <div class="link-sheet-actions">
       <button class="link-sheet-cancel" onclick="closeLinkSheet()">Cancelar</button>
       <button class="link-sheet-save" onclick="saveLinkOverride()">Guardar</button>
@@ -422,7 +420,7 @@
 </div>
 
 <script>
-// ─── DATA ───────────────────────────────────────────────────────────────────────────
+// ─── DATA ───────────────────────────────────────────────────────────────────────────────────
 const REGIONS = [
   {
     id: 'cervical',
@@ -448,7 +446,7 @@ const REGIONS = [
         ]
       },
       {
-        name: 'Mielопатия',
+        name: 'Mieloпатия',
         tests: [
           { id: 'cx-009', name: 'Romberg test', ev: 'green', link: '' },
         ]
@@ -1149,7 +1147,7 @@ const REGIONS = [
   },
 ];
 
-// ─── STATE ───────────────────────────────────────────────────────────────────────────
+// ─── STATE ───────────────────────────────────────────────────────────────────────────────────
 let currentRegion = null;
 let currentFilter = 'all';
 let _linkOverrides = JSON.parse(localStorage.getItem('physiq-wiki-links') || '{}');
@@ -1157,7 +1155,7 @@ let _editingTestId = null;
 let _lpTimer = null;
 let _lpX = 0, _lpY = 0;
 
-// ─── RENDER HOME ────────────────────────────────────────────────────────────────────────────
+// ─── RENDER HOME ────────────────────────────────────────────────────────────────────────────────────────
 function renderHome() {
   const grid = document.getElementById('regions-grid');
   grid.innerHTML = REGIONS.map(region => {
@@ -1174,7 +1172,7 @@ function renderHome() {
   }).join('');
 }
 
-// ─── NAVIGATION ────────────────────────────────────────────────────────────────────────────
+// ─── NAVIGATION ────────────────────────────────────────────────────────────────────────────────────────
 function showRegion(regionId) {
   currentRegion = REGIONS.find(r => r.id === regionId);
   currentFilter = 'all';
@@ -1197,12 +1195,12 @@ function showHome() {
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('btn-back').style.display = 'none';
   document.getElementById('header-title').innerHTML = 'PhysiQ <span class="logo-accent">— Wiki</span>';
-  document.getElementById('header-subtitle').textContent = 'Magee · Key Tests';
+  document.getElementById('header-subtitle').textContent = '';
   currentRegion = null;
   window.scrollTo(0, 0);
 }
 
-// ─── RENDER REGION ─────────────────────────────────────────────────────────────────────────────
+// ─── RENDER REGION ───────────────────────────────────────────────────────────────────────────────────────────
 function renderRegion() {
   const content = document.getElementById('region-content');
   content.innerHTML = currentRegion.categories.map(cat => {
@@ -1240,7 +1238,7 @@ function renderRegion() {
   }).join('');
 }
 
-// ─── FILTER ──────────────────────────────────────────────────────────────────────────────
+// ─── FILTER ──────────────────────────────────────────────────────────────────────────────────────────
 function setFilter(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1255,7 +1253,7 @@ function setFilter(filter, btn) {
   });
 }
 
-// ─── LINK EDIT ────────────────────────────────────────────────────────────────────────────
+// ─── LINK EDIT ────────────────────────────────────────────────────────────────────────────────────────────
 function _findTestById(id) {
   for (const r of REGIONS) {
     for (const c of r.categories) {
@@ -1294,7 +1292,7 @@ function saveLinkOverride() {
   renderRegion();
 }
 
-// ─── HUB INTEGRATION ─────────────────────────────────────────────────────────────────────────
+// ─── HUB INTEGRATION ─────────────────────────────────────────────────────────────────────────────────────────
 try {
   if (window.self !== window.top) {
     document.body.classList.add('in-hub');
@@ -1306,7 +1304,7 @@ try {
   document.body.classList.add('in-hub');
 }
 
-// ─── LONG-PRESS TO EDIT LINK ─────────────────────────────────────────────────────────────────
+// ─── LONG-PRESS TO EDIT LINK ──────────────────────────────────────────────────────────────────────────────────────
 document.getElementById('region-content').addEventListener('pointerdown', e => {
   const item = e.target.closest('.test-item');
   if (!item) return;
@@ -1336,7 +1334,7 @@ document.getElementById('region-content').addEventListener('contextmenu', e => {
   if (e.target.closest('.test-item')) e.preventDefault();
 });
 
-// ─── INIT ───────────────────────────────────────────────────────────────────────────────────
+// ─── INIT ─────────────────────────────────────────────────────────────────────────────────────────────
 renderHome();
 </script>
 </body>
