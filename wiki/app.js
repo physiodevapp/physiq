@@ -257,35 +257,16 @@ const REGIONS = [
     icon: '🔴',
     categories: [
       {
-        name: 'Ligamentos cruzados',
-        tests: [
-          { id: 'ro-001', name: 'Lachman test', ev: 'green', link: 'https://www.youtube.com/watch?v=8L9Z5S_WX_0' },
-          { id: 'ro-002', name: 'Anterior drawer test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=DvF7vvk9BIo' },
-          { id: 'ro-003', name: 'Pivot shift test', ev: 'green', link: 'https://www.youtube.com/watch?v=YEgJJaLjyZk' },
-          { id: 'ro-004', name: 'Posterior drawer test', ev: 'green', link: '' },
-          { id: 'ro-005', name: 'Quadriceps active test', ev: 'green', link: '' },
-          { id: 'ro-006', name: 'Godfrey (posterior sag) test', ev: 'green', link: '' },
-        ]
-      },
-      {
-        name: 'Ligamentos colaterales',
-        tests: [
-          { id: 'ro-007', name: 'Valgus stress test (MCL)', ev: 'green', link: 'https://www.youtube.com/watch?v=F_Kn76EFMDA' },
-          { id: 'ro-008', name: 'Varus stress test (LCL)', ev: 'green', link: '' },
-        ]
-      },
-      {
         name: 'Meniscos',
         tests: [
           { id: 'ro-009', name: 'McMurray test', ev: 'green', link: 'https://www.youtube.com/watch?v=sNH7Og8VUeQ' },
           { id: 'ro-010', name: 'Apley’s test', ev: 'green', link: '' },
-          { id: 'ro-014', name: '"Bounce home" test', ev: 'yellow', link: '' },
+          { id: 'ro-014', name: '”Bounce home” test', ev: 'yellow', link: '' },
           { id: 'ro-013', name: 'Childress’ sign (squat and duck walk test)', ev: 'yellow', link: '' },
           { id: 'ro-024', name: 'Dynamic knee test', ev: 'yellow', link: '' },
           { id: 'ro-025', name: 'Ege’s test', ev: 'yellow', link: '' },
           { id: 'ro-027', name: 'O’Donohue’s test', ev: 'yellow', link: '' },
           { id: 'ro-011', name: 'Thessaly test', ev: 'yellow', link: '' },
-          { id: 'ro-012', name: 'Joint line tenderness', ev: 'yellow', link: '' },
           { id: 'ro-026', name: 'Figure-of-four meniscal stress maneuver', ev: 'red', link: '' },
         ]
       },
@@ -310,23 +291,23 @@ const REGIONS = [
       {
         name: 'Síndrome femoropatelar',
         tests: [
-          { id: 'ro-018', name: 'Fairbank’s apprehension test', ev: 'green', link: '' },
-          { id: 'ro-015', name: 'Clarke’s sign (patellar grind)', ev: 'yellow', link: '' },
+          { id: 'ro-015', name: 'Clarke’s sign', ev: 'yellow', link: '' },
           { id: 'ro-036', name: 'Eccentric step (lateral step down) test', ev: 'yellow', link: '' },
           { id: 'ro-037', name: 'McConnell test', ev: 'yellow', link: '' },
           { id: 'ro-038', name: 'Motion palpation test', ev: 'yellow', link: '' },
           { id: 'ro-039', name: 'Step up test', ev: 'yellow', link: '' },
-          { id: 'ro-016', name: 'Patellar glide / tilt test', ev: 'yellow', link: '' },
-          { id: 'ro-046', name: 'Moving patellar apprehension test', ev: 'yellow', link: '' },
-          { id: 'ro-019', name: 'J-sign (lateral tracking)', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'Cuádriceps / coactivación',
+        name: 'Cuádriceps',
         tests: [
-          { id: 'ro-017', name: 'Vastus medialis coordination test', ev: 'yellow', link: '' },
           { id: 'ro-040', name: 'Q-angle', ev: 'yellow', link: '' },
           { id: 'ro-041', name: 'Tubercle sulcus test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Coactivación cuádriceps / isquios',
+        tests: [
           { id: 'ro-042', name: 'Single-limb dead-lift', ev: 'yellow', link: '' },
           { id: 'ro-043', name: 'Lateral hop', ev: 'yellow', link: '' },
           { id: 'ro-044', name: 'Transverse hop', ev: 'yellow', link: '' },
@@ -334,18 +315,16 @@ const REGIONS = [
         ]
       },
       {
-        name: 'Banda iliotibial',
+        name: 'Inestabilidad patelar',
         tests: [
-          { id: 'ro-047', name: 'Noble compression test', ev: 'yellow', link: '' },
+          { id: 'ro-018', name: 'Fairbank’s apprehension test', ev: 'green', link: '' },
+          { id: 'ro-046', name: 'Moving patellar apprehension test', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'Tendones / bursas',
+        name: 'Banda iliotibial',
         tests: [
-          { id: 'ro-020', name: 'Patellar tendon palpation', ev: 'green', link: '' },
-          { id: 'ro-021', name: 'Royal London Hospital test', ev: 'green', link: '' },
-          { id: 'ro-022', name: 'Arc test (patellar tendinopathy)', ev: 'green', link: '' },
-          { id: 'ro-023', name: 'Pes anserine bursitis palpation', ev: 'yellow', link: '' },
+          { id: 'ro-047', name: 'Noble compression test', ev: 'yellow', link: '' },
         ]
       },
     ]
