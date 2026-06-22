@@ -351,7 +351,6 @@ function _showSat(name) {
   Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = k !== name; });
   document.getElementById('sat-shell').hidden = false;
   document.getElementById('home').hidden = true;
-  document.documentElement.style.overscrollBehavior = 'none';
   // Notify the satellite so it can rebuild its swipe-back history stack
   try { frame.contentWindow?.postMessage({ type: 'PHYSIQ_SAT_VISIBLE' }, '*'); } catch(_) {}
 }
@@ -360,7 +359,6 @@ function _showHome() {
   document.getElementById('sat-shell').hidden = true;
   document.getElementById('home').hidden = false;
   Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = true; });
-  document.documentElement.style.overscrollBehavior = '';
 }
 
 function openSat(name) {
