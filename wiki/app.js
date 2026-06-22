@@ -157,29 +157,92 @@ const REGIONS = [
     icon: '🟡',
     categories: [
       {
-        name: 'Tendinopatía lateral / medial',
+        name: 'Inestabilidad ligamentosa',
         tests: [
-          { id: 'co-001', name: 'Cozen’s test (lateral epicondyle)', ev: 'yellow', link: 'https://www.youtube.com/watch?v=_iGbnJrBBEE' },
-          { id: 'co-002', name: 'Mill’s test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=_iGbnJrBBEE' },
-          { id: 'co-003', name: 'Chair test', ev: 'green', link: '' },
-          { id: 'co-004', name: 'Maudsley’s test (middle finger)', ev: 'yellow', link: '' },
-          { id: 'co-005', name: 'Golfer’s elbow test (medial)', ev: 'yellow', link: '' },
-          { id: 'co-006', name: 'Valgus stress test', ev: 'green', link: '' },
+          { id: 'co-001', name: 'Capitellar shear test', ev: 'red', link: '' },
+          { id: 'co-002', name: 'Chair push-up test', ev: 'yellow', link: '' },
+          { id: 'co-003', name: 'Gravity-assisted varus stress test', ev: 'yellow', link: '' },
+          { id: 'co-004', name: 'Lateral pivot shift test of the elbow', ev: 'green', link: '' },
+          { id: 'co-005', name: 'Ligamentous valgus instability test', ev: 'green', link: '' },
+          { id: 'co-006', name: 'Ligamentous varus instability test', ev: 'green', link: '' },
+          { id: 'co-007', name: 'Milking maneuver', ev: 'yellow', link: '' },
+          { id: 'co-008', name: 'Moving valgus stress test', ev: 'green', link: '' },
+          { id: 'co-009', name: 'Posterolateral rotary apprehension test', ev: 'red', link: '' },
+          { id: 'co-010', name: 'Posterolateral rotary drawer test', ev: 'green', link: '' },
+          { id: 'co-011', name: 'Prone push-up test', ev: 'yellow', link: '' },
+          { id: 'co-012', name: 'Tabletop relocation test', ev: 'yellow', link: '' },
+          { id: 'co-013', name: 'Trochlear shear test', ev: 'yellow', link: '' },
+          { id: 'co-014', name: 'Valgus extension overload test', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'Nervio cubital',
+        name: 'Lesión muscular (rotura de grado III)',
         tests: [
-          { id: 'co-007', name: 'Elbow flexion test', ev: 'green', link: '' },
-          { id: 'co-008', name: 'Tinel’s sign at elbow', ev: 'yellow', link: '' },
-          { id: 'co-009', name: 'Cubital tunnel provocation test', ev: 'yellow', link: '' },
+          { id: 'co-015', name: 'Biceps crease interval', ev: 'yellow', link: '' },
+          { id: 'co-016', name: 'Biceps squeeze test', ev: 'yellow', link: '' },
+          { id: 'co-017', name: 'Bicipital aponeurosis flex test', ev: 'green', link: '' },
+          { id: 'co-018', name: 'Flexion initiation test', ev: 'yellow', link: '' },
+          { id: 'co-019', name: 'Hook (distal biceps) test', ev: 'yellow', link: '' },
+          { id: 'co-020', name: 'Popeye sign (distal biceps tendon)', ev: 'green', link: '' },
+          { id: 'co-021', name: 'Supination-pronation test', ev: 'yellow', link: '' },
+          { id: 'co-022', name: 'TILT sign', ev: 'yellow', link: '' },
+          { id: 'co-023', name: 'Triceps squeeze test', ev: 'green', link: '' },
         ]
       },
       {
-        name: 'Inestabilidad',
+        name: 'Epicondilitis (epicondilalgia)',
         tests: [
-          { id: 'co-010', name: 'Posterolateral rotatory instability test (O’Driscoll)', ev: 'green', link: '' },
-          { id: 'co-011', name: 'Lateral pivot shift test', ev: 'green', link: '' },
+          { id: 'co-024', name: 'Cozen’s test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=_iGbnJrBBEE' },
+          { id: 'co-025', name: 'Golfer’s elbow test', ev: 'red', link: '' },
+          { id: 'co-026', name: 'Kaplan’s test', ev: 'yellow', link: '' },
+          { id: 'co-027', name: 'Maudsley’s (middle finger) test', ev: 'red', link: '' },
+          { id: 'co-028', name: 'Mill’s test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=_iGbnJrBBEE' },
+          { id: 'co-029', name: 'Polk’s test', ev: 'red', link: '' },
+          { id: 'co-030', name: 'Tennis elbow shear test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Plica',
+        tests: [
+          { id: 'co-031', name: 'Extension-supination plica test', ev: 'red', link: '' },
+          { id: 'co-032', name: 'Flexion-pronation plica test', ev: 'red', link: '' },
+          { id: 'co-033', name: 'Plica impingement test', ev: 'red', link: '' },
+          { id: 'co-034', name: 'Radiohumeral joint plica compression test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Pinzamiento posterior',
+        tests: [
+          { id: 'co-035', name: 'Arm bar (posteromedial impingement) test', ev: 'yellow', link: '' },
+          { id: 'co-036', name: 'Extension impingement test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Disfunción articular',
+        tests: [
+          { id: 'co-037', name: 'Active radiocapitellar compression test', ev: 'red', link: '' },
+          { id: 'co-038', name: 'Radiohumeral joint distraction test', ev: 'red', link: '' },
+        ]
+      },
+      {
+        name: 'Fracturas',
+        tests: [
+          { id: 'co-039', name: 'East Riding Elbow Rule (ER2)', ev: 'yellow', link: '' },
+          { id: 'co-040', name: 'Montreal children’s elbow test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Disfunción neurológica',
+        tests: [
+          { id: 'co-041', name: 'Elbow pressure test', ev: 'red', link: '' },
+          { id: 'co-042', name: 'Maudsley’s (middle finger) test', ev: 'red', link: '' },
+          { id: 'co-043', name: 'Pinch grip test (anterior interosseous branch of median nerve)', ev: 'green', link: '' },
+          { id: 'co-044', name: 'Rule-of-nine (RON) test', ev: 'yellow', link: '' },
+          { id: 'co-045', name: 'Scratch collapse test for ulnar, median and/or radial nerve', ev: 'yellow', link: '' },
+          { id: 'co-046', name: 'Test for pronator teres syndrome', ev: 'red', link: '' },
+          { id: 'co-047', name: 'Tinel sign at elbow (ulnar nerve)', ev: 'yellow', link: '' },
+          { id: 'co-048', name: 'Wadsworth elbow flexion test (ulnar nerve)', ev: 'green', link: '' },
+          { id: 'co-049', name: 'Wartenberg sign', ev: 'red', link: '' },
         ]
       },
     ]
