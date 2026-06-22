@@ -3,7 +3,7 @@
 const REGIONS = [
   {
     id: 'cervical',
-    name: 'Columna Cervical',
+    name: 'Cervical',
     icon: '🔵',
     categories: [
       {
