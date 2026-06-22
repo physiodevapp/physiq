@@ -480,38 +480,72 @@ const REGIONS = [
     icon: '🞫',
     categories: [
       {
-        name: 'Ligamentos / inestabilidad',
+        name: 'Posición del astrágalo',
         tests: [
-          { id: 'to-001', name: 'Anterior drawer test (ATFL)', ev: 'green', link: 'https://www.youtube.com/watch?v=4C4eqJjQFbc' },
-          { id: 'to-002', name: 'Talar tilt test (CFL)', ev: 'yellow', link: '' },
-          { id: 'to-003', name: 'External rotation stress test (syndesmosis)', ev: 'green', link: '' },
-          { id: 'to-004', name: 'Squeeze test (syndesmosis)', ev: 'green', link: '' },
-          { id: 'to-005', name: 'Cotton test (medial-lateral translation)', ev: 'green', link: '' },
+          { id: 'to-001', name: 'Navicular drop test', ev: 'red', link: '' },
+          { id: 'to-002', name: 'Talar neutral position (non-weight-bearing) (supine and prone)', ev: 'yellow', link: '' },
+          { id: 'to-003', name: 'Talar neutral position (weight-bearing)', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'Tendón de Aquiles',
+        name: 'Alineación',
         tests: [
-          { id: 'to-006', name: 'Thompson test (Simmonds)', ev: 'green', link: 'https://www.youtube.com/watch?v=DqQ_OJJRdoM' },
-          { id: 'to-007', name: 'Royal London Hospital test (Achilles)', ev: 'green', link: '' },
-          { id: 'to-008', name: 'Matles test', ev: 'yellow', link: '' },
-          { id: 'to-009', name: 'Single-leg heel rise test', ev: 'green', link: '' },
+          { id: 'to-004', name: 'Forefoot-heel alignment', ev: 'yellow', link: '' },
+          { id: 'to-005', name: 'Leg-heel alignment', ev: 'yellow', link: '' },
+          { id: 'to-006', name: 'Tibial torsion (prone)', ev: 'yellow', link: '' },
+          { id: 'to-007', name: 'Tibial torsion (sitting)', ev: 'yellow', link: '' },
+          { id: 'to-008', name: 'Tibial torsion (supine)', ev: 'yellow', link: '' },
+          { id: 'to-009', name: '"Too many toes" sign', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'Pie plano / fascitis',
+        name: 'Inestabilidad ligamentosa',
         tests: [
-          { id: 'to-010', name: 'Windlass mechanism test', ev: 'green', link: '' },
-          { id: 'to-011', name: 'Navicular drop test', ev: 'green', link: '' },
-          { id: 'to-012', name: 'Too many toes sign', ev: 'yellow', link: '' },
-          { id: 'to-013', name: 'Heel raise test (PTTD)', ev: 'green', link: '' },
+          { id: 'to-010', name: 'Anterior drawer test (supine and prone)', ev: 'green', link: 'https://www.youtube.com/watch?v=4C4eqJjQFbc' },
+          { id: 'to-011', name: 'Talar tilt', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'Nervioso',
+        name: 'Inestabilidad articular (sindesmosis)',
         tests: [
-          { id: 'to-014', name: 'Tinel’s sign at tarsal tunnel', ev: 'yellow', link: '' },
-          { id: 'to-015', name: 'Mulder’s click (Morton’s neuroma)', ev: 'green', link: '' },
+          { id: 'to-012', name: 'Cotton test', ev: 'yellow', link: '' },
+          { id: 'to-013', name: 'External rotation stress test', ev: 'green', link: '' },
+          { id: 'to-014', name: 'Fibular translation test', ev: 'yellow', link: '' },
+          { id: 'to-015', name: 'Medial subtalar glide test', ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Síndrome de estrés tibial medial',
+        tests: [
+          { id: 'to-016', name: 'Shin oedema test (SOT)', ev: 'yellow', link: '' },
+          { id: 'to-017', name: 'Shin palpation test (SPT)', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Rotura de grado III',
+        tests: [
+          { id: 'to-018', name: 'Matles (knee flexion) test', ev: 'yellow', link: '' },
+          { id: 'to-019', name: "Thompson’s (Simmonds’) test", ev: 'yellow', link: 'https://www.youtube.com/watch?v=DqQ_OJJRdoM' },
+        ]
+      },
+      {
+        name: 'Edema',
+        tests: [
+          { id: 'to-020', name: 'Figure-eight measurement', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Otras pruebas',
+        tests: [
+          { id: 'to-021', name: 'Dorsiflexion-eversion test for tarsal tunnel syndrome', ev: 'yellow', link: '' },
+          { id: 'to-022', name: 'Functional hallux limitus test', ev: 'yellow', link: '' },
+          { id: 'to-023', name: 'Leg length discrepancy/functional leg length', ev: 'yellow', link: '' },
+          { id: 'to-024', name: 'Morton’s (squeeze) test', ev: 'yellow', link: '' },
+          { id: 'to-025', name: 'Synovial impingement test', ev: 'yellow', link: '' },
+          { id: 'to-026', name: 'Tests for peroneal tendon dislocation', ev: 'yellow', link: '' },
+          { id: 'to-027', name: 'Tinel’s sign (3 positions)', ev: 'green', link: '' },
+          { id: 'to-028', name: 'Triple compression test', ev: 'yellow', link: '' },
+          { id: 'to-029', name: 'Windlass test (great toe extension)', ev: 'yellow', link: '' },
         ]
       },
     ]
