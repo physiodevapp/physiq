@@ -301,39 +301,97 @@ const REGIONS = [
     icon: '🟠',
     categories: [
       {
-        name: 'FAI / labrum',
+        name: 'Patología de cadera',
         tests: [
-          { id: 'ca-001', name: 'FADIR test', ev: 'green', link: 'https://www.youtube.com/watch?v=G-bDl--eDMg' },
-          { id: 'ca-002', name: 'FABER test (Patrick’s)', ev: 'green', link: 'https://www.youtube.com/watch?v=dAr5LzLRFiE' },
-          { id: 'ca-003', name: 'Anterior impingement test', ev: 'yellow', link: '' },
-          { id: 'ca-004', name: 'Posterior impingement test', ev: 'yellow', link: '' },
-          { id: 'ca-005', name: 'Log roll test', ev: 'yellow', link: '' },
-          { id: 'ca-006', name: 'Scour test', ev: 'yellow', link: '' },
+          { id: 'ca-001', name: 'Abduction, extension, and lateral rotation test', ev: 'yellow', link: '' },
+          { id: 'ca-002', name: 'Anterior apprehension test', ev: 'yellow', link: '' },
+          { id: 'ca-003', name: 'Drehmann sign', ev: 'yellow', link: '' },
+          { id: 'ca-004', name: 'Flexion-addution test', ev: 'yellow', link: '' },
+          { id: 'ca-005', name: 'Hip scour test', ev: 'green', link: '' },
+          { id: 'ca-006', name: 'Internal rotation overpressure test', ev: 'yellow', link: '' },
+          { id: 'ca-007', name: 'Lateral FABER test', ev: 'yellow', link: '' },
+          { id: 'ca-008', name: 'Ligamentum teres test', ev: 'yellow', link: '' },
+          { id: 'ca-009', name: 'Log roll test', ev: 'green', link: '' },
+          { id: 'ca-010', name: 'McCarthy hip extension sign', ev: 'yellow', link: '' },
+          { id: 'ca-011', name: 'Patrick’s test', ev: 'green', link: 'https://www.youtube.com/watch?v=dAr5LzLRFiE' },
+          { id: 'ca-012', name: 'Posterior apprehension test', ev: 'yellow', link: '' },
+          { id: 'ca-013', name: 'Prone external rotation test', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'Inestabilidad',
+        name: 'Pinzamiento (FAI)',
         tests: [
-          { id: 'ca-007', name: 'Hip distraction test', ev: 'yellow', link: '' },
-          { id: 'ca-008', name: 'Prone hip distraction (PIVM)', ev: 'red', link: '' },
+          { id: 'ca-014', name: 'Anteroposterior impingement test', ev: 'yellow', link: '' },
+          { id: 'ca-015', name: '"Gear stick" sign', ev: 'yellow', link: '' },
+          { id: 'ca-016', name: 'Impingement provocation test', ev: 'yellow', link: '' },
+          { id: 'ca-017', name: 'Ischiofemoral impingement test', ev: 'yellow', link: '' },
+          { id: 'ca-018', name: 'Lateral FADDIR test', ev: 'yellow', link: '' },
+          { id: 'ca-019', name: 'Lateral rim impingement test', ev: 'yellow', link: '' },
+          { id: 'ca-020', name: 'Posteroinferior impingement test', ev: 'yellow', link: '' },
+          { id: 'ca-021', name: 'Squat test', ev: 'red', link: '' },
         ]
       },
       {
-        name: 'Tendones / bursas',
+        name: 'Lesión del labrum',
         tests: [
-          { id: 'ca-009', name: 'Ober’s test (IT band)', ev: 'yellow', link: 'https://www.youtube.com/watch?v=sMJvbT4Kmh0' },
-          { id: 'ca-010', name: 'Modified Ober’s test', ev: 'green', link: '' },
-          { id: 'ca-011', name: 'Thomas test', ev: 'green', link: 'https://www.youtube.com/watch?v=JFTLXDfGsxM' },
-          { id: 'ca-012', name: 'Rectus femoris contracture (Ely test)', ev: 'yellow', link: '' },
-          { id: 'ca-013', name: 'Trendelenburg test', ev: 'green', link: 'https://www.youtube.com/watch?v=MCOQ41ohNpg' },
-          { id: 'ca-014', name: 'Greater trochanteric provocation test', ev: 'yellow', link: '' },
+          { id: 'ca-022', name: 'Anterior labral tear test', ev: 'green', link: '' },
+          { id: 'ca-023', name: 'External rotation test', ev: 'yellow', link: '' },
+          { id: 'ca-024', name: 'Flexion-internal rotation test', ev: 'yellow', link: '' },
+          { id: 'ca-025', name: 'Posterior labral tear test', ev: 'yellow', link: '' },
+          { id: 'ca-026', name: 'THIRD test', ev: 'yellow', link: '' },
         ]
       },
       {
-        name: 'Nervio ciático / piriforme',
+        name: 'Fractura de estrés del cuello femoral',
         tests: [
-          { id: 'ca-015', name: 'FAIR test (piriform)', ev: 'yellow', link: '' },
-          { id: 'ca-016', name: 'Seated piriformis test', ev: 'yellow', link: '' },
+          { id: 'ca-027', name: 'Heel-strike test', ev: 'yellow', link: '' },
+          { id: 'ca-028', name: 'Patellar-pubic percussion sign', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Patología pediátrica de cadera',
+        tests: [
+          { id: 'ca-029', name: 'Abduction test', ev: 'yellow', link: '' },
+          { id: 'ca-030', name: 'Barlow’s test', ev: 'green', link: '' },
+          { id: 'ca-031', name: 'Galleazzi sign', ev: 'yellow', link: '' },
+          { id: 'ca-032', name: 'Ortolani’s sign', ev: 'green', link: '' },
+          { id: 'ca-033', name: 'Telescoping sign', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Tensión y patología muscular',
+        tests: [
+          { id: 'ca-034', name: 'Abduction contracture test', ev: 'yellow', link: '' },
+          { id: 'ca-035', name: 'Active piriformis stretch test', ev: 'yellow', link: '' },
+          { id: 'ca-036', name: 'Adduction contracture test', ev: 'yellow', link: '' },
+          { id: 'ca-037', name: 'Adductor squeeze (fist) test', ev: 'yellow', link: '' },
+          { id: 'ca-038', name: 'Beatty’s test', ev: 'yellow', link: '' },
+          { id: 'ca-039', name: 'Bent-knee stretch test for proximal hamstrings', ev: 'yellow', link: '' },
+          { id: 'ca-040', name: 'Eccentric hip flexion', ev: 'red', link: '' },
+          { id: 'ca-041', name: 'Ely’s test', ev: 'yellow', link: '' },
+          { id: 'ca-042', name: 'External de-rotation test', ev: 'yellow', link: '' },
+          { id: 'ca-043', name: 'Freiberg’s maneuver', ev: 'yellow', link: '' },
+          { id: 'ca-044', name: 'Hamstring syndrome test', ev: 'yellow', link: '' },
+          { id: 'ca-045', name: 'Heel contralateral knee maneuver', ev: 'yellow', link: '' },
+          { id: 'ca-046', name: 'Hip lag sign', ev: 'green', link: '' },
+          { id: 'ca-047', name: 'Hip rotator tightness', ev: 'yellow', link: '' },
+          { id: 'ca-048', name: 'Long stride heel-strike test', ev: 'yellow', link: '' },
+          { id: 'ca-049', name: '90-90 straight leg raising test', ev: 'green', link: '' },
+          { id: 'ca-050', name: 'Noble compression test', ev: 'yellow', link: '' },
+          { id: 'ca-051', name: 'Ober’s test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=sMJvbT4Kmh0' },
+          { id: 'ca-052', name: 'Pace’s maneuver', ev: 'yellow', link: '' },
+          { id: 'ca-053', name: 'Puranen-Orava test', ev: 'yellow', link: '' },
+          { id: 'ca-054', name: 'Rectus femoris contracture test', ev: 'yellow', link: '' },
+          { id: 'ca-055', name: 'Seated piriformis stretch test', ev: 'yellow', link: '' },
+          { id: 'ca-056', name: 'Thomas test', ev: 'yellow', link: 'https://www.youtube.com/watch?v=JFTLXDfGsxM' },
+          { id: 'ca-057', name: 'Trendelenburg sign', ev: 'green', link: 'https://www.youtube.com/watch?v=MCOQ41ohNpg' },
+        ]
+      },
+      {
+        name: 'Otras pruebas',
+        tests: [
+          { id: 'ca-058', name: 'Femoral nerve tension (prone knee bending) test', ev: 'yellow', link: '' },
+          { id: 'ca-059', name: 'Timed "up and go" test', ev: 'yellow', link: '' },
         ]
       },
     ]
