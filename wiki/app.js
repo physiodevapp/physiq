@@ -729,7 +729,7 @@ function renderHome() {
       <div class="region-card" onclick="showRegion('${r.id}')">
         <div class="region-card-name">${r.name}</div>
         <div class="region-card-count">${total} tests</div>
-        <div class="region-card-green">✓ ${green} verdes</div>
+        <div class="region-card-green">✓ ${green} alta evidencia</div>
       </div>`;
   }).join('');
 }
@@ -784,15 +784,14 @@ function renderRegion() {
 // ─── NAVIGATION ──────────────────────────────────────────────────────────────────────────────────
 function showRegion(id) {
   currentRegion = REGIONS.find(r => r.id === id);
-  currentFilter = 'all';
 
   document.getElementById('view-home').style.display = 'none';
   document.getElementById('view-region').style.display = '';
   document.getElementById('region-sub-badge').textContent = currentRegion.name;
 
-  // reset filter buttons
+  const filterIndex = currentFilter === 'green' ? 1 : 0;
   document.querySelectorAll('.filter-btn').forEach((b, i) => {
-    b.classList.toggle('active', i === 0);
+    b.classList.toggle('active', i === filterIndex);
   });
 
   document.getElementById('region-content').scrollTop = 0;
