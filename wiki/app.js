@@ -19,33 +19,44 @@ const REGIONS = [
           { id: 'cx-003', name: 'Brachial plexus tension test', ev: 'green', link: 'https://www.youtube.com/watch?v=rir6x6Iiqc4' },
           { id: 'cx-004', name: 'Brachial plexus provocation test', ev: 'green', link: 'https://www.youtube.com/watch?v=rir6x6Iiqc4' },
           { id: 'cx-005', name: 'Doorbell sign', ev: 'yellow', link: '' },
-          { id: 'cx-006', name: 'Distraction test (if symptoms severe)', ev: 'green', link: 'https://www.youtube.com/watch?v=P5ib_KBlJug' },
-          { id: 'cx-007', name: 'Foraminal compression test (three stages)', ev: 'green', link: 'https://www.youtube.com/watch?v=3ZSNdv0o0yk' },
-          { id: 'cx-008', name: 'Upper limb neurodynamic tests', ev: 'green', link: 'https://www.youtube.com/watch?v=rir6x6Iiqc4' },
+          { id: 'cx-006', name: 'Distraction test (if symptoms are severe)', ev: 'green', link: 'https://www.youtube.com/watch?v=P5ib_KBlJug' },
+          { id: 'cx-007', name: 'Foraminal compression test (three stages) (if symptoms are absent or mild)', ev: 'green', link: 'https://www.youtube.com/watch?v=3ZSNdv0o0yk' },
+          { id: 'cx-008', name: 'Upper limb neurodynamic (tension) tests (specific to particular nerve/nerve root symptoms)', ev: 'green', link: 'https://www.youtube.com/watch?v=rir6x6Iiqc4' },
         ]
       },
       {
-        name: 'Mielопатия',
+        name: 'Mielopatía',
         tests: [
           { id: 'cx-009', name: 'Romberg test', ev: 'green', link: '' },
-          { id: 'cx-010', name: 'Babinski test', ev: 'green', link: '' },
-          { id: 'cx-011', name: 'Clonus test', ev: 'yellow', link: '' },
-          { id: 'cx-012', name: 'Hoffmann’s sign', ev: 'green', link: '' },
         ]
       },
       {
-        name: 'Inestabilidad',
+        name: 'Signos vasculares',
         tests: [
-          { id: 'cx-013', name: 'Sharp-Purser test', ev: 'yellow', link: '' },
-          { id: 'cx-014', name: 'Tectorial membrane stress test', ev: 'red', link: '' },
-          { id: 'cx-015', name: 'Alar ligament stress test', ev: 'yellow', link: '' },
+          { id: 'cx-010', name: 'Hold planned mobilization/manipulation position for at least 30 seconds watching for vertebral-basilar artery signs', ev: 'red', link: '' },
         ]
       },
       {
-        name: 'Articulaciones facetarias',
+        name: 'Inestabilidad cervical',
         tests: [
-          { id: 'cx-016', name: 'Extension-rotation test', ev: 'yellow', link: '' },
-          { id: 'cx-017', name: 'Joint play assessment (P-A glides)', ev: 'yellow', link: '' },
+          { id: 'cx-011', name: 'Anterior shear stress test', ev: 'red', link: '' },
+          { id: 'cx-012', name: 'Lateral flexion alar ligament stress test', ev: 'red', link: '' },
+          { id: 'cx-013', name: 'Lateral shear test', ev: 'yellow', link: '' },
+          { id: 'cx-014', name: 'Posterior atlanto-occipital membrane test', ev: 'yellow', link: '' },
+          { id: 'cx-015', name: 'Rotational alar ligament stress test', ev: 'red', link: '' },
+          { id: 'cx-016', name: 'Transverse ligament stress test', ev: 'yellow', link: '' },
+        ]
+      },
+      {
+        name: 'Movilidad cervical',
+        tests: [
+          { id: 'cx-017', name: 'Cervical flexion rotation test', ev: 'green', link: '' },
+        ]
+      },
+      {
+        name: 'Movilidad primera costilla',
+        tests: [
+          { id: 'cx-018', name: 'First rib mobility', ev: 'green', link: '' },
         ]
       },
     ]
