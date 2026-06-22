@@ -544,10 +544,12 @@ function hideDiscardConfirm() {
   delete document.getElementById('rec-widget').dataset.confirm;
 }
 
-// ── Pre-load all satellite iframes so BroadcastChannel works from the start ──
+// ── Pre-load recorder-dependent satellite iframes so BroadcastChannel works from the start ──
+// wiki is excluded: it doesn't use the recorder, and pre-loading it causes stale content
+const _PRELOAD = Object.keys(SATS).filter(k => k !== 'wiki');
 requestIdleCallback
-  ? requestIdleCallback(() => { Object.entries(SATS).forEach(([k, url]) => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = url; }); })
-  : setTimeout(() => { Object.entries(SATS).forEach(([k, url]) => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = url; }); }, 1000);
+  ? requestIdleCallback(() => { _PRELOAD.forEach(k => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = SATS[k]; }); })
+  : setTimeout(() => { _PRELOAD.forEach(k => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = SATS[k]; }); }, 1000);
 
 // ── SW ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
