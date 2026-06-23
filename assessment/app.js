@@ -711,7 +711,9 @@ function setupSisObserver(sisId, row) {
   document.getElementById('sisBannerIcon').textContent = icon;
   document.getElementById('sisBannerName').textContent = name;
 
-  const sisNavH = window.innerWidth <= 768 ? 94 : 64;
+  const patientBarEl = document.querySelector('.patient-sticky');
+  const patientBarH = patientBarEl ? patientBarEl.offsetHeight : 0;
+  const sisNavH = (window.innerWidth <= 768 ? 94 : 64) + patientBarH;
   _sisObserver = new IntersectionObserver(entries => {
     const entry = entries[0];
     const banner = document.getElementById('sisContextBanner');
@@ -1244,7 +1246,9 @@ function setupHypObserver(hId) {
   if (bannerDot) bannerDot.style.background = dotBg;
   if (bannerName) bannerName.textContent = name.textContent;
 
-  const hypNavH = window.innerWidth <= 768 ? 94 : 64;
+  const patientBarEl = document.querySelector('.patient-sticky');
+  const patientBarH = patientBarEl ? patientBarEl.offsetHeight : 0;
+  const hypNavH = (window.innerWidth <= 768 ? 94 : 64) + patientBarH;
   _hypObserver = new IntersectionObserver(entries => {
     const entry = entries[0];
     const banner = document.getElementById('hypContextBanner');
