@@ -713,7 +713,7 @@ const REGIONS = [
 // ─── STATE ────────────────────────────────────────────────────────────────────────────────────
 let currentRegion = null;
 let currentFilter = 'all';
-const _linkOverrides = {};
+const _linkOverrides = JSON.parse(localStorage.getItem('physiq_link_overrides') || '{}');
 
 // ─── RENDER: HOME ───────────────────────────────────────────────────────────────────────────
 function renderHome() {
@@ -852,6 +852,7 @@ function saveLinkOverride() {
     _linkOverrides[_editingTestId] = val;
   }
 
+  localStorage.setItem('physiq_link_overrides', JSON.stringify(_linkOverrides));
   closeLinkSheet();
   renderRegion();
 }
