@@ -740,7 +740,7 @@ function renderRegion() {
   let html = '';
   let hasGreen = false;
 
-  currentRegion.categories.forEach(cat => {
+  currentRegion.categories.forEach((cat, catIdx) => {
     const tests = cat.tests;
     if (currentFilter === 'green') {
       const visible = tests.filter(t => t.ev === 'green');
@@ -772,7 +772,7 @@ function renderRegion() {
     hasGreen = hasGreen || tests.some(t => t.ev === 'green');
 
     html += `
-    <div class="category-section">
+    <div class="category-section" style="animation-delay:${catIdx * 0.05}s">
       <div class="category-title">${cat.name}</div>
       ${items}
     </div>`;
