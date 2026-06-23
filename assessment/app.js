@@ -718,8 +718,10 @@ function setupSisObserver(sisId, row) {
     const entry = entries[0];
     const banner = document.getElementById('sisContextBanner');
     if (!entry.isIntersecting && entry.boundingClientRect.top < sisNavH) {
+      if (patientBarEl) banner.style.top = patientBarEl.getBoundingClientRect().bottom + 'px';
       banner.classList.add('visible');
     } else {
+      banner.style.top = '';
       banner.classList.remove('visible');
     }
   }, { threshold: 0, rootMargin: `-${sisNavH}px 0px 0px 0px` });
@@ -1253,8 +1255,10 @@ function setupHypObserver(hId) {
     const entry = entries[0];
     const banner = document.getElementById('hypContextBanner');
     if (!entry.isIntersecting && entry.boundingClientRect.top < hypNavH) {
+      if (patientBarEl) banner.style.top = patientBarEl.getBoundingClientRect().bottom + 'px';
       banner.classList.add('visible');
     } else {
+      banner.style.top = '';
       banner.classList.remove('visible');
     }
   }, { threshold: 0, rootMargin: `-${hypNavH}px 0px 0px 0px` });
