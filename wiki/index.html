@@ -60,7 +60,8 @@
   .logo-wrap { flex: 1; }
   .logo-main {
     font-family: 'DM Serif Display', serif;
-    font-size: 20px;
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
     color: var(--text);
     line-height: 1.1;
   }
@@ -388,8 +389,8 @@
   }
   .in-hub .logo-main:hover { opacity: 0.75; }
 
-  @media (max-width: 768px) { :root { --header-h: 52px; } }
-  @media (max-width: 480px) { :root { --header-h: 48px; } }
+  @media (max-width: 768px) { :root { --header-h: 52px; } .logo-main { font-size: 1.2rem; } }
+  @media (max-width: 480px) { :root { --header-h: 48px; } .logo-main { font-size: 1.1rem; } }
   @media (max-height: 500px) and (max-width: 900px) { :root { --header-h: 44px; } }
 </style>
 </head>
@@ -446,7 +447,7 @@
   </div>
 </div>
 
-<script src="app.js?v=36783cf48eba80c323926c0466bb9c61feb61b7c"></script>
+<script src="app.js?v=4fe070c325591fe98fcc5a0e587debc23a7d6fdf"></script>
 
 </body>
 </html>
