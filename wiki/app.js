@@ -735,7 +735,7 @@ function renderHome() {
 }
 
 // ─── RENDER: REGION ───────────────────────────────────────────────────────────────────────
-function renderRegion() {
+function renderRegion(animate = true) {
   const content = document.getElementById('region-content');
   let html = '';
   let hasGreen = false;
@@ -771,8 +771,9 @@ function renderRegion() {
     const noGreenNotice = hasGreen ? '' : '<div class="no-green-notice">Sin tests de alta evidencia en esta categoría</div>';
     hasGreen = hasGreen || tests.some(t => t.ev === 'green');
 
+    const sectionStyle = animate ? `animation-delay:${catIdx * 0.05}s` : 'animation:none';
     html += `
-    <div class="category-section" style="animation-delay:${catIdx * 0.05}s">
+    <div class="category-section" style="${sectionStyle}">
       <div class="category-title">${cat.name}</div>
       ${items}
     </div>`;
@@ -819,7 +820,7 @@ function setFilter(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderRegion();
+  renderRegion(false);
 }
 
 // ─── LINK OVERRIDE ──────────────────────────────────────────────────────────────────────────────
@@ -854,7 +855,7 @@ function saveLinkOverride() {
 
   localStorage.setItem('physiq_link_overrides', JSON.stringify(_linkOverrides));
   closeLinkSheet();
-  renderRegion();
+  renderRegion(false);
 }
 
 // ─── LONG-PRESS ────────────────────────────────────────────────────────────────────────────────────
