@@ -107,6 +107,11 @@
     padding: 8px 20px 40px;
   }
 
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   .region-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -116,6 +121,7 @@
     transition: border-color 0.15s, transform 0.1s;
     position: relative;
     overflow: hidden;
+    animation: fadeUp 0.3s ease both;
   }
   .region-card::before {
     content: '';
@@ -447,7 +453,7 @@
   </div>
 </div>
 
-<script src="app.js?v=e31c858220f1f780539d9799664f655ab6a68fab"></script>
+<script src="app.js?v=cab71a50f70f7636920dba911db0613b30c4777b"></script>
 
 </body>
 </html>

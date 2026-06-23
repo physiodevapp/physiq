@@ -722,11 +722,11 @@ function renderHome() {
   document.getElementById('view-region').style.display = 'none';
 
   const grid = document.getElementById('regions-grid');
-  grid.innerHTML = REGIONS.map(r => {
+  grid.innerHTML = REGIONS.map((r, i) => {
     const total = r.categories.reduce((s, c) => s + c.tests.length, 0);
     const green = r.categories.reduce((s, c) => s + c.tests.filter(t => t.ev === 'green').length, 0);
     return `
-      <div class="region-card" onclick="showRegion('${r.id}')">
+      <div class="region-card" style="animation-delay:${i * 0.05}s" onclick="showRegion('${r.id}')">
         <div class="region-card-name">${r.name}</div>
         <div class="region-card-count">${total} tests</div>
         <div class="region-card-green">✓ ${green} alta evidencia</div>
