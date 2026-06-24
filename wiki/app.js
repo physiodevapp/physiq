@@ -713,8 +713,12 @@ const REGIONS = [
 // ─── STATE ────────────────────────────────────────────────────────────────────────────────────
 let currentRegion = null;
 let currentView = 'landing'; // 'landing' | 'home' | 'tissue' | 'region'
-let currentFilter = 'all';
+let currentFilter = 'all';   // 'all' | 'green'
+let currentPosFilter = 'all'; // 'all' | 'progression' | 'pie' | 'sentado' | 'supino' | 'lateral' | 'prono'
 const _linkOverrides = JSON.parse(localStorage.getItem('physiq_link_overrides') || '{}');
+
+const POS_ORDER  = ['pie', 'sentado', 'supino', 'lateral', 'prono'];
+const POS_LABELS = { pie: 'De pie', sentado: 'Sentado', supino: 'Supino', lateral: 'Dec. lateral', prono: 'Prono' };
 
 // ─── RENDER: HOME ───────────────────────────────────────────────────────────────────────────
 function renderHome() {
@@ -737,55 +741,90 @@ function renderHome() {
   }).join('');
 }
 
+// ─── RENDER HELPERS ───────────────────────────────────────────────────────────────────────
+function _buildTestItem(test) {
+  const badgeClass = `ev-${test.ev}`;
+  const badgeLabel = test.ev === 'green' ? '✓' : test.ev === 'yellow' ? '!' : '?';
+  const rowClass   = test.ev === 'green' ? 'ev-green-row' : '';
+
+  const storedOverride = _linkOverrides[test.id];
+  const effectiveLink  = storedOverride !== undefined ? storedOverride : test.link;
+
+  const linkBtn = effectiveLink
+    ? `<a class="test-link-btn has-link" href="${effectiveLink}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg viewBox="0 0 24 17" width="22" height="15" style="display:block"><rect width="24" height="17" rx="4" fill="#FF0000"/><path d="M10 5L16 8.5L10 12V5Z" fill="white"/></svg></a>`
+    : `<span class="test-link-btn no-link">&ndash;</span>`;
+
+  return `
+    <div class="test-item ${rowClass}" data-test-id="${test.id}">
+      <span class="evidence-badge ${badgeClass}">${badgeLabel}</span>
+      <span class="test-name">${test.name}</span>
+      ${linkBtn}
+    </div>`;
+}
+
+function _evPass(t) { return currentFilter === 'all' || t.ev === 'green'; }
+function _posPass(t, pos) { return Array.isArray(t.pos) && t.pos.includes(pos); }
+
 // ─── RENDER: REGION ───────────────────────────────────────────────────────────────────────
 function renderRegion(animate = true) {
   const content = document.getElementById('region-content');
   let html = '';
-  let hasGreen = false;
 
-  currentRegion.categories.forEach((cat, catIdx) => {
-    const tests = cat.tests;
-    if (currentFilter === 'green') {
-      const visible = tests.filter(t => t.ev === 'green');
-      if (visible.length === 0) return;
-    }
-
-    const items = tests.map(test => {
-      const badgeClass = `ev-${test.ev}`;
-      const badgeLabel = test.ev === 'green' ? '✓' : test.ev === 'yellow' ? '!' : '?';
-      const rowClass   = test.ev === 'green' ? 'ev-green-row' : '';
-      const hide       = currentFilter === 'green' && test.ev !== 'green' ? ' hidden' : '';
-
-      const storedOverride = _linkOverrides[test.id];
-      const effectiveLink  = storedOverride !== undefined ? storedOverride : test.link;
-
-      const linkBtn = effectiveLink
-        ? `<a class="test-link-btn has-link" href="${effectiveLink}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg viewBox="0 0 24 17" width="22" height="15" style="display:block"><rect width="24" height="17" rx="4" fill="#FF0000"/><path d="M10 5L16 8.5L10 12V5Z" fill="white"/></svg></a>`
-        : `<span class="test-link-btn no-link">&ndash;</span>`;
-
-      return `
-        <div class="test-item ${rowClass}${hide}" data-test-id="${test.id}">
-          <span class="evidence-badge ${badgeClass}">${badgeLabel}</span>
-          <span class="test-name">${test.name}</span>
-          ${linkBtn}
+  if (currentPosFilter === 'all') {
+    currentRegion.categories.forEach((cat, catIdx) => {
+      const tests = cat.tests.filter(_evPass);
+      if (!tests.length) return;
+      const style = animate ? `animation-delay:${catIdx * 0.05}s` : 'animation:none';
+      html += `
+        <div class="category-section" style="${style}">
+          <div class="category-title">${cat.name}</div>
+          ${tests.map(_buildTestItem).join('')}
         </div>`;
-    }).join('');
+    });
+  } else if (currentPosFilter === 'progression') {
+    POS_ORDER.forEach(pos => {
+      const posCats = currentRegion.categories
+        .map(cat => ({ name: cat.name, tests: cat.tests.filter(t => _evPass(t) && _posPass(t, pos)) }))
+        .filter(cat => cat.tests.length);
+      if (!posCats.length) return;
+      html += `<div class="pos-section-label">${POS_LABELS[pos]}</div>`;
+      posCats.forEach(cat => {
+        html += `
+          <div class="category-section" style="animation:none">
+            <div class="category-title">${cat.name}</div>
+            ${cat.tests.map(_buildTestItem).join('')}
+          </div>`;
+      });
+    });
+  } else {
+    currentRegion.categories.forEach(cat => {
+      const tests = cat.tests.filter(t => _evPass(t) && _posPass(t, currentPosFilter));
+      if (!tests.length) return;
+      html += `
+        <div class="category-section" style="animation:none">
+          <div class="category-title">${cat.name}</div>
+          ${tests.map(_buildTestItem).join('')}
+        </div>`;
+    });
+  }
 
-    const noGreenNotice = hasGreen ? '' : '<div class="no-green-notice">Sin tests de alta evidencia en esta categoría</div>';
-    hasGreen = hasGreen || tests.some(t => t.ev === 'green');
-
-    const sectionStyle = animate ? `animation-delay:${catIdx * 0.05}s` : 'animation:none';
-    html += `
-    <div class="category-section" style="${sectionStyle}">
-      <div class="category-title">${cat.name}</div>
-      ${items}
-    </div>`;
-  });
-
+  if (!html) html = '<div class="no-green-notice">Sin tests para este filtro</div>';
   content.innerHTML = html;
 }
 
-// ─── NAVIGATION ──────────────────────────────────────────────────────────────────────────────────
+// ─── FILTER UI SYNC ──────────────────────────────────────────────────────────────────────
+function _syncFilterUI() {
+  const evToggle = document.getElementById('ev-toggle');
+  if (evToggle) evToggle.classList.toggle('on', currentFilter === 'green');
+
+  document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('on-prog', 'on-pos'));
+  if (currentPosFilter !== 'all') {
+    const chip = document.getElementById('pos-chip-' + currentPosFilter);
+    if (chip) chip.classList.add(currentPosFilter === 'progression' ? 'on-prog' : 'on-pos');
+  }
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────────────────
 function showLanding() {
   currentView = 'landing';
   currentRegion = null;
@@ -820,11 +859,7 @@ function showRegion(id) {
   document.getElementById('view-tissue').style.display = 'none';
   document.getElementById('region-sub-badge').textContent = currentRegion.name;
 
-  const filterIndex = currentFilter === 'green' ? 1 : 0;
-  document.querySelectorAll('.filter-btn').forEach((b, i) => {
-    b.classList.toggle('active', i === filterIndex);
-  });
-
+  _syncFilterUI();
   document.getElementById('region-content').scrollTop = 0;
   renderRegion();
 
@@ -850,11 +885,16 @@ window.addEventListener('popstate', () => {
   }
 });
 
-// ─── FILTER ───────────────────────────────────────────────────────────────────────────────────────
-function setFilter(filter, btn) {
-  currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+// ─── FILTER ───────────────────────────────────────────────────────────────────────────────
+function toggleEvFilter(btn) {
+  currentFilter = currentFilter === 'green' ? 'all' : 'green';
+  btn.classList.toggle('on', currentFilter === 'green');
+  renderRegion(false);
+}
+
+function setPosFilter(pos, btn) {
+  currentPosFilter = currentPosFilter === pos ? 'all' : pos;
+  _syncFilterUI();
   renderRegion(false);
 }
 
@@ -960,7 +1000,6 @@ try {
     document.querySelector('.logo-main').addEventListener('click', () => {
       window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
     });
-    // First visit: push sentinels here; subsequent visits handled by PHYSIQ_SAT_VISIBLE above.
     history.replaceState({ view: 'hub-exit' }, '');
     history.pushState({ view: 'landing' }, '');
   }

@@ -199,14 +199,34 @@
     text-overflow: ellipsis;
     margin-left: auto;
   }
+
+  /* FILTER BAR */
   .filter-bar {
-    padding: 8px 20px 10px;
+    display: flex;
+    align-items: center;
+    padding: 8px 0 10px 16px;
+  }
+  .filter-fixed {
+    flex-shrink: 0;
+  }
+  .filter-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--border2);
+    flex-shrink: 0;
+    margin: 0 10px;
+  }
+  .filter-scroll {
     display: flex;
     gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-right: 16px;
   }
-
-  .filter-btn {
-    padding: 5px 14px;
+  .filter-scroll::-webkit-scrollbar { display: none; }
+  .filter-toggle {
+    padding: 5px 13px;
     border-radius: 20px;
     border: 1px solid var(--border);
     background: var(--surface);
@@ -216,11 +236,36 @@
     color: var(--text2);
     transition: all 0.15s;
     font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
   }
-  .filter-btn.active {
+  .filter-toggle.on {
     background: var(--wiki-accent);
     border-color: var(--wiki-accent);
     color: #fff;
+  }
+  .filter-chip {
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+    font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .filter-chip.on-prog {
+    background: var(--wiki-accent);
+    border-color: var(--wiki-accent);
+    color: #fff;
+  }
+  .filter-chip.on-pos {
+    background: rgba(99,102,241,0.18);
+    border-color: rgba(99,102,241,0.5);
+    color: var(--wiki-accent);
   }
 
   .region-content {
@@ -251,7 +296,6 @@
     -webkit-touch-callout: none;
   }
   .test-item:active { background: var(--surface2); }
-  .test-item.hidden { display: none; }
 
   .evidence-badge {
     width: 22px;
@@ -309,6 +353,27 @@
     font-style: italic;
     margin-top: 2px;
   }
+
+  .pos-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--wiki-accent);
+    opacity: 0.75;
+    padding: 14px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pos-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(99,102,241,0.2);
+  }
+  .pos-section-label:first-child { padding-top: 2px; }
 
   /* LINK EDIT SHEET */
   #link-sheet {
@@ -489,7 +554,6 @@
   .tc-2 { background: rgba(225,80,45,0.55); }
   .tc-3 { background: rgba(180,30,30,0.65); }
 
-  /* TISSUE — responsive: desktop keeps label column, mobile puts label inside bar */
   .tissue-desktop { display: table; }
   .tissue-mobile  { display: none; min-width: 0 !important; width: 100%; }
   .tissue-mobile th { width: 12.5%; }
@@ -593,7 +657,7 @@
   <div class="tissue-wrap">
     <div class="tissue-scroll">
 
-      <!-- DESKTOP: label column + 8 time columns (shown ≥ 768px) -->
+      <!-- DESKTOP -->
       <table class="tissue-table tissue-desktop">
         <thead>
           <tr>
@@ -678,7 +742,7 @@
         </tbody>
       </table>
 
-      <!-- MOBILE/TABLET: label inside colored bar via colspan (shown < 768px) -->
+      <!-- MOBILE -->
       <table class="tissue-table tissue-mobile">
         <thead>
           <tr>
@@ -765,8 +829,18 @@
       <span class="region-sub-badge" id="region-sub-badge"></span>
     </div>
     <div class="filter-bar">
-      <button class="filter-btn active" onclick="setFilter('all', this)">Todos</button>
-      <button class="filter-btn" onclick="setFilter('green', this)">&#x2713; Solo alta evidencia</button>
+      <div class="filter-fixed">
+        <button class="filter-toggle" id="ev-toggle" onclick="toggleEvFilter(this)">&#x2713; Alta evidencia</button>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-scroll">
+        <button class="filter-chip" id="pos-chip-progression" onclick="setPosFilter('progression', this)">Progresión</button>
+        <button class="filter-chip" id="pos-chip-pie" onclick="setPosFilter('pie', this)">De pie</button>
+        <button class="filter-chip" id="pos-chip-sentado" onclick="setPosFilter('sentado', this)">Sentado</button>
+        <button class="filter-chip" id="pos-chip-supino" onclick="setPosFilter('supino', this)">Supino</button>
+        <button class="filter-chip" id="pos-chip-lateral" onclick="setPosFilter('lateral', this)">Dec. lateral</button>
+        <button class="filter-chip" id="pos-chip-prono" onclick="setPosFilter('prono', this)">Prono</button>
+      </div>
     </div>
   </div>
   <div class="region-content" id="region-content"></div>
@@ -787,7 +861,7 @@
   </div>
 </div>
 
-<script src="app.js?v=311ed0b0f6a22b858a9ea594f9b0449ddb5516e0"></script>
+<script src="app.js?v=7b61e743bce836b1f31503c903224f61fdd2b44c"></script>
 
 </body>
 </html>
