@@ -7,11 +7,13 @@
   <link rel="icon" href="/physiq/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/physiq/manifest.json">
   <meta name="theme-color" content="#1e2d3d">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body { font-family: system-ui, sans-serif; background: #0a0d12; color: #e8edf2; }
+    :root { --border: #232d45; --border2: #2d3a58; --text2: #8aa4bc; --text3: #5a6e8a; }
+
+    html, body { font-family: 'Outfit', system-ui, sans-serif; background: #0a0d12; color: #e8edf2; }
 
     /* ── Home view ──────────────────────────────────────── */
     #home { display: flex; flex-direction: column; padding: 3rem 1.5rem 5rem; min-height: 100dvh; }
@@ -36,17 +38,28 @@
 
     .app-card {
       display: flex; align-items: center; gap: 1rem;
-      padding: 1.1rem 1.25rem; border-radius: 10px;
+      padding: 1.1rem 1.25rem; border-radius: 12px;
       background: #111620; color: inherit;
-      border: none; cursor: pointer; width: 100%; text-align: left;
-      transition: background 0.15s;
+      border: 1px solid var(--border); cursor: pointer; width: 100%; text-align: left;
+      transition: border-color 0.2s, transform 0.1s;
+      position: relative; overflow: hidden;
+      animation: fadeUp 0.3s ease both;
     }
-    .app-card:active { background: #171e2e; }
+    .app-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: var(--card-color, #4f9cf9);
+      opacity: 0.6;
+    }
+    .app-card:hover { border-color: var(--border2); }
+    .app-card:active { transform: scale(0.97); }
 
-    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .app-info { display: flex; flex-direction: column; gap: 0.2rem; }
-    .app-name { font-size: 1rem; font-weight: 600; color: #fff; }
-    .app-desc { font-size: 0.78rem; color: #8aa4bc; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .app-info { display: flex; flex-direction: column; gap: 0.25rem; }
+    .app-name { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; color: #fff; }
+    .app-desc { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text2); }
 
     /* ── Satellite shell ──────────────────────────────── */
     #sat-shell { position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 10; }
@@ -217,42 +230,42 @@
     <h1>Physi<span>Q</span></h1>
   </header>
   <nav>
-    <button class="app-card" onclick="openSat('report')">
+    <button class="app-card" style="--card-color:#10b981" onclick="openSat('report')">
       <span class="dot" style="background:#10b981"></span>
       <div class="app-info">
         <span class="app-name">Informe con IA</span>
         <span class="app-desc">Generación de informes asistida</span>
       </div>
     </button>
-    <button class="app-card" onclick="openSat('assessment')">
+    <button class="app-card" style="--card-color:#3b82f6" onclick="openSat('assessment')">
       <span class="dot" style="background:#3b82f6"></span>
       <div class="app-info">
         <span class="app-name">Valoración clínica guiada</span>
         <span class="app-desc">Exploración y registro de hallazgos</span>
       </div>
     </button>
-    <button class="app-card" onclick="openSat('motion')">
+    <button class="app-card" style="--card-color:#8b5cf6" onclick="openSat('motion')">
       <span class="dot" style="background:#8b5cf6"></span>
       <div class="app-info">
         <span class="app-name">ROM · Inclinómetro</span>
         <span class="app-desc">Medición de rango articular</span>
       </div>
     </button>
-    <button class="app-card" onclick="openSat('force')">
+    <button class="app-card" style="--card-color:#fb923c" onclick="openSat('force')">
       <span class="dot" style="background:#fb923c"></span>
       <div class="app-info">
         <span class="app-name">Fuerza · Dinamómetro</span>
         <span class="app-desc">Fuerza isométrica y asimetría</span>
       </div>
     </button>
-    <button class="app-card" onclick="openSat('balance')">
+    <button class="app-card" style="--card-color:#22d3ee" onclick="openSat('balance')">
       <span class="dot" style="background:#22d3ee"></span>
       <div class="app-info">
         <span class="app-name">Equilibrio · Acelerómetro</span>
         <span class="app-desc">Evaluación de equilibrio estático</span>
       </div>
     </button>
-    <button class="app-card" onclick="openSat('wiki')">
+    <button class="app-card" style="--card-color:#6366f1" onclick="openSat('wiki')">
       <span class="dot" style="background:#6366f1"></span>
       <div class="app-info">
         <span class="app-name">FisioWiki</span>
