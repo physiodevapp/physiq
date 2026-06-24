@@ -41,6 +41,7 @@ const ORCHESTRATOR_URL = 'https://physiq-orchestrator.edu-gamboa-rodriguez.worke
 // ========= TURNSTILE =========
 const TURNSTILE_SITEKEY = '0x4AAAAAADU3dzE5Tw_whVks';
 let _turnstileToken = null, _turnstileResolve = null, _turnstileWidgetId = null;
+let _emailTurnstileToken = null, _emailTurnstileWidgetId = null;
 let _isProcessing = false;
 
 function _openProcessingOverlay() {
@@ -73,6 +74,15 @@ function initTurnstile() {
       _turnstileToken = token;
       if (_turnstileResolve) { _turnstileResolve(token); _turnstileResolve = null; }
       else if (!_isProcessing) { _showGenerateBtn(); }
+    },
+  });
+  _emailTurnstileWidgetId = turnstile.render('#cf-turnstile-email-container', {
+    sitekey: TURNSTILE_SITEKEY,
+    appearance: 'always',
+    callback: (token) => {
+      _emailTurnstileToken = token;
+      const btn = document.getElementById('email-send-btn');
+      if (btn) btn.disabled = false;
     },
   });
 }
@@ -1683,12 +1693,14 @@ async function _doSendEmail() {
   document.getElementById('clinic-report-email').value = to;
 
   const btn = document.getElementById('email-send-btn');
+  const token = _emailTurnstileToken;
+  _emailTurnstileToken = null;
+  turnstile.reset(_emailTurnstileWidgetId);
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:6px;"></div> Enviando...';
   status.style.display = 'none';
 
   try {
-    const token = await getTurnstileToken();
     const info = lastReportInfo || {};
     const bodyHtml = _markdownToEmailHtml(lastReportText);
     const html = _buildEmailHtml(bodyHtml, info);
@@ -1710,7 +1722,6 @@ async function _doSendEmail() {
   } catch (err) {
     status.textContent = '⚠️ ' + err.message;
     status.style.cssText = 'display:block;color:var(--danger);font-size:13px;margin-top:10px;';
-    btn.disabled = false;
     btn.innerHTML = 'Enviar';
   }
 }
