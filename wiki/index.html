@@ -428,6 +428,67 @@
     color: var(--text3);
   }
 
+  /* TISSUE TABLE */
+  .tissue-wrap { padding: 12px 20px 48px; }
+  .tissue-source {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 12px;
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .tissue-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .tissue-table {
+    border-collapse: collapse;
+    min-width: 520px;
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+  }
+  .tissue-table th {
+    background: var(--surface2);
+    color: var(--text3);
+    font-size: 9px;
+    font-weight: 500;
+    text-align: center;
+    padding: 7px 4px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+  .tissue-th-label { width: 130px; min-width: 130px; }
+  .tissue-table tbody td {
+    border: 1px solid var(--border);
+    height: 28px;
+    min-width: 36px;
+  }
+  .ts-section td {
+    background: var(--surface2);
+    color: var(--text3);
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 4px 10px;
+    border-top: 2px solid var(--border2) !important;
+  }
+  .ts-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    color: var(--text2);
+    padding: 0 10px;
+    white-space: nowrap;
+  }
+  .tc-0 { background: rgba(251,146,60,0.2); }
+  .tc-1 { background: rgba(251,146,60,0.5); }
+  .tc-2 { background: rgba(225,80,45,0.55); }
+  .tc-3 { background: rgba(180,30,30,0.65); }
+
   /* IN-HUB */
   @keyframes hub-back-hint {
     0%   { transform: translateX(0); }
@@ -505,9 +566,93 @@
       <span class="region-sub-badge">Tiempos de Tejido</span>
     </div>
   </div>
-  <div class="home-intro" style="padding-top:32px">
-    <h1>Tiempos de Tejido</h1>
-    <p>Pr&oacute;ximamente: gu&iacute;as de recuperaci&oacute;n de tejidos.</p>
+  <div class="tissue-wrap">
+    <div class="tissue-scroll">
+      <table class="tissue-table">
+        <thead>
+          <tr>
+            <th class="tissue-th-label"></th>
+            <th>1&ndash;3<br>d&iacute;as</th>
+            <th>4&ndash;14<br>d&iacute;as</th>
+            <th>3&ndash;4<br>sem.</th>
+            <th>5&ndash;8<br>sem.</th>
+            <th>2&ndash;3<br>meses</th>
+            <th>3&ndash;6<br>meses</th>
+            <th>6m&ndash;<br>1 a&ntilde;o</th>
+            <th>2<br>a&ntilde;os</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="ts-section"><td colspan="9">Tend&oacute;n</td></tr>
+          <tr>
+            <td class="ts-label">Tendinopat&iacute;a / Ruptura</td>
+            <td></td><td></td>
+            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td>
+            <td></td><td></td>
+          </tr>
+
+          <tr class="ts-section"><td colspan="9">M&uacute;sculo</td></tr>
+          <tr>
+            <td class="ts-label">Dolor inducido por ejercicio</td>
+            <td class="tc-0"></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td class="ts-label">Rotura G. I</td>
+            <td></td>
+            <td class="tc-1"></td><td class="tc-1"></td>
+            <td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td class="ts-label">Rotura G. II</td>
+            <td></td><td></td>
+            <td class="tc-2"></td><td class="tc-2"></td>
+            <td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td class="ts-label">Rotura G. III</td>
+            <td></td><td></td>
+            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-3"></td>
+            <td></td><td></td><td></td>
+          </tr>
+
+          <tr class="ts-section"><td colspan="9">Ligamento</td></tr>
+          <tr>
+            <td class="ts-label">Esguince G. I</td>
+            <td></td>
+            <td class="tc-1"></td><td class="tc-1"></td>
+            <td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td class="ts-label">Esguince G. II</td>
+            <td></td><td></td>
+            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td>
+            <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td class="ts-label">Esguince G. III</td>
+            <td></td><td></td><td></td>
+            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-3"></td>
+            <td></td><td></td>
+          </tr>
+          <tr>
+            <td class="ts-label">Injerto</td>
+            <td></td><td></td><td></td><td></td>
+            <td class="tc-3"></td><td class="tc-3"></td><td class="tc-3"></td>
+            <td></td>
+          </tr>
+
+          <tr class="ts-section"><td colspan="9">Hueso</td></tr>
+          <tr>
+            <td class="ts-label">Fractura</td>
+            <td></td><td></td>
+            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td>
+            <td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tissue-source">Adaptado de Snyder-Mackler et al., &laquo;Developing Treatment Pathways&raquo;, 2012.</p>
   </div>
 </div>
 
@@ -541,7 +686,7 @@
   </div>
 </div>
 
-<script src="app.js?v=2bc092a0b7409665f4c1a8610c1ab6759d147101"></script>
+<script src="app.js?v=2390f0341be71bad04f1f03d53aef15f85343989"></script>
 
 </body>
 </html>
