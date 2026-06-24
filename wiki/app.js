@@ -39,17 +39,21 @@ function _buildTestItem(test) {
   const storedOverride = _linkOverrides[test.id];
   const effectiveLink  = storedOverride !== undefined ? storedOverride : test.link;
 
-  const linkBtn = effectiveLink
-    ? `<a class="test-link-btn has-link" href="${effectiveLink}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg viewBox="0 0 24 17" width="22" height="15" style="display:block"><rect width="24" height="17" rx="4" fill="#FF0000"/><path d="M10 5L16 8.5L10 12V5Z" fill="white"/></svg></a>`
-    : `<span class="test-link-btn no-link">&ndash;</span>`;
+  const icon = `<span class="test-link-btn has-link"><svg viewBox="0 0 24 17" width="22" height="15" style="display:block"><rect width="24" height="17" rx="4" fill="#FF0000"/><path d="M10 5L16 8.5L10 12V5Z" fill="white"/></svg></span>`;
 
-  const rowLinkClass = effectiveLink ? ' has-link-row' : '';
-  const rowLinkAttr  = effectiveLink ? `onclick="openTestLink('${test.id}')"` : '';
-  return `
-    <div class="test-item ${rowClass}${rowLinkClass}" ${rowLinkAttr} data-test-id="${test.id}">
+  if (effectiveLink) {
+    return `
+    <a class="test-item ${rowClass} has-link-row" href="${effectiveLink}" target="_blank" rel="noopener" data-test-id="${test.id}">
       <span class="evidence-badge ${badgeClass}">${badgeLabel}</span>
       <span class="test-name">${test.name}</span>
-      ${linkBtn}
+      ${icon}
+    </a>`;
+  }
+  return `
+    <div class="test-item ${rowClass}" data-test-id="${test.id}">
+      <span class="evidence-badge ${badgeClass}">${badgeLabel}</span>
+      <span class="test-name">${test.name}</span>
+      <span class="test-link-btn no-link">&ndash;</span>
     </div>`;
 }
 
@@ -189,12 +193,6 @@ function setPosFilter(pos, btn) {
 }
 
 // ─── LINK OVERRIDE ──────────────────────────────────────────────────────────────────────────────
-function openTestLink(testId) {
-  const test = currentRegion?.categories.flatMap(c => c.tests).find(t => t.id === testId);
-  const effectiveLink = _linkOverrides[testId] !== undefined ? _linkOverrides[testId] : test?.link;
-  if (effectiveLink) window.open(effectiveLink, '_blank', 'noopener');
-}
-
 let _editingTestId = null;
 
 function openLinkSheet(testId, testName) {
@@ -230,10 +228,12 @@ function saveLinkOverride() {
 }
 
 // ─── LONG-PRESS ────────────────────────────────────────────────────────────────────────────────────
-let _longPressTimer = null;
+let _longPressTimer  = null;
 let _longPressTarget = null;
+let _longPressHappened = false;
 
 document.addEventListener('touchstart', e => {
+  _longPressHappened = false;
   const item = e.target.closest('.test-item');
   if (!item) return;
   const testId = item.dataset.testId;
@@ -244,6 +244,7 @@ document.addEventListener('touchstart', e => {
   item.style.background = 'var(--surface2)';
 
   _longPressTimer = setTimeout(() => {
+    _longPressHappened = true;
     openLinkSheet(test.id, test.name);
     item.style.background = '';
     _longPressTarget = null;
@@ -261,6 +262,15 @@ document.addEventListener('touchmove', () => {
   _longPressTimer = null;
   if (_longPressTarget) { _longPressTarget.style.background = ''; _longPressTarget = null; }
 }, { passive: true });
+
+// Prevent link navigation after long-press (capture phase, before <a> fires)
+document.addEventListener('click', e => {
+  if (_longPressHappened) {
+    e.preventDefault();
+    e.stopPropagation();
+    _longPressHappened = false;
+  }
+}, true);
 
 document.getElementById('region-content').addEventListener('contextmenu', e => {
   if (e.target.closest('.test-item')) e.preventDefault();
