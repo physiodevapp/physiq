@@ -214,12 +214,13 @@
     height: 20px;
     background: var(--border2);
     flex-shrink: 0;
-    margin: 0 10px;
+    margin: 0 0 0 10px;
   }
-  /* Wrapper that clips the scroll and renders the left-edge fade on top */
+  /* Wrapper clips the scroll and shows the left-edge fade only when scrolled */
   .filter-scroll-wrap {
     position: relative;
     flex: 1;
+    min-width: 0;
     overflow: hidden;
   }
   .filter-scroll-wrap::before {
@@ -228,10 +229,15 @@
     left: 0;
     top: 0;
     bottom: 0;
-    width: 20px;
-    background: linear-gradient(to right, rgba(10,13,18,0.9), transparent);
+    width: 28px;
+    background: linear-gradient(to right, #0a0d12, transparent);
     pointer-events: none;
     z-index: 1;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .filter-scroll-wrap.scrolled::before {
+    opacity: 1;
   }
   .filter-scroll {
     display: flex;
@@ -239,6 +245,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    padding-left: 10px;
     padding-right: 16px;
   }
   .filter-scroll::-webkit-scrollbar { display: none; }
@@ -851,7 +858,7 @@
       </div>
       <div class="filter-sep"></div>
       <div class="filter-scroll-wrap">
-        <div class="filter-scroll">
+        <div class="filter-scroll" onscroll="this.parentElement.classList.toggle('scrolled',this.scrollLeft>0)">
           <button class="filter-chip" id="pos-chip-progression" onclick="setPosFilter('progression', this)">Progresión</button>
           <button class="filter-chip" id="pos-chip-pie" onclick="setPosFilter('pie', this)">De pie</button>
           <button class="filter-chip" id="pos-chip-sentado" onclick="setPosFilter('sentado', this)">Sentado</button>
@@ -880,7 +887,7 @@
   </div>
 </div>
 
-<script src="app.js?v=cda39d0ad3793403f61929cfe5bdb3b9525030a7"></script>
+<script src="app.js?v=3df44b9c9e85518c43200bf61bd3cda274a4d2bf"></script>
 
 </body>
 </html>
