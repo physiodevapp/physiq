@@ -43,8 +43,10 @@ function _buildTestItem(test) {
     ? `<a class="test-link-btn has-link" href="${effectiveLink}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg viewBox="0 0 24 17" width="22" height="15" style="display:block"><rect width="24" height="17" rx="4" fill="#FF0000"/><path d="M10 5L16 8.5L10 12V5Z" fill="white"/></svg></a>`
     : `<span class="test-link-btn no-link">&ndash;</span>`;
 
+  const rowLinkClass = effectiveLink ? ' has-link-row' : '';
+  const rowLinkAttr  = effectiveLink ? `onclick="openTestLink('${test.id}')"` : '';
   return `
-    <div class="test-item ${rowClass}" data-test-id="${test.id}">
+    <div class="test-item ${rowClass}${rowLinkClass}" ${rowLinkAttr} data-test-id="${test.id}">
       <span class="evidence-badge ${badgeClass}">${badgeLabel}</span>
       <span class="test-name">${test.name}</span>
       ${linkBtn}
@@ -92,7 +94,7 @@ function renderRegion(animate = true) {
       html += `
         <div class="category-section" style="animation:none">
           <div class="category-title">${cat.name}</div>
-          ${tests.map(_buildTestItem).join('')}
+          ${cat.tests.map(_buildTestItem).join('')}
         </div>`;
     });
   }
@@ -188,6 +190,12 @@ function setPosFilter(pos, btn) {
 }
 
 // ─── LINK OVERRIDE ──────────────────────────────────────────────────────────────────────────────
+function openTestLink(testId) {
+  const test = currentRegion?.categories.flatMap(c => c.tests).find(t => t.id === testId);
+  const effectiveLink = _linkOverrides[testId] !== undefined ? _linkOverrides[testId] : test?.link;
+  if (effectiveLink) window.open(effectiveLink, '_blank', 'noopener');
+}
+
 let _editingTestId = null;
 
 function openLinkSheet(testId, testName) {
