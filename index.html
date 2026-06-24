@@ -34,11 +34,11 @@
       background-clip: text;
     }
 
-    nav { display: flex; flex-direction: column; gap: 0.75rem; }
+    nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
     .app-card {
-      display: flex; align-items: center; gap: 1rem;
-      padding: 1.1rem 1.25rem; border-radius: 12px;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+      padding: 18px 16px; border-radius: 12px;
       background: #111620; color: inherit;
       border: 1px solid var(--border); cursor: pointer; width: 100%; text-align: left;
       transition: border-color 0.2s, transform 0.1s;
@@ -56,10 +56,9 @@
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .app-info { display: flex; flex-direction: column; gap: 0.25rem; }
-    .app-name { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; color: #fff; }
-    .app-desc { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text2); }
+    .app-info { display: flex; flex-direction: column; gap: 5px; }
+    .app-name { font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500; color: #fff; }
+    .app-desc { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); }
 
     /* ── Satellite shell ──────────────────────────────── */
     #sat-shell { position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 10; }
@@ -231,45 +230,39 @@
   </header>
   <nav>
     <button class="app-card" style="--card-color:#10b981" onclick="openSat('report')">
-      <span class="dot" style="background:#10b981"></span>
       <div class="app-info">
         <span class="app-name">Informe con IA</span>
         <span class="app-desc">Generación de informes asistida</span>
       </div>
     </button>
     <button class="app-card" style="--card-color:#3b82f6" onclick="openSat('assessment')">
-      <span class="dot" style="background:#3b82f6"></span>
       <div class="app-info">
         <span class="app-name">Valoración clínica guiada</span>
         <span class="app-desc">Exploración y registro de hallazgos</span>
       </div>
     </button>
     <button class="app-card" style="--card-color:#8b5cf6" onclick="openSat('motion')">
-      <span class="dot" style="background:#8b5cf6"></span>
       <div class="app-info">
         <span class="app-name">ROM · Inclinómetro</span>
         <span class="app-desc">Medición de rango articular</span>
       </div>
     </button>
     <button class="app-card" style="--card-color:#fb923c" onclick="openSat('force')">
-      <span class="dot" style="background:#fb923c"></span>
       <div class="app-info">
         <span class="app-name">Fuerza · Dinamómetro</span>
         <span class="app-desc">Fuerza isométrica y asimetría</span>
       </div>
     </button>
     <button class="app-card" style="--card-color:#22d3ee" onclick="openSat('balance')">
-      <span class="dot" style="background:#22d3ee"></span>
       <div class="app-info">
         <span class="app-name">Equilibrio · Acelerómetro</span>
         <span class="app-desc">Evaluación de equilibrio estático</span>
       </div>
     </button>
     <button class="app-card" style="--card-color:#6366f1" onclick="openSat('wiki')">
-      <span class="dot" style="background:#6366f1"></span>
       <div class="app-info">
         <span class="app-name">FisioWiki</span>
-        <span class="app-desc">Referencia clínica · tests y evidencia</span>
+        <span class="app-desc">Referencia clínica</span>
       </div>
     </button>
   </nav>
