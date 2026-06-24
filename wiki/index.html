@@ -216,6 +216,23 @@
     flex-shrink: 0;
     margin: 0 10px;
   }
+  /* Wrapper that clips the scroll and renders the left-edge fade on top */
+  .filter-scroll-wrap {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+  }
+  .filter-scroll-wrap::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(to right, rgba(10,13,18,0.9), transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
   .filter-scroll {
     display: flex;
     gap: 8px;
@@ -223,7 +240,6 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-right: 16px;
-    box-shadow: inset 8px 0 8px -6px rgba(0,0,0,0.5);
   }
   .filter-scroll::-webkit-scrollbar { display: none; }
   .filter-toggle {
@@ -834,13 +850,15 @@
         <button class="filter-toggle" id="ev-toggle" onclick="toggleEvFilter(this)">&#x2713; Alta evidencia</button>
       </div>
       <div class="filter-sep"></div>
-      <div class="filter-scroll">
-        <button class="filter-chip" id="pos-chip-progression" onclick="setPosFilter('progression', this)">Progresión</button>
-        <button class="filter-chip" id="pos-chip-pie" onclick="setPosFilter('pie', this)">De pie</button>
-        <button class="filter-chip" id="pos-chip-sentado" onclick="setPosFilter('sentado', this)">Sentado</button>
-        <button class="filter-chip" id="pos-chip-supino" onclick="setPosFilter('supino', this)">Supino</button>
-        <button class="filter-chip" id="pos-chip-lateral" onclick="setPosFilter('lateral', this)">Dec. lateral</button>
-        <button class="filter-chip" id="pos-chip-prono" onclick="setPosFilter('prono', this)">Prono</button>
+      <div class="filter-scroll-wrap">
+        <div class="filter-scroll">
+          <button class="filter-chip" id="pos-chip-progression" onclick="setPosFilter('progression', this)">Progresión</button>
+          <button class="filter-chip" id="pos-chip-pie" onclick="setPosFilter('pie', this)">De pie</button>
+          <button class="filter-chip" id="pos-chip-sentado" onclick="setPosFilter('sentado', this)">Sentado</button>
+          <button class="filter-chip" id="pos-chip-supino" onclick="setPosFilter('supino', this)">Supino</button>
+          <button class="filter-chip" id="pos-chip-lateral" onclick="setPosFilter('lateral', this)">Dec. lateral</button>
+          <button class="filter-chip" id="pos-chip-prono" onclick="setPosFilter('prono', this)">Prono</button>
+        </div>
       </div>
     </div>
   </div>
@@ -862,7 +880,7 @@
   </div>
 </div>
 
-<script src="app.js?v=209f079e5c02b71bd759f97b5591016755b3ded5"></script>
+<script src="app.js?v=cda39d0ad3793403f61929cfe5bdb3b9525030a7"></script>
 
 </body>
 </html>
