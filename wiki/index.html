@@ -489,6 +489,30 @@
   .tc-2 { background: rgba(225,80,45,0.55); }
   .tc-3 { background: rgba(180,30,30,0.65); }
 
+  /* TISSUE — responsive: desktop keeps label column, mobile puts label inside bar */
+  .tissue-desktop { display: table; }
+  .tissue-mobile  { display: none; min-width: 0 !important; width: 100%; }
+  .tissue-mobile th { width: 12.5%; }
+  .tissue-mobile tbody td { height: 24px; border: 1px solid rgba(0,0,0,0.12); }
+  .tissue-mobile .tc-e { background: transparent; border-color: var(--border); }
+  .tissue-mobile .ts-section td { border-top: 2px solid var(--border2) !important; }
+  .tc-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.92);
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 3px;
+  }
+  @media (max-width: 767px) {
+    .tissue-desktop { display: none; }
+    .tissue-mobile  { display: table; }
+  }
+
   /* IN-HUB */
   @keyframes hub-back-hint {
     0%   { transform: translateX(0); }
@@ -568,7 +592,9 @@
   </div>
   <div class="tissue-wrap">
     <div class="tissue-scroll">
-      <table class="tissue-table">
+
+      <!-- DESKTOP: label column + 8 time columns (shown ≥ 768px) -->
+      <table class="tissue-table tissue-desktop">
         <thead>
           <tr>
             <th class="tissue-th-label"></th>
@@ -651,6 +677,81 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- MOBILE/TABLET: label inside colored bar via colspan (shown < 768px) -->
+      <table class="tissue-table tissue-mobile">
+        <thead>
+          <tr>
+            <th>1&ndash;3<br>d&iacute;as</th>
+            <th>4&ndash;14<br>d&iacute;as</th>
+            <th>3&ndash;4<br>sem.</th>
+            <th>5&ndash;8<br>sem.</th>
+            <th>2&ndash;3<br>meses</th>
+            <th>3&ndash;6<br>meses</th>
+            <th>6m&ndash;<br>1 a&ntilde;o</th>
+            <th>2<br>a&ntilde;os</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="ts-section"><td colspan="8">Tend&oacute;n</td></tr>
+          <tr>
+            <td class="tc-e" colspan="2"></td>
+            <td class="tc-2 tc-label" colspan="4">Tendinopat&iacute;a / Ruptura</td>
+            <td class="tc-e" colspan="2"></td>
+          </tr>
+
+          <tr class="ts-section"><td colspan="8">M&uacute;sculo</td></tr>
+          <tr>
+            <td class="tc-0 tc-label">DOMS</td>
+            <td class="tc-e" colspan="7"></td>
+          </tr>
+          <tr>
+            <td class="tc-e"></td>
+            <td class="tc-1 tc-label" colspan="2">Rotura G. I</td>
+            <td class="tc-e" colspan="5"></td>
+          </tr>
+          <tr>
+            <td class="tc-e" colspan="2"></td>
+            <td class="tc-2 tc-label" colspan="2">Rotura G. II</td>
+            <td class="tc-e" colspan="4"></td>
+          </tr>
+          <tr>
+            <td class="tc-e" colspan="2"></td>
+            <td class="tc-3 tc-label" colspan="3">Rotura G. III</td>
+            <td class="tc-e" colspan="3"></td>
+          </tr>
+
+          <tr class="ts-section"><td colspan="8">Ligamento</td></tr>
+          <tr>
+            <td class="tc-e"></td>
+            <td class="tc-1 tc-label" colspan="2">Esguince G. I</td>
+            <td class="tc-e" colspan="5"></td>
+          </tr>
+          <tr>
+            <td class="tc-e" colspan="2"></td>
+            <td class="tc-2 tc-label" colspan="3">Esguince G. II</td>
+            <td class="tc-e" colspan="3"></td>
+          </tr>
+          <tr>
+            <td class="tc-e" colspan="3"></td>
+            <td class="tc-3 tc-label" colspan="3">Esguince G. III</td>
+            <td class="tc-e" colspan="2"></td>
+          </tr>
+          <tr>
+            <td class="tc-e" colspan="4"></td>
+            <td class="tc-3 tc-label" colspan="3">Injerto</td>
+            <td class="tc-e"></td>
+          </tr>
+
+          <tr class="ts-section"><td colspan="8">Hueso</td></tr>
+          <tr>
+            <td class="tc-e" colspan="2"></td>
+            <td class="tc-2 tc-label" colspan="4">Fractura</td>
+            <td class="tc-e" colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
     <p class="tissue-source">Adaptado de Snyder-Mackler et al., &laquo;Developing Treatment Pathways&raquo;, 2012.</p>
   </div>
@@ -686,7 +787,7 @@
   </div>
 </div>
 
-<script src="app.js?v=2390f0341be71bad04f1f03d53aef15f85343989"></script>
+<script src="app.js?v=34ee54674e13b1e6ae3b020395513baadd1e6b3e"></script>
 
 </body>
 </html>
