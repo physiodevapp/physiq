@@ -214,9 +214,9 @@
     height: 20px;
     background: var(--border2);
     flex-shrink: 0;
-    margin: 0 0 0 10px;
+    margin: 0 6px 0 10px;
   }
-  /* Wrapper clips the scroll and shows the left-edge fade only when scrolled */
+  /* Wrapper clips scroll and shows left-edge fade only when scrolled */
   .filter-scroll-wrap {
     position: relative;
     flex: 1;
@@ -245,7 +245,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-left: 10px;
+    padding-left: 4px;
     padding-right: 16px;
   }
   .filter-scroll::-webkit-scrollbar { display: none; }
@@ -863,7 +863,7 @@
           <button class="filter-chip" id="pos-chip-pie" onclick="setPosFilter('pie', this)">De pie</button>
           <button class="filter-chip" id="pos-chip-sentado" onclick="setPosFilter('sentado', this)">Sentado</button>
           <button class="filter-chip" id="pos-chip-supino" onclick="setPosFilter('supino', this)">Supino</button>
-          <button class="filter-chip" id="pos-chip-lateral" onclick="setPosFilter('lateral', this)">Dec. lateral</button>
+          <button class="filter-chip" id="pos-chip-lateral" onclick="setPosFilter('lateral', this)" >Dec. lateral</button>
           <button class="filter-chip" id="pos-chip-prono" onclick="setPosFilter('prono', this)">Prono</button>
         </div>
       </div>
@@ -887,7 +887,7 @@
   </div>
 </div>
 
-<script src="app.js?v=3df44b9c9e85518c43200bf61bd3cda274a4d2bf"></script>
+<script src="app.js?v=8dbbd53cdabcd19c42790e8b217fa11f995223fc"></script>
 
 </body>
 </html>
