@@ -378,6 +378,56 @@
   .link-sheet-cancel { background: var(--surface2); color: var(--text2); }
   .link-sheet-save { background: var(--wiki-accent); color: #fff; }
 
+  /* LANDING */
+  .landing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 8px 20px 40px;
+  }
+
+  .landing-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 18px 16px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: border-color 0.2s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .landing-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--card-color, var(--wiki-accent));
+    opacity: 0.6;
+  }
+
+  .landing-card:hover { border-color: var(--border2); }
+  .landing-card:active { transform: scale(0.97); }
+
+  .landing-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .landing-card-desc {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
   /* IN-HUB */
   @keyframes hub-back-hint {
     0%   { transform: translateX(0); }
@@ -409,8 +459,32 @@
   </div>
 </header>
 
+<!-- LANDING VIEW -->
+<div id="view-landing">
+  <div class="home-intro">
+    <h1>Referencia Cl&iacute;nica</h1>
+    <p>Selecciona una secci&oacute;n para comenzar.</p>
+  </div>
+  <div class="landing-grid">
+    <div class="landing-card" style="--card-color:#6366f1; animation-delay:0s" onclick="showSpecialTests()">
+      <div class="landing-card-name">Tests Especiales</div>
+      <div class="landing-card-desc">tests ortop&eacute;dicos</div>
+    </div>
+    <div class="landing-card" style="--card-color:#38d9a9; animation-delay:0.05s" onclick="showTissue()">
+      <div class="landing-card-name">Tiempos de Tejido</div>
+      <div class="landing-card-desc">recuperaci&oacute;n de tejidos</div>
+    </div>
+  </div>
+</div>
+
 <!-- HOME VIEW -->
-<div id="view-home">
+<div id="view-home" style="display:none">
+  <div class="region-sticky-header">
+    <div class="region-sub-bar" style="border-bottom:none">
+      <button class="btn-back-sub" onclick="history.back()">&#x2190; Inicio</button>
+      <span class="region-sub-badge">Tests Especiales</span>
+    </div>
+  </div>
   <div class="home-intro">
     <h1>Tests por regi&oacute;n</h1>
     <p>Tests clasificados por nivel de evidencia diagn&oacute;stica seg&uacute;n Magee &mdash; Orthopaedic Physical Assessment.</p>
@@ -421,6 +495,20 @@
     <div class="legend-item"><span class="evidence-badge ev-red">?</span> Dudosa</div>
   </div>
   <div class="regions-grid" id="regions-grid"></div>
+</div>
+
+<!-- TISSUE VIEW -->
+<div id="view-tissue" style="display:none">
+  <div class="region-sticky-header">
+    <div class="region-sub-bar" style="border-bottom:none">
+      <button class="btn-back-sub" onclick="history.back()">&#x2190; Inicio</button>
+      <span class="region-sub-badge">Tiempos de Tejido</span>
+    </div>
+  </div>
+  <div class="home-intro" style="padding-top:32px">
+    <h1>Tiempos de Tejido</h1>
+    <p>Pr&oacute;ximamente: gu&iacute;as de recuperaci&oacute;n de tejidos.</p>
+  </div>
 </div>
 
 <!-- REGION VIEW -->
@@ -453,7 +541,7 @@
   </div>
 </div>
 
-<script src="app.js?v=4f78a83c7c6c98b28af94df33fdf17056cf9c240"></script>
+<script src="app.js?v=2bc092a0b7409665f4c1a8610c1ab6759d147101"></script>
 
 </body>
 </html>

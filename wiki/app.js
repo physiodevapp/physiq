@@ -712,14 +712,17 @@ const REGIONS = [
 
 // ─── STATE ────────────────────────────────────────────────────────────────────────────────────
 let currentRegion = null;
+let currentView = 'landing'; // 'landing' | 'home' | 'tissue' | 'region'
 let currentFilter = 'all';
 const _linkOverrides = JSON.parse(localStorage.getItem('physiq_link_overrides') || '{}');
 
 // ─── RENDER: HOME ───────────────────────────────────────────────────────────────────────────
 function renderHome() {
   document.getElementById('header-title').innerHTML = 'Physi<span class="logo-q">Q</span> <span class="logo-accent">— Wiki</span>';
+  document.getElementById('view-landing').style.display = 'none';
   document.getElementById('view-home').style.display = '';
   document.getElementById('view-region').style.display = 'none';
+  document.getElementById('view-tissue').style.display = 'none';
 
   const grid = document.getElementById('regions-grid');
   grid.innerHTML = REGIONS.map((r, i) => {
@@ -783,11 +786,38 @@ function renderRegion(animate = true) {
 }
 
 // ─── NAVIGATION ──────────────────────────────────────────────────────────────────────────────────
+function showLanding() {
+  currentView = 'landing';
+  currentRegion = null;
+  document.getElementById('view-landing').style.display = '';
+  document.getElementById('view-home').style.display = 'none';
+  document.getElementById('view-region').style.display = 'none';
+  document.getElementById('view-tissue').style.display = 'none';
+}
+
+function showSpecialTests() {
+  currentView = 'home';
+  renderHome();
+  history.pushState({ view: 'home' }, '');
+}
+
+function showTissue() {
+  currentView = 'tissue';
+  document.getElementById('view-landing').style.display = 'none';
+  document.getElementById('view-home').style.display = 'none';
+  document.getElementById('view-region').style.display = 'none';
+  document.getElementById('view-tissue').style.display = '';
+  history.pushState({ view: 'tissue' }, '');
+}
+
 function showRegion(id) {
   currentRegion = REGIONS.find(r => r.id === id);
+  currentView = 'region';
 
+  document.getElementById('view-landing').style.display = 'none';
   document.getElementById('view-home').style.display = 'none';
   document.getElementById('view-region').style.display = '';
+  document.getElementById('view-tissue').style.display = 'none';
   document.getElementById('region-sub-badge').textContent = currentRegion.name;
 
   const filterIndex = currentFilter === 'green' ? 1 : 0;
@@ -803,13 +833,18 @@ function showRegion(id) {
 
 function showHome() {
   currentRegion = null;
+  currentView = 'home';
+  document.getElementById('view-landing').style.display = 'none';
   document.getElementById('view-home').style.display = '';
   document.getElementById('view-region').style.display = 'none';
+  document.getElementById('view-tissue').style.display = 'none';
 }
 
 window.addEventListener('popstate', () => {
   if (currentRegion) {
     showHome();
+  } else if (currentView === 'home' || currentView === 'tissue') {
+    showLanding();
   } else if (document.body.classList.contains('in-hub')) {
     window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
   }
@@ -896,13 +931,19 @@ document.getElementById('region-content').addEventListener('contextmenu', e => {
 });
 
 // ─── INIT ───────────────────────────────────────────────────────────────────────────────────────────
-renderHome();
+showLanding();
 
 function _rebuildHubHistory() {
-  // Replaces current entry with hub-exit sentinel then pushes current view,
-  // so swipe-back chain is always: view → home → hub (exactly 2 swipes).
   history.replaceState({ view: 'hub-exit' }, '');
-  history.pushState({ view: currentRegion ? 'region' : 'home' }, '');
+  history.pushState({ view: 'landing' }, '');
+  if (currentView === 'home' || currentRegion) {
+    history.pushState({ view: 'home' }, '');
+  } else if (currentView === 'tissue') {
+    history.pushState({ view: 'tissue' }, '');
+  }
+  if (currentRegion) {
+    history.pushState({ view: 'region', region: currentRegion.id }, '');
+  }
 }
 
 let _firstVisible = true;
@@ -921,7 +962,7 @@ try {
     });
     // First visit: push sentinels here; subsequent visits handled by PHYSIQ_SAT_VISIBLE above.
     history.replaceState({ view: 'hub-exit' }, '');
-    history.pushState({ view: 'home' }, '');
+    history.pushState({ view: 'landing' }, '');
   }
 } catch (_) {
   document.body.classList.add('in-hub');
