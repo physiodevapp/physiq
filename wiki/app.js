@@ -57,17 +57,16 @@ function _evPass(t) { return currentFilter === 'all' || t.ev === 'green'; }
 function _posPass(t, pos) { return Array.isArray(t.pos) && t.pos.includes(pos); }
 
 // ─── RENDER: REGION ───────────────────────────────────────────────────────────────────────
-function renderRegion(animate = true) {
+function renderRegion() {
   const content = document.getElementById('region-content');
   let html = '';
 
   if (currentPosFilter === 'all') {
-    currentRegion.categories.forEach((cat, catIdx) => {
+    currentRegion.categories.forEach(cat => {
       const tests = cat.tests.filter(_evPass);
       if (!tests.length) return;
-      const style = animate ? `animation-delay:${catIdx * 0.05}s` : 'animation:none';
       html += `
-        <div class="category-section" style="${style}">
+        <div class="category-section">
           <div class="category-title">${cat.name}</div>
           ${tests.map(_buildTestItem).join('')}
         </div>`;
@@ -81,7 +80,7 @@ function renderRegion(animate = true) {
       html += `<div class="pos-section-label">${POS_LABELS[pos]}</div>`;
       posCats.forEach(cat => {
         html += `
-          <div class="category-section" style="animation:none">
+          <div class="category-section">
             <div class="category-title">${cat.name}</div>
             ${cat.tests.map(_buildTestItem).join('')}
           </div>`;
@@ -92,7 +91,7 @@ function renderRegion(animate = true) {
       const tests = cat.tests.filter(t => _evPass(t) && _posPass(t, currentPosFilter));
       if (!tests.length) return;
       html += `
-        <div class="category-section" style="animation:none">
+        <div class="category-section">
           <div class="category-title">${cat.name}</div>
           ${cat.tests.map(_buildTestItem).join('')}
         </div>`;
@@ -180,13 +179,13 @@ window.addEventListener('popstate', () => {
 function toggleEvFilter(btn) {
   currentFilter = currentFilter === 'green' ? 'all' : 'green';
   btn.classList.toggle('on', currentFilter === 'green');
-  renderRegion(false);
+  renderRegion();
 }
 
 function setPosFilter(pos, btn) {
   currentPosFilter = currentPosFilter === pos ? 'all' : pos;
   _syncFilterUI();
-  renderRegion(false);
+  renderRegion();
 }
 
 // ─── LINK OVERRIDE ──────────────────────────────────────────────────────────────────────────────
@@ -227,7 +226,7 @@ function saveLinkOverride() {
 
   localStorage.setItem('physiq_link_overrides', JSON.stringify(_linkOverrides));
   closeLinkSheet();
-  renderRegion(false);
+  renderRegion();
 }
 
 // ─── LONG-PRESS ────────────────────────────────────────────────────────────────────────────────────
