@@ -68,16 +68,33 @@ The hub contains a `RecorderEngine` — the only audio recording component in th
 
 ## IDB usage
 
-The hub opens DB `'physiq'` **v2** (not v3 — satellites own v3). It creates two stores on `upgradeneeded` but only writes to one:
+The hub opens DB `'physiq'` **v3** (same version as satellites — upgraded from v2 to avoid version conflicts when satellites run first). It creates two stores on `upgradeneeded` but only writes to one directly:
 
 | Store | Key | Written by hub | Read/deleted by |
 |-------|-----|---------------|-----------------|
 | `audio` | `'pending'` | After `stop` — `{ blob, name, type, duration }` | physiq-report (`_consumeAudioFromIDB`) |
-| `session` | — | Never | Satellites only |
+| `session` | `'active'` | By `lib/peer.js` (peer bridge only) | Satellites; peer bridge |
 
-The hub never reads or writes the `session` store. Session management is entirely the satellites' responsibility.
+The recorder engine never reads or writes the `session` store directly. Session management is the satellites' responsibility (and the peer bridge when syncing from mobile).
 
 On `discard`, the hub deletes the `'pending'` key from the `audio` store.
+
+## Peer bridge (`lib/peer.js`)
+
+Enables a tablet + mobile split workflow: the physiotherapist uses physiq-motion on the mobile phone (better grip, accelerometer access) while the tablet hub acts as the session hub displaying other satellites.
+
+**Architecture:** WebRTC P2P (`RTCDataChannel`) with SDP exchange via QR codes. No STUN/TURN needed — both devices on LAN.
+
+- **Tablet (offerer):** generates SDP offer → encodes as URL-safe base64 → displays as QR + URL text + share button
+- **Mobile (answerer):** native camera scans QR → opens hub with `#peer=<encoded>` hash → `peer.js` auto-opens panel → generates answer QR
+- **Tablet:** scans answer QR via `BarcodeDetector` API (paste fallback available) → `RTCDataChannel` connects
+
+**Once connected:**
+- Mobile hub listens on `BroadcastChannel('physiq-session')` for messages from its satellite iframes
+- Forwards them over `RTCDataChannel` to the tablet hub
+- Tablet hub writes to IDB (`session` store v3) and re-broadcasts on its local `physiq-session` channel so tablet satellites update in real time
+
+**UI:** Phone icon button in header (turns green when connected). Bottom sheet with 3 steps: offer, answer, connected. Scan button uses `BarcodeDetector`; falls back to paste.
 
 ## postMessage protocol (hub ↔ satellite iframes)
 

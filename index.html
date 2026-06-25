@@ -813,6 +813,11 @@ async function _peerRunOfferer() {
   scanBtn.textContent = 'Escanear código del móvil';
   scanBtn.onclick     = peerStartScan;
 
+  // Show loading placeholder while ICE gathers (up to 5s)
+  const urlBox = document.getElementById('peer-offer-url-box');
+  urlBox.textContent = 'Generando código…';
+  urlBox.hidden = false;
+
   try {
     const sdp = await peerOffer();
     const enc  = peerEncode(sdp);
@@ -829,7 +834,7 @@ async function _peerRunOfferer() {
       } catch (_) {}
     }
 
-    // URL text box (always shown as fallback)
+    // URL text box (always shown as fallback; was used as loading placeholder)
     document.getElementById('peer-offer-url-box').textContent = url;
     document.getElementById('peer-offer-url-box').hidden = false;
 
@@ -880,6 +885,8 @@ async function _peerRunAnswerer(encodedOffer) {
     if (navigator.share || navigator.clipboard) {
       document.getElementById('peer-answer-share-btn').hidden = false;
     }
+    // Remove stale #peer= hash so a refresh doesn't try to re-answer old offer
+    history.replaceState(null, '', location.pathname);
   } catch (err) {
     document.getElementById('peer-answer-status').textContent = 'Error al procesar. Cierra e inténtalo de nuevo.';
     console.error('peerAnswer error:', err);
@@ -982,8 +989,7 @@ function peerUpdateUI(status) {
   }
 }
 
-// Auto-open peer panel if launched from a peer QR link
-if (_peerInitHash) showPeerPanel();
+// Auto-open trigger is deferred to lib/peer.js so peer functions are defined first
 
 // ── Pre-load recorder-dependent satellite iframes so BroadcastChannel works from the start ──
 // wiki is excluded: it doesn't use the recorder, and pre-loading it causes stale content

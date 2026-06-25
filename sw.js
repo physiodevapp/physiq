@@ -1,4 +1,4 @@
-const CACHE_NAME = 'physiq-hub-v3';
+const CACHE_NAME = 'physiq-hub-v4';
 
 const HUB_SHELL = [
   '/physiq/',
@@ -7,6 +7,7 @@ const HUB_SHELL = [
   '/physiq/favicon.svg',
   '/physiq/icons/icon-192.png',
   '/physiq/icons/icon-512.png',
+  '/physiq/lib/peer.js',
 ];
 
 self.addEventListener('install', event => {
