@@ -8,6 +8,7 @@
   <link rel="manifest" href="/physiq/manifest.json">
   <meta name="theme-color" content="#1e2d3d">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js" crossorigin="anonymous" async></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -219,6 +220,138 @@
       #rec-widget.rw-timer-on .rw-timer-wrap              { display: inline-flex; }
       #rec-widget.rw-vertical.rw-timer-on .rw-timer-wrap  { display: flex; }
     }
+
+    /* ── Peer connect ─────────────────────────────────── */
+    header { display: flex; align-items: center; justify-content: space-between; }
+
+    .peer-hdr-btn {
+      position: relative; flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--border); background: #111620;
+      color: #5a6e8a; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .peer-hdr-btn:hover { border-color: #4f9cf9; color: #4f9cf9; }
+    .peer-hdr-btn.peer-on { border-color: #38d9a9; color: #38d9a9; }
+
+    .peer-hdr-dot {
+      position: absolute; top: 2px; right: 2px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #38d9a9; border: 2px solid #0a0d12;
+    }
+
+    .peer-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      display: flex; align-items: flex-end;
+      animation: peerFadeIn 0.2s ease;
+    }
+    @keyframes peerFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .peer-sheet {
+      width: 100%; max-height: 90dvh; overflow-y: auto;
+      background: #111620;
+      border: 1px solid var(--border); border-bottom: none;
+      border-radius: 16px 16px 0 0;
+      padding: 0 1.5rem calc(env(safe-area-inset-bottom, 0px) + 2rem);
+      display: flex; flex-direction: column; gap: 1.1rem;
+      animation: peerSlideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes peerSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    .peer-sheet-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 0 1rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: #111620; z-index: 1;
+    }
+    .peer-sheet-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem; color: #e8edf2; font-weight: 400;
+    }
+    .peer-close-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: transparent;
+      color: #5a6e8a; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .peer-close-btn:hover { background: rgba(255,255,255,0.08); color: #e8edf2; }
+
+    .peer-step-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem; color: #5a6e8a;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .peer-hint {
+      font-size: 0.875rem; color: #8aa4bc; line-height: 1.55;
+    }
+
+    .peer-qr-wrap {
+      display: flex; justify-content: center;
+      background: #fff; border-radius: 12px; padding: 14px;
+    }
+    .peer-qr-wrap canvas { display: block; }
+
+    .peer-code-box {
+      background: #0a0d12; border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px;
+      font-family: 'DM Mono', monospace; font-size: 0.68rem; color: #5a6e8a;
+      word-break: break-all; user-select: all; cursor: text;
+    }
+
+    .peer-btn {
+      width: 100%; padding: 13px 16px;
+      border-radius: 10px; border: none;
+      background: #4f9cf9; color: #fff;
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .peer-btn:hover { opacity: 0.87; }
+    .peer-btn:active { opacity: 0.72; }
+    .peer-btn.sec {
+      background: transparent; color: #8aa4bc;
+      border: 1px solid var(--border);
+    }
+    .peer-btn.danger { background: transparent; color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+
+    .peer-divider {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'DM Mono', monospace; font-size: 0.7rem; color: #5a6e8a;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .peer-divider::before, .peer-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .peer-video-wrap {
+      border-radius: 10px; overflow: hidden;
+      background: #000; aspect-ratio: 4/3;
+    }
+    .peer-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .peer-textarea {
+      width: 100%; background: #0a0d12;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; resize: vertical; min-height: 72px;
+      font-family: 'DM Mono', monospace; font-size: 0.7rem; color: #8aa4bc;
+      color-scheme: dark;
+    }
+
+    .peer-connected-chip {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-radius: 10px;
+      background: rgba(56,217,169,0.08); border: 1px solid rgba(56,217,169,0.2);
+    }
+    .peer-live-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #38d9a9; flex-shrink: 0;
+      animation: rw-blink 1.5s ease-in-out infinite;
+    }
+    .peer-connected-chip span { font-size: 0.9rem; color: #38d9a9; font-weight: 500; }
   </style>
 </head>
 <body>
@@ -227,6 +360,12 @@
 <div id="home">
   <header>
     <h1>Physi<span>Q</span></h1>
+    <button id="peerBtn" class="peer-hdr-btn" onclick="togglePeerPanel()" title="Conectar dispositivo móvil" aria-label="Conectar dispositivo móvil">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/>
+      </svg>
+      <span id="peerBtnDot" class="peer-hdr-dot" hidden></span>
+    </button>
   </header>
   <nav>
     <button class="app-card" style="--card-color:#10b981" onclick="openSat('report')">
@@ -347,7 +486,83 @@
 
 </div>
 
+<!-- ── Peer connect panel ──────────────────────────────────────────────── -->
+<div id="peer-panel" class="peer-overlay" hidden onclick="_peerOverlayClick(event)">
+  <div class="peer-sheet">
+
+    <div class="peer-sheet-hdr">
+      <span id="peer-title" class="peer-sheet-title">Conectar móvil</span>
+      <button class="peer-close-btn" onclick="hidePeerPanel()" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Offerer: tablet muestra QR de oferta, luego escanea respuesta -->
+    <div id="peer-step-offer">
+      <p class="peer-step-label">Paso 1 — abre PhysiQ en el móvil</p>
+      <p class="peer-hint">Escanea este código con la cámara del móvil. Si ya tienes PhysiQ abierto en el móvil, comparte el enlace.</p>
+      <div id="peer-offer-qr-wrap" class="peer-qr-wrap" hidden>
+        <canvas id="peer-offer-qr"></canvas>
+      </div>
+      <div id="peer-offer-url-box" class="peer-code-box" hidden></div>
+      <button id="peer-share-btn" class="peer-btn sec" onclick="peerShareOffer()" hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Compartir enlace
+      </button>
+
+      <div class="peer-divider">paso 2 — escanea la respuesta del móvil</div>
+
+      <p class="peer-hint">Cuando el móvil muestre su código, escanéalo con la tablet.</p>
+      <button id="peer-scan-btn" class="peer-btn sec" onclick="peerStartScan()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/></svg>
+        Escanear código del móvil
+      </button>
+      <div id="peer-scan-video-wrap" class="peer-video-wrap" hidden>
+        <video id="peer-scan-video" autoplay playsinline muted></video>
+      </div>
+      <p id="peer-scan-hint" class="peer-hint" style="text-align:center;font-size:0.82rem" hidden>Apunta la tablet al móvil</p>
+
+      <div id="peer-paste-wrap" hidden>
+        <p class="peer-hint" style="font-size:0.82rem">O pega el código que el móvil muestra como texto:</p>
+        <textarea id="peer-paste-input" class="peer-textarea" placeholder="Pega aquí el código del móvil…"></textarea>
+        <button class="peer-btn sec" onclick="peerPasteConfirm()" style="margin-top:8px">Confirmar</button>
+      </div>
+    </div>
+
+    <!-- Answerer: móvil procesa oferta, muestra QR de respuesta -->
+    <div id="peer-step-answer" hidden>
+      <p id="peer-answer-status" class="peer-hint">Procesando conexión…</p>
+      <div id="peer-answer-qr-wrap" class="peer-qr-wrap" hidden>
+        <canvas id="peer-answer-qr"></canvas>
+      </div>
+      <p id="peer-answer-inst" class="peer-hint" hidden>Muestra este código a la tablet para completar la conexión.</p>
+      <div id="peer-answer-code-box" class="peer-code-box" hidden></div>
+      <button id="peer-answer-share-btn" class="peer-btn sec" onclick="peerShareAnswer()" hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Compartir código
+      </button>
+    </div>
+
+    <!-- Conectado -->
+    <div id="peer-step-connected" hidden>
+      <div class="peer-connected-chip">
+        <span class="peer-live-dot"></span>
+        <span>Sincronización activa</span>
+      </div>
+      <p class="peer-hint" style="font-size:0.85rem">Los datos del móvil llegan a esta tablet en tiempo real.</p>
+      <button class="peer-btn danger" onclick="peerDisconnectUI()">Desconectar</button>
+    </div>
+
+  </div>
+</div>
+
 <script>
+// Capture peer offer from URL hash before restoreState clears the URL
+const _peerInitHash = (() => {
+  try { return new URLSearchParams(location.hash.replace(/^#/, '')).get('peer') || null; }
+  catch { return null; }
+})();
+
 // ── Navigation ───────────────────────────────────────────────
 const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', wiki: '/physiq/wiki/' };
 
@@ -507,7 +722,7 @@ function _broadcast() {
 // ── IDB ──────────────────────────────────────────────────────
 function _openIDB() {
   return new Promise((res, rej) => {
-    const req = indexedDB.open('physiq', 2);
+    const req = indexedDB.open('physiq', 3);
     req.onupgradeneeded = e => {
       const db = e.target.result;
       if (!db.objectStoreNames.contains('audio'))   db.createObjectStore('audio');
@@ -549,6 +764,226 @@ function showDiscardConfirm() {
 function hideDiscardConfirm() {
   delete document.getElementById('rec-widget').dataset.confirm;
 }
+
+// ── Peer panel ───────────────────────────────────────────────────────────────
+let _peerScanStream   = null;
+let _peerScanTimer    = null;
+let _peerAnswerEnc    = null;
+let _peerOfferUrl     = null;
+
+function _peerOverlayClick(e) {
+  if (e.target === e.currentTarget) hidePeerPanel();
+}
+
+function togglePeerPanel() {
+  document.getElementById('peer-panel').hidden ? showPeerPanel() : hidePeerPanel();
+}
+
+function showPeerPanel() {
+  document.getElementById('peer-panel').hidden = false;
+  if (peer.status === 'connected') { _peerShowStep('connected'); return; }
+  if (_peerInitHash) { _peerRunAnswerer(_peerInitHash); }
+  else               { _peerRunOfferer(); }
+}
+
+function hidePeerPanel() {
+  _peerStopScan();
+  document.getElementById('peer-panel').hidden = true;
+}
+
+function _peerShowStep(step) {
+  ['offer', 'answer', 'connected'].forEach(s =>
+    document.getElementById('peer-step-' + s).hidden = s !== step
+  );
+}
+
+async function _peerRunOfferer() {
+  _peerShowStep('offer');
+  document.getElementById('peer-title').textContent = 'Conectar móvil';
+
+  // Reset scan area
+  document.getElementById('peer-paste-wrap').hidden        = true;
+  document.getElementById('peer-scan-video-wrap').hidden   = true;
+  document.getElementById('peer-scan-hint').hidden         = true;
+  document.getElementById('peer-offer-qr-wrap').hidden     = true;
+  document.getElementById('peer-offer-url-box').hidden     = true;
+  document.getElementById('peer-share-btn').hidden         = true;
+
+  const scanBtn = document.getElementById('peer-scan-btn');
+  scanBtn.textContent = 'Escanear código del móvil';
+  scanBtn.onclick     = peerStartScan;
+
+  try {
+    const sdp = await peerOffer();
+    const enc  = peerEncode(sdp);
+    const url  = location.origin + location.pathname + '#peer=' + enc;
+    _peerOfferUrl = url;
+
+    // QR generation (async CDN lib)
+    const qrCanvas = document.getElementById('peer-offer-qr');
+    const qrSize   = Math.min(window.innerWidth - 80, 240);
+    if (typeof QRCode !== 'undefined') {
+      try {
+        await QRCode.toCanvas(qrCanvas, url, { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } });
+        document.getElementById('peer-offer-qr-wrap').hidden = false;
+      } catch (_) {}
+    }
+
+    // URL text box (always shown as fallback)
+    document.getElementById('peer-offer-url-box').textContent = url;
+    document.getElementById('peer-offer-url-box').hidden = false;
+
+    // Share button (if Web Share API available)
+    if (navigator.share || navigator.clipboard) {
+      document.getElementById('peer-share-btn').hidden = false;
+    }
+  } catch (err) {
+    console.error('peerOffer error:', err);
+  }
+}
+
+async function peerShareOffer() {
+  if (!_peerOfferUrl) return;
+  try { await navigator.share({ url: _peerOfferUrl, title: 'PhysiQ – conectar móvil' }); }
+  catch (_) { try { await navigator.clipboard.writeText(_peerOfferUrl); } catch (__) {} }
+}
+
+async function _peerRunAnswerer(encodedOffer) {
+  _peerShowStep('answer');
+  document.getElementById('peer-title').textContent = 'Conectando con tablet';
+  document.getElementById('peer-answer-status').textContent = 'Procesando conexión…';
+  document.getElementById('peer-answer-qr-wrap').hidden   = true;
+  document.getElementById('peer-answer-inst').hidden       = true;
+  document.getElementById('peer-answer-code-box').hidden   = true;
+  document.getElementById('peer-answer-share-btn').hidden  = true;
+
+  try {
+    const answerSdp = peerDecode(encodedOffer);
+    const sdp       = await peerAnswer(answerSdp);
+    const enc       = peerEncode(sdp);
+    _peerAnswerEnc  = enc;
+
+    document.getElementById('peer-answer-status').textContent = 'Muestra este código a la tablet:';
+    document.getElementById('peer-answer-inst').hidden = false;
+
+    const qrCanvas = document.getElementById('peer-answer-qr');
+    const qrSize   = Math.min(window.innerWidth - 80, 240);
+    if (typeof QRCode !== 'undefined') {
+      try {
+        await QRCode.toCanvas(qrCanvas, enc, { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } });
+        document.getElementById('peer-answer-qr-wrap').hidden = false;
+      } catch (_) {}
+    }
+
+    document.getElementById('peer-answer-code-box').textContent = enc;
+    document.getElementById('peer-answer-code-box').hidden = false;
+    if (navigator.share || navigator.clipboard) {
+      document.getElementById('peer-answer-share-btn').hidden = false;
+    }
+  } catch (err) {
+    document.getElementById('peer-answer-status').textContent = 'Error al procesar. Cierra e inténtalo de nuevo.';
+    console.error('peerAnswer error:', err);
+  }
+}
+
+async function peerShareAnswer() {
+  if (!_peerAnswerEnc) return;
+  try { await navigator.share({ text: _peerAnswerEnc, title: 'PhysiQ – código de conexión' }); }
+  catch (_) { try { await navigator.clipboard.writeText(_peerAnswerEnc); } catch (__) {} }
+}
+
+async function peerStartScan() {
+  const scanBtn    = document.getElementById('peer-scan-btn');
+  const videoWrap  = document.getElementById('peer-scan-video-wrap');
+  const hintEl     = document.getElementById('peer-scan-hint');
+  const pasteWrap  = document.getElementById('peer-paste-wrap');
+
+  if (!('BarcodeDetector' in window)) {
+    pasteWrap.hidden = false;
+    scanBtn.hidden   = true;
+    return;
+  }
+
+  try {
+    _peerScanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    const video     = document.getElementById('peer-scan-video');
+    video.srcObject = _peerScanStream;
+    videoWrap.hidden = false;
+    hintEl.hidden    = false;
+    scanBtn.textContent = 'Cancelar escaneo';
+    scanBtn.onclick     = _peerStopScan;
+
+    const detector = new BarcodeDetector({ formats: ['qr_code'] });
+    _peerScanTimer = setInterval(async () => {
+      try {
+        const codes = await detector.detect(video);
+        if (codes.length > 0) { _peerStopScan(); await _peerHandleAnswer(codes[0].rawValue); }
+      } catch (_) {}
+    }, 300);
+
+  } catch (err) {
+    pasteWrap.hidden = false;
+    scanBtn.hidden   = true;
+    console.warn('Camera unavailable:', err);
+  }
+}
+
+function _peerStopScan() {
+  clearInterval(_peerScanTimer);
+  _peerScanTimer = null;
+  if (_peerScanStream) { _peerScanStream.getTracks().forEach(t => t.stop()); _peerScanStream = null; }
+  const scanBtn   = document.getElementById('peer-scan-btn');
+  const videoWrap = document.getElementById('peer-scan-video-wrap');
+  const hintEl    = document.getElementById('peer-scan-hint');
+  if (scanBtn)   { scanBtn.textContent = 'Escanear código del móvil'; scanBtn.onclick = peerStartScan; }
+  if (videoWrap) videoWrap.hidden = true;
+  if (hintEl)    hintEl.hidden    = true;
+}
+
+async function _peerHandleAnswer(raw) {
+  try {
+    await peerComplete(peerDecode(raw));
+  } catch (err) {
+    console.error('Answer processing failed:', err);
+    document.getElementById('peer-paste-wrap').hidden = false;
+  }
+}
+
+async function peerPasteConfirm() {
+  const val = document.getElementById('peer-paste-input').value.trim();
+  if (val) await _peerHandleAnswer(val);
+}
+
+function peerDisconnectUI() {
+  peerClose();
+  peerUpdateUI('idle');
+  hidePeerPanel();
+}
+
+// Called by lib/peer.js on connection state changes
+function peerUpdateUI(status) {
+  const btn = document.getElementById('peerBtn');
+  const dot = document.getElementById('peerBtnDot');
+  if (status === 'connected') {
+    _peerShowStep('connected');
+    document.getElementById('peer-title').textContent = 'Sincronizando';
+    btn?.classList.add('peer-on');
+    if (dot) dot.hidden = false;
+  } else if (status === 'closed') {
+    btn?.classList.remove('peer-on');
+    if (dot) dot.hidden = true;
+    if (!document.getElementById('peer-panel').hidden) {
+      document.getElementById('peer-title').textContent = 'Conexión cerrada';
+      setTimeout(_peerRunOfferer, 2500);
+    }
+  } else {
+    btn?.classList.remove('peer-on');
+    if (dot) dot.hidden = true;
+  }
+}
+
+// Auto-open peer panel if launched from a peer QR link
+if (_peerInitHash) showPeerPanel();
 
 // ── Pre-load recorder-dependent satellite iframes so BroadcastChannel works from the start ──
 // wiki is excluded: it doesn't use the recorder, and pre-loading it causes stale content
@@ -681,5 +1116,6 @@ if ('serviceWorker' in navigator) {
   }).observe(w, { attributes: true, attributeFilter: ['data-state', 'data-confirm'] });
 }());
 </script>
+<script src="lib/peer.js"></script>
 </body>
 </html>
