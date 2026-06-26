@@ -621,7 +621,7 @@
       <p id="peer-scan-hint" class="peer-hint" style="text-align:center;font-size:0.82rem" hidden>Apunta la cámara al otro dispositivo</p>
 
       <div id="peer-paste-wrap" hidden>
-        <p class="peer-hint" style="font-size:0.82rem">O pega el código que muestra el otro dispositivo:</p>
+        <p class="peer-hint" style="font-size:0.82rem">O pega el código que muestra el otro dispositivo. También puedes abrir el enlace que comparte desde el móvil — la tablet completará la conexión automáticamente.</p>
         <textarea id="peer-paste-input" class="peer-textarea" placeholder="Pega aquí el código del móvil…"></textarea>
         <button class="peer-btn sec" onclick="peerPasteConfirm()" style="margin-top:8px">Confirmar</button>
       </div>
@@ -633,11 +633,11 @@
       <div id="peer-answer-qr-wrap" class="peer-qr-wrap" hidden>
         <canvas id="peer-answer-qr"></canvas>
       </div>
-      <p id="peer-answer-inst" class="peer-hint" hidden>Muestra este código al otro dispositivo para completar la conexión.</p>
+      <p id="peer-answer-inst" class="peer-hint" hidden>Muestra este código a la tablet, o usa el botón para compartir el enlace por email u otra app.</p>
       <div id="peer-answer-code-box" class="peer-code-box" hidden></div>
       <button id="peer-answer-share-btn" class="peer-btn sec" onclick="peerShareAnswer()" hidden>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Compartir código
+        Compartir enlace
       </button>
     </div>
 
@@ -655,9 +655,13 @@
 </div>
 
 <script>
-// Capture peer offer from URL hash before restoreState clears the URL
+// Capture peer hashes from URL before restoreState clears them
 const _peerInitHash = (() => {
   try { return new URLSearchParams(location.hash.replace(/^#/, '')).get('peer') || null; }
+  catch { return null; }
+})();
+const _peerAnsHash = (() => {
+  try { return new URLSearchParams(location.hash.replace(/^#/, '')).get('peer-ans') || null; }
   catch { return null; }
 })();
 
@@ -883,8 +887,9 @@ function showPeerPanel() {
   if (peer.status === 'connected')                 { _peerShowStep('connected'); return; }
   if (peer.status === 'offering' && _peerOfferUrl) { _peerShowStep('offer');    return; }
   if (peer.status === 'answering')                 { _peerShowStep('answer');   return; }
-  if (_peerInitHash) { _peerRunAnswerer(_peerInitHash); }
-  else               { _peerRunOfferer(); }
+  if (_peerAnsHash)       { _peerRunFromAns(_peerAnsHash); }
+  else if (_peerInitHash) { _peerRunAnswerer(_peerInitHash); }
+  else                    { _peerRunOfferer(); }
 }
 
 function hidePeerPanel() {
@@ -1003,8 +1008,27 @@ async function _peerRunAnswerer(encodedOffer) {
 
 async function peerShareAnswer() {
   if (!_peerAnswerEnc) return;
-  try { await navigator.share({ text: _peerAnswerEnc, title: 'PhysiQ – código de conexión' }); }
-  catch (_) { try { await navigator.clipboard.writeText(_peerAnswerEnc); } catch (__) {} }
+  const url = location.origin + location.pathname + '#peer-ans=' + _peerAnswerEnc;
+  try { await navigator.share({ url, title: 'PhysiQ – respuesta de conexión' }); }
+  catch (_) { try { await navigator.clipboard.writeText(url); } catch (__) {} }
+}
+
+// Called when the tablet opens a #peer-ans= URL shared by the mobile.
+// Strategy: if this tab already has the offering RTCPeerConnection, complete it;
+// otherwise relay via BroadcastChannel so any other open tab in offering state
+// can pick it up. Then start a fresh offer for this tab (user re-pairs if needed).
+async function _peerRunFromAns(ansEnc) {
+  history.replaceState(null, '', location.pathname);
+  if (peer.status === 'offering') {
+    await _peerHandleAnswer(ansEnc);
+    return;
+  }
+  try {
+    const relay = new BroadcastChannel('physiq-peer-ans');
+    relay.postMessage({ enc: ansEnc });
+    relay.close();
+  } catch (_) {}
+  await _peerRunOfferer();
 }
 
 async function peerStartScan() {
@@ -1202,6 +1226,33 @@ function peerUpdateUI(status) {
 }());
 
 // Auto-open trigger is deferred to lib/peer.js so peer functions are defined first
+
+// ── Answer-URL completion ─────────────────────────────────────────────────────
+// When the tablet opens a #peer-ans= link while the page is already loaded
+// (hash change, no reload), process the answer directly without navigation.
+window.addEventListener('hashchange', () => {
+  try {
+    const ans = new URLSearchParams(location.hash.replace(/^#/, '')).get('peer-ans');
+    if (!ans) return;
+    history.replaceState(null, '', location.pathname);
+    if (peer.status === 'offering') {
+      showPeerPanel();
+      _peerHandleAnswer(ans);
+    } else {
+      try { const r = new BroadcastChannel('physiq-peer-ans'); r.postMessage({ enc: ans }); r.close(); } catch (_) {}
+    }
+  } catch (_) {}
+});
+
+// When a #peer-ans= URL opens in a new tab, relay the enc to the original tab
+// that still has the offering RTCPeerConnection alive.
+const _peerAnsRelay = new BroadcastChannel('physiq-peer-ans');
+_peerAnsRelay.onmessage = (e) => {
+  if (peer.status === 'offering' && e.data?.enc) {
+    showPeerPanel();
+    _peerHandleAnswer(e.data.enc);
+  }
+};
 
 // ── Pre-load recorder-dependent satellite iframes so BroadcastChannel works from the start ──
 // wiki is excluded: it doesn't use the recorder, and pre-loading it causes stale content
