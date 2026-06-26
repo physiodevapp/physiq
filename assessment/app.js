@@ -1535,7 +1535,7 @@ function buildResults() {
       <div class="plan-note-hint">¿Qué sensación indica que debemos parar? Ej: dolor &gt;4/10, hormigueo, fatiga excesiva</div>
       <textarea class="plan-note-input" id="planVariableControl" rows="2"
         placeholder="Ej: Parar si el dolor supera 4/10 durante el ejercicio o si aparece hormigueo en el brazo"
-        oninput="state.planNotes.variableControl=this.value"
+        oninput="state.planNotes.variableControl=this.value; saveSession()"
       >${state.planNotes.variableControl}</textarea>
     </div>
     <div class="plan-note-row">
@@ -1543,7 +1543,7 @@ function buildResults() {
       <div class="plan-note-hint">¿Cómo está el dolor a las 24 horas? Dato clave para análisis de carga</div>
       <textarea class="plan-note-input" id="planVentana" rows="2"
         placeholder="Ej: Dolor basal de 3/10 debe volver a 3/10 o menos a las 24h. Si aumenta, reducir dosis."
-        oninput="state.planNotes.ventanaRecuperacion=this.value"
+        oninput="state.planNotes.ventanaRecuperacion=this.value; saveSession()"
       >${state.planNotes.ventanaRecuperacion}</textarea>
     </div>
     <div class="plan-note-row">
@@ -1551,7 +1551,7 @@ function buildResults() {
       <div class="plan-note-hint">Vincular el ejercicio a una actividad existente del paciente para reducir la fricción</div>
       <textarea class="plan-note-input" id="planAnclaje" rows="2"
         placeholder="Ej: Hacer las rotaciones mientras espera que se haga el café por la mañana"
-        oninput="state.planNotes.anclajeHabito=this.value"
+        oninput="state.planNotes.anclajeHabito=this.value; saveSession()"
       >${state.planNotes.anclajeHabito}</textarea>
     </div>
     <div style="margin-top:1rem; padding:1rem; background:var(--surface2); border-radius:var(--radius); border:1px solid var(--border2);">
@@ -1912,40 +1912,35 @@ function _restoreSessionDOM() {
 
 function _applyRemoteAssessmentState(as) {
   const gen = _sessionGen;
+  // Preserve local device's navigation — each device navigates independently
+  const localPhase = state.currentPhase;
+  const localMaxIdx = state.maxVisitedIdx;
+  const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
+  const localIdx = phaseMap[localPhase] ?? 0;
+
   Object.assign(state, as);
+  state.currentPhase = localPhase;
+  // Only advance maxVisitedIdx, never regress it
+  state.maxVisitedIdx = Math.max(localMaxIdx, as.maxVisitedIdx ?? 0);
+
   _restoreSessionDOM();
 
   teardownHypObserver();
   teardownSisObserver();
 
-  const phases = ['phase1','phase2','phase3','phase4','phase4b','phase5'];
-  const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
-  const n = as.currentPhase ?? 1;
-  const idx = phaseMap[n] ?? 0;
-
-  phases.forEach(p => document.getElementById(p)?.classList.remove('active'));
-  document.getElementById(phases[idx])?.classList.add('active');
-  state.currentPhase = n;
-  paintNav(idx);
-  updateMobilePhaseBar(n);
-
-  const pct = [0, 20, 40, 60, 80, 100];
-  const progressEl = document.getElementById('progressBar');
-  if (progressEl) progressEl.style.width = pct[idx] + '%';
-  const indicatorEl = document.getElementById('phaseIndicator');
-  if (indicatorEl) indicatorEl.textContent = `FASE ${n === '4b' ? '4b' : n} / 5`;
-
-  if (n === 2 && typeof restoreSisObserver === 'function') setTimeout(restoreSisObserver, 50);
-  if (n === 4) initCIFTree();
-  if (n === '4b') {
+  // Re-render components for the LOCAL current phase only
+  if (localPhase === 2 && typeof restoreSisObserver === 'function') setTimeout(restoreSisObserver, 50);
+  if (localPhase === 4) initCIFTree();
+  if (localPhase === '4b') {
     const hypContainer = document.getElementById('hypothesisCards');
     if (hypContainer) hypContainer.innerHTML = '';
     buildHypothesisCards();
     if (typeof restoreHypObserver === 'function') setTimeout(restoreHypObserver, 50);
   }
-  if (n === 5) buildResults();
+  if (localPhase === 5) buildResults();
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Update nav breadcrumbs to reflect combined maxVisitedIdx
+  paintNav(localIdx);
 
   const date = as.date || new Date().toLocaleDateString('es-ES');
   writeSession({ patient: state.patient || '', date, assessmentState: { ...state } })
