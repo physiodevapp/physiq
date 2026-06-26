@@ -376,7 +376,7 @@
 <div id="home">
   <header>
     <h1>Physi<span>Q</span></h1>
-    <button id="peerBtn" class="peer-hdr-btn" onclick="togglePeerPanel()" title="Conectar dispositivo móvil" aria-label="Conectar dispositivo móvil">
+    <button id="peerBtn" class="peer-hdr-btn" onclick="togglePeerPanel()" title="Enlazar dispositivo" aria-label="Enlazar dispositivo">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/>
       </svg>
@@ -509,7 +509,7 @@
     <div class="peer-sheet-hdr">
       <div class="peer-sheet-handle"></div>
       <div class="peer-sheet-hdr-row">
-        <span id="peer-title" class="peer-sheet-title">Conectar móvil</span>
+        <span id="peer-title" class="peer-sheet-title">Enlazar dispositivo</span>
         <button class="peer-close-btn" onclick="hidePeerPanel()" aria-label="Cerrar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -518,8 +518,8 @@
 
     <!-- Offerer: tablet muestra QR de oferta, luego escanea respuesta -->
     <div id="peer-step-offer">
-      <p class="peer-step-label">Paso 1 — abre PhysiQ en el móvil</p>
-      <p class="peer-hint">Escanea este código con la cámara del móvil. Si ya tienes PhysiQ abierto en el móvil, comparte el enlace.</p>
+      <p class="peer-step-label">Paso 1 — abre PhysiQ en el otro dispositivo</p>
+      <p class="peer-hint">Escanea este código con la cámara del otro dispositivo. Si ya tienes PhysiQ abierto, comparte el enlace.</p>
       <div id="peer-offer-qr-wrap" class="peer-qr-wrap" hidden>
         <canvas id="peer-offer-qr"></canvas>
       </div>
@@ -529,9 +529,9 @@
         Compartir enlace
       </button>
 
-      <div class="peer-divider">paso 2 — escanea la respuesta del móvil</div>
+      <div class="peer-divider">paso 2 — escanea la respuesta</div>
 
-      <p class="peer-hint">Cuando el móvil muestre su código, escanéalo con la tablet.</p>
+      <p class="peer-hint">Cuando el otro dispositivo muestre su código, escanéalo aquí.</p>
       <button id="peer-scan-btn" class="peer-btn sec" onclick="peerStartScan()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/></svg>
         Escanear código del móvil
@@ -539,10 +539,10 @@
       <div id="peer-scan-video-wrap" class="peer-video-wrap" hidden>
         <video id="peer-scan-video" autoplay playsinline muted></video>
       </div>
-      <p id="peer-scan-hint" class="peer-hint" style="text-align:center;font-size:0.82rem" hidden>Apunta la tablet al móvil</p>
+      <p id="peer-scan-hint" class="peer-hint" style="text-align:center;font-size:0.82rem" hidden>Apunta la cámara al otro dispositivo</p>
 
       <div id="peer-paste-wrap" hidden>
-        <p class="peer-hint" style="font-size:0.82rem">O pega el código que el móvil muestra como texto:</p>
+        <p class="peer-hint" style="font-size:0.82rem">O pega el código que muestra el otro dispositivo:</p>
         <textarea id="peer-paste-input" class="peer-textarea" placeholder="Pega aquí el código del móvil…"></textarea>
         <button class="peer-btn sec" onclick="peerPasteConfirm()" style="margin-top:8px">Confirmar</button>
       </div>
@@ -554,7 +554,7 @@
       <div id="peer-answer-qr-wrap" class="peer-qr-wrap" hidden>
         <canvas id="peer-answer-qr"></canvas>
       </div>
-      <p id="peer-answer-inst" class="peer-hint" hidden>Muestra este código a la tablet para completar la conexión.</p>
+      <p id="peer-answer-inst" class="peer-hint" hidden>Muestra este código al otro dispositivo para completar la conexión.</p>
       <div id="peer-answer-code-box" class="peer-code-box" hidden></div>
       <button id="peer-answer-share-btn" class="peer-btn sec" onclick="peerShareAnswer()" hidden>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -568,7 +568,7 @@
         <span class="peer-live-dot"></span>
         <span>Sincronización activa</span>
       </div>
-      <p class="peer-hint" style="font-size:0.85rem">Los datos del móvil llegan a esta tablet en tiempo real.</p>
+      <p class="peer-hint" style="font-size:0.85rem">Ambos dispositivos están sincronizados en tiempo real.</p>
       <button class="peer-btn danger" onclick="peerDisconnectUI()">Desconectar</button>
     </div>
 
@@ -822,7 +822,7 @@ function _peerShowStep(step) {
 
 async function _peerRunOfferer() {
   _peerShowStep('offer');
-  document.getElementById('peer-title').textContent = 'Conectar móvil';
+  document.getElementById('peer-title').textContent = 'Enlazar dispositivo';
 
   // Reset scan area
   document.getElementById('peer-paste-wrap').hidden        = true;
@@ -881,7 +881,7 @@ async function peerShareOffer() {
 
 async function _peerRunAnswerer(encodedOffer) {
   _peerShowStep('answer');
-  document.getElementById('peer-title').textContent = 'Conectando con tablet';
+  document.getElementById('peer-title').textContent = 'Conectando…';
   document.getElementById('peer-answer-status').textContent = 'Procesando conexión…';
   document.getElementById('peer-answer-qr-wrap').hidden   = true;
   document.getElementById('peer-answer-inst').hidden       = true;
