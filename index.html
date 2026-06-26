@@ -265,17 +265,19 @@
     }
     .peer-overlay.open .peer-sheet { transform: translateY(0); }
 
+    .peer-sheet-hdr {
+      display: flex; flex-direction: column; align-items: stretch; gap: 0.6rem;
+      padding: 10px 0 1rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: #111620; z-index: 1;
+    }
     .peer-sheet-handle {
       width: 36px; height: 4px;
       background: var(--border2); border-radius: 2px;
-      margin: 14px auto 6px; touch-action: none; flex-shrink: 0;
+      margin: 0 auto; touch-action: none; align-self: center;
     }
-
-    .peer-sheet-hdr {
+    .peer-sheet-hdr-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.75rem 0 1rem;
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; background: #111620; z-index: 1;
     }
     .peer-sheet-title {
       font-family: 'DM Serif Display', serif;
@@ -503,13 +505,15 @@
 <!-- ── Peer connect panel ──────────────────────────────────────────────── -->
 <div id="peer-panel" class="peer-overlay" onclick="_peerOverlayClick(event)">
   <div class="peer-sheet" id="peer-sheet">
-    <div class="peer-sheet-handle"></div>
 
     <div class="peer-sheet-hdr">
-      <span id="peer-title" class="peer-sheet-title">Conectar móvil</span>
-      <button class="peer-close-btn" onclick="hidePeerPanel()" aria-label="Cerrar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <div class="peer-sheet-handle"></div>
+      <div class="peer-sheet-hdr-row">
+        <span id="peer-title" class="peer-sheet-title">Conectar móvil</span>
+        <button class="peer-close-btn" onclick="hidePeerPanel()" aria-label="Cerrar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- Offerer: tablet muestra QR de oferta, luego escanea respuesta -->
