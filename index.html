@@ -235,6 +235,13 @@
     }
     .peer-hdr-btn:hover { border-color: #4f9cf9; color: #4f9cf9; }
     .peer-hdr-btn.peer-on { border-color: #38d9a9; color: #38d9a9; }
+    /* tablet (≥768px): phone icon visible, tablet icon hidden */
+    .peer-btn-icon-tablet { display: none; }
+    /* mobile (<768px): tablet icon visible, phone icon hidden */
+    @media (max-width: 767px) {
+      .peer-btn-icon-phone  { display: none; }
+      .peer-btn-icon-tablet { display: block; }
+    }
 
     .peer-hdr-dot {
       position: absolute; top: 2px; right: 2px;
@@ -377,8 +384,13 @@
   <header>
     <h1>Physi<span>Q</span></h1>
     <button id="peerBtn" class="peer-hdr-btn" onclick="togglePeerPanel()" title="Enlazar dispositivo" aria-label="Enlazar dispositivo">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- tablet (≥768px): muestra icono de móvil para conectar el móvil -->
+      <svg class="peer-btn-icon-phone" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/>
+      </svg>
+      <!-- móvil (<768px): muestra icono de tablet para conectar la tablet -->
+      <svg class="peer-btn-icon-tablet" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="19" y1="12" x2="19.01" y2="12"/>
       </svg>
       <span id="peerBtnDot" class="peer-hdr-dot" hidden></span>
     </button>
