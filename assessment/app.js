@@ -67,6 +67,10 @@ _sessionCh.onmessage = ({ data }) => {
     clearSession(); _softResetApp(); goToPhase(1);
     return;
   }
+  if (data.type === 'SESSION_ASSESSMENT_STATE') {
+    if (data._relay && data.assessmentState) _applyRemoteAssessmentState(data.assessmentState);
+    return;
+  }
   if (data.type !== 'SESSION_PATIENT') return;
   const el = document.getElementById('patientName');
   if (!el || document.activeElement === el) return;
@@ -1816,6 +1820,7 @@ function saveSession() {
           const _phaseLabels = [1, 2, 3, 4, '4b', 5];
           _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
         }
+        _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_STATE', assessmentState: { ...state } });
       });
   }
 }
@@ -1905,6 +1910,50 @@ function _restoreSessionDOM() {
   // Phases 4 / 4b / 5 restore automatically via initCIFTree / buildHypothesisCards / buildResults
 }
 
+function _applyRemoteAssessmentState(as) {
+  const gen = _sessionGen;
+  Object.assign(state, as);
+  _restoreSessionDOM();
+
+  teardownHypObserver();
+  teardownSisObserver();
+
+  const phases = ['phase1','phase2','phase3','phase4','phase4b','phase5'];
+  const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
+  const n = as.currentPhase ?? 1;
+  const idx = phaseMap[n] ?? 0;
+
+  phases.forEach(p => document.getElementById(p)?.classList.remove('active'));
+  document.getElementById(phases[idx])?.classList.add('active');
+  state.currentPhase = n;
+  paintNav(idx);
+  updateMobilePhaseBar(n);
+
+  const pct = [0, 20, 40, 60, 80, 100];
+  const progressEl = document.getElementById('progressBar');
+  if (progressEl) progressEl.style.width = pct[idx] + '%';
+  const indicatorEl = document.getElementById('phaseIndicator');
+  if (indicatorEl) indicatorEl.textContent = `FASE ${n === '4b' ? '4b' : n} / 5`;
+
+  if (n === 2 && typeof restoreSisObserver === 'function') setTimeout(restoreSisObserver, 50);
+  if (n === 4) initCIFTree();
+  if (n === '4b') {
+    const hypContainer = document.getElementById('hypothesisCards');
+    if (hypContainer) hypContainer.innerHTML = '';
+    buildHypothesisCards();
+    if (typeof restoreHypObserver === 'function') setTimeout(restoreHypObserver, 50);
+  }
+  if (n === 5) buildResults();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const date = as.date || new Date().toLocaleDateString('es-ES');
+  writeSession({ patient: state.patient || '', date, assessmentState: { ...state } })
+    .then(session => {
+      if (_sessionGen !== gen) return;
+      if (session) updateSessionChip(session);
+    });
+}
 
 
 // ─── INIT ─────────────────────────────────────────────────────
