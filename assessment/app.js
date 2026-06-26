@@ -941,8 +941,11 @@ function restoreCIFTree(tree) {
   // Reconstruir hipótesis desde cero a partir de las respuestas guardadas
   state.activeHypotheses = [];
 
+  let lastAnsweredStepIdx = -1;
+  let lastAnsweredOpt = null;
+
   // Renderizar y restaurar cada paso que tenga respuesta guardada
-  tree.steps.forEach(step => {
+  tree.steps.forEach((step, stepIdx) => {
     const savedValue = state.treeAnswers[step.id];
     // Solo renderizar si el paso fue visitado
     if (savedValue === undefined) return;
@@ -961,7 +964,29 @@ function restoreCIFTree(tree) {
     step.options[savedOptIdx].hypothesis.forEach(h => {
       if (!state.activeHypotheses.includes(h)) state.activeHypotheses.push(h);
     });
+
+    lastAnsweredStepIdx = stepIdx;
+    lastAnsweredOpt = step.options[savedOptIdx];
   });
+
+  // Renderizar el siguiente paso pendiente (igual que selectTreeOption) para que
+  // el dispositivo receptor vea la pregunta en curso y no el mensaje de árbol completo
+  if (lastAnsweredStepIdx !== -1 && lastAnsweredOpt) {
+    const nextStepsToRender = [];
+    if (lastAnsweredOpt.next) {
+      const explicitNext = tree.steps.find(s => s.id === lastAnsweredOpt.next);
+      if (explicitNext && state.treeAnswers[explicitNext.id] === undefined) {
+        nextStepsToRender.push(explicitNext);
+      }
+    }
+    if (!lastAnsweredOpt.next && lastAnsweredStepIdx + 1 < tree.steps.length) {
+      const sequentialNext = tree.steps[lastAnsweredStepIdx + 1];
+      if (state.treeAnswers[sequentialNext.id] === undefined && !nextStepsToRender.some(s => s.id === sequentialNext.id)) {
+        nextStepsToRender.push(sequentialNext);
+      }
+    }
+    nextStepsToRender.forEach(s => renderStep(s));
+  }
 
   checkTreeComplete(tree);
 }
@@ -1933,8 +1958,15 @@ function _applyRemoteAssessmentState(as) {
   if (localPhase === 4) initCIFTree();
   if (localPhase === '4b') {
     const hypContainer = document.getElementById('hypothesisCards');
+    // Preserve which card was open before rebuilding
+    const openCard = hypContainer?.querySelector('.hypothesis-card.open');
+    const openHypId = openCard?.id?.replace('hypcard_', '') || null;
     if (hypContainer) hypContainer.innerHTML = '';
     buildHypothesisCards();
+    if (openHypId) {
+      const restoredCard = document.getElementById(`hypcard_${openHypId}`);
+      if (restoredCard) restoredCard.classList.add('open');
+    }
     if (typeof restoreHypObserver === 'function') setTimeout(restoreHypObserver, 50);
   }
   if (localPhase === 5) buildResults();
