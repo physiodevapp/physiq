@@ -927,7 +927,7 @@ async function _peerRunOfferer() {
 
   try {
     const sdp = await peerOffer();
-    const enc  = peerEncode(sdp);
+    const enc  = await peerEncode(sdp);
     const url  = location.origin + location.pathname + '#peer=' + enc;
     _peerOfferUrl = url;
 
@@ -973,10 +973,11 @@ async function _peerRunAnswerer(encodedOffer) {
   document.getElementById('peer-answer-share-btn').hidden  = true;
 
   try {
-    const answerSdp = peerDecode(encodedOffer);
+    const answerSdp = await peerDecode(encodedOffer);
     const sdp       = await peerAnswer(answerSdp);
-    const enc       = peerEncode(sdp);
+    const enc       = await peerEncode(sdp);
     _peerAnswerEnc  = enc;
+    const answerUrl = location.origin + location.pathname + '#peer-ans=' + enc;
 
     document.getElementById('peer-answer-status').textContent = 'Muestra este código a la tablet:';
     document.getElementById('peer-answer-inst').hidden = false;
@@ -986,13 +987,13 @@ async function _peerRunAnswerer(encodedOffer) {
     const codeBox    = document.getElementById('peer-answer-code-box');
     let   qrShown    = false;
     try {
-      await QRCode.toCanvas(qrCanvas, enc, { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } });
+      await QRCode.toCanvas(qrCanvas, answerUrl, { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } });
       document.getElementById('peer-answer-qr-wrap').hidden = false;
       qrShown = true;
     } catch (_) {}
 
     if (!qrShown) {
-      codeBox.textContent = enc;
+      codeBox.textContent = answerUrl;
       codeBox.hidden = false;
     }
     if (navigator.share || navigator.clipboard) {
@@ -1081,7 +1082,13 @@ function _peerStopScan() {
 
 async function _peerHandleAnswer(raw) {
   try {
-    await peerComplete(peerDecode(raw));
+    // Accept both the full URL (#peer-ans=<enc>) and the raw enc string
+    let enc = raw.trim();
+    try {
+      const u = new URL(enc);
+      enc = new URLSearchParams(u.hash.replace(/^#/, '')).get('peer-ans') || enc;
+    } catch (_) {}
+    await peerComplete(await peerDecode(enc));
   } catch (err) {
     console.error('Answer processing failed:', err);
     document.getElementById('peer-paste-wrap').hidden = false;
