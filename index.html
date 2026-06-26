@@ -376,6 +376,17 @@
     }
     .peer-connected-chip span { font-size: 0.9rem; color: #38d9a9; font-weight: 500; }
 
+    /* ── ICE failure warning ─────────────────────────────── */
+    #peer-ice-error {
+      background: rgba(124,45,45,0.18);
+      border: 1px solid #7c2d2d;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      display: flex; flex-direction: column; gap: 0.7rem;
+      margin-top: 0.25rem;
+    }
+    #peer-ice-error p { font-size: 0.83rem; color: #f87171; line-height: 1.5; }
+
     /* ── Session conflict banner ─────────────────────────── */
     #peer-conflict-banner {
       position: fixed; inset: 0; z-index: 600;
@@ -594,6 +605,12 @@
         </button>
       </div>
       <p style="font-size:0.78rem;color:var(--text3);text-align:center;margin:0">Ambos dispositivos deben estar en la misma red Wi-Fi o punto de acceso.</p>
+    </div>
+
+    <!-- ICE failure / network mismatch warning -->
+    <div id="peer-ice-error" hidden>
+      <p>No se pudo establecer la conexión. Comprueba que ambos dispositivos estén en la misma red Wi-Fi o punto de acceso, e inténtalo de nuevo.</p>
+      <button class="peer-btn sec" style="font-size:0.82rem" onclick="_peerRunOfferer()">Reintentar</button>
     </div>
 
     <!-- Offerer: tablet muestra QR de oferta, luego escanea respuesta -->
@@ -906,6 +923,7 @@ function _peerShowStep(step) {
 
 
 async function _peerRunOfferer() {
+  _peerClearICEError();
   _peerShowStep('offer');
   document.getElementById('peer-title').textContent = 'Enlazar dispositivo';
 
@@ -965,6 +983,7 @@ async function peerShareOffer() {
 }
 
 async function _peerRunAnswerer(encodedOffer) {
+  _peerClearICEError();
   _peerShowStep('answer');
   document.getElementById('peer-title').textContent = 'Conectando…';
   document.getElementById('peer-answer-status').textContent = 'Procesando conexión…';
@@ -1154,6 +1173,15 @@ function peerShowConflict(local, remote) {
 
 function peerDismissConflict() {
   document.getElementById('peer-conflict-banner')?.remove();
+}
+
+// Called by lib/peer.js when ICE fails or times out (likely different network)
+function peerOnICEFailed() {
+  document.getElementById('peer-ice-error').hidden = false;
+}
+
+function _peerClearICEError() {
+  document.getElementById('peer-ice-error').hidden = true;
 }
 
 // Called by lib/peer.js on connection state changes
