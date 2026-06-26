@@ -8,7 +8,7 @@
   <link rel="manifest" href="/physiq/manifest.json">
   <meta name="theme-color" content="#1e2d3d">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js" crossorigin="anonymous" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js" crossorigin="anonymous" async onload="_onQRCodeLoad()"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     [hidden] { display: none !important; }
@@ -782,7 +782,9 @@ function togglePeerPanel() {
 
 function showPeerPanel() {
   document.getElementById('peer-panel').hidden = false;
-  if (peer.status === 'connected') { _peerShowStep('connected'); return; }
+  if (peer.status === 'connected')                 { _peerShowStep('connected'); return; }
+  if (peer.status === 'offering' && _peerOfferUrl) { _peerShowStep('offer');    return; }
+  if (peer.status === 'answering')                 { _peerShowStep('answer');   return; }
   if (_peerInitHash) { _peerRunAnswerer(_peerInitHash); }
   else               { _peerRunOfferer(); }
 }
@@ -796,6 +798,23 @@ function _peerShowStep(step) {
   ['offer', 'answer', 'connected'].forEach(s =>
     document.getElementById('peer-step-' + s).hidden = s !== step
   );
+}
+
+// Called when QRCode CDN loads after ICE already gathered (async race)
+function _onQRCodeLoad() {
+  const qrSize = Math.min(window.innerWidth - 80, 240);
+  if (_peerOfferUrl) {
+    QRCode.toCanvas(document.getElementById('peer-offer-qr'), _peerOfferUrl,
+      { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } })
+      .then(() => { document.getElementById('peer-offer-qr-wrap').hidden = false; })
+      .catch(() => {});
+  }
+  if (_peerAnswerEnc) {
+    QRCode.toCanvas(document.getElementById('peer-answer-qr'), _peerAnswerEnc,
+      { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } })
+      .then(() => { document.getElementById('peer-answer-qr-wrap').hidden = false; })
+      .catch(() => {});
+  }
 }
 
 async function _peerRunOfferer() {
