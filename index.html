@@ -375,6 +375,73 @@
       animation: rw-blink 1.5s ease-in-out infinite;
     }
     .peer-connected-chip span { font-size: 0.9rem; color: #38d9a9; font-weight: 500; }
+
+    /* ── Session conflict banner ─────────────────────────── */
+    #peer-conflict-banner {
+      position: fixed; inset: 0; z-index: 600;
+      background: rgba(10,13,18,0.88);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .peer-conflict-sheet {
+      width: 100%; max-height: 92dvh; overflow-y: auto;
+      overscroll-behavior: contain;
+      background: #111620;
+      border-top: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      padding: 0 1.25rem calc(env(safe-area-inset-bottom, 0px) + 1.75rem);
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .peer-conflict-hdr {
+      display: flex; flex-direction: column; align-items: stretch; gap: 0.55rem;
+      padding: 10px 0 1rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: #111620; z-index: 1;
+    }
+    .peer-conflict-handle {
+      width: 36px; height: 4px;
+      background: var(--border2); border-radius: 2px;
+      margin: 0 auto;
+    }
+    .peer-conflict-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem; color: #e8edf2; font-weight: 400;
+    }
+    .peer-conflict-sub {
+      font-size: 0.82rem; color: #8aa4bc; line-height: 1.5;
+    }
+    .peer-conflict-cards {
+      display: flex; flex-direction: column; gap: 0.75rem;
+    }
+    .peer-conflict-card {
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 6px;
+      background: #0a0d12;
+    }
+    .peer-conflict-card-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; color: #5a6e8a;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .peer-conflict-card-name {
+      font-size: 0.95rem; color: #e8edf2; font-weight: 500;
+    }
+    .peer-conflict-card-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem; color: #5a6e8a;
+    }
+    .peer-conflict-card-btn {
+      margin-top: 6px;
+      width: 100%; padding: 11px 14px;
+      border-radius: 8px; border: 1px solid var(--border2);
+      background: transparent; color: #8aa4bc;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500;
+      cursor: pointer; text-align: center;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .peer-conflict-card-btn:hover { border-color: #4f9cf9; color: #4f9cf9; background: rgba(79,156,249,0.07); }
+    .peer-conflict-card-btn:active { opacity: 0.75; }
   </style>
 </head>
 <body>
@@ -1006,6 +1073,55 @@ function peerDisconnectUI() {
   peerClose();
   peerUpdateUI('idle');
   hidePeerPanel();
+}
+
+// ── Session conflict UI ───────────────────────────────────────────────────────
+function _peerSessionLabel(s) {
+  const parts = [];
+  if (s.patient) parts.push(s.patient);
+  const n = s.rom?.regions ? Object.keys(s.rom.regions).length : 0;
+  if (n) parts.push(n + (n === 1 ? ' región' : ' regiones'));
+  return parts.length ? parts.join(' · ') : 'Sesión sin nombre';
+}
+
+function _peerSessionMeta(s) {
+  if (!s.updatedAt) return '';
+  const d = new Date(s.updatedAt);
+  return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })
+    + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+}
+
+function peerShowConflict(local, remote) {
+  peerDismissConflict();
+  const el = document.createElement('div');
+  el.id = 'peer-conflict-banner';
+  el.innerHTML = `
+    <div class="peer-conflict-sheet">
+      <div class="peer-conflict-hdr">
+        <div class="peer-conflict-handle"></div>
+        <span class="peer-conflict-title">Conflicto de sesiones</span>
+        <p class="peer-conflict-sub">Ambos dispositivos tienen una sesión activa. Elige con cuál continuar — la otra se descartará en este dispositivo.</p>
+      </div>
+      <div class="peer-conflict-cards">
+        <div class="peer-conflict-card">
+          <span class="peer-conflict-card-label">Este dispositivo</span>
+          <span class="peer-conflict-card-name">${_peerSessionLabel(local)}</span>
+          <span class="peer-conflict-card-meta">${_peerSessionMeta(local)}</span>
+          <button class="peer-conflict-card-btn" onclick="peerResolveConflictLocal()">Usar esta sesión</button>
+        </div>
+        <div class="peer-conflict-card">
+          <span class="peer-conflict-card-label">Otro dispositivo</span>
+          <span class="peer-conflict-card-name">${_peerSessionLabel(remote)}</span>
+          <span class="peer-conflict-card-meta">${_peerSessionMeta(remote)}</span>
+          <button class="peer-conflict-card-btn" onclick="peerResolveConflictRemote()">Usar esta sesión</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+}
+
+function peerDismissConflict() {
+  document.getElementById('peer-conflict-banner')?.remove();
 }
 
 // Called by lib/peer.js on connection state changes
