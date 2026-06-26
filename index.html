@@ -244,27 +244,36 @@
 
     .peer-overlay {
       position: fixed; inset: 0; z-index: 500;
-      background: rgba(0,0,0,0.65);
+      background: rgba(10,13,18,0.75);
       backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
       display: flex; align-items: flex-end;
-      animation: peerFadeIn 0.2s ease;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
     }
-    @keyframes peerFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .peer-overlay.open { opacity: 1; pointer-events: all; }
 
     .peer-sheet {
       width: 100%; max-height: 90dvh; overflow-y: auto;
+      overscroll-behavior: contain;
       background: #111620;
-      border: 1px solid var(--border); border-bottom: none;
-      border-radius: 16px 16px 0 0;
+      border-top: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
       padding: 0 1.5rem calc(env(safe-area-inset-bottom, 0px) + 2rem);
       display: flex; flex-direction: column; gap: 1.1rem;
-      animation: peerSlideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
     }
-    @keyframes peerSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .peer-overlay.open .peer-sheet { transform: translateY(0); }
+
+    .peer-sheet-handle {
+      width: 36px; height: 4px;
+      background: var(--border2); border-radius: 2px;
+      margin: 14px auto 6px; touch-action: none; flex-shrink: 0;
+    }
 
     .peer-sheet-hdr {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1.25rem 0 1rem;
+      padding: 0.75rem 0 1rem;
       border-bottom: 1px solid var(--border);
       position: sticky; top: 0; background: #111620; z-index: 1;
     }
@@ -492,8 +501,9 @@
 </div>
 
 <!-- ── Peer connect panel ──────────────────────────────────────────────── -->
-<div id="peer-panel" class="peer-overlay" hidden onclick="_peerOverlayClick(event)">
-  <div class="peer-sheet">
+<div id="peer-panel" class="peer-overlay" onclick="_peerOverlayClick(event)">
+  <div class="peer-sheet" id="peer-sheet">
+    <div class="peer-sheet-handle"></div>
 
     <div class="peer-sheet-hdr">
       <span id="peer-title" class="peer-sheet-title">Conectar móvil</span>
@@ -781,11 +791,12 @@ function _peerOverlayClick(e) {
 }
 
 function togglePeerPanel() {
-  document.getElementById('peer-panel').hidden ? showPeerPanel() : hidePeerPanel();
+  const panel = document.getElementById('peer-panel');
+  panel.classList.contains('open') ? hidePeerPanel() : showPeerPanel();
 }
 
 function showPeerPanel() {
-  document.getElementById('peer-panel').hidden = false;
+  document.getElementById('peer-panel').classList.add('open');
   if (peer.status === 'connected')                 { _peerShowStep('connected'); return; }
   if (peer.status === 'offering' && _peerOfferUrl) { _peerShowStep('offer');    return; }
   if (peer.status === 'answering')                 { _peerShowStep('answer');   return; }
@@ -795,7 +806,7 @@ function showPeerPanel() {
 
 function hidePeerPanel() {
   _peerStopScan();
-  document.getElementById('peer-panel').hidden = true;
+  document.getElementById('peer-panel').classList.remove('open');
 }
 
 function _peerShowStep(step) {
@@ -993,7 +1004,7 @@ function peerUpdateUI(status) {
   } else if (status === 'closed') {
     btn?.classList.remove('peer-on');
     if (dot) dot.hidden = true;
-    if (!document.getElementById('peer-panel').hidden) {
+    if (document.getElementById('peer-panel').classList.contains('open')) {
       document.getElementById('peer-title').textContent = 'Conexión cerrada';
       setTimeout(_peerRunOfferer, 2500);
     }
@@ -1002,6 +1013,61 @@ function peerUpdateUI(status) {
     if (dot) dot.hidden = true;
   }
 }
+
+// ── Swipe-to-close (identical to physiq-motion bottom sheet) ─────────────────
+(function () {
+  const sheet = document.getElementById('peer-sheet');
+  if (!sheet) return;
+  let startY = 0, startTime = 0, dragging = false, delta = 0, snapTimer = null;
+  const EASE = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+
+  sheet.addEventListener('touchstart', e => {
+    if (e.touches[0].clientY - sheet.getBoundingClientRect().top > 72) return;
+    startY    = e.touches[0].clientY;
+    startTime = Date.now();
+    delta     = 0;
+    dragging  = true;
+    clearTimeout(snapTimer);
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  sheet.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    delta = Math.max(0, e.touches[0].clientY - startY);
+    sheet.style.transform = delta > 0 ? `translateY(${delta}px)` : 'translateY(0)';
+  }, { passive: true });
+
+  function onRelease() {
+    if (!dragging) return;
+    dragging = false;
+    const velocity = delta / (Date.now() - startTime);
+    if (delta > 80 || velocity > 0.3) {
+      sheet.style.transition = EASE;
+      sheet.style.transform  = 'translateY(110%)';
+      setTimeout(() => {
+        sheet.style.transition = 'none';
+        hidePeerPanel();
+        sheet.style.transform  = '';
+        sheet.style.transition = '';
+      }, 300);
+    } else {
+      sheet.style.transition = EASE;
+      sheet.style.transform  = 'translateY(0)';
+      snapTimer = setTimeout(() => {
+        sheet.style.transform  = '';
+        sheet.style.transition = '';
+      }, 310);
+    }
+  }
+
+  sheet.addEventListener('touchend',   onRelease, { passive: true });
+  sheet.addEventListener('touchcancel', () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transform  = '';
+    sheet.style.transition = '';
+  }, { passive: true });
+}());
 
 // Auto-open trigger is deferred to lib/peer.js so peer functions are defined first
 
