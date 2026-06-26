@@ -348,6 +348,37 @@
       content: ''; flex: 1; height: 1px; background: var(--border);
     }
 
+    /* ── Offer step: slider on mobile, 2-col grid on tablet ─ */
+    .peer-steps-slider {
+      display: flex;
+      overflow-x: scroll; scroll-snap-type: x mandatory; scrollbar-width: none;
+    }
+    .peer-steps-slider::-webkit-scrollbar { display: none; }
+    .peer-slide {
+      flex: 0 0 100%; scroll-snap-align: start;
+      display: flex; flex-direction: column; gap: 1rem; min-width: 0;
+    }
+    .peer-slider-dots {
+      display: flex; justify-content: center; gap: 8px; padding-top: 0.15rem;
+    }
+    .peer-slider-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border2); cursor: pointer; transition: background 0.2s;
+    }
+    .peer-slider-dot.active { background: #4f9cf9; }
+
+    @media (min-width: 640px) {
+      .peer-steps-slider {
+        display: grid; grid-template-columns: 1fr 1fr;
+        overflow: visible; scroll-snap-type: none;
+      }
+      .peer-slide { flex: unset; }
+      .peer-slide + .peer-slide {
+        border-left: 1px solid var(--border); padding-left: 1.5rem;
+      }
+      .peer-slider-dots { display: none; }
+    }
+
     .peer-video-wrap {
       border-radius: 10px; overflow: hidden;
       background: #000; aspect-ratio: 4/3;
@@ -628,33 +659,46 @@
 
     <!-- Offerer: tablet muestra QR de oferta, luego escanea respuesta -->
     <div id="peer-step-offer">
-      <p class="peer-step-label">Paso 1 — abre PhysiQ en el otro dispositivo</p>
-      <p class="peer-hint">Escanea este código con la cámara del otro dispositivo. Si ya tienes PhysiQ abierto, comparte el enlace.</p>
-      <div id="peer-offer-qr-wrap" class="peer-qr-wrap" hidden>
-        <canvas id="peer-offer-qr"></canvas>
+      <div id="peer-steps-slider" class="peer-steps-slider">
+
+        <!-- Slide 1: QR de oferta -->
+        <div class="peer-slide">
+          <p class="peer-step-label">Paso 1 — abre PhysiQ en el otro dispositivo</p>
+          <p class="peer-hint">Escanea este código con la cámara del otro dispositivo. Si ya tienes PhysiQ abierto, comparte el enlace.</p>
+          <div id="peer-offer-qr-wrap" class="peer-qr-wrap" hidden>
+            <canvas id="peer-offer-qr"></canvas>
+          </div>
+          <div id="peer-offer-url-box" class="peer-code-box" hidden></div>
+          <button id="peer-share-btn" class="peer-btn sec" onclick="peerShareOffer()" hidden>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Compartir enlace
+          </button>
+        </div>
+
+        <!-- Slide 2: escanear respuesta -->
+        <div class="peer-slide">
+          <p class="peer-step-label">Paso 2 — escanea la respuesta</p>
+          <p class="peer-hint">Cuando el otro dispositivo muestre su código, escanéalo aquí.</p>
+          <button id="peer-scan-btn" class="peer-btn sec" onclick="peerStartScan()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/></svg>
+            Escanear código del móvil
+          </button>
+          <div id="peer-scan-video-wrap" class="peer-video-wrap" hidden>
+            <video id="peer-scan-video" autoplay playsinline muted></video>
+          </div>
+          <p id="peer-scan-hint" class="peer-hint" style="text-align:center;font-size:0.82rem" hidden>Apunta la cámara al otro dispositivo</p>
+          <div id="peer-paste-wrap" hidden>
+            <p class="peer-hint" style="font-size:0.82rem">O pega el código que muestra el otro dispositivo. También puedes abrir el enlace que comparte desde el móvil — la tablet completará la conexión automáticamente.</p>
+            <textarea id="peer-paste-input" class="peer-textarea" placeholder="Pega aquí el código del móvil…"></textarea>
+            <button class="peer-btn sec" onclick="peerPasteConfirm()" style="margin-top:8px">Confirmar</button>
+          </div>
+        </div>
+
       </div>
-      <div id="peer-offer-url-box" class="peer-code-box" hidden></div>
-      <button id="peer-share-btn" class="peer-btn sec" onclick="peerShareOffer()" hidden>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Compartir enlace
-      </button>
-
-      <div class="peer-divider">paso 2 — escanea la respuesta</div>
-
-      <p class="peer-hint">Cuando el otro dispositivo muestre su código, escanéalo aquí.</p>
-      <button id="peer-scan-btn" class="peer-btn sec" onclick="peerStartScan()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/></svg>
-        Escanear código del móvil
-      </button>
-      <div id="peer-scan-video-wrap" class="peer-video-wrap" hidden>
-        <video id="peer-scan-video" autoplay playsinline muted></video>
-      </div>
-      <p id="peer-scan-hint" class="peer-hint" style="text-align:center;font-size:0.82rem" hidden>Apunta la cámara al otro dispositivo</p>
-
-      <div id="peer-paste-wrap" hidden>
-        <p class="peer-hint" style="font-size:0.82rem">O pega el código que muestra el otro dispositivo. También puedes abrir el enlace que comparte desde el móvil — la tablet completará la conexión automáticamente.</p>
-        <textarea id="peer-paste-input" class="peer-textarea" placeholder="Pega aquí el código del móvil…"></textarea>
-        <button class="peer-btn sec" onclick="peerPasteConfirm()" style="margin-top:8px">Confirmar</button>
+      <!-- Dot indicators (mobile only) -->
+      <div class="peer-slider-dots">
+        <span class="peer-slider-dot active" onclick="peerGoToSlide(0)"></span>
+        <span class="peer-slider-dot" onclick="peerGoToSlide(1)"></span>
       </div>
     </div>
 
@@ -935,8 +979,27 @@ function _peerShowStep(step) {
 }
 
 
+function peerGoToSlide(idx, smooth = true) {
+  const slider = document.getElementById('peer-steps-slider');
+  if (!slider) return;
+  slider.scrollTo({ left: idx * slider.offsetWidth, behavior: smooth ? 'smooth' : 'instant' });
+}
+
+// Sync dot indicators when user swipes the slider
+(function () {
+  const slider = document.getElementById('peer-steps-slider');
+  if (!slider) return;
+  slider.addEventListener('scroll', () => {
+    const idx = Math.round(slider.scrollLeft / slider.offsetWidth);
+    document.querySelectorAll('.peer-slider-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === idx)
+    );
+  }, { passive: true });
+})();
+
 async function _peerRunOfferer() {
   _peerClearICEError();
+  peerGoToSlide(0, false);
   _peerShowStep('offer');
   document.getElementById('peer-title').textContent = 'Enlazar dispositivo';
 
@@ -1066,6 +1129,7 @@ async function _peerRunFromAns(ansEnc) {
 }
 
 async function peerStartScan() {
+  peerGoToSlide(1);
   const scanBtn    = document.getElementById('peer-scan-btn');
   const videoWrap  = document.getElementById('peer-scan-video-wrap');
   const hintEl     = document.getElementById('peer-scan-hint');
