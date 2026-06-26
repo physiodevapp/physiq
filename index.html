@@ -8,7 +8,7 @@
   <link rel="manifest" href="/physiq/manifest.json">
   <meta name="theme-color" content="#1e2d3d">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js" crossorigin="anonymous" async onload="_onQRCodeLoad()"></script>
+  <script src="/physiq/lib/qrcode.min.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     [hidden] { display: none !important; }
@@ -340,6 +340,10 @@
       padding: 10px 12px; resize: vertical; min-height: 72px;
       font-family: 'DM Mono', monospace; font-size: 0.7rem; color: #8aa4bc;
       color-scheme: dark;
+    }
+
+    #peer-step-offer, #peer-step-answer, #peer-step-connected {
+      display: flex; flex-direction: column; gap: 1.1rem;
     }
 
     .peer-connected-chip {
@@ -800,22 +804,6 @@ function _peerShowStep(step) {
   );
 }
 
-// Called when QRCode CDN loads after ICE already gathered (async race)
-function _onQRCodeLoad() {
-  const qrSize = Math.min(window.innerWidth - 80, 240);
-  if (_peerOfferUrl) {
-    QRCode.toCanvas(document.getElementById('peer-offer-qr'), _peerOfferUrl,
-      { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } })
-      .then(() => { document.getElementById('peer-offer-qr-wrap').hidden = false; })
-      .catch(() => {});
-  }
-  if (_peerAnswerEnc) {
-    QRCode.toCanvas(document.getElementById('peer-answer-qr'), _peerAnswerEnc,
-      { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } })
-      .then(() => { document.getElementById('peer-answer-qr-wrap').hidden = false; })
-      .catch(() => {});
-  }
-}
 
 async function _peerRunOfferer() {
   _peerShowStep('offer');
@@ -845,18 +833,21 @@ async function _peerRunOfferer() {
     _peerOfferUrl = url;
 
     // QR generation (async CDN lib)
-    const qrCanvas = document.getElementById('peer-offer-qr');
-    const qrSize   = Math.min(window.innerWidth - 80, 240);
-    if (typeof QRCode !== 'undefined') {
-      try {
-        await QRCode.toCanvas(qrCanvas, url, { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } });
-        document.getElementById('peer-offer-qr-wrap').hidden = false;
-      } catch (_) {}
-    }
+    const qrCanvas  = document.getElementById('peer-offer-qr');
+    const qrSize    = Math.min(window.innerWidth - 80, 240);
+    const urlBox    = document.getElementById('peer-offer-url-box');
+    let   qrShown   = false;
+    try {
+      await QRCode.toCanvas(qrCanvas, url, { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } });
+      document.getElementById('peer-offer-qr-wrap').hidden = false;
+      urlBox.hidden = true;
+      qrShown = true;
+    } catch (_) {}
 
-    // URL text box (always shown as fallback; was used as loading placeholder)
-    document.getElementById('peer-offer-url-box').textContent = url;
-    document.getElementById('peer-offer-url-box').hidden = false;
+    if (!qrShown) {
+      urlBox.textContent = url;
+      urlBox.hidden = false;
+    }
 
     // Share button (if Web Share API available)
     if (navigator.share || navigator.clipboard) {
@@ -891,17 +882,20 @@ async function _peerRunAnswerer(encodedOffer) {
     document.getElementById('peer-answer-status').textContent = 'Muestra este código a la tablet:';
     document.getElementById('peer-answer-inst').hidden = false;
 
-    const qrCanvas = document.getElementById('peer-answer-qr');
-    const qrSize   = Math.min(window.innerWidth - 80, 240);
-    if (typeof QRCode !== 'undefined') {
-      try {
-        await QRCode.toCanvas(qrCanvas, enc, { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } });
-        document.getElementById('peer-answer-qr-wrap').hidden = false;
-      } catch (_) {}
-    }
+    const qrCanvas   = document.getElementById('peer-answer-qr');
+    const qrSize     = Math.min(window.innerWidth - 80, 240);
+    const codeBox    = document.getElementById('peer-answer-code-box');
+    let   qrShown    = false;
+    try {
+      await QRCode.toCanvas(qrCanvas, enc, { width: qrSize, errorCorrectionLevel: 'L', color: { dark: '#000', light: '#fff' } });
+      document.getElementById('peer-answer-qr-wrap').hidden = false;
+      qrShown = true;
+    } catch (_) {}
 
-    document.getElementById('peer-answer-code-box').textContent = enc;
-    document.getElementById('peer-answer-code-box').hidden = false;
+    if (!qrShown) {
+      codeBox.textContent = enc;
+      codeBox.hidden = false;
+    }
     if (navigator.share || navigator.clipboard) {
       document.getElementById('peer-answer-share-btn').hidden = false;
     }
