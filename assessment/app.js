@@ -1011,8 +1011,10 @@ function resetCIFTree() {
       state.hypothesisScores = {};
       document.getElementById('cifTree').innerHTML = '';
       document.getElementById('btnGoConfirm').disabled = true; document.getElementById('btnGoConfirm').style.opacity = '';
+      if (state.maxVisitedIdx >= 4) { state.treeModified = true; paintNav(3); }
       const tree = CIF_TREES[state.region];
       renderStep(tree.steps[0]);
+      saveSession();
     }
   );
 }
