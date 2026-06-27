@@ -382,6 +382,7 @@
       width: min(100%, 240px); margin: 0 auto;
     }
     .peer-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    #peer-scan-placeholder { background: transparent; border: 1.5px dashed var(--border2); }
 
     .peer-textarea {
       width: 100%; background: #0a0d12;
@@ -698,6 +699,7 @@
         <div class="peer-slide">
           <p class="peer-step-label">Paso 2 — escanea la respuesta</p>
           <p class="peer-hint">Cuando el otro dispositivo muestre su código, escanéalo aquí.</p>
+          <div id="peer-scan-placeholder" class="peer-video-wrap"></div>
           <div id="peer-scan-video-wrap" class="peer-video-wrap" hidden>
             <video id="peer-scan-video" autoplay playsinline muted></video>
           </div>
@@ -936,6 +938,7 @@ async function _peerRunOfferer() {
   document.getElementById('peer-paste-wrap').hidden        = true;
   document.getElementById('peer-scan-video-wrap').hidden   = true;
   document.getElementById('peer-scan-hint').hidden         = true;
+  document.getElementById('peer-scan-placeholder').hidden  = false;
   document.getElementById('peer-offer-qr-wrap').hidden     = true;
   document.getElementById('peer-offer-url-box').hidden     = true;
   document.getElementById('peer-share-btn').hidden         = true;
@@ -1059,6 +1062,7 @@ async function _peerRunFromAns(ansEnc) {
 
 async function peerStartScan() {
   peerGoToSlide(1);
+  document.getElementById('peer-scan-placeholder').hidden = true;
   const scanBtn    = document.getElementById('peer-scan-btn');
   const videoWrap  = document.getElementById('peer-scan-video-wrap');
   const hintEl     = document.getElementById('peer-scan-hint');
@@ -1104,6 +1108,8 @@ function _peerStopScan() {
   if (scanBtn)   { scanBtn.textContent = 'Escanear código del móvil'; scanBtn.onclick = peerStartScan; }
   if (videoWrap) videoWrap.hidden = true;
   if (hintEl)    hintEl.hidden    = true;
+  const placeholder = document.getElementById('peer-scan-placeholder');
+  if (placeholder) placeholder.hidden = false;
 }
 
 async function _peerHandleAnswer(raw) {
