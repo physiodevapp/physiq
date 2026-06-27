@@ -259,6 +259,7 @@ function paintNav(activeIdx) {
 }
 
 function _softResetApp() {
+  closePhaseSheet();
   state.currentPhase = 1;
   state.maxVisitedIdx = 0;
   state.regionChanged = false;
