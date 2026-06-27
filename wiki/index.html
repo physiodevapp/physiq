@@ -67,6 +67,7 @@
   }
   .logo-main .logo-accent { color: var(--wiki-accent); }
   .logo-q { background: linear-gradient(135deg, #4f9cf9, #38d9a9); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .logo-sub-initial { display: none; }
 
   /* HOME */
   .home-intro {
@@ -621,9 +622,10 @@
   }
   .in-hub .logo-main:hover { opacity: 0.75; }
 
-  @media (max-width: 768px) { :root { --header-h: 52px; } .logo-main { font-size: 1.2rem; } }
+  @media (max-width: 768px) { :root { --header-h: 52px; } .app-header { padding: 0 1rem; } .logo-main { font-size: 1.2rem; } }
   @media (max-width: 480px) { :root { --header-h: 48px; } .logo-main { font-size: 1.1rem; } }
   @media (max-height: 500px) and (max-width: 900px) { :root { --header-h: 44px; } }
+  @media (max-width: 360px) { .logo-sub-word { display: none; } .logo-sub-initial { display: inline; } }
 </style>
 </head>
 <body>
@@ -631,7 +633,7 @@
 <!-- HEADER -->
 <header class="app-header">
   <div class="logo-wrap">
-    <div class="logo-main" id="header-title">Physi<span class="logo-q">Q</span> <span class="logo-accent">&mdash; Wiki</span></div>
+    <div class="logo-main" id="header-title">Physi<span class="logo-q">Q</span> <span class="logo-accent">&mdash; <span class="logo-sub-word">Wiki</span><span class="logo-sub-initial">W</span></span></div>
   </div>
 </header>
 
@@ -890,8 +892,8 @@
   </div>
 </div>
 
-<script src="data.js?v=640d6a93bea95949c8fff2d5953258531da6cc40"></script>
-<script src="app.js?v=640d6a93bea95949c8fff2d5953258531da6cc40"></script>
+<script src="data.js?v=1da4bd0f766520631e5dd885d8ba1014163c0a4f"></script>
+<script src="app.js?v=1da4bd0f766520631e5dd885d8ba1014163c0a4f"></script>
 
 </body>
 </html>
