@@ -235,13 +235,10 @@
     }
     .peer-hdr-btn:hover { border-color: #4f9cf9; color: #4f9cf9; }
     .peer-hdr-btn.peer-on { border-color: #38d9a9; color: #38d9a9; }
-    /* tablet (≥768px): phone icon visible, tablet icon hidden */
+    /* phone icon by default; monitor icon only when role is secondary */
     .peer-btn-icon-tablet { display: none; }
-    /* mobile (<768px): tablet icon visible, phone icon hidden */
-    @media (max-width: 767px) {
-      .peer-btn-icon-phone  { display: none; }
-      .peer-btn-icon-tablet { display: block; }
-    }
+    #peerBtn.peer-is-secondary .peer-btn-icon-phone  { display: none; }
+    #peerBtn.peer-is-secondary .peer-btn-icon-tablet { display: block; }
 
     .peer-hdr-dot {
       position: absolute; top: 2px; right: 2px;
@@ -784,6 +781,11 @@
 </div>
 
 <script>
+// Apply role-based icon on load
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof _peerApplyRoleIcon === 'function') _peerApplyRoleIcon();
+});
+
 // Capture peer hashes from URL before restoreState clears them
 const _peerInitHash = (() => {
   try { return new URLSearchParams(location.hash.replace(/^#/, '')).get('peer') || null; }
@@ -872,12 +874,19 @@ function showPeerPanel() {
 
 function peerSetRole(role) {
   localStorage.setItem('physiq-device-role', role);
+  _peerApplyRoleIcon();
   if (role === 'primary') _peerRunOfferer();
   else                    _peerShowStep('waiting');
 }
 
+function _peerApplyRoleIcon() {
+  const isSecondary = localStorage.getItem('physiq-device-role') === 'secondary';
+  document.getElementById('peerBtn')?.classList.toggle('peer-is-secondary', isSecondary);
+}
+
 function peerResetRole() {
   localStorage.removeItem('physiq-device-role');
+  _peerApplyRoleIcon();
   _peerShowStep('role');
 }
 
