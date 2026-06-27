@@ -377,8 +377,9 @@
     }
 
     .peer-video-wrap {
-      border-radius: 10px; overflow: hidden;
-      background: #000; aspect-ratio: 4/3;
+      border-radius: 12px; overflow: hidden;
+      background: #000; aspect-ratio: 1;
+      width: min(100%, 240px); margin: 0 auto;
     }
     .peer-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
@@ -697,10 +698,6 @@
         <div class="peer-slide">
           <p class="peer-step-label">Paso 2 — escanea la respuesta</p>
           <p class="peer-hint">Cuando el otro dispositivo muestre su código, escanéalo aquí.</p>
-          <button id="peer-scan-btn" class="peer-btn sec" onclick="peerStartScan()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/></svg>
-            Escanear código del móvil
-          </button>
           <div id="peer-scan-video-wrap" class="peer-video-wrap" hidden>
             <video id="peer-scan-video" autoplay playsinline muted></video>
           </div>
@@ -710,6 +707,10 @@
             <textarea id="peer-paste-input" class="peer-textarea" placeholder="Pega aquí el código del móvil…"></textarea>
             <button class="peer-btn sec" onclick="peerPasteConfirm()" style="margin-top:8px">Confirmar</button>
           </div>
+          <button id="peer-scan-btn" class="peer-btn sec" onclick="peerStartScan()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/></svg>
+            Escanear código del móvil
+          </button>
         </div>
 
       </div>
