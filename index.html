@@ -386,6 +386,16 @@
     }
     .peer-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
     #peer-scan-placeholder { background: transparent; border: 1.5px dashed var(--border2); }
+    #peer-scan-placeholder.loading {
+      background: #0a0d12; border-color: transparent;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #peer-scan-placeholder.loading::after {
+      content: ''; width: 36px; height: 36px;
+      border: 3px solid rgba(255,255,255,0.1); border-top-color: #4a90d9;
+      border-radius: 50%; animation: peer-spin 0.7s linear infinite;
+    }
+    @keyframes peer-spin { to { transform: rotate(360deg); } }
 
     .peer-textarea {
       width: 100%; background: #0a0d12;
@@ -1065,7 +1075,7 @@ async function _peerRunFromAns(ansEnc) {
 
 async function peerStartScan() {
   peerGoToSlide(1);
-  document.getElementById('peer-scan-placeholder').hidden = true;
+  const placeholder = document.getElementById('peer-scan-placeholder');
   const scanBtn    = document.getElementById('peer-scan-btn');
   const videoWrap  = document.getElementById('peer-scan-video-wrap');
   const hintEl     = document.getElementById('peer-scan-hint');
@@ -1077,12 +1087,18 @@ async function peerStartScan() {
     return;
   }
 
+  placeholder.classList.add('loading');
+  scanBtn.disabled = true;
+
   try {
     _peerScanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
     const video     = document.getElementById('peer-scan-video');
     video.srcObject = _peerScanStream;
+    placeholder.classList.remove('loading');
+    placeholder.hidden = true;
     videoWrap.hidden = false;
     hintEl.hidden    = false;
+    scanBtn.disabled = false;
     scanBtn.textContent = 'Cancelar escaneo';
     scanBtn.onclick     = _peerStopScan;
 
@@ -1095,6 +1111,7 @@ async function peerStartScan() {
     }, 300);
 
   } catch (err) {
+    placeholder.classList.remove('loading');
     pasteWrap.hidden = false;
     scanBtn.hidden   = true;
     console.warn('Camera unavailable:', err);
@@ -1112,7 +1129,7 @@ function _peerStopScan() {
   if (videoWrap) videoWrap.hidden = true;
   if (hintEl)    hintEl.hidden    = true;
   const placeholder = document.getElementById('peer-scan-placeholder');
-  if (placeholder) placeholder.hidden = false;
+  if (placeholder) { placeholder.classList.remove('loading'); placeholder.hidden = false; }
 }
 
 async function _peerHandleAnswer(raw) {
