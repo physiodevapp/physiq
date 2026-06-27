@@ -416,6 +416,7 @@
       border: 2px solid currentColor; flex-shrink: 0;
     }
     .peer-rec-mode-btn.active .peer-rec-mode-dot { background: currentColor; }
+    .peer-rec-mode-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
     .peer-connected-chip {
       display: flex; align-items: center; gap: 10px;
@@ -750,10 +751,10 @@
             <span class="peer-rec-mode-dot"></span>Estéreo (ambos micros)
           </button>
           <button class="peer-rec-mode-btn" id="peer-rm-local" onclick="peerSetRecMode('local')">
-            <span class="peer-rec-mode-dot"></span>Boya en este dispositivo
+            <span class="peer-rec-mode-dot"></span>Mic. ext. en este dispositivo
           </button>
           <button class="peer-rec-mode-btn" id="peer-rm-remote" onclick="peerSetRecMode('remote')">
-            <span class="peer-rec-mode-dot"></span>Boya en el otro dispositivo
+            <span class="peer-rec-mode-dot"></span>Mic. ext. en el otro dispositivo
           </button>
         </div>
       </div>
@@ -1185,9 +1186,14 @@ function peerSetRecMode(mode) {
 
 function _peerUpdateRecModeUI() {
   const mode = _peerRecMode();
-  ['stereo', 'local', 'remote'].forEach(m =>
-    document.getElementById('peer-rm-' + m)?.classList.toggle('active', m === mode)
-  );
+  const recState = document.getElementById('rec-widget')?.dataset.state;
+  const locked = recState === 'recording' || recState === 'paused';
+  ['stereo', 'local', 'remote'].forEach(m => {
+    const btn = document.getElementById('peer-rm-' + m);
+    if (!btn) return;
+    btn.classList.toggle('active', m === mode);
+    btn.disabled = locked;
+  });
 }
 
 // Called by lib/peer.js on connection state changes
