@@ -716,7 +716,6 @@
           <div id="peer-scan-video-wrap" class="peer-video-wrap" hidden>
             <video id="peer-scan-video" autoplay playsinline muted></video>
           </div>
-          <p id="peer-scan-hint" class="peer-hint" style="text-align:center;font-size:0.82rem" hidden>Apunta la cámara al otro dispositivo</p>
           <div id="peer-paste-wrap" hidden>
             <p class="peer-hint" style="font-size:0.82rem">O pega el código que muestra el otro dispositivo. También puedes abrir el enlace que comparte desde el móvil — la tablet completará la conexión automáticamente.</p>
             <textarea id="peer-paste-input" class="peer-textarea" placeholder="Pega aquí el código del móvil…"></textarea>
@@ -1078,7 +1077,6 @@ async function peerStartScan() {
   const placeholder = document.getElementById('peer-scan-placeholder');
   const scanBtn    = document.getElementById('peer-scan-btn');
   const videoWrap  = document.getElementById('peer-scan-video-wrap');
-  const hintEl     = document.getElementById('peer-scan-hint');
   const pasteWrap  = document.getElementById('peer-paste-wrap');
 
   if (!('BarcodeDetector' in window)) {
@@ -1097,7 +1095,6 @@ async function peerStartScan() {
     placeholder.classList.remove('loading');
     placeholder.hidden = true;
     videoWrap.hidden = false;
-    hintEl.hidden    = false;
     scanBtn.disabled = false;
     scanBtn.textContent = 'Cancelar escaneo';
     scanBtn.onclick     = _peerStopScan;
@@ -1124,10 +1121,8 @@ function _peerStopScan() {
   if (_peerScanStream) { _peerScanStream.getTracks().forEach(t => t.stop()); _peerScanStream = null; }
   const scanBtn   = document.getElementById('peer-scan-btn');
   const videoWrap = document.getElementById('peer-scan-video-wrap');
-  const hintEl    = document.getElementById('peer-scan-hint');
   if (scanBtn)   { scanBtn.textContent = 'Escanear código del móvil'; scanBtn.onclick = peerStartScan; }
   if (videoWrap) videoWrap.hidden = true;
-  if (hintEl)    hintEl.hidden    = true;
   const placeholder = document.getElementById('peer-scan-placeholder');
   if (placeholder) { placeholder.classList.remove('loading'); placeholder.hidden = false; }
 }
