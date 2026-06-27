@@ -402,6 +402,21 @@
     .peer-role-title { font-size: 0.95rem; color: #c8d8e8; font-weight: 500; }
     .peer-role-desc  { font-size: 0.78rem; color: #5a6e8a; }
 
+    .peer-rec-mode { display: flex; flex-direction: column; gap: 8px; }
+    .peer-rec-mode-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px; width: 100%;
+      border: 1px solid var(--border); background: transparent;
+      color: #8aa4bc; font-size: 0.85rem; cursor: pointer;
+      transition: border-color 0.15s, color 0.15s; text-align: left;
+    }
+    .peer-rec-mode-btn.active { border-color: rgba(56,217,169,0.4); color: #38d9a9; }
+    .peer-rec-mode-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      border: 2px solid currentColor; flex-shrink: 0;
+    }
+    .peer-rec-mode-btn.active .peer-rec-mode-dot { background: currentColor; }
+
     .peer-connected-chip {
       display: flex; align-items: center; gap: 10px;
       padding: 12px 16px; border-radius: 10px;
@@ -728,6 +743,20 @@
         <span>Sincronización activa</span>
       </div>
       <p class="peer-hint" style="font-size:0.85rem">Ambos dispositivos están sincronizados en tiempo real.</p>
+      <div id="peer-rec-mode-wrap">
+        <p class="peer-step-label" style="margin-bottom:2px">Modo de grabación</p>
+        <div class="peer-rec-mode">
+          <button class="peer-rec-mode-btn" id="peer-rm-stereo" onclick="peerSetRecMode('stereo')">
+            <span class="peer-rec-mode-dot"></span>Estéreo (ambos micros)
+          </button>
+          <button class="peer-rec-mode-btn" id="peer-rm-local" onclick="peerSetRecMode('local')">
+            <span class="peer-rec-mode-dot"></span>Boya en este dispositivo
+          </button>
+          <button class="peer-rec-mode-btn" id="peer-rm-remote" onclick="peerSetRecMode('remote')">
+            <span class="peer-rec-mode-dot"></span>Boya en el otro dispositivo
+          </button>
+        </div>
+      </div>
       <button class="peer-btn danger" onclick="peerDisconnectUI()">Desconectar</button>
     </div>
 
@@ -1145,6 +1174,22 @@ function _peerClearICEError() {
   document.getElementById('peer-ice-error').classList.add('peer-ice-hidden');
 }
 
+function _peerRecMode() {
+  return localStorage.getItem('physiq-rec-mode') || 'stereo';
+}
+
+function peerSetRecMode(mode) {
+  localStorage.setItem('physiq-rec-mode', mode);
+  _peerUpdateRecModeUI();
+}
+
+function _peerUpdateRecModeUI() {
+  const mode = _peerRecMode();
+  ['stereo', 'local', 'remote'].forEach(m =>
+    document.getElementById('peer-rm-' + m)?.classList.toggle('active', m === mode)
+  );
+}
+
 // Called by lib/peer.js on connection state changes
 function peerUpdateUI(status) {
   const btn = document.getElementById('peerBtn');
@@ -1154,6 +1199,10 @@ function peerUpdateUI(status) {
     document.getElementById('peer-title').textContent = 'Sincronizando';
     btn?.classList.add('peer-on');
     if (dot) dot.hidden = false;
+    const modeWrap = document.getElementById('peer-rec-mode-wrap');
+    const isPrimary = localStorage.getItem('physiq-device-role') !== 'secondary';
+    modeWrap.hidden = !isPrimary;
+    if (isPrimary) _peerUpdateRecModeUI();
   } else if (status === 'closed') {
     btn?.classList.remove('peer-on');
     if (dot) dot.hidden = true;
