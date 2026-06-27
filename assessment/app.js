@@ -413,8 +413,6 @@ function updatePsicoRecomendacion() {
 
 function collectPhase1() {
   state.motivoConsulta = document.getElementById('motivoConsulta').value;
-  state.severidad = parseInt(document.getElementById('severidadSlider')?.value || 5);
-  state.signoComparable = document.getElementById('signoComparable')?.value || '';
 }
 
 // ─── PHASE 2 HELPERS ─────────────────────────────────────────
