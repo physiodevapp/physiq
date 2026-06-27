@@ -67,6 +67,10 @@ _sessionCh.onmessage = ({ data }) => {
     clearSession(); _softResetApp(); goToPhase(1);
     return;
   }
+  if (data.type === 'SESSION_RESET') {
+    if (data._relay) _softResetApp();
+    return;
+  }
   if (data.type === 'SESSION_ASSESSMENT_STATE') {
     if (data._relay && data.assessmentState) _applyRemoteAssessmentState(data.assessmentState);
     return;
@@ -339,7 +343,10 @@ function resetApp() {
     '↺ Reiniciar valoración completa',
     'Se perderán los datos clínicos de la valoración. El nombre del paciente se conservará.',
     'Reiniciar',
-    () => { _softResetApp(); goToPhase(1); }
+    () => {
+      _softResetApp(); goToPhase(1);
+      _sessionCh.postMessage({ type: 'SESSION_RESET', patient: state.patient || '' });
+    }
   );
 }
 
@@ -1358,6 +1365,7 @@ function clearAllTests() {
         const score = document.getElementById('score_' + hId);
         if (score) score.textContent = 'Sin evaluar';
       });
+      saveSession();
     }
   );
 }
