@@ -1211,8 +1211,12 @@ function peerUpdateUI(status) {
       setTimeout(() => {
         document.getElementById('peer-title').textContent = 'Enlazar dispositivo';
         const role = localStorage.getItem('physiq-device-role');
-        if (role === 'secondary') _peerShowStep('waiting');
-        else                      _peerRunOfferer();
+        if (role === 'secondary') {
+          if (typeof recApplyRemoteState === 'function') recApplyRemoteState('idle', 0);
+          _peerShowStep('waiting');
+        } else {
+          _peerRunOfferer();
+        }
       }, 2500);
     }
   } else {
