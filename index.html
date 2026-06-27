@@ -393,9 +393,14 @@
       color-scheme: dark;
     }
 
-    #peer-step-offer, #peer-step-answer, #peer-step-connected {
+    #peer-step-offer, #peer-step-answer, #peer-step-connected,
+    #peer-step-role, #peer-step-waiting {
       display: flex; flex-direction: column; gap: 1.1rem;
     }
+
+    .peer-role-btn { align-items: flex-start; gap: 3px; text-align: left; }
+    .peer-role-title { font-size: 0.95rem; color: #c8d8e8; font-weight: 500; }
+    .peer-role-desc  { font-size: 0.78rem; color: #5a6e8a; }
 
     .peer-connected-chip {
       display: flex; align-items: center; gap: 10px;
@@ -726,6 +731,25 @@
       <button class="peer-btn danger" onclick="peerDisconnectUI()">Desconectar</button>
     </div>
 
+    <!-- Selección de rol — primera vez -->
+    <div id="peer-step-role" hidden>
+      <p class="peer-hint">¿Cómo usas este dispositivo?</p>
+      <button class="peer-btn sec peer-role-btn" onclick="peerSetRole('primary')">
+        <span class="peer-role-title">Tablet o escritorio</span>
+        <span class="peer-role-desc">Aquí ves las sesiones y los informes</span>
+      </button>
+      <button class="peer-btn sec peer-role-btn" onclick="peerSetRole('secondary')">
+        <span class="peer-role-title">Móvil</span>
+        <span class="peer-role-desc">Lo llevas con el paciente</span>
+      </button>
+    </div>
+
+    <!-- Dispositivo secundario esperando -->
+    <div id="peer-step-waiting" hidden>
+      <p class="peer-hint">Abre el panel de sincronización en tu tablet o escritorio para generar el código de conexión.</p>
+      <button class="peer-btn sec" style="font-size:0.8rem;color:#5a6e8a;border-color:transparent" onclick="peerResetRole()">Cambiar tipo de dispositivo</button>
+    </div>
+
   </div>
 </div>
 
@@ -808,9 +832,23 @@ function showPeerPanel() {
   if (peer.status === 'connected')                 { _peerShowStep('connected'); return; }
   if (peer.status === 'offering' && _peerOfferUrl) { _peerShowStep('offer');    return; }
   if (peer.status === 'answering')                 { _peerShowStep('answer');   return; }
-  if (_peerAnsHash)       { _peerRunFromAns(_peerAnsHash); }
-  else if (_peerInitHash) { _peerRunAnswerer(_peerInitHash); }
-  else                    { _peerRunOfferer(); }
+  if (_peerAnsHash)  { _peerRunFromAns(_peerAnsHash);    return; }
+  if (_peerInitHash) { _peerRunAnswerer(_peerInitHash);   return; }
+  const role = localStorage.getItem('physiq-device-role');
+  if (!role)                { _peerShowStep('role');    return; }
+  if (role === 'secondary') { _peerShowStep('waiting'); return; }
+  _peerRunOfferer();
+}
+
+function peerSetRole(role) {
+  localStorage.setItem('physiq-device-role', role);
+  if (role === 'primary') _peerRunOfferer();
+  else                    _peerShowStep('waiting');
+}
+
+function peerResetRole() {
+  localStorage.removeItem('physiq-device-role');
+  _peerShowStep('role');
 }
 
 function hidePeerPanel() {
@@ -819,7 +857,7 @@ function hidePeerPanel() {
 }
 
 function _peerShowStep(step) {
-  ['offer', 'answer', 'connected'].forEach(s =>
+  ['offer', 'answer', 'connected', 'role', 'waiting'].forEach(s =>
     document.getElementById('peer-step-' + s).hidden = s !== step
   );
 }
@@ -1121,7 +1159,12 @@ function peerUpdateUI(status) {
     if (dot) dot.hidden = true;
     if (document.getElementById('peer-panel').classList.contains('open')) {
       document.getElementById('peer-title').textContent = 'Conexión cerrada';
-      setTimeout(_peerRunOfferer, 2500);
+      setTimeout(() => {
+        document.getElementById('peer-title').textContent = 'Enlazar dispositivo';
+        const role = localStorage.getItem('physiq-device-role');
+        if (role === 'secondary') _peerShowStep('waiting');
+        else                      _peerRunOfferer();
+      }, 2500);
     }
   } else {
     btn?.classList.remove('peer-on');
