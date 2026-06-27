@@ -867,8 +867,12 @@ function showPeerPanel() {
   if (peer.status === 'answering')                 { _peerShowStep('answer');   return; }
   if (_peerAnsHash)  { _peerRunFromAns(_peerAnsHash);    return; }
   if (_peerInitHash) { _peerRunAnswerer(_peerInitHash);   return; }
-  const role = localStorage.getItem('physiq-device-role');
-  if (!role)                { _peerShowStep('role');    return; }
+  let role = localStorage.getItem('physiq-device-role');
+  if (!role) {
+    role = window.innerWidth < 768 ? 'secondary' : 'primary';
+    localStorage.setItem('physiq-device-role', role);
+    _peerApplyRoleIcon();
+  }
   if (role === 'secondary') { _peerShowStep('waiting'); return; }
   _peerRunOfferer();
 }
