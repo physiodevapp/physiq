@@ -1219,10 +1219,8 @@ let _sessionLabel = '';
 function updateSessionChip(session) {
   const btn = document.getElementById('sessionBtn');
   if (!btn) return;
-  if (!session) { _sessionLabel = ''; btn.classList.remove('active'); return; }
-  _sessionLabel = session.patient
-    ? `${session.patient} · ${session.date || '—'}`
-    : `Sesión · ${session.date || '—'}`;
+  if (!session || !session.patient) { _sessionLabel = ''; btn.classList.remove('active'); return; }
+  _sessionLabel = `${session.patient} · ${session.date || '—'}`;
   btn.classList.add('active');
 }
 
@@ -1339,19 +1337,19 @@ function saveSession() {
   if (motivoEl) state.motivoConsulta = motivoEl.value;
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) state.signoComparable = signoEl.value;
-  // After a clear, block writes until new session data genuinely appears
+  // After a clear, block writes until a patient name is entered
   if (_sessionCleared) {
-    if (!state.patient && state.maxVisitedIdx === 0) { updateResetBtnVisibility(); return; }
-    _sessionCleared = false; // new session is starting — release the lock
+    if (!state.patient) { updateResetBtnVisibility(); return; }
+    _sessionCleared = false;
   }
-  if (state.patient || state.maxVisitedIdx > 0) {
+  if (state.patient) {
     const date = new Date().toLocaleDateString('es-ES');
     const gen = _sessionGen;
     writeSession({ patient: state.patient, date, assessmentState: { ...state } })
       .then(session => {
         if (_sessionGen !== gen) { clearSession(); return; }
         if (session) updateSessionChip(session);
-        _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient || '' });
+        _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient });
         if (state.currentPhase !== 5) {
           const _phaseLabels = [1, 2, 3, 4, '4b', 5];
           _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
