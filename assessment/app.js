@@ -1341,7 +1341,7 @@ function saveSession() {
   if (signoEl) state.signoComparable = signoEl.value;
   // After a clear, block writes until new session data genuinely appears
   if (_sessionCleared) {
-    if (!state.patient && state.maxVisitedIdx === 0) return;
+    if (!state.patient && state.maxVisitedIdx === 0) { updateResetBtnVisibility(); return; }
     _sessionCleared = false; // new session is starting — release the lock
   }
   if (state.patient || state.maxVisitedIdx > 0) {
