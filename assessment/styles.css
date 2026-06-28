@@ -111,6 +111,7 @@
   }
 
   .btn-reset {
+    display: none;
     background: transparent;
     border: 1px solid var(--border2);
     color: var(--text2);
@@ -121,6 +122,7 @@
     cursor: pointer;
     transition: all 0.2s;
   }
+  .btn-reset.visible { display: inline-flex; align-items: center; gap: 0.3rem; }
   .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
 
   /* Progress bar */

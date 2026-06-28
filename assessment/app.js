@@ -337,6 +337,7 @@ function _softResetApp() {
   } else {
     history.replaceState({ phase: 1 }, '');
   }
+  updateResetBtnVisibility();
 }
 
 function resetApp() {
@@ -1315,6 +1316,22 @@ function showCopyFeedback() {
 
 // ─── SESSION PERSISTENCE ─────────────────────────────────────
 
+function _hasAssessmentData() {
+  return state.maxVisitedIdx > 0
+    || !!state.motivoConsulta
+    || !!state.mecanismo
+    || !!state.cronologia
+    || !!state.riesgoPsico
+    || !!state.psico_miedo
+    || !!state.psico_autoef
+    || !!state.psico_emocional
+    || Object.values(state.banderasRojas).includes('SI');
+}
+
+function updateResetBtnVisibility() {
+  document.querySelector('.btn-reset')?.classList.toggle('visible', _hasAssessmentData());
+}
+
 function saveSession() {
   const patientEl = document.getElementById('patientName');
   if (patientEl) state.patient = patientEl.value;
@@ -1342,6 +1359,7 @@ function saveSession() {
         _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_STATE', assessmentState: { ...state } });
       });
   }
+  updateResetBtnVisibility();
 }
 
 function _restoreOptionBtnGroup(groupId, val) {
@@ -1539,6 +1557,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     if (session.rom && !state.rom) state.rom = session.rom;
+    updateResetBtnVisibility();
   });
 });
 
