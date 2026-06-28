@@ -440,7 +440,7 @@
 // ── State ─────────────────────────────────────────────────────
 let bpm        = 80;
 let pulses     = 4;
-let intensities = [3, 3, 3, 3]; // per-beat intensity 0–3
+let intensities = [3, 2, 2, 2]; // per-beat intensity 0–3
 let isPlaying  = false;
 let accentOn   = true;
 let soundType  = 'click';
@@ -782,7 +782,7 @@ document.getElementById('pulses-slider').addEventListener('input', e => {
   // Preserve existing intensities, fill new slots with 3
   const prev = intensities.slice();
   intensities = Array.from({ length: newPulses }, (_, i) =>
-    i < prev.length ? prev[i] : 3
+    i < prev.length ? prev[i] : 2
   );
   pulses = newPulses;
   document.getElementById('pulses-count').textContent = pulses;
