@@ -81,7 +81,22 @@
     /* ── Pulse grid ─────────────────────────────────────── */
     .pulse-grid {
       flex: 1; min-height: 0;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+
+    .grid-row {
+      flex: 1; min-height: 0;
       display: grid; gap: 5px;
+    }
+
+    /* n≤4: single centered row, each bar at 1/4-grid width */
+    .grid-row.centered {
+      display: flex; justify-content: center; gap: 5px;
+      align-items: stretch;
+    }
+    .grid-row.centered .pulse-bar {
+      width: calc((100% - 15px) / 4);
+      flex-shrink: 0;
     }
 
     /* Each bar is a container; the fill grows from the bottom */
@@ -538,22 +553,41 @@ function togglePlay() { isPlaying ? stopMetronome() : startMetronome(); }
 // ── Pulse grid ────────────────────────────────────────────────
 function buildGrid() {
   const grid = document.getElementById('pulse-grid');
-  const cols = Math.min(pulses, 8);
-  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   grid.innerHTML = '';
 
-  for (let i = 0; i < pulses; i++) {
-    const bar  = document.createElement('div');
-    bar.className     = 'pulse-bar';
+  function makeBar(i) {
+    const bar = document.createElement('div');
+    bar.className = 'pulse-bar';
     bar.dataset.index = i;
     bar.dataset.intensity = intensities[i] ?? 3;
-
     const fill = document.createElement('div');
     fill.className = 'bar-fill';
     bar.appendChild(fill);
-
     attachBarDrag(bar);
-    grid.appendChild(bar);
+    return bar;
+  }
+
+  if (pulses <= 4) {
+    const row = document.createElement('div');
+    row.className = 'grid-row centered';
+    for (let i = 0; i < pulses; i++) row.appendChild(makeBar(i));
+    grid.appendChild(row);
+  } else {
+    const topCount = Math.floor(pulses / 2);
+    const botCount = Math.ceil(pulses / 2);
+
+    const topRow = document.createElement('div');
+    topRow.className = 'grid-row';
+    topRow.style.gridTemplateColumns = `repeat(${topCount}, 1fr)`;
+    for (let i = 0; i < topCount; i++) topRow.appendChild(makeBar(i));
+
+    const botRow = document.createElement('div');
+    botRow.className = 'grid-row';
+    botRow.style.gridTemplateColumns = `repeat(${botCount}, 1fr)`;
+    for (let i = topCount; i < pulses; i++) botRow.appendChild(makeBar(i));
+
+    grid.appendChild(topRow);
+    grid.appendChild(botRow);
   }
 }
 
