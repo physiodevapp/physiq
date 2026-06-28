@@ -1,7 +1,7 @@
 'use strict';
 // ─── STATE ────────────────────────────────────────────────────────────────────────────────────
 let currentRegion = null;
-let currentView = 'landing'; // 'landing' | 'home' | 'tissue' | 'region'
+let currentView = 'landing'; // 'landing' | 'home' | 'tissue' | 'region' | 'ejercicio'
 let currentFilter = 'all';   // 'all' | 'green'
 let currentPosFilter = 'all'; // 'all' | 'progression' | 'pie' | 'sentado' | 'supino' | 'lateral' | 'prono'
 const _linkOverrides = JSON.parse(localStorage.getItem('physiq_link_overrides') || '{}');
@@ -16,6 +16,7 @@ function renderHome() {
   document.getElementById('view-home').style.display = '';
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = 'none';
+  document.getElementById('view-ejercicio').style.display = 'none';
 
   const grid = document.getElementById('regions-grid');
   grid.innerHTML = REGIONS.map((r, i) => {
@@ -126,6 +127,7 @@ function showLanding() {
   document.getElementById('view-home').style.display = 'none';
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = 'none';
+  document.getElementById('view-ejercicio').style.display = 'none';
 }
 
 function showSpecialTests() {
@@ -140,7 +142,18 @@ function showTissue() {
   document.getElementById('view-home').style.display = 'none';
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = '';
+  document.getElementById('view-ejercicio').style.display = 'none';
   history.pushState({ view: 'tissue' }, '');
+}
+
+function showEjercicio() {
+  currentView = 'ejercicio';
+  document.getElementById('view-landing').style.display = 'none';
+  document.getElementById('view-home').style.display = 'none';
+  document.getElementById('view-region').style.display = 'none';
+  document.getElementById('view-tissue').style.display = 'none';
+  document.getElementById('view-ejercicio').style.display = '';
+  history.pushState({ view: 'ejercicio' }, '');
 }
 
 function showRegion(id) {
@@ -151,6 +164,7 @@ function showRegion(id) {
   document.getElementById('view-home').style.display = 'none';
   document.getElementById('view-region').style.display = '';
   document.getElementById('view-tissue').style.display = 'none';
+  document.getElementById('view-ejercicio').style.display = 'none';
   document.getElementById('region-sub-badge').textContent = currentRegion.name;
 
   _syncFilterUI();
@@ -167,12 +181,13 @@ function showHome() {
   document.getElementById('view-home').style.display = '';
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = 'none';
+  document.getElementById('view-ejercicio').style.display = 'none';
 }
 
 window.addEventListener('popstate', () => {
   if (currentRegion) {
     showHome();
-  } else if (currentView === 'home' || currentView === 'tissue') {
+  } else if (currentView === 'home' || currentView === 'tissue' || currentView === 'ejercicio') {
     showLanding();
   } else if (document.body.classList.contains('in-hub')) {
     window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
@@ -286,6 +301,8 @@ function _rebuildHubHistory() {
     history.pushState({ view: 'home' }, '');
   } else if (currentView === 'tissue') {
     history.pushState({ view: 'tissue' }, '');
+  } else if (currentView === 'ejercicio') {
+    history.pushState({ view: 'ejercicio' }, '');
   }
   if (currentRegion) {
     history.pushState({ view: 'region', region: currentRegion.id }, '');

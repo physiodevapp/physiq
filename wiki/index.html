@@ -605,6 +605,31 @@
     .tissue-mobile  { display: table; }
   }
 
+  /* EJERCICIO VIEW */
+  .ejercicio-wrap { padding: 12px 20px 48px; }
+  .ejercicio-diagram-wrap {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 12px;
+    margin-top: 4px;
+  }
+  .ejercicio-diagram {
+    width: 100%;
+    max-width: 560px;
+    display: block;
+    margin: 0 auto;
+    border-radius: 6px;
+  }
+  .ejercicio-caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+  }
+
   /* IN-HUB */
   @keyframes hub-back-hint {
     0%   { transform: translateX(0); }
@@ -651,6 +676,10 @@
     <div class="landing-card" style="--card-color:#6366f1; animation-delay:0.05s" onclick="showTissue()">
       <div class="landing-card-name">Tiempos de Tejido</div>
       <div class="landing-card-desc">recuperaci&oacute;n de tejidos</div>
+    </div>
+    <div class="landing-card" style="--card-color:#6366f1; animation-delay:0.1s; grid-column:1/-1" onclick="showEjercicio()">
+      <div class="landing-card-name">Ejercicio</div>
+      <div class="landing-card-desc">dosis y prescripci&oacute;n</div>
     </div>
   </div>
 </div>
@@ -850,6 +879,26 @@
   </div>
 </div>
 
+<!-- EJERCICIO VIEW -->
+<div id="view-ejercicio" style="display:none">
+  <div class="region-sticky-header">
+    <div class="region-sub-bar" style="border-bottom:none">
+      <button class="btn-back-sub" onclick="history.back()">&#x2190; Inicio</button>
+      <span class="region-sub-badge">Ejercicio</span>
+    </div>
+  </div>
+  <div class="ejercicio-wrap">
+    <div class="home-intro">
+      <h1>Selecci&oacute;n de Ejercicios</h1>
+      <p>Factores cl&iacute;nicos clave para la prescripci&oacute;n y dosis del ejercicio terap&eacute;utico.</p>
+    </div>
+    <div class="ejercicio-diagram-wrap">
+      <img class="ejercicio-diagram" src="images/ejercicio-seleccion.jpg" alt="Diagrama de Venn: Selección de Ejercicios">
+      <p class="ejercicio-caption">Selecci&oacute;n de ejercicios en funci&oacute;n de adherencia, capacidad tisular, alivio del dolor, estrategias de movimiento y estructura de creencias.</p>
+    </div>
+  </div>
+</div>
+
 <!-- REGION VIEW -->
 <div id="view-region" style="display:none">
   <div class="region-sticky-header">
@@ -892,8 +941,8 @@
   </div>
 </div>
 
-<script src="data.js?v=d9e64bec67a88400c430a4c0446220c084679064"></script>
-<script src="app.js?v=d9e64bec67a88400c430a4c0446220c084679064"></script>
+<script src="data.js?v=4e911c4d0c20be9ef41cc5f83dbce44a000fff5b"></script>
+<script src="app.js?v=4e911c4d0c20be9ef41cc5f83dbce44a000fff5b"></script>
 
 </body>
 </html>
