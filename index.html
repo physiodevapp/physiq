@@ -587,6 +587,12 @@
         <span class="app-desc">Referencia clínica</span>
       </div>
     </button>
+    <button class="app-card" style="--card-color:#f59e0b" onclick="openSat('metronome')">
+      <div class="app-info">
+        <span class="app-name">Metrónomo</span>
+        <span class="app-desc">Control de ritmo y tempo</span>
+      </div>
+    </button>
   </nav>
 </div>
 
@@ -598,6 +604,7 @@
   <iframe id="sat-force"      class="sat-frame" allow="bluetooth" hidden></iframe>
   <iframe id="sat-balance"    class="sat-frame" allow="accelerometer; gyroscope" hidden></iframe>
   <iframe id="sat-wiki"       class="sat-frame" hidden></iframe>
+  <iframe id="sat-metronome"  class="sat-frame" hidden></iframe>
 </div>
 
 <!-- ── Recorder widget ────────────────────────────────────────────── -->
@@ -840,7 +847,7 @@ const _peerAnsHash = (() => {
 })();
 
 // ── Navigation ───────────────────────────────────────────────
-const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', wiki: '/physiq/wiki/' };
+const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', wiki: '/physiq/wiki/', metronome: '/physiq/metronome/' };
 
 function _showSat(name) {
   const frame = document.getElementById('sat-' + name);
@@ -1379,7 +1386,7 @@ _peerAnsRelay.onmessage = (e) => {
 
 // ── Pre-load recorder-dependent satellite iframes so BroadcastChannel works from the start ──
 // wiki is excluded: it doesn't use the recorder, and pre-loading it causes stale content
-const _PRELOAD = Object.keys(SATS).filter(k => k !== 'wiki');
+const _PRELOAD = Object.keys(SATS).filter(k => k !== 'wiki' && k !== 'metronome');
 requestIdleCallback
   ? requestIdleCallback(() => { _PRELOAD.forEach(k => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = SATS[k]; }); })
   : setTimeout(() => { _PRELOAD.forEach(k => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = SATS[k]; }); }, 1000);
