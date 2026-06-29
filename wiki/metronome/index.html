@@ -22,6 +22,7 @@
       --accent-mid: rgba(99,102,241,0.55);
       --accent-bar: rgba(99,102,241,0.85);
       --accent-empty: rgba(99,102,241,0.07);
+      --header-h:   64px;
     }
 
     html, body {
@@ -33,29 +34,53 @@
     .app {
       display: flex; flex-direction: column;
       height: 100dvh; overflow: hidden;
+      max-width: 640px; margin: 0 auto;
     }
 
     /* ── Header ─────────────────────────────────────────── */
-    .hdr {
+    .app-header {
       display: flex; align-items: center; gap: 12px;
-      padding: 0.9rem 1.25rem 0.65rem;
+      padding: 0 1.25rem;
+      height: var(--header-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,13,18,0.92);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       flex-shrink: 0;
     }
 
-    .back-btn {
-      width: 36px; height: 36px; border-radius: 50%;
-      border: 1px solid var(--border); background: transparent;
-      color: var(--text2); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.15s, color 0.15s;
-      flex-shrink: 0;
-    }
-    .back-btn:hover { border-color: var(--border2); color: var(--text); }
+    .logo-wrap { flex: 1; }
 
-    .hdr-title {
+    .logo-main {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.1rem; font-weight: 400; color: var(--text);
+      font-size: 1.4rem;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      line-height: 1.1;
     }
+
+    .logo-q {
+      background: linear-gradient(135deg, #4f9cf9, #38d9a9);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-accent { color: var(--accent); }
+    .logo-sub-initial { display: none; }
+
+    .btn-nav {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-nav:hover { border-color: var(--border2); color: var(--text); }
 
     /* ── Main content ───────────────────────────────────── */
     .content {
@@ -268,6 +293,8 @@
 
     .settings-sheet {
       width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
       background: var(--card);
       border-top: 1px solid var(--border);
       border-radius: 20px 20px 0 0;
@@ -314,19 +341,35 @@
       border: 2px solid currentColor; flex-shrink: 0;
     }
     .sound-opt.active .sound-opt-dot { background: currentColor; }
+
+    /* ── Responsive breakpoints ─────────────────────────── */
+    @media (max-width: 768px) {
+      :root { --header-h: 52px; }
+      .app-header { padding: 0 1rem; }
+      .logo-main { font-size: 1.2rem; }
+    }
+    @media (max-width: 480px) {
+      :root { --header-h: 48px; }
+      .logo-main { font-size: 1.1rem; }
+    }
+    @media (max-height: 500px) and (max-width: 900px) {
+      :root { --header-h: 44px; }
+    }
+    @media (max-width: 360px) {
+      .logo-sub-word { display: none; }
+      .logo-sub-initial { display: inline; }
+    }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <div class="hdr">
-    <button class="back-btn" onclick="goHome()" aria-label="Volver">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5M12 5l-7 7 7 7"/>
-      </svg>
-    </button>
-    <span class="hdr-title">Metrónomo</span>
-  </div>
+  <header class="app-header">
+    <div class="logo-wrap">
+      <div class="logo-main">Physi<span class="logo-q">Q</span> <span class="logo-accent">&mdash; <span class="logo-sub-word">Metrónomo</span><span class="logo-sub-initial">M</span></span></div>
+    </div>
+    <button class="btn-nav" onclick="goHome()" aria-label="Volver al inicio">&#x2190; Inicio</button>
+  </header>
 
   <div class="content">
 

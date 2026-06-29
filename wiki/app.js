@@ -9,7 +9,7 @@ const _linkOverrides = JSON.parse(localStorage.getItem('physiq_link_overrides') 
 const POS_ORDER  = ['pie', 'sentado', 'supino', 'lateral', 'prono'];
 const POS_LABELS = { pie: 'De pie', sentado: 'Sentado', supino: 'Supino', lateral: 'Dec. lateral', prono: 'Prono' };
 
-// ─── RENDER: HOME ───────────────────────────────────────────────────────────────────────────
+// ─── RENDER: HOME ───────────────────────────────────────────────────────────────────────────────────
 function renderHome() {
   document.getElementById('header-title').innerHTML = 'Physi<span class="logo-q">Q</span> <span class="logo-accent">— Wiki</span>';
   document.getElementById('view-landing').style.display = 'none';
@@ -31,7 +31,7 @@ function renderHome() {
   }).join('');
 }
 
-// ─── RENDER HELPERS ───────────────────────────────────────────────────────────────────────
+// ─── RENDER HELPERS ──────────────────────────────────────────────────────────────────────────────
 function _buildTestItem(test) {
   const badgeClass = `ev-${test.ev}`;
   const badgeLabel = test.ev === 'green' ? '✓' : test.ev === 'yellow' ? '!' : '?';
@@ -61,7 +61,7 @@ function _buildTestItem(test) {
 function _evPass(t) { return currentFilter === 'all' || t.ev === 'green'; }
 function _posPass(t, pos) { return Array.isArray(t.pos) && t.pos.includes(pos); }
 
-// ─── RENDER: REGION ───────────────────────────────────────────────────────────────────────
+// ─── RENDER: REGION ────────────────────────────────────────────────────────────────────────────────
 function renderRegion() {
   const content = document.getElementById('region-content');
   let html = '';
@@ -107,7 +107,7 @@ function renderRegion() {
   content.innerHTML = html;
 }
 
-// ─── FILTER UI SYNC ──────────────────────────────────────────────────────────────────────
+// ─── FILTER UI SYNC ────────────────────────────────────────────────────────────────────────────
 function _syncFilterUI() {
   const evToggle = document.getElementById('ev-toggle');
   if (evToggle) evToggle.classList.toggle('on', currentFilter === 'green');
@@ -119,7 +119,7 @@ function _syncFilterUI() {
   }
 }
 
-// ─── NAVIGATION ──────────────────────────────────────────────────────────────────────────
+// ─── NAVIGATION ────────────────────────────────────────────────────────────────────────────────
 function showLanding() {
   currentView = 'landing';
   currentRegion = null;
@@ -171,7 +171,7 @@ function showRegion(id) {
   document.getElementById('region-content').scrollTop = 0;
   renderRegion();
 
-  history.pushState({ region: id }, '');
+  history.pushState({ view: 'region', region: id }, '');
 }
 
 function showHome() {
@@ -184,17 +184,20 @@ function showHome() {
   document.getElementById('view-ejercicio').style.display = 'none';
 }
 
-window.addEventListener('popstate', () => {
+// ─── POPSTATE ───────────────────────────────────────────────────────────────────────────────────
+window.addEventListener('popstate', e => {
   if (currentRegion) {
     showHome();
   } else if (currentView === 'home' || currentView === 'tissue' || currentView === 'ejercicio') {
     showLanding();
-  } else if (document.body.classList.contains('in-hub')) {
+  } else if (e.state?.view === 'hub-exit' && document.body.classList.contains('in-hub')) {
+    // Only navigate to hub when we actually reach the hub-exit sentinel entry
     window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
   }
+  // currentView === 'landing' but not at hub-exit: already on landing, do nothing
 });
 
-// ─── FILTER ───────────────────────────────────────────────────────────────────────────────
+// ─── FILTER ─────────────────────────────────────────────────────────────────────────────────────
 function toggleEvFilter(btn) {
   currentFilter = currentFilter === 'green' ? 'all' : 'green';
   btn.classList.toggle('on', currentFilter === 'green');
@@ -207,7 +210,7 @@ function setPosFilter(pos, btn) {
   renderRegion();
 }
 
-// ─── LINK OVERRIDE ──────────────────────────────────────────────────────────────────────────────
+// ─── LINK OVERRIDE ─────────────────────────────────────────────────────────────────────────────────────
 let _editingTestId = null;
 
 function openLinkSheet(testId, testName) {
@@ -242,7 +245,7 @@ function saveLinkOverride() {
   renderRegion();
 }
 
-// ─── LONG-PRESS ────────────────────────────────────────────────────────────────────────────────────
+// ─── LONG-PRESS ────────────────────────────────────────────────────────────────────────────────────────
 let _longPressTimer  = null;
 let _longPressTarget = null;
 let _longPressHappened = false;
