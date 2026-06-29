@@ -581,6 +581,12 @@
         <span class="app-desc">Evaluación de equilibrio estático</span>
       </div>
     </button>
+    <button class="app-card" style="--card-color:#f59e0b" onclick="openSat('jump')">
+      <div class="app-info">
+        <span class="app-name">Saltos</span>
+        <span class="app-desc">Potencia en tren inferior</span>
+      </div>
+    </button>
     <button class="app-card" style="--card-color:#6366f1" onclick="openSat('wiki')">
       <div class="app-info">
         <span class="app-name">FisioWiki</span>
@@ -597,6 +603,7 @@
   <iframe id="sat-report"     class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-force"      class="sat-frame" allow="bluetooth" hidden></iframe>
   <iframe id="sat-balance"    class="sat-frame" allow="accelerometer; gyroscope" hidden></iframe>
+  <iframe id="sat-jump"       class="sat-frame" allow="accelerometer; gyroscope" hidden></iframe>
   <iframe id="sat-wiki"       class="sat-frame" hidden></iframe>
 </div>
 
@@ -840,7 +847,7 @@ const _peerAnsHash = (() => {
 })();
 
 // ── Navigation ───────────────────────────────────────────────
-const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', wiki: '/physiq/wiki/' };
+const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', jump: '/physiq/jump/', wiki: '/physiq/wiki/' };
 
 function _showSat(name) {
   const frame = document.getElementById('sat-' + name);
