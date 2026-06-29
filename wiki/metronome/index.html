@@ -342,6 +342,31 @@
     }
     .sound-opt.active .sound-opt-dot { background: currentColor; }
 
+    /* ── Nav bar ────────────────────────────────────────── */
+    .nav-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* ── In-hub ─────────────────────────────────────────── */
+    @keyframes hub-back-hint {
+      0%   { transform: translateX(0); }
+      35%  { transform: translateX(-5px); }
+      65%  { transform: translateX(1px); }
+      100% { transform: translateX(0); }
+    }
+    .in-hub .logo-main { cursor: pointer; transition: opacity 0.15s; }
+    .in-hub .logo-main::before {
+      content: '‹';
+      display: inline-block;
+      margin-right: 8px;
+      opacity: 0.55;
+      animation: hub-back-hint 0.7s ease-out 0.5s 1 both;
+    }
+    .in-hub .logo-main:hover { opacity: 0.75; }
+
     /* ── Responsive breakpoints ─────────────────────────── */
     @media (max-width: 768px) {
       :root { --header-h: 52px; }
@@ -368,8 +393,11 @@
     <div class="logo-wrap">
       <div class="logo-main">Physi<span class="logo-q">Q</span> <span class="logo-accent">&mdash; <span class="logo-sub-word">Metrónomo</span><span class="logo-sub-initial">M</span></span></div>
     </div>
-    <button class="btn-nav" onclick="goHome()" aria-label="Volver al inicio">&#x2190; Inicio</button>
   </header>
+
+  <div class="nav-bar">
+    <button class="btn-nav" onclick="goHome()" aria-label="Volver a la wiki">&#x2190; Wiki</button>
+  </div>
 
   <div class="content">
 
@@ -821,6 +849,19 @@ setupLongPress('bpm-plus',  +1);
 setBpm(80);
 buildGrid();
 updateSliderFill(document.getElementById('pulses-slider'));
+
+// ── Hub detection ─────────────────────────────────────────────
+try {
+  if (window.self !== window.top) {
+    document.body.classList.add('in-hub');
+    document.querySelector('.logo-main').addEventListener('click', () => {
+      if (isPlaying) stopMetronome();
+      window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+    });
+  }
+} catch (_) {
+  document.body.classList.add('in-hub');
+}
 </script>
 </body>
 </html>
