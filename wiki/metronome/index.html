@@ -149,16 +149,6 @@
     }
     .pulses-label strong { color: var(--text); font-weight: 500; }
 
-    .sound-btn {
-      width: 36px; height: 36px; border-radius: 9px;
-      border: 1px solid var(--border); background: transparent;
-      color: var(--text3); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.15s, color 0.15s, background 0.15s;
-      flex-shrink: 0;
-    }
-    .sound-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .sound-btn.on    { border-color: rgba(99,102,241,0.45); color: var(--accent); background: var(--accent-lo); }
 
     /* ── BPM section ────────────────────────────────────── */
     .bpm-section {
@@ -346,13 +336,6 @@
       <div class="pulses-row">
         <span class="pulses-label">Pulsos: <strong id="pulses-count">4</strong></span>
         <input type="range" id="pulses-slider" min="1" max="16" value="4">
-        <button class="sound-btn on" id="accent-btn" onclick="toggleAccent()" title="Acento en primer pulso">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-            <ellipse cx="7" cy="18" rx="4" ry="3" transform="rotate(-15 7 18)"/>
-            <rect x="10.5" y="3" width="2" height="15" rx="1"/>
-            <path d="M12.5 3 Q20 5 20 11 Q20 14 16 14 L12.5 14"/>
-          </svg>
-        </button>
       </div>
     </div>
 
@@ -436,7 +419,6 @@ let bpm        = 80;
 let pulses     = 4;
 let intensities = [3, 2, 2, 2]; // per-beat intensity 0–3
 let isPlaying  = false;
-let accentOn   = true;
 let soundType  = 'click';
 
 // ── Audio scheduler (Web Audio API lookahead pattern) ─────────
@@ -461,14 +443,13 @@ function playSound(beat, time) {
   if (intensity === 0) return; // silent beat
 
   const ac        = ctx();
-  const gainMult  = GAIN[intensity];
-  const isAccent  = accentOn && beat === 0;
+  const gainMult = GAIN[intensity];
 
   if (soundType === 'beep') {
     const osc = ac.createOscillator();
     const env = ac.createGain();
     osc.type = 'sine';
-    osc.frequency.value = isAccent ? 880 : 660;
+    osc.frequency.value = 660;
     env.gain.setValueAtTime(0, time);
     env.gain.linearRampToValueAtTime(0.45 * gainMult, time + 0.004);
     env.gain.exponentialRampToValueAtTime(0.001, time + 0.07);
@@ -483,7 +464,7 @@ function playSound(beat, time) {
     const src = ac.createBufferSource();
     src.buffer = buf;
     const bpf = ac.createBiquadFilter();
-    bpf.type = 'bandpass'; bpf.frequency.value = isAccent ? 700 : 450; bpf.Q.value = 3;
+    bpf.type = 'bandpass'; bpf.frequency.value = 500; bpf.Q.value = 3;
     const g = ac.createGain(); g.gain.value = 2.2 * gainMult;
     src.connect(bpf); bpf.connect(g); g.connect(ac.destination);
     src.start(time);
@@ -497,7 +478,7 @@ function playSound(beat, time) {
     const src = ac.createBufferSource();
     src.buffer = buf;
     const bpf = ac.createBiquadFilter();
-    bpf.type = 'bandpass'; bpf.frequency.value = isAccent ? 1800 : 1100; bpf.Q.value = 0.9;
+    bpf.type = 'bandpass'; bpf.frequency.value = 1200; bpf.Q.value = 0.9;
     const g = ac.createGain(); g.gain.value = 1.4 * gainMult;
     src.connect(bpf); bpf.connect(g); g.connect(ac.destination);
     src.start(time);
@@ -735,11 +716,6 @@ function tapTempo() {
   }
 }
 
-// ── Accent toggle ─────────────────────────────────────────────
-function toggleAccent() {
-  accentOn = !accentOn;
-  document.getElementById('accent-btn').classList.toggle('on', accentOn);
-}
 
 // ── Sound type ────────────────────────────────────────────────
 function setSoundType(type) {
