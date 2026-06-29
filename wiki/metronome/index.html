@@ -432,6 +432,12 @@ const SCHEDULE_AHEAD = 0.1;
 
 // Gain multipliers for intensities 0–3
 const GAIN = [0, 0.35, 0.65, 1.0];
+// Pitch (Hz) per intensity 0–3, per sound type
+const FREQ = {
+  beep:  [0,  440,  660,  880],
+  wood:  [0,  350,  500,  700],
+  click: [0,  800, 1200, 1800],
+};
 
 function ctx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -442,14 +448,15 @@ function playSound(beat, time) {
   const intensity = intensities[beat] ?? 3;
   if (intensity === 0) return; // silent beat
 
-  const ac        = ctx();
+  const ac       = ctx();
   const gainMult = GAIN[intensity];
+  const freq     = FREQ[soundType][intensity];
 
   if (soundType === 'beep') {
     const osc = ac.createOscillator();
     const env = ac.createGain();
     osc.type = 'sine';
-    osc.frequency.value = 660;
+    osc.frequency.value = freq;
     env.gain.setValueAtTime(0, time);
     env.gain.linearRampToValueAtTime(0.45 * gainMult, time + 0.004);
     env.gain.exponentialRampToValueAtTime(0.001, time + 0.07);
@@ -464,7 +471,7 @@ function playSound(beat, time) {
     const src = ac.createBufferSource();
     src.buffer = buf;
     const bpf = ac.createBiquadFilter();
-    bpf.type = 'bandpass'; bpf.frequency.value = 500; bpf.Q.value = 3;
+    bpf.type = 'bandpass'; bpf.frequency.value = freq; bpf.Q.value = 3;
     const g = ac.createGain(); g.gain.value = 2.2 * gainMult;
     src.connect(bpf); bpf.connect(g); g.connect(ac.destination);
     src.start(time);
@@ -478,7 +485,7 @@ function playSound(beat, time) {
     const src = ac.createBufferSource();
     src.buffer = buf;
     const bpf = ac.createBiquadFilter();
-    bpf.type = 'bandpass'; bpf.frequency.value = 1200; bpf.Q.value = 0.9;
+    bpf.type = 'bandpass'; bpf.frequency.value = freq; bpf.Q.value = 0.9;
     const g = ac.createGain(); g.gain.value = 1.4 * gainMult;
     src.connect(bpf); bpf.connect(g); g.connect(ac.destination);
     src.start(time);
