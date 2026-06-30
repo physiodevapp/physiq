@@ -11,7 +11,7 @@ const POS_LABELS = { pie: 'De pie', sentado: 'Sentado', supino: 'Supino', latera
 
 // ─── RENDER: HOME ───────────────────────────────────────────────────────────────────────────────────
 function renderHome() {
-  document.getElementById('header-title').innerHTML = 'Physi<span class="logo-q">Q</span> <span class="logo-accent">— Wiki</span>';
+  document.getElementById('header-title').innerHTML = '<span class="logo-physiq">Physi<span class="logo-q">Q</span></span> <span class="logo-accent">— Wiki</span>';
   document.getElementById('view-landing').style.display = 'none';
   document.getElementById('view-home').style.display = '';
   document.getElementById('view-region').style.display = 'none';
