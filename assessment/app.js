@@ -1351,8 +1351,11 @@ function saveSession() {
         if (session) updateSessionChip(session);
         _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient });
         if (state.currentPhase !== 5) {
-          const _phaseLabels = [1, 2, 3, 4, '4b', 5];
-          _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
+          const _hasPhase1Data = state.motivoConsulta || state.mecanismo || state.cronologia || state.riesgoPsico;
+          if (state.maxVisitedIdx > 0 || _hasPhase1Data) {
+            const _phaseLabels = [1, 2, 3, 4, '4b', 5];
+            _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
+          }
         }
         _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_STATE', assessmentState: { ...state } });
       });
