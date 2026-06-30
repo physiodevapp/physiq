@@ -367,6 +367,26 @@
     }
     .in-hub .logo-main:hover .logo-physiq { opacity: 0.75; }
 
+    /* ── Settings sheet: centered dialog on desktop ────── */
+    @media (min-width: 640px) {
+      .overlay { align-items: center; justify-content: center; }
+      .settings-sheet {
+        width: min(420px, 90%);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        transform: scale(0.96);
+        opacity: 0;
+        transition: transform 0.22s cubic-bezier(0.32,0.72,0,1), opacity 0.22s ease;
+        padding-bottom: 1.5rem;
+      }
+      .overlay.open .settings-sheet {
+        transform: scale(1);
+        opacity: 1;
+      }
+      .sheet-handle { display: none; }
+    }
+
     /* ── Responsive breakpoints ─────────────────────────── */
     @media (max-width: 768px) {
       :root { --header-h: 52px; }
