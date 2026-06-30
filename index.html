@@ -1462,7 +1462,10 @@ if ('serviceWorker' in navigator) {
     goCorner(w.dataset.corner || 'bottom-center', false);
   });
 
+  handle.addEventListener('dragstart', e => e.preventDefault());
+
   handle.addEventListener('pointerdown', e => {
+    if (e.button !== undefined && e.button !== 0) return;
     moved = false;
     px0 = e.clientX; py0 = e.clientY;
     const r = w.getBoundingClientRect();
@@ -1472,6 +1475,8 @@ if ('serviceWorker' in navigator) {
   });
 
   handle.addEventListener('pointermove', e => {
+    if (!handle.hasPointerCapture(e.pointerId)) return;
+    e.preventDefault();
     const dx = e.clientX - px0, dy = e.clientY - py0;
     if (!moved && Math.hypot(dx, dy) < 5) return;
     if (!moved) { moved = true; w.classList.add('rw-dragging'); }
