@@ -25,7 +25,7 @@
     <span class="logo-sub">— <span class="logo-sub-word">Assessment</span><span class="logo-sub-initial">A</span></span>
   </div>
   <div class="header-right">
-    <button id="sessionBtn" class="session-btn" onclick="promptClearSession()" aria-label="Sesión activa" title="Sesión activa"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
+    <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
     <span class="phase-indicator" id="phaseIndicator">FASE 1 / 5</span>
     <button class="btn-reset" onclick="resetApp()">↺ <span class="btn-reset-text">Reiniciar</span></button>
     <button class="btn-translate" onclick="handleTranslateClick()" aria-label="View in English">
@@ -95,14 +95,20 @@
   <div class="phase-sheet-list" id="phaseSheetList"></div>
 </div>
 
-<main class="main">
-
-<div class="info-row patient-sticky">
+<!-- SESSION PANEL -->
+<div class="session-panel-overlay" id="sessionPanelOverlay" onclick="closeSessionPanel()"></div>
+<div class="session-panel" id="sessionPanel">
+  <div class="session-panel-title" id="sessionPanelTitle">Sin sesión activa</div>
   <div class="field">
     <label class="field-label" for="patientName">Paciente</label>
-    <input class="field-input" type="text" id="patientName" placeholder="Nombre (opcional)" oninput="state.patient=this.value;saveSession()">
+    <input class="field-input" type="text" id="patientName" placeholder="Nombre (opcional)"
+      oninput="state.patient=this.value;saveSession()"
+      onkeydown="if(event.key==='Enter') closeSessionPanel()">
   </div>
+  <button class="session-panel-clear" id="sessionPanelClear" onclick="promptClearSession()">Borrar sesión</button>
 </div>
+
+<main class="main">
 
 <!-- ==================== FASE 1: TRIAGE ==================== -->
 <div class="phase-container active" id="phase1">

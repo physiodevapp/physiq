@@ -690,11 +690,9 @@ function toggleAccordionRow(sisId, sisIdsStr) {
   if (isOpen) {
     const header = clickedRow.querySelector('.sistema-accordion-header');
     const navbarH = window.innerWidth <= 768 ? 94 : 60;
-    const patientBar = document.querySelector('.patient-sticky');
-    const patientBarH = patientBar ? patientBar.offsetHeight : 0;
     const headerTop = header.getBoundingClientRect().top;
-    if (headerTop < navbarH + patientBarH) {
-      const top = headerTop + window.scrollY - navbarH - patientBarH - 8;
+    if (headerTop < navbarH) {
+      const top = headerTop + window.scrollY - navbarH - 8;
       window.scrollTo({ top, behavior: 'smooth' });
     }
     setTimeout(() => {
@@ -722,14 +720,11 @@ function setupSisObserver(sisId, row) {
   document.getElementById('sisBannerIcon').textContent = icon;
   document.getElementById('sisBannerName').textContent = name;
 
-  const patientBarEl = document.querySelector('.patient-sticky');
-  const patientBarH = patientBarEl ? patientBarEl.offsetHeight : 0;
-  const sisNavH = (window.innerWidth <= 768 ? 94 : 64) + patientBarH;
+  const sisNavH = window.innerWidth <= 768 ? 94 : 64;
   _sisObserver = new IntersectionObserver(entries => {
     const entry = entries[0];
     const banner = document.getElementById('sisContextBanner');
     if (!entry.isIntersecting && entry.boundingClientRect.top < sisNavH) {
-      if (patientBarEl) banner.style.top = patientBarEl.getBoundingClientRect().bottom + 'px';
       banner.classList.add('visible');
     } else {
       banner.style.top = '';
@@ -761,9 +756,7 @@ function scrollToActiveSisHeader() {
   if (!row) return;
   const header = row.querySelector('.sistema-accordion-header');
   const navbarH = window.innerWidth <= 768 ? 94 : 60;
-  const patientBar = document.querySelector('.patient-sticky');
-  const patientBarH = patientBar ? patientBar.offsetHeight : 0;
-  const top = header.getBoundingClientRect().top + window.scrollY - navbarH - patientBarH - 8;
+  const top = header.getBoundingClientRect().top + window.scrollY - navbarH - 8;
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
@@ -1213,18 +1206,60 @@ function showConfirmBanner(title, text, actionLabel, onConfirm) {
 }
 
 
-// ─── SESSION CHIP ─────────────────────────────────────────────
+// ─── SESSION PANEL ────────────────────────────────────────────
 let _sessionLabel = '';
+
+function _updateSessionPanelTitle() {
+  const panelTitle = document.getElementById('sessionPanelTitle');
+  const panel = document.getElementById('sessionPanel');
+  if (!panelTitle) return;
+  const name = (state.patient || '').trim();
+  if (name) {
+    panelTitle.textContent = `${name} · ${new Date().toLocaleDateString('es-ES')}`;
+    panel?.classList.add('has-session');
+  } else {
+    panelTitle.textContent = 'Sin sesión activa';
+    panel?.classList.remove('has-session');
+  }
+}
+
+function toggleSessionPanel() {
+  const panel = document.getElementById('sessionPanel');
+  const overlay = document.getElementById('sessionPanelOverlay');
+  const btn = document.getElementById('sessionBtn');
+  if (!panel || !btn) return;
+  if (panel.classList.contains('open')) {
+    closeSessionPanel();
+    return;
+  }
+  const rect = btn.getBoundingClientRect();
+  panel.style.top = (rect.bottom + 8) + 'px';
+  panel.style.right = (window.innerWidth - rect.right) + 'px';
+  panel.classList.add('open');
+  overlay?.classList.add('open');
+  setTimeout(() => document.getElementById('patientName')?.focus(), 60);
+}
+
+function closeSessionPanel() {
+  document.getElementById('sessionPanel')?.classList.remove('open');
+  document.getElementById('sessionPanelOverlay')?.classList.remove('open');
+}
 
 function updateSessionChip(session) {
   const btn = document.getElementById('sessionBtn');
   if (!btn) return;
-  if (!session || !session.patient) { _sessionLabel = ''; btn.classList.remove('active'); return; }
-  _sessionLabel = `${session.patient} · ${session.date || '—'}`;
-  btn.classList.add('active');
+  if (!session || !session.patient) {
+    _sessionLabel = '';
+    btn.classList.remove('active');
+  } else {
+    _sessionLabel = `${session.patient} · ${session.date || '—'}`;
+    btn.classList.add('active');
+  }
+  _updateSessionPanelTitle();
 }
 
 function promptClearSession() {
+  closeSessionPanel();
   showConfirmBanner(
     'Sesión en curso',
     `${_sessionLabel}<br>¿Borrar y empezar de nuevo?`,
@@ -1337,6 +1372,7 @@ function saveSession() {
   if (motivoEl) state.motivoConsulta = motivoEl.value;
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) state.signoComparable = signoEl.value;
+  _updateSessionPanelTitle();
   // After a clear, block writes until a patient name is entered
   if (_sessionCleared) {
     if (!state.patient) { updateResetBtnVisibility(); return; }
