@@ -858,6 +858,19 @@ try {
       if (isPlaying) stopMetronome();
       window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
     });
+    // Guarantee wiki landing is always behind metronome in history so
+    // swipe-back and the ← Wiki button land on wiki cards, not the hub.
+    history.replaceState({ view: 'wiki-landing' }, '', '/physiq/wiki/');
+    history.pushState({ view: 'metronome' }, '', '/physiq/wiki/metronome/');
+    // Re-seed history when the hub re-shows this satellite. The hub sends
+    // PHYSIQ_SAT_VISIBLE a second time after its own pushState, so entries
+    // added here are not truncated by that pushState.
+    window.addEventListener('message', e => {
+      if (e.data?.type === 'PHYSIQ_SAT_VISIBLE') {
+        history.replaceState({ view: 'wiki-landing' }, '', '/physiq/wiki/');
+        history.pushState({ view: 'metronome' }, '', '/physiq/wiki/metronome/');
+      }
+    });
   }
 } catch (_) {
   document.body.classList.add('in-hub');
