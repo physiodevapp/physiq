@@ -869,6 +869,10 @@ function openSat(name) {
   if (!SATS[name]) return;
   _showSat(name);
   history.pushState({ hub: 'sat', sat: name }, '', '/physiq/?sat=' + name);
+  // Second notification after pushState: the one inside _showSat fires before
+  // pushState and any history entries the satellite adds get truncated by it.
+  // This second one fires after, so rebuilt entries survive.
+  try { document.getElementById('sat-' + name).contentWindow?.postMessage({ type: 'PHYSIQ_SAT_VISIBLE' }, '*'); } catch(_) {}
 }
 
 function goHome() {
