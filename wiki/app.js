@@ -320,6 +320,16 @@ window.addEventListener('message', e => {
   }
 });
 
+// When the browser restores this page from bfcache (e.g. after navigating to
+// metronome/ and pressing back), the hub-exit sentinel must be re-established
+// because the forward navigation consumed a history slot and the sentinel is
+// no longer guaranteed to be the entry immediately before wiki-landing.
+window.addEventListener('pageshow', e => {
+  if (e.persisted && document.body.classList.contains('in-hub')) {
+    _rebuildHubHistory();
+  }
+});
+
 try {
   if (window.self !== window.top) {
     document.body.classList.add('in-hub');
