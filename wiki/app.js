@@ -250,36 +250,48 @@ let _longPressTimer  = null;
 let _longPressTarget = null;
 let _longPressHappened = false;
 
-document.addEventListener('touchstart', e => {
-  _longPressHappened = false;
-  const item = e.target.closest('.test-item');
-  if (!item) return;
-  const testId = item.dataset.testId;
-  const test   = currentRegion?.categories.flatMap(c => c.tests).find(t => t.id === testId);
+function _startLongPress(item, testId) {
+  const test = currentRegion?.categories.flatMap(c => c.tests).find(t => t.id === testId);
   if (!test) return;
-
   _longPressTarget = item;
   item.style.background = 'var(--surface2)';
-
   _longPressTimer = setTimeout(() => {
     _longPressHappened = true;
     openLinkSheet(test.id, test.name);
     item.style.background = '';
     _longPressTarget = null;
   }, 600);
-}, { passive: true });
+}
 
-document.addEventListener('touchend', () => {
+function _cancelLongPress() {
   clearTimeout(_longPressTimer);
   _longPressTimer = null;
   if (_longPressTarget) { _longPressTarget.style.background = ''; _longPressTarget = null; }
+}
+
+document.addEventListener('touchstart', e => {
+  _longPressHappened = false;
+  const item = e.target.closest('.test-item');
+  if (!item) return;
+  _startLongPress(item, item.dataset.testId);
 }, { passive: true });
 
-document.addEventListener('touchmove', () => {
-  clearTimeout(_longPressTimer);
-  _longPressTimer = null;
-  if (_longPressTarget) { _longPressTarget.style.background = ''; _longPressTarget = null; }
-}, { passive: true });
+document.addEventListener('touchend',  _cancelLongPress, { passive: true });
+document.addEventListener('touchmove', _cancelLongPress, { passive: true });
+
+document.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  _longPressHappened = false;
+  const item = e.target.closest('.test-item');
+  if (!item) return;
+  _startLongPress(item, item.dataset.testId);
+});
+
+document.addEventListener('mouseup',   _cancelLongPress);
+document.addEventListener('mouseleave', _cancelLongPress);
+document.addEventListener('mousemove', e => {
+  if (_longPressTarget && (Math.abs(e.movementX) > 5 || Math.abs(e.movementY) > 5)) _cancelLongPress();
+});
 
 // Prevent link navigation after long-press (capture phase, before <a> fires)
 document.addEventListener('click', e => {
