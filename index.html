@@ -849,9 +849,21 @@ const _peerAnsHash = (() => {
 // ── Navigation ───────────────────────────────────────────────
 const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', jump: '/physiq/jump/', wiki: '/physiq/wiki/' };
 
+// Tells a satellite iframe it's about to be hidden, so it can close any open
+// dialog/sheet before it's tucked away — otherwise it'd still be open when
+// the user comes back, since toggling `hidden` never fires visibilitychange
+// inside the iframe (that event is tab-level, not element-level).
+function _notifySatHidden(k) {
+  const el = document.getElementById('sat-' + k);
+  if (el && !el.hidden) {
+    try { el.contentWindow?.postMessage({ type: 'PHYSIQ_SAT_HIDDEN' }, '*'); } catch(_) {}
+  }
+}
+
 function _showSat(name) {
   const frame = document.getElementById('sat-' + name);
   if (!frame.src) frame.src = SATS[name];
+  Object.keys(SATS).forEach(k => { if (k !== name) _notifySatHidden(k); });
   Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = k !== name; });
   document.getElementById('sat-shell').hidden = false;
   document.getElementById('home').hidden = true;
@@ -860,6 +872,7 @@ function _showSat(name) {
 }
 
 function _showHome() {
+  Object.keys(SATS).forEach(_notifySatHidden);
   document.getElementById('sat-shell').hidden = true;
   document.getElementById('home').hidden = false;
   Object.keys(SATS).forEach(k => { document.getElementById('sat-' + k).hidden = true; });

@@ -217,6 +217,7 @@ Satellites send messages to the hub via `window.parent.postMessage(msg, '*')`. T
 | `PHYSIQ_WIDGET_HIDE` | satellite → hub | Sets `#rec-widget` `visibility: hidden` (during modals) |
 | `PHYSIQ_WIDGET_SHOW` | satellite → hub | Restores `#rec-widget` visibility |
 | `PHYSIQ_SAT_VISIBLE` | hub → satellite | Sent when the satellite's iframe becomes visible (allows satellite to rebuild swipe-back history) |
+| `PHYSIQ_SAT_HIDDEN` | hub → satellite | Sent right before the hub hides the satellite's iframe (switching satellite or going home). Toggling the `hidden` attribute never fires `visibilitychange` inside the iframe, so satellites that need to close open dialogs/sheets before being tucked away must listen for this instead. |
 
 ## Commit format
 
