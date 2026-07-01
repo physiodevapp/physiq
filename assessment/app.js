@@ -1284,16 +1284,17 @@ function _setupSessionPanelDrag() {
   const panel = document.getElementById('sessionPanel');
   if (!panel) return;
   const EASE = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-  let startY = 0, startTime = 0, dragging = false, delta = 0;
+  let startY = 0, startTime = 0, dragging = false, delta = 0, snapTimer = null;
 
   panel.addEventListener('touchstart', e => {
     if (window.innerWidth > 768) return;
     if (e.touches[0].clientY - panel.getBoundingClientRect().top > 72) return;
     startY = e.touches[0].clientY;
     startTime = Date.now();
-    dragging = true;
     delta = 0;
-    panel.style.transition = '';
+    dragging = true;
+    clearTimeout(snapTimer);
+    panel.style.transition = 'none';
   }, { passive: true });
 
   panel.addEventListener('touchmove', e => {
@@ -1302,28 +1303,35 @@ function _setupSessionPanelDrag() {
     panel.style.transform = delta > 0 ? `translateY(${delta}px)` : 'translateY(0)';
   }, { passive: true });
 
-  const onRelease = () => {
+  function onRelease() {
     if (!dragging) return;
     dragging = false;
     const velocity = delta / (Date.now() - startTime);
     if (delta > 80 || velocity > 0.3) {
       panel.style.transition = EASE;
-      panel.style.transform = 'translateY(100%)';
-      setTimeout(() => closeSessionPanel(), 300);
+      panel.style.transform = 'translateY(110%)';
+      setTimeout(() => {
+        panel.style.transition = 'none';
+        closeSessionPanel();
+        panel.style.transform = '';
+        panel.style.transition = '';
+      }, 300);
     } else {
       panel.style.transition = EASE;
       panel.style.transform = 'translateY(0)';
-      setTimeout(() => { panel.style.transition = ''; panel.style.transform = ''; }, 300);
+      snapTimer = setTimeout(() => {
+        panel.style.transform = '';
+        panel.style.transition = '';
+      }, 310);
     }
-  };
+  }
 
   panel.addEventListener('touchend', onRelease, { passive: true });
   panel.addEventListener('touchcancel', () => {
     if (!dragging) return;
     dragging = false;
-    panel.style.transition = EASE;
-    panel.style.transform = 'translateY(0)';
-    setTimeout(() => { panel.style.transition = ''; panel.style.transform = ''; }, 300);
+    panel.style.transform = '';
+    panel.style.transition = '';
   }, { passive: true });
 }
 
