@@ -1840,3 +1840,12 @@
   .session-panel-clear{display:none;margin-top:16px;width:100%;background:none;border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-family:'Outfit',sans-serif;font-size:0.85rem;color:var(--text3);cursor:pointer;transition:color 0.2s,border-color 0.2s;}
   .session-panel-clear:hover{color:var(--red);border-color:var(--red);}
   .session-panel.has-session .session-panel-clear{display:block;}
+  .session-panel-handle{display:none;width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px;}
+  @media (max-width: 768px) {
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .session-panel-overlay{align-items:flex-end;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+    .session-panel-overlay.open{animation:none;}
+    .session-panel-overlay.open .session-panel{animation:slideUp 0.3s cubic-bezier(0.32,0.72,0,1);}
+    .session-panel{max-width:100%;width:100%;border-radius:16px 16px 0 0;border:none;border-top:1px solid var(--border2);padding:12px 1.4rem 32px;}
+    .session-panel-handle{display:block;}
+  }
