@@ -3,6 +3,24 @@
 // Lógica principal de la aplicación
 // ============================================================
 
+// ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
+// Reference-counted: several overlays (confirm-banner, session panel,
+// phase sheet) can be stacked or opened in sequence. Each must release
+// its own lock without unlocking scroll while another overlay is still open.
+let _scrollLockCount = 0;
+function lockBodyScroll() {
+  _scrollLockCount++;
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+}
+function unlockBodyScroll() {
+  _scrollLockCount = Math.max(0, _scrollLockCount - 1);
+  if (_scrollLockCount === 0) {
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  }
+}
+
 // ─── STATE ───────────────────────────────────────────────────
 const state = {
   currentPhase: 1,
@@ -1121,13 +1139,16 @@ function togglePhaseSheet() {
   const isOpen = sheet.classList.contains('open');
   sheet.classList.toggle('open');
   overlay.classList.toggle('open');
-  document.body.style.overflow = isOpen ? '' : 'hidden';
+  if (isOpen) unlockBodyScroll(); else lockBodyScroll();
 }
 
 function closePhaseSheet() {
-  document.getElementById('phaseSheet').classList.remove('open');
-  document.getElementById('phaseSheetOverlay').classList.remove('open');
-  document.body.style.overflow = '';
+  const sheet = document.getElementById('phaseSheet');
+  const overlay = document.getElementById('phaseSheetOverlay');
+  if (!sheet.classList.contains('open')) return;
+  sheet.classList.remove('open');
+  overlay.classList.remove('open');
+  unlockBodyScroll();
 }
 
 
@@ -1199,9 +1220,9 @@ function showConfirmBanner(title, text, actionLabel, onConfirm) {
       </div>
     </div>`;
   document.body.appendChild(overlay);
-  document.body.style.overflow = 'hidden';
+  lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
-  const dismiss = () => { overlay.remove(); document.body.style.overflow = ''; window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
+  const dismiss = () => { overlay.remove(); unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
   document.getElementById('confirmCancel').onclick = dismiss;
   document.getElementById('confirmAction').onclick = () => { dismiss(); onConfirm(); };
 }
@@ -1229,9 +1250,9 @@ function _updateSessionPanelTitle() {
 
 function _openSessionSheet() {
   const overlay = document.getElementById('sessionPanelOverlay');
-  if (!overlay) return;
+  if (!overlay || overlay.classList.contains('open')) return;
   overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  lockBodyScroll();
   setTimeout(() => document.getElementById('patientName')?.focus(), 60);
 }
 
@@ -1254,9 +1275,9 @@ function _showSessionInfoBanner() {
       </div>
     </div>`;
   document.body.appendChild(overlay);
-  document.body.style.overflow = 'hidden';
+  lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
-  const dismiss = () => { overlay.remove(); document.body.style.overflow = ''; window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
+  const dismiss = () => { overlay.remove(); unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
   document.getElementById('sib-cancel').onclick = dismiss;
   document.getElementById('sib-edit').onclick = () => { dismiss(); _openSessionSheet(); };
   document.getElementById('sib-delete').onclick = () => { dismiss(); promptClearSession(); };
@@ -1275,8 +1296,10 @@ function toggleSessionPanel() {
 
 function closeSessionPanel() {
   const panel = document.getElementById('sessionPanel');
-  document.getElementById('sessionPanelOverlay')?.classList.remove('open');
-  document.body.style.overflow = '';
+  const overlay = document.getElementById('sessionPanelOverlay');
+  const wasOpen = overlay?.classList.contains('open');
+  overlay?.classList.remove('open');
+  if (wasOpen) unlockBodyScroll();
   if (panel) { panel.style.transition = ''; panel.style.transform = ''; }
 }
 
