@@ -549,6 +549,15 @@ if (window.self !== window.top) {
   // Only replaceState+pushState — never history.go() inside an iframe, as
   // iOS Safari merges iframe and top-level history into one stack.
   window.addEventListener('message', e => {
+    // The hub only toggles the `hidden` attribute on satellite iframes — it
+    // never navigates away — so document.visibilitychange (tab-level) never
+    // fires here. The hub tells us explicitly when it's about to hide us so
+    // any open dialog (delete session, edit patient name…) doesn't linger.
+    if (e.data?.type === 'PHYSIQ_SAT_HIDDEN') {
+      saveSession();
+      _closeAllOverlays();
+      return;
+    }
     if (e.data?.type !== 'PHYSIQ_SAT_VISIBLE') return;
     if (_pendingBackNav) return;
     const _phaseOrder = [1, 2, 3, 4, '4b', 5];
