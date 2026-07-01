@@ -1846,6 +1846,6 @@
     .session-panel-overlay{align-items:flex-end;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
     .session-panel-overlay.open{animation:none;}
     .session-panel-overlay.open .session-panel{animation:slideUp 0.3s cubic-bezier(0.32,0.72,0,1);}
-    .session-panel{max-width:100%;width:100%;border-radius:16px 16px 0 0;border:none;border-top:1px solid var(--border2);padding:12px 1.4rem 32px;}
+    .session-panel{max-width:100%;width:100%;border-radius:16px 16px 0 0;border:none;border-top:1px solid var(--border2);padding:12px 1.4rem 32px;touch-action:none;}
     .session-panel-handle{display:block;}
   }
