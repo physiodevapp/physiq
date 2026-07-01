@@ -1303,6 +1303,21 @@ function closeSessionPanel() {
   if (panel) { panel.style.transition = ''; panel.style.transform = ''; }
 }
 
+// Closes every open sheet/dialog. Called when the hub hides this satellite
+// (e.g. navigating back to hub home) so a stale open dialog isn't still
+// showing when the user returns.
+function _closeAllOverlays() {
+  closePhaseSheet();
+  closeSessionPanel();
+  ['sessionInfoBanner', 'confirmBanner'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.remove();
+    unlockBodyScroll();
+    window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
+  });
+}
+
 function _setupSessionPanelDrag() {
   const panel = document.getElementById('sessionPanel');
   if (!panel) return;
@@ -1691,7 +1706,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Autosave when app is backgrounded (covers swipe-away on Android PWA)
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') saveSession();
+    if (document.visibilityState === 'hidden') {
+      saveSession();
+      _closeAllOverlays();
+    }
   });
 
   document.getElementById('patientName')?.addEventListener('blur', saveSession);
