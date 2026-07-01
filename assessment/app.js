@@ -1709,6 +1709,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     if (session.rom && !state.rom) state.rom = session.rom;
+    _updateSessionPanelTitle();
     updateResetBtnVisibility();
   });
 });
