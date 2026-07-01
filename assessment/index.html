@@ -96,16 +96,17 @@
 </div>
 
 <!-- SESSION PANEL -->
-<div class="session-panel-overlay" id="sessionPanelOverlay" onclick="closeSessionPanel()"></div>
-<div class="session-panel" id="sessionPanel">
-  <div class="session-panel-title" id="sessionPanelTitle">Sin sesión activa</div>
-  <div class="field">
-    <label class="field-label" for="patientName">Paciente</label>
-    <input class="field-input" type="text" id="patientName" placeholder="Nombre (opcional)"
-      oninput="state.patient=this.value;saveSession()"
-      onkeydown="if(event.key==='Enter') closeSessionPanel()">
+<div class="session-panel-overlay" id="sessionPanelOverlay" onclick="closeSessionPanel()">
+  <div class="session-panel" id="sessionPanel" onclick="event.stopPropagation()">
+    <div class="session-panel-title" id="sessionPanelTitle">Sin sesión activa</div>
+    <div class="field">
+      <label class="field-label" for="patientName">Paciente</label>
+      <input class="field-input" type="text" id="patientName" placeholder="Nombre (opcional)"
+        oninput="state.patient=this.value;saveSession()"
+        onkeydown="if(event.key==='Enter') closeSessionPanel()">
+    </div>
+    <button class="session-panel-clear" id="sessionPanelClear" onclick="promptClearSession()">Borrar sesión</button>
   </div>
-  <button class="session-panel-clear" id="sessionPanelClear" onclick="promptClearSession()">Borrar sesión</button>
 </div>
 
 <main class="main">

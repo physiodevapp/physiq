@@ -1212,36 +1212,29 @@ let _sessionLabel = '';
 function _updateSessionPanelTitle() {
   const panelTitle = document.getElementById('sessionPanelTitle');
   const panel = document.getElementById('sessionPanel');
+  const btn = document.getElementById('sessionBtn');
   if (!panelTitle) return;
   const name = (state.patient || '').trim();
   if (name) {
     panelTitle.textContent = `${name} · ${new Date().toLocaleDateString('es-ES')}`;
     panel?.classList.add('has-session');
+    btn?.classList.add('active');
   } else {
     panelTitle.textContent = 'Sin sesión activa';
     panel?.classList.remove('has-session');
+    btn?.classList.remove('active');
   }
 }
 
 function toggleSessionPanel() {
-  const panel = document.getElementById('sessionPanel');
   const overlay = document.getElementById('sessionPanelOverlay');
-  const btn = document.getElementById('sessionBtn');
-  if (!panel || !btn) return;
-  if (panel.classList.contains('open')) {
-    closeSessionPanel();
-    return;
-  }
-  const rect = btn.getBoundingClientRect();
-  panel.style.top = (rect.bottom + 8) + 'px';
-  panel.style.right = (window.innerWidth - rect.right) + 'px';
-  panel.classList.add('open');
-  overlay?.classList.add('open');
+  if (!overlay) return;
+  if (overlay.classList.contains('open')) { closeSessionPanel(); return; }
+  overlay.classList.add('open');
   setTimeout(() => document.getElementById('patientName')?.focus(), 60);
 }
 
 function closeSessionPanel() {
-  document.getElementById('sessionPanel')?.classList.remove('open');
   document.getElementById('sessionPanelOverlay')?.classList.remove('open');
 }
 
