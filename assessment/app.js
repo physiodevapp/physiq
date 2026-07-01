@@ -1226,13 +1226,48 @@ function _updateSessionPanelTitle() {
   }
 }
 
+function _openSessionSheet() {
+  const overlay = document.getElementById('sessionPanelOverlay');
+  if (!overlay) return;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('patientName')?.focus(), 60);
+}
+
+function _showSessionInfoBanner() {
+  const existing = document.getElementById('sessionInfoBanner');
+  if (existing) { existing.remove(); }
+  const label = _sessionLabel || `${state.patient} · ${new Date().toLocaleDateString('es-ES')}`;
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-banner';
+  overlay.id = 'sessionInfoBanner';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <div class="confirm-box-title">Sesión en curso</div>
+      <div class="confirm-box-text">${label}</div>
+      <div class="confirm-box-btns" style="flex-direction:column;gap:0.5rem;">
+        <button class="btn btn-primary" id="sib-edit" style="font-size:0.85rem;padding:9px 18px;">Editar nombre</button>
+        <button class="btn btn-secondary" id="sib-delete" style="font-size:0.85rem;padding:9px 18px;color:var(--red);border-color:var(--red);">Borrar sesión</button>
+        <button class="btn btn-secondary" id="sib-cancel" style="font-size:0.85rem;padding:9px 18px;border-color:transparent;color:var(--text3);">Cancelar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  const dismiss = () => { overlay.remove(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
+  document.getElementById('sib-cancel').onclick = dismiss;
+  document.getElementById('sib-edit').onclick = () => { dismiss(); _openSessionSheet(); };
+  document.getElementById('sib-delete').onclick = () => { dismiss(); promptClearSession(); };
+}
+
 function toggleSessionPanel() {
   const overlay = document.getElementById('sessionPanelOverlay');
   if (!overlay) return;
   if (overlay.classList.contains('open')) { closeSessionPanel(); return; }
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => document.getElementById('patientName')?.focus(), 60);
+  if ((state.patient || '').trim()) {
+    _showSessionInfoBanner();
+  } else {
+    _openSessionSheet();
+  }
 }
 
 function closeSessionPanel() {
