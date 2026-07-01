@@ -1231,11 +1231,62 @@ function toggleSessionPanel() {
   if (!overlay) return;
   if (overlay.classList.contains('open')) { closeSessionPanel(); return; }
   overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
   setTimeout(() => document.getElementById('patientName')?.focus(), 60);
 }
 
 function closeSessionPanel() {
+  const panel = document.getElementById('sessionPanel');
   document.getElementById('sessionPanelOverlay')?.classList.remove('open');
+  document.body.style.overflow = '';
+  if (panel) { panel.style.transition = ''; panel.style.transform = ''; }
+}
+
+function _setupSessionPanelDrag() {
+  const panel = document.getElementById('sessionPanel');
+  if (!panel) return;
+  const EASE = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+  let startY = 0, startTime = 0, dragging = false, delta = 0;
+
+  panel.addEventListener('touchstart', e => {
+    if (window.innerWidth > 768) return;
+    if (e.touches[0].clientY - panel.getBoundingClientRect().top > 72) return;
+    startY = e.touches[0].clientY;
+    startTime = Date.now();
+    dragging = true;
+    delta = 0;
+    panel.style.transition = '';
+  }, { passive: true });
+
+  panel.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    delta = Math.max(0, e.touches[0].clientY - startY);
+    panel.style.transform = delta > 0 ? `translateY(${delta}px)` : 'translateY(0)';
+  }, { passive: true });
+
+  const onRelease = () => {
+    if (!dragging) return;
+    dragging = false;
+    const velocity = delta / (Date.now() - startTime);
+    if (delta > 80 || velocity > 0.3) {
+      panel.style.transition = EASE;
+      panel.style.transform = 'translateY(100%)';
+      setTimeout(() => closeSessionPanel(), 300);
+    } else {
+      panel.style.transition = EASE;
+      panel.style.transform = 'translateY(0)';
+      setTimeout(() => { panel.style.transition = ''; panel.style.transform = ''; }, 300);
+    }
+  };
+
+  panel.addEventListener('touchend', onRelease, { passive: true });
+  panel.addEventListener('touchcancel', () => {
+    if (!dragging) return;
+    dragging = false;
+    panel.style.transition = EASE;
+    panel.style.transform = 'translateY(0)';
+    setTimeout(() => { panel.style.transition = ''; panel.style.transform = ''; }, 300);
+  }, { passive: true });
 }
 
 function updateSessionChip(session) {
@@ -1549,6 +1600,8 @@ document.addEventListener('DOMContentLoaded', () => {
   calcIrritabilidad();
   // Init mobile phase bar
   updateMobilePhaseBar(1);
+  // Init session panel drag-to-dismiss
+  _setupSessionPanelDrag();
 
   // Seed history so the first back press steps through phases
   history.replaceState({ phase: 1 }, '');
