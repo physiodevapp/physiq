@@ -1199,8 +1199,9 @@ function showConfirmBanner(title, text, actionLabel, onConfirm) {
       </div>
     </div>`;
   document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
-  const dismiss = () => { overlay.remove(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
+  const dismiss = () => { overlay.remove(); document.body.style.overflow = ''; window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
   document.getElementById('confirmCancel').onclick = dismiss;
   document.getElementById('confirmAction').onclick = () => { dismiss(); onConfirm(); };
 }
@@ -1241,19 +1242,21 @@ function _showSessionInfoBanner() {
   const overlay = document.createElement('div');
   overlay.className = 'confirm-banner';
   overlay.id = 'sessionInfoBanner';
+  const _ic = (d) => `<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
   overlay.innerHTML = `
     <div class="confirm-box">
       <div class="confirm-box-title">Sesión en curso</div>
       <div class="confirm-box-text">${label}</div>
-      <div class="confirm-box-btns" style="flex-direction:column;gap:0.5rem;">
-        <button class="btn btn-primary" id="sib-edit" style="font-size:0.85rem;padding:9px 18px;">Editar nombre</button>
-        <button class="btn btn-secondary" id="sib-delete" style="font-size:0.85rem;padding:9px 18px;color:var(--red);border-color:var(--red);">Borrar sesión</button>
-        <button class="btn btn-secondary" id="sib-cancel" style="font-size:0.85rem;padding:9px 18px;border-color:transparent;color:var(--text3);">Cancelar</button>
+      <div class="confirm-box-btns" style="justify-content:stretch;gap:0.5rem;">
+        <button class="btn btn-secondary" id="sib-cancel" style="flex:1;font-size:0.8rem;padding:9px 6px;display:flex;align-items:center;justify-content:center;gap:5px;border-color:transparent;color:var(--text3);">${_ic('M2 2l9 9M11 2L2 11')} Cancelar</button>
+        <button class="btn btn-primary" id="sib-edit" style="flex:1;font-size:0.8rem;padding:9px 6px;display:flex;align-items:center;justify-content:center;gap:5px;">${_ic('M8.5 2.5l2 2-6 6H3v-2.5l6-6z')} Editar</button>
+        <button class="btn btn-secondary" id="sib-delete" style="flex:1;font-size:0.8rem;padding:9px 6px;display:flex;align-items:center;justify-content:center;gap:5px;color:var(--red);border-color:var(--red);">${_ic('M2 4h9M5 4V2h3v2M3.5 4l.5 7h5l.5-7')} Borrar</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
-  const dismiss = () => { overlay.remove(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
+  const dismiss = () => { overlay.remove(); document.body.style.overflow = ''; window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); };
   document.getElementById('sib-cancel').onclick = dismiss;
   document.getElementById('sib-edit').onclick = () => { dismiss(); _openSessionSheet(); };
   document.getElementById('sib-delete').onclick = () => { dismiss(); promptClearSession(); };
