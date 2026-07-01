@@ -118,7 +118,12 @@ Satellites send messages to the hub via `window.parent.postMessage(msg, '*')`:
 | `PHYSIQ_WIDGET_HIDE` | Hide recorder widget (during modals) |
 | `PHYSIQ_WIDGET_SHOW` | Restore recorder widget visibility |
 
-Communication is one-way — the hub never posts back to satellites.
+The hub also posts messages back to satellite iframes:
+
+| Type | Meaning |
+|------|---------|
+| `PHYSIQ_SAT_VISIBLE` | The satellite's iframe just became visible (rebuild swipe-back history) |
+| `PHYSIQ_SAT_HIDDEN` | The satellite's iframe is about to be hidden (close any open dialog/sheet) |
 
 ## Local development
 
