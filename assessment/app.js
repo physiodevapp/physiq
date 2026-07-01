@@ -1308,10 +1308,24 @@ function _setupSessionPanelDrag() {
   if (!panel) return;
   const EASE = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
   let startY = 0, startTime = 0, dragging = false, delta = 0, snapTimer = null;
+  let vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+  // Closing the keyboard mid-drag resizes the visual viewport, which shifts
+  // the panel's on-screen position by the same amount. Without compensating
+  // startY, that shift cancels out the manual translateY delta and the sheet
+  // feels stuck/resistant instead of following the finger.
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      const newHeight = window.visualViewport.height;
+      if (dragging) startY += newHeight - vvHeight;
+      vvHeight = newHeight;
+    });
+  }
 
   panel.addEventListener('touchstart', e => {
     if (window.innerWidth > 768) return;
     if (e.touches[0].clientY - panel.getBoundingClientRect().top > 72) return;
+    if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
     startY = e.touches[0].clientY;
     startTime = Date.now();
     delta = 0;
