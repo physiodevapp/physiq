@@ -389,6 +389,7 @@
         overflow: visible; scroll-snap-type: none;
       }
       .peer-slide { flex: unset; padding: 0; }
+      .peer-slide:first-child { padding-right: 1.5rem; }
       .peer-slide + .peer-slide {
         border-left: 1px solid var(--border); padding-left: 1.5rem;
       }
@@ -722,7 +723,7 @@
         <!-- Slide 1: QR de oferta -->
         <div class="peer-slide">
           <p class="peer-step-label">Paso 1 — abre PhysiQ en el otro dispositivo</p>
-          <p class="peer-hint">Escanea este QR con la cámara del otro dispositivo o comparte el enlace.</p>
+          <p class="peer-hint">Escanea este QR con el otro dispositivo o comparte el enlace.</p>
           <div id="peer-offer-qr-wrap" class="peer-qr-wrap" hidden>
             <canvas id="peer-offer-qr"></canvas>
           </div>
