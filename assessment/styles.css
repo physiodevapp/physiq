@@ -1455,6 +1455,10 @@
     gap: 0.75rem;
     justify-content: flex-end;
   }
+  .confirm-btn-cancel { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--border); color: var(--text3); border-radius: 8px; padding: 9px 16px; font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+  .confirm-btn-cancel:hover { border-color: var(--text2); color: var(--text2); }
+  .confirm-btn-ok { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); border: none; color: #fff; border-radius: 8px; padding: 9px 18px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .confirm-btn-ok:hover { background: #3d7fd4; }
 
   /* Print styles */
   @media print {
