@@ -604,6 +604,12 @@
         <span class="app-desc">Potencia en tren inferior</span>
       </div>
     </button>
+    <button class="app-card" style="--card-color:#0ea5e9" onclick="openSat('kinematics')">
+      <div class="app-info">
+        <span class="app-name">Kinematica · Cámara</span>
+        <span class="app-desc">Ángulos articulares en tiempo real</span>
+      </div>
+    </button>
     <button class="app-card" style="--card-color:#6366f1" onclick="openSat('wiki')">
       <div class="app-info">
         <span class="app-name">FisioWiki</span>
@@ -621,6 +627,7 @@
   <iframe id="sat-force"      class="sat-frame" allow="bluetooth" hidden></iframe>
   <iframe id="sat-balance"    class="sat-frame" allow="accelerometer; gyroscope" hidden></iframe>
   <iframe id="sat-jump"       class="sat-frame" allow="camera; accelerometer; gyroscope" hidden></iframe>
+  <iframe id="sat-kinematics" class="sat-frame" allow="camera" hidden></iframe>
   <iframe id="sat-wiki"       class="sat-frame" hidden></iframe>
 </div>
 
@@ -864,7 +871,7 @@ const _peerAnsHash = (() => {
 })();
 
 // ── Navigation ───────────────────────────────────────────────
-const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', jump: '/physiq/jump/', wiki: '/physiq/wiki/' };
+const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', jump: '/physiq/jump/', kinematics: '/physiq/kinematics/', wiki: '/physiq/wiki/' };
 
 // Tells a satellite iframe it's about to be hidden, so it can close any open
 // dialog/sheet before it's tucked away — otherwise it'd still be open when
