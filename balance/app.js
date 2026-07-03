@@ -1137,20 +1137,24 @@ window.hideMetricInfo = hideMetricInfo;
 
 // ── Confirm banner ────────────────────────────────────────────────────────────
 function showConfirmBanner(title, text, actionLabel, onConfirm) {
-  const el = document.getElementById('confirmBanner');
-  document.getElementById('confirmTitle').textContent = title;
-  document.getElementById('confirmText').innerHTML    = text;
-  document.getElementById('confirmAction').textContent = actionLabel;
-  el.hidden = false;
-
-  const onAction = () => { el.hidden = true; cleanup(); onConfirm(); };
-  const onCancel = () => { el.hidden = true; cleanup(); _hubWidgetShow(); };
-
-  document.getElementById('confirmAction').addEventListener('click', onAction, { once: true });
-  document.getElementById('confirmCancel').addEventListener('click', onCancel, { once: true });
-
-  function cleanup() {
-    document.getElementById('confirmAction').removeEventListener('click', onAction);
-    document.getElementById('confirmCancel').removeEventListener('click', onCancel);
-  }
+  const existing = document.getElementById('confirmBanner');
+  if (existing) existing.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-banner';
+  overlay.id = 'confirmBanner';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <div class="confirm-box-title">${title}</div>
+      <div class="confirm-box-text">${text}</div>
+      <div class="confirm-box-btns">
+        <button class="confirm-btn-cancel" id="confirmCancel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancelar</button>
+        <button class="confirm-btn-ok" id="confirmAction"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg> ${actionLabel}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  lockBodyScroll();
+  _hubWidgetHide();
+  const dismiss = () => { overlay.remove(); unlockBodyScroll(); _hubWidgetShow(); };
+  document.getElementById('confirmCancel').onclick = dismiss;
+  document.getElementById('confirmAction').onclick = () => { dismiss(); onConfirm(); };
 }
