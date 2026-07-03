@@ -1137,13 +1137,13 @@
     <span class="logo-sub">— <span class="logo-sub-word">Balance</span><span class="logo-sub-initial" hidden>B</span></span>
   </div>
   <div class="header-right" id="headerRight">
+    <button class="btn-reset" id="headerResetBtn" onclick="promptSoftResetBalance()" style="display:none" aria-label="Borrar mediciones de balance" title="Borrar mediciones">↺ <span class="btn-reset-text">Reiniciar</span></button>
     <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="8" r="4"/>
         <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>
       </svg>
     </button>
-    <button class="btn-reset" id="headerResetBtn" onclick="promptSoftResetBalance()" style="display:none" aria-label="Borrar mediciones de balance" title="Borrar mediciones">↺ <span class="btn-reset-text">Reiniciar</span></button>
     <button class="btn-translate" onclick="handleTranslateClick()" aria-label="View in English">🌐<span class="translate-tooltip">Long-press or right-click → Translate to English</span></button>
   </div>
 </header>
