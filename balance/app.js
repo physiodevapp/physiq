@@ -840,6 +840,9 @@ window.saveResult = async function () {
     testId,
     label:    TESTS[testId].label,
     sublabel: TESTS[testId].sublabel,
+    eyes:     TESTS[testId].eyes,
+    stance:   TESTS[testId].stance,
+    duration: TESTS[testId].duration,
     score:    metrics.score,
     metrics
   };
