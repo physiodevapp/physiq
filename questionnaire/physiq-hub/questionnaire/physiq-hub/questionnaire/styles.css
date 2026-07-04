@@ -41,47 +41,19 @@ html, body {
   z-index: 10;
 }
 
-.logo { display: flex; align-items: baseline; gap: 4px; }
-.logo-main {
+.header-logo {
   font-family: 'DM Serif Display', serif;
   font-size: 1.35rem;
   font-weight: 400;
   color: #fff;
   letter-spacing: -0.02em;
 }
-.logo-q {
+.header-logo span {
   background: linear-gradient(135deg, var(--accent), #fb923c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.logo-sub {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.35rem;
-  color: var(--accent);
-  letter-spacing: -0.02em;
-}
-.logo-sub-initial { display: none; }
-@media (max-width: 360px) {
-  .logo-sub-word    { display: none; }
-  .logo-sub-initial { display: inline; }
-}
-
-@keyframes hub-back-hint {
-  0%   { transform: translateX(0); }
-  35%  { transform: translateX(-5px); }
-  65%  { transform: translateX(1px); }
-  100% { transform: translateX(0); }
-}
-.in-hub .logo-main { cursor: pointer; transition: opacity 0.15s; }
-.in-hub .logo-main::before {
-  content: '‹';
-  display: inline-block;
-  margin-right: 8px;
-  opacity: 0.55;
-  animation: hub-back-hint 0.7s ease-out 0.5s 1 both;
-}
-.in-hub .logo-main:hover { opacity: 0.75; }
 
 .header-patient {
   display: flex;
@@ -97,6 +69,18 @@ html, body {
 }
 .header-patient svg { flex-shrink: 0; color: var(--text3); }
 #patient-name { color: var(--text2); }
+
+.btn-hub-home {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text3);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-hub-home:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ── Home view ─────────────────────────────────────────────── */
 #view-home {
@@ -208,20 +192,18 @@ html, body {
   z-index: 5;
 }
 
-.btn-back {
-  background: transparent;
+.qv-back {
+  width: 36px; height: 36px;
+  border-radius: 50%;
   border: 1px solid var(--border);
+  background: transparent;
   color: var(--text2);
-  border-radius: 8px;
-  padding: 5px 10px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
   cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  white-space: nowrap;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.15s, color 0.15s;
 }
-.btn-back:hover { border-color: var(--text2); color: #e8edf2; }
+.qv-back:hover { border-color: var(--border2); color: #e8edf2; }
 
 .qv-title-wrap {
   display: flex;
@@ -242,17 +224,12 @@ html, body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.qv-region-badge {
+.qv-region {
   font-family: 'DM Mono', monospace;
   font-size: 0.65rem;
-  color: var(--accent);
+  color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  background: rgba(245, 158, 11, 0.08);
-  padding: 4px 9px;
-  border-radius: 6px;
-  white-space: nowrap;
   flex-shrink: 0;
 }
 

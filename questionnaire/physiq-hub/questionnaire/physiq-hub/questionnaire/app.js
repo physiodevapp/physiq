@@ -80,6 +80,10 @@ function goHome() {
   document.getElementById('view-result').hidden        = true;
 }
 
+function goHubHome() {
+  window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+}
+
 function openQuestionnaire(id) {
   const q = QUESTIONNAIRES.find(q => q.id === id);
   if (!q) return;
@@ -128,12 +132,16 @@ function renderQuestionnaire(q) {
   const container = document.getElementById('view-questionnaire');
   container.innerHTML = `
     <div class="qv-header">
-      <button class="btn-back" onclick="goHome()">← Volver</button>
+      <button class="qv-back" onclick="goHome()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+      </button>
       <div class="qv-title-wrap">
         <span class="qv-abbr">${q.abbr}</span>
         <span class="qv-name">${q.name}</span>
       </div>
-      <span class="qv-region-badge">${q.region}</span>
+      <span class="qv-region">${q.region}</span>
     </div>
     ${q.note ? `<p class="qv-note">${q.note}</p>` : ''}
     <div class="qv-items" id="qv-items"></div>
@@ -260,7 +268,11 @@ function showResult(result, q) {
   const el = document.getElementById('view-result');
   el.innerHTML = `
     <div class="res-header">
-      <button class="btn-back" onclick="goHome()">← Volver</button>
+      <button class="qv-back" onclick="goHome()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+      </button>
       <span class="qv-abbr">${result.abbr}</span>
     </div>
     <div class="res-card">
