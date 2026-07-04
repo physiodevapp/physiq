@@ -367,7 +367,14 @@ function _renderTestCards() {
       ? `<span class="card-score" style="color:${_gradeColor(score)}">${score}<small>/100</small></span>`
       : `<span class="card-score-empty">—<small>/100</small></span>`;
 
+    const viewBtn = saved
+      ? `<span role="button" class="card-view-btn" aria-label="Ver detalle" title="Ver detalle" onclick="event.stopPropagation();viewSavedResult('${id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>`
+      : '';
+
     card.innerHTML = `
+      ${viewBtn}
       <div class="card-label">${t.label}</div>
       <div class="card-sub-row">
         <span class="card-sublabel">${t.sublabel}</span>
@@ -379,32 +386,55 @@ function _renderTestCards() {
     `;
     grid.appendChild(card);
   }
-  _renderSavedSummary();
+  _renderGlobalSummary();
   _renderInterpretation();
 }
 
-// ── Saved summary (view / delete completed tests) ────────────────────────────
-function _renderSavedSummary() {
-  const card  = document.getElementById('savedSummaryCard');
-  const items = document.getElementById('savedSummaryItems');
-  if (!card || !items) return;
+// ── Global summary (mirrors physiq-motion's summary-card / chip pattern) ─────
+function _renderGlobalSummary() {
+  const card  = document.getElementById('globalSummaryCard');
+  const chips = document.getElementById('globalSummaryChips');
+  if (!card || !chips) return;
 
   const ids = Object.keys(_balanceResults);
   if (!ids.length) { card.hidden = true; return; }
   card.hidden = false;
 
-  items.innerHTML = Object.entries(TESTS)
+  chips.innerHTML = Object.entries(TESTS)
     .filter(([id]) => _balanceResults[id])
     .map(([id, t]) => {
       const saved = _balanceResults[id];
       return `
-        <div class="saved-summary-item" onclick="viewSavedResult('${id}')">
-          <span class="saved-summary-dot" style="background:${t.color}"></span>
-          <span class="saved-summary-label">${t.label} · ${t.sublabel}</span>
-          <span class="saved-summary-score" style="color:${_gradeColor(saved.score)}">${saved.score}<small>/100</small></span>
-          <span role="button" class="btn-clear" onclick="event.stopPropagation();clearTestResult('${id}')">✕</span>
-        </div>`;
+        <span class="global-summary-chip" onclick="viewSavedResult('${id}')">
+          ${t.label} · ${t.sublabel}
+          <span class="chip-score" style="color:${_gradeColor(saved.score)}">${saved.score}/100</span>
+          <span role="button" class="chip-clear" onclick="event.stopPropagation();clearTestResult('${id}')">✕</span>
+        </span>`;
     }).join('');
+}
+
+window.copyBalanceSummary = function () {
+  const lines = Object.entries(TESTS)
+    .filter(([id]) => _balanceResults[id])
+    .map(([id, t]) => {
+      const r = _balanceResults[id];
+      return `  ${t.label} ${t.sublabel}: ${r.score}/100 (${_getGrade(r.score).label})`;
+    });
+  if (!lines.length) return;
+  const patient = _patient ? `\nPaciente: ${_patient}` : '';
+  const text = `MEDICIÓN PhysiQ-Balance${patient}\nFecha: ${_todayStr()}\n\n${lines.join('\n')}`;
+  navigator.clipboard.writeText(text).then(() => _showCopyFeedback());
+};
+
+function _showCopyFeedback() {
+  const existing = document.getElementById('copyFeedback');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'copyFeedback';
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid #22d3ee;color:#22d3ee;font-size:0.8rem;font-family:\'Outfit\',sans-serif;padding:10px 20px;border-radius:8px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.4);';
+  toast.textContent = '✓ Mediciones copiadas al portapapeles';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 }
 
 // ── Interpretation ───────────────────────────────────────────────────────────
@@ -966,6 +996,10 @@ function _drawCopChart(cop) {
 
   let maxAbs = 0.5; // cm floor so a near-static trace doesn't over-zoom
   for (let i = 0; i < ml.length; i++) maxAbs = Math.max(maxAbs, Math.abs(ml[i]), Math.abs(ap[i]));
+  // The hull comes from the full-resolution series and captures the outer-most
+  // outliers — those can exceed both the downsampled trace and the ellipse
+  // (which by definition only bounds ~95% of points), so it must set the zoom.
+  for (const p of hull) maxAbs = Math.max(maxAbs, Math.abs(p.x), Math.abs(p.y));
   if (ellipse) maxAbs = Math.max(maxAbs, ellipse.a);
   maxAbs *= 1.25;
 
