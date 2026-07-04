@@ -499,29 +499,32 @@ function _computeInterpretation() {
     });
   }
 
-  // Dirección dominante del sway (referencia: ft-eo si disponible)
-  const ref = ftEO || _balanceResults[ids[0]];
-  if (ref?.metrics) {
-    const { ap, ml } = ref.metrics;
-    if (ap.rms > 0 && ml.rms > 0) {
-      const r = ap.rms / ml.rms;
-      if (r > 1.6) {
-        items.push({
-          color: '#4f9cf9',
-          title: 'Oscilación predominantemente anteroposterior',
-          text: 'Mayor movimiento hacia adelante y atrás que lateral. Puede relacionarse con la estrategia de tobillo o debilidad en esa dirección.'
-        });
-      } else if (r < 0.625) {
-        items.push({
-          color: '#4f9cf9',
-          title: 'Oscilación predominantemente lateral',
-          text: 'Mayor movimiento de lado a lado que anteroposterior. Puede indicar debilidad de abductores de cadera o asimetría en la carga.'
-        });
-      }
-    }
-  }
-
   return items;
+}
+
+// Dominant sway direction — a property of a single test (AP vs ML stance
+// mechanics differ, e.g. tandem narrows the base laterally), so this is
+// shown per-test (results page 3) rather than folded into the cross-test
+// interpretation panel above.
+function _getDominantDirection(metrics) {
+  const { ap, ml } = metrics;
+  if (!(ap.rms > 0 && ml.rms > 0)) return null;
+  const r = ap.rms / ml.rms;
+  if (r > 1.6) {
+    return {
+      color: '#4f9cf9',
+      title: 'Oscilación predominantemente anteroposterior',
+      text: 'Mayor movimiento hacia adelante y atrás que lateral. Puede relacionarse con la estrategia de tobillo o debilidad en esa dirección.'
+    };
+  }
+  if (r < 0.625) {
+    return {
+      color: '#4f9cf9',
+      title: 'Oscilación predominantemente lateral',
+      text: 'Mayor movimiento de lado a lado que anteroposterior. Puede indicar debilidad de abductores de cadera o asimetría en la carga.'
+    };
+  }
+  return null;
 }
 
 function _renderInterpretation() {
@@ -962,6 +965,14 @@ function _showResults(metrics, opts = {}) {
   document.getElementById('advUdNPL').textContent = _fmt1(metrics.ud.npl);
   document.getElementById('advUdRMS').textContent = _fmt1(metrics.ud.rms);
   document.getElementById('advUdSD').textContent  = _fmt1(metrics.ud.sd);
+
+  const dom = _getDominantDirection(metrics);
+  document.getElementById('advDominantDirection').hidden = !dom;
+  if (dom) {
+    document.getElementById('advDominantDot').style.background = dom.color;
+    document.getElementById('advDominantTitle').textContent    = dom.title;
+    document.getElementById('advDominantText').textContent     = dom.text;
+  }
 
   // Page 4 — COP (cm)
   document.getElementById('copPathVal').textContent    = _fmt1(metrics.cop.pathLength);
