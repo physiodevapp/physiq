@@ -79,6 +79,7 @@ let _sessionCleared = false;
 let _patientHeight  = 0;               // cm (0 = not entered)
 let _sensorHeight   = DEFAULT_SENSOR_H; // cm, umbilical — used for COP calculation
 let _resultsPage    = 0;
+let _resultsReadonly = false; // true when viewing an already-saved result
 let _swipeStartX    = 0;
 
 const _sessionCh = new BroadcastChannel('physiq-session');
@@ -177,7 +178,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     _abortMeasurement();
     _openSetup(_testId);
   });
-  _initSwipeDismiss('results-overlay', '.results-card', 200, discardResult);
+  _initSwipeDismiss('results-overlay', '.results-card', 200, () => {
+    if (_resultsReadonly) closeResultsView(); else discardResult();
+  });
   _setupSessionPanelDrag();
 });
 
@@ -364,10 +367,6 @@ function _renderTestCards() {
       ? `<span class="card-score" style="color:${_gradeColor(score)}">${score}<small>/100</small></span>`
       : `<span class="card-score-empty">—<small>/100</small></span>`;
 
-    const clearBtn = score !== null
-      ? `<span role="button" class="btn-clear" onclick="event.stopPropagation();clearTestResult('${id}')">✕</span>`
-      : '';
-
     card.innerHTML = `
       <div class="card-label">${t.label}</div>
       <div class="card-sub-row">
@@ -376,12 +375,36 @@ function _renderTestCards() {
       </div>
       <div class="card-bottom">
         ${scoreHtml}
-        ${clearBtn}
       </div>
     `;
     grid.appendChild(card);
   }
+  _renderSavedSummary();
   _renderInterpretation();
+}
+
+// ── Saved summary (view / delete completed tests) ────────────────────────────
+function _renderSavedSummary() {
+  const card  = document.getElementById('savedSummaryCard');
+  const items = document.getElementById('savedSummaryItems');
+  if (!card || !items) return;
+
+  const ids = Object.keys(_balanceResults);
+  if (!ids.length) { card.hidden = true; return; }
+  card.hidden = false;
+
+  items.innerHTML = Object.entries(TESTS)
+    .filter(([id]) => _balanceResults[id])
+    .map(([id, t]) => {
+      const saved = _balanceResults[id];
+      return `
+        <div class="saved-summary-item" onclick="viewSavedResult('${id}')">
+          <span class="saved-summary-dot" style="background:${t.color}"></span>
+          <span class="saved-summary-label">${t.label} · ${t.sublabel}</span>
+          <span class="saved-summary-score" style="color:${_gradeColor(saved.score)}">${saved.score}<small>/100</small></span>
+          <span role="button" class="btn-clear" onclick="event.stopPropagation();clearTestResult('${id}')">✕</span>
+        </div>`;
+    }).join('');
 }
 
 // ── Interpretation ───────────────────────────────────────────────────────────
@@ -665,11 +688,14 @@ function _diffSeries(arr, dt) {
   return out;
 }
 
-// 95% confidence ellipse area (Prieto et al. 1996). F(0.95; 2, n-2) ≈ 3.00
-// for the sample sizes produced by a 30 s / 50 Hz test.
-function _confidenceEllipseArea(x, y) {
+// 95% confidence ellipse (Prieto et al. 1996). F(0.95; 2, n-2) ≈ 3.00 for the
+// sample sizes produced by a 30 s / 50 Hz test. Returns area plus the semi-axes
+// and rotation (of the major axis, relative to the x-axis) needed to draw it:
+// a principal-axis decomposition of the 2×2 covariance matrix, scaled so that
+// π·a·b reproduces the same 2π·F·√(det) area.
+function _confidenceEllipse(x, y) {
   const n = x.length;
-  if (n < 3) return 0;
+  if (n < 3) return { area: 0, a: 0, b: 0, angleRad: 0 };
   const mx = x.reduce((a, b) => a + b, 0) / n;
   const my = y.reduce((a, b) => a + b, 0) / n;
   let varX = 0, varY = 0, covXY = 0;
@@ -678,15 +704,27 @@ function _confidenceEllipseArea(x, y) {
     varX += dx * dx; varY += dy * dy; covXY += dx * dy;
   }
   varX /= (n - 1); varY /= (n - 1); covXY /= (n - 1);
-  const F   = 3.00;
-  const det = Math.max(varX * varY - covXY * covXY, 0);
-  return 2 * Math.PI * F * Math.sqrt(det);
+
+  const F     = 3.00;
+  const trace = varX + varY;
+  const det   = Math.max(varX * varY - covXY * covXY, 0);
+  const temp  = Math.sqrt(Math.max(trace * trace / 4 - det, 0));
+  const lambda1 = trace / 2 + temp; // larger eigenvalue
+  const lambda2 = trace / 2 - temp; // smaller eigenvalue
+  const angleRad = 0.5 * Math.atan2(2 * covXY, varX - varY);
+
+  return {
+    area: 2 * Math.PI * F * Math.sqrt(det),
+    a: Math.sqrt(2 * F * Math.max(lambda1, 0)),
+    b: Math.sqrt(2 * F * Math.max(lambda2, 0)),
+    angleRad
+  };
 }
 
-// Convex hull (monotone chain) + shoelace area, in cm².
-function _convexHullArea(points) {
+// Convex hull via monotone chain, in the same units as the input points.
+function _convexHull(points) {
   const n = points.length;
-  if (n < 3) return 0;
+  if (n < 3) return points.slice();
   const pts = points.slice().sort((a, b) => a.x - b.x || a.y - b.y);
   const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
 
@@ -702,14 +740,33 @@ function _convexHullArea(points) {
     upper.push(p);
   }
   upper.pop(); lower.pop();
-  const hull = lower.concat(upper);
+  return lower.concat(upper);
+}
 
+// Shoelace polygon area, in cm².
+function _polygonArea(pts) {
+  if (pts.length < 3) return 0;
   let area = 0;
-  for (let i = 0; i < hull.length; i++) {
-    const j = (i + 1) % hull.length;
-    area += hull[i].x * hull[j].y - hull[j].x * hull[i].y;
+  for (let i = 0; i < pts.length; i++) {
+    const j = (i + 1) % pts.length;
+    area += pts[i].x * pts[j].y - pts[j].x * pts[i].y;
   }
   return Math.abs(area) / 2;
+}
+
+// Block-averaging downsample — smoother than stride decimation for plotting.
+function _downsample(arr, target) {
+  if (arr.length <= target) return arr.slice();
+  const out = new Array(target);
+  const bucket = arr.length / target;
+  for (let i = 0; i < target; i++) {
+    const start = Math.floor(i * bucket);
+    const end   = Math.max(Math.floor((i + 1) * bucket), start + 1);
+    let sum = 0, count = 0;
+    for (let j = start; j < end && j < arr.length; j++) { sum += arr[j]; count++; }
+    out[i] = count ? sum / count : arr[Math.min(start, arr.length - 1)];
+  }
+  return out;
 }
 
 // ── Metrics computation ───────────────────────────────────────────────────────
@@ -779,8 +836,10 @@ function _computeMetrics(samples) {
   const copHRMS = Math.sqrt(rms(copAP) * rms(copAP) + rms(copML) * rms(copML));
   const copMeanVelocity = measuredDuration > 0 ? copPathLength / measuredDuration : 0;
 
-  const ellipseArea = _confidenceEllipseArea(copAP, copML);
-  const hullArea     = _convexHullArea(copAP.map((v, i) => ({ x: v, y: copML[i] })));
+  // Chart convention: x = ML (left-right), y = AP (back-front)
+  const ellipse   = _confidenceEllipse(copML, copAP);
+  const hullPts   = _convexHull(copML.map((v, i) => ({ x: v, y: copAP[i] })));
+  const hullArea  = _polygonArea(hullPts);
 
   const velAP = _diffSeries(copAP, dt),  velML = _diffSeries(copML, dt);
   const accAP = _diffSeries(velAP, dt),  accML = _diffSeries(velML, dt);
@@ -788,6 +847,8 @@ function _computeMetrics(samples) {
   let jerkSumSq = 0;
   for (let i = 0; i < jerkAP.length; i++) jerkSumSq += jerkAP[i] * jerkAP[i] + jerkML[i] * jerkML[i];
   const jerkRMS = jerkAP.length > 0 ? Math.sqrt(jerkSumSq / jerkAP.length) : 0;
+
+  const round2 = v => Math.round(v * 100) / 100;
 
   return {
     plannedDuration: TESTS[_testId].duration,
@@ -805,19 +866,30 @@ function _computeMetrics(samples) {
       hRMS: copHRMS,
       pathLength: copPathLength,
       meanVelocity: copMeanVelocity,
-      ellipseArea,
+      ellipseArea: ellipse.area,
       hullArea,
-      jerkRMS
+      jerkRMS,
+      // Chart data (x = ML, y = AP), downsampled to keep saved sessions small
+      ellipse: { a: ellipse.a, b: ellipse.b, angleRad: ellipse.angleRad },
+      hull: hullPts.map(p => ({ x: round2(p.x), y: round2(p.y) })),
+      series: {
+        ml: _downsample(copML, 300).map(round2),
+        ap: _downsample(copAP, 300).map(round2)
+      }
     }
   };
 }
 
 // ── Results display ───────────────────────────────────────────────────────────
-function _showResults(metrics) {
+function _showResults(metrics, opts = {}) {
   if (!metrics) {
     _showView('home');
     return;
   }
+  _resultsReadonly = !!opts.readonly;
+  document.getElementById('resultsDiscardBtn').hidden = _resultsReadonly;
+  document.getElementById('resultsSaveBtn').hidden    = _resultsReadonly;
+  document.getElementById('resultsCloseBtn').hidden   = !_resultsReadonly;
 
   const t     = TESTS[_testId];
   const grade = _getGrade(metrics.score);
@@ -867,6 +939,106 @@ function _showResults(metrics) {
 
   _showView('results');
   _hubWidgetHide();
+  // Overlay must be visible (non-zero layout) before measuring the canvas.
+  requestAnimationFrame(() => _drawCopChart(metrics.cop));
+}
+
+// ── COP chart (stabilogram: scatter + convex hull + 95% ellipse) ─────────────
+function _drawCopChart(cop) {
+  const canvas = document.getElementById('copChart');
+  if (!canvas) return;
+  if (!cop || !cop.series || !cop.series.ml.length) { canvas.hidden = true; return; }
+  canvas.hidden = false;
+
+  const dpr  = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width  = rect.width  * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const { ml, ap } = cop.series;
+  const hull    = cop.hull || [];
+  const ellipse = cop.ellipse;
+
+  let maxAbs = 0.5; // cm floor so a near-static trace doesn't over-zoom
+  for (let i = 0; i < ml.length; i++) maxAbs = Math.max(maxAbs, Math.abs(ml[i]), Math.abs(ap[i]));
+  if (ellipse) maxAbs = Math.max(maxAbs, ellipse.a);
+  maxAbs *= 1.25;
+
+  const pad      = 8;
+  const plotSize = Math.min(W, H) - pad * 2;
+  const scale    = plotSize / (2 * maxAbs); // px per cm
+  const cx = W / 2, cy = H / 2;
+  const toPx = (x, y) => ({ px: cx + x * scale, py: cy - y * scale }); // AP+ (front) = up
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - plotSize / 2); ctx.lineTo(cx, cy + plotSize / 2);
+  ctx.moveTo(cx - plotSize / 2, cy); ctx.lineTo(cx + plotSize / 2, cy);
+  ctx.stroke();
+
+  // Convex hull — fill first as a background wash, stroke goes on top of the
+  // sway path later so it doesn't get visually buried under the dense trace.
+  const hullPx = hull.map(p => toPx(p.x, p.y));
+  if (hullPx.length >= 3) {
+    ctx.beginPath();
+    hullPx.forEach((p, i) => { if (i === 0) ctx.moveTo(p.px, p.py); else ctx.lineTo(p.px, p.py); });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(79,156,249,0.10)';
+    ctx.fill();
+  }
+
+  // Sway path
+  ctx.beginPath();
+  for (let i = 0; i < ml.length; i++) {
+    const { px, py } = toPx(ml[i], ap[i]);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.strokeStyle = 'rgba(56,217,169,0.85)';
+  ctx.lineWidth   = 1.25;
+  ctx.stroke();
+
+  // Convex hull outline (on top of the sway path)
+  if (hullPx.length >= 3) {
+    ctx.beginPath();
+    hullPx.forEach((p, i) => { if (i === 0) ctx.moveTo(p.px, p.py); else ctx.lineTo(p.px, p.py); });
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(115,182,255,0.95)';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+  }
+
+  // 95% confidence ellipse (topmost, dashed)
+  if (ellipse && ellipse.a > 0) {
+    const steps = 72;
+    const cosA = Math.cos(ellipse.angleRad), sinA = Math.sin(ellipse.angleRad);
+    ctx.beginPath();
+    for (let i = 0; i <= steps; i++) {
+      const t  = (i / steps) * Math.PI * 2;
+      const ex = ellipse.a * Math.cos(t), ey = ellipse.b * Math.sin(t);
+      const rx = ex * cosA - ey * sinA;
+      const ry = ex * sinA + ey * cosA;
+      const { px, py } = toPx(rx, ry);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = '#22d3ee';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Center marker
+  ctx.beginPath();
+  ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#e8edf2';
+  ctx.fill();
 }
 
 function _getGrade(score) {
@@ -991,6 +1163,20 @@ window.discardResult = function () {
   _lastResult = null;
   _showView('home');
   _hubWidgetShow();
+};
+
+window.closeResultsView = function () {
+  _resultsReadonly = false;
+  _showView('home');
+  _hubWidgetShow();
+};
+
+window.viewSavedResult = function (testId) {
+  const saved = _balanceResults[testId];
+  if (!saved) return;
+  _testId     = testId;
+  _lastResult = null;
+  _showResults(saved.metrics, { readonly: true });
 };
 
 window.saveResult = async function () {
