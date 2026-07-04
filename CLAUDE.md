@@ -24,6 +24,7 @@ physiq/
 │   └── recorder.js     — RecorderEngine (audio recording)
 ├── motion/             — physiq-motion files, copied by CD pipeline
 ├── assessment/         — physiq-assessment files, copied by CD pipeline
+├── questionnaire/      — physiq-questionnaire files, copied by CD pipeline
 ├── report/             — physiq-report files, copied by CD pipeline
 ├── force/              — physiq-force files, copied by CD pipeline
 ├── balance/            — physiq-balance files, copied by CD pipeline
@@ -47,7 +48,7 @@ Each satellite repo has a GitHub Actions workflow that clones this repo, copies 
 
 The pipeline requires a PAT with `repo` scope stored as `PHYSIQ_DEPLOY_TOKEN` in each satellite repo's secrets.
 
-**⚠️ Never edit files inside any satellite subdirectory directly in this repo.** Every subdirectory that maps to a satellite (currently `motion/`, `assessment/`, `report/`, `force/`, `balance/`, `wiki/` — and any future ones) is fully overwritten on every push from the corresponding satellite repo. Any direct edits will be lost. All satellite app changes must be made in the respective satellite repo and will arrive here via the CD pipeline. This rule applies to all current and future satellites.
+**⚠️ Never edit files inside any satellite subdirectory directly in this repo.** Every subdirectory that maps to a satellite (currently `motion/`, `assessment/`, `questionnaire/`, `report/`, `force/`, `balance/`, `wiki/` — and any future ones) is fully overwritten on every push from the corresponding satellite repo. Any direct edits will be lost. All satellite app changes must be made in the respective satellite repo and will arrive here via the CD pipeline. This rule applies to all current and future satellites.
 
 ## Satellite repos
 
@@ -58,16 +59,18 @@ The pipeline requires a PAT with `repo` scope stored as `PHYSIQ_DEPLOY_TOKEN` in
 | physiq-report | /physiq/report/ | AI-assisted clinical reports |
 | physiq-force | /physiq/force/ | Dynamometer force measurement |
 | physiq-balance | /physiq/balance/ | Balance / posturography |
+| physiq-questionnaire | /physiq/questionnaire/ | Validated clinical questionnaires |
 | physiq-wiki | /physiq/wiki/ | Clinical reference wiki |
 
 Satellite iframes declared in `index.html` with their required permissions:
 
 ```html
-<iframe id="sat-motion"     allow="microphone">
-<iframe id="sat-assessment" allow="microphone">
-<iframe id="sat-report"     allow="microphone">
-<iframe id="sat-force"      allow="bluetooth">
-<iframe id="sat-balance"    allow="accelerometer; gyroscope">
+<iframe id="sat-motion"         allow="microphone">
+<iframe id="sat-assessment"     allow="microphone">
+<iframe id="sat-questionnaire">
+<iframe id="sat-report"         allow="microphone">
+<iframe id="sat-force"          allow="bluetooth">
+<iframe id="sat-balance"        allow="accelerometer; gyroscope">
 <iframe id="sat-wiki">
 ```
 
@@ -125,9 +128,10 @@ On `discard`, the hub deletes the `'pending'` key from the `audio` store.
   diagnosis:       string | null,
   manualRegion:    string | null,
   rom:             object | null,   // physiq-motion measurement data
-  assessmentState: object | null,   // physiq-assessment state snapshot
-  assessment:      object | null,   // physiq-assessment completed result
-  force:           array  | null,   // physiq-force measurement series
+  assessmentState:   object | null,   // physiq-assessment state snapshot
+  assessment:        object | null,   // physiq-assessment completed result
+  force:             array  | null,   // physiq-force measurement series
+  questionnaires:    array  | null,   // physiq-questionnaire completed results
 }
 ```
 
@@ -144,6 +148,7 @@ Satellites and the peer bridge communicate patient-session data over `BroadcastC
 | `SESSION_ASSESSMENT_STATE` | `assessmentState` | `session.assessmentState` |
 | `SESSION_ASSESSMENT` | `assessment` | `session.assessment` |
 | `SESSION_FORCE` | `force` | `session.force` |
+| `SESSION_QUESTIONNAIRE` | `questionnaires` | `session.questionnaires` |
 | `SESSION_REPORT_FIELDS` | `patient, date, diagnosis, manualRegion` | all four fields |
 | `SESSION_CLEAR` | — | deletes `'active'` key entirely |
 | `SESSION_SYNC` | full session snapshot | peer-to-peer only (on connect) |
