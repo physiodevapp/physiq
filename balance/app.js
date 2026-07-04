@@ -1,5 +1,23 @@
 'use strict';
 
+// ── Scroll lock (dialogs / bottom sheets) ────────────────────────────────────
+// Reference-counted: several overlays can be stacked or opened in sequence.
+// Each one must release its own lock without unlocking scroll while another
+// overlay is still open.
+let _scrollLockCount = 0;
+function lockBodyScroll() {
+  _scrollLockCount++;
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+}
+function unlockBodyScroll() {
+  _scrollLockCount = Math.max(0, _scrollLockCount - 1);
+  if (_scrollLockCount === 0) {
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  }
+}
+
 // ── Test definitions ─────────────────────────────────────────────────────────
 const TESTS = {
   'ft-eo': {
@@ -373,8 +391,13 @@ function _renderTestCards() {
         </span>`
       : '';
 
+    const deleteBtn = saved
+      ? `<span role="button" class="card-delete-btn" aria-label="Eliminar medición" title="Eliminar medición" onclick="event.stopPropagation();clearTestResult('${id}')">✕</span>`
+      : '';
+
     card.innerHTML = `
       ${viewBtn}
+      ${deleteBtn}
       <div class="card-label">${t.label}</div>
       <div class="card-sub-row">
         <span class="card-sublabel">${t.sublabel}</span>
@@ -390,27 +413,12 @@ function _renderTestCards() {
   _renderInterpretation();
 }
 
-// ── Global summary (mirrors physiq-motion's summary-card / chip pattern) ─────
+// ── Global summary (mirrors physiq-motion's summary-card pattern; the per-test
+// detail lives in each test card's eye icon, not in a chip list here) ────────
 function _renderGlobalSummary() {
-  const card  = document.getElementById('globalSummaryCard');
-  const chips = document.getElementById('globalSummaryChips');
-  if (!card || !chips) return;
-
-  const ids = Object.keys(_balanceResults);
-  if (!ids.length) { card.hidden = true; return; }
-  card.hidden = false;
-
-  chips.innerHTML = Object.entries(TESTS)
-    .filter(([id]) => _balanceResults[id])
-    .map(([id, t]) => {
-      const saved = _balanceResults[id];
-      return `
-        <span class="global-summary-chip" onclick="viewSavedResult('${id}')">
-          ${t.label} · ${t.sublabel}
-          <span class="chip-score" style="color:${_gradeColor(saved.score)}">${saved.score}/100</span>
-          <span role="button" class="chip-clear" onclick="event.stopPropagation();clearTestResult('${id}')">✕</span>
-        </span>`;
-    }).join('');
+  const card = document.getElementById('globalSummaryCard');
+  if (!card) return;
+  card.hidden = !Object.keys(_balanceResults).length;
 }
 
 window.copyBalanceSummary = function () {
