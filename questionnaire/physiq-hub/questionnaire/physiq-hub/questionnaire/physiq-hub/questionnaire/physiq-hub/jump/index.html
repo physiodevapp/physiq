@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PhysiQ · Saltos</title>
+  <link rel="icon" href="/physiq/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/physiq/jump/manifest.json">
+  <meta name="theme-color" content="#1e2d3d">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --accent:      #f43f5e;
+      --accent-dim:  rgba(244,63,94,0.13);
+      --green:       #38d9a9;
+      --green-dim:   rgba(56,217,169,0.11);
+      --blue:        #4f9cf9;
+      --border:      #232d45;
+      --border2:     #2d3a58;
+      --surface:     #111620;
+      --surface2:    #0a0d12;
+      --text1:       #e8edf2;
+      --text2:       #8aa4bc;
+      --text3:       #5a6e8a;
+      --safe-b:      env(safe-area-inset-bottom, 0px);
+      --header-h:    52px;
+    }
+
+    html, body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: var(--surface2);
+      color: var(--text1);
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    body { display: flex; flex-direction: column; }
+
+    /* ── Views ────────────────────────────────────────────── */
+    .view {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; min-height: 0;
+      transition: padding-top 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    /* ── App header (global, always visible) ─────────────── */
+    .app-header {
+      display: flex; align-items: center; gap: 10px;
+      height: var(--header-h); flex-shrink: 0;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,13,18,0.92);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      position: relative; z-index: 100;
+    }
+
+    .logo { display: flex; align-items: baseline; gap: 4px; cursor: default; }
+    .logo-main { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--text1); letter-spacing: -0.5px; }
+    .logo-q { background: linear-gradient(135deg,#4f9cf9,#38d9a9); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-sub { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--accent); letter-spacing: -0.5px; }
+    .logo-sub-initial { display: none; }
+    @keyframes hub-back-hint { 0% { transform: translateX(0); } 35% { transform: translateX(-5px); } 65% { transform: translateX(1px); } 100% { transform: translateX(0); } }
+    .in-hub .logo-main { cursor: pointer; transition: opacity 0.15s; }
+    .in-hub .logo-main::before { content: '‹'; display: inline-block; margin-right: 8px; opacity: 0.55; animation: hub-back-hint 0.7s ease-out 0.5s 1 both; }
+    .in-hub .logo-main:hover { opacity: 0.75; }
+    @media (max-width: 768px) { .logo-main, .logo-sub { font-size: 1.2rem; } }
+    @media (max-width: 480px) { :root { --header-h: 48px; } .logo-main, .logo-sub { font-size: 1.1rem; } }
+    @media (max-height: 500px) and (max-width: 900px) { :root { --header-h: 44px; } }
+    @media (max-width: 360px) { .logo-sub-word { display: none; } .logo-sub-initial { display: inline; } }
+
+    /* ── Header right ──────────────────────────────────────── */
+    .header-right { display: flex; align-items: center; gap: 0.6rem; margin-left: auto; }
+
+    .session-btn {
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      color: var(--text2); padding: 6px; flex-shrink: 0;
+      transition: color 0.15s; border-radius: 6px;
+    }
+    .session-btn:hover { color: var(--text1); }
+    .session-btn.active { color: var(--accent); }
+
+    .btn-reset {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text2); border-radius: 8px; padding: 5px 10px;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-translate {
+      position: relative; background: transparent; border: none;
+      color: var(--text2); font-size: 1rem; cursor: pointer;
+      padding: 4px 8px; border-radius: 6px; transition: color 0.2s;
+      line-height: 1;
+    }
+    .btn-translate:hover { color: var(--text1); }
+    .translate-tooltip {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      background: #171e2e; border: 1px solid var(--border);
+      color: var(--text2); font-size: 0.75rem;
+      font-family: 'Outfit', sans-serif; font-weight: 300; white-space: nowrap;
+      padding: 10px 14px; border-radius: 8px; line-height: 1.6;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 200;
+    }
+    .btn-translate:hover .translate-tooltip { opacity: 1; }
+    @media (max-width: 768px) { .btn-translate .translate-tooltip { display: none; } }
+
+    /* Translate banner (mobile tap feedback) */
+    .translate-banner {
+      position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 50;
+      display: flex; align-items: center;
+      gap: 8px; padding: 9px 1rem;
+      background: #171e2e; border-bottom: 1px solid var(--border);
+      font-family: 'Outfit', sans-serif; font-size: 0.78rem; color: var(--text2);
+      pointer-events: none;
+      transform: translateY(-100%);
+      transition: transform 0.25s ease;
+    }
+    .translate-banner.visible { pointer-events: auto; transform: translateY(0); }
+    @media (min-width: 769px) { .translate-banner { display: none; } }
+    .translate-banner.visible ~ .view { padding-top: 36px; }
+    #subHeader:not([hidden]) ~ .translate-banner { top: calc(var(--header-h) + 44px); }
+    .translate-banner-close {
+      margin-left: auto;
+      background: none; border: none; color: var(--text2); cursor: pointer;
+      font-size: 1rem; line-height: 1; padding: 0 4px;
+    }
+
+    /* ── Session panel ─────────────────────────────────────── */
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .session-panel-overlay {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .session-panel-overlay.open { display: flex; animation: fadeUp 0.2s ease; }
+    .session-panel {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 16px; padding: 1.8rem;
+      max-width: 420px; width: 90%;
+    }
+    .session-panel-handle {
+      display: none; width: 36px; height: 4px; background: var(--border2);
+      border-radius: 2px; margin: 0 auto 14px; touch-action: none;
+    }
+    .session-panel-title {
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      color: var(--text3); text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .session-panel.has-session .session-panel-title { color: var(--accent); }
+    .patient-name-field { display: flex; flex-direction: column; gap: 6px; }
+    .patient-name-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+      color: var(--text3); text-transform: uppercase;
+    }
+    .patient-name-input {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text1); border-radius: 8px; padding: 9px 12px;
+      font-family: 'DM Mono', monospace; font-size: 12px;
+      outline: none; transition: border-color 0.2s; width: 100%;
+    }
+    .patient-name-input:focus { border-color: var(--accent); }
+    .session-panel-clear {
+      display: none; background: none; border: 1px solid #ef4444;
+      border-radius: 8px; padding: 8px; cursor: pointer; color: #ef4444;
+      flex-shrink: 0; align-items: center; justify-content: center;
+      align-self: stretch; transition: opacity 0.2s;
+    }
+    .session-panel.has-session .session-panel-clear { display: flex; }
+    .session-panel-clear:hover { opacity: 0.7; }
+    .confirm-box-text { font-size: 0.83rem; color: var(--text2); line-height: 1.5; }
+    .confirm-box-btns { display: flex; gap: 0.75rem; justify-content: flex-end; }
+    .confirm-btn-cancel {
+      display: inline-flex; align-items: center; background: transparent;
+      border: 1px solid var(--border); color: var(--text3);
+      border-radius: 8px; padding: 9px 16px;
+      font-family: 'DM Mono', monospace; font-size: 12px;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s;
+    }
+    .confirm-btn-cancel:hover { border-color: var(--text2); color: var(--text2); }
+    .confirm-btn-ok {
+      display: inline-flex; align-items: center;
+      background: var(--accent); border: none; color: #fff;
+      border-radius: 8px; padding: 9px 18px;
+      font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .confirm-btn-ok:hover { opacity: 0.85; }
+    @media (max-width: 768px) {
+      .session-panel-overlay { align-items: flex-end; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+      .session-panel-overlay.open { animation: none; }
+      .session-panel-overlay.open .session-panel { animation: slideUp 0.3s cubic-bezier(0.32,0.72,0,1); }
+      .session-panel { max-width: 100%; width: 100%; border-radius: 16px 16px 0 0; border: none; border-top: 1px solid var(--border2); padding: 12px 1.4rem 32px; touch-action: none; }
+      .session-panel-handle { display: block; }
+    }
+
+    /* ── Sub-header (view-specific: back chip + type badge) ── */
+    .sub-header {
+      display: flex; align-items: center; gap: 10px;
+      height: 44px; flex-shrink: 0;
+      padding: 0 1rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      position: relative; z-index: 60;
+    }
+    .btn-back-sub {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text2); border-radius: 8px; padding: 5px 10px;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-back-sub:hover { border-color: var(--accent); color: var(--text1); }
+    .jump-type-badge {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      color: var(--accent);
+      border: 1px solid rgba(244,63,94,0.3);
+      background: rgba(244,63,94,0.08);
+      padding: 5px 10px; border-radius: 6px;
+      margin-left: auto; min-width: 0; max-width: 55%;
+      display: flex; align-items: center; gap: 5px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .jump-type-badge-text { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    /* On very small screens shorten "← Saltos" to just "←" */
+    @media (max-width: 360px) {
+      .btn-back-sub-label { display: none; }
+    }
+
+    .btn-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text2);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.08); color: var(--text1); }
+    .btn-icon:active { background: rgba(255,255,255,0.13); }
+
+    .header-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem; font-weight: 400;
+      color: var(--text1); flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ── Home view ───────────────────────────────────────── */
+    #view-home > .scroll-body,
+    #view-results > .scroll-body {
+      flex: 1; overflow-y: auto;
+      padding: 16px 16px calc(var(--safe-b) + 16px);
+      display: flex; flex-direction: column; gap: 12px;
+      max-width: 640px; margin: 0 auto; width: 100%;
+    }
+
+    .jumps-empty {
+      text-align: center; padding: 40px 0;
+      color: var(--text3); font-size: 0.88rem; line-height: 1.6;
+    }
+
+    .jump-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .jump-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 14px; border-radius: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      animation: fadeUp 0.2s ease both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    .jump-num {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      color: var(--text3); min-width: 18px;
+    }
+    .jump-info { flex: 1; min-width: 0; }
+    .jump-type { font-size: 0.87rem; font-weight: 500; color: var(--text1); }
+    .jump-meta { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); margin-top: 2px; }
+    .jump-note { font-size: 0.72rem; color: var(--text2); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .text-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text1); font-family: 'Outfit', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s; box-sizing: border-box; }
+    .text-input:focus { border-color: var(--accent); }
+    .text-input::placeholder { color: var(--text3); }
+    .jump-height-wrap { text-align: right; }
+    .jump-height { font-family: 'DM Mono', monospace; font-size: 1.05rem; font-weight: 500; color: var(--accent); }
+    .jump-height-unit { font-size: 0.68rem; color: var(--text3); }
+
+    .btn-del {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text3); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.12s, color 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-del:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
+
+    /* ── Summary card ───────────────────────────────── */
+    .summary-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .summary-header {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .summary-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem; color: var(--accent); font-weight: 400;
+    }
+    .btn-copy {
+      background: none; border: 1px solid var(--border2);
+      border-radius: 8px; padding: 5px 10px;
+      font-size: 0.72rem; color: var(--text2); cursor: pointer;
+      font-family: 'DM Mono', monospace;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-copy:hover { border-color: var(--accent); color: var(--text1); }
+    .region-chips {
+      display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 16px;
+    }
+    .region-chip {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 10px;
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      color: var(--text2); cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .region-chip:hover { border-color: var(--accent); color: var(--text1); }
+    .region-chip.active {
+      border-color: rgba(244,63,94,0.5); color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .region-chip .chip-count { color: var(--accent); }
+
+    .summary-bar {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px;
+      display: flex; gap: 0;
+    }
+    .sum-item { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .sum-item + .sum-item { border-left: 1px solid var(--border); padding-left: 16px; }
+    .sum-label { font-family: 'DM Mono', monospace; font-size: 0.63rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; }
+    .sum-value { font-family: 'DM Mono', monospace; font-size: 0.95rem; font-weight: 500; color: var(--text1); }
+
+    .fatigue-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    .fatigue-header {
+      padding: 8px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .fatigue-title { font-family: 'DM Mono', monospace; font-size: 0.63rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; }
+    .fatigue-metrics { display: flex; padding: 13px 16px; gap: 0; }
+    .fatigue-value-low  { color: var(--green); }
+    .fatigue-value-mid  { color: var(--blue); }
+    .fatigue-value-high { color: var(--accent); }
+
+    #results-content { display: flex; flex-direction: column; gap: 12px; }
+    .condition-group { display: flex; flex-direction: column; gap: 8px; }
+    .condition-group-label {
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      color: var(--text2); padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .btn-primary {
+      width: 100%; padding: 14px 16px;
+      border-radius: 12px; border: none;
+      background: var(--accent); color: #fff;
+      font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 500;
+      cursor: pointer; transition: opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-primary:hover { opacity: 0.87; }
+    .btn-primary:active { opacity: 0.7; }
+    .btn-primary:disabled { opacity: 0.28; cursor: not-allowed; }
+
+    /* ── Jump type grid ─────────────────────────────────── */
+    .type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .type-card {
+      display: flex; flex-direction: column; gap: 6px;
+      padding: 18px 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer; text-align: left;
+      transition: border-color 0.15s, transform 0.1s;
+      animation: fadeUp 0.25s ease both;
+      position: relative; overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .type-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+    .type-card:hover { border-color: var(--border2); }
+    .type-card:active { transform: scale(0.97); }
+
+    .type-card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem; font-weight: 500;
+      color: var(--text1);
+    }
+    .type-card-desc {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; color: var(--text3); line-height: 1.4;
+    }
+
+    /* ── Source selector ─────────────────────────────────── */
+    #view-source > .scroll-body {
+      flex: 1; overflow-y: auto;
+      padding: 24px 16px calc(var(--safe-b) + 24px);
+      display: flex; flex-direction: column; gap: 10px;
+      max-width: 640px; margin: 0 auto; width: 100%;
+    }
+
+    .source-card {
+      width: 100%; padding: 18px 16px;
+      border-radius: 12px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text1);
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer; display: flex; align-items: center; gap: 14px;
+      transition: border-color 0.15s, background 0.15s; text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .source-card:hover { border-color: var(--border2); background: #141b28; }
+    .source-card:active { opacity: 0.8; }
+
+    .source-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--accent-dim); color: var(--accent);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .source-name { font-size: 0.95rem; font-weight: 500; }
+    .source-desc { font-size: 0.78rem; color: var(--text3); margin-top: 3px; }
+
+    /* ── Camera view ─────────────────────────────────────── */
+    #view-camera > .cam-body {
+      flex: 1; position: relative; background: #000; overflow: hidden;
+    }
+
+    #cam-preview {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+
+    .rec-badge {
+      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.65); color: #fff;
+      font-family: 'DM Mono', monospace; font-size: 0.82rem;
+      padding: 5px 12px; border-radius: 20px;
+      display: flex; align-items: center; gap: 7px;
+      backdrop-filter: blur(4px);
+    }
+    .rec-badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent); animation: blink 1s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.1} }
+
+    .cam-controls {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 20px 0 calc(var(--safe-b) + 28px);
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(transparent, rgba(0,0,0,0.55));
+    }
+
+    .btn-record {
+      width: 74px; height: 74px; border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.85);
+      background: var(--accent);
+      cursor: pointer; transition: transform 0.1s;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-record:active { transform: scale(0.91); }
+    .btn-record-inner {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #fff;
+      transition: border-radius 0.18s, width 0.18s, height 0.18s;
+    }
+    .btn-record.is-recording .btn-record-inner {
+      border-radius: 5px; width: 22px; height: 22px;
+    }
+
+    /* ── Analyzer view ───────────────────────────────────── */
+    .fps-chip {
+      flex-shrink: 0;
+      padding: 5px 11px; border-radius: 20px;
+      border: 1px solid var(--border2); background: transparent;
+      color: var(--text3); font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      cursor: pointer; white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .fps-chip:hover { border-color: var(--blue); color: var(--blue); }
+    .fps-chip.is-detected { color: var(--green); border-color: rgba(56,217,169,0.3); }
+
+    .video-wrap {
+      flex: 1; min-height: 0;
+      background: #000;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 61;
+    }
+
+    #main-video {
+      width: 100%; height: 100%;
+      object-fit: contain; display: block;
+    }
+    .video-wrap::after {
+      content: ''; pointer-events: none;
+      position: absolute; inset: 0; border-radius: 0;
+      border: 3px solid transparent;
+      transition: border-color 0.15s ease;
+      z-index: 5;
+    }
+    .video-wrap.at-takeoff::after { border-color: var(--green); }
+    .video-wrap.at-landing::after  { border-color: var(--accent); }
+
+    #frame-marker-badge {
+      position: absolute; top: 8px; left: 8px;
+      display: none; align-items: center; gap: 5px;
+      padding: 3px 8px 3px 6px; border-radius: 20px;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      pointer-events: none; z-index: 10;
+    }
+    #frame-marker-badge.at-takeoff {
+      display: flex;
+      background: rgba(56,217,169,0.18);
+      color: var(--green);
+      border: 1px solid rgba(56,217,169,0.4);
+    }
+    #frame-marker-badge.at-landing {
+      display: flex;
+      background: rgba(244,63,94,0.18);
+      color: var(--accent);
+      border: 1px solid rgba(244,63,94,0.4);
+    }
+    #frame-marker-badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor; flex-shrink: 0;
+    }
+
+    .vt-overlay {
+      position: absolute; bottom: 7px; right: 9px;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      color: rgba(255,255,255,0.75);
+      background: rgba(0,0,0,0.48);
+      padding: 2px 7px; border-radius: 10px;
+      pointer-events: none;
+    }
+
+    /* ── Analyzer controls ───────────────────────────────── */
+    .analyzer-controls {
+      flex-shrink: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 9px 12px calc(var(--safe-b) + 9px);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    /* Scrubber */
+    .scrubber-row { display: flex; align-items: center; gap: 7px; padding-top: 13px; }
+    .time-lbl {
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      color: var(--text3); white-space: nowrap; min-width: 30px;
+    }
+    .time-lbl.r { text-align: right; }
+    .scrubber-wrap {
+      flex: 1; position: relative;
+      display: flex; align-items: center;
+    }
+    input[type=range].scrubber {
+      width: 100%; height: 4px; border-radius: 2px;
+      -webkit-appearance: none; appearance: none;
+      background: var(--border2); outline: none; cursor: pointer;
+      position: relative; z-index: 1;
+    }
+    input[type=range].scrubber::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--text1); cursor: pointer;
+    }
+    input[type=range].scrubber::-moz-range-thumb {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--text1); border: none; cursor: pointer;
+    }
+    /* bars layer — behind the scrubber thumb */
+    #scrubber-markers {
+      position: absolute; left: 9px; right: 9px;
+      top: 50%; transform: translateY(-50%);
+      height: 18px; pointer-events: none; z-index: 0;
+    }
+    .scrubber-marker {
+      position: absolute; top: 0; bottom: 0;
+      width: 3px; border-radius: 0 0 1.5px 1.5px;
+      transform: translateX(-50%);
+      opacity: 0.75;
+    }
+    .scrubber-marker.takeoff { background: var(--green); }
+    .scrubber-marker.landing { background: var(--accent); }
+    /* triangle heads layer — in front of the scrubber thumb */
+    #scrubber-marker-heads {
+      position: absolute; left: 9px; right: 9px;
+      top: 50%; transform: translateY(-50%);
+      height: 18px; pointer-events: none; z-index: 2;
+      overflow: visible;
+    }
+    .scrubber-marker-head {
+      position: absolute; bottom: 100%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 11px solid currentColor;
+      pointer-events: all; cursor: pointer;
+      /* dark outline so it doesn't blend with the video frame border */
+      filter:
+        drop-shadow(-1px 0   0 rgba(0,0,0,0.85))
+        drop-shadow( 1px 0   0 rgba(0,0,0,0.85))
+        drop-shadow(0  -1px  0 rgba(0,0,0,0.85))
+        drop-shadow(0   1px  0 rgba(0,0,0,0.85));
+      opacity: 0.95;
+    }
+    .scrubber-marker-head:hover  { opacity: 1; }
+    .scrubber-marker-head:active { opacity: 0.75; }
+    .scrubber-marker-head.takeoff { color: var(--green); }
+    .scrubber-marker-head.landing { color: var(--accent); }
+
+    /* Playback row */
+    .playback-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    .btn-step {
+      width: 58px; height: 46px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: transparent; color: var(--text2);
+      cursor: pointer; display: flex; flex-direction: row;
+      align-items: center; justify-content: center; gap: 4px;
+      transition: background 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none; touch-action: none;
+    }
+    .btn-step:active { background: rgba(255,255,255,0.07); }
+    .btn-step span { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--text3); }
+
+    .btn-play {
+      width: 76px; height: 46px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--surface2); color: var(--text1);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-play:active { background: rgba(255,255,255,0.06); }
+
+    /* Mark buttons */
+    .marks-row { display: flex; gap: 7px; }
+
+    .btn-mark {
+      flex: 1; padding: 9px 6px;
+      border-radius: 10px; border: 1px solid var(--border);
+      background: transparent; color: var(--text3);
+      font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent; user-select: none;
+    }
+    .btn-mark.t-btn { border-color: rgba(56,217,169,0.35); color: var(--green); }
+    .btn-mark.t-btn:hover { background: var(--green-dim); }
+    .btn-mark.l-btn:not(:disabled) { border-color: rgba(244,63,94,0.35); color: var(--accent); }
+    .btn-mark.l-btn:not(:disabled):hover { background: var(--accent-dim); }
+    .btn-mark:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-mark:active:not(:disabled) { opacity: 0.75; }
+
+    /* Result panel */
+    .result-panel {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 7px;
+    }
+
+    .mark-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .mark-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .mark-dot.t { background: var(--green); }
+    .mark-dot.l { background: var(--accent); }
+    .mark-lbl { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); }
+    .mark-val { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text1); margin-left: auto; }
+    .btn-clr {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text3); font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s, color 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-clr:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
+
+    .result-divider { height: 1px; background: var(--border); }
+
+    .result-row { display: flex; align-items: center; gap: 6px; }
+    .flight-time { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--text3); }
+    .arrow { font-size: 0.75rem; color: var(--text3); }
+    .height-val { font-family: 'DM Mono', monospace; font-size: 1.1rem; font-weight: 500; color: var(--accent); margin-left: auto; }
+    .height-unit { font-size: 0.7rem; color: var(--text3); }
+
+    /* Meta + save */
+    .meta-row { display: flex; align-items: center; gap: 7px; }
+
+    .sel-btn {
+      flex: 1; padding: 9px 10px;
+      border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text1);
+      font-family: 'Outfit', sans-serif; font-size: 0.82rem;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s;
+    }
+    .sel-btn:hover { border-color: var(--border2); }
+    .sel-btn-val { flex: 1; text-align: left; }
+    .sel-btn svg { flex-shrink: 0; color: var(--text3); }
+
+    /* ── Picker options ──────────────────────────────────── */
+    .picker-list { display: flex; flex-direction: column; }
+    .picker-opt {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 16px; font-size: 0.88rem; color: var(--text1);
+      cursor: pointer; border-radius: 8px; border: none; width: 100%;
+      background: none; font-family: 'Outfit', sans-serif; text-align: left;
+      transition: background 0.15s; -webkit-tap-highlight-color: transparent;
+    }
+    .picker-opt:hover { background: rgba(255,255,255,0.04); }
+    .picker-opt.active { color: var(--green); }
+    .picker-check { font-size: 0.8rem; color: var(--green); opacity: 0; flex-shrink: 0; }
+    .picker-opt.active .picker-check { opacity: 1; }
+
+    /* ── Finalizar button ────────────────────────────────── */
+    .btn-finish {
+      padding: 9px 16px; border-radius: 8px;
+      border: 1px solid var(--green); background: transparent;
+      color: var(--green); font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem; font-weight: 500; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0;
+      transition: background 0.15s; -webkit-tap-highlight-color: transparent;
+    }
+    .btn-finish:hover:not(:disabled) { background: var(--green-dim); }
+    .btn-finish:disabled { opacity: 0.25; cursor: not-allowed; }
+
+    .btn-save {
+      padding: 9px 16px; border-radius: 8px; border: none;
+      background: var(--accent); color: #fff;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-save:disabled { opacity: 0.25; cursor: not-allowed; }
+    .btn-save:not(:disabled):hover { opacity: 0.87; }
+    .btn-save:not(:disabled):active { opacity: 0.7; }
+
+    /* ── FPS bottom sheet ────────────────────────────────── */
+    .fps-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(10,13,18,0.7);
+      display: flex; align-items: flex-end;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .fps-overlay.open { opacity: 1; pointer-events: all; }
+
+    .fps-sheet {
+      width: 100%; background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      padding: 14px 16px calc(var(--safe-b) + 20px);
+      display: flex; flex-direction: column; gap: 12px;
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+    }
+    .fps-overlay.open .fps-sheet { transform: translateY(0); }
+
+    .fps-handle {
+      width: 36px; height: 4px; background: var(--border2);
+      border-radius: 2px; margin: 0 auto 2px;
+    }
+
+    @media (min-width: 640px) {
+      .fps-overlay {
+        backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        align-items: center; justify-content: center;
+      }
+      .fps-sheet {
+        width: min(440px, 90%);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        padding-bottom: 20px;
+        transform: scale(0.96);
+        opacity: 0;
+        transition: transform 0.22s cubic-bezier(0.32,0.72,0,1), opacity 0.22s ease;
+      }
+      .fps-overlay.open .fps-sheet { transform: scale(1); opacity: 1; }
+      .fps-handle { display: none; }
+    }
+
+    /* ── Notice dialog ───────────────────────────────────── */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .notice-banner {
+      position: fixed; inset: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      animation: fadeUp 0.2s ease;
+    }
+    .notice-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.8rem;
+      max-width: 400px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .notice-box-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem; color: var(--text1); margin-bottom: 0.5rem;
+    }
+    .notice-box-text {
+      font-size: 0.83rem; color: var(--text2);
+      line-height: 1.5; margin-bottom: 1.4rem;
+    }
+    .notice-btn-ok {
+      background: var(--blue); border: none; color: #fff;
+      border-radius: 8px; padding: 9px 18px;
+      font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: opacity 0.2s; float: right;
+    }
+    .notice-btn-ok:hover { opacity: 0.87; }
+    .fps-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem; color: var(--text1); font-weight: 400;
+    }
+    .fps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .fps-opt {
+      padding: 11px 4px; border-radius: 8px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text2); font-family: 'DM Mono', monospace; font-size: 0.88rem;
+      cursor: pointer; text-align: center;
+      transition: border-color 0.13s, color 0.13s, background 0.13s;
+    }
+    .fps-opt.active { border-color: rgba(56,217,169,0.4); color: var(--green); background: var(--green-dim); }
+
+    .fps-custom-row { display: flex; gap: 8px; }
+    .fps-input {
+      flex: 1; padding: 9px 12px;
+      border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text1);
+      font-family: 'DM Mono', monospace; font-size: 0.9rem;
+      outline: none;
+    }
+    .fps-input:focus { border-color: var(--blue); }
+    .fps-ok {
+      padding: 9px 16px; border-radius: 8px; border: none;
+      background: var(--blue); color: #fff;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500;
+      cursor: pointer;
+    }
+    .fps-hint { font-size: 0.72rem; color: var(--text3); line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     GLOBAL HEADER (always visible)
+═══════════════════════════════════════════════ -->
+<header class="app-header">
+  <div class="logo">
+    <span class="logo-main">Physi<span class="logo-q">Q</span></span>
+    <span class="logo-sub">— <span class="logo-sub-word">Jump</span><span class="logo-sub-initial">J</span></span>
+  </div>
+  <div class="header-right" id="headerRight">
+    <button class="btn-reset" id="headerResetBtn" onclick="promptSoftResetJump()" style="display:none" aria-label="Borrar saltos" title="Borrar saltos">↺ <span class="btn-reset-text">Reiniciar</span></button>
+    <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+    <button class="btn-translate" onclick="handleTranslateClick()" aria-label="View in English">🌐<span class="translate-tooltip">Long-press or right-click → Translate to English</span></button>
+  </div>
+</header>
+
+<!-- SUB-HEADER (view-specific: back chip + type badge + optional fps chip) -->
+<div id="subHeader" class="sub-header" hidden>
+  <button id="subHeaderBack" class="btn-back-sub" aria-label="Volver">←<span class="btn-back-sub-label"> Saltos</span></button>
+  <span id="subHeaderBadge" class="jump-type-badge" hidden><span id="subHeaderBadgeDot" style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0"></span><span id="subHeaderBadgeText" class="jump-type-badge-text"></span></span>
+  <button id="fps-chip" class="fps-chip" onclick="openFPSSheet()" hidden>
+    <span id="fps-chip-txt">— fps</span>
+  </button>
+</div>
+
+<div class="translate-banner" id="translateBanner">
+  🌐 <span>Long-press or right-click → Translate to English</span>
+  <button class="translate-banner-close" onclick="hideTranslateBanner()">✕</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     HOME VIEW
+═══════════════════════════════════════════════ -->
+<div id="view-home" class="view">
+  <div class="scroll-body">
+    <div id="jump-summary-card" class="summary-card" hidden>
+      <div class="summary-header">
+        <span class="summary-title">Resumen global</span>
+        <button id="btn-copy-jumps" class="btn-copy" onclick="copyJumpsToClipboard()">📋 Copiar</button>
+      </div>
+      <div id="jump-type-chips" class="region-chips"></div>
+    </div>
+
+    <div class="type-grid">
+      <button class="type-card" onclick="selectJumpType('CMJ')" style="animation-delay:0s">
+        <div class="type-card-title">CMJ</div>
+        <div class="type-card-desc">Salto con contramovimiento</div>
+      </button>
+      <button class="type-card" onclick="selectJumpType('SJ')" style="animation-delay:0.04s">
+        <div class="type-card-title">SJ</div>
+        <div class="type-card-desc">Squat Jump estático</div>
+      </button>
+      <button class="type-card" onclick="selectJumpType('DJ')" style="animation-delay:0.08s">
+        <div class="type-card-title">DJ</div>
+        <div class="type-card-desc">Drop Jump desde caída</div>
+      </button>
+      <button class="type-card" onclick="selectJumpType('Mono-D')" style="animation-delay:0.12s">
+        <div class="type-card-title">Mono-D</div>
+        <div class="type-card-desc">Monopodal pierna derecha</div>
+      </button>
+      <button class="type-card" onclick="selectJumpType('Mono-I')" style="animation-delay:0.16s">
+        <div class="type-card-title">Mono-I</div>
+        <div class="type-card-desc">Monopodal pierna izquierda</div>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SOURCE SELECTOR
+═══════════════════════════════════════════════ -->
+<div id="view-source" class="view" hidden>
+  <div class="scroll-body">
+    <button class="source-card" onclick="openFilePicker()">
+      <div class="source-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div>
+        <div class="source-name">Cargar vídeo</div>
+        <div class="source-desc">Abre un vídeo de la galería o del dispositivo</div>
+      </div>
+    </button>
+
+    <button class="source-card" onclick="openCamera()">
+      <div class="source-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </div>
+      <div>
+        <div class="source-name">Grabar vídeo</div>
+        <div class="source-desc">Usa la cámara para grabar el salto ahora</div>
+      </div>
+    </button>
+
+    <input id="file-input" type="file" accept="video/*" hidden onchange="loadVideoFile(event)">
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CAMERA VIEW
+═══════════════════════════════════════════════ -->
+<div id="view-camera" class="view" hidden>
+  <div class="cam-body">
+    <video id="cam-preview" playsinline muted></video>
+    <div id="rec-badge" class="rec-badge" hidden>
+      <span class="rec-badge-dot"></span>
+      <span id="rec-timer-txt">0:00</span>
+    </div>
+    <div class="cam-controls">
+      <button id="btn-record" class="btn-record" onclick="toggleRecording()" aria-label="Grabar">
+        <div class="btn-record-inner"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ANALYZER VIEW
+═══════════════════════════════════════════════ -->
+<div id="view-analyzer" class="view" hidden>
+  <div class="video-wrap" id="video-wrap">
+    <video id="main-video" playsinline webkit-playsinline preload="auto"></video>
+    <div id="frame-marker-badge">
+      <span id="frame-marker-badge-dot"></span>
+      <span id="frame-marker-badge-label"></span>
+    </div>
+    <div class="vt-overlay" id="vt-overlay">0.000 s</div>
+  </div>
+
+  <div class="analyzer-controls">
+
+    <div class="scrubber-row">
+      <span class="time-lbl" id="lbl-cur">0.000</span>
+      <div class="scrubber-wrap">
+        <input type="range" class="scrubber" id="scrubber"
+          min="0" max="1" step="0.001" value="0"
+          oninput="onScrubInput(this.value)"
+          onchange="onScrubEnd()">
+        <div id="scrubber-markers"></div>
+        <div id="scrubber-marker-heads"></div>
+      </div>
+      <span class="time-lbl r" id="lbl-dur">0.000</span>
+    </div>
+
+    <div class="playback-row">
+      <button class="btn-step"
+        onpointerdown="startStep(-1)" onpointerup="stopStep()"
+        onpointerleave="stopStep()" onpointercancel="stopStep()"
+        aria-label="-1 fotograma">
+        <span>−1f</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="19,6 9,12 19,18"/><rect x="5" y="6" width="3" height="12" rx="1"/>
+        </svg>
+      </button>
+
+      <button class="btn-play" id="btn-play" onclick="togglePlay()" aria-label="Play / Pausa">
+        <svg id="ico-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="ico-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" hidden><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+      </button>
+
+      <button class="btn-step"
+        onpointerdown="startStep(1)" onpointerup="stopStep()"
+        onpointerleave="stopStep()" onpointercancel="stopStep()"
+        aria-label="+1 fotograma">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,6 15,12 5,18"/><rect x="16" y="6" width="3" height="12" rx="1"/>
+        </svg>
+        <span>+1f</span>
+      </button>
+    </div>
+
+    <div class="marks-row">
+      <button id="btn-takeoff" class="btn-mark t-btn" onclick="markTakeoff()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        <span id="lbl-takeoff">Despegue</span>
+      </button>
+      <button id="btn-landing" class="btn-mark l-btn" onclick="markLanding()" disabled>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 19 19 12"/></svg>
+        <span id="lbl-landing">Aterrizaje</span>
+      </button>
+    </div>
+
+    <div id="result-panel" class="result-panel">
+      <div id="row-takeoff" class="mark-row" style="opacity:0.3">
+        <span class="mark-dot t"></span>
+        <span class="mark-lbl">Despegue</span>
+        <span class="mark-val" id="val-takeoff">—</span>
+        <button class="btn-clr" onclick="clearMark('takeoff')" aria-label="Borrar marca despegue">×</button>
+      </div>
+      <div id="row-landing" class="mark-row" style="opacity:0.3">
+        <span class="mark-dot l"></span>
+        <span class="mark-lbl">Aterrizaje</span>
+        <span class="mark-val" id="val-landing">—</span>
+        <button class="btn-clr" onclick="clearMark('landing')" aria-label="Borrar marca aterrizaje">×</button>
+      </div>
+      <div id="result-divider" class="result-divider" style="opacity:0.15"></div>
+      <div id="result-row" class="result-row" style="opacity:0.15">
+        <span class="flight-time" id="flight-time">— ms</span>
+        <span class="arrow">→</span>
+        <span class="height-val" id="height-val">—</span>
+        <span class="height-unit">cm</span>
+      </div>
+    </div>
+
+    <input id="jump-note-input" class="text-input" type="text" placeholder="Nota (opcional)" autocomplete="off">
+
+    <div class="meta-row">
+      <button id="sel-type-btn" class="sel-btn" onclick="openTypePicker()" aria-label="Tipo de salto">
+        <span id="sel-type-val" class="sel-btn-val">CMJ</span>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button id="btn-save" class="btn-save" onclick="saveJump()" disabled>Guardar</button>
+      <button id="btn-finish" class="btn-finish" onclick="closeAnalyzer()" disabled>Finalizar</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     RESULTS VIEW
+═══════════════════════════════════════════════ -->
+<div id="view-results" class="view" hidden>
+  <div class="scroll-body">
+    <div id="results-content"></div>
+    <button class="btn-primary" onclick="sendToReport()">Enviar a informe</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     FPS SHEET
+═══════════════════════════════════════════════ -->
+<div id="fps-overlay" class="fps-overlay" onclick="onFPSOverlayClick(event)">
+  <div class="fps-sheet">
+    <div class="fps-handle"></div>
+    <span class="fps-title">Fotogramas por segundo</span>
+    <div class="fps-grid">
+      <button class="fps-opt" data-v="30"  onclick="setFPS(30)">30</button>
+      <button class="fps-opt" data-v="60"  onclick="setFPS(60)">60</button>
+      <button class="fps-opt" data-v="120" onclick="setFPS(120)">120</button>
+      <button class="fps-opt" data-v="240" onclick="setFPS(240)">240</button>
+    </div>
+    <div class="fps-custom-row">
+      <input type="number" id="fps-input" class="fps-input"
+        placeholder="Personalizar…" min="1" max="1000"
+        onkeydown="if(event.key==='Enter') setFPSCustom()">
+      <button class="fps-ok" onclick="setFPSCustom()">OK</button>
+    </div>
+    <p class="fps-hint">Un mayor número de FPS en el vídeo aumenta la precisión. Los smartphones modernos graban a 60, 120 o 240 fps en modo cámara lenta.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PICKER SHEET (tipo / pierna)
+═══════════════════════════════════════════════ -->
+<div id="picker-overlay" class="fps-overlay" onclick="onPickerOverlayClick(event)">
+  <div class="fps-sheet">
+    <div class="fps-handle"></div>
+    <span class="fps-title" id="picker-title"></span>
+    <div class="picker-list" id="picker-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SESSION PANEL
+═══════════════════════════════════════════════ -->
+<div class="session-panel-overlay" id="sessionPanelOverlay" onclick="closeSessionPanel()">
+  <div class="session-panel" id="sessionPanel" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+// ─── Session IDB helpers (shared physiq schema: DB 'physiq' v3) ──────────────
+const _SESSION_TTL = 24 * 60 * 60 * 1000;
+function _openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('physiq', 3);
+    r.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('session')) db.createObjectStore('session');
+    };
+    r.onsuccess = e => res(e.target.result);
+    r.onerror   = e => rej(e.target.error);
+  });
+}
+function readSession() {
+  return _openDB().then(db => new Promise(res => {
+    const tx = db.transaction('session', 'readonly');
+    const get = tx.objectStore('session').get('active');
+    get.onsuccess = () => {
+      const s = get.result;
+      res(s && Date.now() - s.createdAt <= _SESSION_TTL ? s : null);
+    };
+    get.onerror = () => res(null);
+  })).catch(() => null);
+}
+function writeSession(patch) {
+  return _openDB().then(db => new Promise((res, rej) => {
+    const tx = db.transaction('session', 'readwrite');
+    const store = tx.objectStore('session');
+    const get = store.get('active');
+    get.onsuccess = () => {
+      const now = Date.now(), prev = get.result;
+      const base = prev && (now - prev.createdAt <= _SESSION_TTL) ? prev : null;
+      const next = base
+        ? { ...base, ...patch, updatedAt: now }
+        : { sessionId: now, createdAt: now, updatedAt: now, patient: '', date: '', jump: null, ...patch };
+      store.put(next, 'active');
+      tx.oncomplete = () => res(next);
+      tx.onerror    = () => rej();
+    };
+    get.onerror = () => rej();
+  })).catch(() => null);
+}
+function clearSession() {
+  return _openDB().then(db => new Promise(res => {
+    const tx = db.transaction('session', 'readwrite');
+    tx.objectStore('session').delete('active');
+    tx.oncomplete = () => res(); tx.onerror = () => res();
+  })).catch(() => null);
+}
+
+// ─── State ────────────────────────────────────────────────────
+const G = 9.81;
+let jumps          = [];
+let videoJumpCount = 0;
+let fps            = 60;
+let fpsDetected    = false;
+let marks          = { takeoff: null, landing: null };
+let selectedLeg    = 'both';
+let videoSrc       = null;
+let selectedType     = 'CMJ';
+let activeTypeFilter = null;
+let stepTimer   = null;
+let isScrubbing = false;
+let cameraStream   = null;
+let mediaRecorder  = null;
+let recChunks      = [];
+let recTimerInt    = null;
+let recElapsed     = 0;
+let currentView   = 'home';
+let navDepth      = 0;
+let _popstateLock = false;
+
+// ─── Session state ────────────────────────────────────────────
+let _patient        = '';
+let _sessionDate    = '';
+let _sessionGen     = 0;
+let _sessionCleared = false;
+let _patientDebounce = null;
+let _translateTimer  = null;
+const _sessionCh = new BroadcastChannel('physiq-session');
+
+// ─── View management ──────────────────────────────────────────
+function showView(name) {
+  ['home','source','camera','analyzer','results'].forEach(v => {
+    const el = document.getElementById('view-' + v);
+    const show = v === name;
+    el.hidden = !show;
+    if (show) el.style.display = 'flex'; else el.style.display = '';
+  });
+  currentView = name;
+  _updateSubHeader(name);
+}
+
+function _updateSubHeader(name) {
+  const subHeader = document.getElementById('subHeader');
+  const backBtn   = document.getElementById('subHeaderBack');
+  const badge     = document.getElementById('subHeaderBadge');
+  const fpsChip   = document.getElementById('fps-chip');
+
+  if (name === 'home') {
+    subHeader.hidden = true;
+    return;
+  }
+
+  subHeader.hidden = false;
+
+  const label = backBtn.querySelector('.btn-back-sub-label');
+  if (name === 'camera') {
+    if (label) label.textContent = ' Cancelar';
+    backBtn.firstChild.textContent = '✕';
+    backBtn.onclick = cancelCamera;
+  } else {
+    if (label) label.textContent = ' Saltos';
+    backBtn.firstChild.textContent = '←';
+    backBtn.onclick = name === 'analyzer' ? closeAnalyzer : goHome;
+  }
+
+  if (fpsChip) fpsChip.hidden = name !== 'analyzer';
+
+  if (badge) {
+    const type = activeTypeFilter || selectedType;
+    const textEl = document.getElementById('subHeaderBadgeText');
+    if (type && textEl) {
+      badge.hidden  = false;
+      textEl.textContent = type;
+    } else {
+      badge.hidden = true;
+    }
+  }
+}
+
+function navigateTo(name) {
+  navDepth++;
+  history.pushState({ view: name, depth: navDepth }, '');
+  showView(name);
+}
+
+function goHome() {
+  showView('home');
+  navDepth = 0;
+}
+
+// ─── Back gesture / system back button ────────────────────────
+window.addEventListener('popstate', e => {
+  if (_popstateLock) { _popstateLock = false; return; }
+  const leavingView = currentView;
+  navDepth = e.state?.depth ?? 0;
+  const targetView = e.state?.view ?? 'home';
+
+  if (leavingView === 'camera') {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.onstop = null;
+      mediaRecorder.stop();
+    }
+    teardownCamera();
+  }
+  if (leavingView === 'analyzer') {
+    video.pause();
+    video.removeEventListener('timeupdate', onTimeUpdate);
+    video.removeEventListener('play',       syncPlayBtn);
+    video.removeEventListener('pause',      syncPlayBtn);
+    video.removeEventListener('ended',      syncPlayBtn);
+    video.src = '';
+    if (videoSrc) { URL.revokeObjectURL(videoSrc); videoSrc = null; }
+  }
+
+  showView(targetView);
+});
+
+function selectJumpType(type) {
+  selectedType = type;
+  selectedLeg  = legForType(type);
+  navigateTo('source');
+}
+
+// ─── Hub communication ─────────────────────────────────────────
+function goHub() {
+  window.parent?.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+}
+
+window.addEventListener('message', e => {
+  if (e.data?.type === 'PHYSIQ_SAT_VISIBLE') renderJumpList();
+});
+
+// ─── File loading ──────────────────────────────────────────────
+function openFilePicker() {
+  document.getElementById('file-input').click();
+}
+
+function loadVideoFile(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  e.target.value = '';
+  openAnalyzer(URL.createObjectURL(file));
+}
+
+function showNotice(title, text) {
+  const overlay = document.createElement('div');
+  overlay.className = 'notice-banner';
+  overlay.innerHTML = `
+    <div class="notice-box">
+      <div class="notice-box-title">${title}</div>
+      <div class="notice-box-text">${text}</div>
+      <button class="notice-btn-ok" onclick="this.closest('.notice-banner').remove()">Entendido</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ─── Camera recording ──────────────────────────────────────────
+async function openCamera() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    showNotice('Cámara no disponible', 'La grabación con cámara no está disponible en este navegador.');
+    return;
+  }
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    });
+    const preview = document.getElementById('cam-preview');
+    preview.srcObject = cameraStream;
+    preview.play().catch(() => {});
+    navigateTo('camera');
+  } catch (err) {
+    showNotice('Error de cámara', 'No se pudo acceder a la cámara: ' + (err.message || err));
+  }
+}
+
+function cancelCamera() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.onstop = null;
+    mediaRecorder.stop();
+  }
+  teardownCamera();
+  showView('source');
+  _popstateLock = true;
+  history.back();
+}
+
+function teardownCamera() {
+  if (recTimerInt) { clearInterval(recTimerInt); recTimerInt = null; }
+  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+  document.getElementById('btn-record').classList.remove('is-recording');
+  document.getElementById('rec-badge').hidden = true;
+}
+
+function toggleRecording() {
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+    startRecording();
+  } else {
+    stopRecording();
+  }
+}
+
+function startRecording() {
+  recChunks = [];
+  const mime = (['video/mp4','video/webm;codecs=h264','video/webm','video/ogg']
+    .find(t => MediaRecorder.isTypeSupported(t))) || '';
+
+  mediaRecorder = new MediaRecorder(cameraStream, mime ? { mimeType: mime } : {});
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recChunks, { type: mediaRecorder.mimeType || 'video/webm' });
+    teardownCamera();
+    openAnalyzer(URL.createObjectURL(blob));
+  };
+  mediaRecorder.start(100);
+
+  document.getElementById('btn-record').classList.add('is-recording');
+  document.getElementById('rec-badge').hidden = false;
+  recElapsed = 0;
+  recTimerInt = setInterval(() => {
+    recElapsed++;
+    const m = Math.floor(recElapsed / 60);
+    const s = String(recElapsed % 60).padStart(2, '0');
+    document.getElementById('rec-timer-txt').textContent = m + ':' + s;
+  }, 1000);
+}
+
+function stopRecording() {
+  mediaRecorder?.stop();
+}
+
+// ─── Analyzer lifecycle ────────────────────────────────────────
+const video = document.getElementById('main-video');
+
+function openAnalyzer(src) {
+  if (videoSrc) URL.revokeObjectURL(videoSrc);
+  videoSrc       = src;
+  marks          = { takeoff: null, landing: null };
+  videoJumpCount = 0;
+  fps            = 60;
+  fpsDetected    = false;
+  isScrubbing    = false;
+
+  video.src = src;
+  video.load();
+
+  selectedLeg = legForType(selectedType);
+  document.getElementById('sel-type-val').textContent = selectedType;
+  document.getElementById('scrubber-markers').innerHTML = '';
+  document.getElementById('scrubber-marker-heads').innerHTML = '';
+
+  updateFPSChip();
+  syncMarkUI();
+  syncResultPanel();
+  _syncAnalyzerHeader();
+
+  // Replace the current history entry (source or camera) so that
+  // swipe-back from the analyzer skips back to the view before source.
+  history.replaceState({ view: 'analyzer', depth: navDepth }, '');
+  showView('analyzer');
+
+  video.addEventListener('loadedmetadata', onMeta,       { once: true });
+  video.addEventListener('loadeddata',     onDataLoaded, { once: true });
+  video.addEventListener('timeupdate',     onTimeUpdate);
+  video.addEventListener('play',           syncPlayBtn);
+  video.addEventListener('pause',          syncPlayBtn);
+  video.addEventListener('ended',          syncPlayBtn);
+}
+
+function closeAnalyzer() {
+  video.pause();
+  video.removeEventListener('timeupdate', onTimeUpdate);
+  video.removeEventListener('play',       syncPlayBtn);
+  video.removeEventListener('pause',      syncPlayBtn);
+  video.removeEventListener('ended',      syncPlayBtn);
+  video.src = '';
+  if (videoSrc) { URL.revokeObjectURL(videoSrc); videoSrc = null; }
+  showView('home');
+  history.replaceState({ view: 'home', depth: 0 }, '');
+  navDepth = 0;
+}
+
+function onMeta() {
+  const dur = video.duration;
+  const scrubber = document.getElementById('scrubber');
+  scrubber.max  = isFinite(dur) ? dur : 1;
+  scrubber.step = 0.001;
+  document.getElementById('lbl-dur').textContent = fmtSec(dur);
+  setCurrentTimeDisplay(0);
+}
+
+async function onDataLoaded() {
+  if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+    const detected = await probeFPS(video);
+    if (detected) {
+      fps = snapFPS(detected);
+      fpsDetected = true;
+      updateFPSChip();
+    }
+  }
+}
+
+function onTimeUpdate() {
+  if (isScrubbing) return;
+  setCurrentTimeDisplay(video.currentTime);
+  document.getElementById('scrubber').value = video.currentTime;
+}
+
+function syncPlayBtn() {
+  document.getElementById('ico-play').hidden  = !video.paused;
+  document.getElementById('ico-pause').hidden =  video.paused;
+}
+
+// ─── Scrubber ─────────────────────────────────────────────────
+function onScrubInput(val) {
+  isScrubbing = true;
+  video.pause();
+  video.currentTime = parseFloat(val);
+  setCurrentTimeDisplay(parseFloat(val));
+}
+
+function onScrubEnd() {
+  isScrubbing = false;
+}
+
+// ─── Playback ─────────────────────────────────────────────────
+function togglePlay() {
+  if (video.paused) video.play(); else video.pause();
+}
+
+// ─── Frame stepping ────────────────────────────────────────────
+function startStep(dir) {
+  doStep(dir);
+  stepTimer = setTimeout(() => {
+    stepTimer = setInterval(() => doStep(dir), 75);
+  }, 360);
+}
+
+function stopStep() {
+  if (stepTimer !== null) {
+    clearTimeout(stepTimer);
+    clearInterval(stepTimer);
+    stepTimer = null;
+  }
+}
+
+function doStep(dir) {
+  video.pause();
+  const fd   = 1 / fps;
+  const next = Math.max(0, Math.min(video.duration || 0, video.currentTime + dir * fd));
+  video.currentTime = next;
+  setCurrentTimeDisplay(next);
+  document.getElementById('scrubber').value = next;
+}
+
+// ─── FPS probing ───────────────────────────────────────────────
+function probeFPS(v) {
+  return new Promise(resolve => {
+    const times = [];
+    let live = true;
+
+    const cleanup = () => { live = false; v.pause(); v.currentTime = 0; };
+
+    const cb = (_, meta) => {
+      if (!live) return;
+      times.push(meta.mediaTime);
+      if (times.length >= 8) {
+        cleanup();
+        const diffs = [];
+        for (let i = 1; i < times.length; i++) {
+          const d = times[i] - times[i - 1];
+          if (d > 0.001) diffs.push(d);
+        }
+        if (!diffs.length) { resolve(null); return; }
+        const avg = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+        resolve(Math.round(1 / avg));
+      } else {
+        v.requestVideoFrameCallback(cb);
+      }
+    };
+
+    v.muted = true;
+    v.requestVideoFrameCallback(cb);
+    v.play().catch(() => { live = false; resolve(null); });
+
+    setTimeout(() => { if (!live) return; cleanup(); resolve(null); }, 3500);
+  });
+}
+
+function snapFPS(raw) {
+  const std = [24, 25, 30, 50, 60, 120, 240];
+  return std.reduce((a, b) => Math.abs(b - raw) < Math.abs(a - raw) ? b : a);
+}
+
+// ─── FPS chip ─────────────────────────────────────────────────
+function updateFPSChip() {
+  document.getElementById('fps-chip-txt').textContent = fps + ' fps';
+  document.getElementById('fps-chip').classList.toggle('is-detected', fpsDetected);
+}
+
+function openFPSSheet() {
+  document.querySelectorAll('.fps-opt').forEach(b =>
+    b.classList.toggle('active', parseInt(b.dataset.v) === fps)
+  );
+  document.getElementById('fps-input').value = '';
+  document.getElementById('fps-overlay').classList.add('open');
+}
+
+function onFPSOverlayClick(e) {
+  if (e.target === e.currentTarget) closeFPSSheet();
+}
+
+function closeFPSSheet() {
+  document.getElementById('fps-overlay').classList.remove('open');
+}
+
+function setFPS(val) {
+  fps = val;
+  fpsDetected = false;
+  updateFPSChip();
+  closeFPSSheet();
+}
+
+function setFPSCustom() {
+  const val = parseInt(document.getElementById('fps-input').value);
+  if (val > 0 && val <= 1000) setFPS(val);
+}
+
+// ─── Pickers (tipo / pierna) ───────────────────────────────────
+const TYPE_OPTIONS = [
+  { value: 'CMJ',    label: 'CMJ — Contramovimiento' },
+  { value: 'SJ',     label: 'SJ — Squat jump' },
+  { value: 'DJ',     label: 'DJ — Drop jump' },
+  { value: 'Mono-D', label: 'Mono-D — Monopodal derecha' },
+  { value: 'Mono-I', label: 'Mono-I — Monopodal izquierda' },
+];
+const LEG_OPTIONS = [
+  { value: 'both',  label: 'Ambas' },
+  { value: 'right', label: 'Derecha' },
+  { value: 'left',  label: 'Izquierda' },
+];
+let _pickerCallback = null;
+
+function openPicker(title, options, currentValue, onSelect) {
+  _pickerCallback = onSelect;
+  document.getElementById('picker-title').textContent = title;
+  document.getElementById('picker-list').innerHTML = options.map(opt => `
+    <button class="picker-opt${opt.value === currentValue ? ' active' : ''}"
+            onclick="selectPickerOpt('${opt.value}')">
+      <span>${opt.label}</span>
+      <span class="picker-check">✓</span>
+    </button>`).join('');
+  document.getElementById('picker-overlay').classList.add('open');
+}
+
+function selectPickerOpt(value) {
+  _pickerCallback?.(value);
+  document.getElementById('picker-overlay').classList.remove('open');
+}
+
+function onPickerOverlayClick(e) {
+  if (e.target === e.currentTarget) document.getElementById('picker-overlay').classList.remove('open');
+}
+
+function legForType(type) {
+  if (type === 'Mono-D') return 'right';
+  if (type === 'Mono-I') return 'left';
+  return 'both';
+}
+
+function openTypePicker() {
+  openPicker('Tipo de salto', TYPE_OPTIONS, selectedType, val => {
+    selectedType = val;
+    selectedLeg  = legForType(val);
+    document.getElementById('sel-type-val').textContent = val;
+    _syncAnalyzerHeader();
+  });
+}
+
+// ─── Marks ────────────────────────────────────────────────────
+function markTakeoff() {
+  marks.takeoff = video.currentTime;
+  if (marks.landing !== null && marks.landing <= marks.takeoff) marks.landing = null;
+  syncMarkUI();
+  syncResultPanel();
+  updateScrubberMarkers();
+}
+
+function markLanding() {
+  const t = video.currentTime;
+  if (marks.takeoff !== null && t <= marks.takeoff) {
+    navigator.vibrate?.(40);
+    return;
+  }
+  marks.landing = t;
+  syncMarkUI();
+  syncResultPanel();
+  updateScrubberMarkers();
+}
+
+function clearMark(which) {
+  marks[which] = null;
+  if (which === 'takeoff') marks.landing = null;
+  syncMarkUI();
+  syncResultPanel();
+  updateScrubberMarkers();
+}
+
+function syncMarkUI() {
+  const ht = marks.takeoff !== null;
+  const hl = marks.landing !== null;
+  document.getElementById('lbl-takeoff').textContent = ht ? 'Redefinir' : 'Despegue';
+  document.getElementById('lbl-landing').textContent = hl ? 'Redefinir' : 'Aterrizaje';
+  document.getElementById('btn-landing').disabled    = !ht;
+  updateFrameMarkerVisual(isFinite(video.currentTime) ? video.currentTime : 0);
+}
+
+function syncResultPanel() {
+  const ht = marks.takeoff !== null;
+  const hl = marks.landing !== null;
+  const hb = ht && hl;
+
+  document.getElementById('row-takeoff').style.opacity    = ht ? '1' : '0.3';
+  document.getElementById('row-landing').style.opacity    = hl ? '1' : '0.3';
+  document.getElementById('result-divider').style.opacity = hb ? '1' : '0.15';
+  document.getElementById('result-row').style.opacity     = hb ? '1' : '0.15';
+  document.getElementById('btn-save').disabled            = !hb;
+
+  document.getElementById('val-takeoff').textContent = ht ? marks.takeoff.toFixed(3) + ' s' : '—';
+  document.getElementById('val-landing').textContent = hl ? marks.landing.toFixed(3) + ' s' : '—';
+
+  if (hb) {
+    const t = marks.landing - marks.takeoff;
+    const h = (G * t * t) / 8 * 100;
+    document.getElementById('flight-time').textContent = Math.round(t * 1000) + ' ms';
+    document.getElementById('height-val').textContent  = h.toFixed(1);
+  } else {
+    document.getElementById('flight-time').textContent = '— ms';
+    document.getElementById('height-val').textContent  = '—';
+  }
+}
+
+function updateScrubberMarkers() {
+  const bars  = document.getElementById('scrubber-markers');
+  const heads = document.getElementById('scrubber-marker-heads');
+  const dur   = video.duration;
+  if (!bars || !heads || !isFinite(dur) || dur === 0) return;
+  bars.innerHTML  = '';
+  heads.innerHTML = '';
+  [['takeoff', 'takeoff'], ['landing', 'landing']].forEach(([which, cls]) => {
+    const t = marks[which];
+    if (t === null) return;
+    const pct   = (t / dur) * 100;
+    const title = which === 'takeoff' ? 'Ir a despegue' : 'Ir a aterrizaje';
+
+    const bar = document.createElement('div');
+    bar.className  = 'scrubber-marker ' + cls;
+    bar.style.left = pct + '%';
+    bars.appendChild(bar);
+
+    const head = document.createElement('div');
+    head.className  = 'scrubber-marker-head ' + cls;
+    head.style.left = pct + '%';
+    head.title      = title;
+    head.addEventListener('click', () => seekToMark(which));
+    heads.appendChild(head);
+  });
+}
+
+// ─── Save ──────────────────────────────────────────────────────
+function saveJump() {
+  if (!marks.takeoff || !marks.landing) return;
+  const t = marks.landing - marks.takeoff;
+  const h = parseFloat(((G * t * t) / 8 * 100).toFixed(1));
+  const noteInput = document.getElementById('jump-note-input');
+  const note = noteInput?.value.trim() || '';
+  videoJumpCount++;
+  jumps.push({
+    id:         Date.now(),
+    type:       selectedType,
+    leg:        selectedLeg,
+    flightTime: parseFloat(t.toFixed(4)),
+    height:     h,
+    fps,
+    ...(note ? { note } : {}),
+  });
+  if (noteInput) noteInput.value = '';
+  broadcastJumps();
+  renderJumpList();
+  _updateResetBtn();
+
+  marks = { takeoff: null, landing: null };
+  syncMarkUI();
+  syncResultPanel();
+  updateScrubberMarkers();
+  _syncAnalyzerHeader();
+  _showJumpSavedToast(videoJumpCount, h);
+  navigator.vibrate?.([30, 50, 30]);
+}
+
+function _syncAnalyzerHeader() {
+  const badge  = document.getElementById('subHeaderBadge');
+  const textEl = document.getElementById('subHeaderBadgeText');
+  const finish = document.getElementById('btn-finish');
+  if (badge && textEl) {
+    const type  = selectedType || '';
+    const count = videoJumpCount > 0
+      ? ` · ${videoJumpCount === 1 ? '1 guardado' : `${videoJumpCount} guardados`}`
+      : '';
+    badge.hidden       = false;
+    textEl.textContent = type + count;
+  }
+  if (finish) finish.disabled = videoJumpCount === 0;
+}
+
+function _showJumpSavedToast(n, h) {
+  document.getElementById('jumpSavedToast')?.remove();
+  const toast = document.createElement('div');
+  toast.id = 'jumpSavedToast';
+  toast.style.cssText = [
+    'position:fixed', 'bottom:24px', 'left:50%',
+    'transform:translateX(-50%)',
+    'background:var(--surface)', 'border:1px solid var(--green)',
+    'color:var(--green)', 'font-size:.8rem',
+    "font-family:'Outfit',sans-serif", 'padding:10px 20px',
+    'border-radius:8px', 'z-index:9999',
+    'box-shadow:0 4px 16px rgba(0,0,0,.4)',
+    'white-space:nowrap',
+  ].join(';');
+  toast.textContent = `✓ Salto #${n} — ${h.toFixed(1)} cm`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
+// ─── Jump list ─────────────────────────────────────────────────
+const LEG = { both: 'Ambas', right: 'D', left: 'I' };
+
+function renderJumpList() {
+  const sumCard = document.getElementById('jump-summary-card');
+
+  if (!jumps.length) {
+    sumCard.hidden = true;
+    activeTypeFilter = null;
+    return;
+  }
+
+  sumCard.hidden = false;
+
+  const typeCounts = jumps.reduce((acc, j) => { acc[j.type] = (acc[j.type] || 0) + 1; return acc; }, {});
+  document.getElementById('jump-type-chips').innerHTML = Object.entries(typeCounts)
+    .map(([type, count]) =>
+      `<span class="region-chip" onclick="openResultsView('${type}')">${type} <span class="chip-count">${count}</span></span>`
+    ).join('');
+}
+
+function openResultsView(type) {
+  activeTypeFilter = type;
+  renderResultsView();
+  navigateTo('results');
+}
+
+function renderResultsView() {
+  const filtered = jumps.filter(j => j.type === activeTypeFilter);
+  const content  = document.getElementById('results-content');
+
+  if (!filtered.length) { content.innerHTML = ''; return; }
+
+  // Group by note (same note = same condition)
+  const groups = [];
+  const keyMap = new Map();
+  for (const j of filtered) {
+    const key = j.note || '';
+    if (!keyMap.has(key)) { keyMap.set(key, []); groups.push({ key, list: keyMap.get(key) }); }
+    keyMap.get(key).push(j);
+  }
+
+  const multiGroup = groups.length > 1;
+  let animIdx = 0;
+
+  content.innerHTML = groups.map(({ key, list }) => {
+    const headerHtml = multiGroup
+      ? `<div class="condition-group-label">${key || 'Sin etiqueta'}</div>`
+      : '';
+
+    const itemsHtml = list.map(j => {
+      const realIdx = jumps.indexOf(j);
+      const delay   = (animIdx++ * 0.04).toFixed(2);
+      return `
+      <div class="jump-item" style="animation-delay:${delay}s">
+        <span class="jump-num">${realIdx + 1}</span>
+        <div class="jump-info">
+          <div class="jump-type">${j.type}</div>
+          <div class="jump-meta">${LEG[j.leg] || j.leg} &middot; ${Math.round(j.flightTime * 1000)} ms &middot; ${j.fps} fps</div>
+          ${j.note ? `<div class="jump-note">${j.note}</div>` : ''}
+        </div>
+        <div class="jump-height-wrap">
+          <span class="jump-height">${j.height.toFixed(1)}</span>
+          <span class="jump-height-unit"> cm</span>
+        </div>
+        <button class="btn-del" onclick="deleteJump(${realIdx})" aria-label="Eliminar salto ${realIdx + 1}">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    }).join('');
+
+    const heights = list.map(j => j.height);
+    const avg     = heights.reduce((s, h) => s + h, 0) / heights.length;
+    const best    = Math.max(...heights);
+    const worst   = Math.min(...heights);
+
+    const summaryHtml = `
+    <div class="summary-bar">
+      <div class="sum-item"><span class="sum-label">Saltos</span><span class="sum-value">${list.length}</span></div>
+      <div class="sum-item"><span class="sum-label">Media</span><span class="sum-value">${avg.toFixed(1)} cm</span></div>
+      <div class="sum-item"><span class="sum-label">Mejor</span><span class="sum-value">${best.toFixed(1)} cm</span></div>
+    </div>`;
+
+    let fatigueHtml = '';
+    if (list.length >= 3) {
+      const fi   = ((best - worst) / best) * 100;
+      const sdec = (1 - heights.reduce((s, h) => s + h, 0) / (best * heights.length)) * 100;
+      const cls  = v => v < 10 ? 'fatigue-value-low' : v < 20 ? 'fatigue-value-mid' : 'fatigue-value-high';
+      fatigueHtml = `
+      <div class="fatigue-card">
+        <div class="fatigue-header"><span class="fatigue-title">Fatiga acumulada</span></div>
+        <div class="fatigue-metrics">
+          <div class="sum-item"><span class="sum-label">Índice (FI)</span><span class="sum-value ${cls(fi)}">${fi.toFixed(1)} %</span></div>
+          <div class="sum-item"><span class="sum-label">Decremento (S%)</span><span class="sum-value ${cls(sdec)}">${sdec.toFixed(1)} %</span></div>
+        </div>
+      </div>`;
+    }
+
+    return `<div class="condition-group">${headerHtml}<div class="jump-list">${itemsHtml}</div>${summaryHtml}${fatigueHtml}</div>`;
+  }).join('');
+}
+
+function copyJumpsToClipboard() {
+  const date = new Date().toLocaleDateString('es-ES');
+
+  // Group by type then by note (same logic as renderResultsView)
+  const byType = new Map();
+  for (const j of jumps) {
+    if (!byType.has(j.type)) byType.set(j.type, new Map());
+    const key = j.note || '';
+    if (!byType.get(j.type).has(key)) byType.get(j.type).set(key, []);
+    byType.get(j.type).get(key).push(j);
+  }
+
+  const sections = [...byType.entries()].map(([type, noteGroups]) => {
+    const groupLines = [...noteGroups.entries()].map(([note, list]) => {
+      const condLabel = note ? `${type} — ${note}` : type;
+      const lines = list.map((j, i) =>
+        `  #${i + 1}: Vuelo ${Math.round(j.flightTime * 1000)} ms → ${j.height.toFixed(1)} cm (${j.fps} fps)`
+      );
+      if (list.length > 1) {
+        const avg = list.reduce((s, j) => s + j.height, 0) / list.length;
+        const max = Math.max(...list.map(j => j.height));
+        lines.push(`  Media: ${avg.toFixed(1)} cm | Mejor: ${max.toFixed(1)} cm`);
+      }
+      if (list.length >= 3) {
+        const heights = list.map(j => j.height);
+        const best  = Math.max(...heights);
+        const worst = Math.min(...heights);
+        const fi   = ((best - worst) / best) * 100;
+        const sdec = (1 - heights.reduce((s, h) => s + h, 0) / (best * heights.length)) * 100;
+        lines.push(`  Fatiga — FI: ${fi.toFixed(1)} % | S%: ${sdec.toFixed(1)} %`);
+      }
+      return `${condLabel} (${list.length} ${list.length === 1 ? 'salto' : 'saltos'}):\n${lines.join('\n')}`;
+    });
+    return groupLines.join('\n\n');
+  });
+
+  const text = `SALTOS PhysiQ-Jump\nFecha: ${date}\n\n${sections.join('\n\n')}`;
+  navigator.clipboard.writeText(text).then(() => _showCopyFeedback()).catch(() => {});
+}
+
+function _showCopyFeedback() {
+  document.getElementById('copyFeedback')?.remove();
+  const toast = document.createElement('div');
+  toast.id = 'copyFeedback';
+  toast.style.cssText = [
+    'position:fixed', 'bottom:24px', 'left:50%',
+    'transform:translateX(-50%)',
+    'background:var(--surface)', 'border:1px solid var(--accent)',
+    'color:var(--accent)', 'font-size:.8rem',
+    "font-family:'Outfit',sans-serif", 'padding:10px 20px',
+    'border-radius:8px', 'z-index:9999',
+    'box-shadow:0 4px 16px rgba(0,0,0,.4)',
+  ].join(';');
+  toast.textContent = '✓ Saltos copiados al portapapeles';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function deleteJump(idx) {
+  jumps.splice(idx, 1);
+  broadcastJumps();
+  renderJumpList();
+  _updateResetBtn();
+  if (currentView === 'results') {
+    const remaining = jumps.filter(j => j.type === activeTypeFilter);
+    if (remaining.length === 0) {
+      goHome();
+    } else {
+      renderResultsView();
+    }
+  }
+}
+
+// ─── Broadcast ─────────────────────────────────────────────────
+function broadcastJumps() {
+  try {
+    const avg = jumps.length ? jumps.reduce((s, j) => s + j.height, 0) / jumps.length : null;
+    const max = jumps.length ? Math.max(...jumps.map(j => j.height)) : null;
+    const jumpsCopy = jumps.map(j => ({ ...j }));
+    const ch  = new BroadcastChannel('physiq-session');
+    ch.postMessage({
+      type:    'SESSION_JUMP',
+      jumps:   jumpsCopy,
+      summary: {
+        count:     jumps.length,
+        avgHeight: avg != null ? parseFloat(avg.toFixed(1)) : null,
+        maxHeight: max != null ? parseFloat(max.toFixed(1)) : null,
+      }
+    });
+    ch.close();
+    if (_patient) writeSession({ jump: jumpsCopy });
+  } catch (_) {}
+}
+
+function sendToReport() {
+  broadcastJumps();
+  window.parent?.postMessage({ type: 'PHYSIQ_NAVIGATE', to: 'report' }, '*');
+}
+
+// ─── Helpers ───────────────────────────────────────────────────
+function setCurrentTimeDisplay(t) {
+  const s = isFinite(t) ? t : 0;
+  document.getElementById('vt-overlay').textContent = s.toFixed(3) + ' s';
+  document.getElementById('lbl-cur').textContent    = s.toFixed(3);
+  updateFrameMarkerVisual(s);
+}
+
+function updateFrameMarkerVisual(t) {
+  const vid   = document.getElementById('main-video');
+  const badge = document.getElementById('frame-marker-badge');
+  const label = document.getElementById('frame-marker-badge-label');
+  const fd    = isFinite(fps) && fps > 0 ? 1 / fps / 2 : 0.008;
+
+  const atTakeoff = marks.takeoff !== null && Math.abs(t - marks.takeoff) < fd;
+  const atLanding = marks.landing !== null && Math.abs(t - marks.landing) < fd;
+
+  const wrap = document.getElementById('video-wrap');
+  wrap.classList.toggle('at-takeoff', atTakeoff);
+  wrap.classList.toggle('at-landing', atLanding && !atTakeoff);
+  badge.classList.toggle('at-takeoff', atTakeoff);
+  badge.classList.toggle('at-landing', atLanding && !atTakeoff);
+
+  if (atTakeoff)      label.textContent = 'DESPEGUE';
+  else if (atLanding) label.textContent = 'ATERRIZAJE';
+}
+
+function fmtSec(s) { return (isFinite(s) ? s : 0).toFixed(3); }
+
+function seekToMark(which) {
+  const t = marks[which];
+  if (t === null) return;
+  video.currentTime = t;
+  setCurrentTimeDisplay(t);
+  document.getElementById('scrubber').value = t;
+}
+
+// ─── Session helpers ───────────────────────────────────────────
+function _todayStr() {
+  return new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function _updateSessionBtn() {
+  const btn = document.getElementById('sessionBtn');
+  if (btn) btn.classList.toggle('active', !!_patient);
+}
+
+function _persistPatient() {
+  _sessionDate = _todayStr();
+  if (_patient) _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: _patient });
+  if (!_patient) return;
+  const gen = _sessionGen;
+  writeSession({ patient: _patient, date: _sessionDate }).then(s => {
+    if (_sessionGen !== gen) clearSession();
+  });
+}
+
+function _softReset() {
+  _sessionGen++;
+  _sessionCleared = true;
+  jumps = [];
+  _patient = '';
+  _sessionDate = '';
+  renderJumpList();
+  broadcastJumps();
+  _updateSessionBtn();
+  _updateResetBtn();
+}
+
+function _handleBC(e) {
+  const msg = e.data;
+  if (!msg) return;
+  if (msg.type === 'SESSION_PATIENT') {
+    _patient = msg.patient || '';
+    const inp = document.getElementById('patientName');
+    if (inp) inp.value = _patient;
+    _updateSessionBtn();
+    return;
+  }
+  if (msg.type === 'SESSION_CLEAR') {
+    _softReset();
+    clearSession();
+  }
+}
+
+// ─── Session panel ─────────────────────────────────────────────
+function toggleSessionPanel() {
+  const overlay = document.getElementById('sessionPanelOverlay');
+  if (!overlay) return;
+  if (overlay.classList.contains('open')) { closeSessionPanel(); return; }
+  _showSessionState('edit');
+  overlay.classList.add('open');
+}
+
+function _showSessionState(state) {
+  const panel = document.getElementById('sessionPanel');
+  if (!panel) return;
+  const hasSession = !!_patient;
+  const label = hasSession
+    ? `${_patient} · ${_sessionDate || _todayStr()}`
+    : 'Sin sesión activa';
+  panel.classList.toggle('has-session', hasSession);
+
+  if (state === 'edit') {
+    panel.innerHTML = `
+      <div class="session-panel-handle"></div>
+      <div class="session-panel-title">${label}</div>
+      <div class="patient-name-field">
+        <label class="patient-name-label">Paciente</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input class="patient-name-input" type="text" id="patientName"
+                 placeholder="Nombre (opcional)" autocomplete="off" spellcheck="false" style="flex:1;">
+          <button class="session-panel-clear" id="sessionPanelClear" title="Borrar sesión">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h9M5 4V2h3v2M3.5 4l.5 7h5l.5-7"/></svg>
+          </button>
+        </div>
+      </div>`;
+    const input = panel.querySelector('#patientName');
+    input.value = _patient || '';
+    input.addEventListener('input', e => {
+      _patient = e.target.value.trim();
+      _sessionCleared = false;
+      const titleEl = panel.querySelector('.session-panel-title');
+      if (titleEl) titleEl.textContent = _patient
+        ? `${_patient} · ${_sessionDate || _todayStr()}`
+        : 'Sin sesión activa';
+      panel.classList.toggle('has-session', !!_patient);
+      clearTimeout(_patientDebounce);
+      _patientDebounce = setTimeout(_persistPatient, 800);
+      _updateSessionBtn();
+    });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') closeSessionPanel(); });
+    panel.querySelector('#sessionPanelClear').onclick = () => _showSessionState('delete');
+    setTimeout(() => input.focus(), 60);
+    _addPanelSwipe(panel);
+
+  } else if (state === 'delete') {
+    panel.innerHTML = `
+      <div class="session-panel-handle"></div>
+      <div class="session-panel-title">${label}</div>
+      <div class="confirm-box-text" style="margin:12px 0 0;">¿Borrar sesión y empezar de nuevo?</div>
+      <div class="confirm-box-btns" style="margin-top:1rem;">
+        <button class="confirm-btn-cancel" id="spCancelBtn">Cancelar</button>
+        <button class="confirm-btn-ok" id="spOkBtn">Borrar sesión</button>
+      </div>`;
+    panel.querySelector('#spCancelBtn').onclick = () => _showSessionState('edit');
+    panel.querySelector('#spOkBtn').onclick = () => {
+      closeSessionPanel();
+      _softReset();
+      clearSession().then(() => _sessionCh.postMessage({ type: 'SESSION_CLEAR' }));
+    };
+    _addPanelSwipe(panel);
+  }
+}
+
+function _addPanelSwipe(panel) {
+  let startY = 0;
+  panel.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  panel.addEventListener('touchmove', e => {
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 0) panel.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+  panel.addEventListener('touchend', e => {
+    const dy = e.changedTouches[0].clientY - startY;
+    if (dy > 60) { panel.style.transition = 'transform 0.2s'; panel.style.transform = 'translateY(110%)';
+      setTimeout(closeSessionPanel, 200);
+    } else { panel.style.transform = ''; }
+  });
+}
+
+function closeSessionPanel() {
+  const overlay = document.getElementById('sessionPanelOverlay');
+  const panel   = document.getElementById('sessionPanel');
+  overlay?.classList.remove('open');
+  if (panel) { panel.style.transition = ''; panel.style.transform = ''; }
+}
+
+function _updateResetBtn() {
+  const btn = document.getElementById('headerResetBtn');
+  if (btn) btn.style.display = jumps.length > 0 ? '' : 'none';
+}
+
+function showConfirmBanner(title, text, actionLabel, onConfirm) {
+  const el = document.createElement('div');
+  el.className = 'notice-banner';
+  el.innerHTML = `
+    <div class="notice-box">
+      <div class="notice-box-title">${title}</div>
+      <div class="notice-box-text">${text}</div>
+      <div class="confirm-box-btns" style="margin-top:1.2rem;">
+        <button class="confirm-btn-cancel" id="_cfmCancelBtn">Cancelar</button>
+        <button class="confirm-btn-ok" id="_cfmOkBtn">${actionLabel}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  el.querySelector('#_cfmCancelBtn').onclick = () => el.remove();
+  el.querySelector('#_cfmOkBtn').onclick = () => { el.remove(); onConfirm(); };
+  el.addEventListener('click', e => { if (e.target === el) el.remove(); });
+}
+
+function promptSoftResetJump() {
+  showConfirmBanner(
+    'Borrar saltos',
+    'Se eliminarán todos los saltos registrados. La sesión y el nombre del paciente no se borran.',
+    'Borrar',
+    () => {
+      jumps = [];
+      if (currentView === 'results') goHome();
+      broadcastJumps();
+      renderJumpList();
+      _updateResetBtn();
+    }
+  );
+}
+
+function promptClearSession() {
+  _showSessionState('delete');
+  const overlay = document.getElementById('sessionPanelOverlay');
+  if (overlay && !overlay.classList.contains('open')) overlay.classList.add('open');
+}
+
+// ─── Translate ─────────────────────────────────────────────────
+function handleTranslateClick() {
+  if (window.innerWidth > 768) return;
+  const banner = document.getElementById('translateBanner');
+  if (!banner) return;
+  banner.classList.add('visible');
+  clearTimeout(_translateTimer);
+  _translateTimer = setTimeout(hideTranslateBanner, 4000);
+}
+
+function hideTranslateBanner() {
+  clearTimeout(_translateTimer);
+  document.getElementById('translateBanner')?.classList.remove('visible');
+}
+
+// ─── Init ──────────────────────────────────────────────────────
+renderJumpList();
+
+// Restore session from IDB
+readSession().then(session => {
+  if (session) {
+    _patient     = session.patient || '';
+    _sessionDate = session.date    || _todayStr();
+  }
+  _updateSessionBtn();
+  _sessionCh.onmessage = _handleBC;
+});
+
+if (window.self !== window.top) {
+  document.body.classList.add('in-hub');
+  document.querySelector('.logo-main').addEventListener('click', goHub);
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/physiq/jump/sw.js', { scope: '/physiq/jump/' });
+}
+</script>
+</body>
+</html>
