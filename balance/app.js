@@ -169,7 +169,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   _initResultsSwipe();
   _initSwipeDismiss('measurement-sheet', '.measurement-card', 72, () => {
-    if (_phase === 'testing') stopTest(); else goBack();
+    _abortMeasurement();
+    _openSetup(_testId);
   });
   _initSwipeDismiss('results-overlay', '.results-card', 200, discardResult);
   _setupSessionPanelDrag();
@@ -265,7 +266,10 @@ function _showView(name) {
     }
   }
   _updateHeader(name);
-  if (name === 'setup') history.pushState({ view: 'setup' }, '');
+  if (name === 'setup') {
+    if (history.state?.view === 'setup') history.replaceState({ view: 'setup' }, '');
+    else history.pushState({ view: 'setup' }, '');
+  }
 }
 
 function _animateCountdownToTesting() {
@@ -578,11 +582,8 @@ function _startTestTimer(duration) {
 }
 
 window.stopTest = function () {
-  if (_testTimer) { clearInterval(_testTimer); _testTimer = null; }
-  _stopSensor();
-  _samples = [];
-  _lastResult = null;
-  _showView('home');
+  _abortMeasurement();
+  _openSetup(_testId);
 };
 
 function _endTest() {
