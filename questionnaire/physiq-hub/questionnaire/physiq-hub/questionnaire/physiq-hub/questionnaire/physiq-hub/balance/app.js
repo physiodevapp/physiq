@@ -650,6 +650,68 @@ function _butterworthLP4(data, cutoff, fs) {
   return stage(stage(data)); // two cascaded 2nd-order stages = order 4
 }
 
+// ── COP-in-cm helpers (inverted-pendulum approximation) ──────────────────────
+// For slow, quasi-static postural sway, tilt angle θ ≈ a/g (small-angle,
+// a already in mg ⇒ a/1000 = a/g), and linear displacement at a pivot-to-
+// sensor distance h is ≈ h·θ (arc ≈ chord for small angles). This turns the
+// centered, filtered mg signal into an estimated COP trajectory in cm.
+function _copSeries(centeredMg, sensorHeightCm) {
+  return centeredMg.map(v => sensorHeightCm * (v / 1000));
+}
+
+function _diffSeries(arr, dt) {
+  const out = new Array(arr.length - 1);
+  for (let i = 0; i < arr.length - 1; i++) out[i] = (arr[i + 1] - arr[i]) / dt;
+  return out;
+}
+
+// 95% confidence ellipse area (Prieto et al. 1996). F(0.95; 2, n-2) ≈ 3.00
+// for the sample sizes produced by a 30 s / 50 Hz test.
+function _confidenceEllipseArea(x, y) {
+  const n = x.length;
+  if (n < 3) return 0;
+  const mx = x.reduce((a, b) => a + b, 0) / n;
+  const my = y.reduce((a, b) => a + b, 0) / n;
+  let varX = 0, varY = 0, covXY = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = x[i] - mx, dy = y[i] - my;
+    varX += dx * dx; varY += dy * dy; covXY += dx * dy;
+  }
+  varX /= (n - 1); varY /= (n - 1); covXY /= (n - 1);
+  const F   = 3.00;
+  const det = Math.max(varX * varY - covXY * covXY, 0);
+  return 2 * Math.PI * F * Math.sqrt(det);
+}
+
+// Convex hull (monotone chain) + shoelace area, in cm².
+function _convexHullArea(points) {
+  const n = points.length;
+  if (n < 3) return 0;
+  const pts = points.slice().sort((a, b) => a.x - b.x || a.y - b.y);
+  const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+
+  const lower = [];
+  for (const p of pts) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
+    lower.push(p);
+  }
+  const upper = [];
+  for (let i = pts.length - 1; i >= 0; i--) {
+    const p = pts[i];
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
+    upper.push(p);
+  }
+  upper.pop(); lower.pop();
+  const hull = lower.concat(upper);
+
+  let area = 0;
+  for (let i = 0; i < hull.length; i++) {
+    const j = (i + 1) % hull.length;
+    area += hull[i].x * hull[j].y - hull[j].x * hull[i].y;
+  }
+  return Math.abs(area) / 2;
+}
+
 // ── Metrics computation ───────────────────────────────────────────────────────
 function _computeMetrics(samples) {
   const n = samples.length;
@@ -703,6 +765,30 @@ function _computeMetrics(samples) {
   const threshold = TESTS[_testId].threshold;
   const score     = Math.max(0, Math.min(100, Math.round(100 * (1 - hRMS / threshold))));
 
+  // ── COP-in-cm block ─────────────────────────────────────────────────────
+  const dt    = SAMPLE_RATE_MS / 1000;
+  const copAP = _copSeries(apC, _sensorHeight);
+  const copML = _copSeries(mlC, _sensorHeight);
+
+  let copPathLength = 0;
+  for (let i = 1; i < n; i++) {
+    const dAP = copAP[i] - copAP[i - 1];
+    const dML = copML[i] - copML[i - 1];
+    copPathLength += Math.sqrt(dAP * dAP + dML * dML);
+  }
+  const copHRMS = Math.sqrt(rms(copAP) * rms(copAP) + rms(copML) * rms(copML));
+  const copMeanVelocity = measuredDuration > 0 ? copPathLength / measuredDuration : 0;
+
+  const ellipseArea = _confidenceEllipseArea(copAP, copML);
+  const hullArea     = _convexHullArea(copAP.map((v, i) => ({ x: v, y: copML[i] })));
+
+  const velAP = _diffSeries(copAP, dt),  velML = _diffSeries(copML, dt);
+  const accAP = _diffSeries(velAP, dt),  accML = _diffSeries(velML, dt);
+  const jerkAP = _diffSeries(accAP, dt), jerkML = _diffSeries(accML, dt);
+  let jerkSumSq = 0;
+  for (let i = 0; i < jerkAP.length; i++) jerkSumSq += jerkAP[i] * jerkAP[i] + jerkML[i] * jerkML[i];
+  const jerkRMS = jerkAP.length > 0 ? Math.sqrt(jerkSumSq / jerkAP.length) : 0;
+
   return {
     plannedDuration: TESTS[_testId].duration,
     measuredDuration,
@@ -713,7 +799,16 @@ function _computeMetrics(samples) {
     score,
     ap: { rms: apRMS, sd: apSD, npl: apNPL },
     ml: { rms: mlRMS, sd: mlSD, npl: mlNPL },
-    ud: { rms: udRMS, sd: udSD, npl: udNPL }
+    ud: { rms: udRMS, sd: udSD, npl: udNPL },
+    cop: {
+      sensorHeight: _sensorHeight,
+      hRMS: copHRMS,
+      pathLength: copPathLength,
+      meanVelocity: copMeanVelocity,
+      ellipseArea,
+      hullArea,
+      jerkRMS
+    }
   };
 }
 
@@ -757,6 +852,14 @@ function _showResults(metrics) {
   document.getElementById('advUdNPL').textContent = _fmt1(metrics.ud.npl);
   document.getElementById('advUdRMS').textContent = _fmt1(metrics.ud.rms);
   document.getElementById('advUdSD').textContent  = _fmt1(metrics.ud.sd);
+
+  // Page 4 — COP (cm)
+  document.getElementById('copPathVal').textContent    = _fmt1(metrics.cop.pathLength);
+  document.getElementById('copEllipseVal').textContent = _fmt1(metrics.cop.ellipseArea);
+  document.getElementById('copHullVal').textContent    = _fmt1(metrics.cop.hullArea);
+  document.getElementById('copJerkVal').textContent    = _fmt1(metrics.cop.jerkRMS);
+  document.getElementById('copSensorHeightNote').textContent =
+    `Estimado a partir del acelerómetro (altura sensor: ${Math.round(metrics.cop.sensorHeight)} cm). Aproximación, no sustituye una plataforma de fuerzas.`;
 
   // Reset to page 1
   _resultsPage = 0;
@@ -865,7 +968,7 @@ function _initResultsSwipe() {
   track.addEventListener('touchstart', e => { _swipeStartX = e.touches[0].clientX; }, { passive: true });
   track.addEventListener('touchend',   e => {
     const dx = e.changedTouches[0].clientX - _swipeStartX;
-    if (dx < -50 && _resultsPage < 2) _resultsPage++;
+    if (dx < -50 && _resultsPage < 3) _resultsPage++;
     else if (dx > 50 && _resultsPage > 0) _resultsPage--;
     _updateResultsPage();
   }, { passive: true });
@@ -1201,6 +1304,10 @@ const METRIC_INFO = {
   npl:       { title: 'NPL — Longitud de Trayecto Normalizada', body: 'Longitud total del trayecto de oscilación dividida por la duración del test (mG/s). Permite comparar tests de diferente duración y facilita el seguimiento longitudinal del paciente.' },
   rms:       { title: 'RMS — Raíz Cuadrática Media', body: 'Amplitud media de las oscilaciones en este eje. Un valor bajo indica poco desplazamiento en esa dirección y, por tanto, mejor control en ese plano.' },
   sd:        { title: 'SD — Desviación Estándar', body: 'Variabilidad de las oscilaciones en este eje durante el test. Valores elevados reflejan mayor irregularidad del balanceo, lo que puede indicar estrategias de corrección frecuentes o menor control motor.' },
+  copPath:   { title: 'Trayecto COP', body: 'Longitud total del trayecto estimado del centro de presión, en centímetros, calculada a partir del ángulo de inclinación del tronco (aproximación de péndulo invertido usando la altura umbilical del paciente). Valores menores indican mayor estabilidad.' },
+  copEllipse:{ title: 'Área de Elipse de Confianza 95%', body: 'Área de la elipse que contiene el 95% de los puntos del trayecto del COP (fórmula de Prieto et al., 1996), en cm². Resume la dispersión global del balanceo en un único valor de área: cuanto menor, más compacta y estable la oscilación.' },
+  copHull:   { title: 'Área de Convex Hull', body: 'Área del polígono convexo que envuelve todos los puntos del trayecto del COP, en cm². A diferencia de la elipse, incluye también los desplazamientos puntuales más extremos (picos de descompensación).' },
+  copJerk:   { title: 'Jerk — Suavidad del Movimiento', body: 'Raíz cuadrática media de la tercera derivada de la posición del COP (cm/s³). Cuantifica la suavidad del control postural: valores altos indican correcciones bruscas y menos eficientes; valores bajos, un control más fluido y continuo.' },
 };
 
 function showMetricInfo(key) {
