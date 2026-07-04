@@ -974,12 +974,22 @@
       color: var(--accent);
     }
 
+    .cop-chart-wrap {
+      flex: 1;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
     .cop-chart {
       display: block;
-      width: 100%;
-      max-width: 260px;
+      height: 100%;
+      max-height: 260px;
+      width: auto;
+      max-width: 100%;
       aspect-ratio: 1;
-      margin: 0 auto;
       background: var(--surface2);
       border-radius: 10px;
       border: 1px solid var(--border);
@@ -1457,7 +1467,9 @@
               <span class="metric-item-unit">cm/s³</span>
             </div>
           </div>
-          <canvas id="copChart" class="cop-chart"></canvas>
+          <div class="cop-chart-wrap">
+            <canvas id="copChart" class="cop-chart"></canvas>
+          </div>
           <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;" id="copSensorHeightNote"></p>
         </div>
 

@@ -1001,6 +1001,10 @@ function _drawCopChart(cop) {
 
   const dpr  = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
+  if (!rect.width || !rect.height) {
+    setTimeout(() => _drawCopChart(cop), 50);
+    return;
+  }
   canvas.width  = rect.width  * dpr;
   canvas.height = rect.height * dpr;
   const ctx = canvas.getContext('2d');
