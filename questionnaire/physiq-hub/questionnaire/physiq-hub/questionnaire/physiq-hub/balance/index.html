@@ -1309,12 +1309,57 @@
           <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;">Valores en mG</p>
         </div>
 
+        <!-- Page 4: COP (cm) -->
+        <div class="results-page">
+          <p class="page-section-title">Centro de Presión (COP)</p>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="metric-item-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Trayecto COP
+                <button class="metric-info-btn" onclick="showMetricInfo('copPath')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+              </span>
+              <span class="metric-item-val" id="copPathVal">—</span>
+              <span class="metric-item-unit">cm</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-item-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="6"/></svg>
+                Elipse 95%
+                <button class="metric-info-btn" onclick="showMetricInfo('copEllipse')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+              </span>
+              <span class="metric-item-val" id="copEllipseVal">—</span>
+              <span class="metric-item-unit">cm²</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-item-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 21 8 18 20 6 20 3 8"/></svg>
+                Convex Hull
+                <button class="metric-info-btn" onclick="showMetricInfo('copHull')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+              </span>
+              <span class="metric-item-val" id="copHullVal">—</span>
+              <span class="metric-item-unit">cm²</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-item-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2-8 4 16 2-8h6"/></svg>
+                Jerk
+                <button class="metric-info-btn" onclick="showMetricInfo('copJerk')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+              </span>
+              <span class="metric-item-val" id="copJerkVal">—</span>
+              <span class="metric-item-unit">cm/s³</span>
+            </div>
+          </div>
+          <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;" id="copSensorHeightNote"></p>
+        </div>
+
       </div><!-- /#resultPagesTrack -->
     </div><!-- /.pages-viewport -->
 
     <!-- Dots -->
     <div class="page-dots">
       <span class="page-dot active"></span>
+      <span class="page-dot"></span>
       <span class="page-dot"></span>
       <span class="page-dot"></span>
     </div>

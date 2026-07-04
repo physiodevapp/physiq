@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>PhysiQ — Motion</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c084fc">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PhysiQ Motion">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">
+    <span class="logo-main">Physi<span class="logo-q">Q</span></span>
+    <span class="logo-sub">— <span class="logo-sub-word">Motion</span><span class="logo-sub-initial">M</span></span>
+  </div>
+  <div class="header-right">
+    <button class="btn-reset" onclick="promptSoftResetMotion()" style="display:none">↺ <span class="btn-reset-text">Reiniciar</span></button>
+    <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
+    <button class="btn-translate" onclick="handleTranslateClick()" aria-label="View in English">🌐<span class="translate-tooltip">Long-press or right-click → Translate to English</span></button>
+    <span class="sensor-badge" id="sensorBadge"><svg width="12" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg><span class="sensor-text">Sensor</span></span>
+  </div>
+</header>
+<div class="translate-banner" id="translateBanner">
+  🌐 <span>Long-press or right-click → Translate to English</span>
+  <button class="translate-banner-close" onclick="hideTranslateBanner()">✕</button>
+</div>
+
+<main>
+
+  <!-- Sin sensor -->
+  <div class="no-sensor-banner" id="noSensorBanner" style="display:none">
+    Este dispositivo no expone sensores de orientación al navegador. Prueba con Chrome en Android o Safari en iOS (requiere HTTPS).
+  </div>
+
+  <!-- Permiso iOS -->
+  <div class="permission-card" id="permissionCard" style="display:none">
+    <div class="perm-icon">📐</div>
+    <div class="perm-title">Activar sensor de movimiento</div>
+    <div class="perm-desc">PhysiQ Motion necesita acceso al acelerómetro y giroscopio del dispositivo para medir ángulos en tiempo real.</div>
+    <button class="btn-primary" onclick="requestPermission()">Activar sensor</button>
+  </div>
+
+  <!-- Pantalla 1: Selección de región -->
+  <section id="regionScreen">
+    <div class="summary-card" id="globalExportCard" style="display:none">
+      <div class="summary-header">
+        <span class="summary-title">Resumen global</span>
+        <div style="display:flex;gap:8px;">
+          <button onclick="copyContextToClipboard()" title="Copiar mediciones" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:5px 10px;font-size:0.75rem;color:var(--text2);cursor:pointer;font-family:'DM Mono',monospace;">📋 Copiar</button>
+        </div>
+      </div>
+      <div class="region-chips" id="globalExportChips"></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-label">Región articular</span>
+    </div>
+    <div class="region-grid" id="regionGrid"></div>
+  </section>
+
+  <!-- Pantalla 2: Medición de la región seleccionada -->
+  <section id="measureScreen" style="display:none">
+    <div class="measure-sticky-header">
+      <div class="section-header">
+        <button class="btn-back" onclick="goBackToRegions()">← Regiones</button>
+        <span class="active-region-badge" id="activeRegionLabel"></span>
+      </div>
+
+      <!-- Barra de contexto (lado / modo) -->
+      <div class="context-bar" id="contextBar" style="display:none">
+      <div class="ctx-group" id="ctxSideGroup">
+        <button class="ctx-btn active" id="ctxBtnIzq" onclick="setContextSide('izquierda')">Izquierda</button>
+        <button class="ctx-btn"        id="ctxBtnDer" onclick="setContextSide('derecha')">Derecha</button>
+      </div>
+      <div class="ctx-group" id="ctxModeGroup">
+        <button class="ctx-btn active" id="ctxBtnAct" onclick="setContextMode('activa')">Activa</button>
+        <button class="ctx-btn"        id="ctxBtnPas" onclick="setContextMode('pasiva')">Pasiva</button>
+      </div>
+    </div>
+    </div><!-- /.measure-sticky-header -->
+
+    <!-- Tarjetas de movimiento -->
+    <div class="movement-grid" id="movementGrid"></div>
+
+  </section>
+
+</main>
+
+<!-- Panel de sesión (bottom sheet) -->
+<div class="session-panel-overlay" id="sessionPanelOverlay" onclick="closeSessionPanel()">
+  <div class="session-panel" id="sessionPanel" onclick="event.stopPropagation()">
+    <div class="session-panel-handle"></div>
+    <div class="session-panel-title" id="sessionPanelTitle">Sin sesión activa</div>
+    <div class="field">
+      <label class="field-label" for="patientName">Paciente</label>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input class="field-input" type="text" id="patientName" style="flex:1;" placeholder="Nombre (opcional)"
+          onkeydown="if(event.key==='Enter') closeSessionPanel()">
+        <button class="session-panel-clear" id="sessionPanelClear" onclick="promptClearSession()" title="Borrar sesión"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h9M5 4V2h3v2M3.5 4l.5 7h5l.5-7"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay de medición (bottom sheet) -->
+<div class="measure-overlay" id="measureOverlay" onclick="handleOverlayClick(event)">
+  <div class="measure-sheet" id="measureSheet">
+    <div class="sheet-handle"></div>
+
+    <div class="sheet-header">
+      <div class="sheet-title" id="sheetTitle">—</div>
+    </div>
+
+    <div class="sheet-instruction" id="sheetInstruction"></div>
+    <div class="placement-diagram" id="placementDiagram"></div>
+
+    <div class="angle-display">
+      <div class="angle-value" id="angleValue">—</div>
+      <div class="angle-unit" id="tiltWarning"></div>
+      <div class="peak-label" id="peakLabel"></div>
+    </div>
+
+    <div class="phase-steps">
+      <div class="phase-step-item" id="phaseStep1">
+        <div class="phase-dot" id="phaseDot1"></div>
+        <span id="stepLabel1">Neutro</span>
+      </div>
+      <div class="phase-step-item" id="phaseStep2">
+        <div class="phase-dot" id="phaseDot2"></div>
+        <span id="stepLabel2">Midiendo</span>
+      </div>
+      <div class="phase-step-item" id="phaseStep3">
+        <div class="phase-dot" id="phaseDot3"></div>
+        <span id="stepLabel3">Listo</span>
+      </div>
+    </div>
+
+    <div class="sheet-actions">
+      <!-- Flujo estándar -->
+      <button class="btn-sheet btn-calibrate" id="btnCalibrate" onclick="calibrateNeutral()">
+        Calibrar posición neutra
+      </button>
+      <button class="btn-sheet btn-stop" id="btnStopMeasure" onclick="stopMeasurement()" style="display:none">
+        Detener y registrar
+      </button>
+      <div class="sheet-actions-row" id="rowMeasuringActions" style="display:none">
+        <button class="btn-sheet btn-redo" onclick="redoMeasurement()">↺ Recalibrar</button>
+        <button class="btn-sheet btn-redo" onclick="resetPeak()">↺ Pico</button>
+      </div>
+      <!-- Flujo gravity-vertical -->
+      <div class="sheet-actions-row" id="rowVertical" style="display:none">
+        <button class="btn-sheet btn-redo" onclick="resetPeak()">
+          <span class="sheet-lbl-full">↺ Pico</span><span class="sheet-lbl-short">Pico</span>
+        </button>
+        <button class="btn-sheet btn-stop" id="btnStopVertical" onclick="stopMeasurement()">
+          <span class="sheet-lbl-full">Detener y registrar</span><span class="sheet-lbl-short">Detener</span>
+        </button>
+      </div>
+      <!-- Flujo two-segment -->
+      <button class="btn-sheet btn-calibrate" id="btnCaptureSeg1" onclick="captureSegment1()" style="display:none">
+        Capturar muslo
+      </button>
+      <div class="sheet-actions-row" id="rowSeg1" style="display:none">
+        <button class="btn-sheet btn-redo" onclick="redoMeasurement()">
+          <span class="sheet-lbl-full">↺ Repetir</span><span class="sheet-lbl-short">↺</span>
+        </button>
+        <button class="btn-sheet btn-start" id="btnCaptureSeg2" onclick="captureSegment2()">
+          <span class="sheet-lbl-full">Capturar tibia</span><span class="sheet-lbl-short">Tibia</span>
+        </button>
+      </div>
+      <!-- Resultado (todos los flujos) -->
+      <div class="sheet-actions-row" id="rowDone" style="display:none">
+        <button class="btn-sheet btn-redo" onclick="redoMeasurement()">
+          <span class="sheet-lbl-full">↺ Repetir</span><span class="sheet-lbl-short">↺</span>
+        </button>
+        <button class="btn-sheet btn-save" onclick="saveResult()">
+          <span class="sheet-lbl-full">Confirmar resultado</span><span class="sheet-lbl-short">Confirmar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="lib/session.js"></script>
+<script src="lib/regions.js"></script>
+<script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+if (window.self !== window.top) {
+  document.body.classList.add('in-hub');
+  document.querySelector('.logo-main').addEventListener('click', () => {
+    window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+  });
+}
+</script>
+</body>
+</html>
