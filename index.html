@@ -580,6 +580,12 @@
         <span class="app-desc">Exploración y registro</span>
       </div>
     </button>
+    <button class="app-card" style="--card-color:#f59e0b" onclick="openSat('questionnaire')">
+      <div class="app-info">
+        <span class="app-name">Cuestionarios</span>
+        <span class="app-desc">Escalas y cuestionarios validados</span>
+      </div>
+    </button>
     <button class="app-card" style="--card-color:#8b5cf6" onclick="openSat('motion')">
       <div class="app-info">
         <span class="app-name">ROM · Inclinómetro</span>
@@ -622,8 +628,9 @@
 <!-- ── Satellite shell ────────────────────────────────────────────── -->
 <div id="sat-shell" hidden>
   <iframe id="sat-motion"     class="sat-frame" allow="microphone" hidden></iframe>
-  <iframe id="sat-assessment" class="sat-frame" allow="microphone" hidden></iframe>
-  <iframe id="sat-report"     class="sat-frame" allow="microphone" hidden></iframe>
+  <iframe id="sat-assessment"    class="sat-frame" allow="microphone" hidden></iframe>
+  <iframe id="sat-questionnaire" class="sat-frame" hidden></iframe>
+  <iframe id="sat-report"        class="sat-frame" allow="microphone" hidden></iframe>
   <iframe id="sat-force"      class="sat-frame" allow="bluetooth" hidden></iframe>
   <iframe id="sat-balance"    class="sat-frame" allow="accelerometer; gyroscope" hidden></iframe>
   <iframe id="sat-jump"       class="sat-frame" allow="camera" hidden></iframe>
@@ -871,7 +878,7 @@ const _peerAnsHash = (() => {
 })();
 
 // ── Navigation ───────────────────────────────────────────────
-const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', jump: '/physiq/jump/', kinematics: '/physiq/kinematics/', wiki: '/physiq/wiki/' };
+const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', questionnaire: '/physiq/questionnaire/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', jump: '/physiq/jump/', kinematics: '/physiq/kinematics/', wiki: '/physiq/wiki/' };
 
 // Tells a satellite iframe it's about to be hidden, so it can close any open
 // dialog/sheet before it's tucked away — otherwise it'd still be open when
