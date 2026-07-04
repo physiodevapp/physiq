@@ -1091,6 +1091,7 @@ function handleTranslateClick() {
   const banner = document.getElementById('translateBanner');
   if (!banner) return;
   banner.classList.add('visible');
+  document.body.classList.add('translate-visible');
   clearTimeout(_translateTimer);
   _translateTimer = setTimeout(hideTranslateBanner, 4000);
 }
@@ -1098,6 +1099,7 @@ function hideTranslateBanner() {
   clearTimeout(_translateTimer);
   const banner = document.getElementById('translateBanner');
   if (banner) banner.classList.remove('visible');
+  document.body.classList.remove('translate-visible');
 }
 window.handleTranslateClick = handleTranslateClick;
 window.hideTranslateBanner  = hideTranslateBanner;
