@@ -55,6 +55,9 @@ const TESTS = {
 const COUNTDOWN_SECS  = 3;
 const SAMPLE_RATE_MS  = 20; // 50 Hz
 const G_TO_MG         = 1000 / 9.80665;
+const BUTTERWORTH_CUTOFF = 10;   // Hz — low-pass cutoff for postural sway isolation
+const UMBILICAL_RATIO    = 0.60; // navel height as fraction of total stature
+const DEFAULT_SENSOR_H   = 102;  // cm — 60% × 170 cm average adult
 
 // ── State ────────────────────────────────────────────────────────────────────
 let _phase      = 'home'; // 'home' | 'setup' | 'countdown' | 'testing' | 'results'
@@ -73,6 +76,8 @@ let _sessionLabel = '';
 let _balanceResults = {}; // { testId: savedResult }
 let _sessionGen     = 0;
 let _sessionCleared = false;
+let _patientHeight  = 0;               // cm (0 = not entered)
+let _sensorHeight   = DEFAULT_SENSOR_H; // cm, umbilical — used for COP calculation
 let _resultsPage    = 0;
 let _swipeStartX    = 0;
 
@@ -182,6 +187,10 @@ function _applySessionToUI(session) {
     const inp = document.getElementById('patientInput');
     if (inp) inp.value = session.patient;
   }
+  if (session.height) {
+    _patientHeight = session.height;
+    _sensorHeight  = Math.round(_patientHeight * UMBILICAL_RATIO);
+  }
 }
 
 function _updateSessionChip() {
@@ -208,8 +217,26 @@ async function _persistPatient() {
   if (_patient) _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: _patient });
   if (!_patient) return;
   const gen = _sessionGen;
-  const session = await writeSession({ patient: _patient, date: _sessionDate });
+  await writeSession({ patient: _patient, date: _sessionDate, height: _patientHeight || null });
   if (_sessionGen !== gen) { await clearSession(); }
+}
+
+let _heightDebounce = null;
+function _onHeightInput(e) {
+  const val = parseInt(e.target.value, 10);
+  _patientHeight = (val >= 100 && val <= 220) ? val : 0;
+  _sensorHeight  = _patientHeight ? Math.round(_patientHeight * UMBILICAL_RATIO) : DEFAULT_SENSOR_H;
+  const hint = document.getElementById('sensorHeightHint');
+  if (hint) hint.textContent = _patientHeight ? `Altura umbilical estimada: ${_sensorHeight} cm` : '';
+  clearTimeout(_heightDebounce);
+  _heightDebounce = setTimeout(_persistHeight, 800);
+}
+
+async function _persistHeight() {
+  if (_sessionCleared || !_patient) return;
+  const gen = _sessionGen;
+  await writeSession({ height: _patientHeight || null });
+  if (_sessionGen !== gen) await clearSession();
 }
 
 function _todayStr() {
@@ -593,14 +620,45 @@ function _endTest() {
   _showResults(metrics);
 }
 
+// ── Butterworth low-pass filter (order 4, block mode) ────────────────────────
+function _butterworthLP4(data, cutoff, fs) {
+  const Q     = 1 / Math.sqrt(2);
+  const omega = 2 * Math.PI * cutoff / fs;
+  const cosw  = Math.cos(omega);
+  const sinw  = Math.sin(omega);
+  const alpha = sinw / (2 * Q);
+  const a0    = 1 + alpha;
+  const b0n   = ((1 - cosw) / 2) / a0;
+  const b1n   = (1 - cosw)       / a0;
+  const b2n   = b0n;
+  const a1n   = (-2 * cosw)      / a0;
+  const a2n   = (1 - alpha)      / a0;
+
+  function stage(arr) {
+    const out = new Array(arr.length);
+    let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+    for (let i = 0; i < arr.length; i++) {
+      const x0 = arr[i];
+      const y0 = b0n * x0 + b1n * x1 + b2n * x2 - a1n * y1 - a2n * y2;
+      out[i] = y0;
+      x2 = x1; x1 = x0;
+      y2 = y1; y1 = y0;
+    }
+    return out;
+  }
+
+  return stage(stage(data)); // two cascaded 2nd-order stages = order 4
+}
+
 // ── Metrics computation ───────────────────────────────────────────────────────
 function _computeMetrics(samples) {
   const n = samples.length;
   if (n < 10) return null;
 
-  const ap = samples.map(s => s.ap);
-  const ml = samples.map(s => s.ml);
-  const ud = samples.map(s => s.ud);
+  const fs = 1000 / SAMPLE_RATE_MS;
+  const ap = _butterworthLP4(samples.map(s => s.ap), BUTTERWORTH_CUTOFF, fs);
+  const ml = _butterworthLP4(samples.map(s => s.ml), BUTTERWORTH_CUTOFF, fs);
+  const ud = _butterworthLP4(samples.map(s => s.ud), BUTTERWORTH_CUTOFF, fs);
 
   const mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
 
@@ -852,6 +910,7 @@ window.saveResult = async function () {
   if (_patient) {
     patch.patient = _patient;
     patch.date    = _sessionDate;
+    if (_patientHeight) patch.height = _patientHeight;
   }
 
   _sessionCh.postMessage({ type: 'SESSION_BALANCE', balance: _balanceResults });
@@ -905,12 +964,27 @@ function _showSessionState(st) {
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h9M5 4V2h3v2M3.5 4l.5 7h5l.5-7"/></svg>
           </button>
         </div>
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <label class="field-label">Talla del paciente (cm)</label>
+        <input class="field-input" type="number" id="heightInput" min="100" max="220" step="1"
+               placeholder="cm (opcional)">
+        <div id="sensorHeightHint" style="font-size:11px;color:var(--text3);margin-top:3px;min-height:14px;"></div>
       </div>`;
     const input = panel.querySelector('#patientInput');
     input.value = _patient || '';
     input.addEventListener('input', _onPatientInput);
     input.addEventListener('keydown', e => { if (e.key === 'Enter') closeSessionPanel(); });
     panel.querySelector('#sessionPanelClear').onclick = () => _showSessionState('delete');
+
+    const heightInput = panel.querySelector('#heightInput');
+    if (_patientHeight) {
+      heightInput.value = _patientHeight;
+      panel.querySelector('#sensorHeightHint').textContent = `Altura umbilical estimada: ${_sensorHeight} cm`;
+    }
+    heightInput.addEventListener('input', _onHeightInput);
+    heightInput.addEventListener('keydown', e => { if (e.key === 'Enter') closeSessionPanel(); });
+
     setTimeout(() => input.focus(), 60);
 
   } else if (st === 'delete') {
@@ -1025,9 +1099,11 @@ async function _softReset(fullClear = false) {
   _sessionGen++;
   _sessionCleared = true;
   _balanceResults = {};
-  _patient = '';
-  _sessionDate = '';
-  _sessionLabel = '';
+  _patient        = '';
+  _patientHeight  = 0;
+  _sensorHeight   = DEFAULT_SENSOR_H;
+  _sessionDate    = '';
+  _sessionLabel   = '';
 
   const inp = document.getElementById('patientInput');
   if (inp) inp.value = '';
