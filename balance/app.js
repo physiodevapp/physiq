@@ -243,6 +243,7 @@ function _handleBC(e) {
 function _updateHeader(name) {
   const showSub = (name === 'setup' || name === 'countdown' || name === 'testing');
   if (_$setupSubHeader) _$setupSubHeader.hidden = !showSub;
+  document.body.classList.toggle('has-sub-header', showSub);
 }
 
 // ── View routing ──────────────────────────────────────────────────────────────
