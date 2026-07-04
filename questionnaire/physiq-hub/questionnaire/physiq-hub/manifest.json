@@ -1,0 +1,31 @@
+{
+  "name": "PhysiQ",
+  "short_name": "PhysiQ",
+  "description": "Suite de herramientas clínicas para fisioterapeutas",
+  "start_url": "/physiq/",
+  "scope": "/physiq/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1e2d3d",
+  "background_color": "#1e2d3d",
+  "icons": [
+    {
+      "src": "/physiq/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/physiq/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/physiq/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

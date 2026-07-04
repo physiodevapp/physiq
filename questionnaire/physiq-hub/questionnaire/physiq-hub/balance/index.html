@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PhysiQ Balance</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#38d9a9">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & tokens ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --header-h: 64px;
+      --bg:       #0a0d12;
+      --surface:  #111620;
+      --surface2: #171e2e;
+      --border:   #232d45;
+      --accent:   #4f9cf9;
+      --accent2:  #38d9a9;
+      --text:     #e8edf2;
+      --text2:    #8aa4bc;
+      --text3:    #5a6e8a;
+      --danger:   #ef4444;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', system-ui, sans-serif;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    input {
+      font-family: inherit;
+      outline: none;
+      border: none;
+      background: none;
+      color: var(--text);
+    }
+
+    /* ── Global header ───────────────────────────────────── */
+    .app-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: var(--header-h);
+      padding: 0 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10,13,18,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: filter 0.3s ease;
+    }
+    .measuring .app-header {
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    @keyframes hub-back-hint {
+      0%   { transform: translateX(0); }
+      35%  { transform: translateX(-5px); }
+      65%  { transform: translateX(1px); }
+      100% { transform: translateX(0); }
+    }
+
+    .logo { display: flex; align-items: center; gap: 4px; }
+    .logo-main {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    .logo-q {
+      background: linear-gradient(135deg, #4f9cf9, #38d9a9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo-sub {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: #22d3ee;
+      letter-spacing: -0.5px;
+    }
+    .in-hub .logo-main { cursor: pointer; transition: opacity 0.15s; }
+    .in-hub .logo-main::before {
+      content: '‹';
+      display: inline-block;
+      margin-right: 8px;
+      opacity: 0.55;
+      animation: hub-back-hint 0.7s ease-out 0.5s 1 both;
+    }
+    .in-hub .logo-main:hover { opacity: 0.75; }
+
+    .session-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text3);
+      padding: 6px;
+      flex-shrink: 0;
+    }
+    .session-btn.active { color: #22d3ee; }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text2);
+      padding: 6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s;
+      border-radius: 6px;
+    }
+    .icon-btn:hover { color: #22d3ee; }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reset:hover { border-color: #22d3ee; color: #22d3ee; }
+    @media (max-width: 768px) {
+      .btn-reset-text { display: none; }
+      .btn-reset { padding: 5px 10px; font-size: 0.75rem; }
+    }
+
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    .btn-translate {
+      position: relative;
+      background: transparent;
+      border: none;
+      color: var(--text2);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.2s;
+      line-height: 1;
+    }
+    .btn-translate:hover { color: var(--text); }
+    .translate-tooltip {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      white-space: nowrap;
+      font-size: 0.75rem;
+      color: var(--text2);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 200;
+    }
+    .btn-translate:hover .translate-tooltip { opacity: 1; }
+
+    .translate-banner {
+      position: fixed;
+      top: var(--header-h);
+      left: 0; right: 0;
+      z-index: 50;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 9px 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--text2);
+      font-family: 'Outfit', sans-serif;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-100%);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .translate-banner.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .translate-banner-close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    /* ── Setup sub-header (sticky bar below main header in setup/testing) ─── */
+    .setup-sub-header {
+      position: fixed;
+      top: var(--header-h); left: 0; right: 0;
+      z-index: 90;
+      height: 44px;
+      padding: 0 1rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 12px 4px var(--bg);
+    }
+
+    .btn-back-sub {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-back-sub:hover { border-color: var(--text2); color: var(--text); }
+
+    .active-test-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: #22d3ee;
+      border: 1px solid rgba(34,211,238,0.3);
+      background: rgba(34,211,238,0.08);
+      padding: 5px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      max-width: 60%;
+    }
+
+    .test-badge-color {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .test-badge-sep { color: var(--text3); flex-shrink: 0; }
+
+    @media (min-width: 769px) { .translate-banner { display: none; } }
+    @media (max-width: 768px) {
+      :root { --header-h: 52px; }
+      .app-header { padding: 0 1rem; }
+      .logo-main, .logo-sub { font-size: 1.2rem; }
+      .btn-translate .translate-tooltip { display: none; }
+    }
+    @media (max-width: 480px) {
+      :root { --header-h: 48px; }
+      .logo-main, .logo-sub { font-size: 1.1rem; }
+    }
+    @media (max-height: 500px) and (max-width: 900px) {
+      :root { --header-h: 44px; }
+    }
+    @media (max-width: 360px) {
+      .logo-sub-word { display: none; }
+      .logo-sub-initial { display: inline; }
+    }
+
+    /* Translate banner push */
+    #view-home  { transition: padding-top 0.25s ease; }
+    #view-setup { transition: padding-top 0.25s ease; }
+    .translate-banner.visible ~ #view-home { padding-top: calc(var(--header-h) + 36px); }
+    body.has-sub-header .translate-banner { top: calc(var(--header-h) + 44px); }
+    .translate-banner.visible ~ #view-setup { padding-top: calc(var(--header-h) + 44px + 36px); }
+    body.translate-visible .setup-sub-header { box-shadow: none; }
+
+    /* ── ════════════════════════════════════════════════════ */
+    /* ── VIEW: HOME ─────────────────────────────────────── */
+    /* ── ════════════════════════════════════════════════════ */
+    #view-home {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: var(--header-h);
+      transition: padding-top 0.25s ease;
+    }
+
+    .home-body {
+      flex: 1;
+      padding: 20px 16px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 640px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Patient field */
+    .info-row { display: flex; gap: 10px; align-items: flex-end; }
+    .field { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .home-section { display: flex; flex-direction: column; gap: 10px; }
+    .field-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; }
+    .field-input { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 9px 12px; font-family: 'DM Mono', monospace; font-size: 12px; outline: none; transition: border-color 0.2s; width: 100%; }
+    .field-input:focus { border-color: var(--accent); }
+    .field-input:-webkit-autofill, .field-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset; -webkit-text-fill-color: var(--text); transition: background-color 5000s ease-in-out 0s; }
+
+    /* Sensor warning */
+    .sensor-warning {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text2);
+    }
+
+    #interpretationCard { display: flex; flex-direction: column; gap: 10px; }
+
+    /* Test grid */
+    #testGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .test-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+      transition: background 0.15s, border-color 0.15s;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .test-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: #22d3ee;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .test-card:active { background: var(--surface2); }
+
+    .card-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .card-sub-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .card-sublabel {
+      font-size: 0.75rem;
+      color: var(--text2);
+    }
+
+    .diff-dots {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .diff-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .diff-dot.filled {
+      background: var(--card-accent, var(--accent2));
+    }
+
+    .card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    .card-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .card-score small { font-size: 0.65rem; color: var(--text2); }
+
+    .card-score-empty {
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      color: var(--border);
+      line-height: 1;
+    }
+
+    .card-score-empty small { font-size: 0.65rem; }
+
+    .btn-clear {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      border-radius: 6px;
+      padding: 4px 7px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      flex-shrink: 0;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-clear:hover, .btn-clear:active {
+      border-color: rgba(239,68,68,0.5);
+      color: var(--danger);
+    }
+
+    /* ── ════════════════════════════════════════════════════ */
+    /* ── VIEW: SETUP ─────────────────────────────────────── */
+    /* ── ════════════════════════════════════════════════════ */
+    #view-setup {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: calc(var(--header-h) + 44px);
+    }
+
+    .setup-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 20px 32px;
+      gap: 20px;
+    }
+
+    .instruction-block {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .instruction-text {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .instruction-tip {
+      font-size: 0.82rem;
+      color: var(--text2);
+      line-height: 1.5;
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    /* ── Interpretation card ────────────────────────────────── */
+    .interp-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .interp-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .interp-item:last-child { border-bottom: none; }
+    .interp-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+    .interp-content { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .interp-title { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+    .interp-text { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+
+    .duration-hint {
+      font-size: 0.82rem;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .start-btn {
+      width: 100%;
+      max-width: 360px;
+      height: 52px;
+      border-radius: 26px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #fff;
+      background: #22d3ee;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: auto;
+    }
+
+    .start-btn:disabled { opacity: 0.4; }
+    .start-btn:not(:disabled):active { transform: scale(0.97); }
+
+    .cd-label {
+      font-size: 1rem;
+      color: var(--text2);
+    }
+
+    .cd-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 5rem;
+      color: var(--accent2);
+      line-height: 1;
+      animation: cd-pulse 1s ease-in-out;
+    }
+
+    @keyframes cd-pulse {
+      0%   { transform: scale(1.3); opacity: 0; }
+      40%  { transform: scale(1);   opacity: 1; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+
+    .timer-display {
+      font-family: 'DM Serif Display', serif;
+      font-size: 6rem;
+      color: var(--accent2);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .testing-status {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .testing-label {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .testing-hint {
+      font-size: 0.85rem;
+      color: var(--text2);
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent2);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .stop-btn {
+      width: 100%;
+      max-width: 360px;
+      height: 52px;
+      border-radius: 26px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #fff;
+      background: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .stop-btn:active { transform: scale(0.97); }
+
+    /* ── ════════════════════════════════════════════════════ */
+    /* ── OVERLAY: RESULTS ────────────────────────────────── */
+    /* ── ════════════════════════════════════════════════════ */
+    #results-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 110;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .results-card {
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-height: 92dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Results header */
+    .results-header {
+      padding: 20px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      touch-action: none;
+    }
+
+    .trophy-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(56,217,169,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .results-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .results-test-name {
+      font-size: 0.78rem;
+      color: var(--text2);
+    }
+
+    .grade-badge {
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #fff;
+    }
+
+    /* Pages area */
+    .pages-viewport {
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    #resultPagesTrack {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .results-page {
+      min-width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 20px 20px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Page 1: Summary ─────────────────────────────────── */
+    .stability-circle-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .stability-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 5px solid var(--accent2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: var(--bg);
+    }
+
+    .stability-rate-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.7rem;
+      font-weight: 500;
+      color: var(--accent2);
+      line-height: 1;
+    }
+
+    .stability-rate-unit {
+      font-size: 0.7rem;
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .score-display {
+      font-size: 0.8rem;
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .stability-label {
+      font-size: 0.78rem;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .feedback-box {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: var(--text2);
+      line-height: 1.55;
+    }
+
+    /* ── Page 2: Metrics ─────────────────────────────────── */
+    .page-section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .metric-item {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 12px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-item-label {
+      font-size: 0.73rem;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .metric-info-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text2);
+      padding: 0;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      transition: color 0.15s;
+      line-height: 0;
+    }
+    .metric-info-btn:hover { color: var(--text); }
+
+    .metric-item-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--accent2);
+      line-height: 1;
+    }
+
+    .metric-item-sub {
+      font-size: 0.7rem;
+      color: var(--text2);
+    }
+
+    .metric-item-unit {
+      font-size: 0.72rem;
+      color: var(--text2);
+    }
+
+    /* ── Page 3: Advanced ────────────────────────────────── */
+    .axis-section {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .axis-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .axis-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .axis-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .axis-cell-label {
+      font-size: 0.65rem;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .axis-cell-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* ── Pagination dots ─────────────────────────────────── */
+    .page-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 0 4px;
+      flex-shrink: 0;
+    }
+
+    .page-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+
+    .page-dot.active {
+      background: var(--accent2);
+      transform: scale(1.25);
+    }
+
+    /* ── Results actions ─────────────────────────────────── */
+    .results-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .btn-discard {
+      flex: 0 0 auto;
+      background: transparent;
+      color: var(--text2);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0 16px;
+      height: 44px;
+      border-radius: 22px;
+      transition: color 0.15s;
+    }
+
+    .btn-discard:active { color: var(--danger); }
+
+    .btn-save {
+      flex: 1;
+      height: 44px;
+      border-radius: 22px;
+      background: #22d3ee;
+      color: #0a0d12;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-save:active { transform: scale(0.97); }
+
+    /* ── Confirm dialog ──────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+    .confirm-banner { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: fadeUp 0.2s ease; }
+    .confirm-box { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 1.8rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .confirm-box-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--text); margin-bottom: 0.5rem; }
+
+    /* ── Metric info dialog ─────────────────────────────────── */
+    #metricInfoDialog {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .metric-info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      max-width: 340px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: fadeUp 0.2s ease;
+    }
+    .metric-info-title { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .metric-info-body  { font-size: 0.85rem; color: var(--text2); line-height: 1.55; }
+    .metric-info-close {
+      align-self: flex-end;
+      padding: 8px 20px;
+      border-radius: 20px;
+      background: var(--surface2);
+      color: var(--text2);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* ── OVERLAY: MEASUREMENT SHEET (countdown + testing) ──────────── */
+    @keyframes sheet-in {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    #measurement-sheet {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 95;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .measurement-card {
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 24px calc(48px + env(safe-area-inset-bottom));
+      gap: 24px;
+      animation: sheet-in 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      align-self: center;
+      flex-shrink: 0;
+      touch-action: none;
+    }
+
+    .ms-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+    }
+
+    /* ── Session panel overlay ──────────────────────────────── */
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .session-panel-overlay { display: none; position: fixed; inset: 0; z-index: 999; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .session-panel-overlay.open { display: flex; animation: fadeUp 0.2s ease; }
+    .session-panel { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 1.8rem; max-width: 420px; width: 90%; }
+    .session-panel-handle { display: none; width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 14px; touch-action: none; }
+    .session-panel-title { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .session-panel.has-session .session-panel-title { color: #22d3ee; }
+    .session-panel .field { display: flex; flex-direction: column; gap: 4px; }
+    .session-panel-clear { display: none; background: none; border: 1px solid var(--danger); border-radius: 8px; padding: 8px; cursor: pointer; color: var(--danger); flex-shrink: 0; align-items: center; justify-content: center; align-self: stretch; transition: opacity 0.2s; }
+    .session-panel.has-session .session-panel-clear { display: flex; }
+    .session-panel-clear:hover { opacity: 0.7; }
+    .confirm-box-text { font-size: 0.83rem; color: var(--text2); line-height: 1.5; margin-bottom: 1.4rem; }
+    .confirm-box-btns { display: flex; gap: 0.75rem; justify-content: flex-end; }
+    .confirm-btn-cancel { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--border); color: var(--text3); border-radius: 8px; padding: 9px 16px; font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .confirm-btn-cancel:hover { border-color: var(--text2); color: var(--text2); }
+    .confirm-btn-ok { display: inline-flex; align-items: center; gap: 6px; background: #22d3ee; border: none; color: #0a0d12; border-radius: 8px; padding: 9px 18px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .confirm-btn-ok:hover { background: #06b6d4; }
+    @media (max-width: 768px) {
+      .session-panel-overlay { align-items: flex-end; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+      .session-panel-overlay.open { animation: none; }
+      .session-panel-overlay.open .session-panel { animation: slideUp 0.3s cubic-bezier(0.32,0.72,0,1); }
+      .session-panel { max-width: 100%; width: 100%; border-radius: 16px 16px 0 0; border: none; border-top: 1px solid var(--border2); padding: 12px 1.4rem 32px; touch-action: none; }
+      .session-panel-handle { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- GLOBAL HEADER                                                  -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<header class="app-header">
+  <div class="logo" id="headerLogo">
+    <span class="logo-main">Physi<span class="logo-q">Q</span></span>
+    <span class="logo-sub">— <span class="logo-sub-word">Balance</span><span class="logo-sub-initial" hidden>B</span></span>
+  </div>
+  <div class="header-right" id="headerRight">
+    <button class="btn-reset" id="headerResetBtn" onclick="promptSoftResetBalance()" style="display:none" aria-label="Borrar mediciones de balance" title="Borrar mediciones">↺ <span class="btn-reset-text">Reiniciar</span></button>
+    <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>
+      </svg>
+    </button>
+    <button class="btn-translate" onclick="handleTranslateClick()" aria-label="View in English">🌐<span class="translate-tooltip">Long-press or right-click → Translate to English</span></button>
+  </div>
+</header>
+<div class="translate-banner" id="translateBanner">
+  🌐 <span>Long-press or right-click → Translate to English</span>
+  <button class="translate-banner-close" onclick="hideTranslateBanner()">✕</button>
+</div>
+
+<!-- Setup sub-header: shown in setup/countdown/testing views -->
+<div class="setup-sub-header" id="setupSubHeader" hidden>
+  <button class="btn-back-sub" id="subHeaderBack" onclick="goBack()">← Tests</button>
+  <span class="active-test-badge" id="subHeaderBadge">
+    <span class="test-badge-color" id="subHeaderColor"></span>
+    <span id="subHeaderName"></span>
+    <span class="test-badge-sep">·</span>
+    <span id="subHeaderSub"></span>
+  </span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- VIEW: HOME                                                     -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="view-home">
+  <div class="home-body">
+    <!-- Sensor warning -->
+    <div id="sensor-warning" class="sensor-warning" hidden>
+      Este dispositivo no dispone de acelerómetro. La medición de equilibrio no estará disponible.
+    </div>
+
+    <div class="home-section">
+      <span class="section-label">Condiciones de test</span>
+      <!-- Test cards -->
+      <div id="testGrid"></div>
+    </div>
+
+    <!-- Interpretation -->
+    <div id="interpretationCard" hidden>
+      <span class="section-label">Interpretación</span>
+      <div class="interp-card">
+        <div id="interpretationItems"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- VIEW: SETUP                                                    -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="view-setup" hidden>
+  <div class="setup-body">
+    <div class="instruction-block">
+      <p class="instruction-text" id="setupInstruction"></p>
+      <div class="instruction-tip" id="setupTip"></div>
+    </div>
+
+    <p class="duration-hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span id="setupDuration">Duración: 30 segundos</span>
+    </p>
+
+    <button id="startBtn" class="start-btn" onclick="startTest()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      INICIAR TEST
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- OVERLAY: RESULTS                                               -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="results-overlay" hidden>
+  <div class="results-card">
+    <div class="sheet-handle" style="margin-top:12px;"></div>
+
+    <!-- Fixed header -->
+    <div class="results-header">
+      <div class="trophy-wrap">🏆</div>
+      <p class="results-title">Test Completo</p>
+      <p class="results-test-name" id="resultsTestName"></p>
+      <span class="grade-badge" id="gradeBadge">EXCELENTE</span>
+    </div>
+
+    <!-- Swipeable pages -->
+    <div class="pages-viewport">
+      <div id="resultPagesTrack">
+
+        <!-- Page 1: Summary -->
+        <div class="results-page">
+          <div class="stability-circle-wrap">
+            <div class="stability-circle" id="stabilityCircle">
+              <span class="stability-rate-val" id="stabilityRateVal">—</span>
+              <span class="stability-rate-unit">mG/s</span>
+              <span class="score-display" id="scoreDisplay">—/100</span>
+            </div>
+            <p class="stability-label">Tasa de Sway</p>
+          </div>
+          <div class="feedback-box" id="feedbackText"></div>
+        </div>
+
+        <!-- Page 2: Test Metrics -->
+        <div class="results-page">
+          <p class="page-section-title">Métricas del Test</p>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="metric-item-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Duración
+                <button class="metric-info-btn" onclick="showMetricInfo('duration')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+              </span>
+              <span class="metric-item-val" id="metDuration">—</span>
+              <span class="metric-item-sub" id="metMeasured">Medido: —</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-item-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Sway Total
+                <button class="metric-info-btn" onclick="showMetricInfo('totalSway')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+              </span>
+              <span class="metric-item-val" id="metTotalSway">—</span>
+              <span class="metric-item-unit">mG</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-item-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                H-RMS
+                <button class="metric-info-btn" onclick="showMetricInfo('hrms')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+              </span>
+              <span class="metric-item-val" id="metHRMS">—</span>
+              <span class="metric-item-unit">mG</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-item-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                H-SD
+                <button class="metric-info-btn" onclick="showMetricInfo('hsd')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+              </span>
+              <span class="metric-item-val" id="metHSD">—</span>
+              <span class="metric-item-unit">mG</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page 3: Advanced Metrics -->
+        <div class="results-page">
+          <p class="page-section-title">Métricas Avanzadas</p>
+
+          <div class="axis-section">
+            <p class="axis-title">Sway AP (Ant-Post)</p>
+            <div class="axis-row">
+              <div class="axis-cell">
+                <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advApNPL">—</span>
+              </div>
+              <div class="axis-cell">
+                <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advApRMS">—</span>
+              </div>
+              <div class="axis-cell">
+                <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advApSD">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="axis-section">
+            <p class="axis-title">Sway ML (Lat-Med)</p>
+            <div class="axis-row">
+              <div class="axis-cell">
+                <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advMlNPL">—</span>
+              </div>
+              <div class="axis-cell">
+                <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advMlRMS">—</span>
+              </div>
+              <div class="axis-cell">
+                <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advMlSD">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="axis-section">
+            <p class="axis-title">Sway UD (Vertical)</p>
+            <div class="axis-row">
+              <div class="axis-cell">
+                <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advUdNPL">—</span>
+              </div>
+              <div class="axis-cell">
+                <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advUdRMS">—</span>
+              </div>
+              <div class="axis-cell">
+                <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+                <span class="axis-cell-val" id="advUdSD">—</span>
+              </div>
+            </div>
+          </div>
+
+          <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;">Valores en mG</p>
+        </div>
+
+      </div><!-- /#resultPagesTrack -->
+    </div><!-- /.pages-viewport -->
+
+    <!-- Dots -->
+    <div class="page-dots">
+      <span class="page-dot active"></span>
+      <span class="page-dot"></span>
+      <span class="page-dot"></span>
+    </div>
+
+    <!-- Actions -->
+    <div class="results-actions">
+      <button class="btn-discard" onclick="discardResult()">Descartar</button>
+      <button class="btn-save" onclick="saveResult()">Guardar Resultados</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- MEASUREMENT SHEET (countdown + testing)                        -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="measurement-sheet" hidden>
+  <div class="measurement-card">
+    <div class="sheet-handle"></div>
+
+    <!-- Countdown section -->
+    <div id="msCountdown" class="ms-section">
+      <p class="cd-label">Prepárate...</p>
+      <div id="countdownNum" class="cd-num">3</div>
+      <p class="duration-hint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span id="cdDuration">Duración: 30 segundos</span>
+      </p>
+    </div>
+
+    <!-- Testing section -->
+    <div id="msTesting" class="ms-section" hidden>
+      <div class="timer-display" id="timerDisplay">30</div>
+      <div class="testing-status">
+        <p class="testing-label">Medición en curso...</p>
+        <p class="testing-hint">No muevas el teléfono mientras mantienes el equilibrio.</p>
+      </div>
+      <div class="spinner"></div>
+      <button id="stopBtn" class="stop-btn" onclick="stopTest()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="4" y="4" width="16" height="16" rx="2"/>
+        </svg>
+        DESCARTAR TEST
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- METRIC INFO DIALOG                                             -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="metricInfoDialog" hidden onclick="hideMetricInfo()">
+  <div class="metric-info-card" onclick="event.stopPropagation()">
+    <p class="metric-info-title" id="metricInfoTitle"></p>
+    <p class="metric-info-body"  id="metricInfoBody"></p>
+    <button class="metric-info-close" onclick="hideMetricInfo()">Entendido</button>
+  </div>
+</div>
+
+<!-- ── Session panel overlay ──────────────────────────────────────────────── -->
+<div class="session-panel-overlay" id="sessionPanelOverlay" onclick="closeSessionPanel()">
+  <div class="session-panel" id="sessionPanel" onclick="event.stopPropagation()">
+    <div class="session-panel-handle"></div>
+    <div class="session-panel-title" id="sessionPanelTitle">Sin sesión activa</div>
+    <div class="field">
+      <label class="field-label" for="patientInput">Paciente</label>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input class="field-input" id="patientInput" type="text" placeholder="Nombre (opcional)" autocomplete="off" spellcheck="false" style="flex:1;">
+        <button class="session-panel-clear" onclick="promptClearSession()" title="Borrar sesión">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h9M5 4V2h3v2M3.5 4l.5 7h5l.5-7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="lib/session.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
