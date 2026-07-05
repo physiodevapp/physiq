@@ -1221,8 +1221,8 @@ function _drawCopChart(cop) {
   // AP axis scale values — right of the vertical axis at tick height
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   ctx.fillStyle = valClr;
-  ctx.fillText(`+${tipVal}`, cx + tickLen + 4, cy - halfPlot);
-  ctx.fillText(`−${tipVal}`, cx + tickLen + 4, cy + halfPlot);
+  ctx.fillText(`+${tipVal} cm`, cx + tickLen + 4, cy - halfPlot);
+  ctx.fillText(`−${tipVal} cm`, cx + tickLen + 4, cy + halfPlot);
 
   // DER (right) / IZQ (left) — at ML axis extremes
   ctx.textBaseline = 'middle';
@@ -1235,8 +1235,8 @@ function _drawCopChart(cop) {
   // ML axis scale values — below the horizontal axis at the extreme tick x-positions
   ctx.textBaseline = 'top'; ctx.fillStyle = valClr;
   ctx.textAlign = 'center';
-  ctx.fillText(`+${tipVal}`, cx + halfPlot, cy + tickLen + 5);
-  ctx.fillText(`−${tipVal}`, cx - halfPlot, cy + tickLen + 5);
+  ctx.fillText(`+${tipVal} cm`, cx + halfPlot, cy + tickLen + 5);
+  ctx.fillText(`−${tipVal} cm`, cx - halfPlot, cy + tickLen + 5);
 }
 
 function _getGrade(score) {
