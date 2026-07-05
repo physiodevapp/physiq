@@ -1030,6 +1030,7 @@ function _drawCopChart(cop) {
   const pad      = 28;
   const plotSize = Math.min(W, H) - pad * 2;
   const scale    = plotSize / (2 * maxAbs); // px per cm
+  const halfPlot = plotSize / 2;
   const cx = W / 2, cy = H / 2;
   const toPx = (x, y) => ({ px: cx + x * scale, py: cy - y * scale }); // AP+ (front) = up
 
@@ -1037,8 +1038,24 @@ function _drawCopChart(cop) {
   ctx.strokeStyle = 'rgba(255,255,255,0.08)';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(cx, cy - plotSize / 2); ctx.lineTo(cx, cy + plotSize / 2);
-  ctx.moveTo(cx - plotSize / 2, cy); ctx.lineTo(cx + plotSize / 2, cy);
+  ctx.moveTo(cx, cy - halfPlot); ctx.lineTo(cx, cy + halfPlot);
+  ctx.moveTo(cx - halfPlot, cy); ctx.lineTo(cx + halfPlot, cy);
+  ctx.stroke();
+
+  // Grid — nice-number step: smallest of [0.5,1,2,5,10,20,50] with ≤4 lines per half-axis
+  let gridStep = 50;
+  for (const s of [0.5, 1, 2, 5, 10, 20, 50]) { if (Math.floor(maxAbs / s) <= 4) { gridStep = s; break; } }
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  for (let v = gridStep; v < maxAbs; v += gridStep) {
+    const yp = cy - v * scale, yn = cy + v * scale;
+    const xp = cx + v * scale, xn = cx - v * scale;
+    ctx.moveTo(cx - halfPlot, yp); ctx.lineTo(cx + halfPlot, yp);
+    ctx.moveTo(cx - halfPlot, yn); ctx.lineTo(cx + halfPlot, yn);
+    ctx.moveTo(xp, cy - halfPlot); ctx.lineTo(xp, cy + halfPlot);
+    ctx.moveTo(xn, cy - halfPlot); ctx.lineTo(xn, cy + halfPlot);
+  }
   ctx.stroke();
 
   // Convex hull — fill first as a background wash, stroke goes on top of the
@@ -1099,8 +1116,7 @@ function _drawCopChart(cop) {
   ctx.fill();
 
   // Axis ticks at extremes
-  const halfPlot = plotSize / 2;
-  const tickLen  = 4;
+  const tickLen = 4;
   ctx.strokeStyle = 'rgba(255,255,255,0.2)';
   ctx.lineWidth   = 1;
   ctx.beginPath();
@@ -1116,28 +1132,33 @@ function _drawCopChart(cop) {
   const valClr = 'rgba(200,220,240,0.25)';
   ctx.font = '9px DM Mono, monospace';
 
-  // ANT (top): direction label above tick, scale value above it
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'bottom';
+  // ANT (top) / POST (bottom) — centered on AP axis
+  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
   ctx.fillStyle = dirClr;
   ctx.fillText('ANT', cx, cy - halfPlot - 1);
-  ctx.fillStyle = valClr;
-  ctx.fillText(`+${tipVal} cm`, cx, cy - halfPlot - 12);
-
-  // POST (bottom)
   ctx.textBaseline = 'top';
-  ctx.fillStyle = valClr;
-  ctx.fillText(`−${tipVal} cm`, cx, cy + halfPlot + 1);
   ctx.fillStyle = dirClr;
   ctx.fillText('POST', cx, cy + halfPlot + 12);
 
-  // DER (right) and IZQ (left) — direction only on ML axis
+  // AP axis scale values — right of the vertical axis at tick height
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = valClr;
+  ctx.fillText(`+${tipVal}`, cx + tickLen + 4, cy - halfPlot);
+  ctx.fillText(`−${tipVal}`, cx + tickLen + 4, cy + halfPlot);
+
+  // DER (right) / IZQ (left) — at ML axis extremes
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
   ctx.fillStyle = dirClr;
   ctx.fillText('DER', cx + halfPlot + 5, cy);
   ctx.textAlign = 'right';
   ctx.fillText('IZQ', cx - halfPlot - 5, cy);
+
+  // ML axis scale values — below the horizontal axis at the extreme tick x-positions
+  ctx.textBaseline = 'top'; ctx.fillStyle = valClr;
+  ctx.textAlign = 'center';
+  ctx.fillText(`+${tipVal}`, cx + halfPlot, cy + tickLen + 5);
+  ctx.fillText(`−${tipVal}`, cx - halfPlot, cy + tickLen + 5);
 }
 
 function _getGrade(score) {
