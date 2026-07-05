@@ -1105,6 +1105,11 @@ function _drawCopChart(cop) {
   if (ellipse) maxAbs = Math.max(maxAbs, ellipse.a);
   maxAbs *= 1.25;
 
+  // Grid — nice-number step: smallest of [0.5,1,2,5,10,20,50] with ≤4 lines per half-axis
+  let gridStep = 50;
+  for (const s of [0.5, 1, 2, 5, 10, 20, 50]) { if (Math.floor(maxAbs / s) <= 4) { gridStep = s; break; } }
+  maxAbs = Math.ceil(maxAbs / gridStep) * gridStep;
+
   const pad      = 28;
   const plotSize = Math.min(W, H) - pad * 2;
   const scale    = plotSize / (2 * maxAbs); // px per cm
@@ -1119,10 +1124,6 @@ function _drawCopChart(cop) {
   ctx.moveTo(cx, cy - halfPlot); ctx.lineTo(cx, cy + halfPlot);
   ctx.moveTo(cx - halfPlot, cy); ctx.lineTo(cx + halfPlot, cy);
   ctx.stroke();
-
-  // Grid — nice-number step: smallest of [0.5,1,2,5,10,20,50] with ≤4 lines per half-axis
-  let gridStep = 50;
-  for (const s of [0.5, 1, 2, 5, 10, 20, 50]) { if (Math.floor(maxAbs / s) <= 4) { gridStep = s; break; } }
   ctx.strokeStyle = 'rgba(255,255,255,0.22)';
   ctx.lineWidth = 0.5;
   ctx.beginPath();
