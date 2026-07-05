@@ -1027,7 +1027,7 @@ function _drawCopChart(cop) {
   if (ellipse) maxAbs = Math.max(maxAbs, ellipse.a);
   maxAbs *= 1.25;
 
-  const pad      = 8;
+  const pad      = 28;
   const plotSize = Math.min(W, H) - pad * 2;
   const scale    = plotSize / (2 * maxAbs); // px per cm
   const cx = W / 2, cy = H / 2;
@@ -1097,6 +1097,47 @@ function _drawCopChart(cop) {
   ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
   ctx.fillStyle = '#e8edf2';
   ctx.fill();
+
+  // Axis ticks at extremes
+  const halfPlot = plotSize / 2;
+  const tickLen  = 4;
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth   = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx - tickLen, cy - halfPlot); ctx.lineTo(cx + tickLen, cy - halfPlot);
+  ctx.moveTo(cx - tickLen, cy + halfPlot); ctx.lineTo(cx + tickLen, cy + halfPlot);
+  ctx.moveTo(cx - halfPlot, cy - tickLen); ctx.lineTo(cx - halfPlot, cy + tickLen);
+  ctx.moveTo(cx + halfPlot, cy - tickLen); ctx.lineTo(cx + halfPlot, cy + tickLen);
+  ctx.stroke();
+
+  // Direction labels and scale values
+  const tipVal = maxAbs < 10 ? maxAbs.toFixed(1) : Math.round(maxAbs).toString();
+  const dirClr = 'rgba(200,220,240,0.5)';
+  const valClr = 'rgba(200,220,240,0.25)';
+  ctx.font = '9px DM Mono, monospace';
+
+  // ANT (top): direction label above tick, scale value above it
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillStyle = dirClr;
+  ctx.fillText('ANT', cx, cy - halfPlot - 1);
+  ctx.fillStyle = valClr;
+  ctx.fillText(`+${tipVal} cm`, cx, cy - halfPlot - 12);
+
+  // POST (bottom)
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = valClr;
+  ctx.fillText(`−${tipVal} cm`, cx, cy + halfPlot + 1);
+  ctx.fillStyle = dirClr;
+  ctx.fillText('POST', cx, cy + halfPlot + 12);
+
+  // DER (right) and IZQ (left) — direction only on ML axis
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = dirClr;
+  ctx.fillText('DER', cx + halfPlot + 5, cy);
+  ctx.textAlign = 'right';
+  ctx.fillText('IZQ', cx - halfPlot - 5, cy);
 }
 
 function _getGrade(score) {
