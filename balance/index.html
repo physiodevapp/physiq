@@ -720,33 +720,43 @@
     .stop-btn:active { transform: scale(0.97); }
 
     /* ── ════════════════════════════════════════════════════ */
-    /* ── OVERLAY: RESULTS ────────────────────────────────── */
+    /* ── VIEW: RESULTS ───────────────────────────────────── */
     /* ── ════════════════════════════════════════════════════ */
-    #results-overlay {
+    #view-results {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      z-index: 110;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .results-card {
-      background: var(--surface);
-      border-radius: 24px 24px 0 0;
-      width: 100%;
-      max-height: 92dvh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      padding-top: calc(var(--header-h) + 44px);
+      background: var(--bg);
+      z-index: 45;
+    }
+
+    .results-scroll-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      padding: 20px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 640px;
+      width: 100%;
+      align-self: center;
+    }
+
+    .results-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 16px;
       border-top: 1px solid var(--border);
     }
 
-    /* Results header */
+    /* Results title card */
     .results-header {
-      padding: 16px 20px 16px;
-      margin: 8px 12px 0;
+      padding: 16px 20px;
       border-radius: 12px;
       display: flex;
       flex-direction: column;
@@ -754,11 +764,9 @@
       gap: 6px;
       background: var(--surface2);
       border: 1px solid var(--border);
-      flex-shrink: 0;
-      touch-action: none;
     }
 
-.results-title {
+    .results-title {
       font-size: 1.05rem;
       font-weight: 600;
       color: var(--text);
@@ -778,33 +786,7 @@
       color: #fff;
     }
 
-    /* Pages area */
-    .pages-viewport {
-      flex: 1;
-      overflow: hidden;
-      min-height: 0;
-    }
-
-    #resultPagesTrack {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .results-page {
-      min-width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-      padding: 20px 20px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* ── Page 1: Summary ─────────────────────────────────── */
+    /* ── Section: Summary ────────────────────────────────── */
     .stability-circle-wrap {
       display: flex;
       flex-direction: column;
@@ -862,7 +844,7 @@
       line-height: 1.55;
     }
 
-    /* ── Page 2: Metrics ─────────────────────────────────── */
+    /* ── Section: Metrics ────────────────────────────────── */
     .page-section-title {
       font-size: 0.9rem;
       font-weight: 600;
@@ -925,7 +907,7 @@
       color: var(--text2);
     }
 
-    /* ── Page 3: Advanced ────────────────────────────────── */
+    /* ── Section: Advanced ───────────────────────────────── */
     .axis-section {
       background: var(--surface2);
       border-radius: 10px;
@@ -970,48 +952,23 @@
       color: var(--accent);
     }
 
+    /* ── Section: Stabilogram ────────────────────────────── */
     .cop-chart-wrap {
-      flex: 1;
-      min-height: 150px;
+      height: min(80vw, 320px);
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
     }
 
     .cop-chart {
       display: block;
+      width: 100%;
       height: 100%;
-      max-height: 360px;
-      width: auto;
       max-width: 100%;
       aspect-ratio: 1;
       background: var(--surface2);
       border-radius: 10px;
       border: 1px solid var(--border);
-    }
-
-    /* ── Pagination dots ─────────────────────────────────── */
-    .page-dots {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      padding: 10px 0 4px;
-      flex-shrink: 0;
-    }
-
-    .page-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--border);
-      transition: background 0.2s, transform 0.2s;
-      cursor: pointer;
-    }
-
-    .page-dot.active {
-      background: var(--accent2);
-      transform: scale(1.25);
     }
 
     /* ── Results actions ─────────────────────────────────── */
@@ -1022,6 +979,7 @@
       padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
       border-top: 1px solid var(--border);
       flex-shrink: 0;
+      background: var(--bg);
     }
 
     .btn-discard {
@@ -1203,7 +1161,7 @@
 
 <!-- Setup sub-header: shown in setup/countdown/testing views -->
 <div class="setup-sub-header" id="setupSubHeader" hidden>
-  <button class="btn-back-sub" id="subHeaderBack" onclick="goBack()">← Tests</button>
+  <button class="btn-back-sub" id="subHeaderBack" onclick="subHeaderBack()">← Tests</button>
   <span class="active-test-badge" id="subHeaderBadge">
     <span class="test-badge-color" id="subHeaderColor"></span>
     <span id="subHeaderName"></span>
@@ -1277,222 +1235,206 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
-<!-- OVERLAY: RESULTS                                               -->
+<!-- VIEW: RESULTS                                                  -->
 <!-- ══════════════════════════════════════════════════════════════ -->
-<div id="results-overlay" hidden>
-  <div class="results-card">
-    <div class="sheet-handle" style="margin-top:12px;"></div>
+<div id="view-results" hidden>
+  <div class="results-scroll-body">
 
-    <!-- Fixed header -->
+    <!-- Title card -->
     <div class="results-header">
       <p class="results-title">Test Completo</p>
       <p class="results-test-name" id="resultsTestName"></p>
       <span class="grade-badge" id="gradeBadge">EXCELENTE</span>
     </div>
 
-    <!-- Swipeable pages -->
-    <div class="pages-viewport">
-      <div id="resultPagesTrack">
-
-        <!-- Page 1: Summary -->
-        <div class="results-page">
-          <div class="stability-circle-wrap">
-            <div class="stability-circle" id="stabilityCircle">
-              <span class="stability-rate-val" id="stabilityRateVal">—</span>
-              <span class="stability-rate-unit">mG/s</span>
-              <span class="score-display" id="scoreDisplay">—/100</span>
-            </div>
-            <p class="stability-label">Tasa de Sway</p>
-          </div>
-          <div class="feedback-box" id="feedbackText"></div>
+    <!-- Section 1: Summary -->
+    <div class="results-section">
+      <div class="stability-circle-wrap">
+        <div class="stability-circle" id="stabilityCircle">
+          <span class="stability-rate-val" id="stabilityRateVal">—</span>
+          <span class="stability-rate-unit">mG/s</span>
+          <span class="score-display" id="scoreDisplay">—/100</span>
         </div>
-
-        <!-- Page 2: Test Metrics -->
-        <div class="results-page">
-          <p class="page-section-title">Métricas del Test</p>
-          <div class="metrics-grid">
-            <div class="metric-item">
-              <span class="metric-item-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Duración
-                <button class="metric-info-btn" onclick="showMetricInfo('duration')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
-              </span>
-              <span class="metric-item-val" id="metDuration">—</span>
-              <span class="metric-item-sub" id="metMeasured">Medido: —</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-item-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                Sway Total
-                <button class="metric-info-btn" onclick="showMetricInfo('totalSway')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
-              </span>
-              <span class="metric-item-val" id="metTotalSway">—</span>
-              <span class="metric-item-unit">mG</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-item-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                H-RMS
-                <button class="metric-info-btn" onclick="showMetricInfo('hrms')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
-              </span>
-              <span class="metric-item-val" id="metHRMS">—</span>
-              <span class="metric-item-unit">mG</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-item-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                H-SD
-                <button class="metric-info-btn" onclick="showMetricInfo('hsd')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
-              </span>
-              <span class="metric-item-val" id="metHSD">—</span>
-              <span class="metric-item-unit">mG</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Page 3: Advanced Metrics -->
-        <div class="results-page">
-          <p class="page-section-title">Métricas Avanzadas</p>
-
-          <div class="interp-card" id="advDominantDirection" hidden>
-            <div class="interp-item">
-              <span class="interp-dot" id="advDominantDot"></span>
-              <div class="interp-content">
-                <div class="interp-title" id="advDominantTitle"></div>
-                <div class="interp-text" id="advDominantText"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="axis-section">
-            <p class="axis-title">Sway AP (Ant-Post)</p>
-            <div class="axis-row">
-              <div class="axis-cell">
-                <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advApNPL">—</span>
-              </div>
-              <div class="axis-cell">
-                <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advApRMS">—</span>
-              </div>
-              <div class="axis-cell">
-                <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advApSD">—</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="axis-section">
-            <p class="axis-title">Sway ML (Lat-Med)</p>
-            <div class="axis-row">
-              <div class="axis-cell">
-                <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advMlNPL">—</span>
-              </div>
-              <div class="axis-cell">
-                <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advMlRMS">—</span>
-              </div>
-              <div class="axis-cell">
-                <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advMlSD">—</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="axis-section">
-            <p class="axis-title">Sway UD (Vertical)</p>
-            <div class="axis-row">
-              <div class="axis-cell">
-                <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advUdNPL">—</span>
-              </div>
-              <div class="axis-cell">
-                <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advUdRMS">—</span>
-              </div>
-              <div class="axis-cell">
-                <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
-                <span class="axis-cell-val" id="advUdSD">—</span>
-              </div>
-            </div>
-          </div>
-
-          <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;">Valores en mG</p>
-        </div>
-
-        <!-- Page 4: COP metrics -->
-        <div class="results-page">
-          <p class="page-section-title">Centro de Presión (COP)</p>
-          <div class="metrics-grid">
-            <div class="metric-item">
-              <span class="metric-item-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                Trayecto COP
-                <button class="metric-info-btn" onclick="showMetricInfo('copPath')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
-              </span>
-              <span class="metric-item-val" id="copPathVal">—</span>
-              <span class="metric-item-unit">cm</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-item-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="6"/></svg>
-                Elipse 95%
-                <button class="metric-info-btn" onclick="showMetricInfo('copEllipse')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
-              </span>
-              <span class="metric-item-val" id="copEllipseVal">—</span>
-              <span class="metric-item-unit">cm²</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-item-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 21 8 18 20 6 20 3 8"/></svg>
-                Convex Hull
-                <button class="metric-info-btn" onclick="showMetricInfo('copHull')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
-              </span>
-              <span class="metric-item-val" id="copHullVal">—</span>
-              <span class="metric-item-unit">cm²</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-item-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2-8 4 16 2-8h6"/></svg>
-                Jerk
-                <button class="metric-info-btn" onclick="showMetricInfo('copJerk')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
-              </span>
-              <span class="metric-item-val" id="copJerkVal">—</span>
-              <span class="metric-item-unit">cm/s³</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Page 5: Stabilogram -->
-        <div class="results-page">
-          <p class="page-section-title">Estabilograma</p>
-          <div class="cop-chart-wrap">
-            <canvas id="copChart" class="cop-chart"></canvas>
-          </div>
-          <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;" id="copSensorHeightNote"></p>
-        </div>
-
-      </div><!-- /#resultPagesTrack -->
-    </div><!-- /.pages-viewport -->
-
-    <!-- Dots -->
-    <div class="page-dots">
-      <span class="page-dot active"></span>
-      <span class="page-dot"></span>
-      <span class="page-dot"></span>
-      <span class="page-dot"></span>
-      <span class="page-dot"></span>
+        <p class="stability-label">Tasa de Sway</p>
+      </div>
+      <div class="feedback-box" id="feedbackText"></div>
     </div>
 
-    <!-- Actions -->
-    <div class="results-actions">
-      <button class="btn-discard" id="resultsDiscardBtn" onclick="discardResult()">Descartar</button>
-      <button class="btn-save" id="resultsSaveBtn" onclick="saveResult()">Guardar Resultados</button>
-      <button class="btn-save" id="resultsCloseBtn" onclick="closeResultsView()" hidden>Cerrar</button>
+    <!-- Section 2: Test Metrics -->
+    <div class="results-section">
+      <p class="page-section-title">Métricas del Test</p>
+      <div class="metrics-grid">
+        <div class="metric-item">
+          <span class="metric-item-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Duración
+            <button class="metric-info-btn" onclick="showMetricInfo('duration')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+          </span>
+          <span class="metric-item-val" id="metDuration">—</span>
+          <span class="metric-item-sub" id="metMeasured">Medido: —</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-item-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Sway Total
+            <button class="metric-info-btn" onclick="showMetricInfo('totalSway')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+          </span>
+          <span class="metric-item-val" id="metTotalSway">—</span>
+          <span class="metric-item-unit">mG</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-item-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            H-RMS
+            <button class="metric-info-btn" onclick="showMetricInfo('hrms')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+          </span>
+          <span class="metric-item-val" id="metHRMS">—</span>
+          <span class="metric-item-unit">mG</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-item-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            H-SD
+            <button class="metric-info-btn" onclick="showMetricInfo('hsd')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+          </span>
+          <span class="metric-item-val" id="metHSD">—</span>
+          <span class="metric-item-unit">mG</span>
+        </div>
+      </div>
     </div>
 
+    <!-- Section 3: Advanced Metrics -->
+    <div class="results-section">
+      <p class="page-section-title">Métricas Avanzadas</p>
+
+      <div class="interp-card" id="advDominantDirection" hidden>
+        <div class="interp-item">
+          <span class="interp-dot" id="advDominantDot"></span>
+          <div class="interp-content">
+            <div class="interp-title" id="advDominantTitle"></div>
+            <div class="interp-text" id="advDominantText"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="axis-section">
+        <p class="axis-title">Sway AP (Ant-Post)</p>
+        <div class="axis-row">
+          <div class="axis-cell">
+            <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advApNPL">—</span>
+          </div>
+          <div class="axis-cell">
+            <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advApRMS">—</span>
+          </div>
+          <div class="axis-cell">
+            <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advApSD">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="axis-section">
+        <p class="axis-title">Sway ML (Lat-Med)</p>
+        <div class="axis-row">
+          <div class="axis-cell">
+            <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advMlNPL">—</span>
+          </div>
+          <div class="axis-cell">
+            <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advMlRMS">—</span>
+          </div>
+          <div class="axis-cell">
+            <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advMlSD">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="axis-section">
+        <p class="axis-title">Sway UD (Vertical)</p>
+        <div class="axis-row">
+          <div class="axis-cell">
+            <span class="axis-cell-label">NPL <button class="metric-info-btn" onclick="showMetricInfo('npl')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advUdNPL">—</span>
+          </div>
+          <div class="axis-cell">
+            <span class="axis-cell-label">RMS <button class="metric-info-btn" onclick="showMetricInfo('rms')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advUdRMS">—</span>
+          </div>
+          <div class="axis-cell">
+            <span class="axis-cell-label">SD <button class="metric-info-btn" onclick="showMetricInfo('sd')" aria-label="Más información"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button></span>
+            <span class="axis-cell-val" id="advUdSD">—</span>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;">Valores en mG</p>
+    </div>
+
+    <!-- Section 4: COP -->
+    <div class="results-section">
+      <p class="page-section-title">Centro de Presión (COP)</p>
+      <div class="metrics-grid">
+        <div class="metric-item">
+          <span class="metric-item-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Trayecto COP
+            <button class="metric-info-btn" onclick="showMetricInfo('copPath')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+          </span>
+          <span class="metric-item-val" id="copPathVal">—</span>
+          <span class="metric-item-unit">cm</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-item-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="6"/></svg>
+            Elipse 95%
+            <button class="metric-info-btn" onclick="showMetricInfo('copEllipse')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+          </span>
+          <span class="metric-item-val" id="copEllipseVal">—</span>
+          <span class="metric-item-unit">cm²</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-item-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 21 8 18 20 6 20 3 8"/></svg>
+            Convex Hull
+            <button class="metric-info-btn" onclick="showMetricInfo('copHull')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+          </span>
+          <span class="metric-item-val" id="copHullVal">—</span>
+          <span class="metric-item-unit">cm²</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-item-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2-8 4 16 2-8h6"/></svg>
+            Jerk
+            <button class="metric-info-btn" onclick="showMetricInfo('copJerk')" aria-label="Más información"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none"/></svg></button>
+          </span>
+          <span class="metric-item-val" id="copJerkVal">—</span>
+          <span class="metric-item-unit">cm/s³</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Stabilogram -->
+    <div class="results-section">
+      <p class="page-section-title">Estabilograma</p>
+      <div class="cop-chart-wrap">
+        <canvas id="copChart" class="cop-chart"></canvas>
+      </div>
+      <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;" id="copSensorHeightNote"></p>
+    </div>
+
+  </div><!-- /.results-scroll-body -->
+
+  <!-- Actions bar -->
+  <div class="results-actions">
+    <button class="btn-discard" id="resultsDiscardBtn" onclick="discardResult()">Descartar</button>
+    <button class="btn-save" id="resultsSaveBtn" onclick="saveResult()">Guardar Resultados</button>
+    <button class="btn-save" id="resultsCloseBtn" onclick="closeResultsView()" hidden>Cerrar</button>
   </div>
+
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════ -->

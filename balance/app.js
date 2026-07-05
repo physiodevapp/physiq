@@ -96,10 +96,7 @@ let _sessionGen     = 0;
 let _sessionCleared = false;
 let _patientHeight  = 0;               // cm (0 = not entered)
 let _sensorHeight   = DEFAULT_SENSOR_H; // cm, umbilical — used for COP calculation
-let _resultsPage    = 0;
 let _resultsReadonly = false; // true when viewing an already-saved result
-let _swipeStartX    = 0;
-let _swipeStartY    = 0;
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 
@@ -122,7 +119,7 @@ window.addEventListener('message', e => {
 });
 
 // ── DOM refs (set after DOMContentLoaded) ────────────────────────────────────
-let $viewHome, $viewSetup, $measurementSheet, $msCountdown, $msTesting, $resultsOverlay;
+let $viewHome, $viewSetup, $measurementSheet, $msCountdown, $msTesting, $viewResults;
 let _$headerLogo, _$headerRight, _$setupSubHeader;
 let _translateTimer = null;
 
@@ -133,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   $measurementSheet = document.getElementById('measurement-sheet');
   $msCountdown      = document.getElementById('msCountdown');
   $msTesting        = document.getElementById('msTesting');
-  $resultsOverlay   = document.getElementById('results-overlay');
+  $viewResults      = document.getElementById('view-results');
 
   // Hub integration
   try {
@@ -192,13 +189,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     patientInput.addEventListener('input', _onPatientInput);
   }
 
-  _initResultsSwipe();
   _initSwipeDismiss('measurement-sheet', '.measurement-card', 72, () => {
     _abortMeasurement();
     _openSetup(_testId);
-  });
-  _initSwipeDismiss('results-overlay', '.results-card', 200, () => {
-    if (_resultsReadonly) closeResultsView(); else discardResult();
   });
   _setupSessionPanelDrag();
 });
@@ -291,10 +284,29 @@ function _handleBC(e) {
 
 // ── Header state ─────────────────────────────────────────────────────────────
 function _updateHeader(name) {
-  const showSub = (name === 'setup' || name === 'countdown' || name === 'testing');
+  const showSub = (name === 'setup' || name === 'countdown' || name === 'testing' || name === 'results');
   if (_$setupSubHeader) _$setupSubHeader.hidden = !showSub;
   document.body.classList.toggle('has-sub-header', showSub);
+  if (name === 'results' && _testId) {
+    const t = TESTS[_testId];
+    if (t) {
+      const nameEl  = document.getElementById('subHeaderName');
+      const subEl   = document.getElementById('subHeaderSub');
+      const colorEl = document.getElementById('subHeaderColor');
+      if (nameEl)  nameEl.textContent         = t.label;
+      if (subEl)   subEl.textContent          = t.sublabel;
+      if (colorEl) colorEl.style.background   = t.color;
+    }
+  }
 }
+
+window.subHeaderBack = function () {
+  if (_phase === 'results') {
+    if (_resultsReadonly) closeResultsView(); else discardResult();
+  } else {
+    goBack();
+  }
+};
 
 // ── View routing ──────────────────────────────────────────────────────────────
 function _showView(name) {
@@ -304,7 +316,7 @@ function _showView(name) {
   $viewHome.hidden          = (name !== 'home');
   $viewSetup.hidden         = !['setup', 'countdown', 'testing'].includes(name);
   $measurementSheet.hidden  = !isMeasuring;
-  $resultsOverlay.hidden    = (name !== 'results');
+  $viewResults.hidden       = (name !== 'results');
   document.body.classList.toggle('measuring', isMeasuring);
   if (isMeasuring) {
     if (name === 'testing' && prevPhase === 'countdown') {
@@ -318,6 +330,9 @@ function _showView(name) {
   if (name === 'setup') {
     if (history.state?.view === 'setup') history.replaceState({ view: 'setup' }, '');
     else history.pushState({ view: 'setup' }, '');
+  }
+  if (name === 'results') {
+    history.pushState({ view: 'results' }, '');
   }
 }
 
@@ -351,7 +366,9 @@ window.addEventListener('popstate', (e) => {
     window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
     return;
   }
-  if (_phase === 'setup') {
+  if (_phase === 'results') {
+    if (_resultsReadonly) closeResultsView(); else discardResult();
+  } else if (_phase === 'setup') {
     _showView('home');
   } else if (_phase === 'countdown' || _phase === 'testing') {
     _abortMeasurement();
@@ -983,13 +1000,11 @@ function _showResults(metrics, opts = {}) {
   document.getElementById('copSensorHeightNote').textContent =
     `Estimado a partir del acelerómetro (altura sensor: ${Math.round(metrics.cop.sensorHeight)} cm). Aproximación, no sustituye una plataforma de fuerzas.`;
 
-  // Reset to page 1
-  _resultsPage = 0;
-  _updateResultsPage();
-
   _showView('results');
   _hubWidgetHide();
-  // Overlay must be visible (non-zero layout) before measuring the canvas.
+  const scrollBody = $viewResults?.querySelector('.results-scroll-body');
+  if (scrollBody) scrollBody.scrollTop = 0;
+  // View must be visible (non-zero layout) before measuring the canvas.
   requestAnimationFrame(() => _drawCopChart(metrics.cop));
 }
 
@@ -1250,38 +1265,6 @@ function _initSwipeDismiss(overlayId, cardSel, hitZone, onDismiss) {
     card.style.transform = '';
     card.style.transition = '';
   }, { passive: true });
-}
-
-// ── Results swipe ─────────────────────────────────────────────────────────────
-function _initResultsSwipe() {
-  const track = document.getElementById('resultPagesTrack');
-  if (!track) return;
-
-  track.addEventListener('touchstart', e => {
-    _swipeStartX = e.touches[0].clientX;
-    _swipeStartY = e.touches[0].clientY;
-  }, { passive: true });
-  track.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - _swipeStartX;
-    const dy = e.changedTouches[0].clientY - _swipeStartY;
-    if (Math.abs(dx) > Math.abs(dy)) {
-      if (dx < -50 && _resultsPage < 4) _resultsPage++;
-      else if (dx > 50 && _resultsPage > 0) _resultsPage--;
-      _updateResultsPage();
-    }
-  }, { passive: true });
-
-  document.querySelectorAll('.page-dot').forEach((dot, i) => {
-    dot.addEventListener('click', () => { _resultsPage = i; _updateResultsPage(); });
-  });
-}
-
-function _updateResultsPage() {
-  const track = document.getElementById('resultPagesTrack');
-  if (track) track.style.transform = `translateX(-${_resultsPage * 100}%)`;
-  document.querySelectorAll('.page-dot').forEach((d, i) => {
-    d.classList.toggle('active', i === _resultsPage);
-  });
 }
 
 // ── Results actions ───────────────────────────────────────────────────────────
