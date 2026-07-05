@@ -430,12 +430,25 @@ function _renderTestCards() {
   _renderInterpretation();
 }
 
-// ── Global summary (mirrors physiq-motion's summary-card pattern; the per-test
-// detail lives in each test card's eye icon, not in a chip list here) ────────
 function _renderGlobalSummary() {
-  const card = document.getElementById('globalSummaryCard');
-  if (!card) return;
-  card.hidden = !Object.keys(_balanceResults).length;
+  const card  = document.getElementById('globalSummaryCard');
+  const chips = document.getElementById('globalSummaryChips');
+  if (!card || !chips) return;
+
+  const ids = Object.keys(_balanceResults);
+  if (!ids.length) { card.hidden = true; return; }
+  card.hidden = false;
+
+  chips.innerHTML = Object.entries(TESTS)
+    .filter(([id]) => _balanceResults[id])
+    .map(([id, t]) => {
+      const c = _gradeColor(_balanceResults[id].score);
+      return `
+        <span class="global-summary-chip" style="border-color:${c};color:${c}" onclick="viewSavedResult('${id}')">
+          ${t.label} · ${t.sublabel}
+          <span role="button" class="chip-clear" onclick="event.stopPropagation();clearTestResult('${id}')">✕</span>
+        </span>`;
+    }).join('');
 }
 
 window.copyBalanceSummary = function () {
