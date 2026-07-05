@@ -87,7 +87,6 @@ let _testTimer  = null;
 let _cdTimer    = null;
 let _secsLeft   = 30;
 let _cdSecsLeft = COUNTDOWN_SECS;
-let _lastResult = null; // computed metrics for current test
 let _patient      = '';
 let _sessionDate  = '';
 let _sessionLabel = '';
@@ -302,7 +301,7 @@ function _updateHeader(name) {
 
 window.subHeaderBack = function () {
   if (_phase === 'results') {
-    if (_resultsReadonly) closeResultsView(); else discardResult();
+    closeResultsView();
   } else {
     goBack();
   }
@@ -367,7 +366,7 @@ window.addEventListener('popstate', (e) => {
     return;
   }
   if (_phase === 'results') {
-    if (_resultsReadonly) closeResultsView(); else discardResult();
+    closeResultsView();
   } else if (_phase === 'setup') {
     _showView('home');
   } else if (_phase === 'countdown' || _phase === 'testing') {
@@ -588,8 +587,7 @@ function _abortMeasurement() {
   if (_cdTimer)   { clearInterval(_cdTimer);   _cdTimer   = null; }
   if (_testTimer) { clearInterval(_testTimer); _testTimer = null; }
   if (_sampleInt) { _stopSensor(); }
-  _samples    = [];
-  _lastResult = null;
+  _samples = [];
 }
 
 window.goBack = function () {
@@ -695,10 +693,44 @@ window.stopTest = function () {
   _openSetup(_testId);
 };
 
-function _endTest() {
+async function _endTest() {
   _stopSensor();
   const metrics = _computeMetrics(_samples);
-  _lastResult = { testId: _testId, metrics };
+
+  const testId = _testId;
+  _balanceResults[testId] = {
+    testId,
+    label:    TESTS[testId].label,
+    sublabel: TESTS[testId].sublabel,
+    eyes:     TESTS[testId].eyes,
+    stance:   TESTS[testId].stance,
+    duration: TESTS[testId].duration,
+    score:    metrics.score,
+    metrics
+  };
+
+  _sessionDate = _todayStr();
+  const patch = { balance: _balanceResults };
+  if (_patient) {
+    patch.patient = _patient;
+    patch.date    = _sessionDate;
+    if (_patientHeight) patch.height = _patientHeight;
+  }
+
+  _sessionCh.postMessage({ type: 'SESSION_BALANCE', balance: _balanceResults });
+  if (_patient) {
+    _sessionCleared = false;
+    const gen = _sessionGen;
+    const session = await writeSession(patch);
+    if (_sessionGen !== gen) { await clearSession(); }
+    else if (session) {
+      _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: _patient });
+    }
+  }
+
+  _renderTestCards();
+  _updateSessionChip();
+  _updateResetBtn();
   _showResults(metrics);
 }
 
@@ -946,9 +978,8 @@ function _showResults(metrics, opts = {}) {
     return;
   }
   _resultsReadonly = !!opts.readonly;
-  document.getElementById('resultsDiscardBtn').hidden = _resultsReadonly;
-  document.getElementById('resultsSaveBtn').hidden    = _resultsReadonly;
-  document.getElementById('resultsCloseBtn').hidden   = !_resultsReadonly;
+  document.getElementById('resultsDeleteBtn').hidden = _resultsReadonly;
+  document.getElementById('resultsCloseBtn').hidden  = !_resultsReadonly;
 
   const t     = TESTS[_testId];
   const grade = _getGrade(metrics.score);
@@ -1268,12 +1299,6 @@ function _initSwipeDismiss(overlayId, cardSel, hitZone, onDismiss) {
 }
 
 // ── Results actions ───────────────────────────────────────────────────────────
-window.discardResult = function () {
-  _lastResult = null;
-  _showView('home');
-  _hubWidgetShow();
-};
-
 window.closeResultsView = function () {
   _resultsReadonly = false;
   _showView('home');
@@ -1283,51 +1308,26 @@ window.closeResultsView = function () {
 window.viewSavedResult = function (testId) {
   const saved = _balanceResults[testId];
   if (!saved) return;
-  _testId     = testId;
-  _lastResult = null;
+  _testId = testId;
   _showResults(saved.metrics, { readonly: true });
 };
 
-window.saveResult = async function () {
-  if (!_lastResult) { _showView('home'); return; }
-
-  const { testId, metrics } = _lastResult;
-  _balanceResults[testId] = {
-    testId,
-    label:    TESTS[testId].label,
-    sublabel: TESTS[testId].sublabel,
-    eyes:     TESTS[testId].eyes,
-    stance:   TESTS[testId].stance,
-    duration: TESTS[testId].duration,
-    score:    metrics.score,
-    metrics
-  };
-
-  _sessionDate = _todayStr();
-  const patch = { balance: _balanceResults };
-  if (_patient) {
-    patch.patient = _patient;
-    patch.date    = _sessionDate;
-    if (_patientHeight) patch.height = _patientHeight;
-  }
-
-  _sessionCh.postMessage({ type: 'SESSION_BALANCE', balance: _balanceResults });
-  if (_patient) {
-    _sessionCleared = false;
-    const gen = _sessionGen;
-    const session = await writeSession(patch);
-    if (_sessionGen !== gen) { await clearSession(); }
-    else if (session) {
-      _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: _patient });
+window.deleteResultFromView = function () {
+  showConfirmBanner(
+    'Borrar medición',
+    `Se eliminará el resultado de ${TESTS[_testId]?.label || _testId}.`,
+    'Borrar',
+    async () => {
+      delete _balanceResults[_testId];
+      await updateSession({ balance: _balanceResults });
+      _sessionCh.postMessage({ type: 'SESSION_BALANCE', balance: _balanceResults });
+      _renderTestCards();
+      _updateSessionChip();
+      _updateResetBtn();
+      _showView('home');
+      _hubWidgetShow();
     }
-  }
-
-  _lastResult = null;
-  _renderTestCards();
-  _updateSessionChip();
-  _updateResetBtn();
-  _showView('home');
-  _hubWidgetShow();
+  );
 };
 
 // ── Session panel ─────────────────────────────────────────────────────────────
