@@ -303,11 +303,13 @@
     }
 
     /* Translate banner push */
-    #view-home  { transition: padding-top 0.25s ease; }
-    #view-setup { transition: padding-top 0.25s ease; }
+    #view-home    { transition: padding-top 0.25s ease; }
+    #view-setup   { transition: padding-top 0.25s ease; }
+    #view-results { transition: padding-top 0.25s ease; }
     .translate-banner.visible ~ #view-home { padding-top: calc(var(--header-h) + 36px); }
     body.has-sub-header .translate-banner { top: calc(var(--header-h) + 44px); }
-    .translate-banner.visible ~ #view-setup { padding-top: calc(var(--header-h) + 44px + 36px); }
+    .translate-banner.visible ~ #view-setup   { padding-top: calc(var(--header-h) + 44px + 36px); }
+    .translate-banner.visible ~ #view-results { padding-top: calc(var(--header-h) + 44px + 36px); }
     body.translate-visible .setup-sub-header { box-shadow: none; }
 
     /* ── ════════════════════════════════════════════════════ */
