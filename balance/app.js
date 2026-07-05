@@ -1113,7 +1113,7 @@ function _drawCopChart(cop) {
   const toPx = (x, y) => ({ px: cx + x * scale, py: cy - y * scale }); // AP+ (front) = up
 
   // Axes
-  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(cx, cy - halfPlot); ctx.lineTo(cx, cy + halfPlot);
@@ -1123,7 +1123,7 @@ function _drawCopChart(cop) {
   // Grid — nice-number step: smallest of [0.5,1,2,5,10,20,50] with ≤4 lines per half-axis
   let gridStep = 50;
   for (const s of [0.5, 1, 2, 5, 10, 20, 50]) { if (Math.floor(maxAbs / s) <= 4) { gridStep = s; break; } }
-  ctx.strokeStyle = 'rgba(255,255,255,0.13)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.22)';
   ctx.lineWidth = 0.5;
   ctx.beginPath();
   for (let v = gridStep; v < maxAbs; v += gridStep) {
@@ -1195,7 +1195,7 @@ function _drawCopChart(cop) {
 
   // Axis ticks at extremes
   const tickLen = 4;
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
   ctx.lineWidth   = 1;
   ctx.beginPath();
   ctx.moveTo(cx - tickLen, cy - halfPlot); ctx.lineTo(cx + tickLen, cy - halfPlot);
@@ -1206,8 +1206,8 @@ function _drawCopChart(cop) {
 
   // Direction labels and scale values
   const tipVal = maxAbs < 10 ? maxAbs.toFixed(1) : Math.round(maxAbs).toString();
-  const dirClr = 'rgba(200,220,240,0.85)';
-  const valClr = 'rgba(200,220,240,0.6)';
+  const dirClr = 'rgba(200,220,240,0.95)';
+  const valClr = 'rgba(200,220,240,0.8)';
   ctx.font = '10px DM Mono, monospace';
 
   // ANT (top) / POST (bottom) — centered on AP axis
