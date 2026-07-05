@@ -307,9 +307,6 @@
     .translate-banner.visible ~ #view-setup   { padding-top: calc(var(--header-h) + 44px + 36px); }
     .translate-banner.visible ~ #view-results { padding-top: calc(var(--header-h) + 44px + 36px); }
     body.translate-visible .setup-sub-header { box-shadow: none; }
-    /* Results: spacer inside the flex container grows to push content down */
-    .results-translate-spacer { height: 0; flex-shrink: 0; transition: height 0.25s ease; overflow: hidden; }
-    body.translate-visible .results-translate-spacer { height: 36px; }
 
     /* ── ════════════════════════════════════════════════════ */
     /* ── VIEW: HOME ─────────────────────────────────────── */
@@ -630,6 +627,75 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    /* ── Sensor height disclosure (setup) ──────────────────── */
+    .sensor-height-disclosure { width: 100%; max-width: 360px; }
+    .sensor-height-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      padding: 4px 2px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .sensor-height-toggle:hover { color: var(--text2); }
+    .sensor-height-toggle .sensor-height-chevron { margin-left: auto; transition: transform 0.2s; flex-shrink: 0; }
+    .sensor-height-toggle[aria-expanded="true"] .sensor-height-chevron { transform: rotate(90deg); }
+    .sensor-height-panel {
+      margin-top: 8px;
+      padding: 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sensor-height-row { display: flex; align-items: center; gap: 12px; }
+    .sensor-height-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: #22d3ee;
+      min-width: 48px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .sensor-height-hint { font-size: 0.72rem; color: var(--text3); line-height: 1.4; text-align: left; }
+    #sensorHeightSlider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+    }
+    #sensorHeightSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #22d3ee;
+      cursor: pointer;
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 0 1px #22d3ee;
+    }
+    #sensorHeightSlider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #22d3ee;
+      cursor: pointer;
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 0 1px #22d3ee;
     }
 
     .start-btn {
@@ -1246,6 +1312,28 @@
       <span id="setupDuration">Duración: 30 segundos</span>
     </p>
 
+    <div class="sensor-height-disclosure">
+      <button type="button" class="sensor-height-toggle" id="sensorHeightToggle"
+              onclick="toggleSensorHeightPanel()" aria-expanded="false">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>Altura sensor: <span id="sensorHeightToggleValue">102</span> cm</span>
+        <svg class="sensor-height-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <div class="sensor-height-panel" id="sensorHeightPanel" hidden>
+        <div class="sensor-height-row">
+          <input type="range" id="sensorHeightSlider" min="85" max="120" step="1" value="102"
+                 oninput="_onSensorHeightSlider(event)">
+          <span class="sensor-height-value" id="sensorHeightValue">102 cm</span>
+        </div>
+        <p class="sensor-height-hint">Distancia del suelo al ombligo. Ajusta con una cinta métrica para mayor precisión en el cálculo del COP.</p>
+      </div>
+    </div>
+
     <button id="startBtn" class="start-btn" onclick="startTest()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
         <path d="M8 5v14l11-7z"/>
@@ -1259,7 +1347,6 @@
 <!-- VIEW: RESULTS                                                  -->
 <!-- ══════════════════════════════════════════════════════════════ -->
 <div id="view-results" hidden>
-  <div class="results-translate-spacer"></div>
   <div class="results-scroll-body">
 
     <!-- Title card -->

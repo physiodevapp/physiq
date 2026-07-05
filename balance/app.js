@@ -580,8 +580,39 @@ function _openSetup(testId) {
   const startBtn = document.getElementById('startBtn');
   startBtn.disabled = false;
 
+  _seedSensorHeightUI();
+
   _showView('setup');
 }
+
+function _seedSensorHeightUI() {
+  const slider = document.getElementById('sensorHeightSlider');
+  const panel  = document.getElementById('sensorHeightPanel');
+  const toggle = document.getElementById('sensorHeightToggle');
+  if (!slider) return;
+  slider.value = _sensorHeight;
+  _updateSensorHeightLabels(_sensorHeight);
+  panel.hidden = true;
+  toggle.setAttribute('aria-expanded', 'false');
+}
+
+function _updateSensorHeightLabels(val) {
+  document.getElementById('sensorHeightToggleValue').textContent = val;
+  document.getElementById('sensorHeightValue').textContent = `${val} cm`;
+}
+
+window.toggleSensorHeightPanel = function () {
+  const panel  = document.getElementById('sensorHeightPanel');
+  const toggle = document.getElementById('sensorHeightToggle');
+  const open = panel.hidden;
+  panel.hidden = !open;
+  toggle.setAttribute('aria-expanded', String(open));
+};
+
+window._onSensorHeightSlider = function (e) {
+  _sensorHeight = parseInt(e.target.value, 10);
+  _updateSensorHeightLabels(_sensorHeight);
+};
 
 function _abortMeasurement() {
   if (_cdTimer)   { clearInterval(_cdTimer);   _cdTimer   = null; }
