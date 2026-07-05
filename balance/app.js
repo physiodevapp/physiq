@@ -1197,7 +1197,7 @@ function _initResultsSwipe() {
   track.addEventListener('touchstart', e => { _swipeStartX = e.touches[0].clientX; }, { passive: true });
   track.addEventListener('touchend',   e => {
     const dx = e.changedTouches[0].clientX - _swipeStartX;
-    if (dx < -50 && _resultsPage < 3) _resultsPage++;
+    if (dx < -50 && _resultsPage < 4) _resultsPage++;
     else if (dx > 50 && _resultsPage > 0) _resultsPage--;
     _updateResultsPage();
   }, { passive: true });

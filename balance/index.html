@@ -986,7 +986,7 @@
     .cop-chart {
       display: block;
       height: 100%;
-      max-height: 260px;
+      max-height: 360px;
       width: auto;
       max-width: 100%;
       aspect-ratio: 1;
@@ -1426,7 +1426,7 @@
           <p style="font-size:0.7rem;color:var(--text2);text-align:center;padding-bottom:4px;">Valores en mG</p>
         </div>
 
-        <!-- Page 4: COP (cm) -->
+        <!-- Page 4: COP metrics -->
         <div class="results-page">
           <p class="page-section-title">Centro de Presión (COP)</p>
           <div class="metrics-grid">
@@ -1467,6 +1467,11 @@
               <span class="metric-item-unit">cm/s³</span>
             </div>
           </div>
+        </div>
+
+        <!-- Page 5: Stabilogram -->
+        <div class="results-page">
+          <p class="page-section-title">Estabilograma</p>
           <div class="cop-chart-wrap">
             <canvas id="copChart" class="cop-chart"></canvas>
           </div>
@@ -1479,6 +1484,7 @@
     <!-- Dots -->
     <div class="page-dots">
       <span class="page-dot active"></span>
+      <span class="page-dot"></span>
       <span class="page-dot"></span>
       <span class="page-dot"></span>
       <span class="page-dot"></span>
