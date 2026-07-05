@@ -311,6 +311,9 @@
     .translate-banner.visible ~ #view-setup   { padding-top: calc(var(--header-h) + 44px + 36px); }
     .translate-banner.visible ~ #view-results { padding-top: calc(var(--header-h) + 44px + 36px); }
     body.translate-visible .setup-sub-header { box-shadow: none; }
+    /* Results: spacer inside the flex container grows to push content down */
+    .results-translate-spacer { height: 0; flex-shrink: 0; transition: height 0.25s ease; overflow: hidden; }
+    body.translate-visible .results-translate-spacer { height: 36px; }
 
     /* ── ════════════════════════════════════════════════════ */
     /* ── VIEW: HOME ─────────────────────────────────────── */
@@ -1260,6 +1263,7 @@
 <!-- VIEW: RESULTS                                                  -->
 <!-- ══════════════════════════════════════════════════════════════ -->
 <div id="view-results" hidden>
+  <div class="results-translate-spacer"></div>
   <div class="results-scroll-body">
 
     <!-- Title card -->
