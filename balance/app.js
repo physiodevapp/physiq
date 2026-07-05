@@ -99,6 +99,7 @@ let _sensorHeight   = DEFAULT_SENSOR_H; // cm, umbilical — used for COP calcul
 let _resultsPage    = 0;
 let _resultsReadonly = false; // true when viewing an already-saved result
 let _swipeStartX    = 0;
+let _swipeStartY    = 0;
 
 const _sessionCh = new BroadcastChannel('physiq-session');
 
@@ -1194,12 +1195,18 @@ function _initResultsSwipe() {
   const track = document.getElementById('resultPagesTrack');
   if (!track) return;
 
-  track.addEventListener('touchstart', e => { _swipeStartX = e.touches[0].clientX; }, { passive: true });
-  track.addEventListener('touchend',   e => {
+  track.addEventListener('touchstart', e => {
+    _swipeStartX = e.touches[0].clientX;
+    _swipeStartY = e.touches[0].clientY;
+  }, { passive: true });
+  track.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - _swipeStartX;
-    if (dx < -50 && _resultsPage < 4) _resultsPage++;
-    else if (dx > 50 && _resultsPage > 0) _resultsPage--;
-    _updateResultsPage();
+    const dy = e.changedTouches[0].clientY - _swipeStartY;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx < -50 && _resultsPage < 4) _resultsPage++;
+      else if (dx > 50 && _resultsPage > 0) _resultsPage--;
+      _updateResultsPage();
+    }
   }, { passive: true });
 
   document.querySelectorAll('.page-dot').forEach((dot, i) => {
