@@ -991,8 +991,9 @@ function _showResults(metrics, opts = {}) {
   gradeBadge.style.background = grade.color;
 
   // Page 1 — Summary
-  const circle = document.getElementById('stabilityCircle');
-  circle.style.borderColor = grade.color;
+  const ringFill = document.getElementById('scoreRingFill');
+  ringFill.style.stroke = grade.color;
+  ringFill.style.strokeDashoffset = 2 * Math.PI * 72 * (1 - metrics.score / 100);
   document.getElementById('stabilityRateVal').textContent = _fmt1(metrics.stabilityRate);
   document.getElementById('scoreDisplay').textContent     = `${metrics.score}/100`;
   document.getElementById('feedbackText').textContent     = _getFeedback(metrics.score);
