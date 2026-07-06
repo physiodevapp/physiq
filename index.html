@@ -975,7 +975,6 @@ const DRAG_ROTATE = 1.5;
 const navEl = document.querySelector('nav');
 let reorderMode = false;
 let dragCard = null, dragTX = 0, dragTY = 0, lastPX = 0, lastPY = 0;
-let hoverTarget = null;
 
 // the entrance animation uses fill-mode:both, which keeps holding the
 // `transform` property forever (it outranks inline styles in the cascade)
@@ -1035,26 +1034,32 @@ navEl.addEventListener('pointermove', e => {
   lastPX = e.clientX; lastPY = e.clientY;
   dragCard.style.transform = _dragTransform();
 
-  // only re-run the (rect-reading) reorder pass when the hovered card actually
-  // changes — doing it on every pointermove cancels the FLIP transition on
-  // every frame, which is what made the animation look choppy
   const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.app-card');
-  if (target && target !== dragCard && target !== hoverTarget) {
-    hoverTarget = target;
-    _reorderTo(target);
-  }
+  if (target && target !== dragCard) _reorderTo(target, e.clientX, e.clientY);
 });
 
 navEl.addEventListener('pointerup', _endDrag);
 navEl.addEventListener('pointercancel', _endDrag);
 
-function _reorderTo(target) {
+function _reorderTo(target, pointerX, pointerY) {
+  const rect = target.getBoundingClientRect();
+  // diagonal split of the target cell: top-left half = "insert before",
+  // bottom-right half = "insert after" — works for neighbours to either the
+  // side or below in the 2-col grid. Unlike comparing dragCard/target DOM
+  // indices, this doesn't flip meaning once the pair has already been
+  // swapped once, which was causing a second hover over the same target to
+  // immediately swap back instead of staying resolved.
+  const isAfter = (pointerX - rect.left) / rect.width + (pointerY - rect.top) / rect.height > 1;
+  const refNode = isAfter ? target.nextSibling : target;
+  // already resolved for this direction — bail before touching rects/DOM so
+  // nothing restarts (e.g. hovering the same half of a target repeatedly)
+  if (dragCard.nextSibling === refNode) return;
+
   const cards = [...navEl.querySelectorAll('.app-card')];
   const dragRectBefore = dragCard.getBoundingClientRect();
   const siblingRects = new Map(cards.filter(c => c !== dragCard).map(c => [c, c.getBoundingClientRect()]));
 
-  if (cards.indexOf(dragCard) < cards.indexOf(target)) navEl.insertBefore(dragCard, target.nextSibling);
-  else navEl.insertBefore(dragCard, target);
+  navEl.insertBefore(dragCard, refNode);
 
   // keep the dragged card visually anchored under the pointer across the DOM move
   const dragRectAfter = dragCard.getBoundingClientRect();
@@ -1100,7 +1105,6 @@ function _endDrag() {
   if (!dragCard) return;
   const card = dragCard;
   dragCard = null;
-  hoverTarget = null;
   card.style.pointerEvents = '';
   // "drop" transition back to the resting state, then clean up
   card.style.transition = 'transform 120ms ease-out, box-shadow 120ms ease-out';
