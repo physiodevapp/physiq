@@ -1067,16 +1067,33 @@ function _reorderTo(target) {
     const after = c.getBoundingClientRect();
     const dx = before.left - after.left, dy = before.top - after.top;
     if (!dx && !dy) return;
-    c.style.transition = 'none';
-    c.style.transform = `translate(${dx}px, ${dy}px)`;
-    // double rAF: the invert (instant jump) must be painted before the
-    // transition is re-enabled, otherwise the browser can coalesce both
-    // style writes into one recalc and skip the animation entirely
-    requestAnimationFrame(() => requestAnimationFrame(() => {
+    _flip(c, dx, dy);
+  });
+}
+
+// pending double-rAF ids per card, so a new FLIP on the same card (e.g. the
+// pointer sweeps back over a position it already displaced) cancels the
+// previous one instead of letting its stale callback jump the card back to
+// rest mid-animation and clobber the new invert
+const _flipRafs = new WeakMap();
+
+function _flip(c, dx, dy) {
+  const pending = _flipRafs.get(c);
+  if (pending) pending.forEach(cancelAnimationFrame);
+  c.style.transition = 'none';
+  c.style.transform = `translate(${dx}px, ${dy}px)`;
+  // double rAF: the invert (instant jump) must be painted before the
+  // transition is re-enabled, otherwise the browser can coalesce both
+  // style writes into one recalc and skip the animation entirely
+  const raf1 = requestAnimationFrame(() => {
+    const raf2 = requestAnimationFrame(() => {
       c.style.transition = 'transform 200ms ease-out';
       c.style.transform = '';
-    }));
+      _flipRafs.delete(c);
+    });
+    _flipRafs.set(c, [raf1, raf2]);
   });
+  _flipRafs.set(c, [raf1]);
 }
 
 function _endDrag() {
