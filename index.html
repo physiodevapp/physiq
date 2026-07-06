@@ -68,8 +68,16 @@
     }
     .app-card:hover { border-color: var(--border2); }
     .app-card:active { transform: scale(0.97); }
-    .app-card.dragging {
-      cursor: grabbing; z-index: 20; user-select: none;
+
+    /* SortableJS states: card-ghost is the in-list placeholder marking the
+       drop slot; card-dragging is the floating clone that follows the pointer
+       (forceFallback mode) — Sortable preserves this transform's scale/rotate
+       and only updates the translation on top of it while tracking, so this
+       "lift" look sticks around uninterrupted for the whole drag. */
+    .card-ghost { opacity: 0.35; }
+    .card-dragging {
+      cursor: grabbing; user-select: none; will-change: transform;
+      transform: scale(1.04) rotate(1.5deg);
       box-shadow: 0 16px 40px rgba(0,0,0,0.55);
     }
 
@@ -887,6 +895,7 @@
   </div>
 </div>
 
+<script src="lib/sortable.min.js"></script>
 <script>
 // Apply role-based icon on load
 document.addEventListener('DOMContentLoaded', () => {
@@ -968,24 +977,18 @@ window.addEventListener('message', e => {
   if (sat && SATS[sat]) openSat(sat);
 }());
 
-// ── Card reorder ─────────────────────────────────────────────────────────────
+// ── Card reorder (SortableJS) ─────────────────────────────────────────────────
 const CARD_ORDER_KEY = 'physiq-card-order';
-const DRAG_SCALE = 1.04;
-const DRAG_ROTATE = 1.5;
 const navEl = document.querySelector('nav');
 let reorderMode = false;
-let dragCard = null, dragTX = 0, dragTY = 0, lastPX = 0, lastPY = 0;
 
 // the entrance animation uses fill-mode:both, which keeps holding the
 // `transform` property forever (it outranks inline styles in the cascade)
-// unless cleared once — otherwise no later inline transform ever renders.
+// unless cleared once — otherwise Sortable's own reorder animation (which
+// also animates via `transform`) would never render either.
 navEl.addEventListener('animationend', e => {
   if (e.animationName === 'fadeUp') e.target.style.animation = 'none';
 });
-
-function _dragTransform() {
-  return `translate(${dragTX}px, ${dragTY}px) scale(${DRAG_SCALE}) rotate(${DRAG_ROTATE}deg)`;
-}
 
 (function _applyCardOrder() {
   let saved;
@@ -1000,120 +1003,21 @@ function _saveCardOrder() {
   localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order));
 }
 
+const cardSortable = Sortable.create(navEl, {
+  disabled: true,
+  animation: 150,
+  forceFallback: true, // native HTML5 drag-and-drop is unreliable on touch/iOS
+  fallbackTolerance: 3,
+  ghostClass: 'card-ghost',
+  dragClass: 'card-dragging',
+  onEnd: _saveCardOrder,
+});
+
 function toggleReorderMode() {
-  if (reorderMode && dragCard) _endDrag();
   reorderMode = !reorderMode;
   navEl.classList.toggle('reordering', reorderMode);
   document.getElementById('reorderBtn').classList.toggle('peer-on', reorderMode);
-}
-
-navEl.addEventListener('pointerdown', e => {
-  if (!reorderMode) return;
-  const card = e.target.closest('.app-card');
-  if (!card) return;
-  e.preventDefault();
-  dragCard = card;
-  dragTX = 0; dragTY = 0;
-  lastPX = e.clientX; lastPY = e.clientY;
-  card.setPointerCapture(e.pointerId);
-  card.classList.add('dragging');
-  // hide from hit-testing so elementFromPoint below finds the sibling
-  // underneath instead of the card being dragged (pointer capture keeps
-  // move/up events routed to it regardless of this)
-  card.style.pointerEvents = 'none';
-  // "lift" pop when picking up, then hand off to instant 1:1 pointer tracking
-  card.style.transition = 'transform 120ms ease-out, box-shadow 120ms ease-out';
-  card.style.transform = _dragTransform();
-  setTimeout(() => { if (dragCard === card) card.style.transition = 'none'; }, 120);
-});
-
-navEl.addEventListener('pointermove', e => {
-  if (!dragCard) return;
-  dragTX += e.clientX - lastPX;
-  dragTY += e.clientY - lastPY;
-  lastPX = e.clientX; lastPY = e.clientY;
-  dragCard.style.transform = _dragTransform();
-
-  const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.app-card');
-  if (target && target !== dragCard) _reorderTo(target, e.clientX, e.clientY);
-});
-
-navEl.addEventListener('pointerup', _endDrag);
-navEl.addEventListener('pointercancel', _endDrag);
-
-function _reorderTo(target, pointerX, pointerY) {
-  const rect = target.getBoundingClientRect();
-  // diagonal split of the target cell: top-left half = "insert before",
-  // bottom-right half = "insert after" — works for neighbours to either the
-  // side or below in the 2-col grid. Unlike comparing dragCard/target DOM
-  // indices, this doesn't flip meaning once the pair has already been
-  // swapped once, which was causing a second hover over the same target to
-  // immediately swap back instead of staying resolved.
-  const isAfter = (pointerX - rect.left) / rect.width + (pointerY - rect.top) / rect.height > 1;
-  const refNode = isAfter ? target.nextSibling : target;
-  // already resolved for this direction — bail before touching rects/DOM so
-  // nothing restarts (e.g. hovering the same half of a target repeatedly)
-  if (dragCard.nextSibling === refNode) return;
-
-  const cards = [...navEl.querySelectorAll('.app-card')];
-  const dragRectBefore = dragCard.getBoundingClientRect();
-  const siblingRects = new Map(cards.filter(c => c !== dragCard).map(c => [c, c.getBoundingClientRect()]));
-
-  navEl.insertBefore(dragCard, refNode);
-
-  // keep the dragged card visually anchored under the pointer across the DOM move
-  const dragRectAfter = dragCard.getBoundingClientRect();
-  dragTX += dragRectBefore.left - dragRectAfter.left;
-  dragTY += dragRectBefore.top  - dragRectAfter.top;
-  dragCard.style.transform = _dragTransform();
-
-  // FLIP the displaced siblings into their new slots
-  siblingRects.forEach((before, c) => {
-    const after = c.getBoundingClientRect();
-    const dx = before.left - after.left, dy = before.top - after.top;
-    if (!dx && !dy) return;
-    _flip(c, dx, dy);
-  });
-}
-
-// pending double-rAF ids per card, so a new FLIP on the same card (e.g. the
-// pointer sweeps back over a position it already displaced) cancels the
-// previous one instead of letting its stale callback jump the card back to
-// rest mid-animation and clobber the new invert
-const _flipRafs = new WeakMap();
-
-function _flip(c, dx, dy) {
-  const pending = _flipRafs.get(c);
-  if (pending) pending.forEach(cancelAnimationFrame);
-  c.style.transition = 'none';
-  c.style.transform = `translate(${dx}px, ${dy}px)`;
-  // double rAF: the invert (instant jump) must be painted before the
-  // transition is re-enabled, otherwise the browser can coalesce both
-  // style writes into one recalc and skip the animation entirely
-  const raf1 = requestAnimationFrame(() => {
-    const raf2 = requestAnimationFrame(() => {
-      c.style.transition = 'transform 200ms ease-out';
-      c.style.transform = '';
-      _flipRafs.delete(c);
-    });
-    _flipRafs.set(c, [raf1, raf2]);
-  });
-  _flipRafs.set(c, [raf1]);
-}
-
-function _endDrag() {
-  if (!dragCard) return;
-  const card = dragCard;
-  dragCard = null;
-  card.style.pointerEvents = '';
-  // "drop" transition back to the resting state, then clean up
-  card.style.transition = 'transform 120ms ease-out, box-shadow 120ms ease-out';
-  card.style.transform = '';
-  _saveCardOrder();
-  setTimeout(() => {
-    card.classList.remove('dragging');
-    card.style.transition = '';
-  }, 120);
+  cardSortable.option('disabled', !reorderMode);
 }
 
 // ── Peer panel ───────────────────────────────────────────────────────────────
