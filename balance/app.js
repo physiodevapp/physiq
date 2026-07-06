@@ -1022,8 +1022,8 @@ function _showResults(metrics, opts = {}) {
     return;
   }
   _resultsReadonly = !!opts.readonly;
-  document.getElementById('resultsDeleteBtn').hidden = _resultsReadonly;
-  document.getElementById('resultsCloseBtn').hidden  = !_resultsReadonly;
+  document.getElementById('resultsDeleteBtn').hidden = false;
+  document.getElementById('resultsCloseBtn').hidden  = false;
 
   const t     = TESTS[_testId];
   const grade = _getGrade(metrics.score);
