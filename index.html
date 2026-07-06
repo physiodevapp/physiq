@@ -261,7 +261,9 @@
       display: flex; align-items: center; justify-content: center;
       transition: border-color 0.2s, color 0.2s;
     }
-    .peer-hdr-btn:hover { border-color: #4f9cf9; color: #4f9cf9; }
+    @media (hover: hover) {
+      .peer-hdr-btn:hover { border-color: #4f9cf9; color: #4f9cf9; }
+    }
     .peer-hdr-btn.peer-on { border-color: #38d9a9; color: #38d9a9; }
     /* phone icon by default; monitor icon only when role is secondary */
     .peer-btn-icon-tablet { display: none; }
