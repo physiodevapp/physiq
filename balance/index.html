@@ -1101,6 +1101,7 @@
     /* ── Results actions ─────────────────────────────────── */
     .results-actions {
       display: flex;
+      gap: 10px;
       justify-content: center;
       padding: 12px 24px calc(12px + env(safe-area-inset-bottom));
       border-top: 1px solid var(--border);
@@ -1109,7 +1110,7 @@
     }
 
     .btn-save {
-      width: 100%;
+      flex: 1;
       max-width: 420px;
       height: 48px;
       border-radius: 12px;
@@ -1121,6 +1122,22 @@
     }
 
     .btn-save:active { transform: scale(0.97); }
+
+    .btn-delete-outline {
+      flex: 1;
+      max-width: 420px;
+      height: 48px;
+      border-radius: 12px;
+      background: transparent;
+      border: 1.5px solid var(--danger);
+      color: var(--danger);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-delete-outline:active { transform: scale(0.97); }
 
     /* ── Confirm dialog ──────────────────────────────────── */
     @keyframes fadeUp {
@@ -1571,7 +1588,7 @@
 
   <!-- Actions bar -->
   <div class="results-actions">
-    <button class="btn-save" id="resultsDeleteBtn" onclick="deleteResultFromView()">Eliminar</button>
+    <button class="btn-delete-outline" id="resultsDeleteBtn" onclick="deleteResultFromView()">Eliminar</button>
     <button class="btn-save" id="resultsCloseBtn" onclick="closeResultsView()" hidden>Cerrar</button>
   </div>
 
