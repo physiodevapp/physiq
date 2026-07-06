@@ -70,8 +70,7 @@
     .app-card:active { transform: scale(0.97); }
     .app-card.dragging {
       cursor: grabbing; z-index: 20; user-select: none;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-      transition: none !important;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.55);
     }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -971,9 +970,22 @@ window.addEventListener('message', e => {
 
 // ── Card reorder ─────────────────────────────────────────────────────────────
 const CARD_ORDER_KEY = 'physiq-card-order';
+const DRAG_SCALE = 1.04;
+const DRAG_ROTATE = 1.5;
 const navEl = document.querySelector('nav');
 let reorderMode = false;
 let dragCard = null, dragTX = 0, dragTY = 0, lastPX = 0, lastPY = 0;
+
+// the entrance animation uses fill-mode:both, which keeps holding the
+// `transform` property forever (it outranks inline styles in the cascade)
+// unless cleared once — otherwise no later inline transform ever renders.
+navEl.addEventListener('animationend', e => {
+  if (e.animationName === 'fadeUp') e.target.style.animation = 'none';
+});
+
+function _dragTransform() {
+  return `translate(${dragTX}px, ${dragTY}px) scale(${DRAG_SCALE}) rotate(${DRAG_ROTATE}deg)`;
+}
 
 (function _applyCardOrder() {
   let saved;
@@ -1005,6 +1017,10 @@ navEl.addEventListener('pointerdown', e => {
   lastPX = e.clientX; lastPY = e.clientY;
   card.setPointerCapture(e.pointerId);
   card.classList.add('dragging');
+  // "lift" pop when picking up, then hand off to instant 1:1 pointer tracking
+  card.style.transition = 'transform 120ms ease-out, box-shadow 120ms ease-out';
+  card.style.transform = _dragTransform();
+  setTimeout(() => { if (dragCard === card) card.style.transition = 'none'; }, 120);
 });
 
 navEl.addEventListener('pointermove', e => {
@@ -1012,7 +1028,7 @@ navEl.addEventListener('pointermove', e => {
   dragTX += e.clientX - lastPX;
   dragTY += e.clientY - lastPY;
   lastPX = e.clientX; lastPY = e.clientY;
-  dragCard.style.transform = `translate(${dragTX}px, ${dragTY}px)`;
+  dragCard.style.transform = _dragTransform();
 
   const target = document.elementsFromPoint(e.clientX, e.clientY)
     .find(el => el.classList?.contains('app-card') && el !== dragCard);
@@ -1034,7 +1050,7 @@ function _reorderTo(target) {
   const dragRectAfter = dragCard.getBoundingClientRect();
   dragTX += dragRectBefore.left - dragRectAfter.left;
   dragTY += dragRectBefore.top  - dragRectAfter.top;
-  dragCard.style.transform = `translate(${dragTX}px, ${dragTY}px)`;
+  dragCard.style.transform = _dragTransform();
 
   // FLIP the displaced siblings into their new slots
   siblingRects.forEach((before, c) => {
@@ -1052,10 +1068,16 @@ function _reorderTo(target) {
 
 function _endDrag() {
   if (!dragCard) return;
-  dragCard.classList.remove('dragging');
-  dragCard.style.transform = '';
+  const card = dragCard;
   dragCard = null;
+  // "drop" transition back to the resting state, then clean up
+  card.style.transition = 'transform 120ms ease-out, box-shadow 120ms ease-out';
+  card.style.transform = '';
   _saveCardOrder();
+  setTimeout(() => {
+    card.classList.remove('dragging');
+    card.style.transition = '';
+  }, 120);
 }
 
 // ── Peer panel ───────────────────────────────────────────────────────────────
