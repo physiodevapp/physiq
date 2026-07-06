@@ -48,7 +48,7 @@
     /* while reordering, freeze the odd-card full-width span so drag math
        only ever deals with translate offsets, never width/column changes */
     nav.reordering .app-card:last-child:nth-child(odd) { grid-column: auto; }
-    nav.reordering .app-card { cursor: grab; touch-action: none; }
+    nav.reordering .app-card { cursor: grab; touch-action: none; will-change: transform; }
     nav.reordering .app-card:active { transform: none; }
 
     .app-card {
@@ -975,6 +975,7 @@ const DRAG_ROTATE = 1.5;
 const navEl = document.querySelector('nav');
 let reorderMode = false;
 let dragCard = null, dragTX = 0, dragTY = 0, lastPX = 0, lastPY = 0;
+let hoverTarget = null;
 
 // the entrance animation uses fill-mode:both, which keeps holding the
 // `transform` property forever (it outranks inline styles in the cascade)
@@ -1017,6 +1018,10 @@ navEl.addEventListener('pointerdown', e => {
   lastPX = e.clientX; lastPY = e.clientY;
   card.setPointerCapture(e.pointerId);
   card.classList.add('dragging');
+  // hide from hit-testing so elementFromPoint below finds the sibling
+  // underneath instead of the card being dragged (pointer capture keeps
+  // move/up events routed to it regardless of this)
+  card.style.pointerEvents = 'none';
   // "lift" pop when picking up, then hand off to instant 1:1 pointer tracking
   card.style.transition = 'transform 120ms ease-out, box-shadow 120ms ease-out';
   card.style.transform = _dragTransform();
@@ -1030,9 +1035,14 @@ navEl.addEventListener('pointermove', e => {
   lastPX = e.clientX; lastPY = e.clientY;
   dragCard.style.transform = _dragTransform();
 
-  const target = document.elementsFromPoint(e.clientX, e.clientY)
-    .find(el => el.classList?.contains('app-card') && el !== dragCard);
-  if (target) _reorderTo(target);
+  // only re-run the (rect-reading) reorder pass when the hovered card actually
+  // changes — doing it on every pointermove cancels the FLIP transition on
+  // every frame, which is what made the animation look choppy
+  const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.app-card');
+  if (target && target !== dragCard && target !== hoverTarget) {
+    hoverTarget = target;
+    _reorderTo(target);
+  }
 });
 
 navEl.addEventListener('pointerup', _endDrag);
@@ -1059,10 +1069,13 @@ function _reorderTo(target) {
     if (!dx && !dy) return;
     c.style.transition = 'none';
     c.style.transform = `translate(${dx}px, ${dy}px)`;
-    requestAnimationFrame(() => {
+    // double rAF: the invert (instant jump) must be painted before the
+    // transition is re-enabled, otherwise the browser can coalesce both
+    // style writes into one recalc and skip the animation entirely
+    requestAnimationFrame(() => requestAnimationFrame(() => {
       c.style.transition = 'transform 200ms ease-out';
       c.style.transform = '';
-    });
+    }));
   });
 }
 
@@ -1070,6 +1083,8 @@ function _endDrag() {
   if (!dragCard) return;
   const card = dragCard;
   dragCard = null;
+  hoverTarget = null;
+  card.style.pointerEvents = '';
   // "drop" transition back to the resting state, then clean up
   card.style.transition = 'transform 120ms ease-out, box-shadow 120ms ease-out';
   card.style.transform = '';
