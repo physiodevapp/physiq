@@ -1,7 +1,7 @@
 'use strict';
 // ─── STATE ────────────────────────────────────────────────────────────────────────────────────
 let currentRegion = null;
-let currentView = 'landing'; // 'landing' | 'home' | 'tissue' | 'region' | 'ejercicio'
+let currentView = 'landing'; // 'landing' | 'home' | 'tissue' | 'region' | 'ejercicio' | 'recursos'
 let currentFilter = 'all';   // 'all' | 'green'
 let currentPosFilter = 'all'; // 'all' | 'progression' | 'pie' | 'sentado' | 'supino' | 'lateral' | 'prono'
 const _linkOverrides = JSON.parse(localStorage.getItem('physiq_link_overrides') || '{}');
@@ -17,6 +17,7 @@ function renderHome() {
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = 'none';
   document.getElementById('view-ejercicio').style.display = 'none';
+  document.getElementById('view-recursos').style.display = 'none';
 
   const grid = document.getElementById('regions-grid');
   grid.innerHTML = REGIONS.map((r, i) => {
@@ -128,6 +129,7 @@ function showLanding() {
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = 'none';
   document.getElementById('view-ejercicio').style.display = 'none';
+  document.getElementById('view-recursos').style.display = 'none';
 }
 
 function showSpecialTests() {
@@ -143,6 +145,7 @@ function showTissue() {
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = '';
   document.getElementById('view-ejercicio').style.display = 'none';
+  document.getElementById('view-recursos').style.display = 'none';
   history.pushState({ view: 'tissue' }, '');
 }
 
@@ -153,7 +156,19 @@ function showEjercicio() {
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = 'none';
   document.getElementById('view-ejercicio').style.display = '';
+  document.getElementById('view-recursos').style.display = 'none';
   history.pushState({ view: 'ejercicio' }, '');
+}
+
+function showRecursos() {
+  currentView = 'recursos';
+  document.getElementById('view-landing').style.display = 'none';
+  document.getElementById('view-home').style.display = 'none';
+  document.getElementById('view-region').style.display = 'none';
+  document.getElementById('view-tissue').style.display = 'none';
+  document.getElementById('view-ejercicio').style.display = 'none';
+  document.getElementById('view-recursos').style.display = '';
+  history.pushState({ view: 'recursos' }, '');
 }
 
 function showRegion(id) {
@@ -165,6 +180,7 @@ function showRegion(id) {
   document.getElementById('view-region').style.display = '';
   document.getElementById('view-tissue').style.display = 'none';
   document.getElementById('view-ejercicio').style.display = 'none';
+  document.getElementById('view-recursos').style.display = 'none';
   document.getElementById('region-sub-badge').textContent = currentRegion.name;
 
   _syncFilterUI();
@@ -182,13 +198,14 @@ function showHome() {
   document.getElementById('view-region').style.display = 'none';
   document.getElementById('view-tissue').style.display = 'none';
   document.getElementById('view-ejercicio').style.display = 'none';
+  document.getElementById('view-recursos').style.display = 'none';
 }
 
 // ─── POPSTATE ───────────────────────────────────────────────────────────────────────────────────
 window.addEventListener('popstate', e => {
   if (currentRegion) {
     showHome();
-  } else if (currentView === 'home' || currentView === 'tissue' || currentView === 'ejercicio') {
+  } else if (currentView === 'home' || currentView === 'tissue' || currentView === 'ejercicio' || currentView === 'recursos') {
     showLanding();
   } else if (e.state?.view === 'hub-exit' && document.body.classList.contains('in-hub')) {
     // Only navigate to hub when we actually reach the hub-exit sentinel entry
@@ -318,6 +335,8 @@ function _rebuildHubHistory() {
     history.pushState({ view: 'tissue' }, '');
   } else if (currentView === 'ejercicio') {
     history.pushState({ view: 'ejercicio' }, '');
+  } else if (currentView === 'recursos') {
+    history.pushState({ view: 'recursos' }, '');
   }
   if (currentRegion) {
     history.pushState({ view: 'region', region: currentRegion.id }, '');

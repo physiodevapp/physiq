@@ -615,6 +615,41 @@
     .tissue-mobile  { display: table; }
   }
 
+  /* RECURSOS VIEW */
+  .recursos-wrap { padding: 12px 20px 48px; }
+  .recursos-group { margin-bottom: 20px; }
+  .recursos-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 8px;
+    border-radius: var(--radius-sm);
+    transition: background 0.1s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .recursos-item:hover  { background: var(--surface2); }
+  .recursos-item:active { background: var(--surface2); }
+  .recursos-item-body { flex: 1; min-width: 0; }
+  .recursos-item-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .recursos-item-desc {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+  .recursos-ext-icon {
+    font-size: 13px;
+    color: var(--text3);
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
   /* EJERCICIO VIEW */
   .ejercicio-wrap { padding: 12px 20px 48px; }
   .ejercicio-diagram-wrap {
@@ -694,6 +729,10 @@
     <div class="landing-card" style="--card-color:#6366f1; animation-delay:0.15s" onclick="window.location.href='metronome/'">
       <div class="landing-card-name">Metr&oacute;nomo</div>
       <div class="landing-card-desc">control de ritmo y tempo</div>
+    </div>
+    <div class="landing-card" style="--card-color:#6366f1; animation-delay:0.2s" onclick="showRecursos()">
+      <div class="landing-card-name">Recursos</div>
+      <div class="landing-card-desc">enlaces y bibliograf&iacute;a</div>
     </div>
   </div>
 </div>
@@ -913,6 +952,97 @@
   </div>
 </div>
 
+<!-- RECURSOS VIEW -->
+<div id="view-recursos" style="display:none">
+  <div class="region-sticky-header">
+    <div class="region-sub-bar" style="border-bottom:none">
+      <button class="btn-back-sub" onclick="history.back()">&#x2190; Wiki</button>
+      <span class="region-sub-badge">Recursos</span>
+    </div>
+  </div>
+  <div class="recursos-wrap">
+    <div class="home-intro">
+      <h1>Recursos Externos</h1>
+      <p>Bases de datos, revistas y referencias de inter&eacute;s para la pr&aacute;ctica cl&iacute;nica basada en evidencia.</p>
+    </div>
+
+    <div class="recursos-group">
+      <div class="category-title">Evidencia cl&iacute;nica</div>
+      <a class="recursos-item" href="https://pedro.org.au" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">PEDro</div>
+          <div class="recursos-item-desc">physiotherapy evidence database</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+      <a class="recursos-item" href="https://www.cochranelibrary.com" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">Cochrane Library</div>
+          <div class="recursos-item-desc">revisiones sistem&aacute;ticas</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+      <a class="recursos-item" href="https://pubmed.ncbi.nlm.nih.gov" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">PubMed</div>
+          <div class="recursos-item-desc">literatura biom&eacute;dica MEDLINE</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+    </div>
+
+    <div class="recursos-group">
+      <div class="category-title">Revistas</div>
+      <a class="recursos-item" href="https://www.jospt.org" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">JOSPT</div>
+          <div class="recursos-item-desc">journal of orthopaedic &amp; sports PT</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+      <a class="recursos-item" href="https://bjsm.bmj.com" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">BJSM</div>
+          <div class="recursos-item-desc">british journal of sports medicine</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+      <a class="recursos-item" href="https://academic.oup.com/ptj" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">PTJ</div>
+          <div class="recursos-item-desc">physical therapy journal</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+    </div>
+
+    <div class="recursos-group">
+      <div class="category-title">Referencia y formaci&oacute;n</div>
+      <a class="recursos-item" href="https://www.physio-pedia.com" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">Physiopedia</div>
+          <div class="recursos-item-desc">enciclopedia de fisioterapia</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+      <a class="recursos-item" href="https://www.orthobullets.com" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">Orthobullets</div>
+          <div class="recursos-item-desc">referencia ortop&eacute;dica</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+      <a class="recursos-item" href="https://radiopaedia.org" target="_blank" rel="noopener">
+        <div class="recursos-item-body">
+          <div class="recursos-item-name">Radiopaedia</div>
+          <div class="recursos-item-desc">radiolog&iacute;a y diagn&oacute;stico por imagen</div>
+        </div>
+        <span class="recursos-ext-icon">&#x2197;</span>
+      </a>
+    </div>
+  </div>
+</div>
+
 <!-- REGION VIEW -->
 <div id="view-region" style="display:none">
   <div class="region-sticky-header">
@@ -955,8 +1085,8 @@
   </div>
 </div>
 
-<script src="data.js?v=08760fa444f0dbe5d6b7404a9f33cd204561b819"></script>
-<script src="app.js?v=08760fa444f0dbe5d6b7404a9f33cd204561b819"></script>
+<script src="data.js?v=67c230285e9d179eee1133652859706c9a38857b"></script>
+<script src="app.js?v=67c230285e9d179eee1133652859706c9a38857b"></script>
 
 </body>
 </html>
