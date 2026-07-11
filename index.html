@@ -75,6 +75,25 @@
     .app-badge svg { color: var(--card-color, #4f9cf9); display: block; width: 20px; height: 20px; }
     .app-label { display: none; }
 
+    /* SortableJS states: card-ghost is the in-list placeholder marking the
+       drop slot; card-dragging is the floating clone that follows the pointer
+       (forceFallback mode) — Sortable preserves this transform's scale/rotate
+       and only updates the translation on top of it while tracking, so this
+       "lift" look sticks around uninterrupted for the whole drag. */
+    .card-ghost { opacity: 0.35; }
+    .card-dragging {
+      cursor: grabbing; user-select: none; will-change: transform;
+      transform: scale(1.04) rotate(1.5deg);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.55);
+      transition: none;
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .app-info { display: flex; flex-direction: column; gap: 5px; }
+    .app-name { font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500; color: #fff; }
+    .app-desc { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); }
+
     @media (max-width: 639px) {
       nav { grid-template-columns: repeat(4, 1fr); gap: 2px; }
       nav .app-card:last-child:nth-child(odd) { grid-column: auto; }
@@ -95,25 +114,6 @@
       }
       .app-info { display: none; }
     }
-
-    /* SortableJS states: card-ghost is the in-list placeholder marking the
-       drop slot; card-dragging is the floating clone that follows the pointer
-       (forceFallback mode) — Sortable preserves this transform's scale/rotate
-       and only updates the translation on top of it while tracking, so this
-       "lift" look sticks around uninterrupted for the whole drag. */
-    .card-ghost { opacity: 0.35; }
-    .card-dragging {
-      cursor: grabbing; user-select: none; will-change: transform;
-      transform: scale(1.04) rotate(1.5deg);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.55);
-      transition: none;
-    }
-
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-    .app-info { display: flex; flex-direction: column; gap: 5px; }
-    .app-name { font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500; color: #fff; }
-    .app-desc { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); }
 
     /* ── Satellite shell ──────────────────────────────── */
     #sat-shell { position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 10; }
