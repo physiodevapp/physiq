@@ -512,6 +512,284 @@
     }
     .peer-ice-error-inner p { font-size: 0.83rem; color: #f87171; line-height: 1.5; }
 
+    /* ── Copilot ─────────────────────────────────────────── */
+
+    /* Tab — right-edge toggle, visible on all views */
+    #copilot-tab {
+      position: fixed;
+      right: 0; top: 50%; transform: translateY(-50%);
+      z-index: 250;
+      width: 28px; height: 72px;
+      background: #0f1a28;
+      border: 1px solid var(--border); border-right: none;
+      border-radius: 10px 0 0 10px;
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      color: var(--text3);
+      transition: color 0.2s, border-color 0.2s, right 0.3s cubic-bezier(0.32,0.72,0,1), background 0.2s;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (hover: hover) {
+      #copilot-tab:hover { color: #a78bfa; border-color: rgba(167,139,250,0.4); background: #141e2e; }
+    }
+    #copilot-tab.cop-tab-active    { color: #a78bfa; border-color: rgba(167,139,250,0.5); background: #131a2e; }
+    #copilot-tab.cop-tab-listening { color: #a78bfa; }
+
+    /* Tab moves left when desktop panel is open */
+    @media (min-width: 768px) {
+      body.cop-panel-open #copilot-tab { right: 360px; }
+    }
+
+    /* Tab: listening pulse dot */
+    #copilot-tab-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #a78bfa;
+      animation: cop-blink 1.4s ease-in-out infinite;
+    }
+    @keyframes cop-blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    /* Tab: suggestion count badge */
+    #copilot-tab-badge {
+      position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+      background: #ef4444; color: #fff;
+      font-family: system-ui, sans-serif; font-size: 9px; font-weight: 700;
+      min-width: 16px; height: 16px; border-radius: 8px; padding: 0 3px;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+
+    /* Mobile: pill FAB at bottom-right instead of side tab */
+    @media (max-width: 767px) {
+      #copilot-tab {
+        width: auto; height: 36px;
+        flex-direction: row; gap: 6px;
+        padding: 0 12px 0 10px;
+        border-radius: 18px 18px 0 0;
+        border-right: 1px solid var(--border); border-bottom: none;
+        top: auto; bottom: 0;
+        right: 72px;
+        transform: none;
+      }
+      #copilot-tab-badge { top: -8px; left: auto; right: -4px; transform: none; }
+    }
+
+    /* ── Panel ───────────────────────────────────────────── */
+    #copilot-overlay {
+      position: fixed; inset: 0; z-index: 195;
+      background: rgba(10,13,18,0.55);
+      backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    #copilot-overlay.open { opacity: 1; pointer-events: all; }
+    @media (min-width: 768px) { #copilot-overlay { display: none; } }
+
+    #copilot-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 360px; z-index: 200;
+      background: #0d1420;
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+      will-change: transform;
+    }
+    #copilot-panel.open { transform: translateX(0); }
+
+    @media (max-width: 767px) {
+      #copilot-panel {
+        top: auto; left: 0; right: 0; bottom: 0;
+        width: 100%; height: 84dvh;
+        border-left: none; border-top: 1px solid var(--border);
+        border-radius: 20px 20px 0 0;
+        transform: translateY(100%);
+      }
+      #copilot-panel.open { transform: translateY(0); }
+    }
+
+    /* Drag handle (mobile only) */
+    #copilot-handle {
+      width: 36px; height: 4px;
+      background: var(--border2); border-radius: 2px;
+      margin: 10px auto 0; flex-shrink: 0;
+      touch-action: none; cursor: grab;
+    }
+    @media (min-width: 768px) { #copilot-handle { display: none; } }
+
+    /* Panel header */
+    .cop-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px 14px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .cop-hdr-left { display: flex; align-items: center; gap: 9px; }
+
+    .cop-hdr-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border2); flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .cop-hdr-dot.cop-dot-on   { background: #a78bfa; animation: cop-blink 1.4s ease-in-out infinite; }
+    .cop-hdr-dot.cop-dot-done { background: #38d9a9; animation: none; }
+
+    .cop-hdr-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem; color: #e8edf2; font-weight: 400; letter-spacing: -0.01em;
+    }
+    .cop-hdr-status {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    .cop-close-btn {
+      width: 30px; height: 30px; border-radius: 50%; border: none;
+      background: transparent; color: var(--text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s; flex-shrink: 0;
+    }
+    .cop-close-btn:hover { background: rgba(255,255,255,0.07); color: #e8edf2; }
+
+    /* Suggestions area */
+    #copilot-suggestions {
+      flex: 1; overflow-y: auto; overscroll-behavior: contain;
+      padding: 14px 14px 0;
+      display: flex; flex-direction: column; gap: 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .cop-empty-state {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 24px 8px;
+    }
+    .cop-empty-state p {
+      text-align: center; font-size: 0.82rem; color: var(--text3);
+      line-height: 1.6; max-width: 220px;
+    }
+
+    /* Suggestion cards */
+    .cop-card {
+      border: 1px solid var(--border);
+      border-left-width: 3px;
+      border-radius: 9px;
+      padding: 11px 13px;
+      background: #111a28;
+      flex-shrink: 0;
+    }
+    .cop-card-redflag      { border-left-color: #ef4444; }
+    .cop-card-followup     { border-left-color: #4f9cf9; }
+    .cop-card-differential { border-left-color: #fb923c; }
+    .cop-card-test         { border-left-color: #38d9a9; }
+
+    .cop-card-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .cop-card-type {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.67rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text3);
+    }
+    .cop-card-redflag      .cop-card-type { color: #f87171; }
+    .cop-card-followup     .cop-card-type { color: #60a5fa; }
+    .cop-card-differential .cop-card-type { color: #fb923c; }
+    .cop-card-test         .cop-card-type { color: #34d399; }
+
+    .cop-card-x {
+      width: 22px; height: 22px; border-radius: 50%; border: none;
+      background: transparent; color: var(--text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.12s, color 0.12s; flex-shrink: 0;
+    }
+    .cop-card-x:hover { background: rgba(255,255,255,0.08); color: #e8edf2; }
+
+    .cop-card-text {
+      font-size: 0.845rem; color: #c8d8e8; line-height: 1.55;
+    }
+
+    /* Transcript section */
+    .cop-transcript-section {
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .cop-transcript-toggle {
+      width: 100%; padding: 11px 16px;
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.07em;
+      transition: color 0.15s;
+    }
+    .cop-transcript-toggle:hover { color: #8aa4bc; }
+
+    .cop-tx-chevron {
+      transition: transform 0.2s;
+    }
+    .cop-tx-chevron-open { transform: rotate(180deg); }
+
+    #copilot-transcript-body { border-top: 1px solid var(--border); }
+
+    #copilot-transcript {
+      max-height: 160px; overflow-y: auto;
+      padding: 10px 14px 12px;
+      display: flex; flex-direction: column; gap: 6px;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .cop-tx-line { display: flex; gap: 8px; align-items: flex-start; }
+    .cop-tx-spk {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.66rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      flex-shrink: 0; padding-top: 1px;
+      min-width: 28px;
+    }
+    .cop-tx-spk-f { color: #a78bfa; }
+    .cop-tx-spk-p { color: #60a5fa; }
+    .cop-tx-text { font-size: 0.8rem; color: #8aa4bc; line-height: 1.5; }
+
+    /* Footer controls */
+    .cop-footer {
+      padding: 12px 14px calc(env(safe-area-inset-bottom, 0px) + 14px);
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .cop-listen-btn {
+      width: 100%; padding: 13px 16px;
+      border-radius: 10px; border: 1px solid rgba(167,139,250,0.25);
+      background: rgba(167,139,250,0.08); color: #c4b5fd;
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+    }
+    .cop-listen-btn:hover { background: rgba(167,139,250,0.14); border-color: rgba(167,139,250,0.4); }
+    .cop-listen-btn:active { opacity: 0.75; }
+    .cop-listen-btn.cop-btn-on {
+      background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #fca5a5;
+    }
+    .cop-listen-btn.cop-btn-on:hover { background: rgba(239,68,68,0.16); }
+
+    .cop-soap-btn {
+      width: 100%; padding: 11px 16px;
+      border-radius: 10px; border: 1px solid var(--border);
+      background: transparent; color: #8aa4bc;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500;
+      cursor: pointer; text-align: center;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .cop-soap-btn:hover { border-color: #38d9a9; color: #38d9a9; background: rgba(56,217,169,0.06); }
+    .cop-soap-btn:active { opacity: 0.75; }
+
     /* ── Session conflict banner ─────────────────────────── */
     #peer-conflict-banner {
       position: fixed; inset: 0; z-index: 600;
@@ -742,6 +1020,74 @@
     <span class="rw-confirm-label">¿Descartar?</span>
     <button class="rw-btn rw-confirm-yes" onclick="recCmd('discard')" aria-label="Confirmar descarte">Sí</button>
     <button class="rw-btn rw-confirm-no"  onclick="hideDiscardConfirm()" aria-label="Cancelar">No</button>
+  </div>
+
+</div>
+
+<!-- ── Copilot overlay (mobile backdrop) ─────────────────────────────── -->
+<div id="copilot-overlay" onclick="copilotHide()"></div>
+
+<!-- ── Copilot tab (right-edge toggle, always visible) ───────────────── -->
+<button id="copilot-tab" onclick="copilotToggle()" aria-label="Asistente clínico Copilot">
+  <!-- Brain / sparkle icon -->
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
+    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
+  </svg>
+  <div id="copilot-tab-dot" hidden></div>
+  <div id="copilot-tab-badge" hidden></div>
+</button>
+
+<!-- ── Copilot panel ─────────────────────────────────────────────────── -->
+<div id="copilot-panel" role="complementary" aria-label="Copilot clínico">
+
+  <!-- Mobile drag handle -->
+  <div id="copilot-handle"></div>
+
+  <!-- Header -->
+  <div class="cop-hdr">
+    <div class="cop-hdr-left">
+      <span class="cop-hdr-dot" id="copilot-hdr-dot"></span>
+      <span class="cop-hdr-title">Copilot</span>
+      <span class="cop-hdr-status" id="copilot-status">Inactivo</span>
+    </div>
+    <button class="cop-close-btn" onclick="copilotHide()" aria-label="Cerrar Copilot">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- Suggestions -->
+  <div id="copilot-suggestions">
+    <div class="cop-empty-state" id="copilot-empty">
+      <p>Activa el Copilot para recibir sugerencias clínicas durante la consulta.</p>
+    </div>
+  </div>
+
+  <!-- Transcript -->
+  <div class="cop-transcript-section">
+    <button class="cop-transcript-toggle" onclick="copilotToggleTranscript()" aria-expanded="false">
+      <span>Transcripción</span>
+      <svg class="cop-tx-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div id="copilot-transcript-body" hidden>
+      <div id="copilot-transcript"></div>
+    </div>
+  </div>
+
+  <!-- Controls footer -->
+  <div class="cop-footer">
+    <button class="cop-listen-btn" id="copilot-listen-btn" onclick="copilotToggleListen()">
+      <!-- Mic icon — swaps to stop square when listening -->
+      <svg id="copilot-listen-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+      </svg>
+      <span id="copilot-listen-label">Empezar a escuchar</span>
+    </button>
+    <button class="cop-soap-btn" id="copilot-soap-btn" onclick="copilotGenerateSOAP()" hidden>
+      Generar nota SOAP
+    </button>
   </div>
 
 </div>
@@ -1653,5 +1999,6 @@ if ('serviceWorker' in navigator) {
 </script>
 <script src="lib/recorder.js"></script>
 <script src="lib/peer.js"></script>
+<script src="lib/copilot.js"></script>
 </body>
 </html>
