@@ -62,14 +62,39 @@
       animation: fadeUp 0.3s ease both;
       user-select: none;
     }
-    .app-card::before {
-      content: ''; position: absolute;
-      top: 0; left: 0; right: 0; height: 2px;
-      background: var(--card-color, #4f9cf9);
-      opacity: 0.6;
-    }
+    .app-card::before { display: none; }
     .app-card:hover { border-color: var(--border2); }
     .app-card:active { transform: scale(0.97); }
+
+    .app-badge {
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: color-mix(in srgb, var(--card-color, #4f9cf9) 13%, transparent);
+      border: 1px solid color-mix(in srgb, var(--card-color, #4f9cf9) 20%, transparent);
+    }
+    .app-badge svg { color: var(--card-color, #4f9cf9); display: block; width: 20px; height: 20px; }
+    .app-label { display: none; }
+
+    @media (max-width: 639px) {
+      nav { grid-template-columns: repeat(4, 1fr); gap: 2px; }
+      nav .app-card:last-child:nth-child(odd) { grid-column: auto; }
+      .app-card {
+        flex-direction: column; align-items: center;
+        padding: 8px 4px 10px; gap: 6px;
+        background: transparent; border-color: transparent; border-radius: 10px;
+      }
+      .app-card:hover { background: rgba(255,255,255,0.05); border-color: transparent; }
+      .app-card:active { transform: scale(0.91); }
+      .app-badge { width: 44px; height: 44px; border-radius: 12px; }
+      .app-badge svg { width: 22px; height: 22px; }
+      .app-label {
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 0.6rem; font-weight: 500; color: var(--text2);
+        text-align: center; line-height: 1.25; max-width: 60px;
+      }
+      .app-info { display: none; }
+    }
 
     /* SortableJS states: card-ghost is the in-list placeholder marking the
        drop slot; card-dragging is the floating clone that follows the pointer
@@ -608,54 +633,130 @@
   </header>
   <nav>
     <button class="app-card" data-sat="report" style="--card-color:#10b981" onclick="openSat('report')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="8" y1="13" x2="16" y2="13"/>
+          <line x1="8" y1="17" x2="13" y2="17"/>
+        </svg>
+      </div>
+      <span class="app-label">Informe</span>
       <div class="app-info">
         <span class="app-name">Informe con IA</span>
         <span class="app-desc">Generación de informes asistida</span>
       </div>
     </button>
     <button class="app-card" data-sat="assessment" style="--card-color:#3b82f6" onclick="openSat('assessment')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="4.5" r="3" fill="currentColor" stroke="none"/>
+          <line x1="12" y1="7.5" x2="12" y2="11"/>
+          <path d="M7 17L7 11L17 11L17 17"/>
+          <circle cx="7" cy="20" r="3" fill="currentColor" stroke="none"/>
+          <circle cx="17" cy="20" r="3" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <span class="app-label">Valoración</span>
       <div class="app-info">
         <span class="app-name">Valoración clínica guiada</span>
         <span class="app-desc">Exploración y registro</span>
       </div>
     </button>
     <button class="app-card" data-sat="questionnaire" style="--card-color:#14b8a6" onclick="openSat('questionnaire')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+      </div>
+      <span class="app-label">Cuestionarios</span>
       <div class="app-info">
         <span class="app-name">Cuestionarios</span>
         <span class="app-desc">Escalas y cuestionarios validados</span>
       </div>
     </button>
     <button class="app-card" data-sat="motion" style="--card-color:#8b5cf6" onclick="openSat('motion')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="20" x2="20" y2="20"/>
+          <line x1="4" y1="20" x2="12" y2="4"/>
+          <path d="M7 14A7 7 0 0 1 11 20"/>
+          <circle cx="12" cy="4" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <span class="app-label">ROM</span>
       <div class="app-info">
         <span class="app-name">ROM · Inclinómetro</span>
         <span class="app-desc">Medición de rango articular</span>
       </div>
     </button>
     <button class="app-card" data-sat="force" style="--card-color:#fb923c" onclick="openSat('force')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="12" x2="16" y2="12"/>
+          <rect x="3" y="9" width="5" height="6" rx="1.5"/>
+          <rect x="16" y="9" width="5" height="6" rx="1.5"/>
+        </svg>
+      </div>
+      <span class="app-label">Fuerza</span>
       <div class="app-info">
         <span class="app-name">Fuerza · Dinamómetro</span>
         <span class="app-desc">Fuerza isométrica y asimetría</span>
       </div>
     </button>
     <button class="app-card" data-sat="balance" style="--card-color:#22d3ee" onclick="openSat('balance')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="3" x2="12" y2="21"/>
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <path d="M4 7L1 14h6z"/>
+          <path d="M20 7l3 7h-6z"/>
+        </svg>
+      </div>
+      <span class="app-label">Equilibrio</span>
       <div class="app-info">
         <span class="app-name">Equilibrio · Acelerómetro</span>
         <span class="app-desc">Evaluación de equilibrio estático</span>
       </div>
     </button>
     <button class="app-card" data-sat="jump" style="--card-color:#f43f5e" onclick="openSat('jump')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 19 12 14 18 19"/>
+          <polyline points="6 13 12 8 18 13"/>
+          <polyline points="6 7 12 2 18 7"/>
+        </svg>
+      </div>
+      <span class="app-label">Saltos</span>
       <div class="app-info">
         <span class="app-name">Saltos · Acelerómetro</span>
         <span class="app-desc">Potencia en tren inferior</span>
       </div>
     </button>
     <button class="app-card" data-sat="kinematics" style="--card-color:#0ea5e9" onclick="openSat('kinematics')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 7l-7 5 7 5V7z"/>
+          <rect x="1" y="5" width="15" height="14" rx="2"/>
+        </svg>
+      </div>
+      <span class="app-label">Cinemática</span>
       <div class="app-info">
         <span class="app-name">Cinemática · Cámara</span>
         <span class="app-desc">Ángulos articulares en tiempo real</span>
       </div>
     </button>
     <button class="app-card" data-sat="wiki" style="--card-color:#6366f1" onclick="openSat('wiki')">
+      <div class="app-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+      </div>
+      <span class="app-label">FisioWiki</span>
       <div class="app-info">
         <span class="app-name">FisioWiki</span>
         <span class="app-desc">Referencia clínica</span>
