@@ -95,17 +95,17 @@
     .app-desc { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); }
 
     @media (max-width: 639px) {
-      nav { grid-template-columns: repeat(3, 1fr); gap: 2px; }
+      nav { grid-template-columns: repeat(3, 1fr); gap: 0; }
       nav .app-card:last-child:nth-child(odd) { grid-column: auto; }
       .app-card {
         flex-direction: column; align-items: center;
-        padding: 8px 4px 10px; gap: 6px;
+        padding: 12px 4px 14px; gap: 8px;
         background: transparent; border-color: transparent; border-radius: 10px;
       }
       .app-card:hover { background: rgba(255,255,255,0.05); border-color: transparent; }
       .app-card:active { transform: scale(0.91); }
-      .app-badge { width: 44px; height: 44px; border-radius: 12px; }
-      .app-badge svg { width: 22px; height: 22px; }
+      .app-badge { width: 62px; height: 62px; border-radius: 16px; }
+      .app-badge svg { width: 28px; height: 28px; }
       .app-label {
         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
         overflow: hidden;
