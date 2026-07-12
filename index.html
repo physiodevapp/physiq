@@ -2209,6 +2209,10 @@ if ('serviceWorker' in navigator) {
 </script>
 <script src="lib/recorder.js"></script>
 <script src="lib/peer.js"></script>
+<script>
+  // Set this to your deployed Cloudflare Worker URL after running `wrangler deploy`
+  window.PHYSIQ_COPILOT_WORKER = '';
+</script>
 <script src="lib/copilot.js"></script>
 </body>
 </html>
