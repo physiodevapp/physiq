@@ -107,10 +107,10 @@
       .app-badge { width: 80px; height: 80px; border-radius: 20px; }
       .app-badge svg { width: 38px; height: 38px; }
       .app-label {
-        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-        overflow: hidden;
-        font-size: 0.62rem; font-weight: 500; color: var(--text2);
-        text-align: center; line-height: 1.25; max-width: 90px;
+        display: block;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        font-size: 0.7rem; font-weight: 500; color: var(--text2);
+        text-align: center; max-width: 100px;
       }
       .app-info { display: none; }
     }
