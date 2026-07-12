@@ -1973,49 +1973,71 @@ function updateNavConnectors() {
 
   const W = navRect.width;
   const H = r[8].b;
-  const badgePT = 8;   // padding-top of .app-card on mobile
-  const badgeH  = 80;  // badge height on mobile
-  const badgeW  = 80;  // badge width on mobile
-
-  // Side padding between tile edge and badge edge (horizontal)
+  const badgePT = 8, badgeH = 80, badgeW = 80;
   const tileW   = r[0].r - r[0].l;
   const sidePad = Math.max(0, (tileW - badgeW) / 2);
 
-  // Connector endpoints reach the badge edge (not the tile edge):
-  // — horizontal connectors go from badge right-edge to badge left-edge across the gap
-  const hAx1 = r[0].r - sidePad, hAx2 = r[1].l + sidePad; // gap A
-  const hBx1 = r[1].r - sidePad, hBx2 = r[2].l + sidePad; // gap B
-  // — vertical connectors go from badge bottom to badge top across the gap
-  const vPy1 = r[2].t + badgePT + badgeH,  vPy2 = r[5].t + badgePT; // gap P (col3)
-  const vQy1 = r[3].t + badgePT + badgeH,  vQy2 = r[6].t + badgePT; // gap Q (col1)
+  // Horizontal connectors: badge right-edge → badge left-edge (through horizontal gap)
+  const hAx1 = r[0].r - sidePad, hAx2 = r[1].l + sidePad;
+  const hBx1 = r[1].r - sidePad, hBx2 = r[2].l + sidePad;
+  // Vertical connectors: tile bottom-edge → badge top (avoids label area of upper tile)
+  const vPy1 = r[2].b, vPy2 = r[5].t + badgePT;
+  const vQy1 = r[3].b, vQy2 = r[6].t + badgePT;
 
-  // Badge-centre Y per row and badge-centre X per column (for alignment)
-  const y1 = r[0].t + badgePT + badgeH / 2;
-  const y2 = r[3].t + badgePT + badgeH / 2;
-  const y3 = r[6].t + badgePT + badgeH / 2;
+  const rowY = [
+    r[0].t + badgePT + badgeH / 2,
+    r[3].t + badgePT + badgeH / 2,
+    r[6].t + badgePT + badgeH / 2,
+  ];
   const col1x = r[0].cx, col3x = r[2].cx;
 
-  const st = `stroke="url(#ncg)" stroke-width="2.5"`;
+  // [sx1, sy1, sx2, sy2, isVertical]
+  const segs = [
+    [hAx1, rowY[0], hAx2, rowY[0], false],
+    [hBx1, rowY[0], hBx2, rowY[0], false],
+    [col3x, vPy1, col3x, vPy2, true],
+    [hBx1, rowY[1], hBx2, rowY[1], false],
+    [hAx1, rowY[1], hAx2, rowY[1], false],
+    [col1x, vQy1, col1x, vQy2, true],
+    [hAx1, rowY[2], hAx2, rowY[2], false],
+    [hBx1, rowY[2], hBx2, rowY[2], false],
+  ];
+
+  const sw = 2.5;
+  const fade = 0.22; // opacity-fade proportion at each endpoint
+
+  let defs = `<linearGradient id="ncg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${W}" y2="${H}">
+    <stop offset="0%" stop-color="#4f9cf9"/>
+    <stop offset="48%" stop-color="#8b5cf6"/>
+    <stop offset="100%" stop-color="#34d399"/>
+  </linearGradient>`;
+
+  let lines = '';
+
+  segs.forEach(([sx1, sy1, sx2, sy2, vert], i) => {
+    // Mask gradient aligned with line direction
+    const gx1 = vert ? 0 : sx1, gy1 = vert ? sy1 : 0;
+    const gx2 = vert ? 0 : sx2, gy2 = vert ? sy2 : 0;
+    // Mask rect covers the stroke area
+    const mx = vert ? sx1 - sw : sx1, my = vert ? sy1 : sy1 - sw;
+    const mw = vert ? sw * 2 : sx2 - sx1, mh = vert ? sy2 - sy1 : sw * 2;
+    defs += `
+    <linearGradient id="mg${i}" gradientUnits="userSpaceOnUse" x1="${gx1}" y1="${gy1}" x2="${gx2}" y2="${gy2}">
+      <stop offset="0"        stop-color="#fff" stop-opacity="0"/>
+      <stop offset="${fade}"  stop-color="#fff" stop-opacity="1"/>
+      <stop offset="${1-fade}" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="1"        stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="m${i}" maskUnits="userSpaceOnUse">
+      <rect x="${mx}" y="${my}" width="${mw}" height="${mh}" fill="url(#mg${i})"/>
+    </mask>`;
+    lines += `<line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" stroke="url(#ncg)" stroke-width="${sw}" mask="url(#m${i})"/>`;
+  });
+
   svg.setAttribute('width', W);
   svg.setAttribute('height', H);
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.innerHTML = `
-    <defs>
-      <linearGradient id="ncg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${W}" y2="${H}">
-        <stop offset="0%" stop-color="#4f9cf9"/>
-        <stop offset="48%" stop-color="#8b5cf6"/>
-        <stop offset="100%" stop-color="#34d399"/>
-      </linearGradient>
-    </defs>
-    <line ${st} x1="${hAx1}" y1="${y1}" x2="${hAx2}" y2="${y1}"/>
-    <line ${st} x1="${hBx1}" y1="${y1}" x2="${hBx2}" y2="${y1}"/>
-    <line ${st} x1="${col3x}" y1="${vPy1}" x2="${col3x}" y2="${vPy2}"/>
-    <line ${st} x1="${hBx1}" y1="${y2}" x2="${hBx2}" y2="${y2}"/>
-    <line ${st} x1="${hAx1}" y1="${y2}" x2="${hAx2}" y2="${y2}"/>
-    <line ${st} x1="${col1x}" y1="${vQy1}" x2="${col1x}" y2="${vQy2}"/>
-    <line ${st} x1="${hAx1}" y1="${y3}" x2="${hAx2}" y2="${y3}"/>
-    <line ${st} x1="${hBx1}" y1="${y3}" x2="${hBx2}" y2="${y3}"/>
-  `;
+  svg.innerHTML = `<defs>${defs}</defs>${lines}`;
   svg.style.display = 'block';
 }
 
