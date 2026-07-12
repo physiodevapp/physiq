@@ -95,12 +95,13 @@
     .app-desc { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); }
 
     @media (max-width: 639px) {
-      nav { grid-template-columns: repeat(3, 1fr); gap: 0; }
+      .nav-wrap { position: relative; }
+      nav { grid-template-columns: repeat(3, 1fr); gap: 14px; position: relative; z-index: 1; }
       nav .app-card:last-child:nth-child(odd) { grid-column: auto; }
       .app-card {
         flex-direction: column; align-items: center;
         padding: 8px 2px 10px; gap: 7px;
-        background: transparent; border-color: transparent; border-radius: 10px;
+        background: #0a0d12; border-color: transparent; border-radius: 10px;
       }
       .app-card:hover { background: rgba(255,255,255,0.05); border-color: transparent; }
       .app-card:active { transform: scale(0.91); }
@@ -885,6 +886,8 @@
       </button>
     </div>
   </header>
+  <div class="nav-wrap">
+  <svg id="navConnectorSvg" aria-hidden="true" style="position:absolute;top:0;left:0;pointer-events:none;z-index:0;display:none;"></svg>
   <nav>
     <button class="app-card" data-sat="report" style="--card-color:#10b981" onclick="openSat('report')">
       <div class="app-badge">
@@ -1017,6 +1020,7 @@
       </div>
     </button>
   </nav>
+  </div>
 </div>
 
 <!-- ── Satellite shell ────────────────────────────────────────────── -->
@@ -1944,6 +1948,67 @@ const _PRELOAD = Object.keys(SATS).filter(k => k !== 'wiki');
 requestIdleCallback
   ? requestIdleCallback(() => { _PRELOAD.forEach(k => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = SATS[k]; }); })
   : setTimeout(() => { _PRELOAD.forEach(k => { const f = document.getElementById('sat-' + k); if (!f.src) f.src = SATS[k]; }); }, 1000);
+
+// ── Mobile nav connectors ─────────────────────────────────────────
+function updateNavConnectors() {
+  const svg = document.getElementById('navConnectorSvg');
+  if (!svg) return;
+  if (window.innerWidth > 639) { svg.style.display = 'none'; return; }
+
+  const nav = document.querySelector('nav');
+  const cards = [...nav.querySelectorAll('.app-card')];
+  if (cards.length < 9) return;
+
+  const navRect = nav.getBoundingClientRect();
+  const r = cards.map(c => {
+    const b = c.getBoundingClientRect();
+    return { l: b.left - navRect.left, r: b.right - navRect.left,
+             t: b.top  - navRect.top,  b: b.bottom - navRect.top,
+             cx: (b.left + b.right) / 2 - navRect.left };
+  });
+
+  const W = navRect.width;
+  const H = r[8].b;
+  const badgeOffY = 8 + 40; // padding-top + half badge-height
+
+  // Horizontal gap corridor X edges
+  const gAx1 = r[0].r, gAx2 = r[1].l;
+  const gBx1 = r[1].r, gBx2 = r[2].l;
+  // Vertical gap corridor Y edges
+  const gPy1 = r[0].b, gPy2 = r[3].t;
+  const gQy1 = r[3].b, gQy2 = r[6].t;
+  // Badge-centre Y per row
+  const y1 = r[0].t + badgeOffY, y2 = r[3].t + badgeOffY, y3 = r[6].t + badgeOffY;
+  // Column-centre X for the turn connectors
+  const col1x = r[0].cx, col3x = r[2].cx;
+
+  const st = `stroke="url(#ncg)" stroke-width="2.5"`;
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="ncg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${W}" y2="${H}">
+        <stop offset="0%" stop-color="#4f9cf9"/>
+        <stop offset="48%" stop-color="#8b5cf6"/>
+        <stop offset="100%" stop-color="#34d399"/>
+      </linearGradient>
+    </defs>
+    <line ${st} x1="${gAx1}" y1="${y1}"  x2="${gAx2}"  y2="${y1}"/>
+    <line ${st} x1="${gBx1}" y1="${y1}"  x2="${gBx2}"  y2="${y1}"/>
+    <line ${st} x1="${col3x}" y1="${gPy1}" x2="${col3x}" y2="${gPy2}"/>
+    <line ${st} x1="${gBx1}" y1="${y2}"  x2="${gBx2}"  y2="${y2}"/>
+    <line ${st} x1="${gAx1}" y1="${y2}"  x2="${gAx2}"  y2="${y2}"/>
+    <line ${st} x1="${col1x}" y1="${gQy1}" x2="${col1x}" y2="${gQy2}"/>
+    <line ${st} x1="${gAx1}" y1="${y3}"  x2="${gAx2}"  y2="${y3}"/>
+    <line ${st} x1="${gBx1}" y1="${y3}"  x2="${gBx2}"  y2="${y3}"/>
+  `;
+  svg.style.display = 'block';
+}
+
+document.addEventListener('DOMContentLoaded', updateNavConnectors);
+let _ncResizeTimer;
+window.addEventListener('resize', () => { clearTimeout(_ncResizeTimer); _ncResizeTimer = setTimeout(updateNavConnectors, 100); });
 
 // ── SW ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
