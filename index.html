@@ -101,11 +101,15 @@
       .app-card {
         flex-direction: column; align-items: center;
         padding: 8px 2px 10px; gap: 7px;
-        background: #0a0d12; border-color: transparent; border-radius: 10px;
+        background: transparent; border-color: transparent; border-radius: 10px;
       }
       .app-card:hover { background: rgba(255,255,255,0.05); border-color: transparent; }
       .app-card:active { transform: scale(0.91); }
-      .app-badge { width: 80px; height: 80px; border-radius: 20px; }
+      .app-badge {
+        width: 80px; height: 80px; border-radius: 20px;
+        background: color-mix(in srgb, var(--card-color, #4f9cf9) 15%, #0a0d12);
+        border-color: color-mix(in srgb, var(--card-color, #4f9cf9) 22%, #0a0d12);
+      }
       .app-badge svg { width: 38px; height: 38px; }
       .app-label {
         display: block;
@@ -1969,17 +1973,26 @@ function updateNavConnectors() {
 
   const W = navRect.width;
   const H = r[8].b;
-  const badgeOffY = 8 + 40; // padding-top + half badge-height
+  const badgePT = 8;   // padding-top of .app-card on mobile
+  const badgeH  = 80;  // badge height on mobile
+  const badgeW  = 80;  // badge width on mobile
 
-  // Horizontal gap corridor X edges
-  const gAx1 = r[0].r, gAx2 = r[1].l;
-  const gBx1 = r[1].r, gBx2 = r[2].l;
-  // Vertical gap corridor Y edges
-  const gPy1 = r[0].b, gPy2 = r[3].t;
-  const gQy1 = r[3].b, gQy2 = r[6].t;
-  // Badge-centre Y per row
-  const y1 = r[0].t + badgeOffY, y2 = r[3].t + badgeOffY, y3 = r[6].t + badgeOffY;
-  // Column-centre X for the turn connectors
+  // Side padding between tile edge and badge edge (horizontal)
+  const tileW   = r[0].r - r[0].l;
+  const sidePad = Math.max(0, (tileW - badgeW) / 2);
+
+  // Connector endpoints reach the badge edge (not the tile edge):
+  // — horizontal connectors go from badge right-edge to badge left-edge across the gap
+  const hAx1 = r[0].r - sidePad, hAx2 = r[1].l + sidePad; // gap A
+  const hBx1 = r[1].r - sidePad, hBx2 = r[2].l + sidePad; // gap B
+  // — vertical connectors go from badge bottom to badge top across the gap
+  const vPy1 = r[2].t + badgePT + badgeH,  vPy2 = r[5].t + badgePT; // gap P (col3)
+  const vQy1 = r[3].t + badgePT + badgeH,  vQy2 = r[6].t + badgePT; // gap Q (col1)
+
+  // Badge-centre Y per row and badge-centre X per column (for alignment)
+  const y1 = r[0].t + badgePT + badgeH / 2;
+  const y2 = r[3].t + badgePT + badgeH / 2;
+  const y3 = r[6].t + badgePT + badgeH / 2;
   const col1x = r[0].cx, col3x = r[2].cx;
 
   const st = `stroke="url(#ncg)" stroke-width="2.5"`;
@@ -1994,14 +2007,14 @@ function updateNavConnectors() {
         <stop offset="100%" stop-color="#34d399"/>
       </linearGradient>
     </defs>
-    <line ${st} x1="${gAx1}" y1="${y1}"  x2="${gAx2}"  y2="${y1}"/>
-    <line ${st} x1="${gBx1}" y1="${y1}"  x2="${gBx2}"  y2="${y1}"/>
-    <line ${st} x1="${col3x}" y1="${gPy1}" x2="${col3x}" y2="${gPy2}"/>
-    <line ${st} x1="${gBx1}" y1="${y2}"  x2="${gBx2}"  y2="${y2}"/>
-    <line ${st} x1="${gAx1}" y1="${y2}"  x2="${gAx2}"  y2="${y2}"/>
-    <line ${st} x1="${col1x}" y1="${gQy1}" x2="${col1x}" y2="${gQy2}"/>
-    <line ${st} x1="${gAx1}" y1="${y3}"  x2="${gAx2}"  y2="${y3}"/>
-    <line ${st} x1="${gBx1}" y1="${y3}"  x2="${gBx2}"  y2="${y3}"/>
+    <line ${st} x1="${hAx1}" y1="${y1}" x2="${hAx2}" y2="${y1}"/>
+    <line ${st} x1="${hBx1}" y1="${y1}" x2="${hBx2}" y2="${y1}"/>
+    <line ${st} x1="${col3x}" y1="${vPy1}" x2="${col3x}" y2="${vPy2}"/>
+    <line ${st} x1="${hBx1}" y1="${y2}" x2="${hBx2}" y2="${y2}"/>
+    <line ${st} x1="${hAx1}" y1="${y2}" x2="${hAx2}" y2="${y2}"/>
+    <line ${st} x1="${col1x}" y1="${vQy1}" x2="${col1x}" y2="${vQy2}"/>
+    <line ${st} x1="${hAx1}" y1="${y3}" x2="${hAx2}" y2="${y3}"/>
+    <line ${st} x1="${hBx1}" y1="${y3}" x2="${hBx2}" y2="${y3}"/>
   `;
   svg.style.display = 'block';
 }
