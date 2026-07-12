@@ -1996,8 +1996,8 @@ function updateNavConnectors() {
   const homeRect = homeEl ? homeEl.getBoundingClientRect() : null;
   const rPad    = homeRect ? homeRect.right - navRect.right : 24;
   const lPad    = homeRect ? navRect.left - homeRect.left  : 24;
-  const outerRx = W + rPad * 0.6;
-  const outerLx = -(lPad * 0.6);
+  const outerRx = W + rPad * 0.3;
+  const outerLx = -(lPad * 0.3);
 
   // Corner radius: max 8 px, capped at 55 % of each arm length
   const cr = Math.min(8, (outerRx - rBx) * 0.55, (lBx - outerLx) * 0.55);
