@@ -1,0 +1,14 @@
+name            = "physiq-copilot"
+main            = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# Overridden in production via `wrangler deploy --var` or dashboard env vars
+ALLOWED_ORIGIN = "https://physiodevapp.github.io"
+
+# Secrets — set with `wrangler secret put <NAME>`:
+#   DEEPGRAM_API_KEY
+#   ANTHROPIC_API_KEY
+#   OPENAI_API_KEY
+#   SUPABASE_URL
+#   SUPABASE_ANON_KEY
