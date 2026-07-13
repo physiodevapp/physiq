@@ -1792,6 +1792,41 @@ function peerShowConflict(local, remote) {
       </div>
     </div>`;
   document.body.appendChild(el);
+
+  const sheet = el.querySelector('.peer-conflict-sheet');
+  const EASE  = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+  let startY = 0, startTime = 0, dragging = false, delta = 0;
+  sheet.addEventListener('touchstart', e => {
+    if (e.touches[0].clientY - sheet.getBoundingClientRect().top > 72) return;
+    startY = e.touches[0].clientY; startTime = Date.now(); delta = 0; dragging = true;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+  sheet.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    delta = Math.max(0, e.touches[0].clientY - startY);
+    sheet.style.transform = delta > 0 ? `translateY(${delta}px)` : '';
+  }, { passive: true });
+  const _onRelease = () => {
+    if (!dragging) return;
+    dragging = false;
+    const v = delta / Math.max(1, Date.now() - startTime);
+    if (delta > 80 || v > 0.3) {
+      sheet.style.transition = EASE;
+      sheet.style.transform  = 'translateY(110%)';
+      setTimeout(() => peerDismissConflict(), 300);
+    } else {
+      sheet.style.transition = EASE;
+      sheet.style.transform  = '';
+      setTimeout(() => { sheet.style.transition = ''; }, 310);
+    }
+  };
+  sheet.addEventListener('touchend',    _onRelease, { passive: true });
+  sheet.addEventListener('touchcancel', () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transform  = '';
+    sheet.style.transition = '';
+  }, { passive: true });
 }
 
 function peerDismissConflict() {
