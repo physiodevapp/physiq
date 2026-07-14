@@ -80,7 +80,8 @@ async function handleTranscribe(request, env) {
 
   let dgResp;
   try {
-    dgResp = await fetch(`wss://api.deepgram.com/v1/listen?${params}`, {
+    // CF Workers fetch() requires https:// (not wss://) for outbound WebSocket upgrades
+    dgResp = await fetch(`https://api.deepgram.com/v1/listen?${params}`, {
       headers: {
         'Authorization': `Token ${env.DEEPGRAM_API_KEY}`,
         'Upgrade': 'websocket',
