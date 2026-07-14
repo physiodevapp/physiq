@@ -65,8 +65,6 @@ async function handleTranscribe(request, env) {
     return new Response('Expected WebSocket upgrade', { status: 426 });
   }
 
-  console.log('[dg] key length:', (env.DEEPGRAM_API_KEY || '').length);
-
   const url    = new URL(request.url);
   const params = new URLSearchParams(url.search);
   if (!params.has('model'))            params.set('model',            'nova-3');
@@ -87,12 +85,10 @@ async function handleTranscribe(request, env) {
         'Upgrade': 'websocket',
       },
     });
-  } catch (e) {
-    console.log('[dg] fetch error:', String(e));
+  } catch {
     return new Response('Deepgram unreachable', { status: 502 });
   }
 
-  console.log('[dg] status:', dgResp.status, 'hasWS:', !!dgResp.webSocket);
   const dg = dgResp.webSocket;
   if (!dg) return new Response('Deepgram handshake failed', { status: 502 });
   dg.accept();
