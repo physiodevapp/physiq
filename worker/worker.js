@@ -75,6 +75,7 @@ async function handleTranscribe(request, env) {
   if (!params.has('interim_results'))  params.set('interim_results',  'true');
   if (!params.has('vad_events'))       params.set('vad_events',       'true');
   if (!params.has('utterance_end_ms')) params.set('utterance_end_ms', '1500');
+  if (!params.has('diarize'))          params.set('diarize',          'true');
 
   let dgResp;
   try {
