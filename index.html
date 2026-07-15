@@ -1452,6 +1452,12 @@ function _saveCardOrder() {
   localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order));
 }
 
+let _swapPreview = null;
+
+function _removeSwapPreview() {
+  if (_swapPreview) { _swapPreview.remove(); _swapPreview = null; }
+}
+
 const cardSortable = Sortable.create(navEl, {
   disabled: true,
   animation: 150,
@@ -1462,7 +1468,22 @@ const cardSortable = Sortable.create(navEl, {
   swap: true,
   swapClass: 'card-swap',
   swapThreshold: 0.65,
-  onEnd: _saveCardOrder,
+  onMove(evt) {
+    _removeSwapPreview();
+    const target = evt.related;
+    if (!target || !target.classList.contains('app-card')) return;
+    const wrapRect = navEl.closest('.nav-wrap').getBoundingClientRect();
+    const ghostRect = evt.dragged.getBoundingClientRect();
+    const clone = target.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.style.cssText = `position:absolute;top:${ghostRect.top - wrapRect.top}px;left:${ghostRect.left - wrapRect.left}px;width:${ghostRect.width}px;height:${ghostRect.height}px;opacity:0.35;pointer-events:none;z-index:2;margin:0;box-sizing:border-box;`;
+    navEl.closest('.nav-wrap').appendChild(clone);
+    _swapPreview = clone;
+  },
+  onEnd() {
+    _removeSwapPreview();
+    _saveCardOrder();
+  },
 });
 
 function toggleReorderMode() {
