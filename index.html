@@ -1476,12 +1476,23 @@ function _saveCardOrder() {
   localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order));
 }
 
-let _swapPreview = null;
+let _swapClones = [];
+let _swapTarget = null;
 let _swapGhost = null;
 
 function _removeSwapPreview() {
-  if (_swapPreview) { _swapPreview.remove(); _swapPreview = null; }
+  _swapClones.forEach(c => c.remove());
+  _swapClones = [];
+  _swapTarget = null;
   if (_swapGhost) { _swapGhost.style.opacity = ''; _swapGhost = null; }
+}
+
+function _makeFixedClone(src, rect) {
+  const c = src.cloneNode(true);
+  c.removeAttribute('id');
+  c.style.cssText = `position:fixed;top:${rect.top}px;left:${rect.left}px;width:${rect.width}px;height:${rect.height}px;opacity:0.35;pointer-events:none;z-index:9999;margin:0;box-sizing:border-box;`;
+  document.body.appendChild(c);
+  return c;
 }
 
 const cardSortable = Sortable.create(navEl, {
@@ -1495,15 +1506,18 @@ const cardSortable = Sortable.create(navEl, {
   swapClass: 'card-swap',
   swapThreshold: 0.65,
   onMove(evt) {
-    _removeSwapPreview();
     const target = evt.related;
-    if (!target || !target.classList.contains('app-card')) return;
-    const ghostRect = evt.dragged.getBoundingClientRect();
-    const clone = target.cloneNode(true);
-    clone.removeAttribute('id');
-    clone.style.cssText = `position:fixed;top:${ghostRect.top}px;left:${ghostRect.left}px;width:${ghostRect.width}px;height:${ghostRect.height}px;opacity:0.35;pointer-events:none;z-index:9999;margin:0;box-sizing:border-box;`;
-    document.body.appendChild(clone);
-    _swapPreview = clone;
+    if (!target || !target.classList.contains('app-card')) {
+      _removeSwapPreview();
+      return;
+    }
+    if (target === _swapTarget) return;
+    _removeSwapPreview();
+    _swapTarget = target;
+    const ghostRect  = evt.dragged.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    _swapClones.push(_makeFixedClone(target,      ghostRect));   // B at A's slot
+    _swapClones.push(_makeFixedClone(evt.dragged, targetRect));  // A at B's slot
     evt.dragged.style.opacity = '0';
     _swapGhost = evt.dragged;
   },
