@@ -97,9 +97,7 @@ async function handleTranscribe(request, env) {
   const [clientSocket, workerSocket] = Object.values(new WebSocketPair());
   workerSocket.accept();
 
-  let fwdCount = 0;
   workerSocket.addEventListener('message', async ({ data }) => {
-    fwdCount++;
     // CF Workers delivers binary WebSocket frames as Blob objects.
     // dg.send(Blob) serialises to the string "[object Blob]" (13 chars) instead of
     // the actual bytes, so Deepgram receives garbage and replies with Error on every
