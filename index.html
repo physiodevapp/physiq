@@ -1479,8 +1479,12 @@ function _saveCardOrder() {
 let _satOrderBeforeDrag = null;
 let _releaseHadSwapTarget = false;
 
-function _captureSwapTarget() {
-  _releaseHadSwapTarget = !!navEl.querySelector('.card-swap');
+function _captureSwapTarget(e) {
+  const x = e.clientX ?? e.changedTouches?.[0]?.clientX;
+  const y = e.clientY ?? e.changedTouches?.[0]?.clientY;
+  if (x == null || y == null) { _releaseHadSwapTarget = false; return; }
+  const el = document.elementFromPoint(x, y);
+  _releaseHadSwapTarget = !!el?.closest('.app-card.card-swap');
 }
 
 const cardSortable = Sortable.create(navEl, {
@@ -1507,7 +1511,7 @@ const cardSortable = Sortable.create(navEl, {
       _saveCardOrder();
     } else if (_satOrderBeforeDrag) {
       const order = _satOrderBeforeDrag;
-      setTimeout(() => cardSortable.sort(order, true), 0);
+      setTimeout(() => cardSortable.sort(order, false), 160);
     }
     _satOrderBeforeDrag = null;
     _releaseHadSwapTarget = false;
