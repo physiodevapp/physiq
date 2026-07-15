@@ -83,7 +83,6 @@
     .app-label { display: none; }
 
     .card-ghost { opacity: 0.35; }
-    .card-swap { outline: 2px dashed rgba(139,92,246,0.55); outline-offset: -2px; }
     .nav-wrap.reordering #navConnectorSvg line,
     .nav-wrap.reordering #navConnectorSvg path { stroke-dasharray: 6 5; }
 
@@ -1467,6 +1466,39 @@ function _saveCardOrder() {
 
 // ── Pointer-events swap drag ──────────────────────────────────────────────────
 let _drag = null;
+let _swapSvgEl = null;
+
+function _makeDashRing(w, h, stroke) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', w + 2);
+  svg.setAttribute('height', h + 2);
+  svg.style.cssText = 'pointer-events:none;overflow:visible';
+  const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  r.setAttribute('x', '1'); r.setAttribute('y', '1');
+  r.setAttribute('width', w); r.setAttribute('height', h);
+  r.setAttribute('rx', '12'); r.setAttribute('fill', 'none');
+  r.setAttribute('stroke', stroke);
+  r.setAttribute('stroke-width', '2');
+  r.setAttribute('stroke-dasharray', '6 5');
+  svg.appendChild(r);
+  return svg;
+}
+
+function _addSwapSvg(card) {
+  _removeSwapSvg();
+  const b = card.getBoundingClientRect();
+  const svg = _makeDashRing(b.width, b.height, 'rgba(139,92,246,0.55)');
+  svg.style.position = 'fixed';
+  svg.style.top  = `${b.top  - 1}px`;
+  svg.style.left = `${b.left - 1}px`;
+  document.body.appendChild(svg);
+  _swapSvgEl = svg;
+}
+
+function _removeSwapSvg() {
+  _swapSvgEl?.remove();
+  _swapSvgEl = null;
+}
 
 navEl.addEventListener('pointerdown', e => {
   if (!reorderMode) return;
@@ -1487,15 +1519,19 @@ navEl.addEventListener('pointerdown', e => {
     'z-index:9999',
     'pointer-events:none',
     'border-radius:12px',
+    'overflow:visible',
     'box-shadow:0 16px 40px rgba(0,0,0,0.55)',
-    'outline:2px dashed rgba(139,92,246,0.7)',
-    'outline-offset:-2px',
     `--card-color:${cardColor}`,
     'transform:scale(1.04) rotate(1.5deg)',
     'opacity:0.96',
     'transition:none',
     'cursor:grabbing',
   ].join(';');
+  const ringSvg = _makeDashRing(rect.width, rect.height, 'rgba(139,92,246,0.7)');
+  ringSvg.style.position = 'absolute';
+  ringSvg.style.top  = '-1px';
+  ringSvg.style.left = '-1px';
+  clone.appendChild(ringSvg);
   document.body.appendChild(clone);
   card.classList.add('card-ghost');
 
@@ -1518,9 +1554,9 @@ navEl.addEventListener('pointermove', e => {
   const t = (under && under !== card) ? under : null;
 
   if (t !== _drag.target) {
-    _drag.target?.classList.remove('card-swap');
+    _removeSwapSvg();
     _drag.target = t;
-    t?.classList.add('card-swap');
+    if (t) _addSwapSvg(t);
   }
 });
 
@@ -1530,7 +1566,7 @@ function _endDrag(commit) {
   _drag = null;
   clone.remove();
   card.classList.remove('card-ghost');
-  target?.classList.remove('card-swap');
+  _removeSwapSvg();
 
   if (commit && target) {
     const an = card.nextSibling;
