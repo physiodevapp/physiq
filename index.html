@@ -94,12 +94,16 @@
       box-shadow: 0 16px 40px rgba(0,0,0,0.55);
       transition: none;
     }
+    .card-swap { outline: 2px solid rgba(139,92,246,0.55); outline-offset: -2px; }
+    .nav-wrap.reordering #navConnectorSvg line,
+    .nav-wrap.reordering #navConnectorSvg path { stroke-dasharray: 6 5; }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
     .app-info { display: flex; flex-direction: column; gap: 5px; }
     .app-name { font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500; color: #fff; }
     .app-desc { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); }
+    .nav-wrap { position: relative; }
 
     @media (max-width: 639px) {
       .nav-wrap { position: relative; }
@@ -1472,6 +1476,14 @@ function _saveCardOrder() {
   localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order));
 }
 
+let _swapPreview = null;
+let _swapGhost = null;
+
+function _removeSwapPreview() {
+  if (_swapPreview) { _swapPreview.remove(); _swapPreview = null; }
+  if (_swapGhost) { _swapGhost.style.opacity = ''; _swapGhost = null; }
+}
+
 const cardSortable = Sortable.create(navEl, {
   disabled: true,
   animation: 150,
@@ -1479,12 +1491,32 @@ const cardSortable = Sortable.create(navEl, {
   fallbackTolerance: 3,
   ghostClass: 'card-ghost',
   dragClass: 'card-dragging',
-  onEnd: _saveCardOrder,
+  swap: true,
+  swapClass: 'card-swap',
+  swapThreshold: 0.65,
+  onMove(evt) {
+    _removeSwapPreview();
+    const target = evt.related;
+    if (!target || !target.classList.contains('app-card')) return;
+    const ghostRect = evt.dragged.getBoundingClientRect();
+    const clone = target.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.style.cssText = `position:fixed;top:${ghostRect.top}px;left:${ghostRect.left}px;width:${ghostRect.width}px;height:${ghostRect.height}px;opacity:0.35;pointer-events:none;z-index:9999;margin:0;box-sizing:border-box;`;
+    document.body.appendChild(clone);
+    _swapPreview = clone;
+    evt.dragged.style.opacity = '0';
+    _swapGhost = evt.dragged;
+  },
+  onEnd() {
+    _removeSwapPreview();
+    _saveCardOrder();
+  },
 });
 
 function toggleReorderMode() {
   reorderMode = !reorderMode;
   navEl.classList.toggle('reordering', reorderMode);
+  navEl.closest('.nav-wrap').classList.toggle('reordering', reorderMode);
   document.getElementById('reorderBtn').classList.toggle('peer-on', reorderMode);
   cardSortable.option('disabled', !reorderMode);
 }
@@ -2025,7 +2057,6 @@ requestIdleCallback
 function updateNavConnectors() {
   const svg = document.getElementById('navConnectorSvg');
   if (!svg) return;
-  if (window.innerWidth > 639) { svg.style.display = 'none'; return; }
 
   const nav = document.querySelector('nav');
   const cards = [...nav.querySelectorAll('.app-card')];
@@ -2040,6 +2071,101 @@ function updateNavConnectors() {
 
   const W = navRect.width;
   const H = r[8].b;
+
+  const homeEl = nav.closest('#home');
+  const homeRect = homeEl ? homeEl.getBoundingClientRect() : null;
+  const rPad    = homeRect ? homeRect.right - navRect.right : 24;
+  const lPad    = homeRect ? navRect.left - homeRect.left  : 24;
+
+  // ── Desktop (3-column grid) ─────────────────────────────────────────
+  if (window.innerWidth >= 640) {
+    const badgePL = 16, badgePT = 18, badgeW = 38, badgeH = 38;
+    const badgeCY = badgePT + badgeH / 2;
+
+    const hAx1 = r[0].l + badgePL + badgeW;
+    const hAx2 = r[1].l + badgePL;
+    const hBx1 = r[1].l + badgePL + badgeW;
+    const hBx2 = r[2].l + badgePL;
+
+    const rowY = [r[0].t + badgeCY, r[3].t + badgeCY, r[6].t + badgeCY];
+
+    const rBx = r[2].l + badgePL + badgeW;
+    const lBx = r[0].l + badgePL;
+    const outerRx = W + rPad * 0.4;
+    const outerLx = -(lPad * 0.4);
+    const cr = Math.min(8, (outerRx - rBx) * 0.55, (lBx - outerLx) * 0.55);
+
+    const sw = 2;
+    const fade = 0.22;
+    const ufade = 0.10;
+
+    let defs = `<linearGradient id="ncg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${W}" y2="${H}">
+      <stop offset="0%"   stop-color="#4f9cf9"/>
+      <stop offset="48%"  stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>`;
+    let elems = '';
+
+    [
+      [hAx1, rowY[0], hAx2, rowY[0]],
+      [hBx1, rowY[0], hBx2, rowY[0]],
+      [hBx1, rowY[1], hBx2, rowY[1]],
+      [hAx1, rowY[1], hAx2, rowY[1]],
+      [hAx1, rowY[2], hAx2, rowY[2]],
+      [hBx1, rowY[2], hBx2, rowY[2]],
+    ].forEach(([x1, y1, x2, y2], i) => {
+      defs += `
+      <linearGradient id="hg${i}" gradientUnits="userSpaceOnUse" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">
+        <stop offset="0"         stop-color="#fff" stop-opacity="0"/>
+        <stop offset="${fade}"   stop-color="#fff" stop-opacity="1"/>
+        <stop offset="${1-fade}" stop-color="#fff" stop-opacity="1"/>
+        <stop offset="1"         stop-color="#fff" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="hm${i}" maskUnits="userSpaceOnUse">
+        <rect x="${x1}" y="${y1 - sw}" width="${x2 - x1}" height="${sw * 2}" fill="url(#hg${i})"/>
+      </mask>`;
+      elems += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="url(#ncg)" stroke-width="${sw}" mask="url(#hm${i})"/>`;
+    });
+
+    {
+      const y1 = rowY[0], y2 = rowY[1];
+      defs += `
+      <linearGradient id="rg" gradientUnits="userSpaceOnUse" x1="0" y1="${y1}" x2="0" y2="${y2}">
+        <stop offset="0"          stop-color="#fff" stop-opacity="0"/>
+        <stop offset="${ufade}"   stop-color="#fff" stop-opacity="1"/>
+        <stop offset="${1-ufade}" stop-color="#fff" stop-opacity="1"/>
+        <stop offset="1"          stop-color="#fff" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="rm" maskUnits="userSpaceOnUse">
+        <rect x="${rBx - 1}" y="${y1 - sw - 1}" width="${outerRx - rBx + sw + 2}" height="${y2 - y1 + sw * 2 + 2}" fill="url(#rg)"/>
+      </mask>`;
+      elems += `<path d="M ${rBx},${y1} L ${outerRx-cr},${y1} Q ${outerRx},${y1} ${outerRx},${y1+cr} L ${outerRx},${y2-cr} Q ${outerRx},${y2} ${outerRx-cr},${y2} L ${rBx},${y2}" stroke="url(#ncg)" stroke-width="${sw}" fill="none" mask="url(#rm)"/>`;
+    }
+
+    {
+      const y1 = rowY[1], y2 = rowY[2];
+      defs += `
+      <linearGradient id="lg" gradientUnits="userSpaceOnUse" x1="0" y1="${y1}" x2="0" y2="${y2}">
+        <stop offset="0"          stop-color="#fff" stop-opacity="0"/>
+        <stop offset="${ufade}"   stop-color="#fff" stop-opacity="1"/>
+        <stop offset="${1-ufade}" stop-color="#fff" stop-opacity="1"/>
+        <stop offset="1"          stop-color="#fff" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="lm" maskUnits="userSpaceOnUse">
+        <rect x="${outerLx - sw - 1}" y="${y1 - sw - 1}" width="${lBx - outerLx + sw + 2}" height="${y2 - y1 + sw * 2 + 2}" fill="url(#lg)"/>
+      </mask>`;
+      elems += `<path d="M ${lBx},${y1} L ${outerLx+cr},${y1} Q ${outerLx},${y1} ${outerLx},${y1+cr} L ${outerLx},${y2-cr} Q ${outerLx},${y2} ${outerLx+cr},${y2} L ${lBx},${y2}" stroke="url(#ncg)" stroke-width="${sw}" fill="none" mask="url(#lm)"/>`;
+    }
+
+    svg.setAttribute('width', W);
+    svg.setAttribute('height', H);
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.innerHTML = `<defs>${defs}</defs>${elems}`;
+    svg.style.display = 'block';
+    return;
+  }
+
+  // ── Mobile (2-column grid) ──────────────────────────────────────────
   const badgePT = 8, badgeH = 80, badgeW = 80;
   const tileW   = r[0].r - r[0].l;
   const sidePad = Math.max(0, (tileW - badgeW) / 2);
@@ -2059,11 +2185,6 @@ function updateNavConnectors() {
   const rBx = r[2].r - sidePad;   // badge right of col3 (items 3 & 6)
   const lBx = r[3].l + sidePad;   // badge left of col1 (items 4 & 7)
 
-  // Outer margin x positions (60 % of available padding on each side)
-  const homeEl = nav.closest('#home');
-  const homeRect = homeEl ? homeEl.getBoundingClientRect() : null;
-  const rPad    = homeRect ? homeRect.right - navRect.right : 24;
-  const lPad    = homeRect ? navRect.left - homeRect.left  : 24;
   const outerRx = W + rPad * 0.3;
   const outerLx = -(lPad * 0.3);
 
