@@ -82,18 +82,7 @@
     .app-badge svg { color: var(--card-color, #4f9cf9); display: block; width: 20px; height: 20px; }
     .app-label { display: none; }
 
-    /* SortableJS states: card-ghost is the in-list placeholder marking the
-       drop slot; card-dragging is the floating clone that follows the pointer
-       (forceFallback mode) — Sortable preserves this transform's scale/rotate
-       and only updates the translation on top of it while tracking, so this
-       "lift" look sticks around uninterrupted for the whole drag. */
     .card-ghost { opacity: 0.35; }
-    .card-dragging {
-      cursor: grabbing; user-select: none; will-change: transform;
-      transform: scale(1.04) rotate(1.5deg);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.55);
-      transition: none;
-    }
     .card-swap { outline: 2px solid rgba(139,92,246,0.55); outline-offset: -2px; }
     .nav-wrap.reordering #navConnectorSvg line,
     .nav-wrap.reordering #navConnectorSvg path { stroke-dasharray: 6 5; }
@@ -1368,7 +1357,7 @@
   </div>
 </div>
 
-<script src="lib/sortable.min.js"></script>
+
 <script>
 // Apply role-based icon on load
 document.addEventListener('DOMContentLoaded', () => {
@@ -1476,54 +1465,87 @@ function _saveCardOrder() {
   localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order));
 }
 
-let _satOrderBeforeDrag = null;
-let _releaseHadSwapTarget = false;
+// ── Pointer-events swap drag ──────────────────────────────────────────────────
+let _drag = null;
 
-function _captureSwapTarget(e) {
-  const x = e.clientX ?? e.changedTouches?.[0]?.clientX;
-  const y = e.clientY ?? e.changedTouches?.[0]?.clientY;
-  if (x == null || y == null) { _releaseHadSwapTarget = false; return; }
-  const el = document.elementFromPoint(x, y);
-  _releaseHadSwapTarget = !!el?.closest('.app-card.card-swap');
+navEl.addEventListener('pointerdown', e => {
+  if (!reorderMode) return;
+  const card = e.target.closest('.app-card');
+  if (!card) return;
+  e.preventDefault();
+
+  const rect = card.getBoundingClientRect();
+  const clone = card.cloneNode(true);
+  clone.style.cssText = [
+    'position:fixed',
+    `top:${rect.top}px`,
+    `left:${rect.left}px`,
+    `width:${rect.width}px`,
+    `height:${rect.height}px`,
+    'margin:0',
+    'z-index:9999',
+    'pointer-events:none',
+    'border-radius:12px',
+    'box-shadow:0 16px 40px rgba(0,0,0,0.55)',
+    'transform:scale(1.04) rotate(1.5deg)',
+    'opacity:0.96',
+    'transition:none',
+    'cursor:grabbing',
+  ].join(';');
+  document.body.appendChild(clone);
+  card.classList.add('card-ghost');
+
+  _drag = {
+    card, clone,
+    ox: e.clientX - rect.left,
+    oy: e.clientY - rect.top,
+    target: null,
+  };
+  navEl.setPointerCapture(e.pointerId);
+});
+
+navEl.addEventListener('pointermove', e => {
+  if (!_drag) return;
+  const { clone, card, ox, oy } = _drag;
+  clone.style.left = `${e.clientX - ox}px`;
+  clone.style.top  = `${e.clientY - oy}px`;
+
+  const under = document.elementFromPoint(e.clientX, e.clientY)?.closest('.app-card');
+  const t = (under && under !== card) ? under : null;
+
+  if (t !== _drag.target) {
+    _drag.target?.classList.remove('card-swap');
+    _drag.target = t;
+    t?.classList.add('card-swap');
+  }
+});
+
+function _endDrag(commit) {
+  if (!_drag) return;
+  const { card, clone, target } = _drag;
+  _drag = null;
+  clone.remove();
+  card.classList.remove('card-ghost');
+  target?.classList.remove('card-swap');
+
+  if (commit && target) {
+    const an = card.nextSibling;
+    const bn = target.nextSibling;
+    if (an === target)       navEl.insertBefore(target, card);
+    else if (bn === card)    navEl.insertBefore(card, target);
+    else { navEl.insertBefore(target, an); navEl.insertBefore(card, bn); }
+    _saveCardOrder();
+  }
 }
 
-const cardSortable = Sortable.create(navEl, {
-  disabled: true,
-  animation: 150,
-  forceFallback: true, // native HTML5 drag-and-drop is unreliable on touch/iOS
-  fallbackTolerance: 3,
-  ghostClass: 'card-ghost',
-  dragClass: 'card-dragging',
-  swap: true,
-  swapClass: 'card-swap',
-  swapThreshold: 0.65,
-  dataIdAttr: 'data-sat',
-  onStart() {
-    _satOrderBeforeDrag = cardSortable.toArray();
-    _releaseHadSwapTarget = false;
-    document.addEventListener('pointerup', _captureSwapTarget, { capture: true });
-    document.addEventListener('touchend',  _captureSwapTarget, { capture: true });
-  },
-  onEnd() {
-    document.removeEventListener('pointerup', _captureSwapTarget, true);
-    document.removeEventListener('touchend',  _captureSwapTarget, true);
-    if (_releaseHadSwapTarget) {
-      _saveCardOrder();
-    } else if (_satOrderBeforeDrag) {
-      const order = _satOrderBeforeDrag;
-      setTimeout(() => cardSortable.sort(order, false), 160);
-    }
-    _satOrderBeforeDrag = null;
-    _releaseHadSwapTarget = false;
-  },
-});
+navEl.addEventListener('pointerup',     () => _endDrag(true));
+navEl.addEventListener('pointercancel', () => _endDrag(false));
 
 function toggleReorderMode() {
   reorderMode = !reorderMode;
   navEl.classList.toggle('reordering', reorderMode);
   navEl.closest('.nav-wrap').classList.toggle('reordering', reorderMode);
   document.getElementById('reorderBtn').classList.toggle('peer-on', reorderMode);
-  cardSortable.option('disabled', !reorderMode);
 }
 
 // ── Peer panel ───────────────────────────────────────────────────────────────
