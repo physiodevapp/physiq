@@ -97,23 +97,21 @@ async function handleTranscribe(request, env) {
   workerSocket.accept();
 
   let fwdCount = 0;
-  workerSocket.addEventListener('message', ({ data }) => {
+  workerSocket.addEventListener('message', async ({ data }) => {
     fwdCount++;
-    // CF Workers delivers binary WS frames as Uint8Array, not ArrayBuffer.
-    // Explicitly extract the underlying ArrayBuffer so Deepgram receives a
-    // proper binary frame — sending a TypedArray can result in a text frame
-    // or misframed binary depending on the runtime version.
+    // CF Workers delivers binary WebSocket frames as Blob objects.
+    // dg.send(Blob) serialises to the string "[object Blob]" (13 chars) instead of
+    // the actual bytes, so Deepgram receives garbage and replies with Error on every
+    // packet. We must resolve the Blob to its underlying ArrayBuffer first.
     let payload;
     if (data instanceof ArrayBuffer) {
       payload = data;
     } else if (ArrayBuffer.isView(data)) {
       payload = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+    } else if (data instanceof Blob) {
+      payload = await data.arrayBuffer();
     } else {
-      payload = data; // text frame — forward as-is
-    }
-    if (fwdCount <= 5 || fwdCount % 500 === 0) {
-      const sz = payload instanceof ArrayBuffer ? payload.byteLength : `str:${String(payload).length}`;
-      console.log(`[dg] #${fwdCount} ${data?.constructor?.name} → ${sz}B dgReady=${dg.readyState}`);
+      payload = data; // string text frame — forward as-is
     }
     try { dg.send(payload); } catch (e) { console.error(`[dg] send fail: ${e.message}`); }
   });
