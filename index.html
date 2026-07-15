@@ -83,7 +83,7 @@
     .app-label { display: none; }
 
     .card-ghost { opacity: 0.35; }
-    .card-swap { outline: 2px solid rgba(139,92,246,0.55); outline-offset: -2px; }
+    .card-swap { outline: 2px dashed rgba(139,92,246,0.55); outline-offset: -2px; }
     .nav-wrap.reordering #navConnectorSvg line,
     .nav-wrap.reordering #navConnectorSvg path { stroke-dasharray: 6 5; }
 
@@ -1475,6 +1475,7 @@ navEl.addEventListener('pointerdown', e => {
   e.preventDefault();
 
   const rect = card.getBoundingClientRect();
+  const cardColor = getComputedStyle(card).getPropertyValue('--card-color').trim() || '#4f9cf9';
   const clone = card.cloneNode(true);
   clone.style.cssText = [
     'position:fixed',
@@ -1486,7 +1487,10 @@ navEl.addEventListener('pointerdown', e => {
     'z-index:9999',
     'pointer-events:none',
     'border-radius:12px',
-    'box-shadow:0 16px 40px rgba(0,0,0,0.55), 0 0 0 2px rgba(139,92,246,0.7)',
+    'box-shadow:0 16px 40px rgba(0,0,0,0.55)',
+    'outline:2px dashed rgba(139,92,246,0.7)',
+    'outline-offset:-2px',
+    `--card-color:${cardColor}`,
     'transform:scale(1.04) rotate(1.5deg)',
     'opacity:0.96',
     'transition:none',
