@@ -99,11 +99,23 @@ async function handleTranscribe(request, env) {
   let fwdCount = 0;
   workerSocket.addEventListener('message', ({ data }) => {
     fwdCount++;
-    if (fwdCount <= 3 || fwdCount % 100 === 0) {
-      const bytes = data instanceof ArrayBuffer ? data.byteLength : -1;
-      console.log(`[dg-proxy] fwd #${fwdCount}: ${bytes}B, dgReady=${dg.readyState}`);
+    // CF Workers delivers binary WS frames as Uint8Array, not ArrayBuffer.
+    // Explicitly extract the underlying ArrayBuffer so Deepgram receives a
+    // proper binary frame — sending a TypedArray can result in a text frame
+    // or misframed binary depending on the runtime version.
+    let payload;
+    if (data instanceof ArrayBuffer) {
+      payload = data;
+    } else if (ArrayBuffer.isView(data)) {
+      payload = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+    } else {
+      payload = data; // text frame — forward as-is
     }
-    try { dg.send(data); } catch (e) { console.error(`[dg-proxy] dg.send failed #${fwdCount}: ${e.message}`); }
+    if (fwdCount <= 5 || fwdCount % 500 === 0) {
+      const sz = payload instanceof ArrayBuffer ? payload.byteLength : `str:${String(payload).length}`;
+      console.log(`[dg] #${fwdCount} ${data?.constructor?.name} → ${sz}B dgReady=${dg.readyState}`);
+    }
+    try { dg.send(payload); } catch (e) { console.error(`[dg] send fail: ${e.message}`); }
   });
   workerSocket.addEventListener('close', ({ code, reason }) => {
     try { dg.close(code || 1000, reason || ''); } catch {}
