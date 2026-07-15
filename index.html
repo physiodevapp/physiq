@@ -51,8 +51,10 @@
     nav.reordering .app-card:last-child:nth-child(odd) { grid-column: auto; }
 
     @media (min-width: 640px) {
-      nav { grid-template-columns: 1fr 1fr 1fr; }
+      nav { grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
       nav .app-card:last-child:nth-child(odd) { grid-column: auto; }
+      .app-name { font-size: 0.82rem; }
+      .app-desc { font-size: 0.64rem; }
     }
     nav.reordering .app-card { cursor: grab; touch-action: none; will-change: transform; }
     nav.reordering .app-card:active { transform: none; }
