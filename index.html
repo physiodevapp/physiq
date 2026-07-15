@@ -777,14 +777,15 @@
       display: flex; flex-direction: column; gap: 8px;
       flex-shrink: 0;
     }
+    .cop-footer-row { display: flex; align-items: stretch; gap: 7px; }
 
     .cop-listen-btn {
-      width: 100%; padding: 13px 16px;
+      flex: 1; min-width: 0; padding: 13px 14px;
       border-radius: 10px; border: 1px solid rgba(167,139,250,0.25);
       background: rgba(167,139,250,0.08); color: #c4b5fd;
-      font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500;
       cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 9px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: background 0.15s, border-color 0.15s, opacity 0.15s;
     }
     .cop-listen-btn:hover { background: rgba(167,139,250,0.14); border-color: rgba(167,139,250,0.4); }
@@ -795,15 +796,37 @@
     .cop-listen-btn.cop-btn-on:hover { background: rgba(239,68,68,0.16); }
 
     .cop-soap-btn {
-      width: 100%; padding: 11px 16px;
+      padding: 0 12px; flex-shrink: 0;
       border-radius: 10px; border: 1px solid var(--border);
       background: transparent; color: #8aa4bc;
-      font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500;
-      cursor: pointer; text-align: center;
+      font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 500;
+      cursor: pointer; white-space: nowrap;
       transition: border-color 0.15s, color 0.15s, background 0.15s;
     }
     .cop-soap-btn:hover { border-color: #38d9a9; color: #38d9a9; background: rgba(56,217,169,0.06); }
     .cop-soap-btn:active { opacity: 0.75; }
+    .cop-soap-btn:disabled { opacity: 0.45; cursor: default; }
+
+    .cop-lang-btn {
+      padding: 0 11px; flex-shrink: 0;
+      border-radius: 10px; border: 1px solid var(--border);
+      background: transparent; color: var(--text3);
+      font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 400;
+      cursor: pointer; white-space: nowrap; min-width: 42px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .cop-lang-btn:hover { border-color: var(--border2); color: var(--text2); }
+    .cop-lang-btn:disabled { opacity: 0.35; cursor: default; }
+
+    /* Mic level dot (inside listen button, after label) */
+    .cop-mic-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+      transition: background 0.1s, box-shadow 0.1s, transform 0.1s;
+    }
+    .cop-mic-silence { background: #2d3a58; }
+    .cop-mic-low     { background: #4ade80; opacity: 0.5; }
+    .cop-mic-medium  { background: #4ade80; box-shadow: 0 0 5px rgba(74,222,128,0.35); transform: scale(1.18); }
+    .cop-mic-high    { background: #86efac; box-shadow: 0 0 9px rgba(134,239,172,0.5); transform: scale(1.4); }
 
     /* ── Session conflict banner ─────────────────────────── */
     #peer-conflict-banner {
@@ -1170,18 +1193,19 @@
 
   <!-- Controls footer -->
   <div class="cop-footer">
-    <button class="cop-listen-btn" id="copilot-listen-btn" onclick="copilotToggleListen()">
-      <!-- Mic icon — swaps to stop square when listening -->
-      <svg id="copilot-listen-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-        <line x1="12" y1="19" x2="12" y2="22"/>
-      </svg>
-      <span id="copilot-listen-label">Empezar a escuchar</span>
-    </button>
-    <button class="cop-soap-btn" id="copilot-soap-btn" onclick="copilotGenerateSOAP()" hidden>
-      Generar nota SOAP
-    </button>
+    <div class="cop-footer-row">
+      <button class="cop-listen-btn" id="copilot-listen-btn" onclick="copilotToggleListen()">
+        <svg id="copilot-listen-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+        </svg>
+        <span id="copilot-listen-label">Empezar a escuchar</span>
+        <span class="cop-mic-dot cop-mic-silence" id="copilot-mic-dot" hidden></span>
+      </button>
+      <button class="cop-soap-btn" id="copilot-soap-btn" onclick="copilotGenerateSOAP()" hidden>SOAP</button>
+      <button class="cop-lang-btn" id="copilot-lang-btn" onclick="copilotToggleLang()">ES</button>
+    </div>
   </div>
 
 </div>
