@@ -96,8 +96,14 @@ async function handleTranscribe(request, env) {
   const [clientSocket, workerSocket] = Object.values(new WebSocketPair());
   workerSocket.accept();
 
+  let fwdCount = 0;
   workerSocket.addEventListener('message', ({ data }) => {
-    try { dg.send(data); } catch {}
+    fwdCount++;
+    if (fwdCount <= 3 || fwdCount % 100 === 0) {
+      const bytes = data instanceof ArrayBuffer ? data.byteLength : -1;
+      console.log(`[dg-proxy] fwd #${fwdCount}: ${bytes}B, dgReady=${dg.readyState}`);
+    }
+    try { dg.send(data); } catch (e) { console.error(`[dg-proxy] dg.send failed #${fwdCount}: ${e.message}`); }
   });
   workerSocket.addEventListener('close', ({ code, reason }) => {
     try { dg.close(code || 1000, reason || ''); } catch {}
