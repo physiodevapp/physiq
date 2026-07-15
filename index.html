@@ -1476,7 +1476,7 @@ function _saveCardOrder() {
   localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order));
 }
 
-let _orderBeforeDrag = null;
+let _satOrderBeforeDrag = null;
 let _releaseHadSwapTarget = false;
 
 function _captureSwapTarget() {
@@ -1493,8 +1493,9 @@ const cardSortable = Sortable.create(navEl, {
   swap: true,
   swapClass: 'card-swap',
   swapThreshold: 0.65,
+  dataIdAttr: 'data-sat',
   onStart() {
-    _orderBeforeDrag = [...navEl.querySelectorAll('.app-card')];
+    _satOrderBeforeDrag = cardSortable.toArray();
     _releaseHadSwapTarget = false;
     document.addEventListener('pointerup', _captureSwapTarget, { capture: true });
     document.addEventListener('touchend',  _captureSwapTarget, { capture: true });
@@ -1504,12 +1505,11 @@ const cardSortable = Sortable.create(navEl, {
     document.removeEventListener('touchend',  _captureSwapTarget, true);
     if (_releaseHadSwapTarget) {
       _saveCardOrder();
-    } else if (_orderBeforeDrag) {
-      cardSortable.option('animation', 0);
-      _orderBeforeDrag.forEach(c => navEl.appendChild(c));
-      requestAnimationFrame(() => cardSortable.option('animation', 150));
+    } else if (_satOrderBeforeDrag) {
+      const order = _satOrderBeforeDrag;
+      setTimeout(() => cardSortable.sort(order, true), 0);
     }
-    _orderBeforeDrag = null;
+    _satOrderBeforeDrag = null;
     _releaseHadSwapTarget = false;
   },
 });
