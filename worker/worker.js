@@ -97,14 +97,14 @@ async function handleTranscribe(request, env) {
   workerSocket.accept();
 
   workerSocket.addEventListener('message', ({ data }) => {
-    if (dg.readyState === 1) dg.send(data);
+    try { dg.send(data); } catch {}
   });
   workerSocket.addEventListener('close', ({ code, reason }) => {
     try { dg.close(code || 1000, reason || ''); } catch {}
   });
 
   dg.addEventListener('message', ({ data }) => {
-    if (workerSocket.readyState === 1) workerSocket.send(data);
+    try { workerSocket.send(data); } catch {}
   });
   dg.addEventListener('close', ({ code, reason }) => {
     try { workerSocket.close(code || 1000, reason || ''); } catch {}
