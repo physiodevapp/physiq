@@ -94,6 +94,9 @@
       box-shadow: 0 16px 40px rgba(0,0,0,0.55);
       transition: none;
     }
+    .card-swap { outline: 2px solid rgba(139,92,246,0.55); outline-offset: -2px; }
+    .nav-wrap.reordering #navConnectorSvg line,
+    .nav-wrap.reordering #navConnectorSvg path { stroke-dasharray: 6 5; }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -1456,12 +1459,16 @@ const cardSortable = Sortable.create(navEl, {
   fallbackTolerance: 3,
   ghostClass: 'card-ghost',
   dragClass: 'card-dragging',
+  swap: true,
+  swapClass: 'card-swap',
+  swapThreshold: 0.65,
   onEnd: _saveCardOrder,
 });
 
 function toggleReorderMode() {
   reorderMode = !reorderMode;
   navEl.classList.toggle('reordering', reorderMode);
+  navEl.closest('.nav-wrap').classList.toggle('reordering', reorderMode);
   document.getElementById('reorderBtn').classList.toggle('peer-on', reorderMode);
   cardSortable.option('disabled', !reorderMode);
 }
