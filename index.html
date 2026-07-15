@@ -49,6 +49,11 @@
     /* while reordering, freeze the odd-card full-width span so drag math
        only ever deals with translate offsets, never width/column changes */
     nav.reordering .app-card:last-child:nth-child(odd) { grid-column: auto; }
+
+    @media (min-width: 640px) {
+      nav { grid-template-columns: 1fr 1fr 1fr; }
+      nav .app-card:last-child:nth-child(odd) { grid-column: auto; }
+    }
     nav.reordering .app-card { cursor: grab; touch-action: none; will-change: transform; }
     nav.reordering .app-card:active { transform: none; }
 
