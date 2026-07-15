@@ -1486,7 +1486,7 @@ const cardSortable = Sortable.create(navEl, {
   swap: true,
   swapClass: 'card-swap',
   swapThreshold: 0.65,
-  onEnd: _saveCardOrder,
+  onEnd(evt) { if (evt.oldIndex !== evt.newIndex) _saveCardOrder(); },
 });
 
 function toggleReorderMode() {
