@@ -139,7 +139,7 @@ async function handleSuggest(request, env) {
     return new Response('Bad request', { status: 400 });
   }
 
-  const { query, session = {} } = body;
+  const { query, session = {}, suggestions = [] } = body;
   if (typeof query !== 'string' || !query.trim()) {
     return new Response('Missing query', { status: 400 });
   }
@@ -186,6 +186,10 @@ async function handleSuggest(request, env) {
     session.rom          && `ROM: ${JSON.stringify(session.rom)}`,
   ].filter(Boolean);
 
+  const existingBlock = suggestions.length
+    ? `Sugerencias ya mostradas al fisioterapeuta:\n${suggestions.map((s, i) => `${i + 1}. [${s.type}] ${s.text}`).join('\n')}\nSi tu sugerencia sería semánticamente equivalente a alguna de las anteriores, responde SOLO con la palabra: null`
+    : '';
+
   const system = [
     'Eres un asistente clínico de fisioterapia.',
     'Dado un fragmento de transcripción y contexto clínico, genera UNA sugerencia clínica en JSON.',
@@ -193,8 +197,9 @@ async function handleSuggest(request, env) {
     '  "type": uno de ["redflag","followup","differential","test"]',
     '  "text": sugerencia concisa en español (máx. 2 frases)',
     'Responde SOLO con el objeto JSON, sin texto adicional.',
+    existingBlock,
     knowledgeContext ? `\nBase de conocimiento clínico:\n${knowledgeContext}` : '',
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 
   const user = [
     sessionLines.length ? `Sesión:\n${sessionLines.join('\n')}\n` : '',
@@ -218,7 +223,13 @@ async function handleSuggest(request, env) {
   if (!claudeResp.ok) return new Response('Claude failed', { status: 502 });
 
   const claudeData = await claudeResp.json();
-  const raw = claudeData.content?.[0]?.text || '';
+  const raw = claudeData.content?.[0]?.text?.trim() || '';
+
+  if (raw === 'null') {
+    return new Response(JSON.stringify({ skip: true }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   let suggestion;
   try {
