@@ -1467,17 +1467,37 @@ function _saveCardOrder() {
 // ── Pointer-events swap drag ──────────────────────────────────────────────────
 let _drag = null;
 let _swapSvgEl = null;
+let _ringGradId = 0;
 
-function _makeDashRing(w, h, stroke) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+function _makeDashRing(w, h, opacity) {
+  const id = `_prg${++_ringGradId}`;
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('width', w + 2);
   svg.setAttribute('height', h + 2);
   svg.style.cssText = 'pointer-events:none;overflow:visible';
-  const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+
+  const defs = document.createElementNS(NS, 'defs');
+  const grad = document.createElementNS(NS, 'linearGradient');
+  grad.setAttribute('id', id);
+  grad.setAttribute('gradientUnits', 'objectBoundingBox');
+  grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0');
+  grad.setAttribute('x2', '1'); grad.setAttribute('y2', '1');
+  [['0%','#4f9cf9'],['48%','#8b5cf6'],['100%','#34d399']].forEach(([offset, color]) => {
+    const s = document.createElementNS(NS, 'stop');
+    s.setAttribute('offset', offset);
+    s.setAttribute('stop-color', color);
+    s.setAttribute('stop-opacity', opacity);
+    grad.appendChild(s);
+  });
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+
+  const r = document.createElementNS(NS, 'rect');
   r.setAttribute('x', '1'); r.setAttribute('y', '1');
   r.setAttribute('width', w); r.setAttribute('height', h);
   r.setAttribute('rx', '12'); r.setAttribute('fill', 'none');
-  r.setAttribute('stroke', stroke);
+  r.setAttribute('stroke', `url(#${id})`);
   r.setAttribute('stroke-width', '2');
   r.setAttribute('stroke-dasharray', '6 5');
   svg.appendChild(r);
@@ -1487,7 +1507,7 @@ function _makeDashRing(w, h, stroke) {
 function _addSwapSvg(card) {
   _removeSwapSvg();
   const b = card.getBoundingClientRect();
-  const svg = _makeDashRing(b.width, b.height, 'rgba(139,92,246,0.55)');
+  const svg = _makeDashRing(b.width, b.height, 0.55);
   svg.style.position = 'fixed';
   svg.style.top  = `${b.top  - 1}px`;
   svg.style.left = `${b.left - 1}px`;
@@ -1527,7 +1547,7 @@ navEl.addEventListener('pointerdown', e => {
     'transition:none',
     'cursor:grabbing',
   ].join(';');
-  const ringSvg = _makeDashRing(rect.width, rect.height, 'rgba(139,92,246,0.7)');
+  const ringSvg = _makeDashRing(rect.width, rect.height, 0.7);
   ringSvg.style.position = 'absolute';
   ringSvg.style.top  = '-1px';
   ringSvg.style.left = '-1px';
