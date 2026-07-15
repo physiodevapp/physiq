@@ -1476,26 +1476,6 @@ function _saveCardOrder() {
   localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order));
 }
 
-let _swapClones = [];
-let _swapGhost = null;
-let _swapRafEl = null;   // card currently shown as swap target
-let _swapRafId = null;
-
-function _removeSwapPreview() {
-  _swapClones.forEach(c => c.remove());
-  _swapClones = [];
-  _swapRafEl = null;
-  if (_swapGhost) { _swapGhost.style.opacity = ''; _swapGhost = null; }
-}
-
-function _makeFixedClone(src, rect) {
-  const c = src.cloneNode(true);
-  c.removeAttribute('id');
-  c.style.cssText = `position:fixed;top:${rect.top}px;left:${rect.left}px;width:${rect.width}px;height:${rect.height}px;opacity:0.35;pointer-events:none;z-index:9999;margin:0;box-sizing:border-box;`;
-  document.body.appendChild(c);
-  return c;
-}
-
 const cardSortable = Sortable.create(navEl, {
   disabled: true,
   animation: 150,
@@ -1506,30 +1486,7 @@ const cardSortable = Sortable.create(navEl, {
   swap: true,
   swapClass: 'card-swap',
   swapThreshold: 0.65,
-  onStart(evt) {
-    const dragged = evt.item;
-    function _watch() {
-      const swapEl = navEl.querySelector('.card-swap');
-      if (swapEl !== _swapRafEl) {
-        _removeSwapPreview();
-        if (swapEl) {
-          _swapRafEl = swapEl;
-          _swapClones.push(_makeFixedClone(swapEl,  dragged.getBoundingClientRect()));
-          _swapClones.push(_makeFixedClone(dragged, swapEl.getBoundingClientRect()));
-          dragged.style.opacity = '0';
-          _swapGhost = dragged;
-        }
-      }
-      _swapRafId = requestAnimationFrame(_watch);
-    }
-    _swapRafId = requestAnimationFrame(_watch);
-  },
-  onEnd() {
-    cancelAnimationFrame(_swapRafId);
-    _swapRafId = null;
-    _removeSwapPreview();
-    _saveCardOrder();
-  },
+  onEnd: _saveCardOrder,
 });
 
 function toggleReorderMode() {
