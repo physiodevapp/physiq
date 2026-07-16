@@ -43,6 +43,7 @@ La irritación pleural produce dolor agudo y localizado que se agrava con cualqu
 - El dolor pleural **mejora** al tumbarse sobre el lado afectado (autoentablillado: el paciente limita el movimiento de ese hemitórax)
 - El dolor musculoesquelético de hombro **empeora** al apoyarse sobre el hombro doloroso
 - El síntoma se agrava con el movimiento respiratorio pero no con el movimiento aislado del hombro
+- La enfermedad extensa en la periferia del pulmón puede cursar sin dolor hasta que el proceso alcanza la pleura parietal: el inicio del dolor de hombro no refleja necesariamente el inicio de la enfermedad pulmonar
 
 **Signos de alarma adicionales:** disnea, taquipnea, hiperventilación, sibilancias, ausencia unilateral de murmullo vesicular.
 

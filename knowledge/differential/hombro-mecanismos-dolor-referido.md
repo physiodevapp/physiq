@@ -53,6 +53,32 @@ Si la irritación cruza la línea media del diafragma es posible el dolor bilate
 
 **Clave práctica:** el dolor de hombro por irritación diafragmática raramente es anterior; predomina en la región suprascapular, trapecio superior y porción posterior del hombro.
 
+## Catálogo de condiciones sistémicas que causan dolor de hombro (Tabla 18.1)
+
+Lista de referencia rápida para cribado diferencial. Muchas de estas condiciones tienen desarrollo propio en otros archivos; las marcadas con † son entradas que no tienen sección dedicada y aparecen solo en esta enumeración.
+
+**Cardiovascular / vascular:** angina / IAM (síndrome coronario agudo), endocarditis bacteriana, pericarditis, aneurisma aórtico torácico / disecante, TOS, TVP de extremidad superior, SDRC (síndrome hombro-mano).
+
+**Pulmonar:** tuberculosis pulmonar, tumor de Pancoast, embolia pulmonar, neumonía, pleuritis / neumotórax, empiema y absceso pulmonar†, enfisema / bronquitis crónica (capsulitis secundaria).
+
+**Gastrointestinal / hepático:** úlcera péptica / duodenal perforada, colecistitis / colelitiasis, hernia de hiato, hepatitis / cirrosis / absceso hepático, rotura esplénica (signo de Kehr), enfermedad pancreática.
+
+**Renal / urológico:** litiasis renal, obstrucción o inflamación del tracto urinario superior, neoplasia renal.
+
+**Ginecológico:** embarazo ectópico (rotura), endometriosis (quistes diafragmáticos).
+
+**Oncológico:** metástasis óseas (mama, pulmón, tiroides, riñón, próstata, colon), metástasis ganglionares axilares o mediastínicas, leucemia / linfoma de Hodgkin, neoplasia ósea primaria (osteosarcoma, condrosarcoma).
+
+**Infeccioso:** artritis séptica, osteomielitis, mononucleosis infecciosa (esplenomegalia), herpes zóster†, sífilis / gonorrea†, fascitis necrotizante / celulitis†, absceso subfrénico†.
+
+**Reumatológico:** artritis reumatoide, polimialgia reumática, polimiositis / dermatomiositis, espondiloartropatías HLA-B27, enfermedad del colágeno†.
+
+**Endocrino / metabólico:** diabetes mellitus (capsulitis adhesiva), hipertiroidismo (capsulitis adhesiva), anemia de células falciformes†, hemofilia (hemorragia postoperatoria)†.
+
+**Musculoesquelético adyacente con presentación sistémica:** hernia diafragmática†, síndrome de cordón central cervical / tumor de cordón cervical†, latigazo cervical / inestabilidad ligamentosa†, cirugía espinal anterior†.
+
+**Mama:** mastodinia, cáncer de mama, linfedema / cambios post-radioterapia axilar.
+
 ## Dolor postlaparoscópico como causa frecuente y subdiagnosticada
 
 Tras procedimientos laparoscópicos abdominales (colecistectomía, cirugía ginecológica, apendicectomía) se introduce gas CO₂ en el peritoneo. El gas residual produce distensión con sobreestiramiento de las fibras del diafragma y dolor referido por el nervio frénico al hombro, predominantemente izquierdo.
