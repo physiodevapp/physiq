@@ -33,7 +33,7 @@ El signo del glúteo de Cyriax está compuesto por siete signos que indican enfe
 - Tumefacción y dolor a la palpación en la región glútea
 - Sensación de vacío (empty end feel) en la flexión de cadera
 
-Una prueba positiva puede indicar osteomielitis, neoplasia (fémur proximal, ilion), fractura de sacro, absceso u otra infección.
+Una prueba positiva puede indicar tumor óseo, osteomielitis del fémur proximal, artritis séptica de cadera o de la articulación sacroilíaca, bursitis séptica de cadera, absceso isquiorectal u otra infección grave posterior al eje articular.
 
 ## Patrón no capsular de la cadera como señal de alarma
 
