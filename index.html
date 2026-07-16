@@ -2589,7 +2589,21 @@ function _actDismiss() {
   const s = document.getElementById('activation-screen');
   if (!s) return;
   s.classList.add('act-fade');
-  setTimeout(() => s.remove(), 320);
+  setTimeout(() => { s.style.display = 'none'; }, 320);
+}
+
+function _actRevoke() {
+  localStorage.removeItem('physiq-license-key');
+  const s = document.getElementById('activation-screen');
+  if (!s) return;
+  s.style.display = '';
+  s.classList.remove('act-fade');
+  const err = document.getElementById('act-error');
+  const inp = document.getElementById('act-key-input');
+  const btn = document.getElementById('act-submit-btn');
+  if (err) { err.textContent = 'Tu licencia ha sido desactivada. Introduce una clave válida.'; err.hidden = false; }
+  if (inp) inp.value = '';
+  if (btn) btn.disabled = false;
 }
 
 async function _actValidate(key) {
