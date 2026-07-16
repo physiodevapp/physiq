@@ -70,6 +70,34 @@ Estas preguntas se plantean ante cualquier dolor de hombro de inicio insidioso, 
 - ¿Ha tenido alguna cirugía mamaria, mastectomía o implante? (Alteración del drenaje linfático, tejido cicatricial)
 - ¿Tiene alguna secreción por el pezón o ha notado cambios en la mama o la axila?
 
+## Signos de cribado de patología mamaria
+
+La patología mamaria (incluido el cáncer de mama) puede referir dolor al hombro y al cuadrante superior. El fisioterapeuta puede detectar señales durante el tratamiento posicional. Este cribado aplica tanto a mujeres como a hombres (el cáncer de mama masculino existe).
+
+Signos clínicos que orientan a origen mamario:
+- La compresión o sacudida de la mama reproduce o refiere dolor al hombro (no así la resistencia del hombro)
+- La resistencia de los movimientos del hombro no reproduce el dolor de hombro pero sí provoca dolor o molestia en la mama
+- Cambios visibles en el tejido mamario durante la exploración posicional: hundimiento o retracción de la piel (peau d'orange), venas dilatadas, cambio en el tamaño o la forma de la mama, eritema
+- Descarga o ulceración del pezón
+- Adenopatías axilares o supraclaviculares palpables, duras y fijas
+
+Preguntas de cribado:
+- ¿Ha notado algún cambio en la mama, la axila o la zona del pecho?
+- ¿Tiene alguna secreción por el pezón?
+- ¿Cuándo fue su última revisión mamaria (autoexploración y revisión médica)?
+- ¿Ha tenido alguna cirugía mamaria, mastectomía, radioterapia axilar o implantes? (Alteración del drenaje linfático, tejido cicatricial, secuelas de radioterapia)
+
+## Signos de cribado vascular en exploración (complemento a la entrevista)
+
+Más allá de las preguntas, durante la exploración física hay señales de origen vascular que el fisioterapeuta debe buscar activamente:
+
+- Dolor de hombro bilateral que aparece al mantener los brazos elevados durante 3-5 minutos → sospechar síndrome del desfiladero torácico (TOS)
+- Diferencia de tensión arterial diastólica ≥10 mmHg entre ambos brazos en reposo → aneurisma aórtico disecante o componente vascular del TOS
+- Dolor de hombro que mejora al inclinarse hacia delante sentado, arrodillarse con las manos en el suelo o sentarse erguido → pericarditis
+- Dolor de hombro acompañado de disnea, dolor de articulación temporomandibular, náuseas o presión retroesternal → origen cardíaco
+
+Correlacionar siempre con: antecedente familiar o personal de cardiopatía, edad mayor de 50 años (especialmente mujeres posmenopáusicas) y el patrón completo del dolor (ver Tabla 6.5 de Goodman).
+
 ## Preguntas sobre el patrón del dolor para diferenciar causa visceral de musculoesquelética
 
 - ¿Puede encontrar alguna posición que alivie el dolor completamente?
