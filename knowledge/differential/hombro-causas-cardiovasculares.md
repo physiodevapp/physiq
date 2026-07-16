@@ -35,10 +35,12 @@ Fase aguda (semanas iniciales):
 - Hipersensibilidad al tacto, alodinia
 - Edema, espasmo muscular, rigidez y pérdida de función
 - Cambios en la piel: caliente, roja y seca inicialmente → fría y cianótica con sudoración
+- Crecimiento acelerado del vello (pelo oscuro en parches) sobre la extremidad afectada
 
 Fase subaguda (3-6 meses):
 - El dolor aumenta en intensidad
 - El edema se endurece; tejidos pasan de blandos a firmes
+- Piel fina y brillante
 - Atrofia muscular incipiente
 - Cambios en lechos ungueales (fisuras, surcos, estrías)
 - Desmineralización ósea precoz
@@ -48,7 +50,7 @@ Fase crónica (más de 6 meses):
 - Piel fina y brillante, uñas frágiles, osteoporosis establecida
 - El dolor puede estabilizarse, mejorar o empeorar — variable entre pacientes
 
-**Clave diferencial:** el SDRC post-IAM es más frecuente en mujeres y puede afectar a ambos hombros. La incidencia se ha reducido drásticamente con los programas modernos de rehabilitación cardíaca precoz.
+**Clave diferencial:** el SDRC post-IAM es más frecuente en mujeres y puede afectar a ambos hombros. La incidencia se ha reducido drásticamente con los programas modernos de rehabilitación cardíaca precoz. Se han descrito también casos de SDRC secundario a trombosis venosa profunda (TVP) de la extremidad superior.
 
 ## Síndrome del desfiladero torácico (TOS)
 

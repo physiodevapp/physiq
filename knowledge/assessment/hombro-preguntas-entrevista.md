@@ -28,6 +28,8 @@ Estas preguntas se plantean ante cualquier dolor de hombro de inicio insidioso, 
 - Si tiene angina conocida: ¿el dolor de hombro desaparece cuando toma nitroglicerina? (Para mujeres: ¿con antiácidos?)
 - ¿Cómo afecta el reposo a su dolor de hombro? (La angina cede en 2-15 minutos con el cese de la actividad; una lesión muscular real puede requerir más de una hora de reposo para mejorar)
 - ¿Le han hecho algún procedimiento cardíaco (bypass, stent, marcapasos, cateterismo)?
+- ¿Tuvo fiebre reumática de niño? (Orienta a cardiopatía valvular reumática y mayor riesgo de endocarditis)
+- Si tiene angina conocida: ¿ha cambiado el patrón habitual desde que empezó el hombro? ¿Dura más, aparece con menos esfuerzo o es más intensa? (Diferencia angina estable de síndrome coronario agudo)
 
 ## Preguntas de cribado pulmonar
 
