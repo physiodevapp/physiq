@@ -224,6 +224,70 @@ Satellites send messages to the hub via `window.parent.postMessage(msg, '*')`. T
 | `PHYSIQ_SAT_VISIBLE` | hub → satellite | Sent when the satellite's iframe becomes visible (allows satellite to rebuild swipe-back history) |
 | `PHYSIQ_SAT_HIDDEN` | hub → satellite | Sent right before the hub hides the satellite's iframe (switching satellite or going home). Toggling the `hidden` attribute never fires `visibilitychange` inside the iframe, so satellites that need to close open dialogs/sheets before being tucked away must listen for this instead. |
 
+## Clinical knowledge base (RAG)
+
+The copilot Worker (`worker/src/suggest.js`) uses RAG backed by Supabase pgvector. On each `/suggest` call, the transcript excerpt is embedded with OpenAI `text-embedding-3-small` and the top matching chunks are retrieved from Supabase to ground Claude's clinical suggestions.
+
+### Supabase schema (`supabase/schema.sql`)
+
+Run once in the Supabase SQL editor:
+- Extension: `vector` (pgvector)
+- Table: `chunks` — `content`, `embedding vector(1536)`, `title`, `category`, `region`, `source`, `tags`, `file`
+- Index: HNSW on `embedding` (cosine)
+- Function: `match_chunks(query_embedding, match_count, filter_category, filter_region, min_similarity)` — returns top-N rows above cosine threshold
+- RLS: public SELECT, writes only via service role key
+
+### Knowledge directory (`knowledge/`)
+
+```
+knowledge/
+├── differential/   — differential diagnosis by region
+├── redflags/       — red flag indicators
+├── assessment/     — special tests and assessment protocols
+└── protocols/      — treatment and examination protocols
+```
+
+Each `.md` file uses this format:
+
+```markdown
+---
+title: "Diagnóstico diferencial del dolor lumbar"
+category: differential     # differential | redflags | assessment | protocol
+region: lumbar             # lumbar | cervical | shoulder | knee | hip | ankle | global
+source: "Goodman & Snyder"
+language: es
+tags: [lumbar, dolor, visceral]
+---
+
+## Fractura vertebral osteoporótica
+
+Content of this H2 section becomes one chunk in Supabase.
+
+## Estenosis de canal lumbar
+
+Each H2 = one chunk. Split by condition or topic, not by book chapter.
+```
+
+### Adding content
+
+1. Create or edit a `.md` file in `knowledge/<category>/`
+2. Commit and push to `main`
+3. The `ingest-knowledge` GitHub Action embeds the changed files and upserts chunks into Supabase automatically
+
+To re-ingest all files manually: `node scripts/ingest.js`
+
+### Secrets required
+
+| Secret | Used by | Purpose |
+|--------|---------|---------|
+| `SUPABASE_URL` | Worker + GitHub Action | Supabase project URL (`https://<ref>.supabase.co`) |
+| `SUPABASE_ANON_KEY` | Worker (read) | Public read for `match_chunks` RPC |
+| `SUPABASE_SERVICE_KEY` | GitHub Action (write) | Insert/delete chunks during ingestion |
+| `OPENAI_API_KEY` | Worker + GitHub Action | `text-embedding-3-small` embeddings |
+
+Worker secrets set with `wrangler secret put <NAME>`.
+GitHub Action secrets set in repo Settings → Secrets → Actions.
+
 ## Commit format
 
 ```
