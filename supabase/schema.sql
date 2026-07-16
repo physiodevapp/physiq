@@ -69,3 +69,7 @@ alter table chunks enable row level security;
 create policy "chunks are publicly readable"
   on chunks for select
   using (true);
+
+-- 6. Grants — service_role needs explicit object privileges (bypasses RLS but still needs GRANT)
+grant all on public.chunks to service_role;
+grant usage, select on sequence public.chunks_id_seq to service_role;
