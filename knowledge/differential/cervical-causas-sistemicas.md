@@ -1,7 +1,7 @@
 ---
 title: "Causas sistémicas de dolor cervical: artritis reumatoide, mielopatía, tiroides y vascular"
 category: differential
-region: global
+region: cervical
 source: "Goodman & Snyder - Differential Diagnosis for Physical Therapists"
 language: es
 tags: [cervical, artritis reumatoide, subluxación atlantoaxial, mielopatía cervical, tiroides, insuficiencia vertebrobasilar]
