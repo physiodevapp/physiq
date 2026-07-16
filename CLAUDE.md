@@ -236,6 +236,7 @@ Run once in the Supabase SQL editor:
 - Index: HNSW on `embedding` (cosine)
 - Function: `match_chunks(query_embedding, match_count, filter_category, filter_region, min_similarity)` — returns top-N rows above cosine threshold
 - RLS: public SELECT, writes only via service role key
+- Grants: explicit `GRANT ALL ON chunks TO service_role` + sequence grant required — service_role bypasses RLS but still needs object-level privileges
 
 ### Knowledge directory (`knowledge/`)
 

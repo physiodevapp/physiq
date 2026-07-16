@@ -11,6 +11,7 @@ The hub has no clinical logic of its own. Its responsibilities are:
 3. Host satellite files delivered by the CD pipeline
 4. Own the audio recording engine shared by all satellites
 5. Bridge a tablet + mobile split workflow via WebRTC
+6. Host the Cloudflare Worker that powers the AI copilot (transcription, clinical suggestions via RAG)
 
 ## Satellites
 
@@ -36,6 +37,10 @@ physiq/
 ├── lib/
 │   ├── peer.js       — WebRTC peer bridge (tablet ↔ mobile)
 │   └── qrcode.min.js — QR code generation
+├── worker/           — Cloudflare Worker (transcription, copilot suggestions)
+├── knowledge/        — clinical knowledge base (.md files → Supabase pgvector)
+├── supabase/         — schema.sql for Supabase setup
+├── scripts/          — ingest.js (embed knowledge files into Supabase)
 ├── assessment/       — physiq-assessment files (CD pipeline)
 ├── motion/           — physiq-motion files (CD pipeline)
 ├── report/           — physiq-report files (CD pipeline)
@@ -124,6 +129,28 @@ The hub also posts messages back to satellite iframes:
 |------|---------|
 | `PHYSIQ_SAT_VISIBLE` | The satellite's iframe just became visible (rebuild swipe-back history) |
 | `PHYSIQ_SAT_HIDDEN` | The satellite's iframe is about to be hidden (close any open dialog/sheet) |
+
+## Copilot Worker (`worker/`)
+
+A Cloudflare Worker (`physiq-copilot`) powers the AI features used by physiq-report:
+
+- `/transcribe` — WebSocket proxy to Deepgram for real-time transcription
+- `/suggest` — RAG-backed clinical suggestions: embeds the transcript excerpt with OpenAI `text-embedding-3-small`, retrieves matching chunks from Supabase pgvector, and asks Claude for a typed suggestion (`redflag | followup | differential | test`)
+- `/notes` — structured clinical note generation
+
+### Knowledge base
+
+Clinical knowledge lives in `knowledge/` as `.md` files (one H2 section = one chunk). Pushing to `main` triggers the `ingest-knowledge` GitHub Action, which embeds changed files and upserts them into Supabase automatically.
+
+```
+knowledge/
+├── differential/   — differential diagnosis by region
+├── redflags/       — red flag indicators
+├── assessment/     — special tests and assessment protocols
+└── protocols/      — treatment and examination protocols
+```
+
+Supabase schema is in `supabase/schema.sql` — run once in the Supabase SQL editor to set up the `chunks` table, HNSW index, and `match_chunks` RPC function.
 
 ## Local development
 
