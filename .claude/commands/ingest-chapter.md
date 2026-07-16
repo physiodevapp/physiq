@@ -35,32 +35,25 @@ Contenido en prosa. Sin subcabeceras H3. Listas con - para síntomas/signos.
 - `assessment/<region>-preguntas-entrevista.md` — preguntas de entrevista por sistema, signos de cribado en exploración
 - `protocols/<region>-protocolo-cribado.md` — proceso de decisión clínica, perlas, checklist
 
-## Verificación de modelo antes de cada paso
+## Modelo requerido por paso
 
-Antes de ejecutar cada paso, indica en una línea el modelo activo y si es el adecuado. Si no es el correcto, avisa y espera a que el usuario cambie con `/model` antes de continuar. No ejecutes el paso hasta recibir confirmación explícita.
-
-| Paso | Tarea | Modelo requerido | Esfuerzo |
-|------|-------|-----------------|----------|
+| Paso | Tarea | Modelo | Esfuerzo |
+|------|-------|--------|----------|
 | 1 | Extraer texto del PDF y analizar estructura | Opus 4.8 | Alto |
 | 2 | Proponer estructura de archivos | Opus 4.8 | Alto |
 | 3 | Crear todos los archivos | Sonnet 4.6 | Medio |
 | 4 | Revisión cruzada PDF vs archivos | Opus 4.8 | Alto |
 | 5 | Aplicar gaps + PR + merge | Sonnet 4.6 | Medio |
 
-Ejemplo de cabecera antes de cada paso:
+## Confirmación de modelo — obligatoria antes de cada paso
 
-> Modelo activo: claude-opus-4-8 ✓ — adecuado para este paso. Procediendo.
+No intentes detectar el modelo activo. Antes de ejecutar cada paso, muestra siempre este bloque y espera respuesta explícita del usuario:
 
-> Modelo activo: claude-sonnet-4-6 ✗ — este paso requiere Opus 4.8 + Alto. Cambia con `/model claude-opus-4-8` y confirma para continuar.
+> **Antes de continuar con el paso N — [nombre del paso]**
+> El modelo requerido es **[modelo]** con esfuerzo **[esfuerzo]**.
+> Ajústalo con `/model [modelo]` si es necesario y responde "listo" para continuar.
 
-Si el modelo activo no está disponible en el contexto del sistema, no asumas cuál es. Muestra este mensaje y espera confirmación explícita antes de continuar con cualquier paso:
-
-> No puedo determinar el modelo activo en esta sesión.
-> Antes de continuar confirma que has ajustado:
-> - Pasos 1, 2, 4: `/model claude-opus-4-8` + esfuerzo Alto
-> - Pasos 3, 5: `/model claude-sonnet-4-6` + esfuerzo Medio
->
-> Responde "listo" cuando hayas ajustado el modelo y el esfuerzo.
+No ejecutes el paso hasta recibir "listo" u otra confirmación explícita. No asumas que el modelo ya es el correcto.
 
 ## Flujo de trabajo
 
