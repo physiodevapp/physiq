@@ -42,3 +42,11 @@ El dolor intratorácico se refiere con mayor frecuencia al cuello, la columna do
 - Lumbalgia precedida o acompañada de erupción cutánea → enfermedad inflamatoria intestinal
 - Lumbalgia en adolescente atlético → enfermedad del desarrollo, trauma, epifisitis, espondilólisis, espondilolistesis
 - Lumbalgia con lumbalgia desde una lesión específica → esguince o distensión, fractura, cirugía fallida de espalda
+
+## Efecto de la posición y dolor nocturno en dolor de origen sistémico
+
+El dolor de espalda de origen musculoesquelético habitualmente disminuye con el reposo y el decúbito. Cuando el dolor sistémico o tumoral no se alivia en decúbito, esto constituye una bandera roja significativa. El dolor óseo producido por metástasis o mieloma múltiple puede empeorar en posición supina debido al aumento de la presión venosa en el hueso; el paciente adopta posturas insólitas para encontrar alivio o deambula de noche sin poder quedarse quieto.
+
+La distinción entre el paciente "inquieto" y el paciente "que busca el reposo" es clínicamente relevante. El paciente con dolor musculoesquelético habitualmente encuentra alivio en alguna posición de decúbito y permanece quieto en ella; el paciente con enfermedad visceral grave o lesión expansiva busca continuamente nuevas posiciones sin encontrar alivio sostenido. Las enfermedades viscerales severas pueden obligar al paciente a dormir sentado o a levantarse repetidamente durante la noche.
+
+El dolor nocturno constante y severo, presente desde hace semanas o meses y que no se modifica con el cambio de posición, es sugestivo de una lesión ocupante de espacio (tumor, absceso, aneurisma). Este patrón contrasta con el dolor inflamatorio articular, que es peor por la mañana temprano y mejora con la actividad a lo largo del día.

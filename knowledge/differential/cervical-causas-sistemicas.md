@@ -11,7 +11,7 @@ tags: [cervical, artritis reumatoide, subluxación atlantoaxial, mielopatía cer
 
 La artritis reumatoide (AR) se caracteriza por afectación poliarticular de las articulaciones periféricas, pero la columna cervical se ve afectada precozmente (dentro de los primeros 2 años) en el curso de la enfermedad. El dolor profundo y pulsante en la región occipital, retroorbitaria o temporal, o en la región del occipucio por irritación de la raíz nerviosa C2, puede ser la primera manifestación cervical. Algunos pacientes con subluxación atlantoaxial (AA) refieren la sensación de que la cabeza cae hacia adelante durante la flexión cervical, o una sensación de "clic" durante la extensión cuando la articulación AA se reduce espontáneamente.
 
-La subluxación AA en la AR puede representar una emergencia. Un test de Sharp-Purser positivo (sensación de caída de la cabeza durante la flexión cervical o clic durante la extensión) en un paciente con AR debe ser derivado a un cirujano ortopédico.
+La presencia de estos síntomas en un paciente con AR conocida —sensación de caída de la cabeza en flexión cervical o clic audible durante la extensión cuando la articulación se reduce espontáneamente— indica la necesidad de derivación médica para evaluación adicional.
 
 ## Mielopatía cervical
 

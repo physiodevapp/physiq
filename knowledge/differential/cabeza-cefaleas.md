@@ -51,3 +51,9 @@ Los tumores cerebrales causan cefalea en hasta la mitad de los casos. El dolor s
 - Episodios de "pérdida de conciencia" durante la cefalea (convulsiones, hemorragia, tumor)
 - Cefalea grave súbita acompañada de síntomas similares a la gripe, mialgias, dolor mandibular al masticar y trastornos visuales (arteritis temporal)
 - Sin historia personal ni familiar de cefalea migrañosa previa
+
+## Cáncer de cabeza y cuello: signos de alarma y distribución de metástasis espinales
+
+El cáncer de cabeza y cuello puede presentarse con cefalea o dolor cervical. Los signos locales de alarma incluyen: leucoplasia o eritroplasia en la mucosa oral (lesiones blancas o rojas que no curan en 2 semanas), úlcera oral crónica, masa cervical palpable, disfagia progresiva, ronquera persistente, otalgia unilateral sin causa aparente y dolor facial o mandibular de inicio insidioso. Estos hallazgos, especialmente en pacientes con historia de tabaco o alcohol, deben motivar derivación médica para evaluación otorrinolaringológica.
+
+La columna vertebral es el sitio de metástasis óseas más frecuente. La distribución por región es: columna torácica 50–60%, columna lumbar 30–35%, columna cervical 10–15%. Las metástasis espinales pueden manifestarse inicialmente como dolor de espalda o cuello sin déficit neurológico, lo que puede confundirse con una causa musculoesquelética benigna. El dolor oncológico espinal es típicamente constante, no se alivia con el reposo, y puede empeorar en decúbito o por la noche. La presencia de historia previa de cáncer en cualquier localización eleva considerablemente la probabilidad pretest de metástasis espinales como causa del dolor.
