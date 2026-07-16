@@ -694,10 +694,23 @@
       border: 1px solid var(--border);
       border-left-width: 3px;
       border-radius: 9px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .cop-card-front {
       padding: 11px 13px;
       background: #111a28;
-      flex-shrink: 0;
+      position: relative;
     }
+    .cop-card-trash-bg {
+      position: absolute; top: 0; right: 0; bottom: 0;
+      width: 64px;
+      background: rgba(239,68,68,0.12);
+      display: flex; align-items: center; justify-content: center;
+      color: #ef4444; pointer-events: none;
+    }
+    @media (max-width: 767px) { .cop-card-x { display: none; } }
     .cop-card-redflag      { border-left-color: #ef4444; }
     .cop-card-followup     { border-left-color: #4f9cf9; }
     .cop-card-differential { border-left-color: #fb923c; }
@@ -746,6 +759,13 @@
     }
     .cop-tab:hover { color: #8aa4bc; }
     .cop-tab.cop-tab-active { color: #a78bfa; border-bottom-color: #a78bfa; }
+    .cop-tab-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 14px; height: 14px; border-radius: 999px;
+      background: #ef4444; color: #fff;
+      font-family: system-ui, sans-serif; font-size: 9px; font-weight: 700;
+      padding: 0 3px; line-height: 1; margin-left: 5px; vertical-align: middle;
+    }
 
     /* Content panels */
     .cop-panel {
@@ -1180,7 +1200,7 @@
 
   <!-- Tab bar -->
   <div class="cop-tabs">
-    <button class="cop-tab cop-tab-active" id="cop-tab-suggestions" onclick="copilotSwitchTab('suggestions')">Sugerencias</button>
+    <button class="cop-tab cop-tab-active" id="cop-tab-suggestions" onclick="copilotSwitchTab('suggestions')">Sugerencias<span class="cop-tab-badge" id="cop-tab-badge" hidden></span></button>
     <button class="cop-tab" id="cop-tab-transcript" onclick="copilotSwitchTab('transcript')">Transcripción</button>
   </div>
 
