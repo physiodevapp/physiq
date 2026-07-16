@@ -56,7 +56,7 @@ begin
   from chunks c
   where
     (filter_category is null or c.category = filter_category)
-    and (filter_region is null or c.region = filter_region)
+    and (filter_region is null or c.region = filter_region or c.region = 'global')
     and (1 - (c.embedding <=> query_embedding)) >= min_similarity
   order by c.embedding <=> query_embedding
   limit match_count;
