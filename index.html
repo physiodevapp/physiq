@@ -1643,11 +1643,6 @@ navEl.addEventListener('pointerdown', e => {
     'transition:none',
     'cursor:grabbing',
   ].join(';');
-  const ringSvg = _makeDashRing(rect.width, rect.height, 0.7);
-  ringSvg.style.position = 'absolute';
-  ringSvg.style.top  = '-1px';
-  ringSvg.style.left = '-1px';
-  clone.appendChild(ringSvg);
   document.body.appendChild(clone);
   card.classList.add('card-ghost');
 
