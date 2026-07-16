@@ -308,6 +308,16 @@ To re-ingest all files manually: `node scripts/ingest.js`
 Worker secrets set with `wrangler secret put <NAME>`.
 GitHub Action secrets set in repo Settings → Secrets → Actions.
 
+### Worker deployment
+
+**The Worker has no CI/CD pipeline — it must be deployed manually after every change to `worker/physiq-copilot.js`.**
+
+Options:
+- Dashboard: Workers & Pages → physiq-copilot → Edit code → paste file contents → Deploy
+- CLI: `wrangler deploy` from the `worker/` directory
+
+Whenever you commit a change to `worker/physiq-copilot.js`, remind the user to redeploy before closing the session.
+
 ## Commit format
 
 ```
