@@ -913,9 +913,73 @@
     }
     .peer-conflict-card-btn:hover { border-color: #4f9cf9; color: #4f9cf9; background: rgba(79,156,249,0.07); }
     .peer-conflict-card-btn:active { opacity: 0.75; }
+
+    /* ── Activation screen ───────────────────────────────── */
+    #activation-screen {
+      position: fixed; inset: 0; z-index: 9000;
+      background: #0a0d12;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem 1.5rem;
+      transition: opacity 0.3s;
+    }
+    #activation-screen.act-fade { opacity: 0; pointer-events: none; }
+    .act-card {
+      width: 100%; max-width: 360px;
+      display: flex; flex-direction: column; gap: 1.5rem; align-items: center;
+    }
+    .act-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem; font-weight: 400;
+      letter-spacing: -0.02em; color: #fff; user-select: none;
+    }
+    .act-logo span {
+      background: linear-gradient(135deg, #4f9cf9, #38d9a9);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .act-sub { font-size: 0.88rem; color: #8aa4bc; text-align: center; line-height: 1.5; }
+    .act-form { width: 100%; display: flex; flex-direction: column; gap: 0.75rem; }
+    .act-input {
+      width: 100%; padding: 14px 16px;
+      border-radius: 10px; border: 1px solid #232d45;
+      background: #111620; color: #e8edf2;
+      font-family: 'DM Mono', monospace; font-size: 1rem;
+      outline: none; transition: border-color 0.15s;
+      text-align: center; letter-spacing: 0.08em;
+    }
+    .act-input:focus { border-color: #4f9cf9; }
+    .act-input::placeholder { color: #3a4a5e; letter-spacing: 0.02em; }
+    .act-btn {
+      width: 100%; padding: 14px;
+      border-radius: 10px; border: none;
+      background: linear-gradient(135deg, #4f9cf9, #38d9a9);
+      color: #0a0d12; font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .act-btn:hover { opacity: 0.88; }
+    .act-btn:active { opacity: 0.72; }
+    .act-btn:disabled { opacity: 0.4; cursor: default; }
+    .act-error { font-size: 0.82rem; color: #f87171; text-align: center; line-height: 1.4; }
+    .act-checking { font-size: 0.8rem; color: #5a6e8a; text-align: center; }
   </style>
 </head>
 <body>
+
+<!-- ── Activation screen ─────────────────────────────────────────── -->
+<div id="activation-screen">
+  <div class="act-card">
+    <h1 class="act-logo">Physi<span>Q</span></h1>
+    <p class="act-sub">Introduce tu clave de activación para continuar.</p>
+    <div class="act-form">
+      <input id="act-key-input" class="act-input" type="text" placeholder="XXXX-XXXX-XXXX-XXXX"
+        autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+      <button id="act-submit-btn" class="act-btn" onclick="_actSubmit()">Activar</button>
+    </div>
+    <p id="act-error" class="act-error" hidden></p>
+    <p id="act-checking" class="act-checking" hidden>Verificando…</p>
+  </div>
+</div>
 
 <!-- ── Home view ─────────────────────────────────────────────── -->
 <div id="home">
@@ -2518,6 +2582,73 @@ if ('serviceWorker' in navigator) {
 <script src="lib/peer.js"></script>
 <script>
   window.PHYSIQ_COPILOT_WORKER = 'https://physiq-copilot.edu-gamboa-rodriguez.workers.dev';
+</script>
+<script>
+// ── License activation ────────────────────────────────────────────────────────
+function _actDismiss() {
+  const s = document.getElementById('activation-screen');
+  if (!s) return;
+  s.classList.add('act-fade');
+  setTimeout(() => s.remove(), 320);
+}
+
+async function _actValidate(key) {
+  const base = (window.PHYSIQ_COPILOT_WORKER || '').replace(/\/$/, '');
+  if (!base) return 'ok';   // no worker configured — local dev
+  try {
+    const r = await fetch(`${base}/validate`, { headers: { 'X-License-Key': key } });
+    if (r.ok) return 'ok';
+    const d = await r.json().catch(() => ({}));
+    return d.error || 'license_invalid';
+  } catch {
+    return 'ok';   // network error — let through rather than block the app
+  }
+}
+
+async function _actSubmit() {
+  const input = document.getElementById('act-key-input');
+  const btn   = document.getElementById('act-submit-btn');
+  const err   = document.getElementById('act-error');
+  const key   = input.value.trim();
+  if (!key) return;
+  btn.disabled = true;
+  err.hidden   = true;
+  const result = await _actValidate(key);
+  if (result === 'ok') {
+    localStorage.setItem('physiq-license-key', key);
+    _actDismiss();
+  } else {
+    err.textContent = result === 'license_invalid'
+      ? 'Clave no válida. Comprueba que sea correcta.'
+      : 'No se pudo verificar la clave. Inténtalo de nuevo.';
+    err.hidden = false;
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('act-key-input')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') _actSubmit();
+});
+
+// On startup: if a key is stored, validate it; if valid dismiss screen, else show error
+(async () => {
+  const stored = localStorage.getItem('physiq-license-key');
+  if (!stored) return;   // no key — show activation screen
+  const chk = document.getElementById('act-checking');
+  const btn  = document.getElementById('act-submit-btn');
+  if (chk) chk.hidden = false;
+  if (btn) btn.disabled = true;
+  const result = await _actValidate(stored);
+  if (result === 'ok') {
+    _actDismiss();
+  } else {
+    localStorage.removeItem('physiq-license-key');
+    const err = document.getElementById('act-error');
+    if (err) { err.textContent = 'La clave ha expirado. Introduce una clave de activación.'; err.hidden = false; }
+    if (chk) chk.hidden = true;
+    if (btn) btn.disabled = false;
+  }
+})();
 </script>
 <script src="lib/copilot.js"></script>
 </body>
