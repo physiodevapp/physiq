@@ -82,7 +82,7 @@
     .app-badge svg { color: var(--card-color, #4f9cf9); display: block; width: 20px; height: 20px; }
     .app-label { display: none; }
 
-    .card-ghost { opacity: 0.35; }
+    .card-ghost { filter: grayscale(1) opacity(0.35); will-change: auto; }
     .nav-wrap.reordering #navConnectorSvg line,
     .nav-wrap.reordering #navConnectorSvg path { stroke-dasharray: 6 5; }
 
