@@ -2637,6 +2637,7 @@ async function _actSubmit() {
       : 'No se pudo verificar la clave. Inténtalo de nuevo.';
     err.hidden = false;
     btn.disabled = false;
+    if (result === 'license_invalid') input.value = '';
   }
 }
 
