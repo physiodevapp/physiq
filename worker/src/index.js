@@ -4,7 +4,7 @@ import { handleNotes }      from './notes.js';
 
 const CORS = origin => ({
   'Access-Control-Allow-Origin':  origin,
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, X-License-Key',
   'Vary': 'Origin',
 });
@@ -23,7 +23,9 @@ async function checkLicense(request, env, origin) {
   if (isLocalDev(origin)) return null;  // dev bypass
   if (!env.LICENSES) return null;       // KV not configured yet — passthrough
 
-  const key = request.headers.get('X-License-Key') || '';
+  const url = new URL(request.url);
+  // WebSocket (/transcribe) can't send custom headers — key comes as ?key= query param
+  const key = request.headers.get('X-License-Key') || url.searchParams.get('key') || '';
   if (!key) return new Response(JSON.stringify({ error: 'license_required' }), {
     status: 401, headers: { 'Content-Type': 'application/json' },
   });
@@ -60,7 +62,9 @@ export default {
     if (url.pathname === '/transcribe') return handleTranscribe(request, env);
 
     let resp;
-    if (url.pathname === '/suggest' && request.method === 'POST') {
+    if (url.pathname === '/validate' && request.method === 'GET') {
+      resp = new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } else if (url.pathname === '/suggest' && request.method === 'POST') {
       resp = await handleSuggest(request, env);
     } else if (url.pathname === '/notes' && request.method === 'POST') {
       resp = await handleNotes(request, env);
