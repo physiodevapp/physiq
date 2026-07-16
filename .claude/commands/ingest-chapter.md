@@ -110,24 +110,10 @@ open('chapter.txt', 'w').write('\n'.join(out))
 
 5. **Aplica los gaps** y luego crea el PR y haz merge.
 
-6. **Evalúa el filtro por región** — después del merge, ejecuta esta query en Supabase:
+6. **Región en el frontmatter** — el filtro por región ya está activo en el Worker y en `match_chunks`. Solo tienes que usar el valor correcto en el frontmatter de cada archivo:
 
-   ```sql
-   SELECT region, count(*) FROM chunks GROUP BY region ORDER BY count DESC;
-   ```
-
-   Interpreta el resultado:
-
-   - Si solo existe `global` (o representa >90% de los chunks): el filtro no aportaría nada todavía. Informa al usuario con el recuento y omite la pregunta de implementación.
-   - Si hay ≥50 chunks con región específica distinta de `global` (p.ej. `lumbar`, `shoulder`, `knee`…): el corpus ya justifica el filtro. Pregunta al usuario:
-
-     > El corpus tiene suficientes chunks por región para que el filtro de búsqueda vectorial sea efectivo. ¿Quieres que lo implemente ahora? Requiere dos cambios pequeños:
-     > 1. Actualizar la función `match_chunks` en `supabase/schema.sql` para incluir siempre los chunks con `region = 'global'` como fallback cuando se aplica un filtro de región.
-     > 2. Pasar `filter_region: session.manualRegion` en la llamada del Worker cuando la región de sesión esté disponible.
-
-   Si el usuario dice que sí, implementa ambos cambios en la misma rama y PR antes de cerrar la sesión.
-
-   **Nota arquitectónica para cuando implementes:** el filtro debe ser `region = :filter_region OR region = 'global'`, nunca un match estricto — de lo contrario todo el contenido de cribado sistémico (`region: global`) desaparece de los resultados cuando hay una región activa en sesión.
+   - Usa `region: global` para contenido transversal (mecanismos, cribado sistémico, banderas rojas generales, protocolos). Estos chunks aparecen siempre, independientemente de la región activa en sesión.
+   - Usa la región específica (`lumbar`, `cervical`, `shoulder`, `knee`, `hip`, `ankle`) solo cuando el contenido sea exclusivo de esa región. Estos chunks aparecen únicamente cuando la sesión tiene esa región activa.
 
 ## Rama de trabajo
 
