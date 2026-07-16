@@ -208,7 +208,11 @@ async function handleSuggest(request, env) {
         'Authorization': `Bearer ${env.SUPABASE_ANON_KEY}`,
         'Content-Type':  'application/json',
       },
-      body: JSON.stringify({ query_embedding: embedding, match_count: 5 }),
+      body: JSON.stringify({
+        query_embedding: embedding,
+        match_count: 5,
+        ...(session.manualRegion && { filter_region: session.manualRegion }),
+      }),
     });
     if (sbResp.ok) {
       const chunks = await sbResp.json();
