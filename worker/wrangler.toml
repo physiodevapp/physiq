@@ -6,7 +6,14 @@ compatibility_date = "2025-01-01"
 # Overridden in production via `wrangler deploy --var` or dashboard env vars
 ALLOWED_ORIGIN = "https://physiodevapp.github.io"
 
-# Secrets — set with `wrangler secret put <NAME>`:
+# KV Namespace — bind in Cloudflare dashboard: Worker → Settings → Variables → KV Namespace Bindings
+#   Variable name: LICENSES
+#   KV Namespace:  physiq-licenses  (create first in Workers & Pages → KV)
+#
+# Key format in KV:  <license-key-string>  →  {"clinic":"Nombre Clínica","active":true}
+# While LICENSES is unbound the Worker runs without license checks (dev passthrough).
+
+# Secrets — set in Cloudflare dashboard: Worker → Settings → Variables → Secret:
 #   DEEPGRAM_API_KEY
 #   ANTHROPIC_API_KEY
 #   OPENAI_API_KEY

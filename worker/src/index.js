@@ -5,7 +5,7 @@ import { handleNotes }      from './notes.js';
 const CORS = origin => ({
   'Access-Control-Allow-Origin':  origin,
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, X-License-Key',
   'Vary': 'Origin',
 });
 
@@ -13,6 +13,27 @@ function trusted(origin, allowed) {
   return origin === allowed
     || origin.startsWith('http://localhost')
     || origin.startsWith('http://127.0.0.1');
+}
+
+function isLocalDev(origin) {
+  return origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+}
+
+async function checkLicense(request, env, origin) {
+  if (isLocalDev(origin)) return null;  // dev bypass
+  if (!env.LICENSES) return null;       // KV not configured yet — passthrough
+
+  const key = request.headers.get('X-License-Key') || '';
+  if (!key) return new Response(JSON.stringify({ error: 'license_required' }), {
+    status: 401, headers: { 'Content-Type': 'application/json' },
+  });
+
+  const entry = await env.LICENSES.get(key, { type: 'json' });
+  if (!entry || entry.active === false) return new Response(JSON.stringify({ error: 'license_invalid' }), {
+    status: 401, headers: { 'Content-Type': 'application/json' },
+  });
+
+  return null;
 }
 
 export default {
@@ -27,6 +48,13 @@ export default {
     }
 
     if (!ok) return new Response('Forbidden', { status: 403 });
+
+    const licenseErr = await checkLicense(request, env, origin);
+    if (licenseErr) {
+      const h = new Headers(licenseErr.headers);
+      for (const [k, v] of Object.entries(CORS(origin))) h.set(k, v);
+      return new Response(licenseErr.body, { status: licenseErr.status, headers: h });
+    }
 
     // WebSocket proxy — returned directly (no CORS wrapping needed for WS)
     if (url.pathname === '/transcribe') return handleTranscribe(request, env);
