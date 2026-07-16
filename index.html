@@ -674,6 +674,31 @@
       color: var(--text3); flex-shrink: 0;
     }
 
+    /* Region filter row */
+    .cop-region-row {
+      display: flex; gap: 6px;
+      padding: 8px 14px;
+      overflow-x: auto; scrollbar-width: none;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .cop-region-row::-webkit-scrollbar { display: none; }
+    .cop-rgn-chip {
+      flex-shrink: 0;
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace; font-size: 0.67rem; letter-spacing: 0.04em;
+      cursor: pointer; white-space: nowrap;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+    .cop-rgn-chip:hover { border-color: var(--border2); color: var(--text2); }
+    .cop-rgn-chip.cop-rgn-active {
+      background: rgba(167,139,250,0.12);
+      border-color: rgba(167,139,250,0.4);
+      color: #c4b5fd;
+    }
+
     /* Suggestions area */
     #copilot-suggestions {
       padding: 14px 14px 0;
@@ -1260,6 +1285,16 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
+  </div>
+
+  <!-- Region filter -->
+  <div class="cop-region-row" id="cop-region-row">
+    <button class="cop-rgn-chip" data-region="lumbar"   onclick="copilotSetRegion('lumbar')">Lumbar</button>
+    <button class="cop-rgn-chip" data-region="cervical" onclick="copilotSetRegion('cervical')">Cervical</button>
+    <button class="cop-rgn-chip" data-region="shoulder" onclick="copilotSetRegion('shoulder')">Hombro</button>
+    <button class="cop-rgn-chip" data-region="knee"     onclick="copilotSetRegion('knee')">Rodilla</button>
+    <button class="cop-rgn-chip" data-region="hip"      onclick="copilotSetRegion('hip')">Cadera</button>
+    <button class="cop-rgn-chip" data-region="ankle"    onclick="copilotSetRegion('ankle')">Tobillo</button>
   </div>
 
   <!-- Tab bar -->
