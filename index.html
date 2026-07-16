@@ -661,12 +661,23 @@
     .cop-close-btn:hover { background: rgba(255,255,255,0.07); color: #e8edf2; }
     @media (max-width: 767px) { .cop-close-btn { display: none; } }
 
+    .cop-hdr-right { display: flex; align-items: center; gap: 6px; }
+    .cop-mic-chip {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 62px; padding: 4px 8px;
+      border-radius: 7px; border: 1px solid var(--border);
+      background: #111a28;
+    }
+    .cop-mic-chip-lbl {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.09em; text-transform: uppercase;
+      color: var(--text3); flex-shrink: 0;
+    }
+
     /* Suggestions area */
     #copilot-suggestions {
-      flex: 1; overflow-y: auto; overscroll-behavior: contain;
       padding: 14px 14px 0;
       display: flex; flex-direction: column; gap: 10px;
-      -webkit-overflow-scrolling: touch;
     }
 
     .cop-empty-state {
@@ -719,37 +730,33 @@
       font-size: 0.845rem; color: #c8d8e8; line-height: 1.55;
     }
 
-    /* Transcript section */
-    .cop-transcript-section {
-      border-top: 1px solid var(--border);
-      flex-shrink: 0;
+    /* Tab bar */
+    .cop-tabs {
+      display: flex; flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
     }
-    .cop-transcript-toggle {
-      width: 100%; padding: 11px 16px;
-      background: transparent; border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: space-between;
-      color: var(--text3);
+    .cop-tab {
+      flex: 1; padding: 10px 0;
+      background: transparent; border: none; border-bottom: 2px solid transparent;
+      cursor: pointer; position: relative; bottom: -1px;
       font-family: 'DM Mono', monospace;
-      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.07em;
-      transition: color 0.15s;
+      font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
+      color: var(--text3);
+      transition: color 0.15s, border-color 0.15s;
     }
-    .cop-transcript-toggle:hover { color: #8aa4bc; }
+    .cop-tab:hover { color: #8aa4bc; }
+    .cop-tab.cop-tab-active { color: #a78bfa; border-bottom-color: #a78bfa; }
 
-    .cop-tx-chevron {
-      transition: transform 0.2s;
-    }
-    .cop-tx-chevron-open { transform: rotate(180deg); }
-
-    #copilot-transcript-body { border-top: 1px solid var(--border); }
-
-    #copilot-transcript {
-      max-height: 160px; overflow-y: auto;
-      padding: 10px 14px 12px;
-      display: flex; flex-direction: column; gap: 6px;
-      overscroll-behavior: contain;
+    /* Content panels */
+    .cop-panel {
+      flex: 1; overflow-y: auto; overscroll-behavior: contain;
       -webkit-overflow-scrolling: touch;
     }
-
+    #cop-panel-transcript {
+      padding: 10px 14px 12px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    #copilot-transcript { display: flex; flex-direction: column; gap: 6px; }
     .cop-tx-line { display: flex; gap: 8px; align-items: flex-start; }
     .cop-tx-spk {
       font-family: 'DM Mono', monospace;
@@ -1160,27 +1167,33 @@
       <span class="cop-hdr-title">Copilot</span>
       <span class="cop-hdr-status" id="copilot-status">Inactivo</span>
     </div>
-    <button class="cop-close-btn" onclick="copilotHide()" aria-label="Cerrar Copilot">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
+    <div class="cop-hdr-right">
+      <div class="cop-mic-chip" id="copilot-mic-chip" hidden>
+        <span class="cop-mic-chip-lbl">Mic</span>
+        <span class="cop-mic-dot cop-mic-silence" id="copilot-mic-dot"></span>
+      </div>
+      <button class="cop-close-btn" onclick="copilotHide()" aria-label="Cerrar Copilot">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
   </div>
 
-  <!-- Suggestions -->
-  <div id="copilot-suggestions">
+  <!-- Tab bar -->
+  <div class="cop-tabs">
+    <button class="cop-tab cop-tab-active" id="cop-tab-suggestions" onclick="copilotSwitchTab('suggestions')">Sugerencias</button>
+    <button class="cop-tab" id="cop-tab-transcript" onclick="copilotSwitchTab('transcript')">Transcripción</button>
+  </div>
+
+  <!-- Suggestions panel -->
+  <div id="copilot-suggestions" class="cop-panel">
     <div class="cop-empty-state" id="copilot-empty">
       <p>Activa el Copilot para recibir sugerencias clínicas durante la consulta.</p>
     </div>
   </div>
 
-  <!-- Transcript -->
-  <div class="cop-transcript-section">
-    <button class="cop-transcript-toggle" onclick="copilotToggleTranscript()" aria-expanded="false">
-      <span>Transcripción</span>
-      <svg class="cop-tx-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div id="copilot-transcript-body" hidden>
-      <div id="copilot-transcript"></div>
-    </div>
+  <!-- Transcript panel -->
+  <div id="cop-panel-transcript" class="cop-panel" hidden>
+    <div id="copilot-transcript"></div>
   </div>
 
   <!-- Controls footer -->
@@ -1193,7 +1206,6 @@
           <line x1="12" y1="19" x2="12" y2="22"/>
         </svg>
         <span id="copilot-listen-label">Empezar a escuchar</span>
-        <span class="cop-mic-dot cop-mic-silence" id="copilot-mic-dot" hidden></span>
       </button>
       <button class="cop-soap-btn" id="copilot-soap-btn" onclick="copilotGenerateSOAP()" hidden>SOAP</button>
       <button class="cop-lang-btn" id="copilot-lang-btn" onclick="copilotToggleLang()">ES</button>
