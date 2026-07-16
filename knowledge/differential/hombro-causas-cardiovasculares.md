@@ -100,9 +100,12 @@ Menos frecuente que en extremidad inferior, pero su incidencia aumenta por el us
 **Signos y síntomas:**
 - Dolor y edema con fóvea en el brazo, antebrazo o toda la extremidad superior
 - Zona del miembro 2 cm o más grande que el contralateral
-- Enrojecimiento, calor o dilatación venosa superficial
+- Entumecimiento o sensación de pesadez en la extremidad
+- Picor, quemazón o frialdad del miembro
+- Enrojecimiento, calor o dilatación venosa superficial; posible equimosis o decoloración
 - Fiebre baja con escalofríos y malestar
 - Posible limitación del movimiento cervical y del hombro por edema
+- En casos graves (síndrome de vena cava superior): edema facial y del brazo, vértigo, disnea
 
 **Complicación grave:** la primera manifestación puede ser una embolia pulmonar. La trombosis venosa superficial generalmente no emboliza, pero la profunda sí. Si hay PICC, añadir: dolor o sensibilidad en o por encima del punto de inserción.
 
