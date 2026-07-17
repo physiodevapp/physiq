@@ -698,6 +698,7 @@
       border-color: rgba(167,139,250,0.4);
       color: #c4b5fd;
     }
+    .cop-rgn-chip.cop-rgn-active:hover { opacity: 0.55; }
 
     /* Suggestions area */
     #copilot-suggestions {
@@ -1289,12 +1290,12 @@
 
   <!-- Region filter -->
   <div class="cop-region-row" id="cop-region-row">
-    <button class="cop-rgn-chip" data-region="lumbar"   onclick="copilotSetRegion('lumbar')">Lumbar</button>
-    <button class="cop-rgn-chip" data-region="cervical" onclick="copilotSetRegion('cervical')">Cervical</button>
-    <button class="cop-rgn-chip" data-region="shoulder" onclick="copilotSetRegion('shoulder')">Hombro</button>
-    <button class="cop-rgn-chip" data-region="knee"     onclick="copilotSetRegion('knee')">Rodilla</button>
-    <button class="cop-rgn-chip" data-region="hip"      onclick="copilotSetRegion('hip')">Cadera</button>
-    <button class="cop-rgn-chip" data-region="ankle"    onclick="copilotSetRegion('ankle')">Tobillo</button>
+    <button class="cop-rgn-chip" data-region="lumbar"   onclick="copilotSetRegion('lumbar')"   aria-pressed="false">Lumbar</button>
+    <button class="cop-rgn-chip" data-region="cervical" onclick="copilotSetRegion('cervical')" aria-pressed="false">Cervical</button>
+    <button class="cop-rgn-chip" data-region="shoulder" onclick="copilotSetRegion('shoulder')" aria-pressed="false">Hombro</button>
+    <button class="cop-rgn-chip" data-region="knee"     onclick="copilotSetRegion('knee')"     aria-pressed="false">Rodilla</button>
+    <button class="cop-rgn-chip" data-region="hip"      onclick="copilotSetRegion('hip')"      aria-pressed="false">Cadera</button>
+    <button class="cop-rgn-chip" data-region="ankle"    onclick="copilotSetRegion('ankle')"    aria-pressed="false">Tobillo</button>
   </div>
 
   <!-- Tab bar -->
