@@ -119,3 +119,11 @@ El terapeuta debe preguntar específicamente sobre sangre en la orina o en las h
 El dolor pélvico de causa cancerosa se describe típicamente como una o más de las siguientes: dolor sordo profundo, cólico, constante con oleadas en crescendo que van y vienen, o dolor difuso. Habitualmente el paciente no puede señalarlo con un dedo (el dolor no se localiza).
 
 El fracaso en responder al tratamiento de fisioterapia o el empeoramiento de los síntomas requiere una segunda exploración de cribado. La progresión de la enfermedad con frecuencia se acompaña de un conjunto de nuevos signos y síntomas.
+
+## Neuropatía periférica del suelo pélvico por radiación
+
+La radiación pélvica tiene efectos crónicos sobre el tejido conjuntivo y el sistema nervioso. La fibrosis del tejido conjuntivo puede producir deterioro de los tejidos blandos (por ejemplo, adherencias pélvicas) con disfunción funcional secundaria.
+
+La neuropatía periférica inducida por radiación puede afectar a la vejiga, los músculos del suelo pélvico y los pies, ya que los mismos nervios inervan estas áreas. Este efecto secundario se ha reducido significativamente con los tratamientos modernos, pero sigue ocurriendo en un pequeño número de casos. Las mujeres más jóvenes parecen ser más vulnerables a la neuropatía periférica inducida por radiación.
+
+El fisioterapeuta debe considerar si los síntomas del paciente son inducidos por radiación o corresponden a recurrencia del cáncer. Cuando existe duda, la derivación médica para evaluación está indicada. Si se descarta la recurrencia oncológica, la intervención fisioterápica sobre el suelo pélvico y el sistema nervioso periférico puede ser apropiada.

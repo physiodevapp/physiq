@@ -90,6 +90,10 @@ Las siguientes situaciones requieren derivación médica inmediata:
 - Mujeres con endometriosis, síndrome de congestión pélvica, ITS o EPI pueden beneficiarse del tratamiento médico
 - Fracaso en responder al tratamiento de fisioterapia → nueva exploración de cribado y Revisión de Sistemas
 
+## Nota sobre dolor de cintura pélvica y edad (Guías Europeas)
+
+Según las Guías Europeas para el Diagnóstico y Tratamiento del Dolor de Cintura Pélvica, las banderas rojas y amarillas son las mismas que para el dolor lumbar, con la posible excepción de la edad: el dolor de cintura pélvica afecta a individuos más jóvenes (menores de 30 años) y en este grupo la probabilidad de que sea causado por malignidad es menor que en personas de mayor edad.
+
 ## Perlas clínicas (Key Points)
 
 - El dolor sacro en ausencia de historia de trauma o sobreuso que no se reproduce con presión anteroposterior (spring test) sobre el sacro es una presentación de bandera roja que indica una posible causa sistémica de los síntomas.

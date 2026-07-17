@@ -58,8 +58,6 @@ Signos y síntomas clínicos del prolapso uterino:
 - Presión pélvica y pesadez perineal, molestia en la espalda
 - Síntomas aliviados en decúbito
 - Síntomas empeorados por bipedestación prolongada, deambulación, tos, esfuerzo
-- Frecuencia urinaria y urgencia
-- Cistitis (infección vesical)
 - Sensación de bulto o presión en el área perineal
 - Incontinencia urinaria
 - Bulto en el orificio vaginal
@@ -78,6 +76,8 @@ Signos y síntomas clínicos del cistocele:
 - Bulto en el orificio vaginal
 - En estadios avanzados, dificultad para vaciar la vejiga
 - Presión perineal y sensación de bulto
+- Frecuencia urinaria y urgencia
+- Cistitis (infección vesical)
 - Incontinencia urinaria
 
 Signos y síntomas clínicos del rectocele:

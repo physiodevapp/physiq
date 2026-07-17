@@ -23,9 +23,9 @@ El dolor de la articulación SI se percibe habitualmente centrado sobre la espin
 
 - Dolor lumbar bajo (nivel L5): 72% de los casos
 - Lumbar superior (por encima de L5): 6% (poco frecuente; excluye la SI cuando el dolor es en línea media)
-- Glúteo y cara posterolateral del muslo: 94%
-- Cara posterior del muslo (por debajo de la rodilla): 50%
-- Hasta el tobillo: 14%
+- Glúteo: 94%
+- Cara posterolateral del muslo: 50%
+- Por debajo de la rodilla hasta el tobillo: 14%
 - Pie lateral: 8%
 - Ingle o zona púbica: 14%
 - Muslo anterior: 10%

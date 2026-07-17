@@ -41,6 +41,14 @@ El proceso de cribado sigue cuatro pasos secuenciales:
 ### Signos y síntomas asociados
 - Presencia de síntomas urológicos o GI junto con dolor sacro (el terapeuta debe preguntar para encontrarlos)
 
+## Causas primarias de dolor pélvico: frecuencia y orden
+
+Las causas primarias de dolor pélvico, en orden descendente de frecuencia, son: musculoesquelético/neuromuscular, ginecológico, infeccioso, vascular, neoplásico y gastrointestinal.
+
+El dolor pélvico crónico se asocia más frecuentemente a endometriosis, adherencias, SII y cistitis intersticial. La enfermedad infecciosa es la causa sistémica más frecuente de dolor pélvico. El objetivo del cribado es identificar a los individuos con causas infecciosas, vasculares o neoplásicas para derivarlos de forma apropiada.
+
+En mujeres menores de 14 años, el dolor pélvico de origen ginecológico es infrecuente; en este grupo de edad la infección es la causa más probable y se limita habitualmente a la vulva y la vagina.
+
 ## Claves para el cribado de la pelvis
 
 ### Historia y factores de riesgo
