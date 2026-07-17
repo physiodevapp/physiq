@@ -308,6 +308,36 @@ To re-ingest all files manually: `node scripts/ingest.js`
 Worker secrets set with `wrangler secret put <NAME>`.
 GitHub Action secrets set in repo Settings → Secrets → Actions.
 
+### RAG tuning parameters
+
+Current values in `worker/physiq-copilot.js` (`handleSuggest`):
+
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| `match_count` | 3 | Chunks passed to Claude as context |
+| `min_similarity` | 0.6 | Cosine threshold; raise if noise increases |
+| `filter_region` | `session.manualRegion` | Optional; `global` is always included by `match_chunks` |
+| `filter_category` | `session.category` | Optional; satellite must pass it explicitly |
+
+### Region adjacency map
+
+When the knowledge base grows with articular-specific content (`region: knee`, `region: shoulder`, etc.), the worker should expand `filter_region` from a single string to an array using this adjacency map. The `match_chunks` SQL function will need to change `filter_region text` → `filter_regions text[]` with `= ANY(filter_regions)`.
+
+```
+lumbar    → [lumbar, hip, global]       // L5-S1, SI joint, piriformis
+hip       → [hip, lumbar, global]       // referred pain ↔ lumbar (bidirectional)
+knee      → [knee, hip, global]         // hip as frequent proximal source
+ankle     → [ankle, knee, global]       // distal chain
+shoulder  → [shoulder, cervical, global] // C5-C6, subacromial ↔ cervical root
+cervical  → [cervical, shoulder, global] // same overlap, reverse direction
+```
+
+Rules:
+- `global` is always in the array — systemic screening content is transversal
+- Adjacency is proximal/distal immediate only — no segment skipping
+- `shoulder` ↔ `cervical` and `lumbar` ↔ `hip` are the only bidirectional pairs
+- Sacral/pelvic content stays `global` (screening content, not articular-specific); add `region: sacro` only if articular technique chunks are added for that region
+
 ### Worker deployment
 
 **The Worker has no CI/CD pipeline — it must be deployed manually after every change to `worker/physiq-copilot.js`.**
