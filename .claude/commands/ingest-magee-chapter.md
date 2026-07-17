@@ -1,6 +1,6 @@
 Voy a pasarte un capítulo de Magee "Orthopedic Physical Assessment" para convertirlo en archivos markdown del knowledge base de PhysiQ (RAG con Supabase pgvector + embeddings text-embedding-3-small de OpenAI).
 
-Este comando es para capítulos **ortopédicos regionales** (columna cervical, hombro, codo, muñeca/mano, cadera, rodilla, tobillo/pie, ATM, torácica, lumbar, pelvis…). Es distinto de `/ingest-chapter`, que es para el cribado de enfermedad sistémica de Goodman & Snyder. Aquí el eje NO es el diferencial por sistema, sino la **exploración ortopédica**: tests especiales, ROM, exploración neurológica, banderas rojas regionales.
+Este comando es para capítulos **ortopédicos regionales** (columna cervical, hombro, codo, muñeca/mano, cadera, rodilla, tobillo/pie, ATM, torácica, lumbar, pelvis…). Es distinto de `/ingest-goodman-chapter`, que es para el cribado de enfermedad sistémica de Goodman & Snyder. Aquí el eje NO es el diferencial por sistema, sino la **exploración ortopédica**: tests especiales, ROM, exploración neurológica, banderas rojas regionales.
 
 ## Decisiones ya tomadas — no las rediscutas
 
