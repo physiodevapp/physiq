@@ -338,6 +338,21 @@ Rules:
 - `shoulder` ↔ `cervical` and `lumbar` ↔ `hip` are the only bidirectional pairs
 - Sacral/pelvic content stays `global` (screening content, not articular-specific); add `region: sacro` only if articular technique chunks are added for that region
 
+### When to expand the region enum
+
+When knowledge files are added, check the chunk distribution in Supabase:
+
+```sql
+SELECT region, COUNT(*) as chunks FROM chunks GROUP BY region ORDER BY chunks DESC;
+```
+
+Add a new region to the enum (e.g. `sacro`, `elbow`, `wrist`) when **all three conditions** are met:
+1. There are ≥20 chunks of `category: assessment` or `category: protocol` that are specific to that articular region (i.e. not systemic screening content that belongs in `global`)
+2. The content would be diluted or hard to retrieve if kept in `global` alongside unrelated chunks
+3. The new region has a clear adjacency entry to add to the map above
+
+Red flags and differential diagnosis content for that region almost always belongs in `global`, not in the new region — only articular-specific tests, techniques, and protocols justify a dedicated region value.
+
 ### Worker deployment
 
 **The Worker has no CI/CD pipeline — it must be deployed manually after every change to `worker/physiq-copilot.js`.**
