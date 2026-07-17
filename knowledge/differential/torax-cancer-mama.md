@@ -84,6 +84,18 @@ Los ganglios linfáticos "normales" no son palpables ni visibles, pero no todos 
 
 Un cambio en los ganglios linfáticos presente durante más de 1 mes en más de una región es una señal de alarma; un médico debe evaluar todos los ganglios linfáticos sospechosos.
 
+## Pautas de cribado del cáncer de mama (Recuadro 17.3)
+
+Recomendaciones del American College of Obstetricians and Gynecologists (ACOG), la American Cancer Society (ACS) y el National Comprehensive Cancer Network (NCCN):
+
+- La mamografía de cribado rutinaria (anual) se recomienda para mujeres a partir de los 40 años y continúa mientras la mujer esté en buen estado de salud; sin embargo, falta evidencia para determinar pautas de cribado con mamografía después de los 74 años
+- La mamografía puede comenzar antes de los 40 años según factores de riesgo individuales y preferencias personales. Las mujeres menores de 40 años deben conocer los beneficios y daños de las mamografías rutinarias al tomar esta decisión
+- La exploración clínica de mama (ECM) aproximadamente cada 3 años para mujeres en sus 20 y 30 años, y cada año para mujeres de 40 años en adelante
+- Las mujeres deben saber cómo se ven y sienten normalmente sus mamas e informar de cualquier cambio mamario prontamente a su proveedor de atención sanitaria. El autoexamen mamario (AEM) es una opción para mujeres a partir de los 20 años
+- La evidencia insuficiente hace imposible desarrollar pautas en este momento respecto a la efectividad de la mamografía digital o la resonancia magnética mamaria (RM) en lugar de la mamografía de película. Algunas mujeres (por antecedentes familiares, tendencia genética u otros factores de riesgo) pueden ser alentadas por sus médicos a ser cribadas con RM además de la mamografía
+
+Un fisioterapeuta que realiza una ECM podría pasar por alto un bulto (falso negativo), pero esto seguramente sucederá si el fisioterapeuta no realiza ninguna ECM para evaluar la integridad de la piel y los tejidos blandos circundantes de la mama o la axila.
+
 ## Metástasis del cáncer de mama: señales y síntomas
 
 - Masa palpable en las regiones supraclavicular, torácica o axilar
