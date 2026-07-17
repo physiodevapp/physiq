@@ -209,9 +209,11 @@ async function handleSuggest(request, env) {
         'Content-Type':  'application/json',
       },
       body: JSON.stringify({
-        query_embedding: embedding,
-        match_count: 5,
-        ...(session.manualRegion && { filter_region: session.manualRegion }),
+        query_embedding:  embedding,
+        match_count:      3,
+        min_similarity:   0.6,
+        ...(session.manualRegion && { filter_region:   session.manualRegion }),
+        ...(session.category     && { filter_category: session.category }),
       }),
     });
     if (sbResp.ok) {
