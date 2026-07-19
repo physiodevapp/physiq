@@ -815,6 +815,58 @@
     .cop-tx-spk-p { color: #60a5fa; }
     .cop-tx-text { font-size: 0.8rem; color: #8aa4bc; line-height: 1.5; }
 
+    /* Chat panel */
+    #cop-panel-chat { display: flex; flex-direction: column; overflow: hidden; padding: 0; }
+    #cop-panel-chat[hidden] { display: none; }
+    #copilot-chat-msgs {
+      flex: 1; overflow-y: auto; overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: 14px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .cop-chat-msg {
+      max-width: 86%; padding: 9px 12px; border-radius: 13px;
+      font-size: 0.845rem; line-height: 1.55;
+      white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    .cop-chat-user {
+      align-self: flex-end;
+      background: rgba(167,139,250,0.16); border: 1px solid rgba(167,139,250,0.28);
+      color: #e4dcff; border-bottom-right-radius: 4px;
+    }
+    .cop-chat-asst {
+      align-self: flex-start;
+      background: #111a28; border: 1px solid var(--border);
+      color: #c8d8e8; border-bottom-left-radius: 4px;
+    }
+    .cop-chat-asst.cop-chat-pending::after {
+      content: '▋'; color: var(--text3);
+      animation: cop-blink 1s steps(2, start) infinite;
+    }
+    @keyframes cop-blink { to { visibility: hidden; } }
+    .cop-chat-input-row {
+      display: flex; align-items: flex-end; gap: 8px; flex-shrink: 0;
+      padding: 10px 12px calc(env(safe-area-inset-bottom, 0px) + 12px);
+      border-top: 1px solid var(--border);
+    }
+    #copilot-chat-input {
+      flex: 1; resize: none; min-height: 40px; max-height: 96px;
+      background: #0e1622; border: 1px solid var(--border); border-radius: 10px;
+      color: #e8edf2; padding: 9px 12px; line-height: 1.4;
+      font-family: 'Outfit', sans-serif; font-size: 0.86rem;
+      outline: none; transition: border-color 0.15s;
+    }
+    #copilot-chat-input:focus { border-color: rgba(167,139,250,0.5); }
+    #copilot-chat-input::placeholder { color: var(--text3); }
+    .cop-chat-send {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px;
+      border: 1px solid rgba(167,139,250,0.25); background: rgba(167,139,250,0.1);
+      color: #c4b5fd; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .cop-chat-send:hover { background: rgba(167,139,250,0.18); }
+    .cop-chat-send:disabled { opacity: 0.45; cursor: default; }
+
     /* Footer controls */
     .cop-footer {
       padding: 12px 14px calc(env(safe-area-inset-bottom, 0px) + 14px);
@@ -822,6 +874,7 @@
       display: flex; flex-direction: column; gap: 8px;
       flex-shrink: 0;
     }
+    .cop-footer[hidden] { display: none; }
     .cop-footer-row { display: flex; align-items: stretch; gap: 7px; }
 
     .cop-listen-btn {
@@ -1301,6 +1354,7 @@
   <!-- Tab bar -->
   <div class="cop-tabs">
     <button class="cop-tab cop-tab-active" id="cop-tab-suggestions" onclick="copilotSwitchTab('suggestions')">Sugerencias<span class="cop-tab-badge" id="cop-tab-badge" hidden></span></button>
+    <button class="cop-tab" id="cop-tab-chat" onclick="copilotSwitchTab('chat')">Consultar</button>
     <button class="cop-tab" id="cop-tab-transcript" onclick="copilotSwitchTab('transcript')">Transcripción</button>
   </div>
 
@@ -1308,6 +1362,21 @@
   <div id="copilot-suggestions" class="cop-panel">
     <div class="cop-empty-state" id="copilot-empty">
       <p>Activa el Copilot para recibir sugerencias clínicas durante la consulta.</p>
+    </div>
+  </div>
+
+  <!-- Chat panel -->
+  <div id="cop-panel-chat" class="cop-panel" hidden>
+    <div id="copilot-chat-msgs">
+      <div class="cop-empty-state" id="copilot-chat-empty">
+        <p>Pregunta al Copilot sobre el caso: banderas rojas, diagnóstico diferencial, tests o siguientes pasos.</p>
+      </div>
+    </div>
+    <div class="cop-chat-input-row">
+      <textarea id="copilot-chat-input" rows="1" placeholder="Escribe tu consulta…" aria-label="Consulta al Copilot" onkeydown="copilotChatKey(event)" oninput="copilotChatAutosize(this)"></textarea>
+      <button class="cop-chat-send" id="copilot-chat-send" onclick="copilotSendChat()" aria-label="Enviar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
     </div>
   </div>
 
