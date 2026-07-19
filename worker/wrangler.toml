@@ -1,5 +1,5 @@
 name            = "physiq-copilot"
-main            = "src/index.js"
+main            = "physiq-copilot.js"
 compatibility_date = "2025-01-01"
 
 [vars]
