@@ -837,6 +837,19 @@
       align-self: flex-start;
       background: #111a28; border: 1px solid var(--border);
       color: #c8d8e8; border-bottom-left-radius: 4px;
+      white-space: normal;
+    }
+    /* Rendered Markdown inside assistant bubbles */
+    .cop-chat-asst p { margin: 0 0 8px; }
+    .cop-chat-asst > *:last-child { margin-bottom: 0; }
+    .cop-chat-asst .cop-md-h { font-weight: 600; color: #e4ecf5; margin: 8px 0 4px; }
+    .cop-chat-asst ul, .cop-chat-asst ol { margin: 4px 0 8px; padding-left: 18px; }
+    .cop-chat-asst li { margin: 2px 0; }
+    .cop-chat-asst strong { color: #e4ecf5; font-weight: 600; }
+    .cop-chat-asst em { font-style: italic; }
+    .cop-chat-asst code {
+      background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px;
+      font-family: 'DM Mono', monospace; font-size: 0.82em;
     }
     .cop-chat-asst.cop-chat-pending::after {
       content: '▋'; color: var(--text3);
