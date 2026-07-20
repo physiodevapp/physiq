@@ -355,13 +355,34 @@ Red flags and differential diagnosis content for that region almost always belon
 
 ### Worker deployment
 
-**The Worker has no CI/CD pipeline — it must be deployed manually after every change to `worker/physiq-copilot.js`.**
+The Worker deploys automatically via GitHub Actions (`.github/workflows/deploy-worker.yml`): any push to `main` that touches `worker/**` runs `wrangler deploy`. The workflow can also be run manually from the Actions tab (`workflow_dispatch`).
 
-Options:
+Requires two repo secrets (Settings → Secrets and variables → Actions):
+- `CLOUDFLARE_API_TOKEN` — token with the "Edit Cloudflare Workers" permission
+- `CLOUDFLARE_ACCOUNT_ID` — Cloudflare account id
+
+The Worker's own runtime secrets (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, `SUPABASE_*`) are set in the Cloudflare dashboard and are preserved by `wrangler deploy` — they are not managed by CI.
+
+Manual fallback (if CI is unavailable):
 - Dashboard: Workers & Pages → physiq-copilot → Edit code → paste file contents → Deploy
 - CLI: `wrangler deploy` from the `worker/` directory
 
-Whenever you commit a change to `worker/physiq-copilot.js`, remind the user to redeploy before closing the session.
+## Conversational copilot (`/chat`)
+
+Beyond the passive suggestion engine (`/suggest`), the copilot exposes a conversational mode: the physiotherapist can ask the copilot directly (red flags, differential, tests, next steps) from the **"Consultar"** tab in the copilot panel (`index.html`, `lib/copilot.js`).
+
+- **Endpoint:** `POST /chat` in `worker/physiq-copilot.js`. Reuses the `/suggest` RAG pipeline (embed last user message → `match_chunks` → Claude) with `match_count: 5`.
+- **Streaming:** the reply is streamed to the client as SSE — the worker transforms Anthropic's stream into minimal `data: {text}` / `data: [DONE]` events, and `copilotSendChat` in `lib/copilot.js` appends the deltas to the assistant bubble.
+- **Context:** session data, the live consultation transcript (last 20 exchanges), and retrieved knowledge chunks. RAG is best-effort — the chat still replies if embedding or Supabase is unavailable.
+- **Coexistence:** the passive suggestion engine and the chat run independently; the mic footer is hidden while the chat tab is active.
+- **State:** the chat thread is ephemeral (client-side `_chatMessages`, not persisted to IDB).
+
+### Copilot — próximos pasos (no implementado)
+
+Ideas anotadas para más adelante; ninguna está hecha:
+- **Voz (fase 2):** push-to-talk que reutilice el stream de Deepgram para dictar al chat en vez de teclear. Necesita un toggle de modo de micro para no mezclar "hablar con el asistente" con "capturar la consulta".
+- **Tuning RAG del chat:** revisar `match_count` (5) y `min_similarity` (0.6) en `handleChat` si las respuestas salen con ruido o poco fundamentadas.
+- **Persistencia del hilo:** guardar `_chatMessages` en el `session` store de IDB para que la conversación sobreviva a recargas.
 
 ## Commit format
 
