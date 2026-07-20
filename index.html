@@ -815,6 +815,20 @@
     .cop-tx-spk-p { color: #60a5fa; }
     .cop-tx-text { font-size: 0.8rem; color: #8aa4bc; line-height: 1.5; }
 
+    /* Region filter pill (shown on Sugerencias + Consultar when a region is active) */
+    .cop-region-pill {
+      position: sticky; top: 0; z-index: 2;
+      display: flex; align-items: center; gap: 6px;
+      width: fit-content; margin: 0 auto 12px; padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(167,139,250,0.10); border: 1px solid rgba(167,139,250,0.25);
+      color: #a78bfa;
+      font-family: 'DM Mono', monospace; font-size: 0.66rem;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .cop-region-pill[hidden] { display: none; }
+    .cop-region-pill-val { color: #c4b5fd; font-weight: 600; }
+
     /* Chat panel */
     #cop-panel-chat { display: flex; flex-direction: column; overflow: hidden; padding: 0; }
     #cop-panel-chat[hidden] { display: none; }
@@ -1373,6 +1387,10 @@
 
   <!-- Suggestions panel -->
   <div id="copilot-suggestions" class="cop-panel">
+    <div class="cop-region-pill" hidden>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      Filtrando: <span class="cop-region-pill-val"></span>
+    </div>
     <div class="cop-empty-state" id="copilot-empty">
       <p>Activa el Copilot para recibir sugerencias clínicas durante la consulta.</p>
     </div>
@@ -1381,6 +1399,10 @@
   <!-- Chat panel -->
   <div id="cop-panel-chat" class="cop-panel" hidden>
     <div id="copilot-chat-msgs">
+      <div class="cop-region-pill" hidden>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filtrando: <span class="cop-region-pill-val"></span>
+      </div>
       <div class="cop-empty-state" id="copilot-chat-empty">
         <p>Pregunta al Copilot sobre el caso: banderas rojas, diagnóstico diferencial, tests o siguientes pasos.</p>
       </div>
