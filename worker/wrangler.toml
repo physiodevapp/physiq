@@ -6,12 +6,13 @@ compatibility_date = "2025-01-01"
 # Overridden in production via `wrangler deploy --var` or dashboard env vars
 ALLOWED_ORIGIN = "https://physiodevapp.github.io"
 
-# KV Namespace — bind in Cloudflare dashboard: Worker → Settings → Variables → KV Namespace Bindings
-#   Variable name: LICENSES
-#   KV Namespace:  physiq-licenses  (create first in Workers & Pages → KV)
-#
-# Key format in KV:  <license-key-string>  →  {"clinic":"Nombre Clínica","active":true}
-# While LICENSES is unbound the Worker runs without license checks (dev passthrough).
+# KV Namespace — declared here so `wrangler deploy` keeps the binding attached.
+# (wrangler.toml is the source of truth: a binding not listed here is removed on deploy.)
+#   Key format in KV:  <license-key-string>  →  {"clinic":"Nombre Clínica","active":true}
+#   While LICENSES is unbound the Worker runs without license checks (dev passthrough).
+[[kv_namespaces]]
+binding = "LICENSES"
+id      = "5980b672f0e0409d935fc74e0b948532"  # physiq-licenses
 
 # Secrets — set in Cloudflare dashboard: Worker → Settings → Variables → Secret:
 #   DEEPGRAM_API_KEY
