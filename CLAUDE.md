@@ -377,10 +377,19 @@ Beyond the passive suggestion engine (`/suggest`), the copilot exposes a convers
 - **Coexistence:** the passive suggestion engine and the chat run independently; the mic footer is hidden while the chat tab is active.
 - **State:** the chat thread is ephemeral (client-side `_chatMessages`, not persisted to IDB).
 
+### Dictado por voz en Consultar
+
+El input del chat tiene un botón de micro (`#copilot-chat-mic` → `copilotChatDictate`) que dicta voz → texto reutilizando el mismo pipeline Deepgram del motor pasivo (`/transcribe`). No hay endpoint nuevo ni TTS: la respuesta sigue siendo texto.
+
+- **Modo de stream:** `_startStream()` acepta dos intenciones vía `_streamMode` — `'passive'` (transcript diarizado + `/suggest`) y `'dictation'` (finales concatenados en el input, sin diarización, sin `/suggest`). El dictado pide `diarize=false`.
+- **Micro exclusivo con auto-pausa:** solo hay un stream Deepgram vivo a la vez. Al empezar a dictar, si el motor pasivo estaba escuchando se pausa (`_resumePassiveAfterDictation`) y se reanuda al terminar. Así el transcript de la consulta no se contamina con lo que el fisio le dice *al* asistente.
+- **Ciclo de vida:** el dictado se corta al pulsar de nuevo el mic, al cambiar de pestaña, al cerrar el panel o al enviar el mensaje. `_finishDictation` es el único que anula `_ws` y reanuda el pasivo si procede.
+- **Socket obsoleto:** los handlers del WebSocket capturan `sock`/`mode` en su creación y hacen early-return si `_ws !== sock`, para que el `close` tardío del stream pausado no actúe sobre el que lo reemplazó.
+
 ### Copilot — próximos pasos (no implementado)
 
 Ideas anotadas para más adelante; ninguna está hecha:
-- **Voz (fase 2):** push-to-talk que reutilice el stream de Deepgram para dictar al chat en vez de teclear. Necesita un toggle de modo de micro para no mezclar "hablar con el asistente" con "capturar la consulta".
+- **Conversación por voz (voz→voz):** TTS de la respuesta para un modo manos libres. Fuera de alcance por ahora (nueva API, latencia, y el hilo del chat es efímero).
 - **Tuning RAG del chat:** revisar `match_count` (5) y `min_similarity` (0.6) en `handleChat` si las respuestas salen con ruido o poco fundamentadas.
 - **Persistencia del hilo:** guardar `_chatMessages` en el `session` store de IDB para que la conversación sobreviva a recargas.
 
