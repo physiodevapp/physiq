@@ -26,13 +26,22 @@ create index if not exists chunks_embedding_idx
 
 -- 4. match_chunks — called by the Cloudflare Worker via REST RPC
 --    Returns top-N chunks above min_similarity (cosine).
---    filter_category and filter_region are optional pre-filters.
+--    filter_category and the region filters are optional pre-filters.
+--    Region filtering supports two forms (both optional):
+--      * filter_regions text[] — the Worker's adjacency array (preferred),
+--        e.g. a lumbar session sends ['lumbar','hip','global'].
+--      * filter_region  text   — legacy single region, kept for backward
+--        compatibility with older Worker builds.
+--    'global' chunks are always eligible (transversal screening content).
+drop function if exists match_chunks(vector, int, text, text, float);
+
 create or replace function match_chunks(
   query_embedding  vector(1536),
-  match_count      int   default 5,
-  filter_category  text  default null,
-  filter_region    text  default null,
-  min_similarity   float default 0.5
+  match_count      int    default 5,
+  filter_category  text   default null,
+  filter_region    text   default null,
+  filter_regions   text[] default null,
+  min_similarity   float  default 0.5
 )
 returns table (
   id          bigint,
@@ -56,7 +65,12 @@ begin
   from chunks c
   where
     (filter_category is null or c.category = filter_category)
-    and (filter_region is null or c.region = filter_region or c.region = 'global')
+    and (
+      (filter_region is null and filter_regions is null)
+      or c.region = filter_region
+      or c.region = any(filter_regions)
+      or c.region = 'global'
+    )
     and (1 - (c.embedding <=> query_embedding)) >= min_similarity
   order by c.embedding <=> query_embedding
   limit match_count;
