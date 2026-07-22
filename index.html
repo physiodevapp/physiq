@@ -1017,13 +1017,30 @@
        empty-state (flex:1) fills the whole area and stays vertically centered
        instead of being pushed into the lower half by the empty list. */
     .cop-hist-list:empty { display: none; }
+    /* Two layers: a clipping shell (.cop-hist-item) with a trash-red reveal behind,
+       and a sliding front (.cop-hist-item-front). A touch swipe left past the
+       threshold springs the front back and opens the confirm dialog (same visual
+       language as the suggestion-card swipe). */
     .cop-hist-item {
+      position: relative; overflow: hidden; border-radius: 10px;
+    }
+    .cop-hist-trash-bg {
+      position: absolute; top: 0; right: 0; bottom: 0; z-index: 0;
+      width: 72px; border-radius: 10px;
+      background: rgba(239,68,68,0.14);
+      display: flex; align-items: center; justify-content: center;
+      color: #ef4444; pointer-events: none;
+    }
+    .cop-hist-item-front {
+      position: relative; z-index: 1;
       display: flex; align-items: center; gap: 10px;
       padding: 10px 12px; border-radius: 10px;
       background: #111a28; border: 1px solid var(--border);
-      cursor: pointer; transition: border-color 0.15s, background 0.15s;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.22s ease;
+      will-change: transform;
     }
-    .cop-hist-item:hover { border-color: rgba(167,139,250,0.4); background: #131e2e; }
+    .cop-hist-item-front:hover { border-color: rgba(167,139,250,0.4); background: #131e2e; }
     .cop-hist-item-meta { flex: 1; min-width: 0; }
     .cop-hist-item-title {
       font-family: 'Outfit', sans-serif; font-size: 0.84rem; color: #dbe6f1;
@@ -1045,6 +1062,41 @@
       color: #fca5a5; background: rgba(248,113,113,0.1);
       border-color: rgba(248,113,113,0.3);
     }
+
+    /* Confirm dialog (delete a saved conversation) — matches the satellites' style */
+    .cop-confirm {
+      position: fixed; inset: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+      background: rgba(6,9,14,0.62);
+      -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+      animation: cop-confirm-in 0.14s ease;
+    }
+    .cop-confirm[hidden] { display: none; }
+    @keyframes cop-confirm-in { from { opacity: 0; } to { opacity: 1; } }
+    .cop-confirm-card {
+      width: 100%; max-width: 400px;
+      background: #111a28; border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px 22px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+    }
+    .cop-confirm-title {
+      font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: #f2f5f8;
+      margin-bottom: 8px;
+    }
+    .cop-confirm-sub {
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem; color: #8aa4bc;
+      line-height: 1.5; margin-bottom: 20px; overflow-wrap: anywhere;
+    }
+    .cop-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .cop-confirm-cancel, .cop-confirm-ok {
+      padding: 10px 18px; border-radius: 10px; cursor: pointer;
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .cop-confirm-cancel { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+    .cop-confirm-cancel:hover { border-color: var(--border2); color: #e8edf2; }
+    .cop-confirm-ok { background: #f43f5e; border: 1px solid #f43f5e; color: #fff; }
+    .cop-confirm-ok:hover { background: #e11d48; border-color: #e11d48; }
 
     /* Footer controls */
     .cop-footer {
@@ -1602,6 +1654,18 @@
 
 <!-- ── Copilot overlay (mobile backdrop) ─────────────────────────────── -->
 <div id="copilot-overlay" onclick="copilotHide()"></div>
+
+<!-- ── Copilot confirm dialog (delete a saved conversation) ───────────── -->
+<div id="cop-confirm" class="cop-confirm" hidden onclick="if(event.target===this)copilotConfirmCancel()">
+  <div class="cop-confirm-card" role="dialog" aria-modal="true" aria-labelledby="cop-confirm-title">
+    <div class="cop-confirm-title" id="cop-confirm-title">Borrar conversación</div>
+    <div class="cop-confirm-sub" id="cop-confirm-sub"></div>
+    <div class="cop-confirm-actions">
+      <button class="cop-confirm-cancel" onclick="copilotConfirmCancel()">Cancelar</button>
+      <button class="cop-confirm-ok" onclick="copilotConfirmOk()">Borrar</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── Copilot panel ─────────────────────────────────────────────────── -->
 <div id="copilot-panel" role="complementary" aria-label="Copilot clínico">
