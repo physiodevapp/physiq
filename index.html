@@ -1013,6 +1013,10 @@
       -webkit-overflow-scrolling: touch;
       padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;
     }
+    /* With no saved conversations the list has no children — collapse it so the
+       empty-state (flex:1) fills the whole area and stays vertically centered
+       instead of being pushed into the lower half by the empty list. */
+    .cop-hist-list:empty { display: none; }
     .cop-hist-item {
       display: flex; align-items: center; gap: 10px;
       padding: 10px 12px; border-radius: 10px;
