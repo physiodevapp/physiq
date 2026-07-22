@@ -882,9 +882,11 @@
     .cop-tx-spk-p { color: #60a5fa; }
     .cop-tx-text { font-size: 0.8rem; color: #8aa4bc; line-height: 1.5; }
 
-    /* Region filter pill (shown on Sugerencias + Consultar when a region is active) */
+    /* Region filter pill (shown on Sugerencias + Consultar when a region is active).
+       Flows with the scroll content — NOT sticky: a sticky translucent pill let the
+       conversation text bleed through it. The active region stays visible in the
+       header trigger regardless, so nothing is lost by letting the pill scroll away. */
     .cop-region-pill {
-      position: sticky; top: 0; z-index: 2;
       display: flex; align-items: center; gap: 6px;
       width: fit-content; margin: 0 auto 12px; padding: 5px 11px;
       border-radius: 999px;
