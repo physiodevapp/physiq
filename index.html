@@ -979,6 +979,78 @@
       50%      { box-shadow: 0 0 0 4px rgba(248,113,113,0); }
     }
 
+    /* Chat toolbar (new conversation + history) */
+    .cop-chat-tools {
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-bottom: 1px solid var(--border);
+    }
+    .cop-chat-tool {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 999px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text3); cursor: pointer;
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .cop-chat-tool:hover { color: var(--text2); border-color: var(--border2); }
+
+    /* History list view — replaces the thread + input while open */
+    #cop-chat-history { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    #cop-panel-chat.cop-hist-open > #cop-chat-tools,
+    #cop-panel-chat.cop-hist-open > #copilot-chat-msgs,
+    #cop-panel-chat.cop-hist-open > .cop-chat-input-row { display: none; }
+    #cop-panel-chat.cop-hist-open > #cop-chat-history { display: flex; }
+    .cop-hist-hdr {
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-bottom: 1px solid var(--border);
+    }
+    .cop-hist-back {
+      flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+      border: 1px solid var(--border); background: #0e1622;
+      color: var(--text2); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .cop-hist-back:hover { color: #e8edf2; border-color: rgba(255,255,255,0.2); }
+    .cop-hist-hdr-title {
+      font-family: 'Outfit', sans-serif; font-size: 0.86rem; font-weight: 500;
+      color: #c8d8e8;
+    }
+    .cop-hist-list {
+      flex: 1; overflow-y: auto; overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .cop-hist-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      background: #111a28; border: 1px solid var(--border);
+      cursor: pointer; transition: border-color 0.15s, background 0.15s;
+    }
+    .cop-hist-item:hover { border-color: rgba(167,139,250,0.4); background: #131e2e; }
+    .cop-hist-item-meta { flex: 1; min-width: 0; }
+    .cop-hist-item-title {
+      font-family: 'Outfit', sans-serif; font-size: 0.84rem; color: #dbe6f1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cop-hist-item-sub {
+      margin-top: 3px;
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      color: var(--text3); letter-spacing: 0.03em;
+    }
+    .cop-hist-del {
+      flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+      border: 1px solid transparent; background: transparent;
+      color: var(--text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+    }
+    .cop-hist-del:hover {
+      color: #fca5a5; background: rgba(248,113,113,0.1);
+      border-color: rgba(248,113,113,0.3);
+    }
+
     /* Footer controls */
     .cop-footer {
       padding: 12px 14px calc(env(safe-area-inset-bottom, 0px) + 14px);
@@ -1492,6 +1564,17 @@
 
   <!-- Chat panel -->
   <div id="cop-panel-chat" class="cop-panel" hidden>
+    <!-- Chat toolbar: new conversation + history (independent of the active session) -->
+    <div class="cop-chat-tools" id="cop-chat-tools">
+      <button class="cop-chat-tool" onclick="copilotChatNew()" aria-label="Nueva consulta">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nueva
+      </button>
+      <button class="cop-chat-tool" onclick="copilotHistoryOpen()" aria-label="Historial de consultas">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l3 2"/></svg>
+        Historial
+      </button>
+    </div>
     <div id="copilot-chat-msgs">
       <div class="cop-region-pill" hidden>
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
@@ -1513,6 +1596,20 @@
       <button class="cop-chat-send" id="copilot-chat-send" onclick="copilotSendChat()" aria-label="Enviar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
+    </div>
+
+    <!-- History list view (overlays the thread when open) -->
+    <div id="cop-chat-history">
+      <div class="cop-hist-hdr">
+        <button class="cop-hist-back" onclick="copilotHistoryClose()" aria-label="Volver a la consulta">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <span class="cop-hist-hdr-title">Historial de consultas</span>
+      </div>
+      <div class="cop-hist-list" id="cop-hist-list"></div>
+      <div class="cop-empty-state" id="cop-hist-empty" hidden>
+        <p>Aún no has guardado ninguna consulta. Las conversaciones con el Copilot se guardan aquí automáticamente.</p>
+      </div>
     </div>
   </div>
 

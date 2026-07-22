@@ -375,7 +375,7 @@ Beyond the passive suggestion engine (`/suggest`), the copilot exposes a convers
 - **Streaming:** the reply is streamed to the client as SSE — the worker transforms Anthropic's stream into minimal `data: {text}` / `data: [DONE]` events, and `copilotSendChat` in `lib/copilot.js` appends the deltas to the assistant bubble.
 - **Context:** session data, the live consultation transcript (last 20 exchanges), and retrieved knowledge chunks. RAG is best-effort — the chat still replies if embedding or Supabase is unavailable.
 - **Coexistence:** the passive suggestion engine and the chat run independently; the mic footer is hidden while the chat tab is active.
-- **State:** the chat thread is ephemeral (client-side `_chatMessages`, not persisted to IDB).
+- **State:** the live thread is `_chatMessages` (client-side). It is persisted to a standalone history DB after every assistant reply (see below) — but the passive suggestion engine, transcript, and patient session never read it.
 
 ### Cabeceras del panel (filtro de región)
 
@@ -401,12 +401,20 @@ El input del chat tiene un botón de micro (`#copilot-chat-mic` → `copilotChat
 - **Ciclo de vida:** el dictado se corta al pulsar de nuevo el mic, al cambiar de pestaña, al cerrar el panel o al enviar el mensaje. `_finishDictation` es el único que anula `_ws` y reanuda el pasivo si procede.
 - **Socket obsoleto:** los handlers del WebSocket capturan `sock`/`mode` en su creación y hacen early-return si `_ws !== sock`, para que el `close` tardío del stream pausado no actúe sobre el que lo reemplazó.
 
+### Historial de consultas al copiloto
+
+Las conversaciones de la pestaña **Consultar** se guardan en un historial propio del fisio, **independiente del paciente y de la sesión activa**. No usa el `session` store: vive en su **propia base de datos IndexedDB** (`physiq-copilot-history`, store `conversations`, keyPath `id`) para no chocar con la versión `v3` de la DB `physiq` que comparten los satélites.
+
+- **Cuándo se guarda:** `_histSave()` hace *upsert* del hilo tras cada respuesta del asistente (best-effort — un fallo de escritura nunca rompe el chat). La primera pregunta de un hilo vacío crea `_chatConvId = Date.now()`; las siguientes actualizan el mismo registro (`updatedAt` sube y sube al principio de la lista).
+- **Esquema del registro:** `{ id, createdAt, updatedAt, title, messages: [{ role, text }] }`. `title` = primera pregunta del usuario, recortada a 120 caracteres.
+- **UI (dentro de la pestaña Consultar):** toolbar superior con **Nueva** (`copilotChatNew` — abre un hilo limpio; el anterior ya quedó guardado) e **Historial** (`copilotHistoryOpen`). La vista de historial (`#cop-chat-history`) sustituye al hilo + input mientras está abierta (clase `cop-panel-chat.cop-hist-open`); cada entrada carga la conversación al tocarla (`copilotHistoryLoad`) o se borra con la papelera (`copilotHistoryDelete`). Cargar un hilo antiguo permite **continuarlo** — las nuevas respuestas actualizan ese mismo registro.
+- **Alcance:** el historial sobrevive a recargas y a cambios de paciente; `SESSION_CLEAR` no lo toca. Se cierra automáticamente al cambiar de pestaña (`copilotSwitchTab`).
+
 ### Copilot — próximos pasos (no implementado)
 
 Ideas anotadas para más adelante; ninguna está hecha:
-- **Conversación por voz (voz→voz):** TTS de la respuesta para un modo manos libres. Fuera de alcance por ahora (nueva API, latencia, y el hilo del chat es efímero).
+- **Conversación por voz (voz→voz):** TTS de la respuesta para un modo manos libres. Fuera de alcance por ahora (nueva API, latencia).
 - **Tuning RAG del chat:** revisar `match_count` (5) y `min_similarity` (0.6) en `handleChat` si las respuestas salen con ruido o poco fundamentadas.
-- **Persistencia del hilo:** guardar `_chatMessages` en el `session` store de IDB para que la conversación sobreviva a recargas.
 
 ## Commit format
 
