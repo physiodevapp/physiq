@@ -934,6 +934,10 @@
       color: #e8edf2; padding: 9px 12px; line-height: 1.4;
       font-family: 'Outfit', sans-serif; font-size: 0.86rem;
       outline: none; transition: border-color 0.15s;
+      /* Hidden by default so autosizing below max-height never draws a scrollbar
+         (a stray vertical line on devices with classic scrollbars). copilotChatAutosize
+         switches it to 'auto' only when the content is capped at max-height. */
+      overflow-y: hidden;
     }
     #copilot-chat-input:focus { border-color: rgba(167,139,250,0.5); }
     #copilot-chat-input::placeholder { color: var(--text3); }
