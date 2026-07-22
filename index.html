@@ -667,6 +667,16 @@
 
     .cop-hdr-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
+    /* Chat actions in the header (new conversation + history), shown only on Consultar */
+    .cop-hdr-act { display: flex; align-items: center; gap: 2px; }
+    .cop-hdr-actbtn {
+      width: 30px; height: 30px; border-radius: 50%; border: none;
+      background: transparent; color: var(--text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s; flex-shrink: 0;
+    }
+    .cop-hdr-actbtn:hover { background: rgba(255,255,255,0.07); color: #e8edf2; }
+
     /* Region filter trigger (collapses the chips band into the header) */
     .cop-rgn-trigger {
       display: inline-flex; align-items: center; gap: 5px;
@@ -977,25 +987,8 @@
       50%      { box-shadow: 0 0 0 4px rgba(248,113,113,0); }
     }
 
-    /* Chat toolbar (new conversation + history) */
-    .cop-chat-tools {
-      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px; border-bottom: 1px solid var(--border);
-    }
-    .cop-chat-tool {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 5px 11px; border-radius: 999px;
-      border: 1px solid var(--border); background: transparent;
-      color: var(--text3); cursor: pointer;
-      font-family: 'DM Mono', monospace; font-size: 0.62rem;
-      text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    .cop-chat-tool:hover { color: var(--text2); border-color: var(--border2); }
-
     /* History list view — replaces the thread + input while open */
     #cop-chat-history { display: none; flex: 1; flex-direction: column; overflow: hidden; }
-    #cop-panel-chat.cop-hist-open > #cop-chat-tools,
     #cop-panel-chat.cop-hist-open > #copilot-chat-msgs,
     #cop-panel-chat.cop-hist-open > .cop-chat-input-row { display: none; }
     #cop-panel-chat.cop-hist-open > #cop-chat-history { display: flex; }
@@ -1624,6 +1617,15 @@
         <span class="cop-mic-chip-lbl">Mic</span>
         <span class="cop-mic-dot cop-mic-silence" id="copilot-mic-dot"></span>
       </div>
+      <!-- Chat actions — shown only on the Consultar tab (see _syncHeaderChatActions) -->
+      <div class="cop-hdr-act" id="cop-hdr-chat-actions" hidden>
+        <button class="cop-hdr-actbtn" onclick="copilotChatNew()" title="Nueva consulta" aria-label="Nueva consulta">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="cop-hdr-actbtn" onclick="copilotHistoryOpen()" title="Historial de consultas" aria-label="Historial de consultas">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l3 2"/></svg>
+        </button>
+      </div>
       <button class="cop-rgn-trigger" id="cop-rgn-trigger" onclick="copilotToggleRegionMenu()" aria-expanded="false" aria-label="Filtro de región">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
         <span class="cop-rgn-trigger-lbl" id="cop-rgn-trigger-lbl">Región</span>
@@ -1665,17 +1667,6 @@
 
   <!-- Chat panel -->
   <div id="cop-panel-chat" class="cop-panel" hidden>
-    <!-- Chat toolbar: new conversation + history (independent of the active session) -->
-    <div class="cop-chat-tools" id="cop-chat-tools">
-      <button class="cop-chat-tool" onclick="copilotChatNew()" aria-label="Nueva consulta">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nueva
-      </button>
-      <button class="cop-chat-tool" onclick="copilotHistoryOpen()" aria-label="Historial de consultas">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l3 2"/></svg>
-        Historial
-      </button>
-    </div>
     <div id="copilot-chat-msgs">
       <div class="cop-empty-state" id="copilot-chat-empty">
         <p>Pregunta al Copilot sobre el caso: banderas rojas, diagnóstico diferencial, tests o siguientes pasos.</p>
