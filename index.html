@@ -1175,6 +1175,107 @@
     .peer-conflict-card-btn:hover { border-color: #4f9cf9; color: #4f9cf9; background: rgba(79,156,249,0.07); }
     .peer-conflict-card-btn:active { opacity: 0.75; }
 
+    /* ── APIs panel ──────────────────────────────────────── */
+    #apis-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(10,13,18,0.75);
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+      will-change: opacity;
+    }
+    #apis-overlay.open { opacity: 1; pointer-events: all; }
+
+    #apis-sheet {
+      width: 100%; max-width: 640px;
+      background: #111620;
+      border-top: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      padding: 0 1.5rem calc(env(safe-area-inset-bottom, 0px) + 2rem);
+      display: flex; flex-direction: column; gap: 0.6rem;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+      will-change: transform;
+    }
+    #apis-overlay.open #apis-sheet { transform: translateY(0); }
+
+    @media (min-width: 768px) {
+      #apis-overlay { align-items: center; }
+      #apis-sheet {
+        max-width: 420px; width: calc(100% - 3rem);
+        border: 1px solid var(--border); border-radius: 16px;
+        padding-bottom: 1.75rem;
+        transform: scale(0.96); opacity: 0;
+        transition: transform 0.25s cubic-bezier(0.32,0.72,0,1), opacity 0.2s;
+      }
+      #apis-overlay.open #apis-sheet { transform: scale(1); opacity: 1; }
+      .apis-handle { display: none; }
+    }
+
+    .apis-handle {
+      width: 36px; height: 4px;
+      background: var(--border2); border-radius: 2px;
+      margin: 10px auto 4px; align-self: center;
+    }
+
+    .apis-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .apis-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem; color: #e8edf2; font-weight: 400;
+    }
+    .apis-close-btn {
+      width: 30px; height: 30px; border-radius: 50%; border: none;
+      background: transparent; color: var(--text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .apis-close-btn:hover { background: rgba(255,255,255,0.08); color: #e8edf2; }
+    @media (max-width: 767px) { .apis-close-btn { display: none; } }
+
+    .apis-list {
+      display: flex; flex-direction: column; gap: 6px;
+      padding-top: 6px;
+    }
+    .apis-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0e1420;
+      color: inherit; text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .apis-item:hover { border-color: var(--border2); background: #111a28; }
+
+    .apis-item-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .apis-item-icon svg { width: 16px; height: 16px; display: block; }
+
+    .apis-item-body { flex: 1; min-width: 0; }
+    .apis-item-name {
+      font-size: 0.88rem; font-weight: 500; color: #dbe6f1;
+    }
+    .apis-item-desc {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.66rem; color: var(--text3);
+      margin-top: 1px; letter-spacing: 0.02em;
+    }
+
+    .apis-item-ext {
+      flex-shrink: 0; color: var(--text3);
+      opacity: 0.5;
+    }
+    .apis-item-ext svg { width: 13px; height: 13px; }
+
     /* ── Activation screen ───────────────────────────────── */
     #activation-screen {
       position: fixed; inset: 0; z-index: 9000;
@@ -1247,6 +1348,12 @@
   <header>
     <h1>Physi<span>Q</span></h1>
     <div class="hdr-actions">
+      <button id="apisBtn" class="peer-hdr-btn" onclick="toggleApisPanel()" title="Servicios externos" aria-label="Servicios externos">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </button>
       <button id="reorderBtn" class="peer-hdr-btn" onclick="toggleReorderMode()" title="Reorganizar tarjetas" aria-label="Reorganizar tarjetas">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -1633,6 +1740,65 @@
 
 </div>
 
+<!-- ── APIs panel ─────────────────────────────────────────────────────── -->
+<div id="apis-overlay" onclick="_apisOverlayClick(event)">
+  <div id="apis-sheet">
+    <div class="apis-handle"></div>
+    <div class="apis-hdr">
+      <span class="apis-title">Servicios externos</span>
+      <button class="apis-close-btn" onclick="hideApisPanel()" aria-label="Cerrar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="apis-list">
+      <a class="apis-item" href="https://platform.openai.com/usage" target="_blank" rel="noopener">
+        <div class="apis-item-icon" style="background:rgba(16,163,127,0.12);border:1px solid rgba(16,163,127,0.2)">
+          <svg viewBox="0 0 24 24" fill="#10a37f"><path d="M22.28 9.87a5.97 5.97 0 0 0-.51-4.91 6.05 6.05 0 0 0-6.5-2.9A6 6 0 0 0 10.8 0a6.07 6.07 0 0 0-5.77 4.2A6 6 0 0 0 1.16 7a6.06 6.06 0 0 0 .74 7.12 6 6 0 0 0 .51 4.9 6.05 6.05 0 0 0 6.5 2.9A6 6 0 0 0 13.2 24a6.07 6.07 0 0 0 5.78-4.21 6 6 0 0 0 3.87-2.8 6.06 6.06 0 0 0-.57-7.12zM13.2 22.47a4.48 4.48 0 0 1-2.88-1.04l.14-.08 4.77-2.76a.79.79 0 0 0 .4-.68v-6.74l2.02 1.16a.07.07 0 0 1 .04.06v5.58a4.5 4.5 0 0 1-4.49 4.5zm-9.67-4.14a4.48 4.48 0 0 1-.54-3.02l.15.09 4.77 2.75a.77.77 0 0 0 .78 0l5.83-3.36v2.33a.08.08 0 0 1-.03.06L9.7 20.26a4.5 4.5 0 0 1-6.17-1.93zm-1.26-9.95a4.46 4.46 0 0 1 2.34-1.97v5.67a.77.77 0 0 0 .39.67l5.82 3.36L8.8 17.27a.08.08 0 0 1-.07.01L4 14.7a4.5 4.5 0 0 1-1.73-6.32zm16.56 3.87-5.83-3.37L15.02 7.7a.07.07 0 0 1 .07-.01l4.73 2.73a4.5 4.5 0 0 1-.7 8.12V12.9a.77.77 0 0 0-.39-.65zm2-3.05-.15-.09-4.76-2.77a.79.79 0 0 0-.79 0L9.3 10.7V8.37a.07.07 0 0 1 .03-.07l4.73-2.73a4.5 4.5 0 0 1 6.77 4.66v-.02zM8.23 12.94 6.2 11.78a.08.08 0 0 1-.04-.07V6.15a4.5 4.5 0 0 1 7.38-3.45l-.15.08-4.76 2.76a.78.78 0 0 0-.4.68v6.72zm1.1-2.35 2.6-1.5 2.6 1.5v3L11.93 15l-2.6-1.5V10.6z"/></svg>
+        </div>
+        <div class="apis-item-body">
+          <div class="apis-item-name">OpenAI</div>
+          <div class="apis-item-desc">Embeddings · GPT · Uso y créditos</div>
+        </div>
+        <span class="apis-item-ext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </a>
+      <a class="apis-item" href="https://console.anthropic.com/settings/cost" target="_blank" rel="noopener">
+        <div class="apis-item-icon" style="background:rgba(201,100,66,0.12);border:1px solid rgba(201,100,66,0.2)">
+          <svg viewBox="0 0 24 24" fill="#c96442"><path d="M17.304 3.541 13.847 13.52h6.914l-3.457-9.979ZM6.696 3.541 2.187 16.459h4.04l.901-2.634h5.234l.902 2.634h4.04L12.793 3.541H6.696Zm.513 7.513 1.534-4.481 1.534 4.481H7.21Z"/></svg>
+        </div>
+        <div class="apis-item-body">
+          <div class="apis-item-name">Anthropic</div>
+          <div class="apis-item-desc">Claude · Sugerencias y chat clínico</div>
+        </div>
+        <span class="apis-item-ext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </a>
+      <a class="apis-item" href="https://console.deepgram.com/" target="_blank" rel="noopener">
+        <div class="apis-item-icon" style="background:rgba(79,156,249,0.12);border:1px solid rgba(79,156,249,0.2)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4f9cf9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </div>
+        <div class="apis-item-body">
+          <div class="apis-item-name">Deepgram</div>
+          <div class="apis-item-desc">STT · Transcripción y diarización</div>
+        </div>
+        <span class="apis-item-ext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </a>
+      <a class="apis-item" href="https://supabase.com/dashboard/" target="_blank" rel="noopener">
+        <div class="apis-item-icon" style="background:rgba(62,207,142,0.12);border:1px solid rgba(62,207,142,0.2)">
+          <svg viewBox="0 0 24 24" fill="#3ecf8e"><path d="M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C.113 12.925.697 14.172 1.79 14.172h9.803l.205 8.792c.015.986 1.26 1.41 1.874.637l9.262-11.653c.65-.874.066-2.121-1.028-2.121H12.105L11.9 1.036z"/></svg>
+        </div>
+        <div class="apis-item-body">
+          <div class="apis-item-name">Supabase</div>
+          <div class="apis-item-desc">Base de conocimiento · RAG</div>
+        </div>
+        <span class="apis-item-ext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </a>
+    </div>
+  </div>
+</div>
+
 <!-- ── Peer connect panel ──────────────────────────────────────────────── -->
 <div id="peer-panel" class="peer-overlay" onclick="_peerOverlayClick(event)">
   <div class="peer-sheet" id="peer-sheet">
@@ -1803,6 +1969,21 @@ const _peerAnsHash = (() => {
   try { return new URLSearchParams(location.hash.replace(/^#/, '')).get('peer-ans') || null; }
   catch { return null; }
 })();
+
+// ── APIs panel ───────────────────────────────────────────────
+function toggleApisPanel() {
+  const ov = document.getElementById('apis-overlay');
+  ov.classList.contains('open') ? hideApisPanel() : showApisPanel();
+}
+function showApisPanel() {
+  document.getElementById('apis-overlay').classList.add('open');
+}
+function hideApisPanel() {
+  document.getElementById('apis-overlay').classList.remove('open');
+}
+function _apisOverlayClick(e) {
+  if (e.target === document.getElementById('apis-overlay')) hideApisPanel();
+}
 
 // ── Navigation ───────────────────────────────────────────────
 const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', questionnaire: '/physiq/questionnaire/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', jump: '/physiq/jump/', kinematics: '/physiq/kinematics/', wiki: '/physiq/wiki/' };
