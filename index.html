@@ -705,8 +705,10 @@
       transition: grid-template-rows 0.28s cubic-bezier(0.32,0.72,0,1);
     }
     .cop-region-row.cop-rgn-open { grid-template-rows: 1fr; }
+    /* Clean clip layer — collapses to 0 (padding/scroll live one level deeper,
+       where overflow-x:auto would otherwise block a full 0fr collapse). */
+    .cop-region-clip { min-height: 0; overflow: hidden; }
     .cop-region-inner {
-      min-height: 0;
       display: flex; gap: 6px;
       padding: 8px 14px;
       overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
@@ -1458,13 +1460,15 @@
 
   <!-- Region filter — collapsible popover, opened from the header trigger -->
   <div class="cop-region-row" id="cop-region-row" inert>
-    <div class="cop-region-inner">
-      <button class="cop-rgn-chip" data-region="lumbar"   onclick="copilotSetRegion('lumbar')"   aria-pressed="false">Lumbar</button>
-      <button class="cop-rgn-chip" data-region="cervical" onclick="copilotSetRegion('cervical')" aria-pressed="false">Cervical</button>
-      <button class="cop-rgn-chip" data-region="shoulder" onclick="copilotSetRegion('shoulder')" aria-pressed="false">Hombro</button>
-      <button class="cop-rgn-chip" data-region="knee"     onclick="copilotSetRegion('knee')"     aria-pressed="false">Rodilla</button>
-      <button class="cop-rgn-chip" data-region="hip"      onclick="copilotSetRegion('hip')"      aria-pressed="false">Cadera</button>
-      <button class="cop-rgn-chip" data-region="ankle"    onclick="copilotSetRegion('ankle')"    aria-pressed="false">Tobillo</button>
+    <div class="cop-region-clip">
+      <div class="cop-region-inner">
+        <button class="cop-rgn-chip" data-region="lumbar"   onclick="copilotSetRegion('lumbar')"   aria-pressed="false">Lumbar</button>
+        <button class="cop-rgn-chip" data-region="cervical" onclick="copilotSetRegion('cervical')" aria-pressed="false">Cervical</button>
+        <button class="cop-rgn-chip" data-region="shoulder" onclick="copilotSetRegion('shoulder')" aria-pressed="false">Hombro</button>
+        <button class="cop-rgn-chip" data-region="knee"     onclick="copilotSetRegion('knee')"     aria-pressed="false">Rodilla</button>
+        <button class="cop-rgn-chip" data-region="hip"      onclick="copilotSetRegion('hip')"      aria-pressed="false">Cadera</button>
+        <button class="cop-rgn-chip" data-region="ankle"    onclick="copilotSetRegion('ankle')"    aria-pressed="false">Tobillo</button>
+      </div>
     </div>
   </div>
 
