@@ -632,7 +632,10 @@
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
-    .cop-hdr-left { display: flex; align-items: center; gap: 9px; }
+    .cop-hdr-left { display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1; }
+    .cop-hdr-left .cop-hdr-status {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+    }
 
     .cop-hdr-dot {
       width: 8px; height: 8px; border-radius: 50%;
@@ -645,6 +648,7 @@
     .cop-hdr-title {
       font-family: 'DM Serif Display', serif;
       font-size: 1rem; color: #e8edf2; font-weight: 400; letter-spacing: -0.01em;
+      flex-shrink: 0;
     }
     .cop-hdr-status {
       font-family: 'DM Mono', monospace;
@@ -661,7 +665,25 @@
     .cop-close-btn:hover { background: rgba(255,255,255,0.07); color: #e8edf2; }
     @media (max-width: 767px) { .cop-close-btn { display: none; } }
 
-    .cop-hdr-right { display: flex; align-items: center; gap: 6px; }
+    .cop-hdr-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+    /* Region filter trigger (collapses the chips band into the header) */
+    .cop-rgn-trigger {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 9px; border-radius: 999px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text3); cursor: pointer;
+      font-family: 'DM Mono', monospace; font-size: 0.64rem;
+      text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .cop-rgn-trigger:hover { color: var(--text2); border-color: var(--border2); }
+    .cop-rgn-trigger.cop-rgn-trigger-on {
+      color: #c4b5fd; border-color: rgba(167,139,250,0.4);
+      background: rgba(167,139,250,0.12);
+    }
+    .cop-rgn-chev { transition: transform 0.18s; }
+    .cop-rgn-trigger.cop-rgn-trigger-open .cop-rgn-chev { transform: rotate(180deg); }
     .cop-mic-chip {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       width: 62px; padding: 4px 8px;
@@ -674,15 +696,31 @@
       color: var(--text3); flex-shrink: 0;
     }
 
-    /* Region filter row */
+    /* Region filter row — transient popover under the header.
+       Collapse animates the grid track height (0fr→1fr) so the tabs slide down
+       smoothly instead of jumping when the chips appear. */
     .cop-region-row {
+      display: grid; grid-template-rows: 0fr;
+      flex-shrink: 0;
+      transition: grid-template-rows 0.28s cubic-bezier(0.32,0.72,0,1);
+    }
+    .cop-region-row.cop-rgn-open { grid-template-rows: 1fr; }
+    /* Clean clip layer — collapses to 0 (padding/scroll live one level deeper,
+       where overflow-x:auto would otherwise block a full 0fr collapse). */
+    .cop-region-clip { min-height: 0; overflow: hidden; }
+    .cop-region-inner {
       display: flex; gap: 6px;
       padding: 8px 14px;
-      overflow-x: auto; scrollbar-width: none;
-      flex-shrink: 0;
+      overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
       border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      opacity: 0; transition: opacity 0.2s ease;
     }
-    .cop-region-row::-webkit-scrollbar { display: none; }
+    .cop-region-row.cop-rgn-open .cop-region-inner { opacity: 1; }
+    .cop-region-inner::-webkit-scrollbar { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .cop-region-row, .cop-region-inner, .cop-rgn-chev { transition: none; }
+    }
     .cop-rgn-chip {
       flex-shrink: 0;
       padding: 4px 10px; border-radius: 999px;
@@ -1409,20 +1447,29 @@
         <span class="cop-mic-chip-lbl">Mic</span>
         <span class="cop-mic-dot cop-mic-silence" id="copilot-mic-dot"></span>
       </div>
+      <button class="cop-rgn-trigger" id="cop-rgn-trigger" onclick="copilotToggleRegionMenu()" aria-expanded="false" aria-label="Filtro de región">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span class="cop-rgn-trigger-lbl" id="cop-rgn-trigger-lbl">Región</span>
+        <svg class="cop-rgn-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
       <button class="cop-close-btn" onclick="copilotHide()" aria-label="Cerrar Copilot">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- Region filter -->
-  <div class="cop-region-row" id="cop-region-row">
-    <button class="cop-rgn-chip" data-region="lumbar"   onclick="copilotSetRegion('lumbar')"   aria-pressed="false">Lumbar</button>
-    <button class="cop-rgn-chip" data-region="cervical" onclick="copilotSetRegion('cervical')" aria-pressed="false">Cervical</button>
-    <button class="cop-rgn-chip" data-region="shoulder" onclick="copilotSetRegion('shoulder')" aria-pressed="false">Hombro</button>
-    <button class="cop-rgn-chip" data-region="knee"     onclick="copilotSetRegion('knee')"     aria-pressed="false">Rodilla</button>
-    <button class="cop-rgn-chip" data-region="hip"      onclick="copilotSetRegion('hip')"      aria-pressed="false">Cadera</button>
-    <button class="cop-rgn-chip" data-region="ankle"    onclick="copilotSetRegion('ankle')"    aria-pressed="false">Tobillo</button>
+  <!-- Region filter — collapsible popover, opened from the header trigger -->
+  <div class="cop-region-row" id="cop-region-row" inert>
+    <div class="cop-region-clip">
+      <div class="cop-region-inner">
+        <button class="cop-rgn-chip" data-region="lumbar"   onclick="copilotSetRegion('lumbar')"   aria-pressed="false">Lumbar</button>
+        <button class="cop-rgn-chip" data-region="cervical" onclick="copilotSetRegion('cervical')" aria-pressed="false">Cervical</button>
+        <button class="cop-rgn-chip" data-region="shoulder" onclick="copilotSetRegion('shoulder')" aria-pressed="false">Hombro</button>
+        <button class="cop-rgn-chip" data-region="knee"     onclick="copilotSetRegion('knee')"     aria-pressed="false">Rodilla</button>
+        <button class="cop-rgn-chip" data-region="hip"      onclick="copilotSetRegion('hip')"      aria-pressed="false">Cadera</button>
+        <button class="cop-rgn-chip" data-region="ankle"    onclick="copilotSetRegion('ankle')"    aria-pressed="false">Tobillo</button>
+      </div>
+    </div>
   </div>
 
   <!-- Tab bar -->
