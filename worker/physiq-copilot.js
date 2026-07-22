@@ -420,8 +420,10 @@ async function handleChat(request, env) {
       'Content-Type':      'application/json',
     },
     body: JSON.stringify({
+      // 2048: detailed clinical protocol answers (multi-phase progressions, several
+      // options) were being cut off mid-word at 1024 tokens.
       model:      'claude-sonnet-5',
-      max_tokens: 1024,
+      max_tokens: 2048,
       stream:     true,
       system,
       messages: claudeMessages,
