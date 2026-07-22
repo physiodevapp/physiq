@@ -457,6 +457,9 @@ async function handleChat(request, env) {
             if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
               const text = evt.delta.text || '';
               if (text) controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+            } else if (evt.type === 'message_delta' && evt.delta?.stop_reason === 'max_tokens') {
+              // Reply hit the token ceiling — tell the client so it can flag it.
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ truncated: true })}\n\n`));
             } else if (evt.type === 'message_stop') {
               controller.enqueue(encoder.encode('data: [DONE]\n\n'));
             }
