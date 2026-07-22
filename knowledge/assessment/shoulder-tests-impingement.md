@@ -31,6 +31,12 @@ El paciente abduce activamente el brazo en el plano frontal desde 0° hasta 180�
 
 Precisión diagnóstica: sensibilidad y especificidad moderadas (Park et al.: sensibilidad ~74%, especificidad ~81%). Interpretación clínica: test razonablemente equilibrado; es uno de los ítems de mayor valor dentro de los clústeres de impingente y de rotura del manguito (clúster de Park).
 
+## Signo de impingement posterior interno (posterior internal impingement)
+
+Explora el pinzamiento interno posterosuperior, típico del atleta de lanzamiento (contacto entre la cara articular del manguito posterosuperior y el labrum posterosuperior en abducción y rotación lateral máximas). Con el paciente en supino, el examinador lleva el hombro a ~90°–110° de abducción, rotación lateral máxima y algo de extensión horizontal. Es positivo si reproduce dolor localizado en la región posterosuperior del hombro (no anterior).
+
+Precisión diagnóstica: el eAppendix de Magee recoge para este signo una especificidad en torno al 75%; es más útil en el contexto clínico específico del lanzador que como test general. Interpretación clínica: orienta hacia impingement interno posterosuperior (asociado a lesiones del labrum posterosuperior y a la cara articular del manguito) en deportistas por encima de la cabeza; debe integrarse con la valoración de inestabilidad anterior y del déficit de rotación medial glenohumeral (GIRD).
+
 ## Test de Yocum
 
 El paciente coloca la mano del lado afecto sobre el hombro contralateral y eleva activamente el codo sin elevar el hombro, mientras el examinador puede aplicar ligera resistencia. Es positivo si aparece dolor, indicando pinzamiento subacromial.

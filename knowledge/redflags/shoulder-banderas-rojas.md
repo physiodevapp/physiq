@@ -54,8 +54,10 @@ Nota sobre los tests provocativos del desfiladero torácico (Adson, Roos/EAST, W
 
 ## Dolor referido visceral y cardíaco
 
-El hombro es una localización clásica de dolor referido. Considerar origen no musculoesquelético cuando el dolor no es mecánico (no se reproduce ni modifica con los movimientos y tests del hombro):
-- Cardíaco: dolor en hombro/brazo izquierdo con esfuerzo, opresión torácica, disnea, sudoración (isquemia miocárdica).
-- Diafragmático/subfrénico: irritación diafragmática referida al hombro (signo de Kehr; p. ej., irritación esplénica o hemoperitoneo).
-- Hepatobiliar y otras vísceras: dolor referido al hombro derecho.
+El hombro es una localización clásica de dolor referido visceral. Este chunk es un GATILLO DE CRIBADO en el flujo de examen ortopédico: el diagnóstico diferencial detallado de las causas viscerales del dolor de hombro (cardiovascular, gastrointestinal, hepatobiliar, pulmonar, renal, ginecológico) se encuentra desarrollado en el contenido de diferencial por sistema y no se reproduce aquí.
+
+Sospechar origen no musculoesquelético cuando el dolor NO es mecánico, es decir, cuando no se reproduce ni se modifica con los movimientos activos/pasivos ni con los tests especiales del hombro. Signos que deben disparar el cribado visceral:
+- Dolor de hombro/brazo izquierdo desencadenado por el esfuerzo, con opresión torácica, disnea o sudoración (sospecha de isquemia miocárdica).
+- Dolor constante, no posicional, que no cede con el reposo y despierta por la noche, sin relación con la actividad del brazo.
+- Síntomas sistémicos acompañantes: fiebre, pérdida de peso, malestar general, síntomas digestivos, respiratorios o urinarios.
 - Actuación: dolor de hombro sin hallazgos ortopédicos consistentes, o con síntomas sistémicos/cardiorrespiratorios, obliga a cribar causa visceral y derivar según corresponda.

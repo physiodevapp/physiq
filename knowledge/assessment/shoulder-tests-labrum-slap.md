@@ -15,17 +15,23 @@ Precisión diagnóstica para lesión SLAP: muy variable entre estudios. La descr
 
 Interpretación clínica: útil como test inicial de cribado labral por su sensibilidad, pero de especificidad limitada como test aislado; su valor aumenta dentro de un clúster. La localización del dolor permite además diferenciar SLAP de patología acromioclavicular.
 
-## Test de carga del bíceps I (biceps load test I)
+## Test de carga del bíceps I (biceps load test I / Kim test I)
 
-Diseñado para SLAP en pacientes con inestabilidad anterior. En supino con el brazo en 90° de abducción, el examinador realiza la maniobra de aprensión (rotación lateral) y, cuando aparece la aprensión, pide al paciente que flexione el codo contra resistencia (carga del bíceps). Es positivo si la aprensión persiste o el dolor aumenta con la flexión resistida del codo (el bíceps traiciona un anclaje labral superior inestable); es negativo si la aprensión disminuye.
+Magee también denomina a este test "Kim test I" (no confundir con el test de Kim para la lesión labral posteroinferior, que es distinto). Diseñado para SLAP en pacientes con inestabilidad anterior. En supino con el brazo en 90° de abducción, el examinador realiza la maniobra de aprensión (rotación lateral) y, cuando aparece la aprensión, pide al paciente que flexione el codo contra resistencia (carga del bíceps). Es positivo si la aprensión persiste o el dolor aumenta con la flexión resistida del codo (el bíceps traiciona un anclaje labral superior inestable); es negativo si la aprensión disminuye.
 
 Precisión diagnóstica (Kim et al.): sensibilidad ~91%, especificidad ~97% para SLAP asociada a inestabilidad anterior. Interpretación clínica: test de buen rendimiento (alta sensibilidad y especificidad) en el subgrupo con inestabilidad anterior; contribuye tanto a confirmar como a descartar SLAP en ese contexto.
 
-## Test de carga del bíceps II (biceps load test II)
+## Test de carga del bíceps II (biceps load test II / Kim test II)
 
-Modificación para SLAP con o sin inestabilidad. En supino, el brazo se coloca en 120° de abducción y rotación lateral máxima con el codo a 90° y antebrazo supinado; se pide flexión del codo contra resistencia. Es positivo si el dolor aparece o aumenta con la flexión resistida.
+Magee también lo denomina "Kim test II". Modificación para SLAP con o sin inestabilidad. En supino, el brazo se coloca en 120° de abducción y rotación lateral máxima con el codo a 90° y antebrazo supinado; se pide flexión del codo contra resistencia. Es positivo si el dolor aparece o aumenta con la flexión resistida.
 
 Precisión diagnóstica (Kim et al.): sensibilidad ~90%, especificidad ~97% para lesión SLAP. Interpretación clínica: uno de los tests labrales con mejor precisión documentada; buen valor confirmatorio y de descarte para SLAP.
+
+## Test de supinación resistida en rotación lateral (RSERT / Myers)
+
+Explora lesiones SLAP tipo II reproduciendo la tracción del bíceps sobre el anclaje labral superior. En supino con el hombro en ~90° de abducción y el codo a ~65°–70° de flexión con el antebrazo en pronación, el examinador sujeta la muñeca y el codo y pide al paciente que supine el antebrazo contra resistencia mientras se lleva el hombro a rotación lateral. Es positivo si reproduce dolor o chasquido en la cara anterior o profunda del hombro.
+
+Precisión diagnóstica para lesión SLAP (Myers et al.): sensibilidad ~83%, especificidad ~82%, con LR+ ~4–5 y LR− ~0.2. Interpretación clínica: es uno de los tests labrales aislados con mejor precisión documentada; su LR+ favorable le da valor confirmatorio y su LR− bajo ayuda además a descartar. Buena elección junto con biceps load I/II frente a los tests labrales clásicos de baja validez.
 
 ## Test de cizallamiento labral dinámico (dynamic labral shear / O'Driscoll)
 

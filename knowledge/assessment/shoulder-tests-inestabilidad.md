@@ -71,7 +71,7 @@ Precisión diagnóstica para lesión labral posteroinferior (Kim et al.):
 
 Interpretación clínica: test CONFIRMATORIO de alta especificidad para inestabilidad/lesión labral posteroinferior. Su rendimiento aumenta combinado con el test de Kim.
 
-## Test de Kim (internal rotation resistance / posteroinferior labrum)
+## Test de Kim (para lesión labral posteroinferior)
 
 Con el paciente sentado y el brazo en 90° de abducción, el examinador sostiene el codo y la parte proximal del brazo, aplica una carga axial firme y eleva el brazo diagonalmente a 45° mientras empuja la parte proximal del húmero en sentido posteroinferior. Es positivo si aparece dolor posterior súbito, con o sin clunk.
 
@@ -79,7 +79,7 @@ Precisión diagnóstica para lesión labral posteroinferior (Kim et al.):
 - Sensibilidad ~80%, especificidad ~94%.
 - La combinación de Kim + jerk test eleva la sensibilidad para la lesión labral posteroinferior hasta ~97%.
 
-Interpretación clínica: test de buena especificidad; su mayor valor es que, COMBINADO con el jerk test, cubre tanto la confirmación como el cribado de la lesión labral posteroinferior.
+Interpretación clínica: test de buena especificidad; su mayor valor es que, COMBINADO con el jerk test, cubre tanto la confirmación como el cribado de la lesión labral posteroinferior. No debe confundirse con el test de resistencia a la rotación medial (IRRST), que es un test distinto para diferenciar impingement de salida (outlet) del de no salida, ni con los tests de carga del bíceps (biceps load I/II), que Magee también denomina "Kim I/II" pero que valoran lesiones SLAP.
 
 ## Signo del surco (sulcus sign — inestabilidad inferior/multidireccional)
 

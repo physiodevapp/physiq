@@ -52,6 +52,12 @@ Precisión diagnóstica para rotura del redondo menor: sensibilidad muy alta (ce
 
 Interpretación clínica: test muy sensible para incompetencia del redondo menor; un signo del trompetista positivo es un fuerte indicador de rotura/atrofia del redondo menor, relevante para la planificación quirúrgica.
 
+## Rent test (palpación de la rotura del manguito)
+
+Es un test de palpación para detectar roturas transmurales del manguito (sobre todo del supraespinoso). Con el paciente sentado, el examinador coloca el pulgar sobre el borde anterolateral del acromion palpando el troquíter y, con la otra mano, extiende y rota pasivamente el hombro. Es positivo si se palpa un defecto o "hueco" (rent) en el manguito bajo el dedo al rotar el húmero, correspondiente a la solución de continuidad tendinosa.
+
+Precisión diagnóstica para rotura transmural (Wolf y Agrawal, estudio único): sensibilidad ~96%, especificidad ~97%. Interpretación clínica: precisión muy alta en la descripción original, pero es marcadamente EXAMINADOR-DEPENDIENTE y de un solo estudio, por lo que debe interpretarse con cautela y combinarse con el clúster de Park y la imagen. Un rent palpable apoya fuertemente la rotura transmural.
+
 ## Test de despegue de Gerber (lift-off test, subescapular)
 
 Explora el subescapular. El paciente coloca el dorso de la mano sobre la región lumbar (rotación medial y extensión) y separa activamente la mano de la espalda. Es positivo si no puede despegar la mano (o solo lo consigue por extensión del codo/tronco), indicando debilidad o rotura del subescapular.
@@ -71,6 +77,12 @@ Precisión diagnóstica: alta especificidad para disfunción del subescapular (e
 Con la mano del paciente separada de la región lumbar por el examinador (rotación medial y extensión máximas pasivas), se pide mantener la posición. Es positivo si la mano cae hacia la espalda (retardo), indicando incompetencia del subescapular.
 
 Precisión diagnóstica: sensibilidad muy alta para rotura completa del subescapular (cercana al 97% según Hertel et al.) con buena especificidad. Interpretación clínica: test sensible; útil para detectar rotura completa del subescapular.
+
+## Signo del "belly-off" (belly-off sign, subescapular)
+
+Variante que explora la insuficiencia del subescapular, especialmente de sus fibras superiores. El examinador coloca pasivamente la mano del paciente sobre el abdomen con el codo por delante del plano del tronco (rotación medial pasiva máxima) y luego suelta la muñeca pidiendo mantener la palma sobre el abdomen. Es positivo (belly-off) si la palma se separa del abdomen y la muñeca se flexiona, indicando que el subescapular no puede sostener la rotación medial.
+
+Precisión diagnóstica: buena especificidad para lesión del subescapular (fibras superiores), complementaria al belly-press y al lift-off. Interpretación clínica: útil cuando se sospecha rotura parcial superior del subescapular; forma parte del conjunto lift-off / belly-press / belly-off / bear-hug que cubre todo el músculo.
 
 ## Test del abrazo del oso (bear-hug test, subescapular)
 

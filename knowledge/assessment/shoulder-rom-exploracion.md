@@ -24,6 +24,16 @@ Se observa la calidad del movimiento, el arco doloroso, la presencia de "hiking"
 
 Durante la elevación del brazo, el húmero y la escápula se mueven de forma coordinada en una relación aproximada de 2:1 (por cada 2° de movimiento glenohumeral, 1° de rotación escapular), tras una fase inicial de "ajuste" en los primeros ~30° de abducción en que predomina el movimiento glenohumeral. La alteración del ritmo escapulohumeral (la escápula se mueve más que el húmero, hiking del hombro, discinesia escapular) sugiere debilidad o control incorrecto de los estabilizadores escapulares, arthrocinemática glenohumeral alterada o dolor que modifica el patrón. Su valoración es un cribado clave de disfunción del control motor escapular.
 
+## Discinesia escapular y tests escapulares dinámicos (SAT y SRT)
+
+La discinesia escapular (alteración de la posición o del patrón de movimiento de la escápula) se valora de forma cualitativa "sí/no" observando ambas escápulas durante la elevación y el descenso repetidos del brazo, buscando prominencia del borde medial o del ángulo inferior (aleteo/winging) y movimiento asimétrico. La evaluación observacional sí/no es más fiable que las mediciones con cinta (el test de deslizamiento escapular lateral tiene fiabilidad/validez pobres y no se recomienda como test diagnóstico).
+
+Dos maniobras dinámicas ayudan a establecer si la discinesia contribuye a los síntomas y orientan el tratamiento, más que a "diagnosticar" una estructura:
+- Test de asistencia escapular (Scapular Assistance Test, SAT): mientras el paciente eleva el brazo, el examinador ayuda manualmente a la rotación superior y báscula posterior de la escápula. Es positivo si disminuye el dolor de impingement o mejora el arco de movimiento, indicando que la mecánica escapular contribuye al problema.
+- Test de retracción escapular (Scapular Retraction Test, SRT): el examinador estabiliza/retrae manualmente la escápula contra el tórax mientras se realiza un test de fuerza del supraespinoso o la maniobra de recolocación. Es positivo si mejora la fuerza o disminuye el dolor con la escápula estabilizada.
+
+Precisión diagnóstica: ambos son tests de valor pronóstico/terapéutico más que diagnóstico; su validez formal es limitada. Interpretación clínica: un SAT o SRT positivo señala que el control escapular es un objetivo de tratamiento y respalda un enfoque de rehabilitación centrado en la escápula, especialmente en el impingement secundario y en el deportista por encima de la cabeza.
+
 ## Movimientos pasivos y sensación de tope (end-feel)
 
 Cuando los movimientos activos no alcanzan el rango completo, se exploran los pasivos para valorar la sensación de tope y diferenciar limitación contráctil de no contráctil. Sensaciones de tope normales en el hombro: tope tisular/estiramiento tisular en rotaciones y abducción. Un tope duro o precoz sugiere bloqueo óseo o capsular; un tope vacío (el paciente detiene por dolor antes del tope real) sugiere patología aguda o proceso serio.
