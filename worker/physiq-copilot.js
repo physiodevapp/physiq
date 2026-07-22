@@ -395,7 +395,7 @@ async function handleChat(request, env) {
   const system = [
     'Eres un copiloto clínico de fisioterapia que conversa con el fisioterapeuta durante o después de la consulta.',
     'Responde en español, de forma concisa y clínica, con un tono de compañero experto.',
-    'Fundámentate en la base de conocimiento y en la transcripción de la consulta cuando estén disponibles; no inventes datos que no aparezcan.',
+    'Fundaméntate en la base de conocimiento y en la transcripción de la consulta cuando estén disponibles; no inventes datos que no aparezcan.',
     'Si te falta información para responder con seguridad, dilo y sugiere qué explorar.',
     'Recuerda que asistes a un profesional: no sustituyes su juicio clínico ni emites diagnósticos definitivos.',
     sessionLines.length ? `\nContexto de sesión:\n${sessionLines.join('\n')}` : '',
