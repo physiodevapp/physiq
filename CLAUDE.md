@@ -377,6 +377,21 @@ Beyond the passive suggestion engine (`/suggest`), the copilot exposes a convers
 - **Coexistence:** the passive suggestion engine and the chat run independently; the mic footer is hidden while the chat tab is active.
 - **State:** the chat thread is ephemeral (client-side `_chatMessages`, not persisted to IDB).
 
+### Cabeceras del panel (filtro de región)
+
+El panel del copiloto tiene un header, un filtro de región y una barra de pestañas (**Sugerencias / Consultar / Transcripción**). Para no apilar tres bandas full-width, el filtro de región no es una banda permanente: vive colapsado en un **trigger compacto del header** (`#cop-rgn-trigger` → `copilotToggleRegionMenu`).
+
+- **Trigger:** muestra `Región` si no hay ninguna, o el nombre de la región activa con acento morado (clase `cop-rgn-trigger-on`). El chevron rota al abrir.
+- **Popover:** los chips (`#cop-region-row`) se despliegan como popover transitorio bajo el header y se cierran al elegir una región (`copilotSetRegion`) o al hacer clic fuera. `copilotSetRegion` sigue siendo el mismo punto de entrada — solo cambia cómo se accede a él; no toca el filtrado RAG.
+- **Animación:** el despliegue anima la altura vía `grid-template-rows: 0fr → 1fr` (misma curva que los paneles de la app) para que las pestañas se deslicen en vez de saltar. Estructura de **3 capas** — `.cop-region-row` (grid) › `.cop-region-clip` (`overflow:hidden`, colapsa a 0) › `.cop-region-inner` (padding + `overflow-x:auto` para el scroll de chips). La capa de recorte intermedia es necesaria: sin ella, el `overflow-x:auto` impide que el `grid 0fr` recoja el padding y deja una banda residual. Estado colapsado usa `inert` (accesibilidad) y respeta `prefers-reduced-motion`.
+
+### Corrección de diarización en Transcripción
+
+La diarización de Deepgram (`speaker 0 = fisio`) alimenta el SOAP verbatim (`handleNotes` la formatea como `Fisioterapeuta:` / `Paciente:`), pero la heurística puede fallar (sesión invertida si el paciente habla primero, o flip parcial tras una pausa de dictado). La pestaña **Transcripción** permite corregirla a mano sobre el array `_transcript` que consume `/notes`:
+
+- **Tap por línea** (`copilotToggleLineSpeaker`) — alterna el hablante de una sola línea.
+- **Invertir todo** (`copilotSwapAllSpeakers`) — botón de la toolbar sticky (`#cop-tx-tools`) que invierte todas las líneas de golpe.
+
 ### Dictado por voz en Consultar
 
 El input del chat tiene un botón de micro (`#copilot-chat-mic` → `copilotChatDictate`) que dicta voz → texto reutilizando el mismo pipeline Deepgram del motor pasivo (`/transcribe`). No hay endpoint nuevo ni TTS: la respuesta sigue siendo texto.
