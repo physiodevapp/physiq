@@ -665,7 +665,10 @@
     .cop-close-btn:hover { background: rgba(255,255,255,0.07); color: #e8edf2; }
     @media (max-width: 767px) { .cop-close-btn { display: none; } }
 
-    .cop-hdr-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    /* min-height reserves the 30px action-button height at all times so the header
+       doesn't grow ~8px when New/History appear on the Consultar tab (on mobile the
+       close button is hidden, so otherwise the region trigger sets a shorter height). */
+    .cop-hdr-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 30px; }
 
     /* Chat actions in the header (new conversation + history), shown only on Consultar */
     .cop-hdr-act { display: flex; align-items: center; gap: 2px; }
@@ -2043,6 +2046,51 @@ function hideApisPanel() {
 function _apisOverlayClick(e) {
   if (e.target === document.getElementById('apis-overlay')) hideApisPanel();
 }
+// Drag the bottom sheet down to dismiss (phones only — ≥768px it's a centered modal).
+// Mirrors the copilot panel's _initSwipe: a drag from the top area past a threshold
+// (or a quick flick) animates it off and closes; otherwise it springs back.
+function _initApisSwipe() {
+  const sheet = document.getElementById('apis-sheet');
+  if (!sheet) return;
+  let startY = 0, startTime = 0, dragging = false, delta = 0;
+  const EASE = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+
+  sheet.addEventListener('touchstart', e => {
+    if (window.innerWidth >= 768) return;                                   // centered modal — no drag
+    if (e.touches[0].clientY - sheet.getBoundingClientRect().top > 60) return;  // grab from the handle area
+    startY = e.touches[0].clientY; startTime = Date.now();
+    delta = 0; dragging = true;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  sheet.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    delta = Math.max(0, e.touches[0].clientY - startY);
+    sheet.style.transform = delta > 0 ? `translateY(${delta}px)` : '';
+  }, { passive: true });
+
+  const onRelease = () => {
+    if (!dragging) return;
+    dragging = false;
+    const v = delta / Math.max(1, Date.now() - startTime);
+    if (delta > 80 || v > 0.3) {
+      sheet.style.transition = EASE;
+      sheet.style.transform  = 'translateY(100%)';
+      setTimeout(() => { hideApisPanel(); sheet.style.transition = ''; sheet.style.transform = ''; }, 300);
+    } else {
+      sheet.style.transition = EASE;
+      sheet.style.transform  = '';
+      setTimeout(() => { sheet.style.transition = ''; }, 310);
+    }
+  };
+  sheet.addEventListener('touchend', onRelease, { passive: true });
+  sheet.addEventListener('touchcancel', () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transition = ''; sheet.style.transform = '';
+  }, { passive: true });
+}
+_initApisSwipe();
 
 // ── Navigation ───────────────────────────────────────────────
 const SATS = { motion: '/physiq/motion/', assessment: '/physiq/assessment/', questionnaire: '/physiq/questionnaire/', report: '/physiq/report/', force: '/physiq/force/', balance: '/physiq/balance/', jump: '/physiq/jump/', kinematics: '/physiq/kinematics/', wiki: '/physiq/wiki/' };
