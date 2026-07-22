@@ -18,7 +18,7 @@
 //   Key format:  <license-key-string>  →  {"clinic":"Nombre","active":true}
 //   While LICENSES is unbound the worker runs without license checks (dev passthrough).
 
-// ── CORS ─────────────────────────────────────────────────────────────────────
+// ── CORS ────────────────────────────────────────────────────────────────
 
 const CORS = origin => ({
   'Access-Control-Allow-Origin':  origin,
@@ -35,6 +35,26 @@ function trusted(origin, allowed) {
 
 function isLocalDev(origin) {
   return origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+}
+
+// ── RAG region adjacency ─────────────────────────────────────────────────────────
+// A session's active region also pulls in its immediate proximal/distal neighbour
+// (plus 'global', which match_chunks always includes anyway). Keeps referred-pain
+// overlap retrievable — e.g. a lumbar session still reaches hip chunks (L5-S1, SI
+// joint, piriformis) and vice-versa. match_chunks accepts filter_regions text[]
+// and matches c.region = ANY(...); unknown regions fall back to [region, global].
+const REGION_ADJACENCY = {
+  lumbar:   ['lumbar', 'hip', 'global'],
+  hip:      ['hip', 'lumbar', 'global'],
+  knee:     ['knee', 'hip', 'global'],
+  ankle:    ['ankle', 'knee', 'global'],
+  shoulder: ['shoulder', 'cervical', 'global'],
+  cervical: ['cervical', 'shoulder', 'global'],
+};
+
+function regionsFor(region) {
+  if (!region) return null;
+  return REGION_ADJACENCY[region] || [region, 'global'];
 }
 
 async function checkLicense(request, env, origin) {
@@ -56,7 +76,7 @@ async function checkLicense(request, env, origin) {
   return null;
 }
 
-// ── Router ────────────────────────────────────────────────────────────────────
+// ── Router ──────────────────────────────────────────────────────────────
 
 export default {
   async fetch(request, env) {
@@ -100,7 +120,7 @@ export default {
   },
 };
 
-// ── /transcribe — Deepgram WebSocket proxy ────────────────────────────────────
+// ── /transcribe — Deepgram WebSocket proxy ──────────────────────────────────
 
 async function handleTranscribe(request, env) {
   if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket') {
@@ -174,7 +194,7 @@ async function handleTranscribe(request, env) {
   return new Response(null, { status: 101, webSocket: clientSocket });
 }
 
-// ── /suggest — embed → pgvector → Claude ─────────────────────────────────────
+// ── /suggest — embed → pgvector → Claude ────────────────────────────────
 
 async function handleSuggest(request, env) {
   let body;
@@ -203,6 +223,7 @@ async function handleSuggest(request, env) {
 
   // 2. Vector search
   let knowledgeContext = '';
+  const filterRegions = regionsFor(session.manualRegion);
   if (env.SUPABASE_URL && env.SUPABASE_ANON_KEY) {
     const sbResp = await fetch(`${env.SUPABASE_URL}/rest/v1/rpc/match_chunks`, {
       method: 'POST',
@@ -215,7 +236,7 @@ async function handleSuggest(request, env) {
         query_embedding:  embedding,
         match_count:      3,
         min_similarity:   0.6,
-        ...(session.manualRegion && { filter_region:   session.manualRegion }),
+        ...(filterRegions        && { filter_regions:  filterRegions }),
         ...(session.category     && { filter_category: session.category }),
       }),
     });
@@ -292,7 +313,7 @@ async function handleSuggest(request, env) {
   });
 }
 
-// ── /chat — conversational reply, RAG-grounded, SSE-streamed ─────────────────
+// ── /chat — conversational reply, RAG-grounded, SSE-streamed ───────────────────
 
 async function handleChat(request, env) {
   let body;
@@ -329,7 +350,8 @@ async function handleChat(request, env) {
 
   // 2. Vector search (chat pulls a few more chunks than /suggest)
   let knowledgeContext = '';
-  const filterRegion = region || session.manualRegion;
+  const filterRegion  = region || session.manualRegion;
+  const filterRegions = regionsFor(filterRegion);
   if (embedding && env.SUPABASE_URL && env.SUPABASE_ANON_KEY) {
     try {
       const sbResp = await fetch(`${env.SUPABASE_URL}/rest/v1/rpc/match_chunks`, {
@@ -343,7 +365,7 @@ async function handleChat(request, env) {
           query_embedding:  embedding,
           match_count:      5,
           min_similarity:   0.6,
-          ...(filterRegion     && { filter_region:   filterRegion }),
+          ...(filterRegions    && { filter_regions:  filterRegions }),
           ...(session.category && { filter_category: session.category }),
         }),
       });
@@ -456,7 +478,7 @@ async function handleChat(request, env) {
   });
 }
 
-// ── /notes — transcript → SOAP ────────────────────────────────────────────────
+// ── /notes — transcript → SOAP ───────────────────────────────────────────────
 
 async function handleNotes(request, env) {
   let body;
