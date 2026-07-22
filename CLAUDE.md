@@ -398,6 +398,7 @@ El input del chat tiene un botón de micro (`#copilot-chat-mic` → `copilotChat
 
 - **Modo de stream:** `_startStream()` acepta dos intenciones vía `_streamMode` — `'passive'` (transcript diarizado + `/suggest`) y `'dictation'` (finales concatenados en el input, sin diarización, sin `/suggest`). El dictado pide `diarize=false`.
 - **Micro exclusivo con auto-pausa:** solo hay un stream Deepgram vivo a la vez. Al empezar a dictar, si el motor pasivo estaba escuchando se pausa (`_resumePassiveAfterDictation`) y se reanuda al terminar. Así el transcript de la consulta no se contamina con lo que el fisio le dice *al* asistente.
+- **Auto-pausa del grabador:** por la misma razón, si el `RecorderEngine` está `recording` (widget `#rec-widget`) el dictado lo pausa (`recCmd('pause')`, `_resumeRecAfterDictation`) y lo reanuda al terminar (`recCmd('resume')`), para que lo que el fisio dicta al asistente no entre en el audio de la consulta. Solo se reanuda lo que pausó el propio dictado; si el usuario para/descarta la grabación a mitad, el `resume` es no-op (guardas de estado en `_resume`).
 - **Ciclo de vida:** el dictado se corta al pulsar de nuevo el mic, al cambiar de pestaña, al cerrar el panel o al enviar el mensaje. `_finishDictation` es el único que anula `_ws` y reanuda el pasivo si procede.
 - **Socket obsoleto:** los handlers del WebSocket capturan `sock`/`mode` en su creación y hacen early-return si `_ws !== sock`, para que el `close` tardío del stream pausado no actúe sobre el que lo reemplazó.
 
