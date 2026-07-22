@@ -923,6 +923,14 @@
       animation: cop-blink 1s steps(2, start) infinite;
     }
     @keyframes cop-blink { to { visibility: hidden; } }
+    /* Cut-off reply notice (appended inside the assistant bubble when the worker
+       reports a max_tokens stop) */
+    .cop-chat-trunc {
+      margin-top: 8px; padding-top: 7px;
+      border-top: 1px solid rgba(251,146,60,0.28);
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.02em; color: #fb923c;
+    }
     .cop-chat-input-row {
       display: flex; align-items: flex-end; gap: 8px; flex-shrink: 0;
       padding: 10px 12px calc(env(safe-area-inset-bottom, 0px) + 12px);
