@@ -256,7 +256,7 @@ Each `.md` file uses this format:
 ---
 title: "Diagnóstico diferencial del dolor lumbar"
 category: differential     # differential | redflags | assessment | protocol
-region: lumbar             # lumbar | cervical | shoulder | knee | hip | ankle | global
+region: lumbar             # lumbar | cervical | shoulder | knee | hip | ankle | wrist | global
 source: "Goodman & Snyder"
 language: es
 tags: [lumbar, dolor, visceral]
@@ -323,7 +323,7 @@ Current values in `worker/physiq-copilot.js` (`handleSuggest`):
 
 ### Region adjacency map
 
-When the knowledge base grows with articular-specific content (`region: knee`, `region: shoulder`, etc.), the worker should expand `filter_region` from a single string to an array using this adjacency map. The `match_chunks` SQL function will need to change `filter_region text` → `filter_regions text[]` with `= ANY(filter_regions)`.
+A session's active region also pulls in its immediate proximal/distal neighbour so referred-pain overlap stays retrievable. This is **implemented**: `REGION_ADJACENCY` + `regionsFor()` in `worker/physiq-copilot.js` build a `filter_regions text[]`, and `match_chunks` matches `c.region = ANY(filter_regions)`. Unknown regions fall back to `[region, global]`.
 
 ```
 lumbar    → [lumbar, hip, global]       // L5-S1, SI joint, piriformis
@@ -332,12 +332,13 @@ knee      → [knee, hip, global]         // hip as frequent proximal source
 ankle     → [ankle, knee, global]       // distal chain
 shoulder  → [shoulder, cervical, global] // C5-C6, subacromial ↔ cervical root
 cervical  → [cervical, shoulder, global] // same overlap, reverse direction
+wrist     → [wrist, cervical, global]   // double crush w/ CTS, C6-C8/T1 referral
 ```
 
 Rules:
 - `global` is always in the array — systemic screening content is transversal
-- Adjacency is proximal/distal immediate only — no segment skipping
-- `shoulder` ↔ `cervical` and `lumbar` ↔ `hip` are the only bidirectional pairs
+- Adjacency is proximal/distal immediate only — no segment skipping. Exception: `wrist → cervical` is a *neurological* neighbour, not a mechanical one (the elbow region does not exist), mirroring `shoulder → cervical`. If an `elbow` region is later added, the chain becomes wrist → elbow → cervical.
+- `shoulder` ↔ `cervical` and `lumbar` ↔ `hip` are the only bidirectional pairs (`wrist → cervical` is one-directional: a cervical session does not need wrist-specific tests)
 - Sacral/pelvic content stays `global` (screening content, not articular-specific); add `region: sacro` only if articular technique chunks are added for that region
 
 ### When to expand the region enum
