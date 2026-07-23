@@ -256,7 +256,7 @@ Each `.md` file uses this format:
 ---
 title: "Diagnóstico diferencial del dolor lumbar"
 category: differential     # differential | redflags | assessment | protocol
-region: lumbar             # lumbar | cervical | shoulder | knee | hip | ankle | wrist | global
+region: lumbar             # lumbar | cervical | shoulder | knee | hip | ankle | elbow | wrist | global
 source: "Goodman & Snyder"
 language: es
 tags: [lumbar, dolor, visceral]
@@ -332,13 +332,14 @@ knee      → [knee, hip, global]         // hip as frequent proximal source
 ankle     → [ankle, knee, global]       // distal chain
 shoulder  → [shoulder, cervical, global] // C5-C6, subacromial ↔ cervical root
 cervical  → [cervical, shoulder, global] // same overlap, reverse direction
-wrist     → [wrist, cervical, global]   // double crush w/ CTS, C6-C8/T1 referral
+elbow     → [elbow, wrist, cervical, global] // forearm chain + C6-C7 referral (lateral epicondylalgia mimic)
+wrist     → [wrist, elbow, cervical, global] // forearm chain + double crush w/ CTS, C6-C8/T1 referral
 ```
 
 Rules:
 - `global` is always in the array — systemic screening content is transversal
-- Adjacency is proximal/distal immediate only — no segment skipping. Exception: `wrist → cervical` is a *neurological* neighbour, not a mechanical one (the elbow region does not exist), mirroring `shoulder → cervical`. If an `elbow` region is later added, the chain becomes wrist → elbow → cervical.
-- `shoulder` ↔ `cervical` and `lumbar` ↔ `hip` are the only bidirectional pairs (`wrist → cervical` is one-directional: a cervical session does not need wrist-specific tests)
+- Adjacency is proximal/distal immediate only — no segment skipping. Exception: in the upper limb, `wrist → cervical` and `elbow → cervical` are *neurological* neighbours (double crush / radicular referral), not mechanical ones, mirroring `shoulder → cervical`.
+- Bidirectional pairs: `shoulder` ↔ `cervical`, `lumbar` ↔ `hip`, and `wrist` ↔ `elbow` (both mechanical forearm neighbours). The reach to `cervical` is one-directional (a cervical session does not need wrist/elbow-specific tests)
 - Sacral/pelvic content stays `global` (screening content, not articular-specific); add `region: sacro` only if articular technique chunks are added for that region
 
 ### When to expand the region enum
