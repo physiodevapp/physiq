@@ -13,7 +13,7 @@ create table if not exists chunks (
   embedding  vector(1536) not null,
   title      text,
   category   text,   -- differential | redflags | assessment | protocol
-  region     text,   -- lumbar | cervical | shoulder | knee | hip | ankle | global
+  region     text,   -- lumbar | cervical | shoulder | knee | hip | ankle | wrist | global
   source     text,
   tags       text[],
   file       text,   -- repo-relative path of the source .md file
