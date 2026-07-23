@@ -33,7 +33,9 @@ create index if not exists chunks_embedding_idx
 --      * filter_region  text   — legacy single region, kept for backward
 --        compatibility with older Worker builds.
 --    'global' chunks are always eligible (transversal screening content).
+--    Returns the chunk's `source` so the Worker can ground answers and cite it.
 drop function if exists match_chunks(vector, int, text, text, float);
+drop function if exists match_chunks(vector, int, text, text, text[], float);
 
 create or replace function match_chunks(
   query_embedding  vector(1536),
@@ -49,6 +51,7 @@ returns table (
   title       text,
   category    text,
   region      text,
+  source      text,
   similarity  float
 )
 language plpgsql
@@ -61,6 +64,7 @@ begin
     c.title,
     c.category,
     c.region,
+    c.source,
     (1 - (c.embedding <=> query_embedding))::float as similarity
   from chunks c
   where

@@ -243,7 +243,11 @@ async function handleSuggest(request, env) {
     if (sbResp.ok) {
       const chunks = await sbResp.json();
       if (Array.isArray(chunks) && chunks.length) {
-        knowledgeContext = chunks.map(c => c.content).join('\n\n---\n\n');
+        knowledgeContext = chunks.map(c => {
+          const head = [c.title && `Tema: ${c.title}`, c.source && `Fuente: ${c.source}`]
+            .filter(Boolean).join(' · ');
+          return head ? `${head}\n${c.content}` : c.content;
+        }).join('\n\n---\n\n');
       }
     }
   }
@@ -263,6 +267,7 @@ async function handleSuggest(request, env) {
   const system = [
     'Eres un asistente clínico de fisioterapia.',
     'Dado un fragmento de transcripción y contexto clínico, genera UNA sugerencia clínica en JSON.',
+    'Fundaméntate en evidencia de fisioterapia y en la base de conocimiento recuperada cuando esté disponible; no inventes hallazgos ni referencias.',
     'El JSON debe tener exactamente dos claves:',
     '  "type": uno de ["redflag","followup","differential","test"]',
     '  "text": sugerencia concisa en español (máx. 2 frases)',
@@ -372,7 +377,11 @@ async function handleChat(request, env) {
       if (sbResp.ok) {
         const chunks = await sbResp.json();
         if (Array.isArray(chunks) && chunks.length) {
-          knowledgeContext = chunks.map(c => c.content).join('\n\n---\n\n');
+          knowledgeContext = chunks.map(c => {
+            const head = [c.title && `Tema: ${c.title}`, c.source && `Fuente: ${c.source}`]
+              .filter(Boolean).join(' · ');
+            return head ? `${head}\n${c.content}` : c.content;
+          }).join('\n\n---\n\n');
         }
       }
     } catch { /* retrieval failed — proceed without RAG */ }
@@ -396,6 +405,8 @@ async function handleChat(request, env) {
     'Eres un copiloto clínico de fisioterapia que conversa con el fisioterapeuta durante o después de la consulta.',
     'Responde en español, de forma concisa y clínica, con un tono de compañero experto.',
     'Fundaméntate en la base de conocimiento y en la transcripción de la consulta cuando estén disponibles; no inventes datos que no aparezcan.',
+    'Apóyate en evidencia de fisioterapia y fuentes validadas (guías clínicas, revisiones sistemáticas, organismos como APTA o IASP, revistas como BJSM). Cuando una recomendación provenga de la base de conocimiento recuperada, cita su fuente (campo "Fuente" del fragmento); NUNCA inventes ni atribuyas referencias que no aparezcan en la base de conocimiento.',
+    'Distingue con claridad lo respaldado por la base de conocimiento de tu conocimiento general: si una afirmación no está respaldada por los fragmentos recuperados, indícalo explícitamente (p. ej. "no encontrado en la base de conocimiento").',
     'Si te falta información para responder con seguridad, dilo y sugiere qué explorar.',
     'Recuerda que asistes a un profesional: no sustituyes su juicio clínico ni emites diagnósticos definitivos.',
     sessionLines.length ? `\nContexto de sesión:\n${sessionLines.join('\n')}` : '',

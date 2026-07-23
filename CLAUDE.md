@@ -228,13 +228,15 @@ Satellites send messages to the hub via `window.parent.postMessage(msg, '*')`. T
 
 The copilot Worker (`worker/src/suggest.js`) uses RAG backed by Supabase pgvector. On each `/suggest` call, the transcript excerpt is embedded with OpenAI `text-embedding-3-small` and the top matching chunks are retrieved from Supabase to ground Claude's clinical suggestions.
 
+**Evidence grounding & citation.** Each retrieved chunk is passed to Claude with its `Tema:` (title) and `Fuente:` (source) header, not just raw `content`. The `/chat` system prompt instructs Claude to ground answers in physiotherapy evidence and validated sources (clinical guidelines, systematic reviews, bodies such as APTA/IASP, journals such as BJSM), to cite the chunk's `Fuente:` **only** when the recommendation comes from the retrieved knowledge base (never inventing references), and to flag explicitly when a claim is not backed by the knowledge base ("no encontrado en la base de conocimiento"). `/suggest` is grounded the same way but does not force a citation into its short two-phrase JSON.
+
 ### Supabase schema (`supabase/schema.sql`)
 
 Run once in the Supabase SQL editor:
 - Extension: `vector` (pgvector)
 - Table: `chunks` — `content`, `embedding vector(1536)`, `title`, `category`, `region`, `source`, `tags`, `file`
 - Index: HNSW on `embedding` (cosine)
-- Function: `match_chunks(query_embedding, match_count, filter_category, filter_region, min_similarity)` — returns top-N rows above cosine threshold
+- Function: `match_chunks(query_embedding, match_count, filter_category, filter_region, min_similarity)` — returns top-N rows above cosine threshold, including each chunk's `source` so the Worker can ground answers and cite it. Changing the returned columns requires dropping the existing function first (the schema drops both the legacy 5-arg and current 6-arg signatures) — `create or replace` cannot alter a function's return table.
 - RLS: public SELECT, writes only via service role key
 - Grants: explicit `GRANT ALL ON chunks TO service_role` + sequence grant required — service_role bypasses RLS but still needs object-level privileges
 
