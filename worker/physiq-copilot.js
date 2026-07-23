@@ -41,11 +41,12 @@ function isLocalDev(origin) {
 // A session's active region also pulls in its immediate proximal/distal neighbour
 // (plus 'global', which match_chunks always includes anyway). Keeps referred-pain
 // overlap retrievable — e.g. a lumbar session still reaches hip chunks (L5-S1, SI
-// joint, piriformis) and vice-versa. wrist reaches cervical (not a mechanical
-// neighbour but the frequent proximal neurological source: double crush with CTS,
-// C6-C8/T1 referral), one-directional like shoulder->cervical. match_chunks accepts
-// filter_regions text[] and matches c.region = ANY(...); unknown regions fall back
-// to [region, global].
+// joint, piriformis) and vice-versa. In the upper limb, wrist <-> elbow is a
+// mechanical forearm pair (shared median/ulnar/radial pathways), and both wrist and
+// elbow also reach cervical one-directionally as the frequent proximal neurological
+// source (double crush with CTS, C6-C8/T1 referral; C6-C7 mimics lateral elbow pain)
+// — same idea as shoulder->cervical. match_chunks accepts filter_regions text[] and
+// matches c.region = ANY(...); unknown regions fall back to [region, global].
 const REGION_ADJACENCY = {
   lumbar:   ['lumbar', 'hip', 'global'],
   hip:      ['hip', 'lumbar', 'global'],
@@ -53,7 +54,8 @@ const REGION_ADJACENCY = {
   ankle:    ['ankle', 'knee', 'global'],
   shoulder: ['shoulder', 'cervical', 'global'],
   cervical: ['cervical', 'shoulder', 'global'],
-  wrist:    ['wrist', 'cervical', 'global'],
+  elbow:    ['elbow', 'wrist', 'cervical', 'global'],
+  wrist:    ['wrist', 'elbow', 'cervical', 'global'],
 };
 
 function regionsFor(region) {
