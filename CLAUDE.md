@@ -326,25 +326,26 @@ Current values in `worker/physiq-copilot.js` (`handleSuggest`):
 A session's active region also pulls in its immediate proximal/distal neighbour so referred-pain overlap stays retrievable. This is **implemented**: `REGION_ADJACENCY` + `regionsFor()` in `worker/physiq-copilot.js` build a `filter_regions text[]`, and `match_chunks` matches `c.region = ANY(filter_regions)`. Unknown regions fall back to `[region, global]`.
 
 ```
-lumbar    → [lumbar, hip, global]       // L5-S1, SI joint, piriformis
-hip       → [hip, lumbar, global]       // referred pain ↔ lumbar (bidirectional)
-knee      → [knee, hip, global]         // hip as frequent proximal source
-ankle     → [ankle, knee, global]       // distal chain
-shoulder  → [shoulder, cervical, global] // C5-C6, subacromial ↔ cervical root
-cervical  → [cervical, shoulder, global] // same overlap, reverse direction
+lumbar    → [lumbar, hip, global]           // L5-S1, SI joint, piriformis
+hip       → [hip, lumbar, global]           // referred pain ↔ lumbar (bidirectional)
+knee      → [knee, hip, lumbar, global]     // mechanical hip + L3-L4 radicular referral
+ankle     → [ankle, knee, lumbar, global]   // mechanical knee + L5-S1 radicular referral (sciatica)
+shoulder  → [shoulder, cervical, global]    // C5-C6, subacromial ↔ cervical root
+cervical  → [cervical, shoulder, global]    // same overlap, reverse direction
 elbow     → [elbow, wrist, cervical, global] // forearm chain + C6-C7 referral (lateral epicondylalgia mimic)
 wrist     → [wrist, elbow, cervical, global] // forearm chain + double crush w/ CTS, C6-C8/T1 referral
 ```
 
 Rules:
 - `global` is always in the array — systemic screening content is transversal
-- Adjacency is proximal/distal immediate only — no segment skipping. Exception: in the upper limb, `wrist → cervical` and `elbow → cervical` are *neurological* neighbours (double crush / radicular referral), not mechanical ones, mirroring `shoulder → cervical`.
-- Bidirectional pairs: `shoulder` ↔ `cervical`, `lumbar` ↔ `hip`, and `wrist` ↔ `elbow` (both mechanical forearm neighbours). The reach to `cervical` is one-directional (a cervical session does not need wrist/elbow-specific tests)
+- Adjacency is proximal/distal immediate only — no segment skipping. Exception: distal limb segments reach their proximal **spinal neurological source** one-directionally — upper limb `wrist → cervical` / `elbow → cervical` (double crush / C6-C8 referral), lower limb `knee → lumbar` / `ankle → lumbar` (L3-L4, L5-S1 radicular referral / sciatica). These are *neurological* neighbours, not mechanical, mirroring `shoulder → cervical`.
+- Bidirectional pairs: the two spine pairs `shoulder` ↔ `cervical` and `lumbar` ↔ `hip`, plus the mechanical forearm pair `wrist` ↔ `elbow`. The distal→spine reach is one-directional (a cervical or lumbar session does not need distal limb-specific tests). Note the lower-limb mechanical chain (`knee → hip`, `ankle → knee`) is one-directional proximal-ward, unlike the bidirectional `wrist ↔ elbow` — a pre-existing asymmetry, revisit if a hip/knee session should reach distally.
+- Sacral/pelvic content stays `global` (screening content, not articular-specific); add `region: sacro` only if articular technique chunks are added for that region
 - Sacral/pelvic content stays `global` (screening content, not articular-specific); add `region: sacro` only if articular technique chunks are added for that region
 
 ### Future evolution: two-tier adjacency by category (not implemented)
 
-The current adjacency is *all-or-nothing per region*: a neighbour contributes **all** its categories. The reach to `cervical` is one-directional precisely to avoid dragging every distal-limb procedure into the (common) cervical session. If that reverse reach is ever needed — a cervical session that should surface the *neuropathy differential* of elbow/wrist (double crush: "is this C6 or carpal tunnel?") without pulling their `assessment`/`protocol` procedures (hook test, exam protocol) — the clean way is a **two-tier adjacency**, not making the current map bidirectional.
+The current adjacency is *all-or-nothing per region*: a neighbour contributes **all** its categories. The reach to the spine (`cervical`/`lumbar`) is one-directional precisely to avoid dragging every distal-limb procedure into the (common) spine session. If that reverse reach is ever needed — a cervical session that should surface the *neuropathy differential* of elbow/wrist ("is this C6 or carpal tunnel?"), or a lumbar session that should surface the distal *radicular differential* of knee/ankle ("is this the knee or an L4 radiculopathy?") without pulling their `assessment`/`protocol` procedures (hook test, exam protocol) — the clean way is a **two-tier adjacency**, not making the current map bidirectional. This is symmetric across both limbs, not an upper-limb-only concern.
 
 Each region would carry two neighbour lists:
 - **Full neighbours** — all categories eligible (own region + true mechanical neighbour).
@@ -355,6 +356,10 @@ cervical → full: [cervical, shoulder]   referral: [elbow, wrist]
 shoulder → full: [shoulder, cervical]    referral: [elbow, wrist]
 elbow    → full: [elbow, wrist]          referral: [cervical]
 wrist    → full: [wrist, elbow]          referral: [cervical]
+lumbar   → full: [lumbar, hip]           referral: [knee, ankle]
+hip      → full: [hip, lumbar]           referral: [knee, ankle]
+knee     → full: [knee, hip]             referral: [lumbar]
+ankle    → full: [ankle, knee]           referral: [lumbar]
 + global always
 ```
 
