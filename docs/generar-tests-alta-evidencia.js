@@ -467,6 +467,73 @@ const regions = [
       },
     ]
   },
+  {
+    name: 'Tobillo y pie',
+    groups: [
+      {
+        path: 'Rotura del tendón de Aquiles',
+        tests: [
+          { n: 'Test de Thompson (Simmonds)', role: 'both',
+            d: 'En prono se comprime la pantorrilla; ausencia de flexión plantar pasiva es positiva.',
+            p: 'Sens ~96-100 % · Esp ~93 % · LR− ~0.04. Test de referencia (descarte de primera línea).' },
+          { n: 'Test de Matles (flexión de rodilla)', role: 'screen',
+            d: 'En prono, al flexionar la rodilla el pie cae a neutro/dorsiflexión (pierde el tono en reposo).',
+            p: 'Sens ~88 %. Complementa al Thompson.' },
+        ]
+      },
+      {
+        path: 'Inestabilidad lateral (LTFA / LCF)',
+        tests: [
+          { n: 'Cajón anterior del tobillo (diferido)', role: 'both',
+            d: 'Traslación anterior del astrágalo en flexión plantar; más rentable a los 4-5 días, tras ceder dolor y espasmo.',
+            p: 'Diferido: Sens ~96 % · Esp ~84 % (van Dijk, combinado con hematoma y dolor a la palpación). En agudo la sensibilidad es baja.' },
+        ]
+      },
+      {
+        path: 'Sindesmosis (esguince alto)',
+        tests: [
+          { n: 'Squeeze test (compresión de la pierna)', role: 'confirm',
+            d: 'Compresión tibia-peroné en la pantorrilla; dolor en la sindesmosis distal es positivo.',
+            p: 'Esp ~88-93 % · Sens ~30 %. Confirma; un negativo no descarta.' },
+          { n: 'Test de rotación externa (Kleiger)', role: 'confirm',
+            d: 'Estrés de rotación lateral del pie a 90°; dolor sobre los ligamentos tibioperoneos.',
+            p: 'Esp ~85 % · Sens ~20 %. Dolor medial sugiere lesión asociada del deltoideo.' },
+        ]
+      },
+      {
+        path: 'Neuroma de Morton (interdigital)',
+        tests: [
+          { n: 'Morton squeeze + click de Mulder', role: 'both',
+            d: 'Compresión de las cabezas metatarsianas; dolor reproducido y chasquido palpable (Mulder).',
+            p: 'Buena sensibilidad y especificidad frente a ecografía.' },
+        ]
+      },
+      {
+        path: 'Fascitis plantar',
+        tests: [
+          { n: 'Test de Windlass (extensión del hallux)', role: 'confirm',
+            d: 'Dorsiflexión pasiva del primer dedo; dolor en la inserción plantar (calcáneo medial).',
+            p: 'Esp ~100 % · Sens ~32 % en descarga.' },
+        ]
+      },
+      {
+        path: 'Pinzamiento anterolateral',
+        tests: [
+          { n: 'Test de pinzamiento sinovial', role: 'both',
+            d: 'Presión en la gotera anterolateral mientras se pasa de flexión plantar a dorsiflexión.',
+            p: 'Sens ~94.8 % · Esp ~88 % (frente a RM/artroscopia).' },
+        ]
+      },
+      {
+        path: 'Síndrome de estrés tibial medial (MTSS)',
+        tests: [
+          { n: 'Shin oedema + shin palpation (SOT + SPT)', role: 'both',
+            d: 'Edema con fóvea en el tercio distal tibial + dolor difuso a lo largo del borde posteromedial.',
+            p: 'Combinados: LR+ ~7.94 · LR− <0.001. El dolor difuso distingue MTSS de la fractura de estrés (dolor puntual).' },
+        ]
+      },
+    ]
+  },
 ];
 
 // ---------- role badges ----------
