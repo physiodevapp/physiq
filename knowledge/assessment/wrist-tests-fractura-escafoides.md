@@ -34,19 +34,18 @@ Interpretación clínica: test CONFIRMATORIO fuerte y con capacidad de descarte 
 
 Palpación dentro de la tabaquera anatómica (entre los tendones del abductor largo/extensor corto del pulgar y el extensor largo). El dolor localizado orienta a fractura de escafoides.
 
-Precisión diagnóstica para fractura de escafoides:
-- Sensibilidad ~100% en la serie de referencia (con especificidad ~98% en el estudio de Freeland).
-- Otras series reportan especificidad mucho menor (~29%), reflejando que la palpación aislada es muy sensible pero poco específica.
-- LR+ ~5.0, LR− ~0.00 en la mejor serie.
+Precisión diagnóstica para fractura de escafoides (dos entradas distintas del eAppendix):
+- Tabaquera anatómica (palpación aislada): sensibilidad ~100%, especificidad ~29%, LR+ ~1.41, LR− ~0.00. Muy sensible pero poco específica → LR+ débil en aislado.
+- "Sensibilidad de la tabaquera" en el protocolo referenciado aparte: sensibilidad ~100%, especificidad ~98%, LR+ ~50, LR− ~0.00. Con esta especificidad alcanza valor confirmatorio.
 
-Interpretación clínica: signo de ALTA SENSIBILIDAD → su valor principal es de CRIBADO/DESCARTE: una tabaquera NO dolorosa hace la fractura de escafoides muy improbable. Poco específica en aislado (muchos falsos positivos por otras causas de dolor radial).
+Interpretación clínica: signo de ALTA SENSIBILIDAD → su valor principal es de CRIBADO/DESCARTE: una tabaquera NO dolorosa hace la fractura de escafoides muy improbable. La palpación aislada es poco específica (LR+ ~1.41, muchos falsos positivos por otras causas de dolor radial); solo la serie con especificidad ~98% le da valor confirmatorio.
 
 ## Sensibilidad del tubérculo del escafoides
 
 Palpación del tubérculo del escafoides en la cara palmar de la muñeca. El dolor orienta a fractura.
 
 Precisión diagnóstica para fractura de escafoides:
-- Sensibilidad ~83%–100%, especificidad ~51%, LR+ ~1.69, LR− ~0.33.
+- Sensibilidad ~83%, especificidad ~51%, LR+ ~1.69, LR− ~0.33.
 
 Interpretación clínica: alta sensibilidad y baja especificidad → CRIBADO. Igual que la tabaquera, su ausencia ayuda a descartar más que su presencia a confirmar.
 
