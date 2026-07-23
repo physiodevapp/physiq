@@ -1069,6 +1069,10 @@
       color: #fca5a5; background: rgba(248,113,113,0.1);
       border-color: rgba(248,113,113,0.3);
     }
+    /* On touch devices (mobile + tablet) the swipe-to-delete gesture replaces
+       the static trash button; keep it only for pointer devices, where there
+       is no swipe and the icon is the sole delete affordance. */
+    @media (hover: none) { .cop-hist-del { display: none; } }
 
     /* Confirm dialog (delete a saved conversation) — matches the satellites' style */
     .cop-confirm {
