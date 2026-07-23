@@ -789,7 +789,10 @@
       transition: background 0.18s ease;
     }
     .cop-card-trash-bg svg { transition: transform 0.18s ease; }
-    @media (max-width: 767px) { .cop-card-x { display: none; } }
+    /* On touch devices (mobile + tablet) the swipe-to-dismiss gesture replaces
+       the close button; keep it only for pointer devices, where there is no
+       swipe. Matches the history row's trash button (.cop-hist-del). */
+    @media (hover: none) { .cop-card-x { display: none; } }
     .cop-card-redflag      { border-left-color: #ef4444; }
     .cop-card-followup     { border-left-color: #4f9cf9; }
     .cop-card-differential { border-left-color: #fb923c; }
