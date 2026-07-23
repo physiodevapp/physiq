@@ -23,15 +23,15 @@ Con el paciente sentado, el examinador extiende la rodilla (para tensar el nervi
 
 Precisión (Martin et al.): sensibilidad 52%, especificidad 90%, LR+ 5.22, LR− 0.53, odds ratio diagnóstica 9.82. Interpretación: alta especificidad con baja sensibilidad → prueba **confirmatoria** ("descartar hacia dentro"): un positivo refuerza mucho el diagnóstico, pero un negativo no lo descarta.
 
-## Clúster piriforme (estiramiento activo + estiramiento en sedestación)
+## Combinación de los tests del piriforme
 
-Combinados, el test de estiramiento activo y el test de estiramiento en sedestación del piriforme alcanzan una sensibilidad del 91% y una especificidad del 80% para el atrapamiento del nervio ciático confirmado por endoscopia (Martin et al.). Interpretación: el clúster mejora la sensibilidad respecto a cada test aislado manteniendo buena especificidad, y es el enfoque preferible para el diagnóstico clínico del síndrome glúteo profundo. Coherente con el principio de Magee de priorizar clústeres sobre tests aislados.
+El capítulo recoge los dos tests del piriforme (estiramiento activo y estiramiento en sedestación) con precisión documentada por separado, ambos de la misma fuente primaria (Martin et al., ref 65). El estiramiento activo aporta mayor sensibilidad (78%) y el de sedestación mayor especificidad (90%), por lo que son complementarios: usados juntos, un estiramiento activo negativo ayuda a descartar y un estiramiento en sedestación positivo ayuda a confirmar el atrapamiento del ciático en el espacio glúteo profundo. Coherente con el principio de Magee de priorizar la interpretación de los tests en conjunto sobre los tests aislados. Nota: el eAppendix 11.1 no proporciona una cifra de sensibilidad/especificidad para la combinación, solo para cada test por separado.
 
 ## Test del síndrome isquiotibial / test activo de isquiotibiales (active hamstring test)
 
 Explora la tendinopatía/lesión isquiotibial en su origen isquiático. Paciente sentado con la rodilla a 90°: el examinador resiste isométricamente mientras el paciente intenta flexionar más la rodilla (parte 1). Después el examinador sostiene la pierna en 30° de flexión de rodilla y vuelve a resistir isométricamente (parte 2). Positivo: si el dolor isquiático y la debilidad son menores a 90° que a 30°, indica lesión isquiotibial en el origen del músculo.
 
-Precisión (Zeren/Cacchio et al., a 30° y 90° combinados): especificidad 97%, sensibilidad 84%, LR+ 26.86, LR− 0.17 (a 30° aislado: esp 97%, sens 73%, LR+ 23.43; a 90° aislado: esp 97%, sens 62%, LR+ 20.00). Interpretación: especificidad muy alta y LR+ excelente (>20) → **confirmatorio** potente de tendinopatía isquiotibial proximal; la versión combinada 30°+90° mejora también la sensibilidad.
+Precisión (eAppendix 11.1, a 30° y 90° combinados): especificidad 97%, sensibilidad 84%, LR+ 26.86, LR− 0.17 (a 30° aislado: esp 97%, sens 73%, LR+ 23.43; a 90° aislado: esp 97%, sens 62%, LR+ 20.00). Interpretación: especificidad muy alta y LR+ excelente (>20) → **confirmatorio** potente de tendinopatía isquiotibial proximal; la versión combinada 30°+90° mejora también la sensibilidad.
 
 ## Test de estiramiento con rodilla flexionada (bent-knee stretch test)
 

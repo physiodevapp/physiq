@@ -15,19 +15,19 @@ Muchas patologías intraarticulares de la cadera (FAI, lesiones labrales, microi
 
 Test para lesión labral / dolor intraarticular con la mejor validez del capítulo como prueba de **descarte**. El paciente está en supino con la cadera flexionada a 90° y en 10° de aducción. El examinador rota medialmente la cadera aplicando una fuerza de compresión axial descendente (parte 1) y después repite el movimiento aplicando tracción/distracción de la cadera (parte 2). Es positivo si el dolor es mayor en la fase de compresión y menor con la distracción.
 
-Precisión (Maslowski et al.): sensibilidad 98%, especificidad 75%, LR+ 3.9, LR− 0.03, odds ratio diagnóstica 9.82. Interpretación: sensibilidad muy alta y LR− ≈ 0.03 lo convierten en una excelente prueba de **descarte** — un resultado negativo hace muy improbable la patología intraarticular/labral. Su especificidad moderada limita su valor confirmatorio en solitario.
+Precisión (eAppendix 11.1): sensibilidad 98%, especificidad 75%, LR+ 3.9, LR− 0.03, odds ratio diagnóstica 9.82. Interpretación: sensibilidad muy alta y LR− ≈ 0.03 lo convierten en una excelente prueba de **descarte** — un resultado negativo hace muy improbable la patología intraarticular/labral. Su especificidad moderada limita su valor confirmatorio en solitario.
 
 ## Test de rotación interna con sobrepresión (IROP / test de impingement anterior de cadera)
 
 Explora patología intraarticular y FAI anterior. El paciente está en supino; el examinador sostiene la cadera en 90° de flexión con la rodilla a 90°, rota medialmente la cadera llevando el pie/pierna hacia atrás mientras estabiliza la rodilla, y con la otra mano estabiliza la pelvis presionando hacia abajo sobre la EIAS contralateral. Se vigila la limitación dolorosa del recorrido, el dolor y un end-feel anómalo, que indican test positivo para patología de cadera.
 
-Precisión: sensibilidad alta y variable según la serie (91%, 95%, 99% en varios estudios; también valores menores de 59–75%), con especificidad baja (18–43%; hasta 100% en una serie), y LR− 0.41 en la serie de Martin. Interpretación: por su alta sensibilidad y baja especificidad es fundamentalmente una prueba de **cribado/descarte** — útil para descartar afectación intraarticular/FAI cuando es negativa, poco específica para confirmar. Es equivalente al test de impingement anterior clásico (flexión + aducción + rotación interna, FADDIR pasivo).
+Precisión: sensibilidad alta y variable según la serie (91%, 95%, 99% en varios estudios; también valores menores de 59–75%), con especificidad baja (18–43%; hasta 100% en una serie), y LR− 0.41 en una de las series. Interpretación: por su alta sensibilidad y baja especificidad es fundamentalmente una prueba de **cribado/descarte** — útil para descartar afectación intraarticular/FAI cuando es negativa, poco específica para confirmar. Es equivalente al test de impingement anterior clásico (flexión + aducción + rotación interna, FADDIR pasivo).
 
 ## Test de impingement isquiofemoral (IFI)
 
 Explora el pinzamiento entre el isquion y el trocánter menor (afecta al cuadrado femoral). El paciente está en decúbito lateral con la pierna a explorar arriba; el examinador, situado detrás, sostiene la pierna en ligera flexión de cadera y rodilla (rodilla sujeta con una mano y pie/tobillo entre el costado y el codo del examinador) y con la otra mano estabiliza la pelvis. Extiende pasivamente la cadera y después la aduce y rota lateralmente. Positivo: reproducción de los síntomas y end-feel duro. Si se repite con la cadera en abducción, los síntomas se alivian (dato confirmatorio).
 
-Precisión (Gómez-Hoyos et al.): sensibilidad 82%, especificidad 85%. Interpretación: rendimiento equilibrado, útil tanto para orientar como para reforzar la sospecha de IFI, entidad que de otro modo solo se confirma por RM (edema del cuadrado femoral, espacio isquiofemoral reducido).
+Precisión (Kivlan et al.): sensibilidad 82%, especificidad 85%. Interpretación: rendimiento equilibrado, útil tanto para orientar como para reforzar la sospecha de IFI, entidad que de otro modo solo se confirma por RM (edema del cuadrado femoral, espacio isquiofemoral reducido).
 
 ## Test del ligamento redondo (ligamentum teres)
 
