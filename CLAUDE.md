@@ -342,6 +342,37 @@ Rules:
 - Bidirectional pairs: `shoulder` ↔ `cervical`, `lumbar` ↔ `hip`, and `wrist` ↔ `elbow` (both mechanical forearm neighbours). The reach to `cervical` is one-directional (a cervical session does not need wrist/elbow-specific tests)
 - Sacral/pelvic content stays `global` (screening content, not articular-specific); add `region: sacro` only if articular technique chunks are added for that region
 
+### Future evolution: two-tier adjacency by category (not implemented)
+
+The current adjacency is *all-or-nothing per region*: a neighbour contributes **all** its categories. The reach to `cervical` is one-directional precisely to avoid dragging every distal-limb procedure into the (common) cervical session. If that reverse reach is ever needed — a cervical session that should surface the *neuropathy differential* of elbow/wrist (double crush: "is this C6 or carpal tunnel?") without pulling their `assessment`/`protocol` procedures (hook test, exam protocol) — the clean way is a **two-tier adjacency**, not making the current map bidirectional.
+
+Each region would carry two neighbour lists:
+- **Full neighbours** — all categories eligible (own region + true mechanical neighbour).
+- **Referral neighbours** — only `redflags` + `differential` eligible (the diagnostic reasoning and flags, not the procedures).
+
+```
+cervical → full: [cervical, shoulder]   referral: [elbow, wrist]
+shoulder → full: [shoulder, cervical]    referral: [elbow, wrist]
+elbow    → full: [elbow, wrist]          referral: [cervical]
+wrist    → full: [wrist, elbow]          referral: [cervical]
++ global always
+```
+
+`match_chunks` would gain one clause:
+```sql
+region = any(filter_regions)
+  or (region = any(filter_regions_referral) and category in ('redflags','differential'))
+  or region = 'global'
+```
+and `regionsFor()` in the worker would return both arrays. Self-contained change (one SQL function drop+recreate — the signature changes, so `create or replace` is not enough — plus `regionsFor`); **no re-ingestion**, since `region` and `category` already exist on every chunk.
+
+**When to apply it — all of:**
+1. You observe concrete retrieval misses: cervical (or shoulder) sessions asking differential/double-crush questions that *should* surface distal entrapment content and don't, and this recurs in real use (not hypothetically).
+2. The distal limb actually has `differential`/`redflags` chunks worth reaching (e.g. the elbow/wrist neuropathy differentials — already true) and their absence measurably degrades answers.
+3. Making those regions plainly bidirectional would over-broaden the common session (cervical) with distal *procedures*, i.e. the coarser fix is unacceptable.
+
+Until all three hold, keep the single-list region adjacency: the embedding + top-N + 0.6 threshold already do most relevance filtering, and the region pre-filter is meant to stay coarse. Note the coarseness that remains even with this scheme: `category` groups all four wrist differentials (radial/ulnar/neuropathy/deformity), not neuropathy alone — isolating a single topic across regions would need a cross-cutting tag, a further step not worth taking pre-emptively.
+
 ### When to expand the region enum
 
 When knowledge files are added, check the chunk distribution in Supabase:
