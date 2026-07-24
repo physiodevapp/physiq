@@ -782,11 +782,15 @@
     }
     .cop-card-trash-bg {
       position: absolute; top: 0; right: 0; bottom: 0;
-      width: 64px;
+      width: 116px; padding-right: 24px;
       background: rgba(239,68,68,0.12);
-      display: flex; align-items: center; justify-content: center;
+      display: flex; align-items: center; justify-content: flex-end;
       color: #ef4444; pointer-events: none;
       transition: background 0.18s ease;
+      /* Left edge fades into the background behind the card (see .cop-hist-trash-bg:
+         a mask is used, not a background gradient, so _rampReveal can't wipe it). */
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 55%);
+              mask-image: linear-gradient(to right, transparent, #000 55%);
     }
     .cop-card-trash-bg svg { transition: transform 0.18s ease; }
     /* On touch devices (mobile + tablet) the swipe-to-dismiss gesture replaces
@@ -1034,11 +1038,17 @@
     }
     .cop-hist-trash-bg {
       position: absolute; top: 0; right: 0; bottom: 0; z-index: 0;
-      width: 64px;
+      width: 116px; padding-right: 24px;
       background: rgba(239,68,68,0.12);
-      display: flex; align-items: center; justify-content: center;
+      display: flex; align-items: center; justify-content: flex-end;
       color: #ef4444; pointer-events: none;
       transition: background 0.18s ease;
+      /* Fade the left edge into the dark background behind the card instead of a
+         hard cut. A mask (not a background gradient) is used on purpose: the swipe
+         JS (_rampReveal) rewrites style.background every frame, which would wipe a
+         gradient — the mask survives and modulates whatever flat red it sets. */
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 55%);
+              mask-image: linear-gradient(to right, transparent, #000 55%);
     }
     .cop-hist-trash-bg svg { transition: transform 0.18s ease; }
     .cop-hist-item-front {
