@@ -142,6 +142,26 @@ function fmtAssessment(a) {
   return parts.join('\n');
 }
 
+function fmtBalance(balance) {
+  if (!balance || typeof balance !== 'object') return '';
+  // _balanceResults is keyed by testId; each test carries posturography scalars.
+  // Keep only the clinical summary (score + a couple of COP metrics) — the raw
+  // COP series/hull/ellipse chart arrays inside metrics.cop are dropped.
+  const tests = Object.values(balance).filter((t) => t && typeof t === 'object');
+  if (!tests.length) return '';
+  return tests.map((t) => {
+    const label = t.label ?? t.testId ?? 'Test';
+    const cond  = [t.eyes, t.stance].filter(Boolean).join(' · ');
+    const score = t.score != null ? `${t.score}/100` : (t.metrics?.score != null ? `${t.metrics.score}/100` : null);
+    const cop   = t.metrics?.cop;
+    const vel   = cop?.meanVelocity != null ? `vel COP ${cop.meanVelocity.toFixed(1)} cm/s` : null;
+    const area  = cop?.ellipseArea  != null ? `área ${cop.ellipseArea.toFixed(1)} cm²`      : null;
+    const head  = cond ? `${label} (${cond})` : label;
+    const rest  = [score, vel, area].filter(Boolean).join(' · ');
+    return rest ? `${head}: ${rest}` : head;
+  }).join('\n');
+}
+
 async function checkLicense(request, env, origin) {
   if (isLocalDev(origin)) return null;   // dev bypass
   if (!env.LICENSES) return null;        // KV not bound yet — passthrough
@@ -338,9 +358,10 @@ async function handleSuggest(request, env) {
   }
 
   // 3. Claude
-  const forceStr  = fmtForce(session.force);
-  const questStr  = fmtQuestionnaires(session.questionnaires);
-  const assessStr = fmtAssessment(session.assessment);
+  const forceStr   = fmtForce(session.force);
+  const questStr   = fmtQuestionnaires(session.questionnaires);
+  const assessStr  = fmtAssessment(session.assessment);
+  const balanceStr = fmtBalance(session.balance);
   const sessionLines = [
     session.patient      && `Paciente: ${session.patient}`,
     session.diagnosis    && `Diagnóstico: ${session.diagnosis}`,
@@ -349,6 +370,7 @@ async function handleSuggest(request, env) {
     forceStr             && `Fuerza: ${forceStr}`,
     questStr             && `Cuestionarios: ${questStr}`,
     assessStr            && `Valoración:\n${assessStr}`,
+    balanceStr           && `Equilibrio:\n${balanceStr}`,
   ].filter(Boolean);
 
   const existingBlock = suggestions.length
@@ -479,9 +501,10 @@ async function handleChat(request, env) {
   }
 
   // 3. Build system prompt + conversation context
-  const forceStr  = fmtForce(session.force);
-  const questStr  = fmtQuestionnaires(session.questionnaires);
-  const assessStr = fmtAssessment(session.assessment);
+  const forceStr   = fmtForce(session.force);
+  const questStr   = fmtQuestionnaires(session.questionnaires);
+  const assessStr  = fmtAssessment(session.assessment);
+  const balanceStr = fmtBalance(session.balance);
   const sessionLines = [
     session.patient      && `Paciente: ${session.patient}`,
     session.diagnosis    && `Diagnóstico: ${session.diagnosis}`,
@@ -490,6 +513,7 @@ async function handleChat(request, env) {
     forceStr             && `Fuerza: ${forceStr}`,
     questStr             && `Cuestionarios: ${questStr}`,
     assessStr            && `Valoración:\n${assessStr}`,
+    balanceStr           && `Equilibrio:\n${balanceStr}`,
   ].filter(Boolean);
 
   // Cap the live consultation transcript to the most recent exchanges.
