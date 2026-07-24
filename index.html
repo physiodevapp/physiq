@@ -780,19 +780,16 @@
       background: #111a28;
       position: relative;
     }
+    /* iOS-style floating delete button (see .cop-hist-trash-bg). */
     .cop-card-trash-bg {
-      position: absolute; top: 0; right: 0; bottom: 0;
-      width: 116px; padding-right: 24px;
-      background: rgba(239,68,68,0.12);
-      display: flex; align-items: center; justify-content: flex-end;
-      color: #ef4444; pointer-events: none;
+      position: absolute; top: 7px; right: 7px; bottom: 7px;
+      width: 62px; border-radius: 13px;
+      background: rgba(239,68,68,0.92);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; pointer-events: none;
       transition: background 0.18s ease;
-      /* Left edge fades into the background behind the card (see .cop-hist-trash-bg:
-         a mask is used, not a background gradient, so _rampReveal can't wipe it). */
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 55%);
-              mask-image: linear-gradient(to right, transparent, #000 55%);
     }
-    .cop-card-trash-bg svg { transition: transform 0.18s ease; }
+    .cop-card-trash-bg svg { width: 17px; height: 17px; transition: transform 0.18s ease; }
     /* On touch devices (mobile + tablet) the swipe-to-dismiss gesture replaces
        the close button; keep it only for pointer devices, where there is no
        swipe. Matches the history row's trash button (.cop-hist-del). */
@@ -1036,21 +1033,19 @@
     .cop-hist-item {
       position: relative; overflow: hidden; border-radius: 10px;
     }
+    /* iOS-style floating delete button: solid red, rounded, inset on all four
+       sides so it reads as a detached button rather than a full-height strip.
+       No mask needed — border-radius + inset survive the swipe JS (_rampReveal),
+       which only rewrites background. */
     .cop-hist-trash-bg {
-      position: absolute; top: 0; right: 0; bottom: 0; z-index: 0;
-      width: 116px; padding-right: 24px;
-      background: rgba(239,68,68,0.12);
-      display: flex; align-items: center; justify-content: flex-end;
-      color: #ef4444; pointer-events: none;
+      position: absolute; top: 7px; right: 7px; bottom: 7px; z-index: 0;
+      width: 62px; border-radius: 13px;
+      background: rgba(239,68,68,0.92);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; pointer-events: none;
       transition: background 0.18s ease;
-      /* Fade the left edge into the dark background behind the card instead of a
-         hard cut. A mask (not a background gradient) is used on purpose: the swipe
-         JS (_rampReveal) rewrites style.background every frame, which would wipe a
-         gradient — the mask survives and modulates whatever flat red it sets. */
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 55%);
-              mask-image: linear-gradient(to right, transparent, #000 55%);
     }
-    .cop-hist-trash-bg svg { transition: transform 0.18s ease; }
+    .cop-hist-trash-bg svg { width: 18px; height: 18px; transition: transform 0.18s ease; }
     .cop-hist-item-front {
       position: relative; z-index: 1;
       display: flex; align-items: center; gap: 10px;
