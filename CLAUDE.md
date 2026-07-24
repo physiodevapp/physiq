@@ -132,6 +132,8 @@ On `discard`, the hub deletes the `'pending'` key from the `audio` store.
   assessment:        object | null,   // physiq-assessment completed result
   force:             array  | null,   // physiq-force measurement series
   questionnaires:    array  | null,   // physiq-questionnaire completed results
+  balance:           object | null,   // physiq-balance results, keyed by testId
+  height:            number | null,   // patient height (cm), used by physiq-balance COP math
 }
 ```
 
@@ -149,6 +151,7 @@ Satellites and the peer bridge communicate patient-session data over `BroadcastC
 | `SESSION_ASSESSMENT` | `assessment` | `session.assessment` |
 | `SESSION_FORCE` | `force` | `session.force` |
 | `SESSION_QUESTIONNAIRE` | `questionnaires` | `session.questionnaires` |
+| `SESSION_BALANCE` | `balance` | `session.balance` |
 | `SESSION_REPORT_FIELDS` | `patient, date, diagnosis, manualRegion` | all four fields |
 | `SESSION_CLEAR` | — | deletes `'active'` key entirely |
 | `SESSION_SYNC` | full session snapshot | peer-to-peer only (on connect) |
@@ -414,6 +417,7 @@ Beyond the passive suggestion engine (`/suggest`), the copilot exposes a convers
 - **Endpoint:** `POST /chat` in `worker/physiq-copilot.js`. Reuses the `/suggest` RAG pipeline (embed last user message → `match_chunks` → Claude) with `match_count: 5`.
 - **Streaming:** the reply is streamed to the client as SSE — the worker transforms Anthropic's stream into minimal `data: {text}` / `data: [DONE]` events, and `copilotSendChat` in `lib/copilot.js` appends the deltas to the assistant bubble. `max_tokens` is 2048; if Anthropic stops with `stop_reason: max_tokens` the worker also emits `data: {truncated:true}` and the client appends a "Respuesta recortada" notice (`.cop-chat-trunc`) to the bubble — UI-only, the persisted message text stays clean. Asking "continúa" resends the thread so Claude picks up where it left off.
 - **Context:** session data, the live consultation transcript (last 20 exchanges), and retrieved knowledge chunks. RAG is best-effort — the chat still replies if embedding or Supabase is unavailable.
+- **Session data fed as context (both `/suggest` and `/chat`):** `lib/copilot.js` keeps `_sessionData` in sync from the shared IDB `session` store (hydrated on startup, then updated live via `BroadcastChannel('physiq-session')`) and forwards it to the worker. The worker renders it as short clinical lines — never raw JSON dumps — via `fmtForce` / `fmtQuestionnaires` / `fmtAssessment` / `fmtBalance` in `worker/physiq-copilot.js`. Fields used: `patient`, `diagnosis`, `manualRegion` (also drives the RAG region filter), `rom`, `force`, `questionnaires`, `assessment`, and `balance` (posturography — only per-test `score` + COP mean velocity / ellipse area; the raw `metrics.cop` series/hull/ellipse chart arrays are dropped). `assessmentState` is intentionally excluded (internal navigation state, not clinical content).
 - **Coexistence:** the passive suggestion engine and the chat run independently; the mic footer is hidden while the chat tab is active.
 - **State:** the live thread is `_chatMessages` (client-side). It is persisted to a standalone history DB after every assistant reply (see below) — but the passive suggestion engine, transcript, and patient session never read it.
 
