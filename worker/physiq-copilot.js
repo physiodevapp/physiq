@@ -198,6 +198,31 @@ function fmtJump(jump) {
   return lines.join('\n');
 }
 
+function fmtKinematics(kinematics) {
+  // session.kinematics is an array of recordings, each { joints[], series{joint:{t,a}}, duration }.
+  // Summarise like the report legend: per recording, duration + per-joint angular
+  // range (min°–max°, i.e. dynamic ROM). The raw t/a time series are dropped.
+  const recs = (Array.isArray(kinematics) ? kinematics : [kinematics])
+    .filter((r) => r && Array.isArray(r.joints) && r.joints.length && r.series);
+  if (!recs.length) return '';
+  const fmtJoint = (name) => name
+    .replace(/^left_/, 'L ').replace(/^right_/, 'R ')
+    .replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const lines = [];
+  recs.forEach((rec, i) => {
+    const jointSeries = rec.joints.filter((j) => rec.series[j]?.a?.length);
+    if (!jointSeries.length) return;
+    const ranges = jointSeries.map((j) => {
+      const a = rec.series[j].a;
+      return `${fmtJoint(j)} ${Math.round(Math.min(...a))}°–${Math.round(Math.max(...a))}°`;
+    }).join(' · ');
+    const dur  = rec.duration ? ` (${(rec.duration / 1000).toFixed(1)} s)` : '';
+    const head = recs.length > 1 ? `Grabación ${i + 1}${dur}` : `Grabación${dur}`;
+    lines.push(`${head}: ${ranges}`);
+  });
+  return lines.join('\n');
+}
+
 async function checkLicense(request, env, origin) {
   if (isLocalDev(origin)) return null;   // dev bypass
   if (!env.LICENSES) return null;        // KV not bound yet — passthrough
@@ -399,6 +424,7 @@ async function handleSuggest(request, env) {
   const assessStr  = fmtAssessment(session.assessment);
   const balanceStr = fmtBalance(session.balance);
   const jumpStr    = fmtJump(session.jump);
+  const kinemStr   = fmtKinematics(session.kinematics);
   const sessionLines = [
     session.patient      && `Paciente: ${session.patient}`,
     session.diagnosis    && `Diagnóstico: ${session.diagnosis}`,
@@ -409,6 +435,7 @@ async function handleSuggest(request, env) {
     assessStr            && `Valoración:\n${assessStr}`,
     balanceStr           && `Equilibrio:\n${balanceStr}`,
     jumpStr              && `Salto:\n${jumpStr}`,
+    kinemStr             && `Cinemática:\n${kinemStr}`,
   ].filter(Boolean);
 
   const existingBlock = suggestions.length
@@ -544,6 +571,7 @@ async function handleChat(request, env) {
   const assessStr  = fmtAssessment(session.assessment);
   const balanceStr = fmtBalance(session.balance);
   const jumpStr    = fmtJump(session.jump);
+  const kinemStr   = fmtKinematics(session.kinematics);
   const sessionLines = [
     session.patient      && `Paciente: ${session.patient}`,
     session.diagnosis    && `Diagnóstico: ${session.diagnosis}`,
@@ -554,6 +582,7 @@ async function handleChat(request, env) {
     assessStr            && `Valoración:\n${assessStr}`,
     balanceStr           && `Equilibrio:\n${balanceStr}`,
     jumpStr              && `Salto:\n${jumpStr}`,
+    kinemStr             && `Cinemática:\n${kinemStr}`,
   ].filter(Boolean);
 
   // Cap the live consultation transcript to the most recent exchanges.
