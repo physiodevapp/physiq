@@ -66,6 +66,82 @@ function regionsFor(region) {
   return REGION_ADJACENCY[region] || [region, 'global'];
 }
 
+// ── Session-data summarisers ─────────────────────────────────────────────
+// Force / questionnaire / assessment payloads live in the shared IDB session
+// (written by their satellites). They are condensed here into short clinical
+// lines for the copilot prompt — never dumped as raw JSON — mirroring how the
+// report satellite renders them. Each returns '' when there is nothing useful.
+function fmtForce(force) {
+  if (!force) return '';
+  const arr = Array.isArray(force) ? force : [force];
+  if (!arr.length) return '';
+  return arr.map((m) => {
+    const label = m.label ?? (m.testType === 'peak' ? 'MVC' : (m.testType ? m.testType.toUpperCase() : 'Fuerza'));
+    if (m.laterality === 'comparison') {
+      const l = m.sides?.left?.peak;
+      const r = m.sides?.right?.peak;
+      let ai = m.asymmetryIndex;
+      if (ai == null && l != null && r != null) {
+        const avg = (l + r) / 2;
+        ai = avg ? Math.abs(l - r) / avg * 100 : null;
+      }
+      return [
+        label,
+        l  != null ? `Izq ${l.toFixed(1)} kg` : null,
+        r  != null ? `Der ${r.toFixed(1)} kg` : null,
+        ai != null ? `AI ${ai.toFixed(1)}%`   : null,
+      ].filter(Boolean).join(' · ');
+    }
+    const side = m.side === 'left' ? ' Izq' : m.side === 'right' ? ' Der' : '';
+    return `${label}${side}${m.peak != null ? ` · ${m.peak.toFixed(1)} kg` : ''}`;
+  }).join(' | ');
+}
+
+function fmtQuestionnaires(qs) {
+  if (!qs) return '';
+  const arr = Array.isArray(qs) ? qs : [qs];
+  if (!arr.length) return '';
+  return arr.map((q) => {
+    const name  = q.abbr || q.name || q.id || '?';
+    const score = q.score != null ? `${q.score}` : '—';
+    const label = q.label ? ` (${q.label})` : '';
+    const risk  = q.risk ? ' ⚠riesgo' : '';
+    return `${name}: ${score}${label}${risk}`;
+  }).join(' | ');
+}
+
+function fmtAssessment(a) {
+  if (!a || typeof a !== 'object') return '';
+  const parts = [];
+  // patient / region / diagnosis are already emitted as their own session
+  // lines, so the summary skips them and keeps only the clinical reasoning.
+  if (a.mo) parts.push(`Motivo: ${a.mo}`);
+  if (a.me) parts.push(`Mecanismo: ${a.me}`);
+  if (a.cr) parts.push(`Cronología: ${a.cr}`);
+  if (a.na) parts.push(`Naturaleza: ${a.na}`);
+  if (a.nr != null) parts.push(`NRS: ${a.nr}/10`);
+  if (a.ir) parts.push(`Irritabilidad: ${a.ir}`);
+  if (a.rp) parts.push(`Riesgo psicosocial: ${a.rp}`);
+  if (a.si) parts.push('Cribado sistémico: POSITIVO');
+  if (Array.isArray(a.br) && a.br.length) parts.push(`Banderas rojas: ${a.br.join(', ')}`);
+  if (Array.isArray(a.sq) && a.sq.length) parts.push(`Hallazgos sistémicos: ${a.sq.join('; ')}`);
+  if (Array.isArray(a.h) && a.h.length) {
+    const hyps = a.h.map((h) => {
+      const lr = h.lr != null ? `, LR ${h.lr}` : '';
+      return `${h.name ?? h.id} (${h.sc ?? 'sin evaluar'}${lr})`;
+    }).join('; ');
+    parts.push(`Hipótesis: ${hyps}`);
+  }
+  if (a.pn && typeof a.pn === 'object') {
+    const pn = [];
+    if (a.pn.variableControl)     pn.push(`control: ${a.pn.variableControl}`);
+    if (a.pn.ventanaRecuperacion) pn.push(`ventana: ${a.pn.ventanaRecuperacion}`);
+    if (a.pn.anclajeHabito)       pn.push(`hábito: ${a.pn.anclajeHabito}`);
+    if (pn.length) parts.push(`Plan: ${pn.join(' · ')}`);
+  }
+  return parts.join('\n');
+}
+
 async function checkLicense(request, env, origin) {
   if (isLocalDev(origin)) return null;   // dev bypass
   if (!env.LICENSES) return null;        // KV not bound yet — passthrough
@@ -262,11 +338,17 @@ async function handleSuggest(request, env) {
   }
 
   // 3. Claude
+  const forceStr  = fmtForce(session.force);
+  const questStr  = fmtQuestionnaires(session.questionnaires);
+  const assessStr = fmtAssessment(session.assessment);
   const sessionLines = [
     session.patient      && `Paciente: ${session.patient}`,
     session.diagnosis    && `Diagnóstico: ${session.diagnosis}`,
     session.manualRegion && `Región: ${session.manualRegion}`,
     session.rom          && `ROM: ${JSON.stringify(session.rom)}`,
+    forceStr             && `Fuerza: ${forceStr}`,
+    questStr             && `Cuestionarios: ${questStr}`,
+    assessStr            && `Valoración:\n${assessStr}`,
   ].filter(Boolean);
 
   const existingBlock = suggestions.length
@@ -397,11 +479,17 @@ async function handleChat(request, env) {
   }
 
   // 3. Build system prompt + conversation context
+  const forceStr  = fmtForce(session.force);
+  const questStr  = fmtQuestionnaires(session.questionnaires);
+  const assessStr = fmtAssessment(session.assessment);
   const sessionLines = [
     session.patient      && `Paciente: ${session.patient}`,
     session.diagnosis    && `Diagnóstico: ${session.diagnosis}`,
     (filterRegion)       && `Región: ${filterRegion}`,
     session.rom          && `ROM: ${JSON.stringify(session.rom)}`,
+    forceStr             && `Fuerza: ${forceStr}`,
+    questStr             && `Cuestionarios: ${questStr}`,
+    assessStr            && `Valoración:\n${assessStr}`,
   ].filter(Boolean);
 
   // Cap the live consultation transcript to the most recent exchanges.
