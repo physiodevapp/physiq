@@ -162,6 +162,42 @@ function fmtBalance(balance) {
   }).join('\n');
 }
 
+function fmtJump(jump) {
+  // session.jump is the raw array of individual jumps (broadcast key is `jumps`,
+  // IDB key is `jump` — the copilot stores it under `jump`). Summarise the way the
+  // jump satellite groups its results: by type, then by the optional note, since
+  // jumps of the same type with different notes are distinct conditions with their
+  // own stats. Per-rep raw fields (id, fps, flightTime) are dropped.
+  if (!Array.isArray(jump) || !jump.length) return '';
+  const byType = new Map();
+  for (const j of jump) {
+    if (!j || j.height == null) continue;
+    const type = j.type || 'Salto';
+    if (!byType.has(type)) byType.set(type, new Map());
+    const key = j.note || '';
+    if (!byType.get(type).has(key)) byType.get(type).set(key, []);
+    byType.get(type).get(key).push(j);
+  }
+  const lines = [];
+  for (const [type, noteGroups] of byType) {
+    for (const [note, list] of noteGroups) {
+      const heights = list.map((j) => j.height);
+      const best    = Math.max(...heights);
+      const worst   = Math.min(...heights);
+      const avg     = heights.reduce((s, h) => s + h, 0) / heights.length;
+      const count   = `${list.length} salto${list.length === 1 ? '' : 's'}`;
+      const legs    = [...new Set(list.map((j) => j.leg).filter(Boolean))];
+      const head    = note ? `${type} (${note.toUpperCase()})` : `${type} (Sin etiqueta)`;
+      const parts   = [`mejor ${best.toFixed(1)} cm`, `media ${avg.toFixed(1)} cm`, count];
+      // Fatigue index over the group, matching the satellite (only for ≥3 jumps).
+      if (list.length >= 3 && best > 0) parts.push(`FI ${(((best - worst) / best) * 100).toFixed(1)}%`);
+      if (legs.length === 1) parts.push(legs[0]);
+      lines.push(`${head}: ${parts.join(' · ')}`);
+    }
+  }
+  return lines.join('\n');
+}
+
 async function checkLicense(request, env, origin) {
   if (isLocalDev(origin)) return null;   // dev bypass
   if (!env.LICENSES) return null;        // KV not bound yet — passthrough
@@ -362,6 +398,7 @@ async function handleSuggest(request, env) {
   const questStr   = fmtQuestionnaires(session.questionnaires);
   const assessStr  = fmtAssessment(session.assessment);
   const balanceStr = fmtBalance(session.balance);
+  const jumpStr    = fmtJump(session.jump);
   const sessionLines = [
     session.patient      && `Paciente: ${session.patient}`,
     session.diagnosis    && `Diagnóstico: ${session.diagnosis}`,
@@ -371,6 +408,7 @@ async function handleSuggest(request, env) {
     questStr             && `Cuestionarios: ${questStr}`,
     assessStr            && `Valoración:\n${assessStr}`,
     balanceStr           && `Equilibrio:\n${balanceStr}`,
+    jumpStr              && `Salto:\n${jumpStr}`,
   ].filter(Boolean);
 
   const existingBlock = suggestions.length
@@ -505,6 +543,7 @@ async function handleChat(request, env) {
   const questStr   = fmtQuestionnaires(session.questionnaires);
   const assessStr  = fmtAssessment(session.assessment);
   const balanceStr = fmtBalance(session.balance);
+  const jumpStr    = fmtJump(session.jump);
   const sessionLines = [
     session.patient      && `Paciente: ${session.patient}`,
     session.diagnosis    && `Diagnóstico: ${session.diagnosis}`,
@@ -514,6 +553,7 @@ async function handleChat(request, env) {
     questStr             && `Cuestionarios: ${questStr}`,
     assessStr            && `Valoración:\n${assessStr}`,
     balanceStr           && `Equilibrio:\n${balanceStr}`,
+    jumpStr              && `Salto:\n${jumpStr}`,
   ].filter(Boolean);
 
   // Cap the live consultation transcript to the most recent exchanges.
