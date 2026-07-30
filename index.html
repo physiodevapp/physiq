@@ -937,11 +937,25 @@
       background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px;
       font-family: 'DM Mono', monospace; font-size: 0.82em;
     }
-    .cop-chat-asst.cop-chat-pending::after {
-      content: '▋'; color: var(--text3);
-      animation: cop-blink 1s steps(2, start) infinite;
+    /* Inline "generating" indicator: the app icon spinning while the reply
+       streams in. It is a real element (sibling of the streamed-markdown
+       container `.cop-chat-stream`, not a pseudo-element and not inside the
+       rewritten HTML) so the per-token innerHTML updates never destroy and
+       recreate it — that would restart the rotation on every delta and stop it
+       reading as a smooth spin. `_endStream` collapses the bubble back to plain
+       markdown (dropping this spinner) once the reply finishes. */
+    .cop-chat-spinner {
+      display: inline-block; vertical-align: -2px;
+      width: 15px; height: 15px; margin-left: 3px;
+      animation: cop-spin 0.8s linear infinite;
     }
-    @keyframes cop-blink { to { visibility: hidden; } }
+    .cop-chat-spinner svg { display: block; width: 100%; height: 100%; }
+    @keyframes cop-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      /* No rotation for reduced-motion users — fall back to a gentle opacity
+         pulse (the shared cop-blink fade) so there's still a "working" cue. */
+      .cop-chat-spinner { animation: cop-blink 1.4s ease-in-out infinite; }
+    }
     /* Cut-off reply notice (appended inside the assistant bubble when the worker
        reports a max_tokens stop) */
     .cop-chat-trunc {
