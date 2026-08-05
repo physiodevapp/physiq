@@ -334,7 +334,12 @@ async function rateLimited(request, env, pathname, mode, licenseKey) {
   // analytics, and the license is a bearer secret.
   const actor = licenseKey ? `lic:${fnv1a(licenseKey)}` : `ip:${ip}`;
 
-  const limiter = mode === 'demo'
+  // /validate is cheap and runs on every page load, so it uses the loose bucket
+  // whatever the mode — but it IS limited. It answers real/demo, which makes it
+  // an oracle for licence validity, and an unthrottled oracle is a free
+  // brute-force target.
+  const isValidate = pathname === '/validate';
+  const limiter = (isValidate || mode === 'demo')
     ? env.RL_DEMO
     : (pathname === '/transcribe' ? env.RL_STT : env.RL_AI);
   if (limiter) {
@@ -342,7 +347,9 @@ async function rateLimited(request, env, pathname, mode, licenseKey) {
     if (!success) return true;
   }
 
-  if (mode !== 'real') return false;
+  // The daily ceiling guards paid work only: asking the worker what mode you are
+  // in must never eat into the day's budget.
+  if (isValidate || mode !== 'real') return false;
 
   if (env.RL_IP) {
     const { success } = await env.RL_IP.limit({ key: `ip:${ip}` });
