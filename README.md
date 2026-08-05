@@ -216,6 +216,37 @@ than being thrown back to a login wall.
 Fixtures live in `worker/demo/fixtures.js` (single fictional patient, shared across
 transcript, suggestions, chat and SOAP note).
 
+### Watching the spend
+
+`scripts/usage-report.js` answers one question: *does the consumption showing up at
+OpenAI / Anthropic / Deepgram correspond to requests I actually made?*
+
+```
+CF_API_TOKEN=… CF_ACCOUNT_ID=… node scripts/usage-report.js [--graphql] [--json]
+```
+
+The signal is the `physiq-rate` KV counter (`rl:<date>:<actor>`). It is written in
+`rateLimited()` **only in real mode** — a demo request never reaches that line — so
+its sum is the number of paid requests. Spend at a provider with a counter of zero
+for the same hours did not come from these Workers.
+
+Three limits, all printed by the script itself:
+
+- The keys carry `expirationTtl: 90000`, so **only today and part of yesterday
+  exist**. This cannot reconcile a monthly invoice after the fact — append
+  `--json` output to a file from a daily cron if you want history.
+- Both Workers share the `physiq-rate` namespace and the same key format, so the
+  counters are summed and copilot vs report cannot be separated.
+- One request is not one fixed cost: `/transcribe` bills per connected minute and
+  `/chat` per token. The counter says *paid work happened*, not how much.
+
+`--graphql` adds total (demo + real) requests per Worker from Cloudflare's
+`workersInvocationsAdaptive` dataset, which makes the demo/real split visible; if
+that query ever fails the script prints Cloudflare's error rather than a number.
+The per-provider breakdown is deliberately not fetched over API — none of the three
+exposes a stable public spend endpoint worth hard-coding — so the script prints the
+dashboard links and the figure to compare them against.
+
 ## Copilot Worker (`worker/`)
 
 A Cloudflare Worker (`physiq-copilot`) powers the AI features used by physiq-report:
