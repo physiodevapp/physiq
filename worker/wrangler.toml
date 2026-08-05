@@ -67,16 +67,17 @@ name         = "RL_IP"
 namespace_id = "1004"
 simple       = { limit = 60, period = 60 }
 
-# Optional KV namespace for the daily budget cap (keys `rl:<date>:<ip>`, TTL 25h).
-# Create with `wrangler kv namespace create physiq-rate` and uncomment:
-# [[kv_namespaces]]
-# binding = "RATE"
-# id      = "<namespace id>"
+# KV namespace for the daily budget cap (keys `rl:<date>:<actor>`, TTL 25h).
+# Without this binding DAILY_CAP is inert and only the per-minute windows apply —
+# and those are per Cloudflare location, so they stop bursts, not a slow drain.
+[[kv_namespaces]]
+binding = "RATE"
+id      = "462ecd5f583149038885748a134200a5"  # physiq-rate
 
 # KV Namespace — declared here so `wrangler deploy` keeps the binding attached.
 # (wrangler.toml is the source of truth: a binding not listed here is removed on deploy.)
 #   Key format in KV:  <license-key-string>  →  {"clinic":"Nombre Clínica","active":true}
-#   While LICENSES is unbound the Worker runs without license checks (dev passthrough).
+#   While LICENSES is unbound the Worker serves demo mode (fail-closed).
 [[kv_namespaces]]
 binding = "LICENSES"
 id      = "5980b672f0e0409d935fc74e0b948532"  # physiq-licenses
