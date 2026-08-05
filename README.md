@@ -159,6 +159,13 @@ Secrets are checked per route, so partial configuration degrades per feature: wi
 only `ANTHROPIC_API_KEY` set, chat is real while transcription stays demo. A fork
 deployed with no secrets at all comes up as a fully working demo.
 
+There is one dev bypass: when the worker itself runs under `wrangler dev` it
+assumes a developer with `.dev.vars` and skips the licence check. It keys off the
+worker's *own* hostname, never off the request's `Origin` header — a header the
+caller controls, and which `curl -H 'Origin: http://localhost'` forges in a
+second. (That header *was* the bypass condition until this change, which meant one
+spoofed header bought real mode with no licence.)
+
 The client cannot influence this. It never sends a mode; it *reads* one, from
 `GET /validate` and the `X-PhysiQ-Mode` header on every response, and uses it only
 to render the DEMO badge. Forcing `window.PHYSIQ_MODE` in devtools produces a UI

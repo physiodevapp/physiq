@@ -48,8 +48,24 @@ function trusted(origin, allowed) {
     || origin.startsWith('http://127.0.0.1');
 }
 
+// Only for CORS. Allowing a localhost Origin is harmless: CORS is a browser
+// policy, and this lets a locally-served front end talk to the deployed worker.
 function isLocalDev(origin) {
   return origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+}
+
+// For the licence bypass, and NOT interchangeable with the above.
+//
+// `Origin` is a request header the client controls: outside a browser,
+// `curl -H 'Origin: http://localhost'` forges it in a second. Keying the dev
+// bypass off it meant one spoofed header granted real mode with no licence —
+// free Deepgram, OpenAI and Anthropic on the project's budget.
+//
+// The worker's own hostname cannot be forged by the caller: under `wrangler dev`
+// it is localhost, in production it is the workers.dev subdomain. That is the
+// signal that actually means "a developer is running this locally".
+function isLocalWorker(url) {
+  return url.hostname === 'localhost' || url.hostname === '127.0.0.1';
 }
 
 // ── RAG region adjacency ─────────────────────────────────────────────────────────
@@ -269,11 +285,11 @@ const ROUTE_SECRETS = {
 
 // One KV read per request, shared by every route decision below.
 // Returns the key too — the rate limiter uses it as its primary identity.
-async function licenseState(request, url, env, origin) {
+async function licenseState(request, url, env) {
   // WebSocket (/transcribe) can't send custom headers — key arrives as ?key=
   const key = request.headers.get('X-License-Key') || url.searchParams.get('key') || '';
 
-  if (isLocalDev(origin)) return { licensed: true,  key };   // dev machine with .dev.vars
+  if (isLocalWorker(url)) return { licensed: true, key };    // `wrangler dev` with .dev.vars
   if (!env.LICENSES)      return { licensed: false, key };   // KV unbound in prod → fail closed to demo
   if (!key)               return { licensed: false, key: '' };
 
@@ -371,7 +387,7 @@ export default {
 
     if (!ok) return new Response('Forbidden', { status: 403 });
 
-    const { licensed, key } = await licenseState(request, url, env, origin);
+    const { licensed, key } = await licenseState(request, url, env);
     const mode = modeFor(env, url.pathname, licensed);
 
     if (await rateLimited(request, env, url.pathname, mode, licensed ? key : '')) {
