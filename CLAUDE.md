@@ -434,6 +434,12 @@ this repo:
   module other than `fixtures.js`.
 - **The client never decides the mode.** It reads `X-PhysiQ-Mode` / `GET /validate`
   and renders a badge. Never add a client-controlled flag that the worker trusts.
+- **`track()` is telemetry, never control flow.** It runs *after* `modeFor` has
+  resolved, writes to Analytics Engine (`physiq_usage`), and is wrapped in
+  try/catch with an optional binding. Nothing in the request path may read it
+  back or branch on it. Adding a route means adding a `track()` call for its
+  outcomes; `scripts/usage-report.js` queries the dataset (see README →
+  "Watching the spend").
 - Fixtures (`worker/demo/fixtures.js`) all describe the same fictional patient. Keep
   new fixtures consistent with that case, and keep demo answers labelled as demo —
   the chat bubble carries a `.cop-chat-demo` note rather than passing fixtures off

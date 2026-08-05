@@ -222,29 +222,46 @@ transcript, suggestions, chat and SOAP note).
 OpenAI / Anthropic / Deepgram correspond to requests I actually made?*
 
 ```
-CF_API_TOKEN=… CF_ACCOUNT_ID=… node scripts/usage-report.js [--graphql] [--json]
+CF_API_TOKEN=… CF_ACCOUNT_ID=… node scripts/usage-report.js [--days N] [--json]
 ```
 
-The signal is the `physiq-rate` KV counter (`rl:<date>:<actor>`). It is written in
-`rateLimited()` **only in real mode** — a demo request never reaches that line — so
-its sum is the number of paid requests. Spend at a provider with a counter of zero
-for the same hours did not come from these Workers.
+The token needs **Workers KV Storage → Read** and **Account Analytics → Read**.
+Two sources are cross-referenced:
+
+**Analytics Engine** (`physiq_usage` dataset) — one row per request, written by
+`track()` in both Workers *after* `modeFor` has resolved:
+
+| field | value |
+|-------|-------|
+| `blob1` | worker — `copilot` / `report` |
+| `blob2` | path |
+| `blob3` | mode — `real` / `demo` |
+| `blob4` | outcome — `served` / `ratelimited` / `turnstile` |
+| `blob5` | identity — `lic` / `anon` |
+
+This gives the **exact** demo/real split with weeks of history, and separates the
+two Workers. Counts use `SUM(_sample_interval)`, not `COUNT(*)`, so they stay
+correct once Analytics Engine starts sampling. The binding is optional in code
+(`if (!env.AE) return`) and the write is wrapped in try/catch — telemetry can
+never fail a request. There is no backfill: data starts at the deploy that added
+the binding.
+
+**The `physiq-rate` KV counter** (`rl:<date>:<actor>`) — written in
+`rateLimited()` **only in real mode**, and the thing `DAILY_CAP` trips on. It
+serves as a cross-check on the figure above.
 
 Three limits, all printed by the script itself:
 
-- The keys carry `expirationTtl: 90000`, so **only today and part of yesterday
-  exist**. This cannot reconcile a monthly invoice after the fact — append
-  `--json` output to a file from a daily cron if you want history.
-- Both Workers share the `physiq-rate` namespace and the same key format, so the
-  counters are summed and copilot vs report cannot be separated.
+- The KV keys carry `expirationTtl: 90000`, so **only today and part of yesterday
+  exist** there. Long history comes from Analytics Engine.
+- Both Workers share the `physiq-rate` namespace *and* the key format, so those
+  counters are summed and cannot be attributed per Worker (Analytics Engine can).
 - One request is not one fixed cost: `/transcribe` bills per connected minute and
-  `/chat` per token. The counter says *paid work happened*, not how much.
+  `/chat` per token. Neither source says how much was spent — they say what paid
+  work happened.
 
-`--graphql` adds total (demo + real) requests per Worker from Cloudflare's
-`workersInvocationsAdaptive` dataset, which makes the demo/real split visible; if
-that query ever fails the script prints Cloudflare's error rather than a number.
-The per-provider breakdown is deliberately not fetched over API — none of the three
-exposes a stable public spend endpoint worth hard-coding — so the script prints the
+The per-provider spend is deliberately not fetched over API — none of the three
+exposes a stable public endpoint worth hard-coding — so the script prints the
 dashboard links and the figure to compare them against.
 
 ## Copilot Worker (`worker/`)

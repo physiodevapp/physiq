@@ -379,6 +379,31 @@ function fnv1a(str) {
   return (h >>> 0).toString(36);
 }
 
+// ── Analytics Engine — el reparto demo/real, exacto ─────────────────────────
+//
+// El contador del KV solo se escribe en modo real, así que la parte demo del
+// tráfico solo se podía *estimar* restándola del total de peticiones del
+// Worker — un total que incluye /validate y los preflights CORS, y que además
+// se mide en una ventana distinta. Este data point la mide directamente.
+//
+// Se escribe una fila por petición, con la ruta y el modo con el que se
+// resolvió. `writeDataPoint` no bloquea y no debe esperarse. El binding es
+// opcional igual que los limitadores: sin él esto es un no-op, nunca un error.
+//
+// Nada de esto entra en la decisión de modo: es telemetría, se escribe *después*
+// de que `modeFor` haya resuelto, y va envuelta en try/catch porque una métrica
+// jamás puede tumbar una petición.
+function track(env, { path, mode, outcome, licensed }) {
+  if (!env.AE) return;
+  try {
+    env.AE.writeDataPoint({
+      indexes: [mode],                                              // 'real' | 'demo'
+      blobs:   ['copilot', path, mode, outcome, licensed ? 'lic' : 'anon'],
+      doubles: [],
+    });
+  } catch { /* ignorada a propósito */ }
+}
+
 // ── Router ──────────────────────────────────────────────────────────────
 
 export default {
@@ -398,6 +423,7 @@ export default {
     const mode = modeFor(env, url.pathname, licensed);
 
     if (await rateLimited(request, env, url.pathname, mode, licensed ? key : '')) {
+      track(env, { path: url.pathname, mode, outcome: 'ratelimited', licensed });
       // WebSocket clients can't read a 429 body, but the close code is enough
       // for lib/copilot.js to surface "límite alcanzado".
       const h = new Headers(CORS(origin));
@@ -406,6 +432,8 @@ export default {
       h.set('X-PhysiQ-Mode', mode);
       return new Response(JSON.stringify({ error: 'rate_limited', retryAfter: 60 }), { status: 429, headers: h });
     }
+
+    track(env, { path: url.pathname, mode, outcome: 'served', licensed });
 
     // ── The fork. Everything below the `demo` branch runs without `env`, so no
     // demo path can reach a paid API even by mistake — it has no credentials to

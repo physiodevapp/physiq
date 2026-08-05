@@ -4,39 +4,44 @@
 // OpenAI / Anthropic / Deepgram se corresponde con peticiones que yo he hecho?"
 //
 // Uso:
-//   node scripts/usage-report.js              # informe de contadores
-//   node scripts/usage-report.js --graphql    # + peticiones totales (Cloudflare)
+//   node scripts/usage-report.js              # últimas 24 h
+//   node scripts/usage-report.js --days 30    # ventana de Analytics Engine
 //   node scripts/usage-report.js --json       # salida cruda, para pipes
 //
 // Env:
 //   CF_API_TOKEN    obligatorio — token con permiso de lectura de KV
-//                   (y de Account Analytics si se usa --graphql)
+//                   y de Account Analytics
 //   CF_ACCOUNT_ID   obligatorio
 //   RATE_KV_ID      opcional — id del namespace physiq-rate (hay default)
 //
 // ─────────────────────────────────────────────────────────────────────────────
 // QUÉ MIDE Y QUÉ NO
 //
-// La señal fuerte es el contador diario del KV `physiq-rate`. Se escribe en
-// `rateLimited()` (physiq-copilot.js / physiq-orchestrator.js) y SOLO en modo
-// real: una petición demo nunca llega a esa línea. Por tanto:
+// Hay dos fuentes, y dicen cosas distintas:
 //
-//     peticiones de pago = suma de los contadores `rl:<fecha>:<actor>`
+//   · ANALYTICS ENGINE (dataset `physiq_usage`) — una fila por petición, con el
+//     Worker, la ruta, el modo con el que se resolvió y el desenlace. Es el
+//     reparto demo/real EXACTO, y con historial de semanas. Requiere que los dos
+//     Workers estén desplegados con el binding `AE`.
+//   · CONTADOR KV (`physiq-rate`) — se escribe en `rateLimited()` y SOLO en modo
+//     real: una petición demo nunca llega a esa línea. Es la cifra que hace de
+//     tope de presupuesto, y sirve para contrastar la anterior.
 //
-// Si en un proveedor aparece gasto y aquí el total del día es 0, ese gasto no
-// vino de los Workers de PhysiQ (o alguien tiene una licencia válida).
+// Si en un proveedor aparece gasto y aquí las peticiones de pago son 0, ese
+// gasto no vino de los Workers de PhysiQ.
 //
 // Tres límites que conviene tener presentes al leer la salida:
 //
-//   1. VENTANA DE 25 HORAS. Las claves se escriben con `expirationTtl: 90000`,
-//      así que solo existen las de hoy y parte de ayer. Esto NO sirve para
-//      cuadrar una factura mensual a posteriori: hay que ejecutarlo a diario
-//      (ver "Historial" al final de la salida).
-//   2. NAMESPACE COMPARTIDO. Los dos Workers usan el mismo `physiq-rate` y el
-//      mismo formato de clave, así que los contadores están sumados: no se
-//      puede saber cuántas fueron del copiloto y cuántas del informe.
+//   1. EL CONTADOR KV VIVE 25 HORAS. Se escribe con `expirationTtl: 90000`, así
+//      que solo existen las claves de hoy y parte de ayer. El historial largo
+//      sale de Analytics Engine, no de aquí.
+//   2. NAMESPACE KV COMPARTIDO. Los dos Workers usan el mismo `physiq-rate` y el
+//      mismo formato de clave, así que esos contadores están sumados: no se
+//      puede saber cuántas fueron del copiloto y cuántas del informe. Analytics
+//      Engine sí los separa (blob1).
 //   3. UNA PETICIÓN ≠ UN COSTE FIJO. `/transcribe` factura por minuto conectado
-//      y `/chat` por tokens. El contador dice "hubo trabajo de pago", no cuánto.
+//      y `/chat` por tokens. El desglose por ruta ayuda, pero ninguna de las dos
+//      fuentes dice cuánto costó: dicen qué trabajo de pago hubo.
 //
 // El desglose por proveedor no se consulta por API a propósito: OpenAI,
 // Anthropic y Deepgram no exponen un endpoint de gasto estable y público que
@@ -47,11 +52,13 @@
 
 const CF_API = 'https://api.cloudflare.com/client/v4';
 const DEFAULT_RATE_KV = '462ecd5f583149038885748a134200a5'; // physiq-rate
-const SCRIPTS = ['physiq-copilot', 'physiq-orchestrator'];
+const AE_DATASET = 'physiq_usage';
 
-const args    = process.argv.slice(2);
-const asJson  = args.includes('--json');
-const doGraph = args.includes('--graphql');
+const args   = process.argv.slice(2);
+const asJson = args.includes('--json');
+const days   = args.includes('--days')
+  ? Math.max(1, parseInt(args[args.indexOf('--days') + 1], 10) || 1)
+  : 1;
 
 const TOKEN   = process.env.CF_API_TOKEN;
 const ACCOUNT = process.env.CF_ACCOUNT_ID;
@@ -122,50 +129,46 @@ async function realCounters() {
   return rows;
 }
 
-// ── Cloudflare GraphQL: peticiones totales (demo + real) ─────────────────────
+// ── Analytics Engine: el reparto demo/real, exacto ───────────────────────────
 //
-// Opcional y detrás de --graphql a propósito. El dataset de Workers es
-// `workersInvocationsAdaptive`; si Cloudflare cambia el esquema, esta consulta
-// fallará y el script imprime el error tal cual en vez de inventarse un número.
-// Los totales del panel de cada Worker son la fuente equivalente y siempre fiable.
+// Los Workers escriben una fila por petición (`track()` en physiq-copilot.js y
+// physiq-orchestrator.js):
+//
+//   blob1 worker ('copilot' | 'report')   blob2 ruta
+//   blob3 modo   ('real' | 'demo')        blob4 desenlace
+//   blob5 identidad ('lic' | 'anon')
+//
+// `_sample_interval` es el factor de muestreo que aplica Analytics Engine
+// cuando el volumen crece: sumarlo (en vez de contar filas) devuelve el número
+// real de peticiones. Con el tráfico de este proyecto vale 1 casi siempre, pero
+// SUM(_sample_interval) es correcto en ambos casos y COUNT(*) no.
 
-const GQL = `
-query PhysiqWorkerRequests($accountTag: string!, $start: Time!, $end: Time!) {
-  viewer {
-    accounts(filter: { accountTag: $accountTag }) {
-      workersInvocationsAdaptive(
-        limit: 1000
-        filter: { datetime_geq: $start, datetime_leq: $end }
-      ) {
-        sum { requests errors }
-        dimensions { scriptName }
-      }
-    }
-  }
-}`;
+async function usageSplit(days) {
+  const sql = `
+    SELECT blob1 AS worker, blob3 AS mode, blob2 AS path, blob4 AS outcome,
+           SUM(_sample_interval) AS n
+    FROM ${AE_DATASET}
+    WHERE timestamp > NOW() - INTERVAL '${days}' DAY
+    GROUP BY blob1, blob2, blob3, blob4
+    ORDER BY n DESC`;
 
-async function totalRequests(hours = 24) {
-  const end   = new Date();
-  const start = new Date(end.getTime() - hours * 3600 * 1000);
-  const res   = await fetch(`${CF_API}/graphql`, {
-    method:  'POST',
-    headers: { ...auth, 'Content-Type': 'application/json' },
-    body:    JSON.stringify({
-      query: GQL,
-      variables: { accountTag: ACCOUNT, start: start.toISOString(), end: end.toISOString() },
-    }),
+  const res  = await fetch(`${CF_API}/accounts/${ACCOUNT}/analytics_engine/sql`, {
+    method: 'POST', headers: auth, body: sql,
   });
-  const body = await res.json();
-  if (body.errors) throw new Error(body.errors.map(e => e.message).join('; '));
+  const text = await res.text();
+  if (!res.ok) throw new Error(`${res.status} — ${text.slice(0, 300)}`);
 
-  const nodes = body.data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive || [];
-  const byScript = {};
-  for (const n of nodes) {
-    const name = n.dimensions?.scriptName;
-    if (!SCRIPTS.includes(name)) continue;
-    byScript[name] = (byScript[name] || 0) + (n.sum?.requests || 0);
-  }
-  return byScript;
+  let body;
+  try { body = JSON.parse(text); }
+  catch { throw new Error(`respuesta no-JSON: ${text.slice(0, 300)}`); }
+
+  return (body.data || []).map(r => ({
+    worker:  r.worker,
+    mode:    r.mode,
+    path:    r.path,
+    outcome: r.outcome,
+    n:       Number(r.n) || 0,
+  }));
 }
 
 // ── Salida ───────────────────────────────────────────────────────────────────
@@ -179,22 +182,81 @@ const PROVIDERS = [
 
 function pad(s, n) { return String(s).padEnd(n); }
 
+function section(title) { console.log(`\n─── ${title} ───\n`); }
+
 async function main() {
   const counters = await realCounters();
-  const totals   = doGraph ? await totalRequests().catch(e => ({ _error: e.message })) : null;
+  const split    = await usageSplit(days).catch(e => ({ _error: e.message }));
 
   if (asJson) {
-    console.log(JSON.stringify({ counters, totals }, null, 2));
+    console.log(JSON.stringify({ window: `${days}d`, counters, split }, null, 2));
     return;
   }
 
+  console.log(`\n═══ PhysiQ — uso de los Workers (últimos ${days === 1 ? 'día' : `${days} días`}) ═══`);
+
+  // ── 1. El reparto exacto ───────────────────────────────────────────────────
+  section('Demo vs. real (Analytics Engine)');
+
+  if (split._error) {
+    console.log(`  No se pudo consultar el dataset ${AE_DATASET}: ${split._error}\n`);
+    console.log('  Causas habituales: el token no tiene Account Analytics → Read, o los');
+    console.log('  Workers aún no se han desplegado con el binding AE (no hay datos');
+    console.log('  anteriores al despliegue: Analytics Engine no rellena hacia atrás).\n');
+  } else if (!split.length) {
+    console.log('  Sin filas en la ventana. O no ha habido tráfico, o los Workers');
+    console.log('  todavía no escriben en el dataset.\n');
+  } else {
+    const byMode   = {};
+    const byWorker = {};
+    for (const r of split) {
+      byMode[r.mode]     = (byMode[r.mode] || 0) + r.n;
+      const wk           = `${r.worker}/${r.mode}`;
+      byWorker[wk]       = (byWorker[wk] || 0) + r.n;
+    }
+    const total = Object.values(byMode).reduce((a, b) => a + b, 0);
+    const pct   = n => `${((n / total) * 100).toFixed(1)}%`;
+
+    for (const mode of ['demo', 'real']) {
+      const n = byMode[mode] || 0;
+      console.log(`  ${pad(mode, 10)}${pad(n, 10)}${pct(n)}`);
+    }
+    console.log(`  ${pad('TOTAL', 10)}${total}\n`);
+
+    console.log(`  ${pad('Worker / modo', 26)}Peticiones`);
+    console.log(`  ${'-'.repeat(40)}`);
+    for (const [wk, n] of Object.entries(byWorker).sort((a, b) => b[1] - a[1])) {
+      console.log(`  ${pad(wk, 26)}${n}`);
+    }
+
+    const paid = split.filter(r => r.mode === 'real' && r.outcome === 'served' && r.path !== '/validate');
+    if (paid.length) {
+      console.log(`\n  Rutas de pago servidas (las que generan gasto):`);
+      console.log(`  ${'-'.repeat(40)}`);
+      for (const r of paid.sort((a, b) => b.n - a.n)) {
+        console.log(`  ${pad(`${r.worker} ${r.path}`, 26)}${r.n}`);
+      }
+    } else {
+      console.log('\n  Ninguna ruta de pago servida en la ventana.');
+    }
+
+    const blocked = split.filter(r => r.outcome !== 'served');
+    if (blocked.length) {
+      console.log(`\n  Bloqueadas (no llegaron a gastar):`);
+      for (const r of blocked.sort((a, b) => b.n - a.n)) {
+        console.log(`  ${pad(`${r.worker} ${r.path}`, 26)}${pad(r.outcome, 14)}${r.n}`);
+      }
+    }
+    console.log();
+  }
+
+  // ── 2. El contador de presupuesto ──────────────────────────────────────────
   const byDay = {};
   for (const r of counters) byDay[r.day] = (byDay[r.day] || 0) + r.count;
   const grand = Object.values(byDay).reduce((a, b) => a + b, 0);
 
-  console.log('\n═══ PhysiQ — peticiones de pago (modo real) ═══\n');
-  console.log('Fuente: contadores KV physiq-rate. Solo se escriben en modo real,');
-  console.log('y expiran a las 25 h: aquí solo hay hoy y parte de ayer.\n');
+  section('Contador de presupuesto (KV physiq-rate, últimas ~25 h)');
+  console.log('  Solo se escribe en modo real. Es el que dispara DAILY_CAP.\n');
 
   if (!counters.length) {
     console.log('  Sin contadores. En las últimas ~25 h no ha habido NINGUNA');
@@ -212,39 +274,24 @@ async function main() {
     console.log('  (suma de los dos Workers — comparten namespace, no se pueden separar)\n');
   }
 
-  if (totals) {
-    console.log('─── Peticiones totales (demo + real), últimas 24 h ───\n');
-    if (totals._error) {
-      console.log(`  No se pudo consultar la GraphQL Analytics API: ${totals._error}`);
-      console.log('  Usa los totales del panel de cada Worker en el dashboard.\n');
-    } else if (!Object.keys(totals).length) {
-      console.log('  Sin datos para physiq-copilot / physiq-orchestrator.\n');
-    } else {
-      for (const [name, n] of Object.entries(totals)) console.log(`  ${pad(name, 26)}${n}`);
-      const t = Object.values(totals).reduce((a, b) => a + b, 0);
-      console.log(`\n  Demo (aprox.) = ${t} totales − ${grand} de pago = ${Math.max(0, t - grand)}`);
-      console.log('  Aproximado por dos motivos: los totales incluyen /validate y los');
-      console.log('  preflights CORS, y las dos ventanas no coinciden exactamente');
-      console.log('  (24 h móviles frente a las ~25 h de vida de los contadores).\n');
-    }
-  }
-
-  console.log('─── Contrastar con el gasto de cada proveedor ───\n');
+  // ── 3. Cruce con los proveedores ───────────────────────────────────────────
+  section('Contrastar con el gasto de cada proveedor');
   for (const [name, what, url] of PROVIDERS) {
-    console.log(`  ${pad(name, 12)}${pad(what, 40)}`);
+    console.log(`  ${pad(name, 12)}${what}`);
     console.log(`  ${' '.repeat(12)}${url}\n`);
   }
 
-  console.log('  Lectura: si el total de pago de arriba es 0 (o muy bajo) y en algún');
-  console.log('  panel aparece consumo en esas mismas horas, el gasto no viene de los');
-  console.log('  Workers de PhysiQ. Revisa entonces si alguna clave de API está usada');
-  console.log('  fuera de aquí, y rota la que corresponda.\n');
+  console.log('  Lectura: si las peticiones de pago de arriba son 0 (o muy pocas) y en');
+  console.log('  algún panel aparece consumo en esas mismas horas, el gasto no viene de');
+  console.log('  los Workers de PhysiQ. Revisa entonces si alguna clave de API está');
+  console.log('  usada fuera de aquí, y rota la que corresponda.\n');
 
-  console.log('─── Historial ───\n');
-  console.log('  Los contadores viven 25 h. Para cuadrar una factura mensual hay que');
-  console.log('  ir guardando la salida:\n');
-  console.log('    node scripts/usage-report.js --json >> ~/physiq-usage.jsonl\n');
-  console.log('  Un cron diario (o una GitHub Action programada) basta.\n');
+  if (!split._error && split.length) {
+    const realN = split.filter(r => r.mode === 'real').reduce((a, r) => a + r.n, 0);
+    if (realN === 0) {
+      console.log('  En esta ventana TODO el tráfico fue demo: coste de proveedores 0.\n');
+    }
+  }
 }
 
 main().catch(err => { console.error(`\n✗ ${err.message}\n`); process.exit(1); });
