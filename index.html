@@ -964,6 +964,29 @@
       font-family: 'DM Mono', monospace; font-size: 0.68rem;
       letter-spacing: 0.02em; color: #fb923c;
     }
+    /* Marca de respuesta precargada. Va dentro de la burbuja, no en una banda
+       del panel: es el punto donde el contenido se puede confundir con salida
+       real de un modelo, así que la etiqueta tiene que viajar con el mensaje. */
+    .cop-chat-demo {
+      margin-top: 8px; padding-top: 7px;
+      border-top: 1px solid rgba(242,179,61,0.28);
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.02em; color: #f2b33d;
+    }
+    /* Banda del panel del copiloto: contexto permanente mientras dure la sesión. */
+    #cop-demo-bar {
+      display: none;
+      flex: none; align-items: center; gap: 7px;
+      padding: 7px 12px;
+      background: rgba(242,179,61,0.08);
+      border-bottom: 1px solid rgba(242,179,61,0.22);
+      font-family: 'DM Mono', monospace; font-size: 0.66rem;
+      letter-spacing: 0.05em; color: #f2b33d;
+    }
+    body.physiq-demo #cop-demo-bar { display: flex; }
+    #cop-demo-bar .demo-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #f2b33d; flex: none;
+    }
     .cop-chat-input-row {
       display: flex; align-items: flex-end; gap: 8px; flex-shrink: 0;
       padding: 10px 12px calc(env(safe-area-inset-bottom, 0px) + 12px);
@@ -1406,6 +1429,86 @@
     .act-btn:disabled { opacity: 0.4; cursor: default; }
     .act-error { font-size: 0.82rem; color: #f87171; text-align: center; line-height: 1.4; }
     .act-checking { font-size: 0.8rem; color: #5a6e8a; text-align: center; }
+
+    /* ── Modo demo ────────────────────────────────────────
+       La pantalla de activación es la portada pública: la acción principal es
+       entrar en demo (un tap) y la clave queda como acción secundaria plegada.
+       Ver README → "Modo demo". */
+    .act-btn-ghost {
+      width: 100%; padding: 13px;
+      border-radius: 10px; border: 1px solid #232d45;
+      background: transparent; color: #8aa4bc;
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
+      cursor: pointer; transition: border-color 0.15s, color 0.15s;
+    }
+    .act-btn-ghost:hover { border-color: #4f9cf9; color: #4f9cf9; }
+    .act-note {
+      font-size: 0.78rem; color: #5a6e8a; text-align: center; line-height: 1.55;
+      max-width: 320px;
+    }
+    .act-note a { color: #8aa4bc; text-decoration: underline; text-underline-offset: 2px; }
+    .act-note a:hover { color: #4f9cf9; }
+    .act-lic-toggle {
+      background: none; border: none; padding: 4px;
+      font-family: 'Outfit', sans-serif; font-size: 0.8rem; color: #5a6e8a;
+      cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+    }
+    .act-lic-toggle:hover { color: #8aa4bc; }
+    #act-license[hidden] { display: none; }
+
+    /* Indicador persistente en la cabecera. Siempre visible mientras el modo
+       sea demo: un visitante que entre directo al copiloto tiene que poder
+       saber en todo momento que lo que lee es material precargado. */
+    #demoChip {
+      display: inline-flex; align-items: center; gap: 5px;
+      height: 30px; padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(242,179,61,0.35);
+      background: rgba(242,179,61,0.1);
+      color: #f2b33d;
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.09em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.15s, border-color 0.15s;
+    }
+    #demoChip:hover { background: rgba(242,179,61,0.18); border-color: rgba(242,179,61,0.55); }
+    #demoChip[hidden] { display: none; }
+    #demoChip .demo-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #f2b33d; flex: none;
+    }
+
+    /* Bloque explicativo dentro del panel "Servicios externos": es el sitio
+       temático correcto — la explicación aparece justo encima de la lista de
+       APIs que el modo demo está evitando llamar. */
+    #demo-note { display: none; }
+    #apis-overlay.demo-on #demo-note { display: block; }
+    .demo-note-box {
+      border: 1px solid rgba(242,179,61,0.28);
+      background: rgba(242,179,61,0.07);
+      border-radius: 12px; padding: 14px 15px;
+      display: flex; flex-direction: column; gap: 9px;
+    }
+    .demo-note-title {
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 600;
+      color: #f2b33d; display: flex; align-items: center; gap: 7px;
+    }
+    .demo-note-body { font-size: 0.82rem; color: #8aa4bc; line-height: 1.6; }
+    .demo-note-body strong { color: #c9d6e2; font-weight: 500; }
+    .demo-note-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+    .demo-note-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 11px; border-radius: 8px;
+      border: 1px solid var(--border2); background: transparent;
+      color: #8aa4bc; font-family: 'Outfit', sans-serif; font-size: 0.8rem;
+      cursor: pointer; text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .demo-note-link:hover { border-color: #4f9cf9; color: #4f9cf9; }
+    .demo-note-stale {
+      font-size: 0.78rem; color: #f87171; line-height: 1.5;
+      padding-top: 2px;
+    }
+    .demo-note-stale[hidden] { display: none; }
   </style>
 </head>
 <body>
@@ -1414,14 +1517,28 @@
 <div id="activation-screen">
   <div class="act-card">
     <h1 class="act-logo">Physi<span>Q</span></h1>
-    <p class="act-sub">Introduce tu clave de activación para continuar.</p>
+    <p class="act-sub">Suite de herramientas clínicas para fisioterapia musculoesquelética.</p>
+
     <div class="act-form">
+      <button id="act-demo-btn" class="act-btn" onclick="_actEnterDemo()">Entrar en modo demo</button>
+      <button class="act-lic-toggle" onclick="_actToggleLicense()">¿Tienes una clave de activación?</button>
+    </div>
+
+    <div id="act-license" class="act-form" hidden>
       <input id="act-key-input" class="act-input" type="text" placeholder="XXXX-XXXX-XXXX-XXXX"
         autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-      <button id="act-submit-btn" class="act-btn" onclick="_actSubmit()">Activar</button>
+      <button id="act-submit-btn" class="act-btn-ghost" onclick="_actSubmit()">Activar</button>
     </div>
+
     <p id="act-error" class="act-error" hidden></p>
     <p id="act-checking" class="act-checking" hidden>Verificando…</p>
+
+    <p class="act-note">
+      El modo demo recorre el copiloto y los informes con respuestas de ejemplo
+      precargadas, sin llamar a ninguna API externa: el proyecto es público y su
+      presupuesto de IA es personal.
+      <a href="https://github.com/physiodevapp/physiq" target="_blank" rel="noopener">Ver el código en GitHub</a>
+    </p>
   </div>
 </div>
 
@@ -1430,6 +1547,9 @@
   <header>
     <h1>Physi<span>Q</span></h1>
     <div class="hdr-actions">
+      <button id="demoChip" onclick="showApisPanel()" title="Estás en modo demo — toca para saber por qué" aria-label="Modo demo activo" hidden>
+        <span class="demo-dot"></span>Demo
+      </button>
       <button id="apisBtn" class="peer-hdr-btn" onclick="toggleApisPanel()" title="Servicios externos" aria-label="Servicios externos">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
@@ -1738,6 +1858,12 @@
     </div>
   </div>
 
+  <!-- Demo mode strip — visible while body.physiq-demo is set (see _modeApply) -->
+  <div id="cop-demo-bar">
+    <span class="demo-dot"></span>
+    Modo demo · transcripción y respuestas de ejemplo
+  </div>
+
   <!-- Region filter — collapsible popover, opened from the header trigger -->
   <div class="cop-region-row" id="cop-region-row" inert>
     <div class="cop-region-clip">
@@ -1843,6 +1969,36 @@
       <button class="apis-close-btn" onclick="hideApisPanel()" aria-label="Cerrar">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
+    </div>
+    <div id="demo-note">
+      <div class="demo-note-box">
+        <div class="demo-note-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          Estás en modo demo
+        </div>
+        <div class="demo-note-body">
+          Las funciones de IA responden con <strong>contenido de ejemplo precargado</strong>
+          sobre un paciente ficticio. Ninguna de las APIs de abajo se está llamando:
+          PhysiQ es un proyecto público y su presupuesto de IA es personal, así que
+          el modo real queda reservado a instalaciones con licencia.
+          <br><br>
+          Todo lo demás —medición de ROM, fuerza, equilibrio, salto, cuestionarios,
+          cinemática— <strong>funciona de verdad</strong>: se calcula en tu dispositivo
+          y no consume ningún servicio externo.
+        </div>
+        <p id="demo-note-stale" class="demo-note-stale" hidden>
+          Tu clave de activación ya no está activa, así que la sesión ha pasado a modo demo.
+        </p>
+        <div class="demo-note-links">
+          <a class="demo-note-link" href="https://github.com/physiodevapp/physiq" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+            Código del proyecto
+          </a>
+          <button class="demo-note-link" onclick="_actReopen()">Tengo una clave</button>
+        </div>
+      </div>
     </div>
     <div class="apis-list">
       <a class="apis-item" href="https://platform.openai.com/usage" target="_blank" rel="noopener">
@@ -2147,6 +2303,9 @@ function _showSat(name) {
   document.getElementById('home').hidden = true;
   // Notify the satellite so it can rebuild its swipe-back history stack
   try { frame.contentWindow?.postMessage({ type: 'PHYSIQ_SAT_VISIBLE' }, '*'); } catch(_) {}
+  // Re-announce the run mode: a satellite that finished loading after the
+  // initial /validate would otherwise never have received it.
+  try { frame.contentWindow?.postMessage({ type: 'PHYSIQ_MODE', ...window.PHYSIQ_MODE }, '*'); } catch(_) {}
 }
 
 function _showHome() {
@@ -3234,7 +3393,65 @@ if ('serviceWorker' in navigator) {
   window.PHYSIQ_COPILOT_WORKER = 'https://physiq-copilot.edu-gamboa-rodriguez.workers.dev';
 </script>
 <script>
-// ── License activation ────────────────────────────────────────────────────────
+// ── Modo de ejecución (real / demo) ───────────────────────────────────────────
+//
+// El cliente NO decide el modo: lo resuelve el worker en cada petición (licencia
+// en KV + secretos presentes + kill switch) y lo anuncia en /validate y en la
+// cabecera X-PhysiQ-Mode de cada respuesta. Este objeto solo lo refleja.
+//
+// Si alguien lo fuerza desde devtools, lo único que consigue es una UI que
+// miente: el worker recalcula el modo en cada petición y sigue devolviendo
+// fixtures. No existe ningún canal por el que el cliente pueda pedir modo real.
+window.PHYSIQ_MODE = { mode: 'unknown', routes: {}, demoOnly: false, staleLicense: false };
+
+async function _modeFetch(key) {
+  const base = (window.PHYSIQ_COPILOT_WORKER || '').replace(/\/$/, '');
+  if (!base) return null;   // sin worker configurado — dev local
+  try {
+    const r = await fetch(`${base}/validate`, { headers: key ? { 'X-License-Key': key } : {} });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d && d.mode ? d : null;
+  } catch {
+    return null;   // worker inalcanzable — no bloquear la app por ello
+  }
+}
+
+function _modeApply(info, opts = {}) {
+  const m = window.PHYSIQ_MODE;
+  m.mode     = info?.mode || 'unknown';
+  m.routes   = info?.routes || {};
+  m.demoOnly = !!info?.demoOnly;
+  // Tenía clave guardada y aun así el worker responde demo: la licencia ya no
+  // está activa. Se avisa, pero no se expulsa al usuario a la pantalla de
+  // activación como hacía la versión anterior.
+  m.staleLicense = !!opts.storedKey && m.mode === 'demo' && !m.demoOnly;
+
+  const isDemo = m.mode === 'demo' || m.mode === 'mixed';
+  document.body.classList.toggle('physiq-demo', isDemo);
+  document.getElementById('demoChip')?.toggleAttribute('hidden', !isDemo);
+  document.getElementById('apis-overlay')?.classList.toggle('demo-on', isDemo);
+  document.getElementById('demo-note-stale')?.toggleAttribute('hidden', !m.staleLicense);
+
+  // Los satélites en iframe y lib/copilot.js reaccionan a esto para etiquetar
+  // sus propias vistas sin volver a preguntar al worker.
+  window.dispatchEvent(new CustomEvent('physiq-mode', { detail: { ...m } }));
+  document.querySelectorAll('iframe.sat-frame').forEach(f => {
+    try { f.contentWindow?.postMessage({ type: 'PHYSIQ_MODE', ...m }, '*'); } catch {}
+  });
+}
+
+// Llamado por lib/copilot.js con el valor de X-PhysiQ-Mode de cada respuesta.
+// Solo actúa en la transición real → demo (licencia revocada a mitad de sesión);
+// para el resto, /validate al arrancar ya dio la foto completa.
+window._physiqSetMode = async function (headerMode) {
+  if (headerMode !== 'demo' || window.PHYSIQ_MODE.mode === 'demo') return;
+  const stored = localStorage.getItem('physiq-license-key') || '';
+  const info = await _modeFetch(stored);
+  _modeApply(info || { mode: 'demo', routes: {} }, { storedKey: !!stored });
+};
+
+// ── Portada / activación ──────────────────────────────────────────────────────
 function _actDismiss() {
   const s = document.getElementById('activation-screen');
   if (!s) return;
@@ -3242,31 +3459,33 @@ function _actDismiss() {
   setTimeout(() => { s.style.display = 'none'; }, 320);
 }
 
-function _actRevoke() {
-  localStorage.removeItem('physiq-license-key');
+function _actEnterDemo() {
+  _actDismiss();
+}
+
+function _actToggleLicense() {
+  const box = document.getElementById('act-license');
+  if (!box) return;
+  box.hidden = !box.hidden;
+  if (!box.hidden) document.getElementById('act-key-input')?.focus();
+}
+
+// Reabre la portada desde el panel de servicios ("Tengo una clave").
+function _actReopen() {
+  hideApisPanel();
   const s = document.getElementById('activation-screen');
   if (!s) return;
   s.style.display = '';
   s.classList.remove('act-fade');
-  const err = document.getElementById('act-error');
-  const inp = document.getElementById('act-key-input');
-  const btn = document.getElementById('act-submit-btn');
-  if (err) { err.textContent = 'Tu licencia ha sido desactivada. Introduce una clave válida.'; err.hidden = false; }
-  if (inp) inp.value = '';
-  if (btn) btn.disabled = false;
+  const box = document.getElementById('act-license');
+  if (box) box.hidden = false;
+  document.getElementById('act-key-input')?.focus();
 }
 
-async function _actValidate(key) {
-  const base = (window.PHYSIQ_COPILOT_WORKER || '').replace(/\/$/, '');
-  if (!base) return 'ok';   // no worker configured — local dev
-  try {
-    const r = await fetch(`${base}/validate`, { headers: { 'X-License-Key': key } });
-    if (r.ok) return 'ok';
-    const d = await r.json().catch(() => ({}));
-    return d.error || 'license_invalid';
-  } catch {
-    return 'ok';   // network error — let through rather than block the app
-  }
+// Conservado por compatibilidad: lib/copilot.js todavía lo invoca si el worker
+// devolviese un 401. Ya no expulsa a nadie — degrada a demo y lo señala.
+function _actRevoke() {
+  window._physiqSetMode('demo');
 }
 
 async function _actSubmit() {
@@ -3277,42 +3496,48 @@ async function _actSubmit() {
   if (!key) return;
   btn.disabled = true;
   err.hidden   = true;
-  const result = await _actValidate(key);
-  if (result === 'ok') {
-    localStorage.setItem('physiq-license-key', key);
-    _actDismiss();
-  } else {
-    err.textContent = result === 'license_invalid'
-      ? 'Clave no válida. Comprueba que sea correcta.'
-      : 'No se pudo verificar la clave. Inténtalo de nuevo.';
+
+  const info = await _modeFetch(key);
+
+  if (!info) {
+    err.textContent = 'No se pudo verificar la clave. Inténtalo de nuevo.';
     err.hidden = false;
     btn.disabled = false;
-    if (result === 'license_invalid') input.value = '';
+    return;
   }
+  if (info.mode === 'demo') {
+    // demoOnly es una propiedad global del worker, no de esta clave: distinguirlo
+    // no filtra nada y evita decirle "clave no válida" a alguien cuya clave sí lo es.
+    err.textContent = info.demoOnly
+      ? 'El modo demo está activado en el servidor ahora mismo, así que la clave no habilita el modo real.'
+      : 'Clave no válida. Comprueba que sea correcta.';
+    err.hidden = false;
+    btn.disabled = false;
+    if (!info.demoOnly) input.value = '';
+    return;
+  }
+
+  localStorage.setItem('physiq-license-key', key);
+  _modeApply(info, { storedKey: true });
+  _actDismiss();
 }
 
 document.getElementById('act-key-input')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') _actSubmit();
 });
 
-// On startup: if a key is stored, validate it; if valid dismiss screen, else show error
+// Al arrancar: se resuelve el modo una vez. Con clave guardada la portada se
+// descarta siempre (válida o no); sin clave, se muestra y el visitante elige.
 (async () => {
   const stored = localStorage.getItem('physiq-license-key');
-  if (!stored) return;   // no key — show activation screen
   const chk = document.getElementById('act-checking');
-  const btn  = document.getElementById('act-submit-btn');
-  if (chk) chk.hidden = false;
-  if (btn) btn.disabled = true;
-  const result = await _actValidate(stored);
-  if (result === 'ok') {
-    _actDismiss();
-  } else {
-    localStorage.removeItem('physiq-license-key');
-    const err = document.getElementById('act-error');
-    if (err) { err.textContent = 'La clave ha expirado. Introduce una clave de activación.'; err.hidden = false; }
-    if (chk) chk.hidden = true;
-    if (btn) btn.disabled = false;
-  }
+  if (stored && chk) chk.hidden = false;
+
+  const info = await _modeFetch(stored || '');
+  _modeApply(info, { storedKey: !!stored });
+
+  if (chk) chk.hidden = true;
+  if (stored) _actDismiss();
 })();
 </script>
 <script src="lib/copilot.js"></script>
