@@ -130,13 +130,110 @@ The hub also posts messages back to satellite iframes:
 | `PHYSIQ_SAT_VISIBLE` | The satellite's iframe just became visible (rebuild swipe-back history) |
 | `PHYSIQ_SAT_HIDDEN` | The satellite's iframe is about to be hidden (close any open dialog/sheet) |
 
+## Demo mode
+
+PhysiQ is a public portfolio project whose AI features run on a personal API
+budget. To keep the app openly explorable without that budget funding anonymous
+traffic, the worker serves a **demo mode**: the copilot and the report generator
+walk end to end on preloaded, clinically plausible fixtures, with **zero calls to
+Deepgram, OpenAI or Anthropic**.
+
+Nothing is disabled in demo mode. Every route answers — with fixtures instead of
+a model. The rest of the suite (ROM, force, balance, jump, questionnaires,
+kinematics) is unaffected: it computes on-device and never used an external
+service to begin with.
+
+### How the mode is decided
+
+**In the worker, never in the client.** `resolveMode` runs in the router before
+any handler and is fail-closed — `real` requires *all* of:
+
+| Condition | Otherwise |
+|---|---|
+| `DEMO_ONLY` variable is not set | demo (budget kill switch) |
+| An `X-License-Key` is present (or `?key=` for the WebSocket) | demo |
+| That key exists in the `LICENSES` KV namespace with `active !== false` | demo |
+| The secrets that route needs are configured | demo |
+
+Secrets are checked per route, so partial configuration degrades per feature: with
+only `ANTHROPIC_API_KEY` set, chat is real while transcription stays demo. A fork
+deployed with no secrets at all comes up as a fully working demo.
+
+There is one dev bypass: when the worker itself runs under `wrangler dev` it
+assumes a developer with `.dev.vars` and skips the licence check. It keys off the
+worker's *own* hostname, never off the request's `Origin` header — a header the
+caller controls, and which `curl -H 'Origin: http://localhost'` forges in a
+second. (That header *was* the bypass condition until this change, which meant one
+spoofed header bought real mode with no licence.)
+
+The client cannot influence this. It never sends a mode; it *reads* one, from
+`GET /validate` and the `X-PhysiQ-Mode` header on every response, and uses it only
+to render the DEMO badge. Forcing `window.PHYSIQ_MODE` in devtools produces a UI
+that lies while the worker keeps serving fixtures. Note that the CORS `Origin`
+check is *not* part of the decision — CORS is a browser policy and `curl` walks
+through it; the KV license is the only thing that separates spend from no-spend.
+
+### Zero-cost guarantee
+
+Demo handlers (`worker/demo/handlers.js`) **never receive `env`**. The API keys
+live there, so a demo path cannot call a paid provider even by mistake — it has
+nothing to authenticate with. The guarantee is a property of the function
+signatures rather than of remembering to write an early return.
+
+```
+grep -rn "api\.\(openai\|anthropic\|deepgram\)\|env\." worker/demo/   # → empty
+```
+
+### Rate limiting
+
+Second layer, protecting the budget if a license key ever leaks. Real routes are
+limited by license (hashed) and by IP; demo traffic gets a loose anti-abuse limit.
+Bindings are configured in `worker/wrangler.toml` and every one of them is optional
+in code — unbound means "no limiting", never a runtime error.
+
+Two caveats worth knowing: the binding's `period` only accepts 10 or 60 seconds and
+its counters are **local to each Cloudflare location**, so it stops bursts rather
+than a slow global drain. The all-day ceiling is the `DAILY_CAP` counter, which
+needs the optional `RATE` KV namespace bound to take effect.
+
+### Enabling real mode
+
+1. Set the worker secrets: `wrangler secret put DEEPGRAM_API_KEY` (and
+   `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`)
+2. Make sure `DEMO_ONLY` is `"0"` in `worker/wrangler.toml` (or unset in the dashboard)
+3. Add a license key to the `physiq-licenses` KV namespace:
+   `<key-string>` → `{"clinic":"Nombre","active":true}`
+4. In the app, open the front screen → *¿Tienes una clave de activación?* → enter it
+
+Flipping `active` to `false` in KV drops every visitor back to demo instantly and
+with no deploy — KV holds data, not config, so deploys never touch it. `DEMO_ONLY=1`
+does the same globally, but it *is* config: `wrangler deploy` resets `[vars]` to the
+values in `wrangler.toml`, so set it there and push rather than in the dashboard.
+Sessions already open degrade gracefully:
+the user is told the license is no longer active and keeps working in demo, rather
+than being thrown back to a login wall.
+
+Fixtures live in `worker/demo/fixtures.js` (single fictional patient, shared across
+transcript, suggestions, chat and SOAP note).
+
 ## Copilot Worker (`worker/`)
 
 A Cloudflare Worker (`physiq-copilot`) powers the AI features used by physiq-report:
 
-- `/transcribe` — WebSocket proxy to Deepgram for real-time transcription
+- `/validate` — reports the run mode (`real` / `demo` / `mixed`), per route
+- `/transcribe` — WebSocket proxy to Deepgram for real-time transcription. In demo
+  mode the worker accepts the socket and replays a fixture in Deepgram's own
+  message format, discarding incoming audio frames unbuffered — so the client needs
+  no demo-specific code, and the visitor's audio never leaves their browser
 - `/suggest` — RAG-backed clinical suggestions: embeds the transcript excerpt with OpenAI `text-embedding-3-small`, retrieves matching chunks from Supabase pgvector, and asks Claude for a typed suggestion (`redflag | followup | differential | test`)
+- `/chat` — conversational reply, SSE-streamed. The demo path reproduces the same
+  incremental stream, paced to the rate the real model streams at
 - `/notes` — structured clinical note generation
+
+> Deployment note: the worker is no longer a single file (`worker/demo/` is bundled
+> at deploy time), so pasting `physiq-copilot.js` into the dashboard editor is no
+> longer a valid fallback. Deploy with `wrangler deploy`; the GitHub Action does
+> this automatically on every push to `main` that touches `worker/**`.
 
 ### Knowledge base
 

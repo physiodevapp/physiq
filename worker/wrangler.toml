@@ -6,6 +6,73 @@ compatibility_date = "2025-01-01"
 # Overridden in production via `wrangler deploy --var` or dashboard env vars
 ALLOWED_ORIGIN = "https://physiodevapp.github.io"
 
+# Budget kill switch: "1" forces every request into demo mode regardless of
+# license, cutting spend to zero.
+#
+# ⚠ This file is the source of truth for [vars], exactly as it is for bindings:
+# `wrangler deploy` resets anything set in the dashboard back to the values here.
+# So flip it by editing this line and pushing (CI redeploys in ~1 min); a
+# dashboard override works, but only until the next deploy.
+# For an instant, deploy-free cut, revoke the license in KV instead — KV holds
+# data, not config, so deploys never touch it.
+DEMO_ONLY = "0"
+
+# Per-IP cap of real (paid) requests per day. Only enforced while the optional
+# RATE KV namespace is bound; see below.
+DAILY_CAP = "200"
+
+# ── Rate limiting ────────────────────────────────────────────────────────────
+# Sliding windows at the edge. Requires wrangler ≥ 4.36.0.
+#
+# Two properties to keep in mind when reading the limits below:
+#   · `simple.period` only accepts 10 or 60 seconds. These stop bursts; the
+#     all-day budget ceiling is the KV counter guarded by DAILY_CAP.
+#   · Counters are local to each Cloudflare location, so the effective global
+#     limit is (limit × number of locations the traffic hits). Sized on the
+#     assumption that a single abuser lands in one or two locations.
+#
+# Keys are the license (hashed) when there is one, IP otherwise — see the
+# rationale in physiq-copilot.js. Every binding is optional in code: unbound
+# means "no limiting", never a runtime error.
+#
+# namespace_id is an arbitrary per-worker integer, not an account resource, but
+# two bindings sharing one namespace_id share counters — hence three distinct ids.
+
+# /transcribe — the most expensive route (Deepgram bills by connected minute).
+[[ratelimits]]
+name         = "RL_STT"
+namespace_id = "1001"
+simple       = { limit = 6, period = 60 }
+
+# /suggest, /chat, /notes — Anthropic tokens + OpenAI embeddings per call.
+# 30/min is well above real clinical use: /suggest fires at most every few
+# utterances, and a physio asks the chat a handful of questions per session.
+[[ratelimits]]
+name         = "RL_AI"
+namespace_id = "1002"
+simple       = { limit = 30, period = 60 }
+
+# Demo traffic costs nothing, so this is anti-abuse only: keeps a scripted
+# visitor from burning worker CPU. Deliberately loose.
+[[ratelimits]]
+name         = "RL_DEMO"
+namespace_id = "1003"
+simple       = { limit = 120, period = 60 }
+
+# Per-IP ceiling across all real routes. Loose on purpose: a whole clinic can
+# share one NAT address, and locking out paying users to save pennies is the
+# wrong trade. It exists to catch one host cycling through license keys.
+[[ratelimits]]
+name         = "RL_IP"
+namespace_id = "1004"
+simple       = { limit = 60, period = 60 }
+
+# Optional KV namespace for the daily budget cap (keys `rl:<date>:<ip>`, TTL 25h).
+# Create with `wrangler kv namespace create physiq-rate` and uncomment:
+# [[kv_namespaces]]
+# binding = "RATE"
+# id      = "<namespace id>"
+
 # KV Namespace — declared here so `wrangler deploy` keeps the binding attached.
 # (wrangler.toml is the source of truth: a binding not listed here is removed on deploy.)
 #   Key format in KV:  <license-key-string>  →  {"clinic":"Nombre Clínica","active":true}

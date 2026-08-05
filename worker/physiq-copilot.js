@@ -1,22 +1,35 @@
-// physiq-copilot — single-file Cloudflare Worker (paste into dashboard editor)
+// physiq-copilot — Cloudflare Worker (deploy with `wrangler deploy`)
 // Endpoints:
-//   GET  /validate    — license key check
+//   GET  /validate    — mode check (real | demo), per route
 //   GET  /transcribe  — WebSocket proxy to Deepgram Nova-3
 //   POST /suggest     — RAG-backed clinical suggestion (embed → pgvector → Claude)
 //   POST /chat        — RAG-backed conversational reply, SSE-streamed (embed → pgvector → Claude)
 //   POST /notes       — SOAP note generation (transcript + session → Claude)
 //
+// ⚠ No longer a single file: worker/demo/ is bundled at deploy time, so pasting
+// this file alone into the dashboard editor is no longer a valid fallback. Use
+// `wrangler deploy` (the GitHub Action does this on every push to main).
+//
 // Secrets to set in Dashboard → Worker → Settings → Variables → Add secret:
 //   DEEPGRAM_API_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY,
 //   SUPABASE_URL, SUPABASE_ANON_KEY
 //
-// Variable (plain text, not secret):
+// Variables (plain text, not secret):
 //   ALLOWED_ORIGIN = https://physiodevapp.github.io
+//   DEMO_ONLY      = "1" forces every request into demo mode (budget kill switch)
+//   DAILY_CAP      = per-IP cap of real (paid) requests per day; default 200
 //
 // KV Namespace binding (Dashboard → Worker → Settings → Bindings):
 //   Variable name: LICENSES  →  KV namespace: physiq-licenses
 //   Key format:  <license-key-string>  →  {"clinic":"Nombre","active":true}
-//   While LICENSES is unbound the worker runs without license checks (dev passthrough).
+//   While LICENSES is unbound the worker serves demo mode (fail-closed) except
+//   on localhost, where it assumes a developer with .dev.vars.
+//
+// Optional bindings (all degrade to "no limiting" when absent):
+//   RL_STT, RL_AI, RL_DEMO — Workers rate limiting bindings (see wrangler.toml)
+//   RATE                   — KV namespace for the per-IP daily budget cap
+
+import { handleDemo } from './demo/handlers.js';
 
 // ── CORS ────────────────────────────────────────────────────────────────
 
@@ -24,6 +37,8 @@ const CORS = origin => ({
   'Access-Control-Allow-Origin':  origin,
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, X-License-Key',
+  // The client reads the mode off every response to render the DEMO badge.
+  'Access-Control-Expose-Headers': 'X-PhysiQ-Mode',
   'Vary': 'Origin',
 });
 
@@ -33,8 +48,24 @@ function trusted(origin, allowed) {
     || origin.startsWith('http://127.0.0.1');
 }
 
+// Only for CORS. Allowing a localhost Origin is harmless: CORS is a browser
+// policy, and this lets a locally-served front end talk to the deployed worker.
 function isLocalDev(origin) {
   return origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+}
+
+// For the licence bypass, and NOT interchangeable with the above.
+//
+// `Origin` is a request header the client controls: outside a browser,
+// `curl -H 'Origin: http://localhost'` forges it in a second. Keying the dev
+// bypass off it meant one spoofed header granted real mode with no licence —
+// free Deepgram, OpenAI and Anthropic on the project's budget.
+//
+// The worker's own hostname cannot be forged by the caller: under `wrangler dev`
+// it is localhost, in production it is the workers.dev subdomain. That is the
+// signal that actually means "a developer is running this locally".
+function isLocalWorker(url) {
+  return url.hostname === 'localhost' || url.hostname === '127.0.0.1';
 }
 
 // ── RAG region adjacency ─────────────────────────────────────────────────────────
@@ -223,29 +254,128 @@ function fmtKinematics(kinematics) {
   return lines.join('\n');
 }
 
-async function checkLicense(request, env, origin) {
-  if (isLocalDev(origin)) return null;   // dev bypass
-  if (!env.LICENSES) return null;        // KV not bound yet — passthrough
+// ── Mode resolution ─────────────────────────────────────────────────────────
+//
+// The single authority on real vs demo. It runs in the router, before any
+// handler is reached, and it is fail-closed: 'real' requires EVERY condition
+// below to hold, anything else degrades to 'demo'.
+//
+// Why here and not inside each handler: with the decision at the edge, the
+// guarantee is "there is exactly one entry point to the paid handlers" —
+// checkable at a glance and stable when routes are added later. Scattered
+// `if (demo)` guards would make it "we didn't forget one", which has to be
+// re-verified on every future change.
+//
+// Note what is NOT part of the decision: the Origin header. The worker does
+// reject foreign origins with 403, but CORS is a browser policy — `curl -H
+// 'Origin: …'` walks straight through it. The only thing separating spend from
+// no-spend is the KV license, which is why it is the only thing consulted here.
 
-  const url = new URL(request.url);
-  // WebSocket (/transcribe) can't send custom headers — key arrives as ?key= query param
+// Which secrets a route genuinely needs to run for real. Missing any of them
+// means the real handler would fail anyway, so the route serves demo instead of
+// a 502. Side effect worth having: a fork deployed with no secrets at all comes
+// up as a fully working demo, and partial configuration degrades per route.
+const ROUTE_SECRETS = {
+  '/transcribe': ['DEEPGRAM_API_KEY'],
+  '/suggest':    ['OPENAI_API_KEY', 'ANTHROPIC_API_KEY'],
+  '/chat':       ['ANTHROPIC_API_KEY'],   // OpenAI/Supabase optional — chat degrades without RAG
+  '/notes':      ['ANTHROPIC_API_KEY'],
+  '/validate':   [],
+};
+
+// One KV read per request, shared by every route decision below.
+// Returns the key too — the rate limiter uses it as its primary identity.
+async function licenseState(request, url, env) {
+  // WebSocket (/transcribe) can't send custom headers — key arrives as ?key=
   const key = request.headers.get('X-License-Key') || url.searchParams.get('key') || '';
-  if (!key) return new Response(JSON.stringify({ error: 'license_required' }), {
-    status: 401, headers: { 'Content-Type': 'application/json' },
-  });
+
+  if (isLocalWorker(url)) return { licensed: true, key };    // `wrangler dev` with .dev.vars
+  if (!env.LICENSES)      return { licensed: false, key };   // KV unbound in prod → fail closed to demo
+  if (!key)               return { licensed: false, key: '' };
 
   const entry = await env.LICENSES.get(key, { type: 'json' });
-  if (!entry || entry.active === false) return new Response(JSON.stringify({ error: 'license_invalid' }), {
-    status: 401, headers: { 'Content-Type': 'application/json' },
-  });
+  return { licensed: !!entry && entry.active !== false, key };
+}
 
-  return null;
+function modeFor(env, pathname, licensed) {
+  if (env.DEMO_ONLY === '1' || env.DEMO_ONLY === 'true') return 'demo';   // budget kill switch
+  if (!licensed) return 'demo';
+  const needed = ROUTE_SECRETS[pathname] ?? [];
+  if (needed.some(name => !env[name])) return 'demo';
+  return 'real';
+}
+
+// ── Rate limiting ───────────────────────────────────────────────────────────
+//
+// Second layer, on top of mode resolution. Demo costs nothing, so the budget
+// does not depend on this — but a leaked license key would, and this is what
+// contains the damage until the key is revoked in KV.
+//
+// Two identities, because they fail differently:
+//   · License key — the identity Cloudflare's own guidance recommends (stable,
+//     one actor). In real mode there is always one: having a valid key is what
+//     *defines* real mode. This is the per-license budget guard, and it holds
+//     even if the key is shared across many machines.
+//   · IP — required by design here even though the docs warn against it (NAT,
+//     mobile carriers and privacy proxies share IPs). It catches the reverse
+//     case: one host cycling through keys. Kept deliberately loose so a clinic
+//     behind a single NAT is not locked out.
+//
+// Two tiers, because they fail on different timescales:
+//   · Rate limiting binding — sliding window at the edge, no KV writes and no
+//     added latency. `period` only accepts 10 or 60 s, and counters are LOCAL
+//     TO EACH CLOUDFLARE LOCATION, so this stops bursts, not a slow global drain.
+//   · KV daily counter — the actual budget ceiling, global but eventually
+//     consistent, so a distributed attacker can overshoot a little.
+// Every binding is optional: unbound means "no limiting", never a 500.
+async function rateLimited(request, env, pathname, mode, licenseKey) {
+  const ip    = request.headers.get('CF-Connecting-IP') || 'unknown';
+  // Never use the raw key as a limiter key: those strings end up in logs and
+  // analytics, and the license is a bearer secret.
+  const actor = licenseKey ? `lic:${fnv1a(licenseKey)}` : `ip:${ip}`;
+
+  const limiter = mode === 'demo'
+    ? env.RL_DEMO
+    : (pathname === '/transcribe' ? env.RL_STT : env.RL_AI);
+  if (limiter) {
+    const { success } = await limiter.limit({ key: `${pathname}:${actor}` });
+    if (!success) return true;
+  }
+
+  if (mode !== 'real') return false;
+
+  if (env.RL_IP) {
+    const { success } = await env.RL_IP.limit({ key: `ip:${ip}` });
+    if (!success) return true;
+  }
+
+  // Daily budget ceiling — only guards real (paid) traffic.
+  if (!env.RATE) return false;
+  const cap = parseInt(env.DAILY_CAP || '200', 10);
+  const day = new Date().toISOString().slice(0, 10);
+  const k   = `rl:${day}:${actor}`;
+  const n   = parseInt(await env.RATE.get(k) || '0', 10);
+  if (n >= cap) return true;
+  // TTL 25h: the key expires on its own, no cleanup job needed.
+  await env.RATE.put(k, String(n + 1), { expirationTtl: 90000 });
+  return false;
+}
+
+// FNV-1a — stable, dependency-free, used only to avoid putting the license key
+// itself into rate-limit keys.
+function fnv1a(str) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(36);
 }
 
 // ── Router ──────────────────────────────────────────────────────────────
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url     = new URL(request.url);
     const origin  = request.headers.get('Origin') || '';
     const allowed = env.ALLOWED_ORIGIN || 'https://physiodevapp.github.io';
@@ -257,11 +387,26 @@ export default {
 
     if (!ok) return new Response('Forbidden', { status: 403 });
 
-    const licenseErr = await checkLicense(request, env, origin);
-    if (licenseErr) {
-      const h = new Headers(licenseErr.headers);
-      for (const [k, v] of Object.entries(CORS(origin))) h.set(k, v);
-      return new Response(licenseErr.body, { status: licenseErr.status, headers: h });
+    const { licensed, key } = await licenseState(request, url, env);
+    const mode = modeFor(env, url.pathname, licensed);
+
+    if (await rateLimited(request, env, url.pathname, mode, licensed ? key : '')) {
+      // WebSocket clients can't read a 429 body, but the close code is enough
+      // for lib/copilot.js to surface "límite alcanzado".
+      const h = new Headers(CORS(origin));
+      h.set('Content-Type', 'application/json');
+      h.set('Retry-After', '60');
+      h.set('X-PhysiQ-Mode', mode);
+      return new Response(JSON.stringify({ error: 'rate_limited', retryAfter: 60 }), { status: 429, headers: h });
+    }
+
+    // ── The fork. Everything below the `demo` branch runs without `env`, so no
+    // demo path can reach a paid API even by mistake — it has no credentials to
+    // authenticate with. See worker/demo/handlers.js.
+    if (mode === 'demo') {
+      const resp = handleDemo(request, url, ctx);
+      if (url.pathname === '/transcribe') return resp;   // 101 — headers are fixed
+      return withMode(await resp, origin, mode);
     }
 
     // WebSocket — returned directly (no CORS wrapping needed for WS)
@@ -269,7 +414,7 @@ export default {
 
     let resp;
     if (url.pathname === '/validate' && request.method === 'GET') {
-      resp = new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      resp = await handleValidate(env, licensed);
     } else if (url.pathname === '/suggest' && request.method === 'POST') {
       resp = await handleSuggest(request, env);
     } else if (url.pathname === '/chat' && request.method === 'POST') {
@@ -280,11 +425,39 @@ export default {
       return new Response('Not found', { status: 404 });
     }
 
-    const headers = new Headers(resp.headers);
-    for (const [k, v] of Object.entries(CORS(origin))) headers.set(k, v);
-    return new Response(resp.body, { status: resp.status, statusText: resp.statusText, headers });
+    return withMode(resp, origin, mode);
   },
 };
+
+function withMode(resp, origin, mode) {
+  const headers = new Headers(resp.headers);
+  for (const [k, v] of Object.entries(CORS(origin))) headers.set(k, v);
+  headers.set('X-PhysiQ-Mode', mode);
+  return new Response(resp.body, { status: resp.status, statusText: resp.statusText, headers });
+}
+
+// ── /validate — what mode is this visitor actually getting? ─────────────────
+//
+// Reports the mode per route, because secrets are configured per provider: with
+// only ANTHROPIC_API_KEY set, chat is real while transcription is demo. The
+// client renders the badge off `mode` and can label each feature off `routes`.
+//
+// Deliberately never says *why* it is demo. Distinguishing "no key" from
+// "invalid key" would hand a brute-forcer exactly the oracle it needs; a client
+// that sent a key and got `demo` back already knows its key is not valid.
+async function handleValidate(env, licensed) {
+  const routes = {};
+  for (const path of ['/transcribe', '/suggest', '/chat', '/notes']) {
+    routes[path.slice(1)] = modeFor(env, path, licensed);
+  }
+  const values = Object.values(routes);
+  const mode = values.every(m => m === 'real') ? 'real'
+             : values.every(m => m === 'demo') ? 'demo'
+             : 'mixed';
+  return new Response(JSON.stringify({ ok: true, mode, routes }), {
+    status: 200, headers: { 'Content-Type': 'application/json' },
+  });
+}
 
 // ── /transcribe — Deepgram WebSocket proxy ──────────────────────────────────
 

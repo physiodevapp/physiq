@@ -413,9 +413,31 @@ Requires two repo secrets (Settings → Secrets and variables → Actions):
 
 The Worker's own runtime secrets (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, `SUPABASE_*`) are set in the Cloudflare dashboard and are preserved by `wrangler deploy` — they are not managed by CI.
 
-Manual fallback (if CI is unavailable):
-- Dashboard: Workers & Pages → physiq-copilot → Edit code → paste file contents → Deploy
-- CLI: `wrangler deploy` from the `worker/` directory
+Manual fallback (if CI is unavailable): `wrangler deploy` from the `worker/` directory.
+
+⚠ Pasting `physiq-copilot.js` into the dashboard editor is **no longer valid**: the
+worker imports `worker/demo/` and is bundled at deploy time. Use `wrangler deploy`.
+
+## Demo mode
+
+The worker serves fixtures instead of calling paid APIs whenever it cannot verify a
+license. Full rationale in README → "Demo mode"; the rules that matter when editing
+this repo:
+
+- **The mode is decided in `fetch()`**, by `modeFor()` in `worker/physiq-copilot.js`,
+  before any handler runs. Fail-closed: `real` needs no `DEMO_ONLY`, a valid key in
+  the `LICENSES` KV *and* the secrets that route uses. Adding a route means adding its
+  entry to `ROUTE_SECRETS` and a branch in `handleDemo`.
+- **`worker/demo/handlers.js` must never receive `env`.** That is the zero-cost
+  guarantee: without `env` there are no API keys to authenticate a paid call with.
+  Do not "simplify" by passing `env` through, and do not import anything into that
+  module other than `fixtures.js`.
+- **The client never decides the mode.** It reads `X-PhysiQ-Mode` / `GET /validate`
+  and renders a badge. Never add a client-controlled flag that the worker trusts.
+- Fixtures (`worker/demo/fixtures.js`) all describe the same fictional patient. Keep
+  new fixtures consistent with that case, and keep demo answers labelled as demo —
+  the chat bubble carries a `.cop-chat-demo` note rather than passing fixtures off
+  as model output.
 
 ## Conversational copilot (`/chat`)
 
