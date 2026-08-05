@@ -6,9 +6,15 @@ compatibility_date = "2025-01-01"
 # Overridden in production via `wrangler deploy --var` or dashboard env vars
 ALLOWED_ORIGIN = "https://physiodevapp.github.io"
 
-# Budget kill switch: set to "1" (dashboard variable, no deploy needed) to force
-# every request into demo mode regardless of license. Cuts spend to zero without
-# touching KV or shipping code.
+# Budget kill switch: "1" forces every request into demo mode regardless of
+# license, cutting spend to zero.
+#
+# ⚠ This file is the source of truth for [vars], exactly as it is for bindings:
+# `wrangler deploy` resets anything set in the dashboard back to the values here.
+# So flip it by editing this line and pushing (CI redeploys in ~1 min); a
+# dashboard override works, but only until the next deploy.
+# For an instant, deploy-free cut, revoke the license in KV instead — KV holds
+# data, not config, so deploys never touch it.
 DEMO_ONLY = "0"
 
 # Per-IP cap of real (paid) requests per day. Only enforced while the optional

@@ -150,7 +150,7 @@ any handler and is fail-closed — `real` requires *all* of:
 
 | Condition | Otherwise |
 |---|---|
-| `DEMO_ONLY` variable is not set | demo (budget kill switch, no deploy needed) |
+| `DEMO_ONLY` variable is not set | demo (budget kill switch) |
 | An `X-License-Key` is present (or `?key=` for the WebSocket) | demo |
 | That key exists in the `LICENSES` KV namespace with `active !== false` | demo |
 | The secrets that route needs are configured | demo |
@@ -198,8 +198,11 @@ needs the optional `RATE` KV namespace bound to take effect.
    `<key-string>` → `{"clinic":"Nombre","active":true}`
 4. In the app, open the front screen → *¿Tienes una clave de activación?* → enter it
 
-Flipping `active` to `false` in KV — or setting `DEMO_ONLY=1` — drops every visitor
-back to demo instantly, with no deploy. Sessions already open degrade gracefully:
+Flipping `active` to `false` in KV drops every visitor back to demo instantly and
+with no deploy — KV holds data, not config, so deploys never touch it. `DEMO_ONLY=1`
+does the same globally, but it *is* config: `wrangler deploy` resets `[vars]` to the
+values in `wrangler.toml`, so set it there and push rather than in the dashboard.
+Sessions already open degrade gracefully:
 the user is told the license is no longer active and keeps working in demo, rather
 than being thrown back to a login wall.
 
