@@ -1459,29 +1459,45 @@
     /* Indicador persistente en la cabecera. Siempre visible mientras el modo
        sea demo: un visitante que entre directo al copiloto tiene que poder
        saber en todo momento que lo que lee es material precargado. */
+    /* Chip de modo. Anuncia los tres estados, no solo demo: si únicamente se
+       pintara en demo, su ausencia significaría a la vez "tengo licencia",
+       "el worker no responde" y "el JS ha fallado" — tres cosas distintas con
+       el mismo aspecto. El color hace el trabajo: ámbar demo, verde licencia,
+       gris sin verificar. */
     #demoChip {
       display: inline-flex; align-items: center; gap: 5px;
       height: 30px; padding: 0 10px;
       border-radius: 999px;
-      border: 1px solid rgba(242,179,61,0.35);
-      background: rgba(242,179,61,0.1);
-      color: #f2b33d;
+      border: 1px solid rgba(var(--chip-rgb), 0.35);
+      background: rgba(var(--chip-rgb), 0.1);
+      color: rgb(var(--chip-rgb));
       font-family: 'DM Mono', monospace; font-size: 0.68rem;
       letter-spacing: 0.09em; text-transform: uppercase;
       cursor: pointer; transition: background 0.15s, border-color 0.15s;
+      --chip-rgb: 242,179,61;                      /* demo (por defecto) */
     }
-    #demoChip:hover { background: rgba(242,179,61,0.18); border-color: rgba(242,179,61,0.55); }
+    #demoChip[data-mode="real"]    { --chip-rgb: 74,190,140; }
+    #demoChip[data-mode="unknown"] { --chip-rgb: 138,164,188; }
+    #demoChip:hover { background: rgba(var(--chip-rgb), 0.18); border-color: rgba(var(--chip-rgb), 0.55); }
     #demoChip[hidden] { display: none; }
     #demoChip .demo-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: #f2b33d; flex: none;
+      background: rgb(var(--chip-rgb)); flex: none;
     }
 
     /* Bloque explicativo dentro del panel "Servicios externos": es el sitio
        temático correcto — la explicación aparece justo encima de la lista de
        APIs que el modo demo está evitando llamar. */
-    #demo-note { display: none; }
+    #demo-note, #mode-note-unknown { display: none; }
     #apis-overlay.demo-on #demo-note { display: block; }
+    #apis-overlay.mode-unknown #mode-note-unknown { display: block; }
+    /* El aviso de "sin verificar" es un estado de error, no informativo: gris
+       en vez del ámbar del demo, para que no se lea como "estás en demo". */
+    #mode-note-unknown .demo-note-box {
+      border-color: rgba(138,164,188,0.28);
+      background: rgba(138,164,188,0.07);
+    }
+    #mode-note-unknown .demo-note-title { color: #8aa4bc; }
     .demo-note-box {
       border: 1px solid rgba(242,179,61,0.28);
       background: rgba(242,179,61,0.07);
@@ -1547,8 +1563,8 @@
   <header>
     <h1>Physi<span>Q</span></h1>
     <div class="hdr-actions">
-      <button id="demoChip" onclick="showApisPanel()" title="Estás en modo demo — toca para saber por qué" aria-label="Modo demo activo" hidden>
-        <span class="demo-dot"></span>Demo
+      <button id="demoChip" onclick="showApisPanel()" data-mode="demo" title="Estás en modo demo — toca para saber por qué" aria-label="Modo demo activo" hidden>
+        <span class="demo-dot"></span><span id="demoChipLabel">Demo</span>
       </button>
       <button id="apisBtn" class="peer-hdr-btn" onclick="toggleApisPanel()" title="Servicios externos" aria-label="Servicios externos">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1997,6 +2013,24 @@
             Código del proyecto
           </a>
           <button class="demo-note-link" onclick="_actReopen()">Tengo una clave</button>
+        </div>
+      </div>
+    </div>
+    <div id="mode-note-unknown">
+      <div class="demo-note-box">
+        <div class="demo-note-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          Modo sin verificar
+        </div>
+        <div class="demo-note-body">
+          No se ha podido preguntar al servidor en qué modo estás: puede estar caído,
+          o tu red o un bloqueador están impidiendo la conexión. <strong>Las funciones
+          de IA no responderán</strong> hasta que se restablezca.
+          <br><br>
+          Todo lo que se calcula en el dispositivo —ROM, fuerza, equilibrio, salto,
+          cuestionarios, cinemática— <strong>sigue funcionando</strong>.
         </div>
       </div>
     </div>
@@ -3429,9 +3463,29 @@ function _modeApply(info, opts = {}) {
 
   const isDemo = m.mode === 'demo' || m.mode === 'mixed';
   document.body.classList.toggle('physiq-demo', isDemo);
-  document.getElementById('demoChip')?.toggleAttribute('hidden', !isDemo);
   document.getElementById('apis-overlay')?.classList.toggle('demo-on', isDemo);
   document.getElementById('demo-note-stale')?.toggleAttribute('hidden', !m.staleLicense);
+
+  // El chip anuncia los tres estados. `unknown` (el worker no contestó) es el
+  // que importa distinguir: antes se pintaba igual que `real` — sin nada —, así
+  // que "no hay chip" no permitía saber si tenías licencia o si el servicio
+  // estaba caído.
+  const state = isDemo ? 'demo' : (m.mode === 'real' ? 'real' : 'unknown');
+  const chip  = document.getElementById('demoChip');
+  if (chip) {
+    const COPY = {
+      demo:    ['Demo',          'Estás en modo demo — toca para saber por qué'],
+      real:    ['Licencia',      'Licencia activa: las funciones de IA llaman a los servicios reales'],
+      unknown: ['Sin verificar', 'No se ha podido comprobar el modo — el servidor no responde'],
+    };
+    const [label, title] = COPY[state];
+    chip.dataset.mode = state;
+    chip.hidden = false;
+    document.getElementById('demoChipLabel').textContent = label;
+    chip.title = title;
+    chip.setAttribute('aria-label', title);
+  }
+  document.getElementById('apis-overlay')?.classList.toggle('mode-unknown', state === 'unknown');
 
   // Los satélites en iframe y lib/copilot.js reaccionan a esto para etiquetar
   // sus propias vistas sin volver a preguntar al worker.
