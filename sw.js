@@ -1,4 +1,4 @@
-const CACHE_NAME = 'physiq-hub-v19';
+const CACHE_NAME = 'physiq-hub-v20';
 
 const HUB_SHELL = [
   '/physiq/',
