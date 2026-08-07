@@ -1494,9 +1494,15 @@
     /* Bloque explicativo dentro del panel "Servicios externos": es el sitio
        temático correcto — la explicación aparece justo encima de la lista de
        APIs que el modo demo está evitando llamar. */
-    #demo-note, #mode-note-unknown { display: none; }
+    #demo-note, #mode-note-unknown, #mode-note-real { display: none; }
     #apis-overlay.demo-on #demo-note { display: block; }
     #apis-overlay.mode-unknown #mode-note-unknown { display: block; }
+    #apis-overlay.mode-real #mode-note-real { display: block; }
+    #mode-note-real .demo-note-box {
+      border-color: rgba(74,190,140,0.28);
+      background: rgba(74,190,140,0.07);
+    }
+    #mode-note-real .demo-note-title { color: #4abe8c; }
     /* El aviso de "sin verificar" es un estado de error, no informativo: gris
        en vez del ámbar del demo, para que no se lea como "estás en demo". */
     #mode-note-unknown .demo-note-box {
@@ -2019,6 +2025,24 @@
             Código del proyecto
           </a>
           <button class="demo-note-link" onclick="_actReopen()">Tengo una clave</button>
+        </div>
+      </div>
+    </div>
+    <div id="mode-note-real">
+      <div class="demo-note-box">
+        <div class="demo-note-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/>
+          </svg>
+          Licencia activa
+        </div>
+        <div class="demo-note-body">
+          Las funciones de IA de este dispositivo <strong>llaman a los servicios reales</strong>
+          de la lista de abajo, con su coste correspondiente. La clave se guarda en este
+          navegador; en cualquier otro se entra en modo demo.
+        </div>
+        <div class="demo-note-links">
+          <button class="demo-note-link" onclick="_modeRevokeLicense()">Volver a modo demo</button>
         </div>
       </div>
     </div>
@@ -3505,7 +3529,13 @@ function _modeApply(info, opts = {}) {
   // estaba caído.
   _chipState = isDemo ? 'demo' : (m.mode === 'real' ? 'real' : 'unknown');
   _paintModeChip();
-  document.getElementById('apis-overlay')?.classList.toggle('mode-unknown', _chipState === 'unknown');
+  // El panel es el destino del chip en los tres estados, así que en los tres
+  // tiene que decir algo propio. Sin esto, en modo real el chip abría el mismo
+  // panel que el botón de al lado y sin ninguna diferencia: dos controles
+  // distintos con el mismo efecto.
+  const ov = document.getElementById('apis-overlay');
+  ov?.classList.toggle('mode-unknown', _chipState === 'unknown');
+  ov?.classList.toggle('mode-real',    _chipState === 'real');
 
   // Los satélites en iframe y lib/copilot.js reaccionan a esto para etiquetar
   // sus propias vistas sin volver a preguntar al worker.
@@ -3524,6 +3554,16 @@ window._physiqSetMode = async function (headerMode) {
   const info = await _modeFetch(stored);
   _modeApply(info || { mode: 'demo', routes: {} }, { storedKey: !!stored });
 };
+
+// Salir del modo real en este dispositivo. No es una operación delicada —la
+// clave se puede volver a introducir desde "Tengo una clave"—, pero sí es la
+// única forma de ver la app como la ve un visitante sin abrir una ventana de
+// incógnito, que es justo lo que hace falta para revisar la demo.
+async function _modeRevokeLicense() {
+  localStorage.removeItem('physiq-license-key');
+  const info = await _modeFetch('');
+  _modeApply(info || { mode: 'demo', routes: {} }, { storedKey: false });
+}
 
 // ── Portada / activación ──────────────────────────────────────────────────────
 function _actDismiss() {
