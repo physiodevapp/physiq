@@ -1480,6 +1480,12 @@
     #demoChip[data-mode="unknown"] { --chip-rgb: 138,164,188; }
     #demoChip:hover { background: rgba(var(--chip-rgb), 0.18); border-color: rgba(var(--chip-rgb), 0.55); }
     #demoChip[hidden] { display: none; }
+    @media (max-width: 460px) {
+      #demoChip { height: 28px; padding: 0 8px; font-size: 0.63rem; letter-spacing: 0.06em; }
+      /* Sin etiqueta (licencia): pastilla circular, para que no parezca un chip
+         recortado sino un indicador propio. */
+      #demoChip.chip-dot-only { width: 28px; padding: 0; justify-content: center; gap: 0; }
+    }
     #demoChip .demo-dot {
       width: 6px; height: 6px; border-radius: 50%;
       background: rgb(var(--chip-rgb)); flex: none;
@@ -3451,6 +3457,33 @@ async function _modeFetch(key) {
   }
 }
 
+// El chip comparte cabecera con el logo y tres botones redondos. En móvil no
+// caben dos palabras largas, así que cada estado tiene una etiqueta corta:
+// `real` se queda en el punto verde a secas —es el estado permanente y el que
+// menos hay que explicar— y `unknown` se acorta. El title y el aria-label
+// siguen llevando el texto completo, así que no se pierde información.
+const _CHIP_COPY = {
+  demo:    ['Demo',          'Demo',      'Estás en modo demo — toca para saber por qué'],
+  real:    ['Licencia',      '',          'Licencia activa: las funciones de IA llaman a los servicios reales'],
+  unknown: ['Sin verificar', 'Sin señal', 'No se ha podido comprobar el modo — el servidor no responde'],
+};
+let _chipState = null;
+const _chipNarrow = window.matchMedia('(max-width: 460px)');
+
+function _paintModeChip() {
+  const chip = document.getElementById('demoChip');
+  if (!chip || !_chipState) return;
+  const [long, short, title] = _CHIP_COPY[_chipState];
+  const label = _chipNarrow.matches ? short : long;
+  chip.dataset.mode = _chipState;
+  chip.hidden = false;
+  chip.classList.toggle('chip-dot-only', !label);
+  document.getElementById('demoChipLabel').textContent = label;
+  chip.title = title;
+  chip.setAttribute('aria-label', title);
+}
+_chipNarrow.addEventListener('change', _paintModeChip);
+
 function _modeApply(info, opts = {}) {
   const m = window.PHYSIQ_MODE;
   m.mode     = info?.mode || 'unknown';
@@ -3470,22 +3503,9 @@ function _modeApply(info, opts = {}) {
   // que importa distinguir: antes se pintaba igual que `real` — sin nada —, así
   // que "no hay chip" no permitía saber si tenías licencia o si el servicio
   // estaba caído.
-  const state = isDemo ? 'demo' : (m.mode === 'real' ? 'real' : 'unknown');
-  const chip  = document.getElementById('demoChip');
-  if (chip) {
-    const COPY = {
-      demo:    ['Demo',          'Estás en modo demo — toca para saber por qué'],
-      real:    ['Licencia',      'Licencia activa: las funciones de IA llaman a los servicios reales'],
-      unknown: ['Sin verificar', 'No se ha podido comprobar el modo — el servidor no responde'],
-    };
-    const [label, title] = COPY[state];
-    chip.dataset.mode = state;
-    chip.hidden = false;
-    document.getElementById('demoChipLabel').textContent = label;
-    chip.title = title;
-    chip.setAttribute('aria-label', title);
-  }
-  document.getElementById('apis-overlay')?.classList.toggle('mode-unknown', state === 'unknown');
+  _chipState = isDemo ? 'demo' : (m.mode === 'real' ? 'real' : 'unknown');
+  _paintModeChip();
+  document.getElementById('apis-overlay')?.classList.toggle('mode-unknown', _chipState === 'unknown');
 
   // Los satélites en iframe y lib/copilot.js reaccionan a esto para etiquetar
   // sus propias vistas sin volver a preguntar al worker.
