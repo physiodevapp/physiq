@@ -8,12 +8,12 @@
 // ⚠ Paciente ficticio. El caso es clínicamente verosímil pero inventado: no
 // procede de ninguna consulta real ni contiene datos de ninguna persona.
 //
-// Todas las piezas cuentan LA MISMA historia clínica (Elena R., lumbalgia con
+// Todas las piezas cuentan LA MISMA historia clínica (Nuria V., lumbalgia con
 // irradiación L5 izquierda). Un demo en el que cada pantalla habla de un
 // paciente distinto se nota de inmediato.
 
 export const DEMO_CASE = {
-  patient:      'Elena R. (paciente demo)',
+  patient:      'Nuria V. (paciente demo)',
   age:          43,
   date:         '12/03/2025',
   region:       'lumbar',
@@ -30,7 +30,7 @@ export const DEMO_CASE = {
 // algo real que corregir con copilotToggleLineSpeaker / copilotSwapAllSpeakers
 // en la pestaña Transcripción, en lugar de un transcript artificialmente limpio.
 export const DEMO_TRANSCRIPT = [
-  { speaker: 0, text: 'Buenos días Elena, cuéntame qué te trae por aquí.' },
+  { speaker: 0, text: 'Buenos días Nuria, cuéntame qué te trae por aquí.' },
   { speaker: 1, text: 'Pues llevo unas tres semanas con un dolor en la parte baja de la espalda que se me baja por la pierna izquierda.' },
   { speaker: 0, text: '¿Recuerdas cómo empezó? ¿Hubo algún gesto o alguna carga concreta?' },
   { speaker: 1, text: 'Sí, fue durante una mudanza. Cogí una caja pesada del suelo girando el cuerpo y noté un pinchazo fuerte en la zona lumbar.' },
