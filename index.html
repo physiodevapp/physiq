@@ -2809,10 +2809,30 @@ function peerSetRole(role) {
   else                    _peerShowStep('waiting');
 }
 
-function _peerApplyRoleIcon() {
-  const isSecondary = localStorage.getItem('physiq-device-role') === 'secondary';
-  document.getElementById('peerBtn')?.classList.toggle('peer-is-secondary', isSecondary);
+// El rol efectivo, esté guardado o no. Sin este respaldo el icono de la
+// cabecera salía mal en la primera carga de cualquier móvil: el rol solo se
+// detectaba al abrir el panel por primera vez, así que hasta entonces no había
+// nada en localStorage y el botón mostraba el icono de móvil —"conecta tu
+// teléfono"— justo en el teléfono.
+//
+// Deliberadamente NO persiste: escribir el rol antes de que el usuario haya
+// tocado nada convertiría una suposición por ancho de pantalla en una decisión
+// guardada. Quien decide sigue siendo el panel (o `peerSetRole`).
+function _peerRole() {
+  return localStorage.getItem('physiq-device-role')
+      || (window.innerWidth < 768 ? 'secondary' : 'primary');
 }
+
+function _peerApplyRoleIcon() {
+  document.getElementById('peerBtn')?.classList.toggle('peer-is-secondary', _peerRole() === 'secondary');
+}
+
+// Mientras el rol siga siendo una suposición, tiene que seguir al dispositivo:
+// una tableta girada cruza los 768 px y el icono debe acompañarla. En cuanto
+// hay rol guardado, esto no toca nada.
+window.addEventListener('resize', () => {
+  if (!localStorage.getItem('physiq-device-role')) _peerApplyRoleIcon();
+});
 
 function peerResetRole() {
   localStorage.removeItem('physiq-device-role');
