@@ -1466,7 +1466,7 @@
        gris sin verificar. */
     #demoChip {
       display: inline-flex; align-items: center; gap: 5px;
-      height: 30px; padding: 0 10px;
+      height: 40px; padding: 0 12px;   /* mismo alto que .peer-hdr-btn: la cabecera es una fila */
       border-radius: 999px;
       border: 1px solid rgba(var(--chip-rgb), 0.35);
       background: rgba(var(--chip-rgb), 0.1);
@@ -1481,10 +1481,10 @@
     #demoChip:hover { background: rgba(var(--chip-rgb), 0.18); border-color: rgba(var(--chip-rgb), 0.55); }
     #demoChip[hidden] { display: none; }
     @media (max-width: 460px) {
-      #demoChip { height: 28px; padding: 0 8px; font-size: 0.63rem; letter-spacing: 0.06em; }
-      /* Sin etiqueta (licencia): pastilla circular, para que no parezca un chip
-         recortado sino un indicador propio. */
-      #demoChip.chip-dot-only { width: 28px; padding: 0; justify-content: center; gap: 0; }
+      #demoChip { padding: 0 10px; font-size: 0.63rem; letter-spacing: 0.06em; }
+      /* Sin etiqueta (licencia): círculo del mismo tamaño que los botones
+         vecinos, para que no parezca un chip recortado sino un indicador propio. */
+      #demoChip.chip-dot-only { width: 40px; padding: 0; justify-content: center; gap: 0; }
     }
     #demoChip .demo-dot {
       width: 6px; height: 6px; border-radius: 50%;
