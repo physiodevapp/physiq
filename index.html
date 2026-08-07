@@ -2592,7 +2592,12 @@ function _lpArm(e, card) {
       _enterReorder();
       // Confirmación háptica: sin ella el gesto se siente como si no hubiera
       // pasado nada hasta que la vista cambia.
-      try { navigator.vibrate?.(12); } catch { /* no soportado */ }
+      //
+      // 35 ms, no 12: los motores lineales de los móviles actuales necesitan
+      // unas decenas de milisegundos para arrancar, y por debajo de ~20 ms el
+      // pulso no llega a notarse aunque la llamada tenga éxito. iOS no
+      // implementa la API en ningún navegador, así que allí no vibrará nunca.
+      try { navigator.vibrate?.(35); } catch { /* no soportado */ }
       _startDrag(card, x, y, pointerId);
     }, LP_MS),
   };
