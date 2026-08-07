@@ -1510,10 +1510,12 @@
          vecinos, para que no parezca un chip recortado sino un indicador propio. */
       #demoChip.chip-dot-only { width: 40px; padding: 0; justify-content: center; gap: 0; }
     }
-    #demoChip .demo-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: rgb(var(--chip-rgb)); flex: none;
-    }
+    #demoChip .chip-ico { width: 14px; height: 14px; flex: none; display: none; }
+    #demoChip[data-mode="real"]    .chip-ico-real,
+    #demoChip[data-mode="demo"]    .chip-ico-demo,
+    #demoChip[data-mode="unknown"] .chip-ico-unknown { display: block; }
+    /* Sin etiqueta el icono carga con todo el significado, así que crece. */
+    #demoChip.chip-dot-only .chip-ico { width: 17px; height: 17px; }
 
     /* Bloque explicativo dentro del panel "Servicios externos": es el sitio
        temático correcto — la explicación aparece justo encima de la lista de
@@ -1600,7 +1602,23 @@
     <h1>Physi<span>Q</span></h1>
     <div class="hdr-actions">
       <button id="demoChip" onclick="showApisPanel()" data-mode="demo" title="Estás en modo demo — toca para saber por qué" aria-label="Modo demo activo" hidden>
-        <span class="demo-dot"></span><span id="demoChipLabel">Demo</span>
+        <!-- Tres iconos distintos, no tres variantes del mismo: licencia y demo
+             son dos modos de funcionamiento y "sin señal" es un fallo de red.
+             Una misma familia los leería como grados de una escala, y dejaría
+             la demo como "te falta la llave" — que es lo contrario de lo que
+             este proyecto quiere decir de ella. -->
+        <svg class="chip-ico chip-ico-real" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12.6 11.4a5.5 5.5 0 1 0-7.78 7.78 5.5 5.5 0 0 0 7.78-7.78zm0 0L16.5 7.5m0 0 3 3L23 7l-3-3m-3.5 3.5L20 4"/>
+        </svg>
+        <svg class="chip-ico chip-ico-demo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M10 2v7.2L4.7 18a2 2 0 0 0 1.7 3h11.2a2 2 0 0 0 1.7-3L14 9.2V2"/>
+          <line x1="8.5" y1="2" x2="15.5" y2="2"/><line x1="6.6" y1="14.5" x2="17.4" y2="14.5"/>
+        </svg>
+        <svg class="chip-ico chip-ico-unknown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22.6 17A5 5 0 0 0 18 10h-1.3a8 8 0 0 0-7-6M5 5a8 8 0 0 0 4 15h9a5 5 0 0 0 1.7-.3"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+        <span id="demoChipLabel">Demo</span>
       </button>
       <button id="apisBtn" class="peer-hdr-btn" onclick="toggleApisPanel()" title="Servicios externos" aria-label="Servicios externos">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
