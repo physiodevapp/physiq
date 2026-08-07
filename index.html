@@ -2609,6 +2609,20 @@ function _lpCancel() {
 navEl.addEventListener('pointermove', e => {
   if (_lp && (Math.abs(e.clientX - _lp.x) > LP_SLOP || Math.abs(e.clientY - _lp.y) > LP_SLOP)) _lpCancel();
 });
+
+// Sin esto, el arrastre nacido de un long press no funciona hasta soltar y
+// volver a pulsar. `touch-action` se evalúa cuando empieza el toque, y en ese
+// momento la tarjeta todavía no estaba en modo edición: el navegador ya se ha
+// quedado el dedo para hacer scroll, así que al moverlo manda `pointercancel`
+// y aborta el arrastre. Cambiar la clase a mitad de gesto no lo deshace.
+//
+// preventDefault() sobre touchmove sí lo deshace, siempre que el scroll no
+// haya arrancado aún — y no puede haber arrancado, porque un desplazamiento
+// mayor que LP_SLOP habría cancelado la pulsación. Tiene que ser un listener
+// no pasivo: uno pasivo no puede llamar a preventDefault.
+navEl.addEventListener('touchmove', e => {
+  if (_drag && e.cancelable) e.preventDefault();
+}, { passive: false });
 window.addEventListener('scroll', _lpCancel, { passive: true });
 navEl.addEventListener('contextmenu', e => { if (e.target.closest('.app-card')) e.preventDefault(); });
 
