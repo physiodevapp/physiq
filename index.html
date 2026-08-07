@@ -1615,7 +1615,7 @@
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       </button>
-      <button id="demoChip" onclick="showApisPanel()" data-mode="demo" title="Estás en modo demo — toca para saber por qué" aria-label="Modo demo activo" hidden>
+      <button id="demoChip" onclick="showModeInfo()" data-mode="demo" title="Estás en modo demo — toca para saber por qué" aria-label="Modo demo activo" hidden>
         <!-- Tres iconos distintos, no tres variantes del mismo: licencia y demo
              son dos modos de funcionamiento y "sin señal" es un fallo de red.
              Una misma familia los leería como grados de una escala, y dejaría
@@ -2347,6 +2347,23 @@ function showApisPanel() {
 }
 function hideApisPanel() {
   document.getElementById('apis-overlay').classList.remove('open');
+}
+
+// Destino del chip de modo. Abre el mismo panel que el botón de servicios —la
+// nota de cada modo dice precisamente qué hace ese modo con esos servicios, así
+// que partir la respuesta en dos hojas no ayudaría a nadie— pero además señala
+// la nota: sin ese acuse de recibo, quien llega desde el chip aterriza en algo
+// titulado "Servicios externos" y no sabe si le ha respondido.
+function showModeInfo() {
+  showApisPanel();
+  const note = document.querySelector('#apis-overlay.demo-on #demo-note, '
+    + '#apis-overlay.mode-real #mode-note-real, #apis-overlay.mode-unknown #mode-note-unknown');
+  if (!note || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // Espera a que el panel haya entrado; animarlo mientras sube no se percibe.
+  setTimeout(() => {
+    note.animate([{ opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }],
+                 { duration: 620, iterations: 2, easing: 'ease-in-out' });
+  }, 260);
 }
 function _apisOverlayClick(e) {
   if (e.target === document.getElementById('apis-overlay')) hideApisPanel();
