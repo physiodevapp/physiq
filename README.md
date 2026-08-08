@@ -246,7 +246,7 @@ correct once Analytics Engine starts sampling. The binding is optional in code
 never fail a request. There is no backfill: data starts at the deploy that added
 the binding.
 
-**The `physiq-rate` KV counter** (`rl:<date>:<actor>`) — written in
+**The `physiq-rate` KV counter** (`rl:<worker>:<date>:<actor>`) — written in
 `rateLimited()` **only in real mode**, and the thing `DAILY_CAP` trips on. It
 serves as a cross-check on the figure above.
 
@@ -254,8 +254,9 @@ Three limits, all printed by the script itself:
 
 - The KV keys carry `expirationTtl: 90000`, so **only today and part of yesterday
   exist** there. Long history comes from Analytics Engine.
-- Both Workers share the `physiq-rate` namespace *and* the key format, so those
-  counters are summed and cannot be attributed per Worker (Analytics Engine can).
+- Both Workers share the `physiq-rate` namespace, so the worker name is part of
+  the key. Without it their counters were summed and each `DAILY_CAP` drew down
+  the other's — the report worker's cap of 50 was consumed by copilot traffic.
 - One request is not one fixed cost: `/transcribe` bills per connected minute and
   `/chat` per token. Neither source says how much was spent — they say what paid
   work happened.

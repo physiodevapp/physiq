@@ -110,10 +110,16 @@ async function readKey(name) {
   return (await res.text()).trim();
 }
 
-// `rl:<YYYY-MM-DD>:<actor>` — actor es `lic:<hash>` o `ip:<direccion>`.
+// `rl:<worker>:<YYYY-MM-DD>:<actor>` — actor es `lic:<hash>` o `ip:<direccion>`.
+//
+// El formato antiguo no llevaba worker (`rl:<fecha>:<actor>`) y los dos Workers
+// compartían contador. Se sigue aceptando porque las claves viven 25 h: durante
+// la transición conviven ambos, y se marcan como '—' en vez de descartarlas.
 function parseKey(name) {
-  const m = name.match(/^rl:(\d{4}-\d{2}-\d{2}):(.+)$/);
-  return m ? { day: m[1], actor: m[2] } : null;
+  const m = name.match(/^rl:([a-z]+):(\d{4}-\d{2}-\d{2}):(.+)$/);
+  if (m) return { worker: m[1], day: m[2], actor: m[3] };
+  const legacy = name.match(/^rl:(\d{4}-\d{2}-\d{2}):(.+)$/);
+  return legacy ? { worker: '—', day: legacy[1], actor: legacy[2] } : null;
 }
 
 async function realCounters() {
@@ -263,15 +269,21 @@ async function main() {
     console.log('  petición en modo real a ninguno de los dos Workers.');
     console.log('  → Cualquier gasto en los proveedores en esa ventana no viene de aquí.\n');
   } else {
-    console.log(`  ${pad('Día', 12)}${pad('Actor', 26)}Peticiones de pago`);
-    console.log(`  ${'-'.repeat(58)}`);
-    for (const r of counters) console.log(`  ${pad(r.day, 12)}${pad(r.actor, 26)}${r.count}`);
-    console.log(`  ${'-'.repeat(58)}`);
+    console.log(`  ${pad('Día', 12)}${pad('Worker', 10)}${pad('Actor', 26)}Peticiones de pago`);
+    console.log(`  ${'-'.repeat(68)}`);
+    for (const r of counters) {
+      console.log(`  ${pad(r.day, 12)}${pad(r.worker, 10)}${pad(r.actor, 26)}${r.count}`);
+    }
+    console.log(`  ${'-'.repeat(68)}`);
     for (const [day, n] of Object.entries(byDay).sort().reverse()) {
-      console.log(`  ${pad(day, 38)}${n}`);
+      console.log(`  ${pad(day, 48)}${n}`);
     }
     console.log(`\n  TOTAL en la ventana: ${grand} peticiones de pago`);
-    console.log('  (suma de los dos Workers — comparten namespace, no se pueden separar)\n');
+    if (counters.some(r => r.worker === '—')) {
+      console.log('  Las filas con worker "—" son del formato antiguo, sin separar por');
+      console.log('  Worker. Desaparecen solas en 25 h.');
+    }
+    console.log();
   }
 
   // ── 3. Cruce con los proveedores ───────────────────────────────────────────

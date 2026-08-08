@@ -360,7 +360,10 @@ async function rateLimited(request, env, pathname, mode, licenseKey) {
   if (!env.RATE) return false;
   const cap = parseInt(env.DAILY_CAP || '200', 10);
   const day = new Date().toISOString().slice(0, 10);
-  const k   = `rl:${day}:${actor}`;
+  // El namespace es el mismo en los dos Workers, así que la clave lleva de qué
+  // Worker viene: sin el prefijo, sus contadores se sumaban y el DAILY_CAP de
+  // cada uno consumía el del otro.
+  const k   = `rl:copilot:${day}:${actor}`;
   const n   = parseInt(await env.RATE.get(k) || '0', 10);
   if (n >= cap) return true;
   // TTL 25h: the key expires on its own, no cleanup job needed.
