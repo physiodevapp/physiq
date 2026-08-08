@@ -1342,15 +1342,19 @@
       .apis-handle { display: none; }
     }
 
+    /* Mismo ritmo vertical que .peer-sheet-hdr: el asa a 10px del borde y el
+       título justo después. Antes sumaba tres espaciados (margen inferior del
+       asa + gap del sheet + padding del header) y dejaba 43px sobre el título,
+       frente a los 25px del resto de hojas. */
     .apis-handle {
       width: 36px; height: 4px;
       background: var(--border2); border-radius: 2px;
-      margin: 10px auto 4px; align-self: center;
+      margin: 10px auto 0; align-self: center;
     }
 
     .apis-hdr {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 0 10px;
+      padding: 0 0 10px;
       border-bottom: 1px solid var(--border);
     }
     .apis-title {
@@ -1942,7 +1946,7 @@
   <!-- Demo mode strip — visible while body.physiq-demo is set (see _modeApply) -->
   <div id="cop-demo-bar">
     <span class="demo-dot"></span>
-    Modo demo · transcripción y respuestas de ejemplo
+    Modo demo · transcripción, sugerencias y respuestas precargadas
   </div>
 
   <!-- Region filter — collapsible popover, opened from the header trigger -->
@@ -3532,6 +3536,12 @@ function updateNavConnectors() {
 }
 
 document.addEventListener('DOMContentLoaded', updateNavConnectors);
+// El trazado se calcula midiendo las tarjetas, y su alto depende de la
+// tipografía. En una visita fría —primera vez, o incógnito— las fuentes llegan
+// después de DOMContentLoaded, así que el cálculo se hace sobre la caja
+// equivocada y las líneas quedan descolocadas. Con la caché caliente no pasa,
+// que es justo por lo que solo se nota entrando de nuevas.
+document.fonts?.ready.then(updateNavConnectors);
 let _ncResizeTimer;
 window.addEventListener('resize', () => { clearTimeout(_ncResizeTimer); _ncResizeTimer = setTimeout(updateNavConnectors, 100); });
 
@@ -3783,7 +3793,12 @@ function _actDismiss() {
   const s = document.getElementById('activation-screen');
   if (!s) return;
   s.classList.add('act-fade');
-  setTimeout(() => { s.style.display = 'none'; }, 320);
+  setTimeout(() => {
+    s.style.display = 'none';
+    // Segunda red por si el trazado se calculó con la portada delante y el
+    // layout aún moviéndose: recalcularlo es barato y es idempotente.
+    if (typeof updateNavConnectors === 'function') updateNavConnectors();
+  }, 320);
 }
 
 function _actEnterDemo() {
