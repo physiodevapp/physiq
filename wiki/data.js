@@ -73,7 +73,7 @@ const REGIONS = [
           { id: 'ho-002', name: 'Hawkins-Kennedy test', ev: 'green', link: 'https://www.youtube.com/watch?v=UFCiQq9mDpQ' },
           { id: 'ho-029', name: 'Coracoid impingement sign', ev: 'green', link: '' },
           { id: 'ho-030', name: 'Supine impingement test', ev: 'green', link: '' },
-          { id: 'ho-031', name: 'Yokum test', ev: 'green', link: '' },
+          { id: 'ho-031', name: 'Yocum test', ev: 'green', link: '' },
           { id: 'ho-032', name: 'Zaslav test (IRRST)', ev: 'green', link: '' },
           { id: 'ho-005', name: 'Painful arc (60–120°)', ev: 'green', link: '' },
           { id: 'ho-004', name: 'Full Can test', ev: 'yellow', link: '' },
@@ -745,7 +745,7 @@ const SEARCH_CATEGORY_TERM = {
 // derivada por completo (el sufijo de región/categoría NO se añade a estas).
 const SEARCH_QUERY_OVERRIDES = {
   'cx-009': 'romberg test neurological examination',       // no es una prueba cervical
-  'ho-031': 'yocum test shoulder impingement',             // en los datos figura como "Yokum"
+  'ho-031': 'yocum test shoulder impingement',             // acota: "yocum test" solo devuelve poco
   'ho-032': 'internal rotation resistance strength test shoulder',
   'ho-035': 'internal rotation lag sign spring back subscapularis',
   'ho-038': 'hornblower sign patte test shoulder',
