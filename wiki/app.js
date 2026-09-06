@@ -32,20 +32,58 @@ function renderHome() {
   }).join('');
 }
 
+// ─── ENLACES DE TÉCNICA ──────────────────────────────────────────────────────────────────────────
+// Convierte el nombre del test en términos de búsqueda: fuera paréntesis (casi siempre son
+// matices condicionales, no parte del nombre), fuera puntuación que YouTube ignora.
+function _searchTerms(name) {
+  return name
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/[–—/,]/g, ' ')
+    .replace(/['\u2019]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+// Consulta derivada para un test, o '' si su evidencia no recibe enlace de búsqueda.
+function _searchQuery(test, regionId, categoryName) {
+  if (!SEARCH_LINK_EV.includes(test.ev)) return '';
+
+  const override = SEARCH_QUERY_OVERRIDES[test.id];
+  if (override) return override;
+
+  const term  = SEARCH_CATEGORY_TERM[`${regionId}|${categoryName}`] || SEARCH_REGION_TERM[regionId] || '';
+  const terms = _searchTerms(test.name);
+  return term && !terms.includes(term) ? `${terms} ${term}` : terms;
+}
+
+function _searchUrl(query) {
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+}
+
 // ─── RENDER HELPERS ──────────────────────────────────────────────────────────────────────────────
-function _buildTestItem(test) {
+const _ICON_VIDEO  = `<span class="test-link-btn has-link" title="Vídeo de la técnica"><svg viewBox="0 0 24 17" width="22" height="15" style="display:block"><rect width="24" height="17" rx="4" fill="#FF0000"/><path d="M10 5L16 8.5L10 12V5Z" fill="white"/></svg></span>`;
+const _ICON_SEARCH = `<span class="test-link-btn is-search" title="Búsqueda en YouTube — no es un vídeo verificado"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:block"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span>`;
+
+function _buildTestItem(test, regionId, categoryName) {
   const badgeClass = `ev-${test.ev}`;
   const badgeLabel = test.ev === 'green' ? '✓' : test.ev === 'yellow' ? '!' : '?';
   const rowClass   = test.ev === 'green' ? 'ev-green-row' : '';
 
+  // Prioridad: enlace guardado por el usuario > vídeo curado > búsqueda derivada.
   const storedOverride = _linkOverrides[test.id];
-  const effectiveLink  = storedOverride !== undefined ? storedOverride : test.link;
+  const curatedLink    = storedOverride !== undefined ? storedOverride : test.link;
 
-  const icon = `<span class="test-link-btn has-link"><svg viewBox="0 0 24 17" width="22" height="15" style="display:block"><rect width="24" height="17" rx="4" fill="#FF0000"/><path d="M10 5L16 8.5L10 12V5Z" fill="white"/></svg></span>`;
+  let link = curatedLink;
+  let icon = _ICON_VIDEO;
+  if (!link) {
+    const query = _searchQuery(test, regionId, categoryName);
+    if (query) { link = _searchUrl(query); icon = _ICON_SEARCH; }
+  }
 
-  if (effectiveLink) {
+  if (link) {
     return `
-    <a class="test-item ${rowClass} has-link-row" href="${effectiveLink}" target="_blank" rel="noopener" data-test-id="${test.id}">
+    <a class="test-item ${rowClass} has-link-row" href="${link}" target="_blank" rel="noopener" data-test-id="${test.id}">
       <span class="evidence-badge ${badgeClass}">${badgeLabel}</span>
       <span class="test-name">${test.name}</span>
       ${icon}
@@ -74,7 +112,7 @@ function renderRegion() {
       html += `
         <div class="category-section">
           <div class="category-title">${cat.name}</div>
-          ${tests.map(_buildTestItem).join('')}
+          ${tests.map(t => _buildTestItem(t, currentRegion.id, cat.name)).join('')}
         </div>`;
     });
   } else if (currentPosFilter === 'progression') {
@@ -88,7 +126,7 @@ function renderRegion() {
         html += `
           <div class="category-section">
             <div class="category-title">${cat.name}</div>
-            ${cat.tests.map(_buildTestItem).join('')}
+            ${cat.tests.map(t => _buildTestItem(t, currentRegion.id, cat.name)).join('')}
           </div>`;
       });
     });
@@ -99,7 +137,7 @@ function renderRegion() {
       html += `
         <div class="category-section">
           <div class="category-title">${cat.name}</div>
-          ${cat.tests.map(_buildTestItem).join('')}
+          ${tests.map(t => _buildTestItem(t, currentRegion.id, cat.name)).join('')}
         </div>`;
     });
   }

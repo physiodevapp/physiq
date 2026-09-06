@@ -101,6 +101,7 @@
     padding: 12px 20px;
     flex-wrap: wrap;
   }
+  .legend-links { padding-top: 0; }
   .legend-item {
     display: flex;
     align-items: center;
@@ -379,7 +380,14 @@
     font-size: 11px;
     cursor: default;
   }
-  .test-link-btn.has-link:active { opacity: 0.75; }
+  /* Búsqueda en YouTube, no un vídeo verificado: lupa apagada, nunca el rojo de YouTube. */
+  .test-link-btn.is-search {
+    background: var(--surface2);
+    color: var(--text3);
+    border: 1px solid var(--border);
+  }
+  .test-link-btn.has-link:active,
+  .test-link-btn.is-search:active { opacity: 0.75; }
 
   .no-green-notice {
     font-size: 11px;
@@ -755,6 +763,10 @@
     <div class="legend-item"><span class="evidence-badge ev-yellow">!</span> Moderada</div>
     <div class="legend-item"><span class="evidence-badge ev-red">?</span> Dudosa</div>
   </div>
+  <div class="legend legend-links">
+    <div class="legend-item"><span class="test-link-btn has-link"><svg viewBox="0 0 24 17" width="18" height="13" style="display:block"><rect width="24" height="17" rx="4" fill="#FF0000"/><path d="M10 5L16 8.5L10 12V5Z" fill="white"/></svg></span> V&iacute;deo de la t&eacute;cnica</div>
+    <div class="legend-item"><span class="test-link-btn is-search"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="display:block"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span> B&uacute;squeda en YouTube &mdash; no verificada, comprueba que la maniobra es la correcta</div>
+  </div>
   <div class="regions-grid" id="regions-grid"></div>
 </div>
 
@@ -1100,8 +1112,8 @@
   </div>
 </div>
 
-<script src="data.js?v=997a196188330fc21e885ef49748e93e90195bdd"></script>
-<script src="app.js?v=997a196188330fc21e885ef49748e93e90195bdd"></script>
+<script src="data.js?v=af11f833da8af21048f6c35651f09c4e9131a77b"></script>
+<script src="app.js?v=af11f833da8af21048f6c35651f09c4e9131a77b"></script>
 
 </body>
 </html>

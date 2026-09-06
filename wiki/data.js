@@ -709,3 +709,61 @@ const REGIONS = [
     ]
   },
 ];
+
+// ─── ENLACES DE TÉCNICA ────────────────────────────────────────────────────────────────────────
+// Los tests con `link` propio abren ese vídeo. El resto, si su evidencia está en
+// SEARCH_LINK_EV, abre una BÚSQUEDA en YouTube derivada del nombre del test.
+// No son vídeos verificados: la interfaz los marca con un icono distinto.
+
+// Niveles de evidencia que reciben enlace de búsqueda.
+// Ampliar a ['green', 'yellow'] abre los enlaces a evidencia moderada.
+const SEARCH_LINK_EV = ['green'];
+
+// Sufijo en inglés que acota la búsqueda, por región.
+const SEARCH_REGION_TERM = {
+  cervical: 'neck',
+  hombro:   'shoulder',
+  codo:     'elbow',
+  muneca:   'wrist',
+  cadera:   'hip',
+  rodilla:  'knee',
+  tobillo:  'ankle',
+  lumbar:   'lumbar spine',
+};
+
+// El sufijo de región no siempre basta. En Lumbar / SIJ conviven pruebas lumbares y
+// sacroilíacas, y "compression test lumbar spine" no devuelve la maniobra correcta.
+// Clave: `<id de región>|<nombre de categoría>`. Tiene prioridad sobre la región.
+const SEARCH_CATEGORY_TERM = {
+  'lumbar|SIJ — Afectación articular':        'sacroiliac joint',
+  'lumbar|SIJ — Afectación neurológica':      'sacroiliac joint',
+  'lumbar|SIJ — Longitud y función muscular': 'pelvis',
+  'muneca|Circulación y edema':               'hand',
+};
+
+// Excepciones: tests cuyo nombre no funciona como búsqueda. Sustituyen a la consulta
+// derivada por completo (el sufijo de región/categoría NO se añade a estas).
+const SEARCH_QUERY_OVERRIDES = {
+  'cx-009': 'romberg test neurological examination',       // no es una prueba cervical
+  'ho-031': 'yocum test shoulder impingement',             // en los datos figura como "Yokum"
+  'ho-032': 'internal rotation resistance strength test shoulder',
+  'ho-035': 'internal rotation lag sign spring back subscapularis',
+  'ho-038': 'hornblower sign patte test shoulder',
+  'ho-017': 'biceps load test II shoulder',                // "kim test i" no discrimina
+  'ho-045': 'upper limb neurodynamic test 1 median nerve',
+  'ho-046': 'upper limb neurodynamic test 2 median nerve',
+  'ho-047': 'upper limb neurodynamic test 3 radial nerve',
+  'ho-048': 'upper limb neurodynamic test 4 ulnar nerve',
+  'co-020': 'popeye sign distal biceps rupture',
+  'co-043': 'pinch grip test anterior interosseous nerve',
+  'mu-062': 'hand elevation test carpal tunnel',
+  'mu-074': 'two point discrimination test hand sensation',
+  'mu-077': 'capillary refill digital blood flow hand',
+  'mu-079': 'hand volumeter test edema measurement',
+  'ro-032': 'brush stroke bulge test knee effusion',
+  'to-027': 'tinel sign tarsal tunnel ankle',
+  'lu-018': 'centralization peripheralization mckenzie lumbar',
+  'lu-014': 'waddell signs nonorganic low back pain',
+  'lu-047': 'leg length discrepancy measurement supine',
+  'lu-048': 'trendelenburg test hip abductor weakness',
+};
