@@ -297,8 +297,12 @@ async function licenseState(request, url, env) {
   return { licensed: !!entry && entry.active !== false, key };
 }
 
+function isDemoOnly(env) {
+  return env.DEMO_ONLY === '1' || env.DEMO_ONLY === 'true';
+}
+
 function modeFor(env, pathname, licensed) {
-  if (env.DEMO_ONLY === '1' || env.DEMO_ONLY === 'true') return 'demo';   // budget kill switch
+  if (isDemoOnly(env)) return 'demo';   // budget kill switch
   if (!licensed) return 'demo';
   const needed = ROUTE_SECRETS[pathname] ?? [];
   if (needed.some(name => !env[name])) return 'demo';
@@ -480,9 +484,14 @@ function withMode(resp, origin, mode) {
 // only ANTHROPIC_API_KEY set, chat is real while transcription is demo. The
 // client renders the badge off `mode` and can label each feature off `routes`.
 //
-// Deliberately never says *why* it is demo. Distinguishing "no key" from
-// "invalid key" would hand a brute-forcer exactly the oracle it needs; a client
-// that sent a key and got `demo` back already knows its key is not valid.
+// Deliberately never says *why a given key* is demo. Distinguishing "no key"
+// from "invalid key" would hand a brute-forcer exactly the oracle it needs; a
+// client that sent a key and got `demo` back already knows its key is not
+// valid. `demoOnly` is the one exception: it is the same value for every
+// visitor regardless of what key (if any) they sent, so exposing it leaks
+// nothing about a specific key — it only tells the client "the server-wide
+// kill switch is on, no key will get you real mode right now" instead of
+// letting a valid key be misreported as invalid.
 async function handleValidate(env, licensed) {
   const routes = {};
   for (const path of ['/transcribe', '/suggest', '/chat', '/notes']) {
@@ -492,7 +501,7 @@ async function handleValidate(env, licensed) {
   const mode = values.every(m => m === 'real') ? 'real'
              : values.every(m => m === 'demo') ? 'demo'
              : 'mixed';
-  return new Response(JSON.stringify({ ok: true, mode, routes }), {
+  return new Response(JSON.stringify({ ok: true, mode, routes, demoOnly: isDemoOnly(env) }), {
     status: 200, headers: { 'Content-Type': 'application/json' },
   });
 }
