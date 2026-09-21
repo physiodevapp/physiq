@@ -15,7 +15,7 @@
 //   SUPABASE_URL, SUPABASE_ANON_KEY
 //
 // Variables (plain text, not secret):
-//   ALLOWED_ORIGIN = https://physiodevapp.github.io
+//   ALLOWED_ORIGIN = https://physiodevapp.github.io (comma-separated for more than one origin)
 //   DEMO_ONLY      = "1" forces every request into demo mode (budget kill switch)
 //   DAILY_CAP      = per-IP cap of real (paid) requests per day; default 200
 //
@@ -42,8 +42,10 @@ const CORS = origin => ({
   'Vary': 'Origin',
 });
 
-function trusted(origin, allowed) {
-  return origin === allowed
+// ALLOWED_ORIGIN can list more than one origin (comma-separated) — e.g. the
+// GitHub Pages URL plus a custom domain pointed at the same Pages site.
+function trusted(origin, allowedOrigins) {
+  return allowedOrigins.includes(origin)
     || origin.startsWith('http://localhost')
     || origin.startsWith('http://127.0.0.1');
 }
@@ -417,7 +419,7 @@ export default {
   async fetch(request, env, ctx) {
     const url     = new URL(request.url);
     const origin  = request.headers.get('Origin') || '';
-    const allowed = env.ALLOWED_ORIGIN || 'https://physiodevapp.github.io';
+    const allowed = (env.ALLOWED_ORIGIN || 'https://physiodevapp.github.io').split(',').map(s => s.trim());
     const ok      = trusted(origin, allowed);
 
     if (request.method === 'OPTIONS') {

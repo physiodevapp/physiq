@@ -3,8 +3,10 @@ main            = "physiq-copilot.js"
 compatibility_date = "2025-01-01"
 
 [vars]
-# Overridden in production via `wrangler deploy --var` or dashboard env vars
-ALLOWED_ORIGIN = "https://physiodevapp.github.io"
+# Overridden in production via `wrangler deploy --var` or dashboard env vars.
+# Comma-separated if the Pages site is reachable at more than one origin (e.g.
+# the github.io URL plus a custom domain pointed at the same Pages deploy).
+ALLOWED_ORIGIN = "https://physiodevapp.github.io,https://edugamboa.com"
 
 # Budget kill switch: "1" forces every request into demo mode regardless of
 # license, cutting spend to zero.
