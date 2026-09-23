@@ -370,6 +370,100 @@ function resetApp() {
   );
 }
 
+// ─── QUICK INPUT (chips de frases + dictado por voz) ──────────
+function isSpeechSupported() {
+  return typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+
+function _escapeAttr(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function renderQuickInputBar(fieldId) {
+  const phrases = (typeof QUICK_PHRASES !== 'undefined' && QUICK_PHRASES[fieldId]) || [];
+  const chips = phrases.map(p => {
+    const esc = _escapeAttr(p);
+    return `<button type="button" class="chip-btn" data-field="${fieldId}" data-phrase="${esc}" onclick="appendQuickPhrase(this)">${esc}</button>`;
+  }).join('');
+  const mic = isSpeechSupported()
+    ? `<button type="button" class="mic-btn" data-field="${fieldId}" onclick="toggleDictation(this)" title="Dictar por voz" aria-label="Dictar por voz">🎤</button>`
+    : '';
+  if (!chips && !mic) return '';
+  return `<div class="quick-input-bar">${chips ? `<div class="chip-row">${chips}</div>` : ''}${mic}</div>`;
+}
+
+function injectQuickInputBar(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (!field || field.dataset.quickBarInjected) return;
+  const html = renderQuickInputBar(fieldId);
+  if (!html) return;
+  field.insertAdjacentHTML('afterend', html);
+  field.dataset.quickBarInjected = '1';
+}
+
+function initQuickInputBars() {
+  ['motivoConsulta', 'signoComparable'].forEach(injectQuickInputBar);
+}
+
+function appendQuickPhrase(btn) {
+  const field = document.getElementById(btn.dataset.field);
+  if (!field) return;
+  const sep = field.value && !/\s$/.test(field.value) ? ' ' : '';
+  field.value = field.value + sep + btn.dataset.phrase;
+  field.dispatchEvent(new Event('input', { bubbles: true }));
+  field.focus();
+}
+
+function toggleDictation(btn) {
+  const field = document.getElementById(btn.dataset.field);
+  if (!field) return;
+  const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognitionCtor) return;
+
+  if (btn._recognition) {
+    btn._recognition.stop();
+    return;
+  }
+
+  const recognition = new SpeechRecognitionCtor();
+  recognition.lang = 'es-ES';
+  recognition.interimResults = true;
+  recognition.continuous = true;
+
+  const baseValue = field.value;
+  const baseSep = baseValue && !/\s$/.test(baseValue) ? ' ' : '';
+  let finalTranscript = '';
+
+  recognition.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const transcript = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalTranscript += transcript + ' ';
+      else interim += transcript;
+    }
+    field.value = baseValue + baseSep + finalTranscript + interim;
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+
+  recognition.onerror = () => {
+    btn.classList.remove('listening');
+    btn._recognition = null;
+  };
+
+  recognition.onend = () => {
+    btn.classList.remove('listening');
+    btn._recognition = null;
+  };
+
+  btn._recognition = recognition;
+  btn.classList.add('listening');
+  recognition.start();
+}
+
 // ─── PHASE 1 HELPERS ─────────────────────────────────────────
 function selectOption(groupId, btn, value) {
   const group = document.getElementById(groupId);
@@ -1068,6 +1162,7 @@ function buildResults() {
         placeholder="Ej: Parar si el dolor supera 4/10 durante el ejercicio o si aparece hormigueo en el brazo"
         oninput="state.planNotes.variableControl=this.value; saveSession()"
       >${state.planNotes.variableControl}</textarea>
+      ${renderQuickInputBar('planVariableControl')}
     </div>
     <div class="plan-note-row">
       <div class="plan-note-label">Ventana de recuperación</div>
@@ -1076,6 +1171,7 @@ function buildResults() {
         placeholder="Ej: Dolor basal de 3/10 debe volver a 3/10 o menos a las 24h. Si aumenta, reducir dosis."
         oninput="state.planNotes.ventanaRecuperacion=this.value; saveSession()"
       >${state.planNotes.ventanaRecuperacion}</textarea>
+      ${renderQuickInputBar('planVentana')}
     </div>
     <div class="plan-note-row">
       <div class="plan-note-label">Anclaje de hábito</div>
@@ -1084,6 +1180,7 @@ function buildResults() {
         placeholder="Ej: Hacer las rotaciones mientras espera que se haga el café por la mañana"
         oninput="state.planNotes.anclajeHabito=this.value; saveSession()"
       >${state.planNotes.anclajeHabito}</textarea>
+      ${renderQuickInputBar('planAnclaje')}
     </div>
     <div style="margin-top:1rem; padding:1rem; background:var(--surface2); border-radius:var(--radius); border:1px solid var(--border2);">
       <p style="font-size:0.75rem; color:var(--text3); line-height:1.6;">
@@ -1716,6 +1813,8 @@ document.addEventListener('DOMContentLoaded', () => {
   updateMobilePhaseBar(1);
   // Init session panel drag-to-dismiss
   _setupSessionPanelDrag();
+  // Init quick-input chips + dictation for static text fields
+  initQuickInputBars();
 
   // Seed history so the first back press steps through phases
   history.replaceState({ phase: 1 }, '');

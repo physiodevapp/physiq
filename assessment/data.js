@@ -1665,4 +1665,42 @@ const PHASE_DEFS = [
   { n: '4b', label: 'Confirmación de Hipótesis',short: 'Fase 4b' },
   { n: 5,    label: 'Resultados',               short: 'Fase 5' },
 ];
+
+// Frases clínicas predefinidas para los chips de entrada rápida en campos de texto libre.
+// Clave = id del campo (#id del textarea). Tocar un chip añade la frase al campo; sigue siendo editable.
+const QUICK_PHRASES = {
+  motivoConsulta: [
+    'Dolor de inicio traumático tras caída',
+    'Dolor de inicio insidioso y progresivo',
+    'Dolor post-quirúrgico',
+    'Limitación funcional para actividades cotidianas',
+    'Dolor nocturno que interrumpe el sueño',
+    'Episodio recurrente, ya tratado previamente'
+  ],
+  signoComparable: [
+    'Reproduce dolor en flexión activa',
+    'Reproduce dolor en rotación externa resistida',
+    'Reproduce dolor al cargar peso',
+    'Reproduce dolor en el rango final del movimiento',
+    'Reproduce dolor con la palpación local'
+  ],
+  planVariableControl: [
+    'Parar si el dolor supera 4/10 durante el ejercicio',
+    'Parar si aparece hormigueo o entumecimiento',
+    'Parar si aumenta la rigidez tras el ejercicio',
+    'Parar ante fatiga excesiva o pérdida de forma'
+  ],
+  planVentana: [
+    'El dolor basal debe volver a su nivel en 24h',
+    'Si el dolor aumenta más allá de 24h, reducir dosis',
+    'Sin aumento de dolor a las 24h: progresar dosis',
+    'Registrar dolor a las 24h antes de la siguiente sesión'
+  ],
+  planAnclaje: [
+    'Vincular a la rutina matutina (café, ducha)',
+    'Vincular a un descanso durante la jornada laboral',
+    'Vincular a la rutina antes de dormir',
+    'Vincular a un desplazamiento habitual (coche, transporte)'
+  ]
+};
 const PHASE_NAV_IDS = { 1:'nav1', 2:'nav2', 3:'nav3', 4:'nav4', '4b':'nav4b', 5:'nav5' };
