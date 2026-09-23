@@ -436,16 +436,19 @@ function toggleDictation(btn) {
 
   const baseValue = field.value;
   const baseSep = baseValue && !/\s$/.test(baseValue) ? ' ' : '';
-  let finalTranscript = '';
 
   recognition.onresult = (e) => {
+    // Rebuild from the full results list every time (index 0, not e.resultIndex):
+    // some engines re-fire earlier entries as "already final" on later events,
+    // so accumulating with += across calls double-counts finalized segments.
+    let final = '';
     let interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
+    for (let i = 0; i < e.results.length; i++) {
       const transcript = e.results[i][0].transcript;
-      if (e.results[i].isFinal) finalTranscript += transcript + ' ';
+      if (e.results[i].isFinal) final += transcript + ' ';
       else interim += transcript;
     }
-    field.value = baseValue + baseSep + finalTranscript + interim;
+    field.value = baseValue + baseSep + final + interim;
     field.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
