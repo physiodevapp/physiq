@@ -449,9 +449,18 @@ function toggleDictation(btn) {
     field.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
-  recognition.onerror = () => {
+  const DICTATION_ERROR_MESSAGES = {
+    'not-allowed': 'Permiso de micrófono denegado. Actívalo en los ajustes del navegador.',
+    'service-not-allowed': 'Permiso de micrófono denegado. Actívalo en los ajustes del navegador.',
+    'audio-capture': 'No se ha detectado ningún micrófono.',
+    'network': 'Error de red durante el dictado. Inténtalo de nuevo.'
+  };
+
+  recognition.onerror = (e) => {
     btn.classList.remove('listening');
     btn._recognition = null;
+    const msg = DICTATION_ERROR_MESSAGES[e.error];
+    if (msg) showToast(msg, 'warning');
   };
 
   recognition.onend = () => {
@@ -460,8 +469,13 @@ function toggleDictation(btn) {
   };
 
   btn._recognition = recognition;
-  btn.classList.add('listening');
-  recognition.start();
+  try {
+    recognition.start();
+    btn.classList.add('listening');
+  } catch (err) {
+    btn._recognition = null;
+    showToast('No se pudo iniciar el dictado por voz.', 'warning');
+  }
 }
 
 // ─── PHASE 1 HELPERS ─────────────────────────────────────────
@@ -1585,21 +1599,27 @@ Anclaje hábito: ${d.pn?.anclajeHabito || '—'}`;
 }
 
 function showCopyFeedback() {
-  const existing = document.getElementById('copyFeedback');
+  showToast('✓ Contexto clínico copiado al portapapeles', 'success');
+}
+
+function showToast(message, tone) {
+  const existing = document.getElementById('appToast');
   if (existing) existing.remove();
+  const color = tone === 'warning' ? 'var(--orange)' : 'var(--accent2)';
   const toast = document.createElement('div');
-  toast.id = 'copyFeedback';
+  toast.id = 'appToast';
   toast.style.cssText = `
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    background:var(--surface3); border:1px solid var(--accent2);
-    color:var(--accent2); font-size:0.8rem; font-family:'Outfit',sans-serif;
+    background:var(--surface3); border:1px solid ${color};
+    color:${color}; font-size:0.8rem; font-family:'Outfit',sans-serif;
     padding:10px 20px; border-radius:8px; z-index:9999;
+    max-width:calc(100vw - 32px); text-align:center;
     box-shadow:0 4px 16px rgba(0,0,0,0.4);
     animation:fadeUp 0.25s ease;
   `;
-  toast.textContent = '✓ Contexto clínico copiado al portapapeles';
+  toast.textContent = message;
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2500);
+  setTimeout(() => toast.remove(), tone === 'warning' ? 3500 : 2500);
 }
 
 // ─── SESSION PERSISTENCE ─────────────────────────────────────
