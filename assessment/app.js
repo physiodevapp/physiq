@@ -403,13 +403,36 @@ function injectQuickInputBar(fieldId) {
   if (!html) return;
   field.insertAdjacentHTML('afterend', html);
   field.dataset.quickBarInjected = '1';
+  wireQuickInputBar(fieldId);
 }
 
 function initQuickInputBars() {
   ['motivoConsulta', 'signoComparable'].forEach(injectQuickInputBar);
 }
 
+// A chip's phrase already sitting in the field is spent: dim it and block
+// re-adding it, until the phrase is edited/deleted out of the field again.
+function syncQuickPhraseChips(fieldId) {
+  const field = document.getElementById(fieldId);
+  const bar = field && field.nextElementSibling;
+  if (!bar || !bar.classList.contains('quick-input-bar')) return;
+  const value = field.value.toLowerCase();
+  bar.querySelectorAll('.chip-btn').forEach(chip => {
+    const used = value.includes(chip.dataset.phrase.toLowerCase());
+    chip.classList.toggle('used', used);
+    chip.disabled = used;
+  });
+}
+
+function wireQuickInputBar(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  syncQuickPhraseChips(fieldId);
+  field.addEventListener('input', () => syncQuickPhraseChips(fieldId));
+}
+
 function appendQuickPhrase(btn) {
+  if (btn.disabled) return;
   const field = document.getElementById(btn.dataset.field);
   if (!field) return;
   const sep = field.value && !/\s$/.test(field.value) ? ' ' : '';
@@ -1234,6 +1257,10 @@ function buildResults() {
   <div style="text-align:center; padding:1rem 0; color:var(--text3); font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:1px;">
     PhysiQ-Assessment · ${now.toLocaleDateString('es-ES')} a las ${now.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}
   </div>`;
+
+  // Wire chip sync last: every `container.innerHTML +=` above reparses and
+  // recreates the whole subtree, which would drop listeners attached earlier.
+  ['planVariableControl', 'planVentana', 'planAnclaje'].forEach(wireQuickInputBar);
 }
 
 function finalizarValoracion() {
@@ -1714,6 +1741,7 @@ function _restoreSessionDOM() {
   if (patientEl) patientEl.value = state.patient || '';
   const motivoEl = document.getElementById('motivoConsulta');
   if (motivoEl) motivoEl.value = state.motivoConsulta || '';
+  syncQuickPhraseChips('motivoConsulta');
 
   ['mecanismo', 'cronologia', 'riesgoPsico'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
 
@@ -1781,6 +1809,7 @@ function _restoreSessionDOM() {
   ['naturaleza', 'estadio', 'estabilidad'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) signoEl.value = state.signoComparable || '';
+  syncQuickPhraseChips('signoComparable');
   // Phases 4 / 4b / 5 restore automatically via initCIFTree / buildHypothesisCards / buildResults
 }
 

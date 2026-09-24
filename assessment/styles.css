@@ -342,6 +342,12 @@
     flex-shrink: 0;
   }
   .chip-btn:hover, .chip-btn:active { border-color: var(--accent); color: var(--text); }
+  .chip-btn.used {
+    opacity: 0.4;
+    cursor: default;
+    text-decoration: line-through;
+  }
+  .chip-btn.used:hover { border-color: var(--border2); color: var(--text2); }
   .mic-btn {
     background: var(--surface2);
     border: 1px solid var(--border2);
