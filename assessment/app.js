@@ -436,19 +436,41 @@ function toggleDictation(btn) {
 
   const baseValue = field.value;
   const baseSep = baseValue && !/\s$/.test(baseValue) ? ' ' : '';
+  let committed = '';
+  let current = '';
+
+  function wordsOf(s) { return s.trim().split(/\s+/).filter(Boolean); }
+
+  // Does `words` begin with every word in `prefixWords` (word-for-word)?
+  // Word-level, not character-level: a raw substring check would wrongly treat
+  // an unrelated short word like "es" as "already contained" in "esto".
+  function extendsPrefix(words, prefixWords) {
+    if (prefixWords.length > words.length) return false;
+    for (let i = 0; i < prefixWords.length; i++) {
+      if (words[i].toLowerCase() !== prefixWords[i].toLowerCase()) return false;
+    }
+    return true;
+  }
 
   recognition.onresult = (e) => {
-    // Rebuild from the full results list every time (index 0, not e.resultIndex):
-    // some engines re-fire earlier entries as "already final" on later events,
-    // so accumulating with += across calls double-counts finalized segments.
-    let final = '';
-    let interim = '';
-    for (let i = 0; i < e.results.length; i++) {
-      const transcript = e.results[i][0].transcript;
-      if (e.results[i].isFinal) final += transcript + ' ';
-      else interim += transcript;
+    if (!e.results.length) return;
+    // Only the newest entry (last index) is used as the live utterance text.
+    // Some engines (seen on Android Chrome) treat every array entry as an
+    // independent segment even when it's really a growing restatement of the
+    // same phrase ("esto", "esto es", "esto es una", ...) — summing entries,
+    // whether by resultIndex or by re-walking the whole list, duplicates that
+    // growth. Comparing only the newest entry against what's already shown,
+    // and "committing" it as done only once a genuinely different (non
+    // -extending) segment shows up, handles both that quirk and normal
+    // multi-sentence continuous dictation.
+    const text = e.results[e.results.length - 1][0].transcript.trim();
+    if (current && !extendsPrefix(wordsOf(text), wordsOf(current))) {
+      committed = committed ? committed + ' ' + current : current;
     }
-    field.value = baseValue + baseSep + final + interim;
+    current = text;
+
+    const combined = committed ? (current ? committed + ' ' + current : committed) : current;
+    field.value = baseValue + baseSep + combined;
     field.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
