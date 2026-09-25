@@ -1245,9 +1245,10 @@ function finalizarValoracion() {
     });
 
   // Outside the hub there's no report app around to relay to — share the
-  // summary directly instead of the "enviado al informe" confirmation.
+  // patient/GP-facing report directly (not the clinician shorthand) instead
+  // of the "enviado al informe" confirmation.
   if (!document.body.classList.contains('in-hub')) {
-    const text = buildContextSummaryText();
+    const text = buildInformeFisioterapiaText();
     if (navigator.share) {
       navigator.share({ title: 'Informe de valoración — PhysiQ-Assessment', text }).catch(() => {});
     } else {
