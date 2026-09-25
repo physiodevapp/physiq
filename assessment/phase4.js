@@ -69,19 +69,8 @@ export function restoreCIFTree(tree) {
   // Renderizar el siguiente paso pendiente (igual que selectTreeOption) para que
   // el dispositivo receptor vea la pregunta en curso y no el mensaje de árbol completo
   if (lastAnsweredStepIdx !== -1 && lastAnsweredOpt) {
-    const nextStepsToRender = [];
-    if (lastAnsweredOpt.next) {
-      const explicitNext = tree.steps.find(s => s.id === lastAnsweredOpt.next);
-      if (explicitNext && state.treeAnswers[explicitNext.id] === undefined) {
-        nextStepsToRender.push(explicitNext);
-      }
-    }
-    if (!lastAnsweredOpt.next && lastAnsweredStepIdx + 1 < tree.steps.length) {
-      const sequentialNext = tree.steps[lastAnsweredStepIdx + 1];
-      if (state.treeAnswers[sequentialNext.id] === undefined && !nextStepsToRender.some(s => s.id === sequentialNext.id)) {
-        nextStepsToRender.push(sequentialNext);
-      }
-    }
+    const nextStepsToRender = resolveOptionTargets(tree, lastAnsweredStepIdx, lastAnsweredOpt)
+      .filter(s => state.treeAnswers[s.id] === undefined);
     nextStepsToRender.forEach(s => renderStep(s));
   }
 
@@ -136,6 +125,27 @@ export function renderStep(step) {
   }, 50);
 }
 
+// Resuelve a qué step(s) apunta una opción: el step explícito (`next`) si lo
+// tiene, o el siguiente step del array si no — el fallback posicional
+// documentado en el esquema de CIF_TREES sobre data.js. Pura: no toca DOM ni
+// state, así que es testeable por separado (tests/unit.js, "CIF tree
+// navigation resolution") tanto con árboles reales como con el árbol ficticio
+// del motor. Deliberadamente NO decide si ese step ya está renderizado/
+// respondido — eso varía entre selectTreeOption (mira el DOM) y
+// restoreCIFTree (mira state.treeAnswers), así que se queda en cada llamador.
+export function resolveOptionTargets(tree, stepIdx, opt) {
+  const targets = [];
+  if (opt.next) {
+    const explicitNext = tree.steps.find(s => s.id === opt.next);
+    if (explicitNext) targets.push(explicitNext);
+  }
+  if (!opt.next && stepIdx + 1 < tree.steps.length) {
+    const sequentialNext = tree.steps[stepIdx + 1];
+    if (!targets.some(s => s.id === sequentialNext.id)) targets.push(sequentialNext);
+  }
+  return targets;
+}
+
 export function selectTreeOption(stepId, optIdx, value) {
   const tree = CIF_TREES[state.region];
   const stepIdx = tree.steps.findIndex(s => s.id === stepId);
@@ -174,26 +184,13 @@ export function selectTreeOption(stepId, optIdx, value) {
   // Reconstruir hipótesis desde cero (por si cambió una respuesta anterior)
   rebuildHypotheses(tree);
 
-  // Determinar pasos siguientes a renderizar
-  const nextStepsToRender = [];
+  // Determinar pasos siguientes a renderizar (los ya renderizados no se
+  // vuelven a encolar — renderStep() ya es idempotente, pero evitarlo aquí
+  // deja la intención explícita)
+  const nextStepsToRender = resolveOptionTargets(tree, stepIdx, opt)
+    .filter(s => !document.getElementById(s.id));
 
-  if (opt.next) {
-    const explicitNext = tree.steps.find(s => s.id === opt.next);
-    if (explicitNext) nextStepsToRender.push(explicitNext);
-  }
-
-  if (!opt.next && stepIdx + 1 < tree.steps.length) {
-    const sequentialNext = tree.steps[stepIdx + 1];
-    const alreadyQueued = nextStepsToRender.some(s => s.id === sequentialNext.id);
-    const alreadyRendered = document.getElementById(sequentialNext.id);
-    if (!alreadyQueued && !alreadyRendered) {
-      nextStepsToRender.push(sequentialNext);
-    }
-  }
-
-  if (nextStepsToRender.length > 0) {
-    nextStepsToRender.forEach(s => renderStep(s));
-  }
+  nextStepsToRender.forEach(s => renderStep(s));
 
   checkTreeComplete(tree);
   saveSession();
