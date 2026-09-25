@@ -259,7 +259,7 @@ export const SYSTEMIC_SCREENING = {
         preguntas: [
           { id: 'h_gi1', text: '¿El dolor de hombro aumenta o aparece 1-2 horas después de comer, especialmente comidas grasas?', alerta: true, s1: true },
           { id: 'h_gi2', text: '¿Ha notado cambios en el color de la orina (más oscura, como té o cola) o en las heces (muy claras, como arcilla)?', alerta: true },
-          { id: 'h_gi3', text: '¿Aumenta el dolor de hombro de 2 a 4 horas tras tomar antiinflamatorios (AINEs)?', alerta: false }
+          { id: 'h_gi3', text: '¿Aumenta el dolor de hombro de 2 a 4 horas tras tomar antiinflamatorios (AINEs)?', alerta: true }
         ],
         zonasDolor: [
           { zona: 'Hombro derecho', desc: 'Colecistitis, vesícula biliar, hígado (n. frénico → diafragma)' },
@@ -641,7 +641,7 @@ export const SYSTEMIC_SCREENING = {
           'Engrosamiento óseo palpable o deformidad (Paget)'
         ],
         preguntas: [
-          { id: 'l5', text: '¿Tiene rigidez matutina prolongada (más de 30 minutos) que mejora con el movimiento y el calor?', alerta: false, s1: true },
+          { id: 'l5', text: '¿Tiene rigidez matutina prolongada (más de 30 minutos) que mejora con el movimiento y el calor?', alerta: true, s1: true },
           { id: 'l_e2', text: '¿El dolor sacroilíaco lo despierta en la segunda mitad de la noche (entre las 2 y las 5 am)?', alerta: true, s1: true },
           { id: 'l_e3', text: '¿El dolor pélvico está claramente relacionado con el ciclo menstrual, o tiene sangrado ginecológico inusual?', alerta: true, s1: true },
           { id: 'l_e4', text: '¿Tiene diagnóstico de osteoporosis, o ha tenido una fractura reciente ante un golpe menor o sin trauma aparente?', alerta: true },
@@ -700,7 +700,7 @@ export const SYSTEMIC_SCREENING = {
         banderasAmarillas: ['Antecedente de infección reciente (urinaria, respiratoria, cutánea)'],
         preguntas: [
           { id: 'r1', text: '¿Hay fiebre, enrojecimiento intenso y calor local junto con la tumefacción de la rodilla (artritis séptica)?', alerta: true },
-          { id: 'r_i2', text: '¿Ha tenido alguna infección reciente (urinaria, respiratoria, cutánea) antes de que apareciera el dolor articular?', alerta: false }
+          { id: 'r_i2', text: '¿Ha tenido alguna infección reciente (urinaria, respiratoria, cutánea) antes de que apareciera el dolor articular?', alerta: true }
         ],
         zonasDolor: [{ zona: 'Rodilla / Articulación', desc: 'Artritis séptica — dolor intenso localizado con signos flogóticos' }],
         impactoDescanso: ['Dolor articular intenso constante impide el descanso'],
@@ -775,7 +775,7 @@ export const SYSTEMIC_SCREENING = {
         ],
         preguntas: [
           { id: 'co_e1', text: '¿Tiene síndrome del túnel carpiano en ambas manos a la vez, o síntomas similares también en el codo contralateral?', alerta: true },
-          { id: 'co_e2', text: '¿Nota fatiga muscular proximal inusual (dificultad para subir escaleras, levantarse de una silla) además del dolor en el codo?', alerta: false }
+          { id: 'co_e2', text: '¿Nota fatiga muscular proximal inusual (dificultad para subir escaleras, levantarse de una silla) además del dolor en el codo?', alerta: true }
         ],
         zonasDolor: [
           { zona: 'Muñecas / Manos bilateral', desc: 'Síndrome del túnel carpiano bilateral — alerta tiroidea/metabólica' },
