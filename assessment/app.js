@@ -1637,6 +1637,61 @@ function copyContextToClipboard() {
   });
 }
 
+// Same underlying data as buildContextSummaryText(), but reworded for a
+// different audience: the patient and their GP, not the clinician's own
+// shorthand (no NRS/LR jargon, no scoring labels or emoji) — meant to be
+// pasted straight into a letterhead template and handed over as-is.
+function buildInformeFisioterapiaText() {
+  const d = buildPhysiQPayload();
+  const region = d.r ? d.r.charAt(0).toUpperCase() + d.r.slice(1) : '—';
+
+  const hyps = [...d.h].sort((a, b) => (b.lr ?? 1) - (a.lr ?? 1));
+  const impresion = hyps.length
+    ? hyps.map(h => `  · ${h.name}`).join('\n')
+    : '  · Pendiente de completar la valoración diagnóstica.';
+
+  const seguridad = d.br.length
+    ? `Se han detectado los siguientes signos que recomendamos comentar con su médico de cabecera:\n${d.br.map(b => `  · ${b}`).join('\n')}`
+    : 'No se han detectado signos de alarma (banderas rojas) en el cribado realizado.';
+  const sistemico = d.sq.length
+    ? `\n\nAdemás, durante el cribado el paciente refirió:\n${d.sq.map(s => `  · ${s}`).join('\n')}`
+    : '';
+
+  return `INFORME DE FISIOTERAPIA${d.p ? `\nPaciente: ${d.p}` : ''}
+Fecha: ${d.d}
+Región valorada: ${region}
+
+MOTIVO DE CONSULTA
+${d.mo || '—'}
+Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}
+
+VALORACIÓN
+Intensidad del dolor referida: ${d.nr}/10
+Irritabilidad del cuadro: ${d.ir || '—'}
+Naturaleza del dolor: ${d.na || '—'}
+Riesgo psicosocial: ${d.rp || '—'}
+
+CRIBADO DE SEGURIDAD
+${seguridad}${sistemico}
+
+IMPRESIÓN CLÍNICA
+${impresion}
+
+PLAN DE TRATAMIENTO Y RECOMENDACIONES
+  · Señal para detener el ejercicio: ${d.pn?.variableControl || '—'}
+  · Evolución esperada a las 24h: ${d.pn?.ventanaRecuperacion || '—'}
+  · Cómo incorporarlo a la rutina: ${d.pn?.anclajeHabito || '—'}
+
+—
+Informe generado con PhysiQ-Assessment el ${d.d}.`;
+}
+
+function copyInformeFisioterapia() {
+  navigator.clipboard.writeText(buildInformeFisioterapiaText()).then(() => {
+    showToast('✓ Informe copiado — listo para pegar en tu plantilla', 'success');
+  });
+}
+
 function showCopyFeedback() {
   showToast('✓ Contexto clínico copiado al portapapeles', 'success');
 }
@@ -1973,7 +2028,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getSistem
 // scope, never a module's private scope.
 Object.assign(window, {
   appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
-  finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  copyInformeFisioterapia, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
