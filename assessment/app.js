@@ -242,6 +242,7 @@ function _softResetApp() {
   state.regionChanged = false;
   state.treeModified = false;
   state.motivoConsulta = '';
+  state.edadPaciente = null;
   state.mecanismo = '';
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
@@ -252,7 +253,6 @@ function _softResetApp() {
   state.region = '';
   state.sistemicoAnswers = {};
   state.sistemicoAlerta = false;
-  state.edadPaciente = null;
   state.activeHypotheses = [];
   state.treeAnswers = {};
   state.currentStep = null;
@@ -265,6 +265,8 @@ function _softResetApp() {
   // Phase 1 DOM
   const mConsulta = document.getElementById('motivoConsulta');
   if (mConsulta) mConsulta.value = '';
+  const edadEl = document.getElementById('edadPaciente');
+  if (edadEl) edadEl.value = '';
   document.querySelectorAll('#phase1 .option-btn').forEach(b => b.classList.remove('selected'));
   ['banderaAlert', 'psicoToolSuggest', 'psicoAltoQuestions', 'psicoRecomendacion'].forEach(id => {
     const el = document.getElementById(id);
@@ -792,17 +794,11 @@ function buildSistemaHTML(sis) {
   // above can't express by themselves. Rendered once per system that
   // declares one; evaluated by evaluarCriterioCompuesto() after every
   // relevant answer or edad change, never at build time (answers aren't
-  // known yet here).
+  // known yet here). Edad itself is collected in Fase 1 (#edadPaciente),
+  // not here — this only renders the resulting banner (or a hint when
+  // edad is still missing).
   if (sis.criterioCompuesto) {
-    const edadActual = state.edadPaciente ?? '';
-    html += `
-      <div class="criterio-compuesto-edad">
-        <label for="edadPaciente_${sis.id}">Edad del paciente (años)</label>
-        <input type="number" id="edadPaciente_${sis.id}" min="0" max="120" value="${edadActual}"
-          placeholder="—" oninput="updateEdadPaciente(this.value)">
-        <span class="criterio-compuesto-edad-hint">Necesaria para aplicar el criterio de dolor lumbar inflamatorio de abajo.</span>
-      </div>
-      <div id="criterioCompuesto_${sis.id}" class="criterio-compuesto-alert"></div>`;
+    html += `<div id="criterioCompuesto_${sis.id}" class="criterio-compuesto-alert"></div>`;
   }
 
   // Referred pain zones
@@ -842,11 +838,11 @@ function buildSistemaHTML(sis) {
 
 // Evaluates one system's criterioCompuesto (if it has one) and (re)renders
 // its banner. Uses querySelectorAll rather than getElementById for the
-// banner container and the edad input: buildSistemaHTML's output is
-// inserted twice (desktop tab panel + mobile accordion, see
-// buildSistemicoQuestions), so both markup copies carry the same id and
-// only querySelectorAll reaches both — getElementById would silently only
-// ever touch whichever copy comes first in the DOM.
+// banner container: buildSistemaHTML's output is inserted twice (desktop
+// tab panel + mobile accordion, see buildSistemicoQuestions), so both
+// markup copies carry the same id and only querySelectorAll reaches both —
+// getElementById would silently only ever touch whichever copy comes first
+// in the DOM.
 function evaluarCriterioCompuesto(sis) {
   const criterio = sis.criterioCompuesto;
   if (!criterio) return;
@@ -854,19 +850,22 @@ function evaluarCriterioCompuesto(sis) {
   if (!contenedores.length) return;
 
   const edad = state.edadPaciente;
-  const cumpleFiltro = edad !== null && edad !== undefined && !isNaN(edad)
-    && edad < criterio.filtro.edadMax && state.cronologia === criterio.filtro.evolucion;
+  const edadConocida = edad !== null && edad !== undefined && !isNaN(edad);
+  const cumpleFiltro = edadConocida && edad < criterio.filtro.edadMax && state.cronologia === criterio.filtro.evolucion;
   const positivas = criterio.ids.filter(id => state.sistemicoAnswers[id] === 'SI').length;
   const cumpleCriterio = cumpleFiltro && positivas >= criterio.minPositivas;
 
-  const html = cumpleCriterio
-    ? `<div class="alert alert-warning">
+  let html = '';
+  if (cumpleCriterio) {
+    html = `<div class="alert alert-warning">
         <span class="alert-icon">⚠️</span>
         <div><strong>${criterio.etiqueta}</strong> (${positivas}/${criterio.ids.length})
           <div style="font-size:0.82rem; color:var(--text2); margin-top:4px;">${criterio.nota}</div>
         </div>
-      </div>`
-    : '';
+      </div>`;
+  } else if (!edadConocida) {
+    html = `<div class="criterio-compuesto-hint">Indique la edad del paciente en la Fase 1 para poder aplicar este criterio.</div>`;
+  }
   contenedores.forEach(c => { c.innerHTML = html; });
 }
 
@@ -883,12 +882,6 @@ function evaluarCriteriosCompuestos(regionId) {
 function updateEdadPaciente(value) {
   const edad = value === '' ? null : parseInt(value, 10);
   state.edadPaciente = (edad === null || isNaN(edad)) ? null : edad;
-  // Keep both duplicate inputs (desktop panel + mobile accordion) in sync —
-  // only the one the user typed into gets this event, the other would
-  // otherwise go stale until the next full rebuild.
-  document.querySelectorAll('[id^="edadPaciente_"]').forEach(el => {
-    if (el.value !== value) el.value = value;
-  });
   evaluarCriteriosCompuestos(state.region);
   saveSession();
 }
@@ -1813,6 +1806,7 @@ function showToast(message, tone) {
 function _hasAssessmentData() {
   return state.maxVisitedIdx > 0
     || !!state.motivoConsulta
+    || state.edadPaciente !== null
     || !!state.mecanismo
     || !!state.cronologia
     || !!state.riesgoPsico
@@ -1848,7 +1842,7 @@ function saveSession() {
         if (session) updateSessionChip(session);
         _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient });
         if (state.currentPhase !== 5) {
-          const _hasPhase1Data = state.motivoConsulta || state.mecanismo || state.cronologia || state.riesgoPsico;
+          const _hasPhase1Data = state.motivoConsulta || state.edadPaciente !== null || state.mecanismo || state.cronologia || state.riesgoPsico;
           if (state.maxVisitedIdx > 0 || _hasPhase1Data) {
             const _phaseLabels = [1, 2, 3, 4, '4b', 5];
             _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
@@ -1876,6 +1870,8 @@ function _restoreSessionDOM() {
   const motivoEl = document.getElementById('motivoConsulta');
   if (motivoEl) motivoEl.value = state.motivoConsulta || '';
   syncQuickPhraseChips('motivoConsulta');
+  const edadEl = document.getElementById('edadPaciente');
+  if (edadEl) edadEl.value = state.edadPaciente ?? '';
 
   ['mecanismo', 'cronologia', 'riesgoPsico'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
 

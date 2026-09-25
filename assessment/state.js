@@ -12,6 +12,7 @@ const state = {
   // Fase 1
   patient: '',
   motivoConsulta: '',
+  edadPaciente: null,     // años; input #edadPaciente — usado por criterioCompuesto (fase 2)
   mecanismo: '',
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
@@ -21,7 +22,6 @@ const state = {
   region: '',
   sistemicoAnswers: {},
   sistemicoAlerta: false,
-  edadPaciente: null,       // años; input #edadPaciente_<sisId> (solo se muestra donde hace falta, p. ej. l_espondilo) — usado por criterioCompuesto
   // Fase 3
   severidad: null,
   irritabilidad: { dolor: 'Baja (≤3/10)', reposo: 'Ausente', movimiento: 'Al final del rango con SP', discapacidad: 'Mínima', tolerancia: 'Alta' },

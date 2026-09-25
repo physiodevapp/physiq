@@ -1078,31 +1078,18 @@
   }
 
   /* Composite screening criterion (e.g. Goodman's 2-of-4 inflammatory-back-
-     pain rule) — edad input + its resulting alert, rendered only for systems
-     that declare a criterioCompuesto (see data.js, l_espondilo) */
-  .criterio-compuesto-edad {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px 10px;
+     pain rule) — resulting alert (or missing-edad hint), rendered only for
+     systems that declare a criterioCompuesto (see data.js, l_espondilo).
+     Edad itself is collected in Fase 1 (#edadPaciente). */
+  .criterio-compuesto-hint {
+    color: var(--text3);
+    font-size: 0.78rem;
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 0.7rem 1rem;
+    padding: 0.6rem 1rem;
     margin: 0.4rem 0 0.6rem;
-    font-size: 0.84rem;
   }
-  .criterio-compuesto-edad label { color: var(--text2); }
-  .criterio-compuesto-edad input {
-    width: 64px;
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 6px;
-    padding: 4px 8px;
-    color: var(--text);
-    font: inherit;
-  }
-  .criterio-compuesto-edad-hint { color: var(--text3); font-size: 0.72rem; flex-basis: 100%; }
   .criterio-compuesto-alert:empty { display: none; }
   .criterio-compuesto-alert .alert { margin: 0 0 0.6rem; }
 
