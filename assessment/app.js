@@ -252,6 +252,7 @@ function _softResetApp() {
   state.region = '';
   state.sistemicoAnswers = {};
   state.sistemicoAlerta = false;
+  state.edadPaciente = null;
   state.activeHypotheses = [];
   state.treeAnswers = {};
   state.currentStep = null;
@@ -740,6 +741,7 @@ function buildSistemicoQuestions(regionId) {
   }
 
   wrap.style.display = 'block';
+  evaluarCriteriosCompuestos(regionId);
   updateSistemicoAlert();
 }
 
@@ -785,6 +787,24 @@ function buildSistemaHTML(sis) {
       </div>`;
   });
 
+  // Composite screening criterion (e.g. Goodman's inflammatory-back-pain
+  // 2-of-4 rule) — gated on demographics the individual SI/NO questions
+  // above can't express by themselves. Rendered once per system that
+  // declares one; evaluated by evaluarCriterioCompuesto() after every
+  // relevant answer or edad change, never at build time (answers aren't
+  // known yet here).
+  if (sis.criterioCompuesto) {
+    const edadActual = state.edadPaciente ?? '';
+    html += `
+      <div class="criterio-compuesto-edad">
+        <label for="edadPaciente_${sis.id}">Edad del paciente (años)</label>
+        <input type="number" id="edadPaciente_${sis.id}" min="0" max="120" value="${edadActual}"
+          placeholder="—" oninput="updateEdadPaciente(this.value)">
+        <span class="criterio-compuesto-edad-hint">Necesaria para aplicar el criterio de dolor lumbar inflamatorio de abajo.</span>
+      </div>
+      <div id="criterioCompuesto_${sis.id}" class="criterio-compuesto-alert"></div>`;
+  }
+
   // Referred pain zones
   if (sis.zonasDolor && sis.zonasDolor.length > 0) {
     html += `<div class="screening-section-title" style="margin-top:1rem;">📍 Zonas de Dolor Referido</div>
@@ -818,6 +838,59 @@ function buildSistemaHTML(sis) {
     html += `</div>`;
   }
   return html;
+}
+
+// Evaluates one system's criterioCompuesto (if it has one) and (re)renders
+// its banner. Uses querySelectorAll rather than getElementById for the
+// banner container and the edad input: buildSistemaHTML's output is
+// inserted twice (desktop tab panel + mobile accordion, see
+// buildSistemicoQuestions), so both markup copies carry the same id and
+// only querySelectorAll reaches both — getElementById would silently only
+// ever touch whichever copy comes first in the DOM.
+function evaluarCriterioCompuesto(sis) {
+  const criterio = sis.criterioCompuesto;
+  if (!criterio) return;
+  const contenedores = document.querySelectorAll(`#criterioCompuesto_${sis.id}`);
+  if (!contenedores.length) return;
+
+  const edad = state.edadPaciente;
+  const cumpleFiltro = edad !== null && edad !== undefined && !isNaN(edad)
+    && edad < criterio.filtro.edadMax && state.cronologia === criterio.filtro.evolucion;
+  const positivas = criterio.ids.filter(id => state.sistemicoAnswers[id] === 'SI').length;
+  const cumpleCriterio = cumpleFiltro && positivas >= criterio.minPositivas;
+
+  const html = cumpleCriterio
+    ? `<div class="alert alert-warning">
+        <span class="alert-icon">⚠️</span>
+        <div><strong>${criterio.etiqueta}</strong> (${positivas}/${criterio.ids.length})
+          <div style="font-size:0.82rem; color:var(--text2); margin-top:4px;">${criterio.nota}</div>
+        </div>
+      </div>`
+    : '';
+  contenedores.forEach(c => { c.innerHTML = html; });
+}
+
+// Re-evaluates every criterioCompuesto in the current region — called after
+// building the panels (buildSistemicoQuestions) and after restoring a saved
+// session (_restoreSessionDOM), where sistemicoAnswers/edadPaciente only
+// reach their real values after the panels already exist.
+function evaluarCriteriosCompuestos(regionId) {
+  const data = SYSTEMIC_SCREENING[regionId];
+  if (!data) return;
+  data.sistemas.forEach(sis => { if (sis.criterioCompuesto) evaluarCriterioCompuesto(sis); });
+}
+
+function updateEdadPaciente(value) {
+  const edad = value === '' ? null : parseInt(value, 10);
+  state.edadPaciente = (edad === null || isNaN(edad)) ? null : edad;
+  // Keep both duplicate inputs (desktop panel + mobile accordion) in sync —
+  // only the one the user typed into gets this event, the other would
+  // otherwise go stale until the next full rebuild.
+  document.querySelectorAll('[id^="edadPaciente_"]').forEach(el => {
+    if (el.value !== value) el.value = value;
+  });
+  evaluarCriteriosCompuestos(state.region);
+  saveSession();
 }
 
 function activeSistemaTab(sisId, sistemas) {
@@ -940,6 +1013,7 @@ function selectSistQ(btn, id, value, isAlerta, sisId) {
     const hasAlert = sis.preguntas.some(q => state.sistemicoAnswers[q.id] === 'SI');
     if (tab) tab.classList.toggle('has-alert', hasAlert);
     if (accRow) accRow.classList.toggle('has-alert', hasAlert);
+    if (sis.criterioCompuesto) evaluarCriterioCompuesto(sis);
   }
 
   updateSistemicoAlert();
@@ -1843,6 +1917,7 @@ function _restoreSessionDOM() {
         if (m) btn.classList.toggle('selected', m[1] === answer);
       });
     });
+    evaluarCriteriosCompuestos(state.region);
     updateSistemicoAlert();
     const btnSinss = document.getElementById('btnContinuarSinss');
     if (btnSinss) btnSinss.disabled = false;
@@ -2050,7 +2125,7 @@ Object.assign(window, {
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
-  updateResetBtnVisibility,
+  updateEdadPaciente, updateResetBtnVisibility,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========

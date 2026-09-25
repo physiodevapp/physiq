@@ -650,6 +650,19 @@ export const SYSTEMIC_SCREENING = {
           { id: 'l_e4', text: '¿Tiene diagnóstico de osteoporosis, o ha tenido una fractura reciente ante un golpe menor o sin trauma aparente?', alerta: true },
           { id: 'l_e5', text: '¿Ha notado deformidad ósea, engrosamiento de huesos o ha sido diagnosticado de enfermedad de Paget?', alerta: true }
         ],
+        // Criterio de dolor lumbar inflamatorio de Goodman (cap. 14): válido solo en <45 años
+        // y >3 meses de evolución (proxy: state.cronologia === 'Crónico (>3 meses)'); con 2 de
+        // las 4 preguntas positivas, Sn 70%/Sp 81%; con 3, Sp ≈100%. l5 y l_e2 ya alertan por sí
+        // solas (banderas rojas independientes); l5c/l5d no tienen significado aislado en
+        // Goodman — solo cuentan dentro de este criterio compuesto. Evaluado en app.js
+        // (evaluarCriterioCompuesto), no cambia el `alerta` individual de cada pregunta.
+        criterioCompuesto: {
+          ids: ['l5', 'l_e2', 'l5c', 'l5d'],
+          minPositivas: 2,
+          filtro: { edadMax: 45, evolucion: 'Crónico (>3 meses)' },
+          etiqueta: 'Patrón compatible con dolor lumbar inflamatorio: derivación preferente a reumatología.',
+          nota: 'Criterio de Goodman (cap. 14): 2 de 4 → sensibilidad 70%, especificidad 81%; 3 de 4 → especificidad cercana al 100%. No es un diagnóstico.'
+        },
         zonasDolor: [
           { zona: 'Sacroilíacas (bilateral/alterno)', desc: 'Espondilitis anquilosante, síndrome de Reiter, Crohn' },
           { zona: 'Columna lumbar difusa', desc: 'Fracturas por insuficiencia (osteoporosis), enfermedad de Paget' },
