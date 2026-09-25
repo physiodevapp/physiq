@@ -1069,6 +1069,15 @@ function buildResults() {
   const container = document.getElementById('resultsContent');
   container.innerHTML = '';
 
+  // Outside the hub there's no report app to relay the assessment to — offer
+  // sharing it directly instead of the hub-only "enviado al informe" flow.
+  const btnFinalizar = document.getElementById('btnFinalizar');
+  if (btnFinalizar) {
+    const inHub = document.body.classList.contains('in-hub');
+    btnFinalizar.textContent = inHub ? 'Finalizar valoración →' : '📤 Compartir informe';
+    btnFinalizar.title = inHub ? '' : 'Comparte el resumen clínico por email, WhatsApp, etc.';
+  }
+
   // Sort hypotheses by score
   const sorted = [...state.activeHypotheses]
     .map(h => ({ id: h, score: state.hypothesisScores[h]?.totalLR || 1, hyp: HYPOTHESES[h] }))
@@ -1226,11 +1235,27 @@ function finalizarValoracion() {
   const btn = document.getElementById('btnFinalizar');
   const _assessmentPayload = buildPhysiQPayload();
   const now = new Date();
+  // Always persist — physiq-report reads this from IDB on its own load too,
+  // independent of the broadcast below, so this is never wasted even when
+  // nothing is listening for the broadcast right now (standalone use).
   writeSession({ assessment: _assessmentPayload, patient: state.patient || '', date: now.toLocaleDateString('es-ES') })
     .then(session => {
       if (session) updateSessionChip(session);
       _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT', assessment: _assessmentPayload });
     });
+
+  // Outside the hub there's no report app around to relay to — share the
+  // summary directly instead of the "enviado al informe" confirmation.
+  if (!document.body.classList.contains('in-hub')) {
+    const text = buildContextSummaryText();
+    if (navigator.share) {
+      navigator.share({ title: 'Informe de valoración — PhysiQ', text }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text).then(() => showToast('✓ Informe copiado al portapapeles', 'success'));
+    }
+    return;
+  }
+
   if (btn) {
     btn.textContent = '✓ Enviado al informe';
     btn.disabled = true;
@@ -1593,10 +1618,10 @@ function buildPhysiQPayload() {
 }
 
 
-function copyContextToClipboard() {
+function buildContextSummaryText() {
   const d = buildPhysiQPayload();
   const hyps = (d.h || []).map(h => `  · ${h.name} — ${h.sc}`).join('\n');
-  const text = `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}
+  return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}
 Región: ${d.r} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}
 Hipótesis:
@@ -1604,7 +1629,10 @@ ${hyps}
 Variable control: ${d.pn?.variableControl || '—'}
 Ventana recuperación: ${d.pn?.ventanaRecuperacion || '—'}
 Anclaje hábito: ${d.pn?.anclajeHabito || '—'}`;
-  navigator.clipboard.writeText(text).then(() => {
+}
+
+function copyContextToClipboard() {
+  navigator.clipboard.writeText(buildContextSummaryText()).then(() => {
     showCopyFeedback();
   });
 }
