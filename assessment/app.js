@@ -1249,7 +1249,7 @@ function finalizarValoracion() {
   if (!document.body.classList.contains('in-hub')) {
     const text = buildContextSummaryText();
     if (navigator.share) {
-      navigator.share({ title: 'Informe de valoración — PhysiQ', text }).catch(() => {});
+      navigator.share({ title: 'Informe de valoración — PhysiQ-Assessment', text }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text).then(() => showToast('✓ Informe copiado al portapapeles', 'success'));
     }
