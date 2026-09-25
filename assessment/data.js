@@ -86,7 +86,7 @@ const SIS_HEMATOLOGICO = {
   ]
 };
 
-const SYSTEMIC_SCREENING = {
+export const SYSTEMIC_SCREENING = {
   hombro: {
     label: 'Hombro y Cuadrante Superior',
     sistemas: [
@@ -793,7 +793,7 @@ const SYSTEMIC_SCREENING = {
 // CIF TREES — Algoritmos de decisión por región
 // ============================================================
 
-const CIF_TREES = {
+export const CIF_TREES = {
 
   hombro: {
     title: 'Algoritmo CIF — Hombro',
@@ -1101,7 +1101,7 @@ const CIF_TREES = {
 // HYPOTHESES — Cuadros clínicos con tests y datos diagnósticos
 // ============================================================
 
-const HYPOTHESES = {
+export const HYPOTHESES = {
 
   // ─── HOMBRO ─────────────────────────────────────────────
   h1: {
@@ -1654,10 +1654,10 @@ const HYPOTHESES = {
 };
 
 
-const NRS_LABELS = ['Sin dolor','Dolor muy leve','Dolor leve','Dolor leve-moderado','Dolor moderado','Dolor moderado','Dolor moderado-intenso','Dolor intenso','Dolor intenso','Dolor muy intenso','Dolor máximo'];
-const NRS_CLASSES = ['nrs-0','nrs-1','nrs-2','nrs-3','nrs-4','nrs-5','nrs-6','nrs-7','nrs-8','nrs-9','nrs-10'];
+export const NRS_LABELS = ['Sin dolor','Dolor muy leve','Dolor leve','Dolor leve-moderado','Dolor moderado','Dolor moderado','Dolor moderado-intenso','Dolor intenso','Dolor intenso','Dolor muy intenso','Dolor máximo'];
+export const NRS_CLASSES = ['nrs-0','nrs-1','nrs-2','nrs-3','nrs-4','nrs-5','nrs-6','nrs-7','nrs-8','nrs-9','nrs-10'];
 
-const PHASE_DEFS = [
+export const PHASE_DEFS = [
   { n: 1,    label: 'Triage y Cabecera',       short: 'Fase 1' },
   { n: 2,    label: 'Cribado Sistémico',        short: 'Fase 2' },
   { n: 3,    label: 'SINSS',                    short: 'Fase 3' },
@@ -1668,7 +1668,7 @@ const PHASE_DEFS = [
 
 // Frases clínicas predefinidas para los chips de entrada rápida en campos de texto libre.
 // Clave = id del campo (#id del textarea). Tocar un chip añade la frase al campo; sigue siendo editable.
-const QUICK_PHRASES = {
+export const QUICK_PHRASES = {
   motivoConsulta: [
     'Dolor de inicio traumático tras caída',
     'Dolor de inicio insidioso y progresivo',

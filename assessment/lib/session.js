@@ -15,7 +15,7 @@ function openSessionDB() {
   });
 }
 
-function readSession() {
+export function readSession() {
   return openSessionDB().then(db => new Promise(resolve => {
     const tx  = db.transaction('session', 'readonly');
     const get = tx.objectStore('session').get('active');
@@ -28,7 +28,7 @@ function readSession() {
   })).catch(() => null);
 }
 
-function writeSession(patch) {
+export function writeSession(patch) {
   return openSessionDB().then(db => new Promise((resolve, reject) => {
     const tx    = db.transaction('session', 'readwrite');
     const store = tx.objectStore('session');
@@ -48,7 +48,7 @@ function writeSession(patch) {
   })).catch(() => null);
 }
 
-function updateSession(patch) {
+export function updateSession(patch) {
   return openSessionDB().then(db => new Promise((resolve, reject) => {
     const tx    = db.transaction('session', 'readwrite');
     const store = tx.objectStore('session');
@@ -66,7 +66,7 @@ function updateSession(patch) {
   })).catch(() => null);
 }
 
-function clearSession() {
+export function clearSession() {
   return openSessionDB().then(db => new Promise(resolve => {
     const tx = db.transaction('session', 'readwrite');
     tx.objectStore('session').delete('active');

@@ -2,8 +2,11 @@
 // PhysiQ-Assessment · PHASE4.JS
 // Algoritmo CIF — árbol de decisión clínica
 // ============================================================
+import { CIF_TREES, HYPOTHESES } from './data.js';
+import { state } from './state.js';
+import { saveSession, showConfirmBanner, paintNav } from './app.js';
 
-function initCIFTree() {
+export function initCIFTree() {
   if (!state.region) {
     document.getElementById('cifTree').innerHTML = `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><span>Por favor, seleccione una región en la Fase 2 antes de continuar.</span></div>`;
     return;
@@ -27,7 +30,7 @@ function initCIFTree() {
   renderStep(tree.steps[0]);
 }
 
-function restoreCIFTree(tree) {
+export function restoreCIFTree(tree) {
   // Re-renderiza el árbol con las respuestas guardadas en state.treeAnswers
   document.getElementById('cifTree').innerHTML = '';
   document.getElementById('btnGoConfirm').disabled = true; document.getElementById('btnGoConfirm').style.opacity = '';
@@ -85,7 +88,7 @@ function restoreCIFTree(tree) {
   checkTreeComplete(tree);
 }
 
-function resetCIFTree() {
+export function resetCIFTree() {
   showConfirmBanner(
     '↺ Reiniciar árbol de decisión',
     'Se perderán las respuestas del árbol y los tests de hipótesis. Los datos de triage, cribado y SINSS se mantienen.',
@@ -106,7 +109,7 @@ function resetCIFTree() {
   );
 }
 
-function renderStep(step) {
+export function renderStep(step) {
   const container = document.getElementById('cifTree');
   const existing = document.getElementById(step.id);
   if (existing) return; // already rendered
@@ -133,7 +136,7 @@ function renderStep(step) {
   }, 50);
 }
 
-function selectTreeOption(stepId, optIdx, value) {
+export function selectTreeOption(stepId, optIdx, value) {
   const tree = CIF_TREES[state.region];
   const stepIdx = tree.steps.findIndex(s => s.id === stepId);
   const step = tree.steps[stepIdx];
@@ -183,7 +186,7 @@ function selectTreeOption(stepId, optIdx, value) {
 }
 
 // Elimina del DOM y del state todos los pasos a partir de fromIdx
-function pruneTreeFrom(fromIdx, tree) {
+export function pruneTreeFrom(fromIdx, tree) {
   for (let i = fromIdx; i < tree.steps.length; i++) {
     const stepEl = document.getElementById(tree.steps[i].id);
     if (stepEl) stepEl.remove();
@@ -201,7 +204,7 @@ function pruneTreeFrom(fromIdx, tree) {
 }
 
 // Reconstruye activeHypotheses desde las respuestas actuales en state.treeAnswers
-function rebuildHypotheses(tree) {
+export function rebuildHypotheses(tree) {
   state.activeHypotheses = [];
   tree.steps.forEach(step => {
     const savedValue = state.treeAnswers[step.id];
@@ -214,7 +217,7 @@ function rebuildHypotheses(tree) {
   });
 }
 
-function checkTreeComplete(tree) {
+export function checkTreeComplete(tree) {
   const renderedSteps = tree.steps.filter(s => document.getElementById(s.id));
   const allAnswered = renderedSteps.every(s => state.treeAnswers[s.id] !== undefined);
   if (allAnswered && renderedSteps.length > 0) {
@@ -222,7 +225,7 @@ function checkTreeComplete(tree) {
   }
 }
 
-function showTreeComplete() {
+export function showTreeComplete() {
   const container = document.getElementById('cifTree');
   const existing = document.getElementById('treeComplete');
   if (existing) existing.remove();
@@ -242,3 +245,9 @@ function showTreeComplete() {
   document.getElementById('btnGoConfirm').disabled = false;
   div.scrollIntoView({ behavior: 'smooth' });
 }
+
+// Exposed for inline onclick attributes (index.html static markup + this
+// file's own dynamically-generated HTML) — those resolve only against the
+// global scope, never a module's private scope.
+window.resetCIFTree = resetCIFTree;
+window.selectTreeOption = selectTreeOption;

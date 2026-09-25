@@ -2,8 +2,11 @@
 // PhysiQ-Assessment · PHASE4B.JS
 // Confirmación de hipótesis — scoring bayesiano con LR
 // ============================================================
+import { HYPOTHESES } from './data.js';
+import { state } from './state.js';
+import { saveSession, showConfirmBanner } from './app.js';
 
-function buildHypothesisCards() {
+export function buildHypothesisCards() {
   const container = document.getElementById('hypothesisCards');
   container.innerHTML = '';
 
@@ -61,7 +64,7 @@ function buildHypothesisCards() {
   });
 }
 
-function buildTestItem(hId, test, idx) {
+export function buildTestItem(hId, test, idx) {
   const hasStats = test.sn || test.sp || test.lr_pos || test.lr_neg;
   const statsHtml = hasStats
     ? `<div class="test-stats">
@@ -88,7 +91,7 @@ function buildTestItem(hId, test, idx) {
 let _hypObserver = null;
 let _activeHypId = null;
 
-function toggleHypCard(hId) {
+export function toggleHypCard(hId) {
   const card = document.getElementById(`hypcard_${hId}`);
   const isOpen = card.classList.contains('open');
 
@@ -117,7 +120,7 @@ function toggleHypCard(hId) {
   }
 }
 
-function setupHypObserver(hId) {
+export function setupHypObserver(hId) {
   teardownHypObserver();
   _activeHypId = hId;
   const card = document.getElementById(`hypcard_${hId}`);
@@ -150,7 +153,7 @@ function setupHypObserver(hId) {
   _hypObserver.observe(header);
 }
 
-function refreshHypBanner(hId) {
+export function refreshHypBanner(hId) {
   const card = document.getElementById(`hypcard_${hId}`);
   if (!card) return;
   const dot = card.querySelector('.hyp-color-dot');
@@ -162,14 +165,14 @@ function refreshHypBanner(hId) {
   if (bannerName) bannerName.textContent = name.textContent;
 }
 
-function teardownHypObserver() {
+export function teardownHypObserver() {
   if (_hypObserver) { _hypObserver.disconnect(); _hypObserver = null; }
   _activeHypId = null;
   const banner = document.getElementById('hypContextBanner');
   if (banner) banner.classList.remove('visible');
 }
 
-function restoreHypObserver() {
+export function restoreHypObserver() {
   // Find any open hypothesis card and restore its observer
   const openCard = document.querySelector('.hypothesis-card.open');
   if (!openCard) return;
@@ -177,7 +180,7 @@ function restoreHypObserver() {
   setupHypObserver(hId);
 }
 
-function scrollToActiveHypHeader() {
+export function scrollToActiveHypHeader() {
   if (!_activeHypId) return;
   const card = document.getElementById(`hypcard_${_activeHypId}`);
   const header = card.querySelector('.hypothesis-header');
@@ -188,7 +191,7 @@ function scrollToActiveHypHeader() {
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
-function clearAllTests() {
+export function clearAllTests() {
   showConfirmBanner(
     '⊘ Limpiar resultados de tests',
     'Se resetearán todos los resultados a "Sin datos". Las hipótesis identificadas se mantendrán.',
@@ -218,7 +221,7 @@ function clearAllTests() {
   );
 }
 
-function setTestResult(hId, idx, result, btn) {
+export function setTestResult(hId, idx, result, btn) {
   const row = btn.closest('.test-result-btns');
   row.querySelectorAll('.test-result-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -236,7 +239,7 @@ function setTestResult(hId, idx, result, btn) {
   saveSession();
 }
 
-function calcLRScore(hyp, results) {
+export function calcLRScore(hyp, results) {
   let totalLR = 1.0, evaluatedCount = 0, positiveCount = 0, hasHighLR = false;
   hyp.tests.forEach((test, i) => {
     const res = results[i];
@@ -265,7 +268,7 @@ function calcLRScore(hyp, results) {
   return { totalLR, label, colorClass, evaluatedCount };
 }
 
-function recalcHypScore(hId) {
+export function recalcHypScore(hId) {
   const hyp = HYPOTHESES[hId];
   const results = state.testResults[hId];
   if (!hyp || !results) return;
@@ -275,3 +278,11 @@ function recalcHypScore(hId) {
   card.className = `hypothesis-card ${colorClass}`;
   document.getElementById(`score_${hId}`).textContent = label;
 }
+
+// Exposed for inline onclick attributes (index.html static markup + this
+// file's own dynamically-generated HTML) — those resolve only against the
+// global scope, never a module's private scope.
+window.toggleHypCard = toggleHypCard;
+window.clearAllTests = clearAllTests;
+window.setTestResult = setTestResult;
+window.scrollToActiveHypHeader = scrollToActiveHypHeader;

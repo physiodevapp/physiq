@@ -2,6 +2,11 @@
 // PhysiQ-Assessment · APP.js
 // Lógica principal de la aplicación
 // ============================================================
+import { state } from './state.js';
+import { SYSTEMIC_SCREENING, HYPOTHESES, PHASE_DEFS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
+import { initCIFTree } from './phase4.js';
+import { buildHypothesisCards, teardownHypObserver, restoreHypObserver } from './phase4b.js';
+import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
 // Reference-counted: several overlays (confirm-banner, session panel,
@@ -20,52 +25,6 @@ function unlockBodyScroll() {
     document.body.style.overflow = '';
   }
 }
-
-// ─── STATE ───────────────────────────────────────────────────
-const state = {
-  currentPhase: 1,
-  // Navegación
-  maxVisitedIdx: 0,       // índice más alto visitado en la sesión
-  regionChanged: false,   // región cambiada sin haber rehecho el árbol
-  treeModified: false,    // árbol modificado sin haber rehecho 4b
-  // Fase 1
-  patient: '',
-  motivoConsulta: '',
-  mecanismo: '',
-  cronologia: '',
-  banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
-  riesgoPsico: '',
-  psico_miedo: '', psico_autoef: '', psico_emocional: '',
-  // Fase 2
-  region: '',
-  sistemicoAnswers: {},
-  sistemicoAlerta: false,
-  // Fase 3
-  severidad: null,
-  irritabilidad: { dolor: 'Baja (≤3/10)', reposo: 'Ausente', movimiento: 'Al final del rango con SP', discapacidad: 'Mínima', tolerancia: 'Alta' },
-  irritabilidadNivel: 'Baja',
-  naturaleza: '',
-  estadio: '',
-  estabilidad: '',
-  signoComparable: '',
-  // Fase 4
-  activeHypotheses: [],
-  treeAnswers: {},
-  currentStep: null,
-  stepsCompleted: [],
-  // Fase 4b
-  testResults: {},
-  hypothesisScores: {},
-  // Fase 5
-  resultsBuilt: false,
-  // Notas del Plan
-  planNotes: {
-    variableControl: '',
-    ventanaRecuperacion: '',
-    anclajeHabito: ''
-  },
-  rom: null   // payload importado desde PhysiQ-Motion vía ?rom=
-};
 
 // ─── HISTORY / BACK-BUTTON NAVIGATION ────────────────────────
 let _handlingPopState = false;
@@ -1938,6 +1897,60 @@ document.addEventListener('DOMContentLoaded', () => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
+
+// ─── HUB INTEGRATION ─────────────────────────────────────────
+// physiq-assessment runs inside an iframe in the PhysiQ hub. Moved here (was
+// a trailing inline <script> in index.html) so it can reference module-scoped
+// state (_historyDepth, _pendingBackNav, _closeAllOverlays) directly instead
+// of needing them exposed on window.
+function _initHubIntegration() {
+  if (window.self === window.top) return;
+  document.body.classList.add('in-hub');
+  document.querySelector('.logo-main').addEventListener('click', () => {
+    window.parent.postMessage({ type: 'PHYSIQ_GO_HOME' }, '*');
+  });
+  // When the hub re-shows this iframe, rebuild the phase history stack so
+  // swipe-back steps through phases (phase N → … → phase 1 → hub home).
+  // Only replaceState+pushState — never history.go() inside an iframe, as
+  // iOS Safari merges iframe and top-level history into one stack.
+  window.addEventListener('message', e => {
+    // The hub only toggles the `hidden` attribute on satellite iframes — it
+    // never navigates away — so document.visibilitychange (tab-level) never
+    // fires here. The hub tells us explicitly when it's about to hide us so
+    // any open dialog (delete session, edit patient name…) doesn't linger.
+    if (e.data?.type === 'PHYSIQ_SAT_HIDDEN') {
+      saveSession();
+      _closeAllOverlays();
+      return;
+    }
+    if (e.data?.type !== 'PHYSIQ_SAT_VISIBLE') return;
+    if (_pendingBackNav) return;
+    const _phaseOrder = [1, 2, 3, 4, '4b', 5];
+    const _phaseIdx = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
+    const targetIdx = _phaseIdx[state.currentPhase] ?? 0;
+    history.replaceState({ phase: 1 }, '');
+    for (let i = 1; i <= targetIdx; i++) history.pushState({ phase: _phaseOrder[i] }, '');
+    _historyDepth = targetIdx;
+  });
+}
+_initHubIntegration();
+
+// ─── PUBLIC API ──────────────────────────────────────────────
+// Named exports for phase4.js / phase4b.js (which import these directly) and
+// for tests/unit.js.
+export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getSistemicoAffirmativeTexts };
+
+// Exposed on window for inline onclick/oninput attributes across index.html
+// and dynamically-generated HTML — those resolve only against the global
+// scope, never a module's private scope.
+Object.assign(window, {
+  appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
+  finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
+  selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
+  toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
+  updateResetBtnVisibility,
+});
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========
 (function () {
