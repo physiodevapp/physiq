@@ -141,15 +141,29 @@ export function selectTreeOption(stepId, optIdx, value) {
   const stepIdx = tree.steps.findIndex(s => s.id === stepId);
   const step = tree.steps[stepIdx];
   const opt = step.options[optIdx];
+  const optGroup = document.getElementById(`opts_${stepId}`);
+  const prevValue = state.treeAnswers[stepId];
+
+  // Clicking the already-selected option again un-answers this step instead
+  // of re-selecting it — same downstream pruning as changing to a different
+  // answer, but this step itself goes back to unanswered rather than staying
+  // selected. Otherwise the only way to undo a step is "↺ Reiniciar árbol",
+  // which throws away every other answer too.
+  if (prevValue === value) {
+    delete state.treeAnswers[stepId];
+    pruneTreeFrom(stepIdx + 1, tree);
+    optGroup.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    rebuildHypotheses(tree);
+    saveSession();
+    return;
+  }
 
   // Si ya había una respuesta distinta en este paso, limpiar pasos posteriores
-  const prevValue = state.treeAnswers[stepId];
-  if (prevValue !== undefined && prevValue !== value) {
+  if (prevValue !== undefined) {
     pruneTreeFrom(stepIdx + 1, tree);
   }
 
   // Marcar seleccionado — mantener botones activos para permitir cambio
-  const optGroup = document.getElementById(`opts_${stepId}`);
   optGroup.querySelectorAll('.option-btn').forEach((b, i) => {
     b.classList.toggle('selected', i === optIdx);
     b.style.opacity = '1'; // Todos visibles y clicables

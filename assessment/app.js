@@ -488,11 +488,18 @@ function toggleDictation(btn) {
 // ─── PHASE 1 HELPERS ─────────────────────────────────────────
 function selectOption(groupId, btn, value) {
   const group = document.getElementById(groupId);
+  const alreadySelected = btn.classList.contains('selected');
   if (group) {
     group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   }
-  btn.classList.add('selected');
-  state[groupId] = value;
+  if (alreadySelected) {
+    // Clicking the selected option again un-answers this field instead of
+    // re-selecting it — the only way to undo it otherwise is a full reset.
+    state[groupId] = '';
+  } else {
+    btn.classList.add('selected');
+    state[groupId] = value;
+  }
   if (groupId === 'psico_miedo' || groupId === 'psico_autoef' || groupId === 'psico_emocional') {
     updatePsicoRecomendacion();
   }
@@ -514,12 +521,22 @@ function checkBanderasRojas() {
 }
 
 function selectPsico(btn, value) {
+  const alreadySelected = btn.classList.contains('selected');
   document.querySelectorAll('#riesgoPsico .option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.riesgoPsico = value;
 
   const suggest = document.getElementById('psicoToolSuggest');
   const altoQ = document.getElementById('psicoAltoQuestions');
+
+  if (alreadySelected) {
+    state.riesgoPsico = '';
+    suggest.style.display = 'none';
+    altoQ.style.display = 'none';
+    saveSession();
+    return;
+  }
+
+  btn.classList.add('selected');
+  state.riesgoPsico = value;
 
   // Will update after region is known — show generic for now
   suggest.style.display = 'block';
