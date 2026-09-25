@@ -3,7 +3,7 @@
 // Lógica principal de la aplicación
 // ============================================================
 import { state } from './state.js';
-import { SYSTEMIC_SCREENING, HYPOTHESES, PHASE_DEFS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
+import { SYSTEMIC_SCREENING, HYPOTHESES, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree } from './phase4.js';
 import { buildHypothesisCards, teardownHypObserver, restoreHypObserver } from './phase4b.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';

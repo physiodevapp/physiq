@@ -1703,4 +1703,4 @@ export const QUICK_PHRASES = {
     'Vincular a un desplazamiento habitual (coche, transporte)'
   ]
 };
-const PHASE_NAV_IDS = { 1:'nav1', 2:'nav2', 3:'nav3', 4:'nav4', '4b':'nav4b', 5:'nav5' };
+export const PHASE_NAV_IDS = { 1:'nav1', 2:'nav2', 3:'nav3', 4:'nav4', '4b':'nav4b', 5:'nav5' };
