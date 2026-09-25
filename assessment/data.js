@@ -792,7 +792,41 @@ export const SYSTEMIC_SCREENING = {
 // ============================================================
 // CIF TREES — Algoritmos de decisión por región
 // ============================================================
-
+//
+// Esquema (motor: initCIFTree/renderStep/selectTreeOption/pruneTreeFrom/
+// rebuildHypotheses en phase4.js — validado en tests/unit.js, sección
+// "CIF_TREES data integrity"):
+//
+// CIF_TREES = {
+//   [region]: {                     // clave = una de las 6 regiones válidas
+//                                    // (hombro|cadera|cervical|lumbar|rodilla|codo)
+//     title: string,                // título mostrado en #phase4Title
+//     steps: [                      // orden = orden secuencial por defecto
+//       {
+//         id: string,                // único dentro del árbol (id del <div> renderizado)
+//         tag: string,                // etiqueta corta ("Paso N — ...")
+//         question: string,           // texto de la pregunta
+//         options: [
+//           {
+//             label: string,          // texto del botón
+//             value: string,          // valor persistido en state.treeAnswers[step.id]
+//             next: string | null,    // id de otro step del MISMO árbol a renderizar
+//                                      // a continuación; si es null/omitido, el motor
+//                                      // renderiza steps[idx+1] (siguiente en el array)
+//                                      // cuando existe — la mayoría de opciones lo dejan
+//                                      // así y avanzan siempre de forma secuencial, no
+//                                      // solo la rama "no". `next` explícito solo hace
+//                                      // falta para SALTAR a un step que no es el
+//                                      // siguiente del array.
+//             hypothesis: string[]    // ids de HYPOTHESES que esta opción activa
+//                                      // (deben existir y pertenecer a esta misma región)
+//           }, ...
+//         ]
+//       }, ...
+//     ]
+//   }
+// }
+//
 export const CIF_TREES = {
 
   hombro: {
@@ -1100,7 +1134,35 @@ export const CIF_TREES = {
 // ============================================================
 // HYPOTHESES — Cuadros clínicos con tests y datos diagnósticos
 // ============================================================
-
+//
+// Esquema (motor: buildHypothesisCards/calcLRScore/recalcHypScore en
+// phase4b.js — validado en tests/unit.js, sección "HYPOTHESES data integrity"):
+//
+// HYPOTHESES = {
+//   [id]: {                    // clave = HYPOTHESES[id].id (deben coincidir)
+//     id: string,               // debe ser igual a la clave del objeto
+//     region: string,           // una de las 6 regiones válidas — debe coincidir
+//                                // con la región de todo CIF_TREES[region] que
+//                                // referencie este id en un option.hypothesis
+//     num: string,               // numeral visual ('①', '②', ...), solo decorativo
+//     name: string,               // nombre del cuadro clínico
+//     prom: string,               // PROM recomendado (texto libre)
+//     dosis: string,              // pauta de tratamiento (texto libre)
+//     tests: [
+//       {
+//         name: string,           // nombre del test ortopédico
+//         sn: string | null,      // sensibilidad (texto, p.ej. '76%'), null si no hay dato
+//         sp: string | null,      // especificidad, null si no hay dato
+//         lr_pos: string | null,  // LR+ — string numérico parseable con parseFloat,
+//                                  // o null; calcLRScore usa 1.5 como fallback si es null
+//         lr_neg: string | null,  // LR− — igual que lr_pos; fallback 0.5 si es null
+//         criterio: string,       // criterio de positividad (texto libre)
+//         noData?: boolean        // opcional, solo decorativo (aviso "datos limitados")
+//       }, ...
+//     ]                          // no puede estar vacío
+//   }
+// }
+//
 export const HYPOTHESES = {
 
   // ─── HOMBRO ─────────────────────────────────────────────
