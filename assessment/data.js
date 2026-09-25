@@ -259,7 +259,7 @@ export const SYSTEMIC_SCREENING = {
         preguntas: [
           { id: 'h_gi1', text: '¿El dolor de hombro aumenta o aparece 1-2 horas después de comer, especialmente comidas grasas?', alerta: true, s1: true },
           { id: 'h_gi2', text: '¿Ha notado cambios en el color de la orina (más oscura, como té o cola) o en las heces (muy claras, como arcilla)?', alerta: true },
-          { id: 'h_gi3', text: '¿Aumenta el dolor de hombro de 2 a 4 horas tras tomar antiinflamatorios (AINEs)?', alerta: true }
+          { id: 'h_gi3', text: 'Si toma antiinflamatorios (AINEs), ¿el dolor de hombro aumenta en las horas siguientes en vez de mejorar?', alerta: true }
         ],
         zonasDolor: [
           { zona: 'Hombro derecho', desc: 'Colecistitis, vesícula biliar, hígado (n. frénico → diafragma)' },
@@ -641,7 +641,7 @@ export const SYSTEMIC_SCREENING = {
           'Engrosamiento óseo palpable o deformidad (Paget)'
         ],
         preguntas: [
-          { id: 'l5', text: '¿Tiene rigidez matutina prolongada (más de 30 minutos) que mejora con el movimiento y el calor?', alerta: true, s1: true },
+          { id: 'l5', text: '¿Tiene rigidez matutina prolongada (más de 30 minutos) que mejora con el movimiento?', alerta: true, s1: true },
           { id: 'l_e2', text: '¿El dolor sacroilíaco lo despierta en la segunda mitad de la noche (entre las 2 y las 5 am)?', alerta: true, s1: true },
           { id: 'l_e3', text: '¿El dolor pélvico está claramente relacionado con el ciclo menstrual, o tiene sangrado ginecológico inusual?', alerta: true, s1: true },
           { id: 'l_e4', text: '¿Tiene diagnóstico de osteoporosis, o ha tenido una fractura reciente ante un golpe menor o sin trauma aparente?', alerta: true },
@@ -707,7 +707,7 @@ export const SYSTEMIC_SCREENING = {
         impactoEjercicio: ['Contraindicación absoluta de carga hasta confirmación diagnóstica']
       },
       {
-        id: 'ro_oncologico', icon: '🔬', nombre: 'Oncológico',
+        id: 'ro_oncologico', icon: '🔬', nombre: 'Oncológico / Hematológico',
         banderasRojas: [
           'Dolor nocturno constante e intenso sin alivio postural',
           'Masa o bulto palpable en zona periarticular',
@@ -717,7 +717,7 @@ export const SYSTEMIC_SCREENING = {
         preguntas: [
           { id: 'r2', text: '¿El dolor es constante, nocturno, intenso y no se alivia con ninguna posición ni reposo?', alerta: true },
           { id: 'r3', text: '¿Tiene antecedentes de cáncer o ha notado algún bulto en la zona de la rodilla o muslo?', alerta: true },
-          { id: 'r4', text: '¿Ha tenido episodios de hinchazón articular rápida después de un traumatismo menor?', alerta: false }
+          { id: 'r4', text: '¿Ha tenido episodios de hinchazón articular después de un traumatismo menor?', alerta: false }
         ],
         zonasDolor: [{ zona: 'Rodilla / Fémur distal / Tibia proximal', desc: 'Osteosarcoma, metástasis' }],
         impactoDescanso: ['Dolor óseo nocturno que despierta — señal de alarma principal'],
