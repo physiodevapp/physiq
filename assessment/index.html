@@ -521,11 +521,11 @@
 <!-- ==================== FASE 5: RESULTADOS ==================== -->
 <div class="phase-container" id="phase5">
   <div class="phase-header">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0.5rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0.5rem;flex-wrap:wrap;">
       <h1 class="phase-title" style="margin-bottom:0;">Informe de Valoración</h1>
       <div style="display:flex;gap:8px;flex-shrink:0;">
-        <button onclick="copyInformeFisioterapia()" title="Copiar informe para el paciente y su médico de cabecera" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:6px 10px;font-size:0.75rem;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:'DM Mono',monospace;">📄 Informe</button>
-        <button onclick="copyContextToClipboard()" title="Copiar contexto clínico" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:6px 10px;font-size:0.75rem;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:'DM Mono',monospace;">📋 Copiar</button>
+        <button class="phase5-copy-btn" onclick="copyInformeFisioterapia()" title="Copiar informe para el paciente y su médico de cabecera">📄 <span class="btn-text-full">Copiar informe</span><span class="btn-text-short">Informe</span></button>
+        <button class="phase5-copy-btn" onclick="copyContextToClipboard()" title="Copiar notas clínicas">📋 <span class="btn-text-full">Copiar notas</span><span class="btn-text-short">Notas</span></button>
       </div>
     </div>
     <p class="phase-subtitle">Resumen clínico completo generado a partir de la valoración.</p>

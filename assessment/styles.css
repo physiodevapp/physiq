@@ -766,6 +766,26 @@
   .test-result-btn.nd.selected { background: rgba(90,110,138,0.2); border-color: var(--text3); color: var(--text2); }
   .test-result-btn:hover { border-color: var(--text2); color: var(--text2); }
 
+  /* Phase 5 header actions — "Copiar informe" (patient/GP) vs "Copiar notas"
+     (clinician shorthand); full wording on wider screens, short single-word
+     labels under 480px so both buttons + the title fit without overflowing. */
+  .phase5-copy-btn {
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    color: var(--text2);
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+  .phase5-copy-btn .btn-text-short { display: none; }
+  @media (max-width: 480px) {
+    .phase5-copy-btn .btn-text-full { display: none; }
+    .phase5-copy-btn .btn-text-short { display: inline; }
+  }
+
   /* Summary / Results */
   .summary-section {
     background: var(--surface);
