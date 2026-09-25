@@ -588,7 +588,8 @@ export const SYSTEMIC_SCREENING = {
         preguntas: [
           { id: 'l4', text: '¿Ha notado cambios en la orina (color rojo, marrón, turbio) o fiebre/escalofríos junto con el dolor de espalda?', alerta: true, s1: true },
           { id: 'l6', text: '¿Presenta incontinencia urinaria o intestinal, o pérdida de sensibilidad en la zona de "silla de montar"?', alerta: true, s1: true },
-          { id: 'l_u3', text: '¿Se levanta durante la noche para orinar más de una vez, o tiene dolor/ardor al orinar?', alerta: false }
+          { id: 'l_u3a', text: '¿En las últimas 3–4 semanas ha notado ardor o dolor al orinar?', alerta: true },
+          { id: 'l_u3b', text: '¿Desde hace poco se levanta a orinar más de una vez cada noche, sin que haya cambiado lo que bebe antes de acostarse?', alerta: true }
         ],
         zonasDolor: [
           { zona: 'Lumbar posterior (flanco)', desc: 'Riñones → ángulo costovertebral' },
@@ -642,6 +643,8 @@ export const SYSTEMIC_SCREENING = {
         ],
         preguntas: [
           { id: 'l5', text: '¿Tiene rigidez matutina prolongada (más de 30 minutos) que mejora con el movimiento?', alerta: true, s1: true },
+          { id: 'l5c', text: '¿El dolor cambia de un glúteo a otro, unas veces en un lado y otras en el otro?', alerta: false },
+          { id: 'l5d', text: '¿El dolor sigue igual o empeora cuando descansa, en lugar de aliviarse?', alerta: false },
           { id: 'l_e2', text: '¿El dolor sacroilíaco lo despierta en la segunda mitad de la noche (entre las 2 y las 5 am)?', alerta: true, s1: true },
           { id: 'l_e3', text: '¿El dolor pélvico está claramente relacionado con el ciclo menstrual, o tiene sangrado ginecológico inusual?', alerta: true, s1: true },
           { id: 'l_e4', text: '¿Tiene diagnóstico de osteoporosis, o ha tenido una fractura reciente ante un golpe menor o sin trauma aparente?', alerta: true },
@@ -740,8 +743,12 @@ export const SYSTEMIC_SCREENING = {
         ],
         banderasAmarillas: ['Parestesias en 4º y 5º dedo sin dolor localizado en codo'],
         preguntas: [
-          { id: 'co4', text: '¿Ha notado cambios de color en la mano o dedos (palidez, azulado) con el frío, o adormecimiento sin dolor?', alerta: false },
-          { id: 'co3', text: '¿Tiene debilidad progresiva en el brazo o la mano que no se relaciona con el dolor local del codo?', alerta: true }
+          { id: 'co4a', text: '¿Se le ponen los dedos blancos o azules con el frío o con los nervios?', alerta: false },
+          { id: 'co4a_uni', text: 'Si se le ponen los dedos blancos o azules con el frío, ¿le pasa solo en una mano?', alerta: true },
+          { id: 'co4a_prog', text: 'Si se le ponen los dedos blancos o azules con el frío, ¿empezó hace menos de 2 años o ha ido a peor?', alerta: true },
+          { id: 'co4b', text: '¿Tiene zonas del brazo o de la mano dormidas o con menos sensibilidad, aunque no le duelan?', alerta: false },
+          { id: 'co3', text: '¿Tiene debilidad progresiva en el brazo o la mano que no se relaciona con el dolor local del codo?', alerta: true },
+          { id: 'co_e2b', text: '¿Nota que los músculos se le cansan cada vez más mientras los usa y se recuperan al descansar, o que al final del día se le caen los párpados o ve doble?', alerta: true }
         ],
         zonasDolor: [{ zona: 'Mano / Dedos 4º-5º', desc: 'Neuropatía cubital o compresión vascular' }],
         impactoDescanso: ['Parestesias nocturnas en mano interrumpen el sueño (síndrome del túnel cubital)'],
@@ -775,7 +782,7 @@ export const SYSTEMIC_SCREENING = {
         ],
         preguntas: [
           { id: 'co_e1', text: '¿Tiene síndrome del túnel carpiano en ambas manos a la vez, o síntomas similares también en el codo contralateral?', alerta: true },
-          { id: 'co_e2', text: '¿Nota fatiga muscular proximal inusual (dificultad para subir escaleras, levantarse de una silla) además del dolor en el codo?', alerta: true }
+          { id: 'co_e2a', text: '¿Le cuesta más que antes subir escaleras o levantarse de una silla?', alerta: true }
         ],
         zonasDolor: [
           { zona: 'Muñecas / Manos bilateral', desc: 'Síndrome del túnel carpiano bilateral — alerta tiroidea/metabólica' },
