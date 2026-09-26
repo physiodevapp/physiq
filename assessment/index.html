@@ -124,15 +124,11 @@
   </div>
 
   <div class="card">
-    <div class="card-title">Datos del Paciente</div>
-    <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label">Edad (años)</label>
-      <input type="number" class="form-input" id="edadPaciente" min="0" max="120" placeholder="Ej: 45" style="max-width:140px;" oninput="updateEdadPaciente(this.value)">
-    </div>
-  </div>
-
-  <div class="card">
     <div class="card-title">Motivo de Consulta</div>
+    <div class="form-group" style="max-width:140px;">
+      <label class="form-label">Edad (años)</label>
+      <input type="number" class="form-input" id="edadPaciente" min="0" max="120" placeholder="Ej: 45" oninput="updateEdadPaciente(this.value)">
+    </div>
     <div class="form-group">
       <label class="form-label">Descripción del problema principal</label>
       <textarea class="form-input" id="motivoConsulta" placeholder="Ej: Dolor en hombro derecho desde hace 3 semanas tras caída..." oninput="state.motivoConsulta=this.value; updateResetBtnVisibility()"></textarea>
