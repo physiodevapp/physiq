@@ -312,6 +312,16 @@
 
   textarea.form-input { resize: vertical; min-height: 80px; }
 
+  /* Signos vitales / antropometría: short numeric fields shown side by side
+     instead of stacked full-width, since each only needs 2-3 digits. */
+  .vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 16px;
+  }
+  .vitals-grid .form-group { margin-bottom: 0; }
+  #imcCalculado { color: var(--text2); }
+
   /* Quick-input bar: phrase chips + voice dictation, under free-text fields */
   .quick-input-bar {
     display: flex;
@@ -1587,6 +1597,7 @@
     .card { padding: 1.1rem; }
     .card-title { font-size: 0.72rem; }
     .region-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .vitals-grid { grid-template-columns: repeat(2, 1fr); gap: 10px 14px; }
     .region-card { padding: 1rem; }
     .region-icon { font-size: 1.6rem; }
     .region-name { font-size: 0.82rem; }

@@ -13,6 +13,8 @@ const state = {
   patient: '',
   motivoConsulta: '',
   edadPaciente: null,     // años; input #edadPaciente — usado por criterioCompuesto (fase 2)
+  signosVitales: { fc: null, fr: null, spo2: null, tas: null, tad: null },
+  antropometria: { talla: null, peso: null },  // imc se calcula al vuelo, no se persiste (ver calcImc en app.js)
   mecanismo: '',
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },

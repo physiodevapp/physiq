@@ -136,6 +136,45 @@
   </div>
 
   <div class="card">
+    <div class="card-title">Signos Vitales y Antropometría</div>
+    <div class="plan-note-hint">Opcional — no se usan en el algoritmo actual; útiles como referencia evolutiva entre valoraciones.</div>
+    <div class="vitals-grid">
+      <div class="form-group">
+        <label class="form-label">FC (lpm)</label>
+        <input type="number" class="form-input" id="vitalFc" min="20" max="250" placeholder="Ej: 72" oninput="updateVital('signosVitales','fc',this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">FR (rpm)</label>
+        <input type="number" class="form-input" id="vitalFr" min="4" max="60" placeholder="Ej: 16" oninput="updateVital('signosVitales','fr',this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">SpO₂ (%)</label>
+        <input type="number" class="form-input" id="vitalSpo2" min="50" max="100" placeholder="Ej: 98" oninput="updateVital('signosVitales','spo2',this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TAS (mmHg)</label>
+        <input type="number" class="form-input" id="vitalTas" min="50" max="260" placeholder="Ej: 120" oninput="updateVital('signosVitales','tas',this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TAD (mmHg)</label>
+        <input type="number" class="form-input" id="vitalTad" min="30" max="160" placeholder="Ej: 80" oninput="updateVital('signosVitales','tad',this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Talla (cm)</label>
+        <input type="number" class="form-input" id="vitalTalla" min="50" max="250" step="0.1" placeholder="Ej: 170" oninput="updateVital('antropometria','talla',this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Peso (kg)</label>
+        <input type="number" class="form-input" id="vitalPeso" min="10" max="300" step="0.1" placeholder="Ej: 70" oninput="updateVital('antropometria','peso',this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">IMC (kg/m²)</label>
+        <input type="text" class="form-input" id="imcCalculado" placeholder="—" readonly>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-title">Mecanismo de Inicio</div>
     <div class="option-group option-group-col" id="mecanismo">
       <button class="option-btn" onclick="selectOption('mecanismo', this, 'Traumático')">⚡ Traumático</button>

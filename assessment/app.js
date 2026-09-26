@@ -243,6 +243,8 @@ function _softResetApp() {
   state.treeModified = false;
   state.motivoConsulta = '';
   state.edadPaciente = null;
+  state.signosVitales = { fc: null, fr: null, spo2: null, tas: null, tad: null };
+  state.antropometria = { talla: null, peso: null };
   state.mecanismo = '';
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
@@ -267,6 +269,10 @@ function _softResetApp() {
   if (mConsulta) mConsulta.value = '';
   const edadEl = document.getElementById('edadPaciente');
   if (edadEl) edadEl.value = '';
+  ['vitalFc', 'vitalFr', 'vitalSpo2', 'vitalTas', 'vitalTad', 'vitalTalla', 'vitalPeso', 'imcCalculado'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
   document.querySelectorAll('#phase1 .option-btn').forEach(b => b.classList.remove('selected'));
   ['banderaAlert', 'psicoToolSuggest', 'psicoAltoQuestions', 'psicoRecomendacion'].forEach(id => {
     const el = document.getElementById(id);
@@ -885,6 +891,32 @@ function updateEdadPaciente(value) {
   const edad = value === '' ? null : parseInt(value, 10);
   state.edadPaciente = (edad === null || isNaN(edad)) ? null : edad;
   evaluarCriteriosCompuestos(state.region);
+  saveSession();
+}
+
+// IMC is derived from talla/peso, never persisted in state — storing it
+// separately would risk it going stale whenever either input is edited.
+function calcImc(peso, talla) {
+  if (!peso || !talla) return null;
+  const m = talla / 100;
+  return peso / (m * m);
+}
+
+function updateImcDisplay() {
+  const el = document.getElementById('imcCalculado');
+  if (!el) return;
+  const imc = calcImc(state.antropometria.peso, state.antropometria.talla);
+  el.value = imc !== null ? imc.toFixed(1) : '';
+}
+
+// Shared handler for the optional Fase 1 vitals/anthropometry fields
+// (signosVitales: fc/fr/spo2/tas/tad, antropometria: talla/peso) — none of
+// them drive any current algorithm, so a single generic setter avoids
+// repeating updateEdadPaciente's body seven times over.
+function updateVital(group, field, value) {
+  const num = value === '' ? null : parseFloat(value);
+  state[group][field] = (num === null || isNaN(num)) ? null : num;
+  if (group === 'antropometria') updateImcDisplay();
   saveSession();
 }
 
@@ -1683,6 +1715,8 @@ function buildPhysiQPayload() {
     r:  state.region,
     d:  new Date().toLocaleDateString('es-ES'),
     mo: state.motivoConsulta,
+    sv: state.signosVitales,
+    an: { ...state.antropometria, imc: calcImc(state.antropometria.peso, state.antropometria.talla) },
     me: state.mecanismo,
     cr: state.cronologia,
     rp: state.riesgoPsico,
@@ -1874,6 +1908,16 @@ function _restoreSessionDOM() {
   syncQuickPhraseChips('motivoConsulta');
   const edadEl = document.getElementById('edadPaciente');
   if (edadEl) edadEl.value = state.edadPaciente ?? '';
+  const vitalIds = { fc: 'vitalFc', fr: 'vitalFr', spo2: 'vitalSpo2', tas: 'vitalTas', tad: 'vitalTad' };
+  Object.entries(vitalIds).forEach(([field, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = state.signosVitales[field] ?? '';
+  });
+  const tallaEl = document.getElementById('vitalTalla');
+  if (tallaEl) tallaEl.value = state.antropometria.talla ?? '';
+  const pesoEl = document.getElementById('vitalPeso');
+  if (pesoEl) pesoEl.value = state.antropometria.peso ?? '';
+  updateImcDisplay();
 
   ['mecanismo', 'cronologia', 'riesgoPsico'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
 
@@ -2123,7 +2167,7 @@ Object.assign(window, {
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
-  updateEdadPaciente, updateResetBtnVisibility,
+  updateEdadPaciente, updateVital, updateResetBtnVisibility,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========
