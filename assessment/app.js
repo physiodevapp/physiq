@@ -398,7 +398,9 @@ function appendQuickPhrase(btn) {
   const field = document.getElementById(btn.dataset.field);
   if (!field) return;
   const sep = field.value && !/\s$/.test(field.value) ? ' ' : '';
-  field.value = field.value + sep + btn.dataset.phrase;
+  const phrase = btn.dataset.phrase;
+  const suffix = /[.!?]$/.test(phrase) ? '' : '.';
+  field.value = field.value + sep + phrase + suffix;
   field.dispatchEvent(new Event('input', { bubbles: true }));
   field.focus();
 }
