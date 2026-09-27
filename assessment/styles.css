@@ -1617,12 +1617,19 @@
     .card-title { font-size: 0.72rem; }
     .region-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     /* A fixed 50% basis would force every row to 2 columns, splitting the
-       3-item (talla/peso/imc) and 4-item (fc/fr/spo2/edad) rows across two
-       lines and defeating the point of grouping them — a min-basis instead
-       lets each row keep its own items together whenever they fit, and only
-       wrap the rows that genuinely don't (4 items on a narrow phone). */
+       4-item (fc/fr/spo2/edad) row across two lines — a min-basis instead
+       lets it keep as many items together as fit, only wrapping what
+       genuinely doesn't on a narrow phone. */
     .vitals-row { flex-wrap: wrap; gap: 10px 14px; }
     .vitals-row .form-group { flex: 1 1 96px; }
+    /* talla/peso/imc must never split across rows — IMC is computed from
+       the other two, so seeing all three together is the whole point.
+       nowrap + min-width:0 forces an even 3-way split at any viewport
+       width instead of leaving it to fit-dependent wrapping (an <input>'s
+       default min-width:auto would otherwise refuse to shrink below its
+       intrinsic content size and force a wrap on narrow phones). */
+    .vitals-row.vitals-row-3 { flex-wrap: nowrap; }
+    .vitals-row.vitals-row-3 .form-group { flex: 1 1 0; min-width: 0; }
     .region-card { padding: 1rem; }
     .region-icon { font-size: 1.6rem; }
     .region-name { font-size: 0.82rem; }
