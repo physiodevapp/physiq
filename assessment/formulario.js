@@ -135,6 +135,27 @@ function btn(sel, label, onclick) {
   return `<button type="button" class="option-btn fp-opt${sel ? ' selected' : ''}" onclick="${onclick}">${esc(label)}</button>`;
 }
 
+// Escalas con `estiloSeveridad: true` (dolor/severidad) se pintan como la
+// escala coloreada de fase 3 (verde→rojo), en dos filas — no como la fila
+// plana de `.fp-escala`. La banda de color se calcula a partir de min/max
+// del ítem (no de una tabla fija de 11 valores como NRS_CLASSES en fase 3),
+// para que funcione con cualquier rango que declare el schema.
+function renderEscalaSeveridad(scope, it, v) {
+  const count = it.max - it.min + 1;
+  const bandSize = count / 5;
+  const nums = [];
+  for (let n = it.min; n <= it.max; n++) {
+    const band = Math.min(4, Math.floor((n - it.min) / bandSize));
+    const sel = v === n ? ' selected' : '';
+    nums.push(`<button type="button" class="fp-escala-btn sev-b${band}${sel}" onclick="fpEscala('${scope}','${it.id}',${n})">${n}</button>`);
+  }
+  const primeraFila = Math.floor(count / 2);
+  const filas = [nums.slice(0, primeraFila), nums.slice(primeraFila)];
+  return `<div class="fp-escala-grid">${filas.map(f => `<div class="fp-escala-row">${f.join('')}</div>`).join('')}</div>
+    <div class="fp-escala-ext"><span>${esc(it.extremos[0])}</span><span>${esc(it.extremos[1])}</span></div>
+    <div class="fp-opts">${btn(v === 'ns', 'No sabría decir', `fpEscala('${scope}','${it.id}','ns')`)}</div>`;
+}
+
 function renderItem(scope, it, resp) {
   if (!visible(it, resp)) return '';
   const v = resp[it.id];
@@ -146,6 +167,8 @@ function renderItem(scope, it, resp) {
     const sel = o => it.tipo === 'unica' ? v === o : (v || []).includes(o);
     cuerpo = `<div class="fp-opts">${it.opciones.map((o, i) => btn(sel(o), o, `${fn}('${scope}','${it.id}',${i})`)).join('')}</div>`;
     if (it.detalle && sel(it.detalle.opcion)) cuerpo += textarea(scope, `${it.id}__detalle`, it.detalle.etiqueta, 1, resp);
+  } else if (it.tipo === 'escala' && it.estiloSeveridad) {
+    cuerpo = renderEscalaSeveridad(scope, it, v);
   } else if (it.tipo === 'escala') {
     const nums = [];
     for (let n = it.min; n <= it.max; n++) nums.push(btn(v === n, String(n), `fpEscala('${scope}','${it.id}',${n})`));

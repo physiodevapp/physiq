@@ -8,7 +8,11 @@
 //   unica  { opciones, detalle? }   una sola opción; `detalle: { opcion, etiqueta }`
 //                                   abre un texto libre al marcar esa opción
 //   multi  { opciones, detalle? }   varias opciones
-//   escala { min, max, extremos }   0–10 + «No sabría decir»
+//   escala { min, max, extremos, estiloSeveridad? }   0–10 + «No sabría decir»;
+//                                   `estiloSeveridad: true` la pinta como la escala
+//                                   de dolor coloreada (verde→rojo) de fase 3, en vez
+//                                   de la fila plana de botones — solo para escalas
+//                                   que sí son de intensidad de dolor/severidad
 //   matriz { filas: [{id, texto}], opciones }   una respuesta por fila
 //   texto  { lineas?, chips? }      texto libre (teclado o micro)
 //   mostrarSi: { id, valores }      solo se muestra si la pregunta `id`
@@ -49,7 +53,7 @@ export default {
           opciones: ['Sí, cambiando de postura mejora', 'No, sigue igual haga lo que haga', NS],
           mostrarSi: { id: 'despierta', valores: ['Sí'] } },
         { id: 'dolor_max_semana', tipo: 'escala', texto: 'Pensando en la última semana, ¿cuánto le ha dolido en el peor momento?',
-          min: 0, max: 10, extremos: ['Nada', 'El peor que pueda imaginar'] },
+          min: 0, max: 10, extremos: ['Nada', 'El peor que pueda imaginar'], estiloSeveridad: true },
         { id: 'tiempo_calmarse', tipo: 'unica', texto: 'Cuando algo le empeora el dolor, ¿cuánto tarda en volver a como estaba antes?',
           opciones: ['Se pasa enseguida', 'Unos minutos', 'Unas horas', 'Me dura el resto del día o más', NS] }
       ]

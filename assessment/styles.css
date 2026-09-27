@@ -2050,6 +2050,40 @@
 .fp-escala { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; }
 .fp-escala .option-btn { padding: 8px 0; justify-content: center; min-width: 0; }
 .fp-escala-ext { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text3); margin: 4px 0 6px; }
+/* Escalas de severidad (estiloSeveridad: true) — mismo lenguaje visual que
+   la escala NRS de fase 3 (.nrs-btn), en clases propias para no acoplar el
+   formulario previo a esa escala fija de fase 3: la banda de color (sev-b0
+   verde … sev-b4 rojo) la calcula renderEscalaSeveridad() a partir de
+   min/max del ítem, no de una tabla de 11 valores. */
+.fp-escala-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.fp-escala-row { display: flex; gap: 6px; }
+.fp-escala-btn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fp-escala-btn:hover { border-color: var(--text3); color: var(--text); }
+.fp-escala-btn.sev-b0 { border-color: rgba(56,217,169,0.3); }
+.fp-escala-btn.sev-b1 { border-color: rgba(180,220,80,0.3); }
+.fp-escala-btn.sev-b2 { border-color: rgba(255,212,59,0.3); }
+.fp-escala-btn.sev-b3 { border-color: rgba(255,140,0,0.3); }
+.fp-escala-btn.sev-b4 { border-color: rgba(255,71,87,0.3); }
+.fp-escala-btn.selected.sev-b0 { background: rgba(56,217,169,0.15); border-color: var(--green); color: var(--green); }
+.fp-escala-btn.selected.sev-b1 { background: rgba(180,220,80,0.12); border-color: #b4dc50; color: #b4dc50; }
+.fp-escala-btn.selected.sev-b2 { background: rgba(255,212,59,0.12); border-color: var(--accent3); color: var(--accent3); }
+.fp-escala-btn.selected.sev-b3 { background: rgba(255,140,0,0.12); border-color: var(--orange); color: var(--orange); }
+.fp-escala-btn.selected.sev-b4 { background: rgba(255,71,87,0.12); border-color: var(--danger); color: var(--danger); }
 .fp-matriz { display: flex; flex-direction: column; gap: 6px; }
 .fp-fila { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 6px 0; border-bottom: 1px solid var(--border); }
 .fp-fila-txt { flex: 1 1 220px; font-size: 0.82rem; color: var(--text2); }
