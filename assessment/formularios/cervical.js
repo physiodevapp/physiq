@@ -27,18 +27,18 @@ export default {
     {
       titulo: 'Dolor en el brazo',
       items: [
-        { id: 'brazo_mover', tipo: 'unica', texto: '¿Le baja el dolor por el brazo al mover el cuello?', opciones: SNNS },
+        { id: 'brazo_mover', tipo: 'unica', informe: 'Dolor irradiado al brazo al mover el cuello', texto: '¿Le baja el dolor por el brazo al mover el cuello?', opciones: SNNS },
         { id: 'brazo_como', tipo: 'multi', texto: '¿Cómo es ese dolor del brazo, si lo tiene? (puede marcar varias)',
           opciones: ['Quemazón', 'Como descargas', 'Como pinchazos', 'Zona dormida', 'No tengo dolor en el brazo', NS] },
         { id: 'brazo_atras', tipo: 'unica', texto: '¿Le duele el cuello o el brazo al llevar el brazo hacia atrás?', opciones: SNNS },
-        { id: 'fuerza', tipo: 'unica', texto: '¿Ha notado menos fuerza en el brazo?', opciones: SNNS }
+        { id: 'fuerza', tipo: 'unica', informe: 'Pérdida de fuerza en el brazo', texto: '¿Ha notado menos fuerza en el brazo?', opciones: SNNS }
       ]
     },
     {
       titulo: 'Dolor de cabeza',
       intro: 'Si NO tiene dolores de cabeza, salte este apartado y vaya a MAREO.',
       items: [
-        { id: 'cefalea', tipo: 'unica', texto: '¿Tiene también dolores de cabeza?', opciones: SNNS },
+        { id: 'cefalea', tipo: 'unica', informe: 'Dolores de cabeza', texto: '¿Tiene también dolores de cabeza?', opciones: SNNS },
         { id: 'cef_lado', tipo: 'unica', texto: '¿Le dan siempre en el mismo lado de la cabeza?',
           opciones: ['Sí, siempre en el mismo lado', 'No, cambian de lado o son en los dos', NS],
           mostrarSi: { id: 'cefalea', valores: ['Sí', NS] } },
@@ -61,7 +61,7 @@ export default {
       titulo: 'Mareo',
       intro: 'Si NO nota mareo ni inestabilidad, salte este apartado y vaya a QUÉ LO EMPEORA Y QUÉ LO ALIVIA.',
       items: [
-        { id: 'mareo', tipo: 'unica', texto: '¿Nota mareo o sensación de inestabilidad?', opciones: SNNS },
+        { id: 'mareo', tipo: 'unica', informe: 'Mareo o inestabilidad', texto: '¿Nota mareo o sensación de inestabilidad?', opciones: SNNS },
         { id: 'mareo_como', tipo: 'unica', texto: '¿Cómo es?', opciones: ['Me siento aturdido o inestable', 'Todo me da vueltas', NS],
           mostrarSi: { id: 'mareo', valores: ['Sí', NS] } },
         { id: 'mareo_cuello', tipo: 'unica', texto: '¿Le aumenta cuando le duele más el cuello o al moverlo?', opciones: SNNS,

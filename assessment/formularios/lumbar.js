@@ -17,14 +17,14 @@ export default {
     {
       titulo: 'Dónde nota los síntomas',
       items: [
-        { id: 'pierna_hasta', tipo: 'unica', texto: 'Además de la espalda, ¿le baja el dolor por la pierna?',
+        { id: 'pierna_hasta', tipo: 'unica', informe: 'Dolor irradiado a la pierna', texto: 'Además de la espalda, ¿le baja el dolor por la pierna?',
           opciones: ['No, se queda en la espalda', 'Hasta la nalga', 'Hasta la rodilla', 'Por debajo de la rodilla', 'Hasta el pie', NS] },
-        { id: 'pierna_lado', tipo: 'unica', texto: 'Pierna', opciones: ['Derecha', 'Izquierda', 'Las dos'],
+        { id: 'pierna_lado', tipo: 'unica', informe: 'Pierna afectada', texto: 'Pierna', opciones: ['Derecha', 'Izquierda', 'Las dos'],
           mostrarSi: { id: 'pierna_hasta', valores: ['Hasta la nalga', 'Hasta la rodilla', 'Por debajo de la rodilla', 'Hasta el pie'] } },
         { id: 'cambia_lado', tipo: 'unica', texto: '¿El dolor le cambia de lado de unos días a otros?', opciones: ['Sí', 'No', NS] },
         { id: 'pierna_tipo', tipo: 'multi', texto: '¿Cómo es ese dolor de pierna, si lo tiene? (puede marcar varias)',
           opciones: ['Quemazón', 'Como calambres o descargas', 'Hormigueo', 'Zona dormida', 'Distinto a cualquier dolor que haya tenido antes', 'No tengo dolor de pierna', NS] },
-        { id: 'debilidad', tipo: 'unica', texto: '¿Ha notado pérdida de fuerza en la pierna, que se le doble o que tropiece?', opciones: ['Sí', 'No', NS] }
+        { id: 'debilidad', tipo: 'unica', informe: 'Pérdida de fuerza en la pierna', texto: '¿Ha notado pérdida de fuerza en la pierna, que se le doble o que tropiece?', opciones: ['Sí', 'No', NS] }
       ]
     },
     {

@@ -59,11 +59,11 @@ export default {
       titulo: 'Sensación de que el hombro se sale',
       items: [
         { id: 'miedo', tipo: 'unica', texto: '¿Le da inseguridad o miedo poner el brazo arriba y hacia atrás, como al lanzar?', opciones: ['No', 'Sí', NS] },
-        { id: 'salido', tipo: 'unica', texto: '¿Alguna vez se le ha salido el hombro de su sitio, o ha notado que «algo se iba»?',
+        { id: 'salido', tipo: 'unica', informe: 'Luxación o subluxación previa', texto: '¿Alguna vez se le ha salido el hombro de su sitio, o ha notado que «algo se iba»?',
           opciones: ['No', 'Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio', NS] },
-        { id: 'veces', tipo: 'unica', texto: 'Si se le ha salido: ¿cuántas veces?', opciones: ['Una', 'Varias', NS],
+        { id: 'veces', tipo: 'unica', informe: 'Número de veces', texto: 'Si se le ha salido: ¿cuántas veces?', opciones: ['Una', 'Varias', NS],
           mostrarSi: { id: 'salido', valores: ['Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio'] } },
-        { id: 'ultima', tipo: 'texto', texto: '¿Cuándo fue la última?', lineas: 1,
+        { id: 'ultima', tipo: 'texto', informe: 'Última vez', texto: '¿Cuándo fue la última?', lineas: 1,
           mostrarSi: { id: 'salido', valores: ['Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio'] } }
       ]
     },

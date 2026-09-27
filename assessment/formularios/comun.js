@@ -2,7 +2,11 @@
 // Formulario previo a la primera visita · CARA 1 (común a todas las regiones)
 // Texto literal de guia-de-consulta/tools/plantilla_formularios.js (cara 1).
 // Solo datos: lo pinta formulario.js. Los campos de cabecera del papel
-// (nombre, fecha, edad) no se repiten: ya están en la fase 1.
+// (nombre, fecha, edad) no se repiten: ya están en la fase 1. Tampoco la
+// casilla final del papel «Hay algo relacionado con esta molestia que prefiero
+// comentarle en persona»: aquí el fisio rellena el formulario siempre con el
+// paciente delante, así que esa conversación ya está ocurriendo (y marcada
+// acababa en las notas y en physiq-report como una confidencia sin contenido).
 //
 // Tipos de pregunta:
 //   unica  { opciones, detalle? }   una sola opción; `detalle: { opcion, etiqueta }`
@@ -17,6 +21,11 @@
 //   texto  { lineas?, chips? }      texto libre (teclado o micro)
 //   mostrarSi: { id, valores }      solo se muestra si la pregunta `id`
 //                                   (de este mismo formulario) tiene uno de esos valores
+//   informe: 'Etiqueta'             la respuesta sale en el 📄 Informe (paciente/médico)
+//                                   como «Etiqueta: respuesta»; items seguidos con la
+//                                   misma etiqueta se unen en una línea. `antecedente: true`
+//                                   la manda al bloque de antecedentes. Nunca en matriz,
+//                                   ni en nada que el paciente quiera reservarse
 // ============================================================
 const NS = 'No sabría decir';
 
@@ -28,19 +37,19 @@ export default {
     {
       titulo: '1 · Cómo empezó',
       items: [
-        { id: 'desde_cuando', tipo: 'texto', texto: '¿Desde cuándo le pasa?', ayuda: 'Fecha aproximada, o «hace X semanas»', lineas: 1 },
+        { id: 'desde_cuando', tipo: 'texto', informe: 'Inicio de los síntomas', texto: '¿Desde cuándo le pasa?', ayuda: 'Fecha aproximada, o «hace X semanas»', lineas: 1 },
         { id: 'desencadenante', tipo: 'unica', texto: '¿Hubo algo concreto que lo desencadenara? — un golpe, una caída, un esfuerzo, un gesto',
           opciones: ['Sí', 'No, empezó poco a poco sin causa clara', NS], detalle: { opcion: 'Sí', etiqueta: 'Y fue…' } },
         { id: 'inicio', tipo: 'unica', texto: '¿Apareció de golpe o poco a poco?', opciones: ['De golpe', 'Poco a poco', NS] },
-        { id: 'primera_vez', tipo: 'unica', texto: '¿Es la primera vez que le pasa?', opciones: ['Sí', 'No, ya me había pasado antes', NS] },
-        { id: 'episodio_previo', tipo: 'texto', texto: 'Si ya le había pasado: ¿cuándo fue la última vez y cuánto le duró?', lineas: 1,
+        { id: 'primera_vez', tipo: 'unica', informe: 'Primer episodio', texto: '¿Es la primera vez que le pasa?', opciones: ['Sí', 'No, ya me había pasado antes', NS] },
+        { id: 'episodio_previo', tipo: 'texto', informe: 'Episodio previo', texto: 'Si ya le había pasado: ¿cuándo fue la última vez y cuánto le duró?', lineas: 1,
           mostrarSi: { id: 'primera_vez', valores: ['No, ya me había pasado antes'] } }
       ]
     },
     {
       titulo: '2 · Desde entonces',
       items: [
-        { id: 'evolucion', tipo: 'unica', texto: 'Desde que empezó, el dolor va…', opciones: ['A mejor', 'Igual', 'A peor', 'Va y viene', NS] }
+        { id: 'evolucion', tipo: 'unica', informe: 'Evolución desde el inicio', texto: 'Desde que empezó, el dolor va…', opciones: ['A mejor', 'Igual', 'A peor', 'Va y viene', NS] }
       ]
     },
     {
@@ -48,8 +57,8 @@ export default {
       items: [
         { id: 'peor_momento_dia', tipo: 'multi', texto: '¿Cuándo está peor? (puede marcar varias)',
           opciones: ['Al levantarme', 'Durante el día, según lo que haga', 'Al final del día', 'Por la noche', NS] },
-        { id: 'despierta', tipo: 'unica', texto: '¿Le despierta por la noche?', opciones: ['No', 'Sí', NS] },
-        { id: 'despierta_postura', tipo: 'unica', texto: 'Si le despierta: al cambiar de postura, ¿se le calma?',
+        { id: 'despierta', tipo: 'unica', informe: 'Le despierta el dolor por la noche', texto: '¿Le despierta por la noche?', opciones: ['No', 'Sí', NS] },
+        { id: 'despierta_postura', tipo: 'unica', informe: 'Al cambiar de postura por la noche', texto: 'Si le despierta: al cambiar de postura, ¿se le calma?',
           opciones: ['Sí, cambiando de postura mejora', 'No, sigue igual haga lo que haga', NS],
           mostrarSi: { id: 'despierta', valores: ['Sí'] } },
         { id: 'dolor_max_semana', tipo: 'escala', texto: 'Pensando en la última semana, ¿cuánto le ha dolido en el peor momento?',
@@ -62,27 +71,26 @@ export default {
       titulo: '4 · Qué le cuesta hacer',
       intro: 'Su trabajo, un deporte, dormir, conducir, jugar con sus hijos: lo que sea importante para usted. Serán las tres cosas que mediremos en cada revisión.',
       items: [
-        { id: 'actividad_1', tipo: 'texto', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 1ª cosa', lineas: 1,
+        { id: 'actividad_1', tipo: 'texto', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 1ª cosa', lineas: 1,
           chips: ['Dormir', 'Trabajar', 'Conducir', 'Caminar', 'Estar sentado', 'Hacer deporte'] },
-        { id: 'actividad_2', tipo: 'texto', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 2ª cosa', lineas: 1 },
-        { id: 'actividad_3', tipo: 'texto', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 3ª cosa', lineas: 1 }
+        { id: 'actividad_2', tipo: 'texto', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 2ª cosa', lineas: 1 },
+        { id: 'actividad_3', tipo: 'texto', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 3ª cosa', lineas: 1 }
       ]
     },
     {
       titulo: '5 · Qué ha probado ya',
       items: [
-        { id: 'probado', tipo: 'multi', texto: '¿Qué ha probado ya?',
+        { id: 'probado', tipo: 'multi', informe: 'Tratamientos ya probados', texto: '¿Qué ha probado ya?',
           opciones: ['Nada todavía', 'Reposo', 'Calor o frío', 'Medicación', 'Fisioterapia', 'Ejercicio', 'Otros'] },
-        { id: 'probado_sirvio', tipo: 'texto', texto: '¿Le sirvió de algo?', lineas: 1 }
+        { id: 'probado_sirvio', tipo: 'texto', informe: 'Resultado de lo probado', texto: '¿Le sirvió de algo?', lineas: 1 }
       ]
     },
     {
       titulo: '6 · Su salud en general',
       items: [
-        { id: 'enfermedades', tipo: 'texto', texto: 'Enfermedades importantes que tenga o haya tenido', ayuda: 'Todas, aunque le parezca que no tienen relación con esto', lineas: 2 },
-        { id: 'operaciones', tipo: 'texto', texto: 'Operaciones', ayuda: 'Y aproximadamente cuándo', lineas: 1 },
-        { id: 'medicacion', tipo: 'texto', texto: 'Medicación que toma ahora', ayuda: 'Incluidos parches, inyecciones y lo que compra sin receta', lineas: 2 },
-        { id: 'en_persona', tipo: 'multi', texto: '', opciones: ['Hay algo relacionado con esta molestia que prefiero comentarle en persona.'] }
+        { id: 'enfermedades', tipo: 'texto', informe: 'Enfermedades', antecedente: true, texto: 'Enfermedades importantes que tenga o haya tenido', ayuda: 'Todas, aunque le parezca que no tienen relación con esto', lineas: 2 },
+        { id: 'operaciones', tipo: 'texto', informe: 'Operaciones', antecedente: true, texto: 'Operaciones', ayuda: 'Y aproximadamente cuándo', lineas: 1 },
+        { id: 'medicacion', tipo: 'texto', informe: 'Medicación actual', antecedente: true, texto: 'Medicación que toma ahora', ayuda: 'Incluidos parches, inyecciones y lo que compra sin receta', lineas: 2 }
       ]
     }
   ]

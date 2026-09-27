@@ -366,6 +366,9 @@ function abrirFormularioPrevio(tab) {
 function resumenFormularioPrevio() {
   return _fpMod ? _fpMod.resumenFormularioPrevio() : [];
 }
+function informeFormularioPrevio() {
+  return _fpMod ? _fpMod.informeFormularioPrevio() : { historia: [], antecedentes: [] };
+}
 
 // ─── QUICK INPUT (chips de frases + dictado por voz) ──────────
 function isSpeechSupported() {
@@ -1956,13 +1959,19 @@ function buildInformeFisioterapiaText() {
     ? `\n\nAdemás, durante el cribado el paciente refirió:\n${d.sq.map(s => `  · ${s}`).join('\n')}`
     : '';
 
+  // Solo lo marcado con `informe` en formularios/*.js — nunca el formulario entero
+  const fpInf = informeFormularioPrevio();
+  const bloqueFp = (titulo, lista) => lista.length
+    ? `\n\n${titulo}\n${lista.map(x => `  · ${x.q}: ${x.a}`).join('\n')}`
+    : '';
+
   return `INFORME DE FISIOTERAPIA${d.p ? `\nPaciente: ${d.p}` : ''}
 Fecha: ${d.d}
 Región valorada: ${region}
 
 MOTIVO DE CONSULTA
 ${d.mo || '—'}
-Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}
+Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
 
 VALORACIÓN
 Intensidad del dolor referida: ${d.nr}/10
@@ -2347,7 +2356,8 @@ _initHubIntegration();
 // ─── PUBLIC API ──────────────────────────────────────────────
 // Named exports for phase4.js / phase4b.js (which import these directly) and
 // for tests/unit.js.
-export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getSistemicoAffirmativeTexts,
+export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
+  precargarFormularioPrevio,
   injectQuickInputBar, lockBodyScroll, unlockBodyScroll };
 
 // Exposed on window for inline onclick/oninput attributes across index.html

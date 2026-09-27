@@ -14,6 +14,7 @@ import COMUN from './formularios/comun.js';
 // (tests/unit.js comprueba que cada entrada carga): así no se pide por red
 // un archivo que no existe (404 en consola) para las demás regiones.
 export const REGIONES_CON_FORMULARIO = ['lumbar', 'cadera', 'cervical', 'rodilla', 'hombro'];
+const NS_TEXTO = 'No sabría decir';
 const _regiones = {};          // region → esquema | null (sin formulario)
 let _tab = 'comun';
 
@@ -391,6 +392,32 @@ function resumenDe(scope) {
 // devuelve la cara común (app.js lo precarga al elegir región).
 export function resumenFormularioPrevio() {
   return [...resumenDe('comun'), ...(state.region ? resumenDe(state.region) : [])];
+}
+
+// Lo que va al 📄 Informe (paciente/médico): solo los items con `informe` en
+// el esquema, con esa etiqueta en vez de la pregunta. «No sabría decir» no
+// aporta nada al médico y se omite. Items seguidos con la misma etiqueta
+// (actividad_1..3) se unen en una línea.
+// → { historia: [{ q, a }], antecedentes: [{ q, a }] }
+export function informeFormularioPrevio() {
+  const out = { historia: [], antecedentes: [] };
+  ['comun', state.region].forEach(scope => {
+    const esquema = scope && esquemaDe(scope);
+    if (!esquema) return;
+    const resp = scope === 'comun' ? fp().comun : (fp().regiones[scope] || {});
+    esquema.secciones.forEach(s => s.items.forEach(it => {
+      if (!it.informe || !visible(it, resp)) return;
+      let v = resp[it.id];
+      if (Array.isArray(v)) v = v.filter(x => x !== NS_TEXTO);
+      if (vacio(v) || v === 'ns' || v === NS_TEXTO) return;
+      const lista = it.antecedente ? out.antecedentes : out.historia;
+      const a = textoRespuesta(it, v, resp);
+      const ultimo = lista[lista.length - 1];
+      if (ultimo?.q === it.informe) ultimo.a += `; ${a}`;
+      else lista.push({ q: it.informe, a });
+    }));
+  });
+  return out;
 }
 
 export function contarRespuestas() {
