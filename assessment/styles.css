@@ -552,7 +552,6 @@
     border-color: var(--accent);
     box-shadow: 0 0 0 1px var(--accent);
   }
-  .region-icon { font-size: 2rem; margin-bottom: 8px; }
   .region-name { font-size: 0.9rem; font-weight: 500; color: var(--text); }
   .region-sub { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
 
@@ -1658,7 +1657,6 @@
     .vitals-row.vitals-row-3 { flex-wrap: nowrap; }
     .vitals-row.vitals-row-3 .form-group { flex: 1 1 0; min-width: 0; }
     .region-card { padding: 1rem; }
-    .region-icon { font-size: 1.6rem; }
     .region-name { font-size: 0.82rem; }
     .tree-question { padding: 1.1rem; }
     .tree-question-text { font-size: 0.95rem; }
@@ -1749,7 +1747,6 @@
     .phase-tag { font-size: 0.58rem; letter-spacing: 2px; }
     .region-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .region-card { padding: 0.8rem 0.6rem; }
-    .region-icon { font-size: 1.4rem; margin-bottom: 4px; }
     .region-name { font-size: 0.82rem; }
     .region-sub { font-size: 0.62rem; }
     .tree-question { padding: 1rem; }
