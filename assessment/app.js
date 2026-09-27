@@ -277,7 +277,8 @@ function _softResetApp() {
     const el = document.getElementById(id);
     if (el) { el.textContent = ''; el.classList.remove('vital-orange', 'vital-red'); }
   });
-  updateImcDisplay(); // also strips imcCalculado/flagImc's own color classes
+  updateImcDisplay();
+  updateImcColor(); // updateImcDisplay only sets the value now (color/flag deferred to blur — see updateVitalColor), so reset needs both
   document.querySelectorAll('#phase1 .option-btn').forEach(b => b.classList.remove('selected'));
   ['banderaAlert', 'psicoToolSuggest', 'psicoAltoQuestions', 'psicoRecomendacion'].forEach(id => {
     const el = document.getElementById(id);
@@ -1915,10 +1916,16 @@ function showToast(message, tone) {
 
 // ─── SESSION PERSISTENCE ─────────────────────────────────────
 
+function _hasVitalsData() {
+  return Object.values(state.signosVitales).some(v => v !== null)
+    || Object.values(state.antropometria).some(v => v !== null);
+}
+
 function _hasAssessmentData() {
   return state.maxVisitedIdx > 0
     || !!state.motivoConsulta
     || state.edadPaciente !== null
+    || _hasVitalsData()
     || !!state.mecanismo
     || !!state.cronologia
     || !!state.riesgoPsico
@@ -1954,7 +1961,7 @@ function saveSession() {
         if (session) updateSessionChip(session);
         _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient });
         if (state.currentPhase !== 5) {
-          const _hasPhase1Data = state.motivoConsulta || state.edadPaciente !== null || state.mecanismo || state.cronologia || state.riesgoPsico;
+          const _hasPhase1Data = state.motivoConsulta || state.edadPaciente !== null || _hasVitalsData() || state.mecanismo || state.cronologia || state.riesgoPsico;
           if (state.maxVisitedIdx > 0 || _hasPhase1Data) {
             const _phaseLabels = [1, 2, 3, 4, '4b', 5];
             _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
@@ -1996,6 +2003,7 @@ function _restoreSessionDOM() {
   const pesoEl = document.getElementById('vitalPeso');
   if (pesoEl) pesoEl.value = state.antropometria.peso ?? '';
   updateImcDisplay();
+  updateImcColor();
 
   ['mecanismo', 'cronologia', 'riesgoPsico'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
 
