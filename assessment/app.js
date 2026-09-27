@@ -949,30 +949,51 @@ function applyVitalColor(el, flagEl, category) {
   if (flagEl && category.label) { flagEl.textContent = category.label; flagEl.classList.add(category.cls === 'vital-red' ? 'vital-red' : 'vital-orange'); }
 }
 
+// Live numeric value only — no color/flag here (see updateImcColor), so
+// typing talla/peso digit by digit doesn't flash the IMC field through
+// unrelated categories before landing on the real value.
 function updateImcDisplay() {
   const el = document.getElementById('imcCalculado');
   if (!el) return;
   const imc = calcImc(state.antropometria.peso, state.antropometria.talla);
   el.value = imc !== null ? imc.toFixed(1) : '';
+}
+
+function updateImcColor() {
+  const el = document.getElementById('imcCalculado');
+  if (!el) return;
+  const imc = calcImc(state.antropometria.peso, state.antropometria.talla);
   applyVitalColor(el, document.getElementById('flagImc'), imc !== null ? imcCategory(imc) : null);
 }
 
 // Shared handler for the optional Fase 1 vitals/anthropometry fields
 // (signosVitales: fc/fr/spo2/tas/tad, antropometria: talla/peso) — none of
 // them drive any current algorithm, so a single generic setter avoids
-// repeating updateEdadPaciente's body seven times over.
+// repeating updateEdadPaciente's body seven times over. Fires on every
+// keystroke (oninput), so it only writes state/IMC's live number — see
+// updateVitalColor for the color/flag, deferred to blur.
 function updateVital(group, field, value) {
   const num = value === '' ? null : parseFloat(value);
   const val = (num === null || isNaN(num)) ? null : num;
   state[group][field] = val;
   if (group === 'antropometria') updateImcDisplay();
-  const bands = VITAL_BANDS[field];
-  if (bands) {
-    const el = document.getElementById(VITAL_INPUT_IDS[field]);
-    const flagEl = document.getElementById(VITAL_FLAG_IDS[field]);
-    applyVitalColor(el, flagEl, val !== null ? bandCategory(val, bands) : null);
-  }
   saveSession();
+}
+
+// Color/flag for a vitals field, wired to onblur rather than oninput: a
+// value like "140" typed digit by digit would otherwise flash through
+// "1" and "14" (each landing in some band) before the real value lands,
+// flickering the color and — worse — the flag's height, which shifts every
+// card below it. Waiting for blur shows the category once, when the
+// clinician has actually finished entering the value.
+function updateVitalColor(group, field) {
+  if (group === 'antropometria') { updateImcColor(); return; }
+  const bands = VITAL_BANDS[field];
+  if (!bands) return;
+  const val = state[group][field];
+  const el = document.getElementById(VITAL_INPUT_IDS[field]);
+  const flagEl = document.getElementById(VITAL_FLAG_IDS[field]);
+  applyVitalColor(el, flagEl, val !== null ? bandCategory(val, bands) : null);
 }
 
 function activeSistemaTab(sisId, sistemas) {
@@ -2224,7 +2245,7 @@ Object.assign(window, {
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
-  updateEdadPaciente, updateVital, updateResetBtnVisibility,
+  updateEdadPaciente, updateVital, updateVitalColor, updateResetBtnVisibility,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========

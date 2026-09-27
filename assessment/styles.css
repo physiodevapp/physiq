@@ -1616,8 +1616,13 @@
     .card { padding: 1.1rem; }
     .card-title { font-size: 0.72rem; }
     .region-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    /* A fixed 50% basis would force every row to 2 columns, splitting the
+       3-item (talla/peso/imc) and 4-item (fc/fr/spo2/edad) rows across two
+       lines and defeating the point of grouping them — a min-basis instead
+       lets each row keep its own items together whenever they fit, and only
+       wrap the rows that genuinely don't (4 items on a narrow phone). */
     .vitals-row { flex-wrap: wrap; gap: 10px 14px; }
-    .vitals-row .form-group { flex: 1 1 calc(50% - 7px); }
+    .vitals-row .form-group { flex: 1 1 96px; }
     .region-card { padding: 1rem; }
     .region-icon { font-size: 1.6rem; }
     .region-name { font-size: 0.82rem; }
