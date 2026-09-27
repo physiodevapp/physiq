@@ -317,12 +317,29 @@
      share its width evenly regardless of how many other rows exist. */
   .vitals-row {
     display: flex;
+    align-items: flex-start;
     gap: 12px 16px;
     margin-bottom: 12px;
   }
   .vitals-row:last-child { margin-bottom: 0; }
   .vitals-row .form-group { flex: 1; margin-bottom: 0; }
   #imcCalculado { color: var(--text2); }
+  /* Shared by imcCalculado and the raw vitalFc/Fr/Spo2/Tas/Tad inputs — see
+     VITAL_BANDS in app.js for the thresholds behind each color. */
+  .form-input.vital-green { color: var(--green); border-color: rgba(56,217,169,0.4); background: rgba(56,217,169,0.06); }
+  .form-input.vital-orange { color: var(--orange); border-color: rgba(255,159,67,0.4); background: rgba(255,159,67,0.06); }
+  .form-input.vital-red { color: var(--red); border-color: rgba(255,107,107,0.4); background: rgba(255,107,107,0.06); }
+  /* Category name (Taquicardia, Hipertensión, ...) under an out-of-range
+     field. Empty (the normal case) collapses to zero height via :empty, so
+     it costs no vertical space on mobile unless a value actually flags. */
+  .vital-flag {
+    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    margin-top: 4px;
+  }
+  .vital-flag:empty { display: none; }
+  .vital-flag.vital-orange { color: var(--orange); }
+  .vital-flag.vital-red { color: var(--red); }
 
   /* Quick-input bar: phrase chips + voice dictation, under free-text fields */
   .quick-input-bar {

@@ -269,10 +269,15 @@ function _softResetApp() {
   if (mConsulta) mConsulta.value = '';
   const edadEl = document.getElementById('edadPaciente');
   if (edadEl) edadEl.value = '';
-  ['vitalFc', 'vitalFr', 'vitalSpo2', 'vitalTas', 'vitalTad', 'vitalTalla', 'vitalPeso', 'imcCalculado'].forEach(id => {
+  ['vitalFc', 'vitalFr', 'vitalSpo2', 'vitalTas', 'vitalTad', 'vitalTalla', 'vitalPeso'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.value = '';
+    if (el) { el.value = ''; el.classList.remove('vital-green', 'vital-orange', 'vital-red'); }
   });
+  ['flagFc', 'flagFr', 'flagSpo2', 'flagTas', 'flagTad'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = ''; el.classList.remove('vital-orange', 'vital-red'); }
+  });
+  updateImcDisplay(); // also strips imcCalculado/flagImc's own color classes
   document.querySelectorAll('#phase1 .option-btn').forEach(b => b.classList.remove('selected'));
   ['banderaAlert', 'psicoToolSuggest', 'psicoAltoQuestions', 'psicoRecomendacion'].forEach(id => {
     const el = document.getElementById(id);
@@ -902,11 +907,54 @@ function calcImc(peso, talla) {
   return peso / (m * m);
 }
 
+// Rough resting-adult reference ranges, for visual flagging only (none of
+// this feeds an algorithm) — below redLo or above redHi is red (alert),
+// within greenLo..greenHi is green (normal), the two bands in between are
+// orange (caution). loLabel/hiLabel name the out-of-range direction shown
+// under the field (same label for the orange and red case — severity is
+// already carried by color, not by wording).
+const VITAL_BANDS = {
+  fc:   { redLo: 50, greenLo: 60, greenHi: 100, redHi: 120, loLabel: 'Bradicardia',  hiLabel: 'Taquicardia' },
+  fr:   { redLo: 8,  greenLo: 12, greenHi: 20,  redHi: 24,  loLabel: 'Bradipnea',    hiLabel: 'Taquipnea' },
+  spo2: { redLo: 90, greenLo: 95, greenHi: 100, redHi: 100, loLabel: 'Hipoxemia' },
+  tas:  { redLo: 70, greenLo: 90, greenHi: 139, redHi: 180, loLabel: 'Hipotensión',  hiLabel: 'Hipertensión' },
+  tad:  { redLo: 40, greenLo: 60, greenHi: 89,  redHi: 110, loLabel: 'Hipotensión',  hiLabel: 'Hipertensión' },
+};
+const VITAL_INPUT_IDS = { fc: 'vitalFc', fr: 'vitalFr', spo2: 'vitalSpo2', tas: 'vitalTas', tad: 'vitalTad' };
+const VITAL_FLAG_IDS = { fc: 'flagFc', fr: 'flagFr', spo2: 'flagSpo2', tas: 'flagTas', tad: 'flagTad', imc: 'flagImc' };
+
+function bandCategory(value, bands) {
+  if (value < bands.redLo) return { cls: 'vital-red', label: bands.loLabel };
+  if (value > bands.redHi) return { cls: 'vital-red', label: bands.hiLabel };
+  if (value < bands.greenLo) return { cls: 'vital-orange', label: bands.loLabel };
+  if (value > bands.greenHi) return { cls: 'vital-orange', label: bands.hiLabel };
+  return { cls: 'vital-green', label: null };
+}
+
+// IMC gets its own categorizer rather than VITAL_BANDS: sobrepeso and
+// obesidad are different WHO categories, not "mild vs severe" of the same
+// one, so a single hiLabel (as the other fields use) can't name both.
+function imcCategory(imc) {
+  if (imc < 18.5) return { cls: 'vital-orange', label: 'Bajo peso' };
+  if (imc <= 24.9) return { cls: 'vital-green', label: null };
+  if (imc <= 29.9) return { cls: 'vital-orange', label: 'Sobrepeso' };
+  return { cls: 'vital-red', label: 'Obesidad' };
+}
+
+function applyVitalColor(el, flagEl, category) {
+  if (el) el.classList.remove('vital-green', 'vital-orange', 'vital-red');
+  if (flagEl) { flagEl.textContent = ''; flagEl.classList.remove('vital-orange', 'vital-red'); }
+  if (!category) return;
+  if (el) el.classList.add(category.cls);
+  if (flagEl && category.label) { flagEl.textContent = category.label; flagEl.classList.add(category.cls === 'vital-red' ? 'vital-red' : 'vital-orange'); }
+}
+
 function updateImcDisplay() {
   const el = document.getElementById('imcCalculado');
   if (!el) return;
   const imc = calcImc(state.antropometria.peso, state.antropometria.talla);
   el.value = imc !== null ? imc.toFixed(1) : '';
+  applyVitalColor(el, document.getElementById('flagImc'), imc !== null ? imcCategory(imc) : null);
 }
 
 // Shared handler for the optional Fase 1 vitals/anthropometry fields
@@ -915,8 +963,15 @@ function updateImcDisplay() {
 // repeating updateEdadPaciente's body seven times over.
 function updateVital(group, field, value) {
   const num = value === '' ? null : parseFloat(value);
-  state[group][field] = (num === null || isNaN(num)) ? null : num;
+  const val = (num === null || isNaN(num)) ? null : num;
+  state[group][field] = val;
   if (group === 'antropometria') updateImcDisplay();
+  const bands = VITAL_BANDS[field];
+  if (bands) {
+    const el = document.getElementById(VITAL_INPUT_IDS[field]);
+    const flagEl = document.getElementById(VITAL_FLAG_IDS[field]);
+    applyVitalColor(el, flagEl, val !== null ? bandCategory(val, bands) : null);
+  }
   saveSession();
 }
 
@@ -1908,10 +1963,12 @@ function _restoreSessionDOM() {
   syncQuickPhraseChips('motivoConsulta');
   const edadEl = document.getElementById('edadPaciente');
   if (edadEl) edadEl.value = state.edadPaciente ?? '';
-  const vitalIds = { fc: 'vitalFc', fr: 'vitalFr', spo2: 'vitalSpo2', tas: 'vitalTas', tad: 'vitalTad' };
-  Object.entries(vitalIds).forEach(([field, id]) => {
+  Object.entries(VITAL_INPUT_IDS).forEach(([field, id]) => {
     const el = document.getElementById(id);
-    if (el) el.value = state.signosVitales[field] ?? '';
+    const val = state.signosVitales[field] ?? null;
+    if (el) el.value = val ?? '';
+    const bands = VITAL_BANDS[field];
+    applyVitalColor(el, document.getElementById(VITAL_FLAG_IDS[field]), val !== null && bands ? bandCategory(val, bands) : null);
   });
   const tallaEl = document.getElementById('vitalTalla');
   if (tallaEl) tallaEl.value = state.antropometria.talla ?? '';
