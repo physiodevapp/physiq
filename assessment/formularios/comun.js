@@ -62,10 +62,10 @@ export default {
       titulo: '4 · Qué le cuesta hacer',
       intro: 'Su trabajo, un deporte, dormir, conducir, jugar con sus hijos: lo que sea importante para usted. Serán las tres cosas que mediremos en cada revisión.',
       items: [
-        { id: 'actividad_1', tipo: 'texto', texto: 'Tres cosas que ha dejado de hacer, o que hace peor, por este problema — 1', lineas: 1,
+        { id: 'actividad_1', tipo: 'texto', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 1ª cosa', lineas: 1,
           chips: ['Dormir', 'Trabajar', 'Conducir', 'Caminar', 'Estar sentado', 'Hacer deporte'] },
-        { id: 'actividad_2', tipo: 'texto', texto: '2', lineas: 1 },
-        { id: 'actividad_3', tipo: 'texto', texto: '3', lineas: 1 }
+        { id: 'actividad_2', tipo: 'texto', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 2ª cosa', lineas: 1 },
+        { id: 'actividad_3', tipo: 'texto', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 3ª cosa', lineas: 1 }
       ]
     },
     {
