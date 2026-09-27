@@ -1667,7 +1667,9 @@ export const HYPOTHESES = {
       { name: 'Edad > 48 años', sn: null, sp: null, lr_pos: null, lr_neg: null, cluster: 'cook', criterio: 'Positivo si el paciente tiene más de 48 años.' },
       { name: 'Marcha con base amplia', sn: null, sp: null, lr_pos: '13', lr_neg: null, criterio: 'Observación de la marcha: aumento de la base de sustentación. Muy específica, poco sensible.', fuente: 'Suri 2010 (JAMA, revisión RCE; IC 95 %: 1,9–95)' },
       { name: 'Romberg alterado', sn: null, sp: null, lr_pos: '4.2', lr_neg: null, criterio: 'Alteración del equilibrio en bipedestación con pies juntos y ojos cerrados.', fuente: 'Suri 2010 (JAMA, revisión RCE; IC 95 %: 1,4–13)' },
-      { name: 'Déficits sensoriales (L3-S1)', sn: '~50%', sp: '~80%', lr_pos: null, lr_neg: null, criterio: 'Distribuciones de pinchazo/vibración en L3-S1.' }
+      { name: 'Déficits sensoriales (L3-S1)', sn: '~50%', sp: '~80%', lr_pos: null, lr_neg: null, criterio: 'Distribuciones de pinchazo/vibración en L3-S1.' },
+      // Al final (no en medio) para no desplazar los índices de state.testResults ya guardados.
+      { name: 'Test de extensión lumbar de 30 s', sn: '51%', sp: '69%', lr_pos: null, lr_neg: null, criterio: 'De pie, extensión lumbar mantenida 30 s. Positivo: aparece o aumenta el dolor en el muslo (por debajo del pliegue glúteo), no solo el lumbar. No informativo por sí solo. Una versión modificada (hasta 60 s, más extensión + inclinación hacia el lado sintomático) da S 92 %, E 40 %, LR− 0,2, pero con IC 95 % hasta 1,36 en 30 pacientes: no sirve aún para descartar.', fuente: 'Katz 1995, datos citados en Dobbs 2016 (Manual Therapy; referencia: RM)' }
     ]
   },
   lu5: {
@@ -1729,7 +1731,7 @@ export const HYPOTHESES = {
       fuente: 'Tarjeta de consulta lumbar (guía clínica lumbar, ap. 6)'
     },
     clusters: {
-      laslett: { nombre: 'Tests de provocación SI (3 de 5)', umbralPos: 3, umbralNeg: 2, sn: null, sp: null, lr_pos: '2.44', lr_neg: '0.31', fuente: 'Han 2023 (eClinicalMedicine, revisión sistemática, 6 estudios; LR+ IC 95 %: 1,50–3,98, LR− 0,21–0,47; referencia: bloqueo anestésico). Misma regla que la tarjeta lumbar: 3 de 5 positivos' }
+      laslett: { nombre: 'Tests de provocación SI (3 de 5)', umbralPos: 3, umbralNeg: 2, sn: null, sp: null, lr_pos: '2.44', lr_neg: '0.31', fuente: 'Han 2023 (eClinicalMedicine, revisión sistemática, 6 estudios; LR+ IC 95 %: 1,50–3,98, LR− 0,21–0,47; referencia: bloqueo anestésico). Misma regla que la tarjeta lumbar: 3 de 5 positivos. Saueressig 2021 (JOSPT, metaanálisis, 5 estudios): LR+ 2,13, LR− 0,33, certeza muy baja (GRADE); descarta mejor de lo que confirma' }
     },
     tests: [
       { name: 'Distracción', sn: null, sp: null, lr_pos: null, lr_neg: null, cluster: 'laslett', criterio: 'Supino: presión posterolateral sobre ambas EIAS. Positivo: reproduce el dolor conocido.' },
