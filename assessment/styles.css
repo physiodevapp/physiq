@@ -2047,3 +2047,12 @@
   .fp-escala .option-btn { font-size: 0.75rem; }
   .fp-card-row { flex-direction: column; align-items: stretch; }
 }
+
+/* ─── Urgencias de la región (fase 2) ───────────────────────── */
+.urgencia-box { border: 2px solid var(--red); border-radius: var(--radius); background: rgba(255,71,87,0.08); padding: 10px 14px; margin-bottom: 1rem; }
+.urgencia-box summary { cursor: pointer; font-weight: 600; color: var(--red); font-size: 0.88rem; line-height: 1.4; }
+.urgencia-box p { font-size: 0.8rem; color: var(--text2); line-height: 1.55; margin: 8px 0 0; }
+.urgencia-alert { margin-bottom: 0.6rem; }
+.sq2-urg-badge { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; font-size: 0.62rem; font-family: 'DM Mono', monospace; color: var(--red); border: 1px solid var(--red); vertical-align: middle; }
+.sq2-urg-msg { display: none; margin-top: 6px; font-size: 0.78rem; font-weight: 600; color: var(--red); }
+.answered-si .sq2-urg-msg { display: block; }

@@ -290,7 +290,7 @@ function _softResetApp() {
 
   // Phase 2 DOM
   document.querySelectorAll('.region-card').forEach(c => c.classList.remove('selected'));
-  ['sistemaTabs', 'sistemaPanels'].forEach(id => {
+  ['sistemaTabs', 'sistemaPanels', 'urgenciaRegion'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '';
   });
@@ -709,6 +709,7 @@ function buildSistemicoQuestions(regionId) {
   const title = document.getElementById('sistemicoTitle');
 
   title.textContent = `Cribado Sistémico — ${data.label}`;
+  renderUrgenciaRegion(data);
   tabsContainer.innerHTML = '';
   panelsContainer.innerHTML = '';
   state.sistemicoAnswers = {};
@@ -816,11 +817,12 @@ function buildSistemaHTML(sis) {
   // Screening questions
   html += `<div class="screening-section-title">❓ Preguntas de Cribado</div>`;
   sis.preguntas.forEach((q, qi) => {
-    const s1Badge = q.s1 ? `<span class="sq2-s1-badge">Screening rápido</span>` : '';
+    const s1Badge = (q.s1 ? `<span class="sq2-s1-badge">Screening rápido</span>` : '')
+      + (q.urgencia ? `<span class="sq2-urg-badge">Urgencia</span>` : '');
     html += `
       <div class="sq2${q.alerta ? ' alerta-high' : ''}" id="sq2_${q.id}">
         <div class="sq2-badge${q.alerta ? ' alerta' : ''}">${qi + 1}</div>
-        <span class="sq2-text">${q.text}${s1Badge}</span>
+        <span class="sq2-text">${q.text}${s1Badge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}</span>
         <div class="sq-btns">
           <button class="sq-btn si" onclick="selectSistQ(this,'${q.id}','SI',${q.alerta},'${sis.id}')">SÍ</button>
           <button class="sq-btn no selected" onclick="selectSistQ(this,'${q.id}','NO',${q.alerta},'${sis.id}')">NO</button>
@@ -1146,16 +1148,52 @@ function selectSistQ(btn, id, value, isAlerta, sisId) {
   }
 
   updateSistemicoAlert();
+  const q = SYSTEMIC_SCREENING[state.region]?.sistemas.flatMap(x => x.preguntas).find(x => x.id === id);
+  if (q?.urgencia && value === 'SI') showToast(`🚨 ${q.urgencia}`, 'warning');
   saveSession();
+}
+
+// Recuadro «URGENCIAS HOY» de la región (SYSTEMIC_SCREENING[region].urgencia,
+// literal de la tarjeta de guía de consulta), arriba del cribado. Abierto por
+// defecto: lo primero que se ve al elegir la región.
+function renderUrgenciaRegion(data) {
+  const el = document.getElementById('urgenciaRegion');
+  if (!el) return;
+  const u = data?.urgencia;
+  el.innerHTML = u ? `<details class="urgencia-box" open>
+      <summary>🚨 ${u.titulo}</summary>
+      ${u.lineas.map(l => `<p>${l}</p>`).join('')}
+    </details>` : '';
+}
+
+// Preguntas del cribado con `urgencia` respondidas SÍ en la región actual.
+function getUrgenciasActivas() {
+  const data = SYSTEMIC_SCREENING[state.region];
+  if (!data) return [];
+  return data.sistemas.flatMap(sis => sis.preguntas)
+    .filter(q => q.urgencia && state.sistemicoAnswers[q.id] === 'SI')
+    .map(q => q.urgencia);
 }
 
 function updateSistemicoAlert() {
   const alertDiv = document.getElementById('sistemicoAlert');
   const hasPositive = Object.values(state.sistemicoAnswers).includes('SI');
   state.sistemicoAlerta = hasPositive;
-  if (hasPositive) {
+  const urgencias = getUrgenciasActivas();
+  // Una urgencia nunca lleva el mensaje de «watchful waiting»: aviso propio, arriba.
+  const urgHtml = urgencias.length ? `<div class="alert alert-danger urgencia-alert">
+      <span class="alert-icon">🚨</span>
+      <div><strong>Derivación urgente hoy.</strong> No continuar con la valoración mecánica.
+        ${urgencias.map(u => `<div>· ${u}</div>`).join('')}</div>
+    </div>` : '';
+  const soloUrgencias = urgencias.length && !Object.entries(state.sistemicoAnswers)
+    .some(([id, v]) => v === 'SI' && !SYSTEMIC_SCREENING[state.region]?.sistemas.some(s => s.preguntas.some(q => q.id === id && q.urgencia)));
+  if (hasPositive && soloUrgencias) {
     alertDiv.style.display = 'block';
-    alertDiv.innerHTML = `<div class="alert alert-warning">
+    alertDiv.innerHTML = urgHtml;
+  } else if (hasPositive) {
+    alertDiv.style.display = 'block';
+    alertDiv.innerHTML = urgHtml + `<div class="alert alert-warning">
       <span class="alert-icon">⚠️</span>
       <div><strong>Respuesta afirmativa detectada.</strong> Evalúe en el contexto clínico completo. La presencia de una sola bandera sistémica no exige derivación automática (excepto emergencias claras). Considere un enfoque de "watchful waiting" y monitorice la evolución. Puede continuar con la evaluación mecánica.</div>
     </div>`;
@@ -1835,6 +1873,7 @@ function buildPhysiQPayload() {
     si: state.sistemicoAlerta,
     br: Object.entries(state.banderasRojas).filter(([, v]) => v === 'SI').map(([k]) => BR_LABELS[k]),
     sq: getSistemicoAffirmativeTexts(),
+    ur: getUrgenciasActivas(),
     h:  state.activeHypotheses.map(id => ({
           id,
           name: HYPOTHESES[id]?.name ?? id,
@@ -1854,7 +1893,7 @@ function buildContextSummaryText() {
   const hyps = (d.h || []).map(h => `  · ${h.name} — ${h.sc}`).join('\n');
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}
 Región: ${d.r} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
-Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}
+Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
 Variable control: ${d.pn?.variableControl || '—'}
