@@ -203,13 +203,88 @@ function _pintarCuerpo() {
   });
 }
 
+// Swipe-to-dismiss del bottom sheet en móvil — mismo patrón que
+// `_setupSessionPanelDrag()` en app.js (no el más simple `initSwipe()` de
+// #phaseSheet): el formulario, igual que #sessionPanel, es un modal
+// centrado en escritorio y solo se convierte en bottom sheet por debajo de
+// 768px, así que el arrastre necesita el mismo guard de ancho; y tiene
+// muchos textarea/input enfocados (los ítems `texto`), así que también
+// necesita el blur() del campo activo y la compensación de
+// visualViewport.resize cuando el teclado se cierra a mitad de gesto.
+function _setupFpSheetDrag() {
+  const sheet = document.querySelector('#fpOverlay .fp-sheet');
+  if (!sheet) return;
+  const EASE = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+  let startY = 0, startTime = 0, dragging = false, delta = 0, snapTimer = null;
+  let vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      const newHeight = window.visualViewport.height;
+      if (dragging) startY += newHeight - vvHeight;
+      vvHeight = newHeight;
+    });
+  }
+
+  sheet.addEventListener('touchstart', e => {
+    if (window.innerWidth > 768) return;
+    if (e.touches[0].clientY - sheet.getBoundingClientRect().top > 72) return;
+    if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+    startY = e.touches[0].clientY;
+    startTime = Date.now();
+    delta = 0;
+    dragging = true;
+    clearTimeout(snapTimer);
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  sheet.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    delta = Math.max(0, e.touches[0].clientY - startY);
+    sheet.style.transform = delta > 0 ? `translateY(${delta}px)` : 'translateY(0)';
+  }, { passive: true });
+
+  function onRelease() {
+    if (!dragging) return;
+    dragging = false;
+    const velocity = delta / (Date.now() - startTime);
+    if (delta > 80 || velocity > 0.3) {
+      sheet.style.transition = EASE;
+      sheet.style.transform = 'translateY(110%)';
+      setTimeout(() => {
+        sheet.style.transition = 'none';
+        cerrarFormularioPrevio();
+        sheet.style.transform = '';
+        sheet.style.transition = '';
+      }, 300);
+    } else {
+      sheet.style.transition = EASE;
+      sheet.style.transform = 'translateY(0)';
+      snapTimer = setTimeout(() => {
+        sheet.style.transform = '';
+        sheet.style.transition = '';
+      }, 310);
+    }
+  }
+
+  sheet.addEventListener('touchend', onRelease, { passive: true });
+  sheet.addEventListener('touchcancel', () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transform = '';
+    sheet.style.transition = '';
+  }, { passive: true });
+}
+
 function _asegurarDOM() {
   if (document.getElementById('fpOverlay')) return;
   const el = document.createElement('div');
   el.id = 'fpOverlay';
   el.className = 'fp-overlay';
+  el.onclick = () => cerrarFormularioPrevio();
   el.innerHTML = `
-    <div class="fp-sheet" role="dialog" aria-modal="true" aria-label="Formulario previo">
+    <div class="fp-sheet" role="dialog" aria-modal="true" aria-label="Formulario previo" onclick="event.stopPropagation()">
+      <div class="fp-sheet-handle"></div>
       <div class="fp-head">
         <div class="fp-head-title">📝 Formulario previo</div>
         <button type="button" class="fp-close" onclick="cerrarFormularioPrevio()" aria-label="Cerrar">✕</button>
@@ -225,6 +300,7 @@ function _asegurarDOM() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && el.classList.contains('open')) cerrarFormularioPrevio();
   });
+  _setupFpSheetDrag();
 }
 
 function _nombreRegion(r) { return r ? r.charAt(0).toUpperCase() + r.slice(1) : 'Región'; }
