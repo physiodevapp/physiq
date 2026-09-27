@@ -399,6 +399,23 @@
     animation: recordPulse 1.2s ease-in-out infinite;
   }
 
+  /* Label carrying the mic button next to the question, instead of a lone
+     circular button below the field when it has no chips (injectQuickInputBar).
+     `label.label-with-mic` (element+class) so it still wins over `.fp-q`'s
+     `display: block` (single class) regardless of stylesheet order. */
+  label.label-with-mic {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .label-with-mic .mic-btn {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    font-size: 0.8rem;
+  }
+
   /* Patient field — compact identity row matching other satellites */
   .info-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 1.5rem; }
   .field { flex: 1; display: flex; flex-direction: column; gap: 5px; }

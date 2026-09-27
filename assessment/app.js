@@ -380,26 +380,55 @@ function _escapeAttr(str) {
     .replace(/>/g, '&gt;');
 }
 
-// `phrases` overrides QUICK_PHRASES[fieldId] — used by dynamically rendered
-// fields (formulario previo) that carry their own chips in their schema.
-function renderQuickInputBar(fieldId, phrases = (typeof QUICK_PHRASES !== 'undefined' && QUICK_PHRASES[fieldId]) || []) {
+function _renderChipRow(fieldId, phrases) {
   const chips = phrases.map(p => {
     const esc = _escapeAttr(p);
     return `<button type="button" class="chip-btn" data-field="${fieldId}" data-phrase="${esc}" onclick="appendQuickPhrase(this)">${esc}</button>`;
   }).join('');
-  const mic = isSpeechSupported()
-    ? `<button type="button" class="mic-btn" data-field="${fieldId}" onclick="toggleDictation(this)" title="Dictar por voz" aria-label="Dictar por voz">🎤</button>`
-    : '';
-  if (!chips && !mic) return '';
-  return `<div class="quick-input-bar">${chips ? `<div class="chip-row">${chips}</div>` : ''}${mic}</div>`;
+  return chips ? `<div class="chip-row">${chips}</div>` : '';
 }
 
+function _renderMicButton(fieldId) {
+  return isSpeechSupported()
+    ? `<button type="button" class="mic-btn" data-field="${fieldId}" onclick="toggleDictation(this)" title="Dictar por voz" aria-label="Dictar por voz">🎤</button>`
+    : '';
+}
+
+// `phrases` overrides QUICK_PHRASES[fieldId] — used by dynamically rendered
+// fields (formulario previo) that carry their own chips in their schema.
+// Kept as a single bar (chips + mic together, after the field) for fields
+// built as an HTML string (phase 5 plan notes) where there's no `<label
+// for>` to hang the mic button off of.
+function renderQuickInputBar(fieldId, phrases = (typeof QUICK_PHRASES !== 'undefined' && QUICK_PHRASES[fieldId]) || []) {
+  const chips = _renderChipRow(fieldId, phrases);
+  const mic = _renderMicButton(fieldId);
+  if (!chips && !mic) return '';
+  return `<div class="quick-input-bar">${chips}${mic}</div>`;
+}
+
+// Mic goes next to the field's question (inside its `<label for="fieldId">`,
+// right-aligned) rather than in the bar below — that bar only exists for
+// chips, so a field with a mic but no chips (most `texto` items in the
+// formulario previo) never renders an orphan circular button on its own row.
+// Falls back to the old combined bar when no matching `<label for>` is found.
 function injectQuickInputBar(fieldId, phrases) {
   const field = document.getElementById(fieldId);
   if (!field || field.dataset.quickBarInjected) return;
-  const html = phrases ? renderQuickInputBar(fieldId, phrases) : renderQuickInputBar(fieldId);
-  if (!html) return;
-  field.insertAdjacentHTML('afterend', html);
+  const finalPhrases = phrases || (typeof QUICK_PHRASES !== 'undefined' && QUICK_PHRASES[fieldId]) || [];
+  const chipsHtml = _renderChipRow(fieldId, finalPhrases);
+  const micHtml = _renderMicButton(fieldId);
+  if (!chipsHtml && !micHtml) return;
+
+  const label = document.querySelector(`label[for="${fieldId}"]`);
+  if (micHtml && label) {
+    label.classList.add('label-with-mic');
+    label.insertAdjacentHTML('beforeend', micHtml);
+    if (chipsHtml) field.insertAdjacentHTML('afterend', `<div class="quick-input-bar">${chipsHtml}</div>`);
+  } else {
+    // No label to attach the mic to — keep the old combined bar so the
+    // button doesn't get lost.
+    field.insertAdjacentHTML('afterend', `<div class="quick-input-bar">${chipsHtml}${micHtml}</div>`);
+  }
   field.dataset.quickBarInjected = '1';
   wireQuickInputBar(fieldId);
 }
