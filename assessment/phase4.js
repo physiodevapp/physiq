@@ -109,6 +109,7 @@ export function renderStep(step) {
   div.innerHTML = `
     <div class="tree-step-badge">${step.tag}</div>
     <div class="tree-question-text">${step.question}</div>
+    ${window.fpPistasPasoHTML?.(step.id) || ''}
     <div class="option-group" id="opts_${step.id}">
       ${step.options.map((opt, i) => `
         <button class="option-btn" style="width:100%; text-align:left; justify-content:flex-start;"

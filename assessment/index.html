@@ -132,6 +132,15 @@
   </div>
 
   <div class="card">
+    <div class="card-title">📝 Formulario Previo a la Primera Visita</div>
+    <div class="fp-card-row">
+      <span class="fp-card-text">Preguntas generales y de la región (esta última, tras elegirla en la fase 2). Texto libre con teclado o micro.</span>
+      <button type="button" class="btn btn-secondary fp-open-btn" onclick="abrirFormularioPrevio('comun')">Rellenar</button>
+    </div>
+    <div class="fp-contador" id="fpContador">Sin rellenar</div>
+  </div>
+
+  <div class="card">
     <div class="card-title">Signos Vitales y Antropometría</div>
     <div class="plan-note-hint">Opcional — no se usan en el algoritmo actual; útiles como referencia evolutiva entre valoraciones.</div>
     <div class="vitals-row vitals-row-3">
@@ -339,6 +348,8 @@
   </div>
 
   <div id="sistemicoQuestions" style="display:none;">
+
+    <button type="button" class="btn btn-secondary fp-open-btn fp-open-region" onclick="abrirFormularioPrevio('region')">📝 Formulario previo de la región</button>
 
     <!-- Nota clínica -->
     <div class="alert alert-info" style="margin-bottom:1rem;">

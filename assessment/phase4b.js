@@ -54,6 +54,7 @@ export function buildHypothesisCards() {
       </div>
       <div class="hypothesis-body">
         <p style="font-size:0.8rem; color:var(--text3); margin-bottom:1rem;">Realice los tests e indique el resultado para calcular el peso diagnóstico.</p>
+        ${Object.keys(hyp.clusters || {}).map(cid => buildClusterBox(hyp, cid)).join('')}
         ${hyp.tests.map((t, i) => buildTestItem(hId, t, i)).join('')}
         <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border);">
           <div style="font-size:0.72rem; color:var(--accent); font-family:'DM Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">PROM Recomendado</div>
@@ -64,22 +65,52 @@ export function buildHypothesisCards() {
   });
 }
 
+function fmtLR(n) { return n >= 10 ? n.toFixed(0) : n.toFixed(n < 1 ? 2 : 1); }
+
+function lrBadge(signo, valor, origen, util) {
+  if (valor == null) return '';
+  const txt = origen === 'calculada' ? `LR${signo} ≈${fmtLR(valor)} (calc.)` : `LR${signo}: ${fmtLR(valor)}`;
+  const title = util ? 'Informativa: multiplica la puntuación' : 'No informativa: cuenta como hallazgo clínico';
+  return `<span class="stat-badge ${util ? 'highlight' : 'lr-weak'}" title="${title}">${txt}</span>`;
+}
+
+export function buildClusterBox(hyp, cid) {
+  const r = hyp.clusters[cid];
+  const n = hyp.tests.filter(t => t.cluster === cid).length;
+  const lr = lrEfectiva(r);
+  const pos = lr.posUtil ? `≥${r.umbralPos} de ${n} positivos → LR+ ${fmtLR(lr.pos)}` : '';
+  const neg = lr.negUtil && r.umbralNeg != null
+    ? `${r.umbralNeg === 0 ? 'ninguno' : `≤${r.umbralNeg}`} de ${n} positivos (todos hechos) → LR− ${fmtLR(lr.neg)}` : '';
+  return `<div class="cluster-box">
+    <div class="cluster-title">🧩 ${r.nombre}</div>
+    <div class="cluster-rule">${[pos, neg].filter(Boolean).join(' · ')}</div>
+    <div class="cluster-rule">Los tests del cluster no puntúan por separado.</div>
+    ${r.fuente ? `<div class="test-source">${r.fuente}</div>` : ''}
+  </div>`;
+}
+
 export function buildTestItem(hId, test, idx) {
-  const hasStats = test.sn || test.sp || test.lr_pos || test.lr_neg;
-  const statsHtml = hasStats
-    ? `<div class="test-stats">
-        ${test.sn ? `<span class="stat-badge highlight">Sn: ${test.sn}</span>` : ''}
-        ${test.sp ? `<span class="stat-badge highlight">Sp: ${test.sp}</span>` : ''}
-        ${test.lr_pos ? `<span class="stat-badge highlight">LR+: ${test.lr_pos}</span>` : ''}
-        ${test.lr_neg ? `<span class="stat-badge highlight">LR-: ${test.lr_neg}</span>` : ''}
-      </div>`
-    : `<div class="test-stats"><span class="stat-badge no-data">⚠ Datos de fiabilidad limitados/ausentes en literatura actual</span></div>`;
+  const hyp = HYPOTHESES[hId];
+  const lr = lrEfectiva(test);
+  const badges = [
+    test.sn ? `<span class="stat-badge">Sn: ${test.sn}</span>` : '',
+    test.sp ? `<span class="stat-badge">Sp: ${test.sp}</span>` : '',
+    test.cluster ? '' : lrBadge('+', lr.pos, lr.origenPos, lr.posUtil),
+    test.cluster ? '' : lrBadge('−', lr.neg, lr.origenNeg, lr.negUtil),
+    test.tipo === 'pronostico' ? `<span class="stat-badge lr-weak">Pronóstico · no puntúa</span>` : '',
+    test.cluster && hyp?.clusters?.[test.cluster] ? `<span class="stat-badge">🧩 ${hyp.clusters[test.cluster].nombre}</span>` : '',
+  ].filter(Boolean);
+  if (!test.cluster && test.tipo !== 'pronostico' && lr.pos == null && lr.neg == null) {
+    badges.push(`<span class="stat-badge no-data">Sin LR publicada · cuenta como hallazgo clínico</span>`);
+  }
+  const statsHtml = `<div class="test-stats">${badges.join('')}</div>`;
 
   const savedResult = (state.testResults[hId] && state.testResults[hId][idx]) || 'nd';
   return `<div class="test-item">
     <div class="test-name">${test.name}</div>
     ${statsHtml}
     <div class="test-criterion">${test.criterio}</div>
+    ${test.fuente ? `<div class="test-source">${test.fuente}</div>` : ''}
     <div class="test-result-btns">
       <button class="test-result-btn pos ${savedResult==='pos'?'selected':''}" onclick="setTestResult('${hId}',${idx},'pos',this)">✓ Positivo</button>
       <button class="test-result-btn neg ${savedResult==='neg'?'selected':''}" onclick="setTestResult('${hId}',${idx},'neg',this)">✗ Negativo</button>
@@ -239,33 +270,120 @@ export function setTestResult(hId, idx, result, btn) {
   saveSession();
 }
 
+// ─── Puntuación LR ────────────────────────────────────────────
+// Reglas (ver CLAUDE.md, "Puntuación de la fase 4b"):
+// 1. LR publicada (`lr_pos`/`lr_neg`) si existe; si no, calculada a partir de
+//    `sn`/`sp` cuando ambos son un número único (LR+ = S/(1−E), LR− = (1−S)/E).
+//    Un rango de S/E («52–70%», «~40%», «>90%») no se calcula. Un rango de LR
+//    («2.9–4.9») se toma por su extremo más cercano a 1 (conservador).
+// 2. Cada dirección cuenta por separado: la LR+ solo multiplica si es ≥ 2 y la
+//    LR− solo si es ≤ 0,5. Si no, el resultado es un «hallazgo clínico»:
+//    no multiplica (LR = 1) y se cuenta aparte como compatible / no compatible.
+// 3. Los tests con `cluster: id` no multiplican solos: multiplica la regla
+//    `hyp.clusters[id]` (umbralPos/lr_pos, umbralNeg/lr_neg).
+// 4. `tipo: 'pronostico'` no entra en la puntuación diagnóstica.
+// 5. Sin ninguna LR aplicable, la etiqueta no habla de peso diagnóstico.
+// 6. `absorbe: [idx]` — si este test aporta LR, los tests listados (que forman
+//    parte de él, p. ej. el SLR dentro de RAPIDH) dejan de multiplicar.
+export const LR_POS_MIN = 2;
+export const LR_NEG_MAX = 0.5;
+
+// '92%' → 0.92 · '0.91' → 0.91 · rango o texto → null
+export function parseProporcion(v) {
+  if (v == null) return null;
+  const m = String(v).trim().match(/^(\d+(?:[.,]\d+)?)\s*%?$/);
+  if (!m) return null;
+  const n = parseFloat(m[1].replace(',', '.'));
+  const p = n > 1 ? n / 100 : n;
+  return p >= 0 && p <= 1 ? p : null;
+}
+
+// '3.7' → 3.7 · '2.9–4.9' → 2.9 (pos) / 4.9 (neg) · texto que no es LR → null
+export function parseLR(v, direccion) {
+  if (v == null) return null;
+  const m = String(v).trim().match(/^(\d+(?:[.,]\d+)?)(?:\s*[–-]\s*(\d+(?:[.,]\d+)?))?(?:\s*\([^)]*\))?$/);
+  if (!m) return null;
+  const a = parseFloat(m[1].replace(',', '.'));
+  const b = m[2] != null ? parseFloat(m[2].replace(',', '.')) : a;
+  const lo = Math.min(a, b), hi = Math.max(a, b);
+  const n = direccion === 'pos' ? lo : hi;
+  return n > 0 ? n : null;
+}
+
+// LR efectiva de un test (o de una regla de cluster) en ambas direcciones.
+// origen: 'publicada' | 'calculada' | null
+export function lrEfectiva(t) {
+  const sn = parseProporcion(t.sn), sp = parseProporcion(t.sp);
+  const calcPos = sn != null && sp != null && sp < 1 ? sn / (1 - sp) : null;
+  const calcNeg = sn != null && sp != null && sp > 0 ? (1 - sn) / sp : null;
+  const pubPos = parseLR(t.lr_pos, 'pos'), pubNeg = parseLR(t.lr_neg, 'neg');
+  const pos = pubPos ?? calcPos, neg = pubNeg ?? calcNeg;
+  return {
+    pos, neg,
+    origenPos: pubPos != null ? 'publicada' : calcPos != null ? 'calculada' : null,
+    origenNeg: pubNeg != null ? 'publicada' : calcNeg != null ? 'calculada' : null,
+    posUtil: pos != null && pos >= LR_POS_MIN,
+    negUtil: neg != null && neg <= LR_NEG_MAX,
+  };
+}
+
 export function calcLRScore(hyp, results) {
-  let totalLR = 1.0, evaluatedCount = 0, positiveCount = 0, hasHighLR = false;
+  let totalLR = 1.0, evaluatedCount = 0, informativos = 0, posInformativos = 0, hasHighLR = false;
+  let hallazgos = 0, hallazgosPos = 0;
+  const aportes = {};   // idx → LR que ha multiplicado (para `absorbe`)
+
+  const multiplicar = (lr, esPos) => {
+    totalLR *= lr; informativos++;
+    if (esPos) { posInformativos++; if (lr >= 5) hasHighLR = true; }
+  };
+
+  // Tests sueltos
   hyp.tests.forEach((test, i) => {
     const res = results[i];
-    if (res === 'nd') return;
+    if (!res || res === 'nd') return;
     evaluatedCount++;
-    if (res === 'pos') {
-      positiveCount++;
-      const lr = parseFloat(test.lr_pos) || 1.5;
-      totalLR *= lr;
-      if (lr >= 5) hasHighLR = true;
-    } else if (res === 'neg') {
-      const lr = parseFloat(test.lr_neg) || 0.5;
-      totalLR *= lr;
-    }
+    if (test.tipo === 'pronostico' || test.cluster) return;
+    const lr = lrEfectiva(test);
+    if (res === 'pos' && lr.posUtil) aportes[i] = { lr: lr.pos, esPos: true };
+    else if (res === 'neg' && lr.negUtil) aportes[i] = { lr: lr.neg, esPos: false };
+    else { hallazgos++; if (res === 'pos') hallazgosPos++; }
   });
+
+  // `absorbe`: un test compuesto que aporta LR anula la de sus componentes
+  hyp.tests.forEach((test, i) => {
+    if (!aportes[i] || !test.absorbe) return;
+    test.absorbe.forEach(j => {
+      if (!aportes[j]) return;
+      delete aportes[j];
+      hallazgos++; if (results[j] === 'pos') hallazgosPos++;
+    });
+  });
+  Object.values(aportes).forEach(a => multiplicar(a.lr, a.esPos));
+
+  // Clusters
+  Object.entries(hyp.clusters || {}).forEach(([cid, regla]) => {
+    const idxs = hyp.tests.map((t, i) => t.cluster === cid ? i : -1).filter(i => i >= 0);
+    const pos = idxs.filter(i => results[i] === 'pos').length;
+    const todos = idxs.every(i => results[i] === 'pos' || results[i] === 'neg');
+    const lr = lrEfectiva(regla);
+    if (pos >= regla.umbralPos && lr.posUtil) multiplicar(lr.pos, true);
+    else if (todos && regla.umbralNeg != null && pos <= regla.umbralNeg && lr.negUtil) multiplicar(lr.neg, false);
+  });
+
+  const hallazgosTxt = hallazgos > 0 ? ` · ${hallazgosPos}/${hallazgos} hallazgos compatibles` : '';
   let label, colorClass;
   if (evaluatedCount === 0) {
     label = 'Sin evaluar'; colorClass = 'hyp-orange';
-  } else if (totalLR >= 5 || (hasHighLR && positiveCount > 0)) {
-    label = `🟢 Peso alto (LR× ${totalLR.toFixed(1)})`; colorClass = 'hyp-green';
-  } else if (totalLR >= 2 || positiveCount > 0) {
-    label = `🟠 Peso moderado (LR× ${totalLR.toFixed(1)})`; colorClass = 'hyp-orange';
+  } else if (informativos === 0) {
+    label = `⚪ Sin LR aplicable${hallazgosTxt}`; colorClass = 'hyp-neutral';
+  } else if (totalLR >= 5 || hasHighLR) {
+    label = `🟢 Peso alto (LR× ${totalLR.toFixed(1)})${hallazgosTxt}`; colorClass = 'hyp-green';
+  } else if (totalLR >= 2 || posInformativos > 0) {
+    label = `🟠 Peso moderado (LR× ${totalLR.toFixed(1)})${hallazgosTxt}`; colorClass = 'hyp-orange';
   } else {
-    label = `🔴 Peso bajo (LR× ${totalLR.toFixed(1)})`; colorClass = 'hyp-red';
+    label = `🔴 Peso bajo (LR× ${totalLR.toFixed(1)})${hallazgosTxt}`; colorClass = 'hyp-red';
   }
-  return { totalLR, label, colorClass, evaluatedCount };
+  return { totalLR, label, colorClass, evaluatedCount, informativos, hallazgos, hallazgosPos };
 }
 
 export function recalcHypScore(hId) {

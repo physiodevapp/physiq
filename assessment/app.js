@@ -263,6 +263,9 @@ function _softResetApp() {
   state.hypothesisScores = {};
   state.resultsBuilt = false;
   state.planNotes = { variableControl: '', ventanaRecuperacion: '', anclajeHabito: '' };
+  state.formularioPrevio = { comun: {}, regiones: {} };
+  window.cerrarFormularioPrevio?.();
+  precargarFormularioPrevio();   // refresca el contador de la fase 1
 
   // Phase 1 DOM
   const mConsulta = document.getElementById('motivoConsulta');
@@ -344,6 +347,26 @@ function resetApp() {
   );
 }
 
+// ─── FORMULARIO PREVIO (formulario.js, carga dinámica) ───────
+// import() dinámico: si formulario.js o un formularios/<region>.js no llegan
+// a cargar, el resto de la app sigue funcionando. `_fpMod` queda disponible
+// para las lecturas síncronas (payload, notas, pistas del árbol).
+let _fpMod = null;
+function _cargarFormularioMod() {
+  return import('./formulario.js').then(m => { _fpMod = m; return m; });
+}
+function precargarFormularioPrevio() {
+  return _cargarFormularioMod().then(m => m.precargarFormulario()).catch(() => {});
+}
+function abrirFormularioPrevio(tab) {
+  _cargarFormularioMod()
+    .then(m => m.abrirFormularioPrevio(tab))
+    .catch(() => showToast('No se pudo cargar el formulario previo.', 'warning'));
+}
+function resumenFormularioPrevio() {
+  return _fpMod ? _fpMod.resumenFormularioPrevio() : [];
+}
+
 // ─── QUICK INPUT (chips de frases + dictado por voz) ──────────
 function isSpeechSupported() {
   return typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
@@ -357,8 +380,9 @@ function _escapeAttr(str) {
     .replace(/>/g, '&gt;');
 }
 
-function renderQuickInputBar(fieldId) {
-  const phrases = (typeof QUICK_PHRASES !== 'undefined' && QUICK_PHRASES[fieldId]) || [];
+// `phrases` overrides QUICK_PHRASES[fieldId] — used by dynamically rendered
+// fields (formulario previo) that carry their own chips in their schema.
+function renderQuickInputBar(fieldId, phrases = (typeof QUICK_PHRASES !== 'undefined' && QUICK_PHRASES[fieldId]) || []) {
   const chips = phrases.map(p => {
     const esc = _escapeAttr(p);
     return `<button type="button" class="chip-btn" data-field="${fieldId}" data-phrase="${esc}" onclick="appendQuickPhrase(this)">${esc}</button>`;
@@ -370,10 +394,10 @@ function renderQuickInputBar(fieldId) {
   return `<div class="quick-input-bar">${chips ? `<div class="chip-row">${chips}</div>` : ''}${mic}</div>`;
 }
 
-function injectQuickInputBar(fieldId) {
+function injectQuickInputBar(fieldId, phrases) {
   const field = document.getElementById(fieldId);
   if (!field || field.dataset.quickBarInjected) return;
-  const html = renderQuickInputBar(fieldId);
+  const html = phrases ? renderQuickInputBar(fieldId, phrases) : renderQuickInputBar(fieldId);
   if (!html) return;
   field.insertAdjacentHTML('afterend', html);
   field.dataset.quickBarInjected = '1';
@@ -381,7 +405,7 @@ function injectQuickInputBar(fieldId) {
 }
 
 function initQuickInputBars() {
-  ['motivoConsulta', 'signoComparable'].forEach(injectQuickInputBar);
+  ['motivoConsulta', 'signoComparable'].forEach(id => injectQuickInputBar(id));
 }
 
 // A chip's phrase already sitting in the field is spent: dim it and block
@@ -671,6 +695,7 @@ function applyRegionChange(regionId, card) {
   }
   state.region = regionId;
   buildSistemicoQuestions(regionId);
+  precargarFormularioPrevio();
   saveSession();
 }
 
@@ -1332,7 +1357,7 @@ function buildResults() {
       const { id, hyp, score } = item;
       const scoreInfo = state.hypothesisScores[id];
       const colorClass = scoreInfo?.colorClass || 'hyp-orange';
-      const colorMap = { 'hyp-green': '#38d9a9', 'hyp-orange': '#ff9f43', 'hyp-red': '#ff6b6b' };
+      const colorMap = { 'hyp-green': '#38d9a9', 'hyp-orange': '#ff9f43', 'hyp-red': '#ff6b6b', 'hyp-neutral': '#8b95a7' };
       const rankEmoji = ['🥇','🥈','🥉'][rank] || `${rank+1}º`;
       const dotColor = colorMap[colorClass] || '#ff9f43';
 
@@ -1368,8 +1393,14 @@ function buildResults() {
         </div>
         <div>
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent2); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">💊 Dosis Día 1 (Baja Fricción)</div>
-          <div class="exercise-box">${hyp.dosis}</div>
+          <div class="exercise-box">${hyp.dosis || '<em style="color:var(--text3)">Sin dosis de referencia: a criterio del clínico.</em>'}</div>
         </div>
+        ${hyp.pronostico ? `<div style="margin-top:1rem;">
+          <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🧭 Pronóstico y derivación</div>
+          <div style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${hyp.pronostico.horizonte}</div>
+          ${hyp.pronostico.derivacion ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${hyp.pronostico.derivacion}</div>` : ''}
+          ${hyp.pronostico.fuente ? `<div class="test-source" style="margin:4px 0 0;">${hyp.pronostico.fuente}</div>` : ''}
+        </div>` : ''}
       </div>`;
     });
   }
@@ -1677,6 +1708,7 @@ function toggleSessionPanel() {
 function _closeAllOverlays() {
   closePhaseSheet();
   closeSessionPanel();
+  window.cerrarFormularioPrevio?.();
   const banner = document.getElementById('confirmBanner');
   if (banner) {
     banner.remove();
@@ -1811,6 +1843,7 @@ function buildPhysiQPayload() {
           tr:   state.testResults[id] ?? {}
         })),
     pn: state.planNotes,
+    fp: resumenFormularioPrevio(),
     ...(state.rom ? { rom: state.rom } : {})
   };
 }
@@ -1823,7 +1856,7 @@ function buildContextSummaryText() {
 Región: ${d.r} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}
 Hipótesis:
-${hyps}
+${hyps}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
 Variable control: ${d.pn?.variableControl || '—'}
 Ventana recuperación: ${d.pn?.ventanaRecuperacion || '—'}
 Anclaje hábito: ${d.pn?.anclajeHabito || '—'}`;
@@ -1932,7 +1965,8 @@ function _hasAssessmentData() {
     || !!state.psico_miedo
     || !!state.psico_autoef
     || !!state.psico_emocional
-    || Object.values(state.banderasRojas).includes('SI');
+    || Object.values(state.banderasRojas).includes('SI')
+    || resumenFormularioPrevio().length > 0;
 }
 
 function updateResetBtnVisibility() {
@@ -2073,6 +2107,7 @@ function _restoreSessionDOM() {
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) signoEl.value = state.signoComparable || '';
   syncQuickPhraseChips('signoComparable');
+  precargarFormularioPrevio();   // contador de la fase 1 + esquema de la región
   // Phases 4 / 4b / 5 restore automatically via initCIFTree / buildHypothesisCards / buildResults
 }
 
@@ -2152,6 +2187,8 @@ document.addEventListener('DOMContentLoaded', () => {
   _setupSessionPanelDrag();
   // Init quick-input chips + dictation for static text fields
   initQuickInputBars();
+  // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
+  precargarFormularioPrevio();
 
   // Seed history so the first back press steps through phases
   history.replaceState({ phase: 1 }, '');
@@ -2242,13 +2279,14 @@ _initHubIntegration();
 // ─── PUBLIC API ──────────────────────────────────────────────
 // Named exports for phase4.js / phase4b.js (which import these directly) and
 // for tests/unit.js.
-export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getSistemicoAffirmativeTexts };
+export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getSistemicoAffirmativeTexts,
+  injectQuickInputBar, lockBodyScroll, unlockBodyScroll };
 
 // Exposed on window for inline onclick/oninput attributes across index.html
 // and dynamically-generated HTML — those resolve only against the global
 // scope, never a module's private scope.
 Object.assign(window, {
-  appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
+  abrirFormularioPrevio, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
   copyInformeFisioterapia, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,

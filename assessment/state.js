@@ -48,6 +48,8 @@ const state = {
     ventanaRecuperacion: '',
     anclajeHabito: ''
   },
+  // Formulario previo (formulario.js): { comun: {id: valor}, regiones: { lumbar: {...} } }
+  formularioPrevio: { comun: {}, regiones: {} },
   rom: null   // payload importado desde PhysiQ-Motion vía ?rom=
 };
 
