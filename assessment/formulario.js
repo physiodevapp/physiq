@@ -317,7 +317,7 @@ function _asegurarDOM() {
         <button type="button" class="fp-tab" data-tab="comun" onclick="fpTab('comun')">General</button>
         <button type="button" class="fp-tab" data-tab="region" id="fpTabRegion" onclick="fpTab('region')">Región</button>
       </div>
-      <div class="fp-literal-nota">Anote las respuestas de texto con las palabras del paciente: se muestran luego como cita.</div>
+      <div class="fp-literal-nota">✍️ Anote las respuestas de texto con las palabras del paciente: se muestran luego como cita.</div>
       <div class="fp-body" id="fpBody"></div>
       <div class="fp-foot"><button type="button" class="btn btn-primary" onclick="cerrarFormularioPrevio()">Hecho</button></div>
     </div>`;
