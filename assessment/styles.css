@@ -2089,7 +2089,9 @@
 .fp-pistas { background: var(--surface2); border: 1px dashed var(--border2); border-radius: var(--radius); padding: 8px 12px; margin: 0 0 12px; }
 .fp-pistas-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
 .fp-pista { font-size: 0.78rem; line-height: 1.5; color: var(--text2); }
-.fp-pista-a { color: var(--accent); }
+.fp-pista-a { color: var(--text); font-weight: 500; }
+.fp-pista-cita { font-style: italic; font-weight: 400; }
+.fp-literal-nota { font-size: 0.72rem; color: var(--text3); padding: 8px 18px 0; }
 @media (max-width: 768px) {
   .fp-overlay { align-items: flex-end; }
   .fp-sheet { width: 100%; height: 94vh; border-radius: 16px 16px 0 0; border: none; border-top: 1px solid var(--border2); }

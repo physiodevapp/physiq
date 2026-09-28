@@ -26,6 +26,9 @@
 //                                   misma etiqueta se unen en una línea. `antecedente: true`
 //                                   la manda al bloque de antecedentes. Nunca en matriz,
 //                                   ni en nada que el paciente quiera reservarse
+//   pistas: { <campo fase 1>: ['c:<id>'] }   respuestas que se recuerdan encima
+//                                   de esa tarjeta de la fase 1 (mecanismo,
+//                                   cronologia). Solo recuerdan; nunca la rellenan
 // ============================================================
 const NS = 'No sabría decir';
 
@@ -93,5 +96,9 @@ export default {
         { id: 'medicacion', tipo: 'texto', informe: 'Medicación actual', antecedente: true, texto: 'Medicación que toma ahora', ayuda: 'Incluidos parches, inyecciones y lo que compra sin receta', lineas: 2 }
       ]
     }
-  ]
+  ],
+  pistas: {
+    mecanismo: ['c:desencadenante', 'c:inicio', 'c:operaciones'],
+    cronologia: ['c:desde_cuando', 'c:evolucion']
+  }
 };

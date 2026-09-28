@@ -141,6 +141,26 @@
   </div>
 
   <div class="card">
+    <div class="card-title">Mecanismo de Inicio</div>
+    <div id="fpPistas_mecanismo"></div>
+    <div class="option-group option-group-col" id="mecanismo">
+      <button class="option-btn" onclick="selectOption('mecanismo', this, 'Traumático')">⚡ Traumático</button>
+      <button class="option-btn" onclick="selectOption('mecanismo', this, 'Insidioso')">🌱 Insidioso</button>
+      <button class="option-btn" onclick="selectOption('mecanismo', this, 'Post-quirúrgico')">🏥 Post-quirúrgico</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cronología</div>
+    <div id="fpPistas_cronologia"></div>
+    <div class="option-group option-group-col" id="cronologia">
+      <button class="option-btn" onclick="selectOption('cronologia', this, 'Agudo (<6 semanas)')">🔴 Agudo (&lt;6 semanas)</button>
+      <button class="option-btn" onclick="selectOption('cronologia', this, 'Subagudo')">🟡 Subagudo</button>
+      <button class="option-btn" onclick="selectOption('cronologia', this, 'Crónico (>3 meses)')">🔵 Crónico (&gt;3 meses)</button>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-title">Signos Vitales y Antropometría</div>
     <div class="plan-note-hint">Opcional — no se usan en el algoritmo actual; útiles como referencia evolutiva entre valoraciones.</div>
     <div class="vitals-row vitals-row-3">
@@ -190,24 +210,6 @@
         <label class="form-label">Edad (años)</label>
         <input type="number" class="form-input" id="edadPaciente" min="0" max="120" placeholder="Ej: 45" oninput="updateEdadPaciente(this.value)">
       </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Mecanismo de Inicio</div>
-    <div class="option-group option-group-col" id="mecanismo">
-      <button class="option-btn" onclick="selectOption('mecanismo', this, 'Traumático')">⚡ Traumático</button>
-      <button class="option-btn" onclick="selectOption('mecanismo', this, 'Insidioso')">🌱 Insidioso</button>
-      <button class="option-btn" onclick="selectOption('mecanismo', this, 'Post-quirúrgico')">🏥 Post-quirúrgico</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Cronología</div>
-    <div class="option-group option-group-col" id="cronologia">
-      <button class="option-btn" onclick="selectOption('cronologia', this, 'Agudo (<6 semanas)')">🔴 Agudo (&lt;6 semanas)</button>
-      <button class="option-btn" onclick="selectOption('cronologia', this, 'Subagudo')">🟡 Subagudo</button>
-      <button class="option-btn" onclick="selectOption('cronologia', this, 'Crónico (>3 meses)')">🔵 Crónico (&gt;3 meses)</button>
     </div>
   </div>
 
