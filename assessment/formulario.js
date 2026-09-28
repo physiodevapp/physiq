@@ -13,7 +13,7 @@ import COMUN from './formularios/comun.js';
 // Regiones con archivo formularios/<region>.js. Al añadir uno, añadirlo aquí
 // (tests/unit.js comprueba que cada entrada carga): así no se pide por red
 // un archivo que no existe (404 en consola) para las demás regiones.
-export const REGIONES_CON_FORMULARIO = ['lumbar', 'cadera', 'cervical', 'rodilla', 'hombro'];
+export const REGIONES_CON_FORMULARIO = ['lumbar', 'cadera', 'cervical', 'rodilla', 'hombro', 'tobillo_pie'];
 const NS_TEXTO = 'No sabría decir';
 const _regiones = {};          // region → esquema | null (sin formulario)
 let _tab = 'comun';
@@ -327,7 +327,7 @@ function _asegurarDOM() {
   _setupFpSheetDrag();
 }
 
-function _nombreRegion(r) { return r ? r.charAt(0).toUpperCase() + r.slice(1) : 'Región'; }
+function _nombreRegion(r) { return r ? (n => n.charAt(0).toUpperCase() + n.slice(1))(r.replace(/_/g, ' y ')) : 'Región'; }
 
 export async function abrirFormularioPrevio(tab) {
   _asegurarDOM();

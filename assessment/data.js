@@ -14,9 +14,10 @@ import * as cervical from './data/cervical.js';
 import * as lumbar from './data/lumbar.js';
 import * as rodilla from './data/rodilla.js';
 import * as codo from './data/codo.js';
+import * as tobillo_pie from './data/tobillo_pie.js';
 
 // Orden = orden de las claves de SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES
-const REGIONES = { hombro, cadera, cervical, lumbar, rodilla, codo };
+const REGIONES = { hombro, cadera, cervical, lumbar, rodilla, codo, tobillo_pie };
 
 // Fase 2 — cribado sistémico por región (esquema: ver CLAUDE.md, "Clinical Data Structure")
 export const SYSTEMIC_SCREENING = Object.fromEntries(
@@ -32,8 +33,8 @@ export const SYSTEMIC_SCREENING = Object.fromEntries(
 // "CIF_TREES data integrity"):
 //
 // CIF_TREES = {
-//   [region]: {                     // clave = una de las 6 regiones válidas
-//                                    // (hombro|cadera|cervical|lumbar|rodilla|codo)
+//   [region]: {                     // clave = una de las 7 regiones válidas
+//                                    // (hombro|cadera|cervical|lumbar|rodilla|codo|tobillo_pie)
 //     title: string,                // título mostrado en #phase4Title
 //     steps: [                      // orden = orden secuencial por defecto
 //       {

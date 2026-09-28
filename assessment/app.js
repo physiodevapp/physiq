@@ -1355,6 +1355,12 @@ function getSistemicoAffirmativeTexts() {
   return texts;
 }
 
+// Region key → display name: 'tobillo_pie' → 'Tobillo y pie', 'lumbar' → 'Lumbar'.
+function nombreRegion(r) {
+  const n = r.replace(/_/g, ' y ');
+  return n.charAt(0).toUpperCase() + n.slice(1);
+}
+
 function buildResults() {
   const container = document.getElementById('resultsContent');
   container.innerHTML = '';
@@ -1401,7 +1407,7 @@ function buildResults() {
   container.innerHTML += `
   <div class="summary-section">
     <div class="summary-section-title">📊 SINSS — Caracterización del Cuadro</div>
-    <div class="summary-row"><span class="summary-label">Región valorada</span><span class="summary-value">${state.region ? state.region.charAt(0).toUpperCase() + state.region.slice(1) : '—'}</span></div>
+    <div class="summary-row"><span class="summary-label">Región valorada</span><span class="summary-value">${state.region ? nombreRegion(state.region) : '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Severidad (EVN)</span><span class="summary-value">${state.severidad}/10</span></div>
     <div class="summary-row"><span class="summary-label">Irritabilidad</span><span class="summary-value">${state.irritabilidadNivel || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Naturaleza</span><span class="summary-value">${state.naturaleza || '—'}</span></div>
@@ -1414,7 +1420,7 @@ function buildResults() {
   let hypHtml = `<div class="summary-section"><div class="summary-section-title">🎯 Hipótesis Diagnósticas — Ordenadas por Peso Diagnóstico</div>`;
 
   if (sorted.length === 0) {
-    const regionLabel = state.region ? state.region.charAt(0).toUpperCase() + state.region.slice(1) : 'la región';
+    const regionLabel = state.region ? nombreRegion(state.region) : 'la región';
     const showCS = state.cronologia === 'Crónico (>3 meses)' && state.riesgoPsico === 'Alto';
     hypHtml += `
       <div style="background:var(--surface2); border:1px solid var(--orange); border-radius:var(--radius); padding:1.2rem; color:var(--text2); font-size:0.85rem; line-height:1.7;">
@@ -1924,7 +1930,7 @@ function buildContextSummaryText() {
   const d = buildPhysiQPayload();
   const hyps = (d.h || []).map(h => `  · ${h.name} — ${h.sc}`).join('\n');
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}
-Región: ${d.r} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
+Región: ${d.r ? nombreRegion(d.r) : '—'} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
@@ -1945,7 +1951,7 @@ function copyContextToClipboard() {
 // pasted straight into a letterhead template and handed over as-is.
 function buildInformeFisioterapiaText() {
   const d = buildPhysiQPayload();
-  const region = d.r ? d.r.charAt(0).toUpperCase() + d.r.slice(1) : '—';
+  const region = d.r ? nombreRegion(d.r) : '—';
 
   const hyps = [...d.h].sort((a, b) => (b.lr ?? 1) - (a.lr ?? 1));
   const impresion = hyps.length
