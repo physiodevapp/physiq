@@ -2017,9 +2017,7 @@
 
 
 /* ─── Formulario previo (formulario.js) ─────────────────────── */
-.fp-card-row { display: flex; align-items: center; gap: 12px; }
-.fp-card-text { flex: 1; font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
-.fp-open-btn { flex-shrink: 0; }
+.fp-card-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; margin-bottom: 12px; }
 .fp-open-region { width: 100%; margin-bottom: 1rem; }
 .fp-contador { margin-top: 8px; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); }
 
@@ -2099,7 +2097,6 @@
   .fp-sheet { width: 100%; height: 94vh; border-radius: 16px 16px 0 0; border: none; border-top: 1px solid var(--border2); }
   .fp-sheet-handle { display: block; }
   .fp-escala .option-btn { font-size: 0.75rem; }
-  .fp-card-row { flex-direction: column; align-items: stretch; }
 }
 
 /* ─── Urgencias de la región (fase 2) ───────────────────────── */
