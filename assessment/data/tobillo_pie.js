@@ -7,10 +7,12 @@
 //
 // Región nueva (no existía en PhysiQ): todo sale de la tarjeta de consulta
 // tobillo y pie (guía de consulta, data/tarjeta_tobillo_pie.js), con el texto
-// clínico literal. Ninguna cifra puntúa todavía: los tests son hallazgos
-// (lr_pos/lr_neg null) hasta verificar cada fuente original; la S/E de
-// Thompson de la tarjeta va solo en el criterio. La tarjeta no da dosis
-// («Dosis y progresión no están en la guía»): dosis '' en todas.
+// clínico literal. Solo puntúan los tests con fuente verificada en el
+// artículo original: Thompson y hueco palpable (tp3, Maffulli 1998 / Reiman
+// 2014), Ottawa (tp5, Bachmann 2003, solo LR−) y el signo de Molloy (tp20,
+// test añadido). El resto son hallazgos, con la cifra verificada y el motivo
+// en su criterio. La tarjeta no da dosis («Dosis y progresión no están en la
+// guía»): dosis '' en todas.
 // ============================================================
 import { SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
 
@@ -328,7 +330,7 @@ export const hypotheses = {
       { name: 'Reglas de Ottawa (si no carga)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Si no carga: Ottawa antes de nada.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'LPAA: palpar y estirar', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Priorizar LPAA (palpar y estirar: flexión plantar con inversión y rotación interna). Reproducir el dolor conocido indica lesión de ese ligamento.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'LPC: palpar y estirar', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'LPC (palpar y estirar: inversión del retropié con el tobillo en flexión dorsal). Reproducir el dolor conocido indica lesión de ese ligamento.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
-      { name: 'Cajón anterior (a los 4–6 días)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Cajón anterior con mejor S y E a los 4–6 días; sin signo del surco, el LPAA no está roto del todo.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
+      { name: 'Cajón anterior (a los 4–6 días)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Cajón anterior con mejor S y E a los 4–6 días; sin signo del surco, el LPAA no está roto del todo. No puntúa: van Dijk 1996 (160 inversiones; referencia: cirugía o artrografía) da para la exploración diferida completa (día 5: hinchazón, hematoma, palpación y cajón) S 96 %, E 84 %, pero para el cajón solo el texto (S 86 %, E 74 %) no cuadra con su propia tabla, y lo que valida es rotura frente a ligamentos intactos, no esguince frente a otros diagnósticos.', fuente: 'Tarjeta de consulta tobillo y pie (ap. 5); van Dijk 1996 (J Bone Joint Surg Br 78-B(6))' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Estiramiento pasivo del LPAA o apoyo monopodal → EVA. ② Tiempo de apoyo monopodal descalzo sin dolor; cuando tolere carga, KTW en cm frente al lado sano.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' }
     ]
   },
@@ -342,8 +344,8 @@ export const hypotheses = {
       fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5 y 6)'
     },
     tests: [
-      { name: 'Palpación del LTPAI', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Palpación del LTPAI (la más sensible). Si las dos reproducen el dolor conocido, sospechar lesión. Sin cifras en el capítulo.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
-      { name: 'Squeeze test', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'squeeze test (la más específica). Si las dos reproducen el dolor conocido, sospechar lesión. Sin cifras en el capítulo.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
+      { name: 'Palpación del LTPAI', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Palpación del LTPAI (la más sensible). Si las dos reproducen el dolor conocido, sospechar lesión. Sin cifras en el capítulo. No puntúa: la palpación del LTPAI sola da resultados contradictorios (Frey 2017: S 95 %, E 86 %; Großterlinden 2016: S 43 %, E 52 %; recogidos en Netterström-Wedin 2021). La LR− 0,28 (IC 0,09–0,89) de Sman 2015 es de otra cosa: dolor en cualquiera de cinco estructuras de la sindesmosis (S 92 %, E 29 %).', fuente: 'Tarjeta de consulta tobillo y pie (ap. 5); Sman 2015 (Br J Sports Med, publicado en línea en 2013); Netterström-Wedin 2021 (Phys Ther Sport 49:214–26)' },
+      { name: 'Squeeze test', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'squeeze test (la más específica). Si las dos reproducen el dolor conocido, sospechar lesión. Sin cifras en el capítulo. No puntúa: Sman 2015 (RM de referencia) da S 26 %, E 88 %, LR+ 2,15 (IC 0,86–5,39); agrupado en Netterström-Wedin 2021 (4 estudios, 428 participantes), S 32 %, E 85 %, LR+ 3,16 (IC 0,95–10,49), LR− 0,77. Los dos intervalos de la LR+ cruzan el 1.', fuente: 'Tarjeta de consulta tobillo y pie (ap. 5); Sman 2015 (Br J Sports Med, publicado en línea en 2013); Netterström-Wedin 2021 (Phys Ther Sport 49:214–26)' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Squeeze test o flexión dorsal en carga → EVA. ② KTW en cm frente al lado sano, cuando tolere la carga.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' }
     ]
   },
@@ -358,8 +360,8 @@ export const hypotheses = {
       fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5 y 6)'
     },
     tests: [
-      { name: 'Thompson (Simmonds)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Thompson: prono, pie fuera de la camilla; al comprimir la pantorrilla el tobillo no se mueve → S 96 % · E 93 % → derivación preferente.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
-      { name: 'Hueco palpable', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Hueco palpable, que se pierde con el tiempo.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
+      { name: 'Thompson (Simmonds)', sn: '96%', sp: '93%', lr_pos: '13.71', lr_neg: '0.04', criterio: 'Thompson: prono, pie fuera de la camilla; al comprimir la pantorrilla el tobillo no se mueve → S 96 % · E 93 % → derivación preferente. Maffulli 1998: 133 roturas confirmadas en cirugía y 28 controles con lesión posterior sin rotura (26 negativos; 2 dudosos contados como falsos positivos). LR de Reiman 2014 con esos datos: LR+ 13,71 (IC 95 % 3,54–51,24), LR− 0,04 (0,02–0,10). Límite: la especificidad sale de solo 28 controles.', fuente: 'Maffulli 1998 (Am J Sports Med 26:266–70); LR: Reiman 2014 (J Athl Train 49:820–9)' },
+      { name: 'Hueco palpable', sn: '73%', sp: '89%', lr_pos: '6.64', lr_neg: '0.30', criterio: 'Hueco palpable, que se pierde con el tiempo. Maffulli 1998 (paciente despierto): S 73 %, E 89 %; LR de Reiman 2014: LR+ 6,64 (IC 95 % 2,32–19,91), LR− 0,30 (0,23–0,40). Es otro test que Thompson, pero en el mismo paciente: si los dos son positivos, el peso conjunto puede estar algo sobrestimado.', fuente: 'Maffulli 1998 (Am J Sports Med 26:266–70); LR: Reiman 2014 (J Athl Train 49:820–9)' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① y ② No procede: derivar. Tras el alta, el gesto que reproduce → EVA y ETM a tempo fijo frente al lado sano.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' }
     ]
   },
@@ -392,7 +394,7 @@ export const hypotheses = {
       fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5 y 6)'
     },
     tests: [
-      { name: 'Reglas de Ottawa de tobillo y de pie', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'TOBILLO → radiografía si dolor en la zona maleolar Y alguno: dolor óseo en los 6 cm distales del borde posterior de la tibia o punta del maléolo medial · ídem del peroné o punta del maléolo lateral · no carga cuatro pasos, ni justo tras la lesión ni en consulta. PIE → radiografía si dolor en el mediopié Y alguno: dolor óseo en la base del 5.º MT · en el navicular · no carga cuatro pasos.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
+      { name: 'Reglas de Ottawa de tobillo y de pie', sn: null, sp: null, lr_pos: null, lr_neg: '0.21', criterio: 'TOBILLO → radiografía si dolor en la zona maleolar Y alguno: dolor óseo en los 6 cm distales del borde posterior de la tibia o punta del maléolo medial · ídem del peroné o punta del maléolo lateral · no carga cuatro pasos, ni justo tras la lesión ni en consulta. PIE → radiografía si dolor en el mediopié Y alguno: dolor óseo en la base del 5.º MT · en el navicular · no carga cuatro pasos. Solo descarta: Bachmann 2003 (27 estudios, 15 581 pacientes) da LR− 0,08 aplicando solo la regla del tobillo o solo la del pie, pero 0,21 (IC 95 % 0,12–0,38) en los estudios que aplican las dos juntas, que es como se usan aquí (se toma la más prudente). El positivo es un hallazgo: en adultos, LR+ 1,47 (IC 1,11–1,93; Gomes 2022).', fuente: 'Bachmann 2003 (BMJ 326:417); Gomes 2022 (BMC Musculoskelet Disord 23:885)' },
       { name: '5.º MT: dolor en la base', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '5.º MT: dolor en la base en todos los tipos; en la espiral, a lo largo del hueso.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'Calcáneo: talón doloroso con equimosis', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Calcáneo: talón doloroso, hinchado, con equimosis.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① y ② No procede en fase aguda: derivar.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' }
@@ -436,7 +438,7 @@ export const hypotheses = {
       fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5 y 6)'
     },
     tests: [
-      { name: 'Batería progresiva de carga', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Batería progresiva: ETM bipodal → monopodal → saltos bipodales → monopodales, hasta reproducir; dolor localizado (1–2 dedos). EVA en cada escalón. Aquiles: la palpación no ayuda al diagnóstico.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
+      { name: 'Batería progresiva de carga', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Batería progresiva: ETM bipodal → monopodal → saltos bipodales → monopodales, hasta reproducir; dolor localizado (1–2 dedos). EVA en cada escalón. Aquiles: la palpación no ayuda al diagnóstico. No puntúa: la única cifra de estos gestos es de Hutchison 2013 (estudio piloto, 10 tendinopatías; en Reiman 2014): ETM monopodal S 22 %, E 93 %, LR+ 3,14; salto S 43 %, E 87 %, LR+ 3,31, sin intervalo de confianza publicado.', fuente: 'Tarjeta de consulta tobillo y pie (ap. 5); Reiman 2014 (J Athl Train 49:820–9)' },
       { name: 'Descarga en el salto', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Vigilar la descarga: aterrizar con el talón; saltar con el talón elevado aumenta el dolor.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Primer escalón de la batería que reproduce → EVA. ② Repeticiones de ETM monopodal a tempo fijo en el suelo, hasta dolor o fatiga, frente al lado sano.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' }
     ]
@@ -630,7 +632,9 @@ export const hypotheses = {
     tests: [
       { name: 'KTW', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'El KTW reproduce el dolor y muestra limitación.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'Palpación anterior', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Hinchazón y palpación dolorosa y engrosada: interlínea anterior, astragaloescafoidea, seno del tarso, LTPAI, LPAA.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
-      { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Zancada o KTW en carga → EVA. ② KTW en cm frente al lado sano.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' }
+      { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Zancada o KTW en carga → EVA. ② KTW en cm frente al lado sano.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
+      // Test añadido (no está en la tarjeta), al final de tests[] para no desplazar resultados guardados.
+      { name: 'Signo de pinzamiento de Molloy', sn: '94.8%', sp: '88%', lr_pos: null, lr_neg: null, criterio: 'Pulgar sobre la gotera anterolateral con el pie en flexión plantar y, sin soltar, llevar a flexión dorsal completa. Positivo si la maniobra combinada provoca dolor o aumenta el que daba la presión sola. Molloy 2003, 73 pacientes con artroscopia: 37 verdaderos positivos, 4 falsos positivos (adherencias, artrosis), 2 falsos negativos, 30 verdaderos negativos → S 94,8 %, E 88 % (LR calculadas). Límites: todos ya iban a artroscopia (sin inestabilidad mecánica), el mismo cirujano exploraba y decidía operar, y valida el pinzamiento sinovial anterolateral, no el óseo.', fuente: 'Molloy 2003 (J Bone Joint Surg Br 85-B(3))' }
     ]
   },
   tp21: {
@@ -846,7 +850,7 @@ export const hypotheses = {
       fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5 y 6)'
     },
     tests: [
-      { name: 'Palpación del espacio con compresión de los metatarsianos', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor a la palpación directa del espacio (sobre todo 3.º–4.º); posible chasquido al palpar mientras se comprimen los metatarsianos.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
+      { name: 'Palpación del espacio con compresión de los metatarsianos', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor a la palpación directa del espacio (sobre todo 3.º–4.º); posible chasquido al palpar mientras se comprimen los metatarsianos. No puntúa: la compresión pulgar-índice del espacio (Mahadevan 2015) tiene S 96 %, pero su especificidad sale de un solo pie sin Morton; el chasquido de Mulder da LR+ 2,19 (IC 0,45–10,60; Dando, en Pitcher 2024).', fuente: 'Tarjeta de consulta tobillo y pie (ap. 5); Mahadevan 2015 (J Foot Ankle Surg 54:549–53); Pitcher 2024 (Foot Ankle Orthop 9(4))' },
       { name: 'Diferencial del antepié', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Morton frente a metatarsalgia (callosidad, colapso del arco), Freiberg (14–18 años, cabeza del MT) y estrés de MT (dolor más dorsal).', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Palpación del espacio con compresión transversal → EVA. ② Minutos de marcha en cinta hasta los síntomas, mismo calzado y velocidad.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' }
     ]
