@@ -152,8 +152,10 @@ function renderEscalaSeveridad(scope, it, v) {
   }
   const primeraFila = Math.floor(count / 2);
   const filas = [nums.slice(0, primeraFila), nums.slice(primeraFila)];
-  return `<div class="fp-escala-grid">${filas.map(f => `<div class="fp-escala-row">${f.join('')}</div>`).join('')}</div>
-    <div class="fp-escala-ext"><span>${esc(it.extremos[0])}</span><span>${esc(it.extremos[1])}</span></div>
+  // Extremos ENCIMA de la escala y con el número (`0 = Nada`): debajo de una
+  // escala en dos filas parecían pistas del 5 y del 10.
+  return `<div class="fp-escala-ext fp-escala-ext-top"><span>${it.min} = ${esc(it.extremos[0])}</span><span>${it.max} = ${esc(it.extremos[1])}</span></div>
+    <div class="fp-escala-grid">${filas.map(f => `<div class="fp-escala-row">${f.join('')}</div>`).join('')}</div>
     <div class="fp-opts">${btn(v === 'ns', 'No sabría decir', `fpEscala('${scope}','${it.id}','ns')`)}</div>`;
 }
 

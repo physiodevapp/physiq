@@ -1554,6 +1554,8 @@
   .nrs-btn.selected.nrs-9, .nrs-btn.selected.nrs-10 {
     background: rgba(255,71,87,0.12); border-color: var(--danger); color: var(--danger);
   }
+  .nrs-ext { display: flex; justify-content: space-between; gap: 12px; font-size: 0.7rem; color: var(--text3); margin: 2px 0 8px; }
+  .nrs-ext span:last-child { text-align: right; }
   .nrs-label {
     font-size: 0.78rem;
     color: var(--text3);
@@ -2045,6 +2047,8 @@
 .fp-escala { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; }
 .fp-escala .option-btn { padding: 8px 0; justify-content: center; min-width: 0; }
 .fp-escala-ext { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text3); margin: 4px 0 6px; }
+.fp-escala-ext-top { gap: 12px; margin: 2px 0 8px; }
+.fp-escala-ext-top span:last-child { text-align: right; }
 /* Escalas de severidad (estiloSeveridad: true) — mismo lenguaje visual que
    la escala NRS de fase 3 (.nrs-btn), en clases propias para no acoplar el
    formulario previo a esa escala fija de fase 3: la banda de color (sev-b0
