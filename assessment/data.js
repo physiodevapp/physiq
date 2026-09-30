@@ -110,6 +110,9 @@ export const CIF_TREES = Object.fromEntries(
 //
 // Los ids son globales: tests/unit.js comprueba que ninguna región repite uno
 // de otra (aquí una clave repetida se sobrescribiría sin aviso).
+// Texto fijo de las hipótesis de derivación (fracturas, roturas, gota…): la fase 5 lo reconoce.
+export { DOSIS_DERIVAR } from './data/comun.js';
+
 export const HYPOTHESES = Object.assign({}, ...Object.values(REGIONES).map(m => m.hypotheses));
 
 

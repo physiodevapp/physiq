@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
+import { SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.rodilla
 export const screening = {
@@ -433,7 +433,7 @@ export const hypotheses = {
     id: 'ro11', region: 'rodilla', num: '⑪',
     name: 'Fracturas (Rótula o Meseta Tibial)',
     prom: 'KOOS-12',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     pronostico: {
       horizonte: 'Rótula: radiografía AP y lateral; TC en conminutas. Meseta: radiografía primero, TC para clasificar, RM si se sospecha lesión meniscal o ligamentosa.',
       derivacion: 'El dolor y el derrame limitan la exploración: no forzar. Ante déficit neurovascular, urgencia.',

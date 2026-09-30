@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
+import { SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.hombro
 export const screening = {
@@ -470,7 +470,7 @@ export const hypotheses = {
     id: 'h11', region: 'hombro', num: '⑪',
     name: 'Luxación Bloqueada o Fractura (→ Rx)',
     prom: 'QuickDASH (MCID: 8.0–15.9 pts)',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     tests: [
       { name: 'Rx antes de nada', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Traumatismo previo + rigidez activa y pasiva → luxación bloqueada o fractura → Rx. No explorar más hasta tenerla.', fuente: 'Tarjeta de consulta hombro (guía clínica de hombro, ap. 5)' },
       { name: 'Luxación bloqueada', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Traumatismo previo, cualquier edad, rigidez activa y pasiva similar al congelado. Imagen: Rx simple.', fuente: 'Tarjeta de consulta hombro (guía clínica de hombro, ap. 5)' },

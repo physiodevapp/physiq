@@ -4,6 +4,12 @@
 // regiones: cada data/<region>.js los importa y los añade a su `sistemas`.
 // ============================================================
 
+// ── DOSIS DE LAS HIPÓTESIS DE DERIVACIÓN ──
+// Fracturas, roturas, luxaciones, gota…: lo primero no es fisioterapia sino el
+// diagnóstico médico. Texto fijo decidido por el usuario (2026-09); la fase 5
+// lo reconoce (hyp.dosis === DOSIS_DERIVAR) y titula «Derivación».
+export const DOSIS_DERIVAR = 'Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico';
+
 // ── SISTEMAS TRANSVERSALES (aplicados a todas las regiones) ──
 export const SIS_ENDOCRINO = {
   id: 'transversal_endocrino', icon: '⚗️', nombre: 'Endocrino / Metabólico',

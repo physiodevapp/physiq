@@ -14,7 +14,7 @@
 // en su criterio. La tarjeta no da dosis («Dosis y progresión no están en la
 // guía»): dosis '' en todas.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
+import { SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.tobillo_pie
 // Árbol, nodo 1 (cinco P, monoartritis con fiebre, debilidad simétrica con
@@ -354,7 +354,7 @@ export const hypotheses = {
     id: 'tp3', region: 'tobillo_pie', num: '③',
     name: 'Rotura del Aquiles',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     pronostico: {
       horizonte: 'Aquiles: imagen solo para decidir quirúrgico o conservador. Lisfranc: radiografía en carga con los dos pies en la misma placa, S y E bajas → TC o RM. Calcáneo: TC. 5.º MT: radiografía.',
       derivacion: 'Fractura de Jones: riesgo de pseudoartrosis sin fijación quirúrgica.',
@@ -370,7 +370,7 @@ export const hypotheses = {
     id: 'tp4', region: 'tobillo_pie', num: '④',
     name: 'Lesión de Lisfranc',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     pronostico: {
       horizonte: 'Aquiles: imagen solo para decidir quirúrgico o conservador. Lisfranc: radiografía en carga con los dos pies en la misma placa, S y E bajas → TC o RM. Calcáneo: TC. 5.º MT: radiografía.',
       derivacion: 'Fractura de Jones: riesgo de pseudoartrosis sin fijación quirúrgica.',
@@ -388,7 +388,7 @@ export const hypotheses = {
     id: 'tp5', region: 'tobillo_pie', num: '⑤',
     name: 'Fracturas del Pie (5.º MT, Calcáneo)',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     pronostico: {
       horizonte: 'Aquiles: imagen solo para decidir quirúrgico o conservador. Lisfranc: radiografía en carga con los dos pies en la misma placa, S y E bajas → TC o RM. Calcáneo: TC. 5.º MT: radiografía.',
       derivacion: 'Fractura de Jones: riesgo de pseudoartrosis sin fijación quirúrgica.',
@@ -405,7 +405,7 @@ export const hypotheses = {
     id: 'tp6', region: 'tobillo_pie', num: '⑥',
     name: 'Luxación del Tibial Posterior',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     tests: [
       { name: 'Hinchazón y equimosis perimaleolar medial', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Hinchazón y equimosis perimaleolar medial.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'Resalte con la flexión dorsal y plantar', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Se subluxa hacia delante con la flexión dorsal y se recoloca con la plantar.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
@@ -575,7 +575,7 @@ export const hypotheses = {
     id: 'tp17', region: 'tobillo_pie', num: '⑰',
     name: 'Fractura de Estrés del Tobillo (Maléolo Medial, Astrágalo, Calcáneo)',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     pronostico: {
       horizonte: 'Radiografía poco sensible al principio; RM de elección; TC para caracterizar.',
       derivacion: '3–4 meses hasta el deporte tras una no complicada; complicada si no se resuelve con reposo relativo. Varias → causas sistémicas (RED-S, endocrinas, densidad ósea).',
@@ -787,7 +787,7 @@ export const hypotheses = {
     id: 'tp30', region: 'tobillo_pie', num: '㉚',
     name: 'Fractura de Estrés del Mediopié (Navicular, Cuboides, Cuñas)',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     pronostico: {
       horizonte: 'Radiografía poco sensible al principio; RM de elección; TC para caracterizar.',
       derivacion: '3–4 meses hasta el deporte tras una no complicada; complicada si no se resuelve con reposo relativo. Varias → causas sistémicas (RED-S, endocrinas, densidad ósea).',
@@ -863,7 +863,7 @@ export const hypotheses = {
     id: 'tp35', region: 'tobillo_pie', num: '㉟',
     name: 'Gota',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: DOSIS_DERIVAR,
     tests: [
       { name: 'Articulación roja, hinchada y muy dolorosa', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Articulación roja, hinchada, muy dolorosa al tacto y al movimiento; puede parecer una dactilitis.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       { name: 'Sistémicamente bien', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Sistémicamente bien; tofos en la gota de larga evolución. En la gota, en cambio, está sistémicamente bien.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
