@@ -2111,3 +2111,54 @@
 .sq2-urg-badge { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; font-size: 0.62rem; font-family: 'DM Mono', monospace; color: var(--red); border: 1px solid var(--red); vertical-align: middle; }
 .sq2-urg-msg { display: none; margin-top: 6px; font-size: 0.78rem; font-weight: 600; color: var(--red); }
 .answered-si .sq2-urg-msg { display: block; }
+
+/* ─── Modo breve (consulta de aseguradora, 10 min) ──────────── */
+/* body.modo-breve la pone selectModo() (app.js). Pliega lo opcional; nunca
+   oculta banderas rojas, urgencias ni el árbol. Ver docs/modo-breve.md. */
+.modo-badge, .breve-only, .breve-only-inline, .embudo { display: none; }
+.modo-breve .modo-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; color: var(--orange); border: 1px solid var(--orange); border-radius: 6px; padding: 2px 8px; }
+.modo-breve .breve-only { display: block; }
+.modo-breve .breve-only-inline { display: inline-block; }
+.modo-breve:not(.breve-ver-todo) .breve-opcional { display: none !important; }
+.modo-breve .card-title .breve-opcional + .breve-only-inline { display: none; }
+.modo-breve:not(.breve-ver-todo) .card-title .breve-only-inline { display: inline; }
+.breve-toggle { background: transparent; border: 1px dashed var(--border2); color: var(--text3); border-radius: var(--radius); padding: 8px 12px; font-family: 'Outfit', sans-serif; font-size: 0.78rem; cursor: pointer; width: 100%; margin: 4px 0 1rem; }
+.breve-toggle-menos, .breve-ver-todo .breve-toggle-mas { display: none; }
+.breve-ver-todo .breve-toggle-menos { display: inline; }
+#irritabDirecta { margin-bottom: 8px; }
+#irritabDirecta .option-btn { white-space: nowrap; padding-left: 4px; padding-right: 4px; }
+#modoConsulta + .plan-note-hint { margin-top: 10px; }
+
+/* Fase 4: «Resultados sin confirmar» solo cuando el árbol está completo */
+#btnGoConfirm:disabled ~ #btnSinConfirmar { opacity: 0.4; pointer-events: none; }
+.btn-sc-short { display: none; }
+@media (max-width: 768px) {
+  .modo-breve .nav-buttons #btnSinConfirmar { flex: 1; }
+  .btn-sc-full { display: none; }
+  .btn-sc-short { display: inline; }
+}
+
+/* Fase 2: embudo por sistema */
+.modo-breve .embudo { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; border: 1px solid var(--orange); border-radius: var(--radius); background: rgba(255,159,67,0.06); padding: 0.8rem 1rem; margin: 0.8rem 0; }
+.embudo-q { font-size: 0.85rem; color: var(--text); font-weight: 500; flex: 1 1 220px; }
+/* Móvil: botones SÍ/NO a todo el ancho, como las preguntas (.sq2 .sq-btns) */
+@media (max-width: 768px) { .modo-breve .embudo .sq-btns { flex: 1 1 100%; } }
+.embudo-nota { font-size: 0.72rem; color: var(--text3); display: block; font-weight: 400; margin-top: 2px; }
+/* «Mostrar campos opcionales» (breve-ver-todo) enseña también las preguntas
+   plegadas: así se completan los pendientes sin salir del modo breve. */
+.modo-breve:not(.breve-ver-todo) .sis-body:not(.embudo-si) .sq2:not(.sq2-urg),
+.modo-breve:not(.breve-ver-todo) .sis-body:not(.embudo-si) .sis-extra,
+.modo-breve:not(.breve-ver-todo) .sis-body:not(.embudo-si):not(.tiene-urg) .screening-section-title { display: none; }
+.embudo-estado { display: none; }
+.modo-breve .sistema-tab.embudo-no .embudo-estado,
+.modo-breve .sistema-accordion-row.embudo-no .embudo-estado { display: inline; color: var(--accent2); margin-left: 4px; }
+
+/* Fase 4b: en breve, los tests sin LR aplicable van plegados */
+.breve-hallazgos { margin-top: 0.6rem; border-top: 1px dashed var(--border2); padding-top: 0.6rem; }
+.breve-hallazgos summary { cursor: pointer; font-size: 0.78rem; color: var(--text3); }
+
+/* Fase 1 y 5: pendientes de la valoración breve */
+.breve-pendientes { border: 1px solid var(--orange); border-radius: var(--radius); background: rgba(255,159,67,0.06); padding: 0.9rem 1.1rem; margin-bottom: 1rem; font-size: 0.82rem; color: var(--text2); line-height: 1.55; }
+.breve-pendientes-title { color: var(--orange); font-weight: 600; margin-bottom: 4px; }
+.breve-pendientes ul { margin: 4px 0 0 1.1rem; padding: 0; }
+.breve-pendientes .btn { margin-top: 10px; font-size: 0.8rem; padding: 8px 14px; }

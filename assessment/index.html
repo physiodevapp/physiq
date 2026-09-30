@@ -25,6 +25,7 @@
     <span class="logo-sub">— <span class="logo-sub-word">Assessment</span><span class="logo-sub-initial">A</span></span>
   </div>
   <div class="header-right">
+    <span class="modo-badge" title="Consulta breve (10 min): cribado y confirmación no exhaustivos">⏱ Breve</span>
     <span class="phase-indicator" id="phaseIndicator">FASE 1 / 5</span>
     <button class="btn-reset" onclick="resetApp()">↺ <span class="btn-reset-text">Reiniciar</span></button>
     <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
@@ -123,6 +124,18 @@
     <p class="phase-subtitle">Recogida de información básica y filtros de seguridad antes de iniciar la valoración mecánica.</p>
   </div>
 
+  <div id="brevePendientes"></div>
+
+  <div class="card">
+    <div class="card-title">Tipo de Consulta</div>
+    <div class="option-group option-group-full" id="modoConsulta">
+      <button class="option-btn selected" onclick="selectModo('completo')">Completa</button>
+      <button class="option-btn" onclick="selectModo('breve')">⏱ Breve (10')</button>
+    </div>
+    <div class="plan-note-hint breve-only">Consulta breve: se mantienen las banderas rojas, las urgencias y el árbol completo. El cribado por sistemas y la confirmación con tests no son exhaustivos, quedan como pendientes y así consta en las notas y en el informe.</div>
+    <button type="button" class="breve-toggle breve-only" onclick="toggleBreveVerTodo()"><span class="breve-toggle-mas">+ Mostrar campos opcionales</span><span class="breve-toggle-menos">− Ocultar campos opcionales</span></button>
+  </div>
+
   <div class="card">
     <div class="card-title">Motivo de Consulta</div>
     <div class="form-group">
@@ -134,6 +147,7 @@
   <div class="card">
     <div class="card-title">📝 Formulario Previo</div>
     <div class="fp-card-text">Preguntas generales y de la región (esta última, tras elegirla en la fase 2). Texto libre con teclado o micro.</div>
+    <div class="plan-note-hint breve-only">Consulta breve: mejor en papel en la sala de espera; transcriba solo lo que se muestra en el árbol como «Refiere el paciente».</div>
     <button type="button" class="btn btn-secondary fp-open-btn fp-open-region" onclick="abrirFormularioPrevio('comun')">📝 Formulario previo general</button>
     <div class="fp-contador" id="fpContador">Sin rellenar</div>
   </div>
@@ -159,9 +173,9 @@
   </div>
 
   <div class="card">
-    <div class="card-title">Signos Vitales y Antropometría</div>
-    <div class="plan-note-hint">Opcional — no se usan en el algoritmo actual; útiles como referencia evolutiva entre valoraciones.</div>
-    <div class="vitals-row vitals-row-3">
+    <div class="card-title"><span class="breve-opcional">Signos Vitales y Antropometría</span><span class="breve-only-inline">Edad</span></div>
+    <div class="plan-note-hint breve-opcional">Opcional — no se usan en el algoritmo actual; útiles como referencia evolutiva entre valoraciones.</div>
+    <div class="vitals-row vitals-row-3 breve-opcional">
       <div class="form-group">
         <label class="form-label">Talla (cm)</label>
         <input type="number" class="form-input" id="vitalTalla" min="50" max="250" step="0.1" placeholder="Ej: 170" oninput="updateVital('antropometria','talla',this.value)" onblur="updateVitalColor('antropometria','talla')">
@@ -176,7 +190,7 @@
         <div class="vital-flag" id="flagImc"></div>
       </div>
     </div>
-    <div class="vitals-row">
+    <div class="vitals-row breve-opcional">
       <div class="form-group">
         <label class="form-label">TAS (mmHg)</label>
         <input type="number" class="form-input" id="vitalTas" min="50" max="260" placeholder="Ej: 120" oninput="updateVital('signosVitales','tas',this.value)" onblur="updateVitalColor('signosVitales','tas')">
@@ -189,17 +203,17 @@
       </div>
     </div>
     <div class="vitals-row">
-      <div class="form-group">
+      <div class="form-group breve-opcional">
         <label class="form-label">FC (lpm)</label>
         <input type="number" class="form-input" id="vitalFc" min="20" max="250" placeholder="Ej: 72" oninput="updateVital('signosVitales','fc',this.value)" onblur="updateVitalColor('signosVitales','fc')">
         <div class="vital-flag" id="flagFc"></div>
       </div>
-      <div class="form-group">
+      <div class="form-group breve-opcional">
         <label class="form-label">FR (rpm)</label>
         <input type="number" class="form-input" id="vitalFr" min="4" max="60" placeholder="Ej: 16" oninput="updateVital('signosVitales','fr',this.value)" onblur="updateVitalColor('signosVitales','fr')">
         <div class="vital-flag" id="flagFr"></div>
       </div>
-      <div class="form-group">
+      <div class="form-group breve-opcional">
         <label class="form-label">SpO₂ (%)</label>
         <input type="number" class="form-input" id="vitalSpo2" min="50" max="100" placeholder="Ej: 98" oninput="updateVital('signosVitales','spo2',this.value)" onblur="updateVitalColor('signosVitales','spo2')">
         <div class="vital-flag" id="flagSpo2"></div>
@@ -266,7 +280,7 @@
     </div>
 
     <div id="psicoToolSuggest" class="tool-suggestion" style="display:none;"></div>
-    <div id="psicoAltoQuestions" style="display:none; margin-top:12px;">
+    <div id="psicoAltoQuestions" class="breve-opcional" style="display:none; margin-top:12px;">
       <div class="alert alert-warning" style="margin-bottom:12px;">
         <span class="alert-icon">🧠</span>
         <span>Riesgo alto detectado. Dedique 2 minutos a clarificar con preguntas abiertas y valore cuestionario unidimensional específico.</span>
@@ -357,6 +371,9 @@
       <span>Una respuesta afirmativa no implica derivación automática, salvo en las preguntas marcadas como <strong>Urgencia</strong>. Interprete en el contexto clínico completo del paciente — aplique "watchful waiting" si los síntomas persisten o empeoran.</span>
     </div>
 
+    <div class="plan-note-hint breve-only">Consulta breve: lea las banderas rojas de cada sistema y conteste un solo SÍ/NO. Las preguntas de urgencia se ven siempre.</div>
+    <button type="button" class="breve-toggle breve-only" onclick="toggleBreveVerTodo()"><span class="breve-toggle-mas">+ Mostrar todas las preguntas de cada sistema</span><span class="breve-toggle-menos">− Ocultar las preguntas plegadas</span></button>
+
     <!-- Tabs de sistemas -->
     <div class="card" style="padding-bottom:0.5rem;">
       <div class="card-title" id="sistemicoTitle">Sistemas a Descartar</div>
@@ -408,8 +425,17 @@
 
   <div class="card">
     <div class="card-title">Irritabilidad</div>
+    <!-- Modo breve: nivel directo en vez de la matriz (la matriz queda plegada) -->
+    <div class="breve-only">
+      <div class="plan-note-hint">Consulta breve: estime el nivel directamente; la matriz queda como pendiente (se abre con «Mostrar campos opcionales»).</div>
+      <div class="option-group option-group-full" id="irritabDirecta">
+        <button class="option-btn" onclick="selectIrritabDirecta(this,'Baja')">🟢 Baja</button>
+        <button class="option-btn" onclick="selectIrritabDirecta(this,'Moderada')">🟠 Moderada</button>
+        <button class="option-btn" onclick="selectIrritabDirecta(this,'Alta')">🔴 Alta</button>
+      </div>
+    </div>
     <!-- Tabla: visible en desktop -->
-    <div class="irritab-table-wrap irritab-desktop"><table class="irritab-table">
+    <div class="irritab-table-wrap irritab-desktop breve-opcional"><table class="irritab-table">
       <thead>
         <tr>
           <th>Criterio</th>
@@ -461,7 +487,7 @@
     </table></div>
 
     <!-- Cards: visible en móvil/tablet -->
-    <div class="irritab-cards irritab-mobile">
+    <div class="irritab-cards irritab-mobile breve-opcional">
       <div class="irritab-card">
         <div class="irritab-card-label">Nivel de dolor</div>
         <div class="irritab-card-btns">
@@ -506,7 +532,7 @@
     <div id="irritabilidadResumen" style="margin-top:1rem;"></div>
   </div>
 
-  <div class="card">
+  <div class="card breve-opcional">
     <div class="card-title">Naturaleza del Dolor</div>
     <div class="option-group option-group-col" id="naturaleza">
       <button class="option-btn" onclick="selectOption('naturaleza',this,'Nociceptiva')">🔴 Nociceptiva</button>
@@ -515,7 +541,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card breve-opcional">
     <div class="card-title">Estadio</div>
     <div class="option-group option-group-col" id="estadio">
       <button class="option-btn" onclick="selectOption('estadio',this,'Agudo (<6 semanas)')">🔴 Agudo (&lt;6 semanas)</button>
@@ -524,7 +550,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card breve-opcional">
     <div class="card-title">Estabilidad del Cuadro</div>
     <div class="option-group option-group-col" id="estabilidad">
       <button class="option-btn" onclick="selectOption('estabilidad',this,'Mejora')">📈 Mejora</button>
@@ -532,6 +558,8 @@
       <button class="option-btn" onclick="selectOption('estabilidad',this,'Empeora')">📉 Empeora</button>
     </div>
   </div>
+
+  <button type="button" class="breve-toggle breve-only" onclick="toggleBreveVerTodo()"><span class="breve-toggle-mas">+ Mostrar campos opcionales (matriz, naturaleza, estadio, estabilidad)</span><span class="breve-toggle-menos">− Ocultar campos opcionales</span></button>
 
   <div class="card">
     <div class="card-title">Signo Comparable</div>
@@ -562,6 +590,7 @@
   <div class="nav-buttons">
     <button class="btn btn-secondary" onclick="goToPhase(3)">← Anterior</button>
     <button class="btn btn-primary btn-disabled-until-ready" id="btnGoConfirm" onclick="goToPhase('4b')" disabled>Continuar → Hipótesis</button>
+    <button class="btn btn-secondary breve-only-inline" id="btnSinConfirmar" onclick="verResultadosSinConfirmar()"><span class="btn-sc-full">Resultados sin confirmar →</span><span class="btn-sc-short">Sin tests →</span></button>
   </div>
 </div>
 

@@ -55,7 +55,7 @@ export function buildHypothesisCards() {
       <div class="hypothesis-body">
         <p style="font-size:0.8rem; color:var(--text3); margin-bottom:1rem;">Realice los tests e indique el resultado para calcular el peso diagnóstico.</p>
         ${Object.keys(hyp.clusters || {}).map(cid => buildClusterBox(hyp, cid)).join('')}
-        ${hyp.tests.map((t, i) => buildTestItem(hId, t, i)).join('')}
+        ${buildTestList(hId, hyp)}
         <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border);">
           <div style="font-size:0.72rem; color:var(--accent); font-family:'DM Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">PROM Recomendado</div>
           <span class="prom-badge">${hyp.prom}</span>
@@ -63,6 +63,35 @@ export function buildHypothesisCards() {
       </div>`;
     container.appendChild(card);
   });
+}
+
+// Modo breve: primero los tests que pueden mover la puntuación (testPuntua);
+// los hallazgos sin LR aplicable y los pronósticos, plegados debajo. Solo
+// cambia el orden visual: cada test conserva su índice en state.testResults.
+function buildTestList(hId, hyp) {
+  const items = hyp.tests.map((t, i) => ({ i, html: buildTestItem(hId, t, i), puntua: testPuntua(hyp, t) }));
+  if (state.modo !== 'breve') return items.map(x => x.html).join('');
+  const puntuan = items.filter(x => x.puntua), resto = items.filter(x => !x.puntua);
+  return (puntuan.length ? puntuan.map(x => x.html).join('')
+      : `<p style="font-size:0.8rem; color:var(--text3);">Ningún test de esta hipótesis tiene LR aplicable: todos son hallazgos clínicos.</p>`)
+    + (resto.length ? `<details class="breve-hallazgos"${puntuan.length ? '' : ' open'}>
+        <summary>+ ${resto.length} test${resto.length > 1 ? 's' : ''} sin LR aplicable (hallazgos, no puntúan)</summary>
+        ${resto.map(x => x.html).join('')}
+      </details>` : '');
+}
+
+// ¿Puede este test cambiar la puntuación? Mismas reglas que calcLRScore:
+// LR+ ≥ 2 o LR− ≤ 0,5 propia, o pertenecer a un cluster cuya regla puntúa.
+export function testPuntua(hyp, test) {
+  if (test.tipo === 'pronostico') return false;
+  if (test.cluster) {
+    const regla = hyp.clusters?.[test.cluster];
+    if (!regla) return false;
+    const lr = lrEfectiva(regla);
+    return lr.posUtil || lr.negUtil;
+  }
+  const lr = lrEfectiva(test);
+  return lr.posUtil || lr.negUtil;
 }
 
 function fmtLR(n) { return n >= 10 ? n.toFixed(0) : n.toFixed(n < 1 ? 2 : 1); }

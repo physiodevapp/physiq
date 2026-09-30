@@ -5,6 +5,9 @@
 
 const state = {
   currentPhase: 1,
+  // Tipo de consulta: 'completo' (por defecto) | 'breve' (aseguradora, 10 min).
+  // Sobrevive a «Reiniciar» igual que el nombre del paciente. Ver docs/modo-breve.md.
+  modo: 'completo',
   // Navegación
   maxVisitedIdx: 0,       // índice más alto visitado en la sesión
   regionChanged: false,   // región cambiada sin haber rehecho el árbol
@@ -24,10 +27,12 @@ const state = {
   region: '',
   sistemicoAnswers: {},
   sistemicoAlerta: false,
+  sistemicoBreve: {},     // solo modo breve: { [sisId]: 'SI'|'NO' } — respuesta del embudo por sistema
   // Fase 3
   severidad: null,
   irritabilidad: { dolor: 'Baja (≤3/10)', reposo: 'Ausente', movimiento: 'Al final del rango con SP', discapacidad: 'Mínima', tolerancia: 'Alta' },
   irritabilidadNivel: 'Baja',
+  irritabilidadDirecta: false,  // true si el nivel se eligió directamente (modo breve) y no con la matriz
   naturaleza: '',
   estadio: '',
   estabilidad: '',

@@ -170,6 +170,7 @@ function goToPhase(n) {
   document.getElementById('phaseIndicator').textContent = `FASE ${n === '4b' ? '4b' : n} / 5`;
 
   // Phase-specific init
+  if (n === 1) renderBrevePendientes();
   if (n === 4) initCIFTree();
   if (n === '4b') {
     const hypContainer = document.getElementById('hypothesisCards');
@@ -254,6 +255,7 @@ function _softResetApp() {
   state.psico_emocional = '';
   state.region = '';
   state.sistemicoAnswers = {};
+  state.sistemicoBreve = {};
   state.sistemicoAlerta = false;
   state.activeHypotheses = [];
   state.treeAnswers = {};
@@ -332,6 +334,7 @@ function _softResetApp() {
   } else {
     history.replaceState({ phase: 1 }, '');
   }
+  _pintarModoUI();   // el modo se conserva, pero el bucle de .option-btn de arriba quitó su selección
   updateResetBtnVisibility();
 }
 
@@ -356,7 +359,9 @@ function _cargarFormularioMod() {
   return import('./formulario.js').then(m => { _fpMod = m; return m; });
 }
 function precargarFormularioPrevio() {
-  return _cargarFormularioMod().then(m => m.precargarFormulario()).catch(() => {});
+  return _cargarFormularioMod().then(m => m.precargarFormulario())
+    .then(() => renderBrevePendientes())   // «formulario sin rellenar» depende del módulo cargado
+    .catch(() => {});
 }
 function abrirFormularioPrevio(tab) {
   _cargarFormularioMod()
@@ -639,6 +644,108 @@ function collectPhase1() {
   state.motivoConsulta = document.getElementById('motivoConsulta').value;
 }
 
+// ─── MODO BREVE (consulta de aseguradora, 10 min) ────────────
+// docs/modo-breve.md. El modo solo cambia qué se muestra y cómo se resume:
+// banderas rojas, urgencias y árbol CIF funcionan igual en los dos modos.
+// Lo que el modo breve deja sin hacer sale como pendiente (getPendientesBreve)
+// en la fase 1, la fase 5, 📋 Notas, 📄 Informe y el payload (`pe`).
+function selectModo(modo) {
+  if (modo !== 'breve' && modo !== 'completo') return;
+  if (modo === state.modo) return;
+  const pendientes = getPendientesBreve();
+  // Pasar de breve a completo con pendientes: el resumen dejará de decir que
+  // la valoración fue breve, así que se pide confirmación explícita.
+  if (state.modo === 'breve' && modo === 'completo' && pendientes.length && state.maxVisitedIdx >= 1) {
+    showConfirmBanner(
+      'Pasar a consulta completa',
+      `Las notas y el informe dejarán de indicar que la valoración fue breve. Complete antes estos pendientes: ${pendientes.map(p => p.texto).join(' · ')}.`,
+      'Pasar a completa',
+      () => _aplicarModo('completo')
+    );
+    return;
+  }
+  _aplicarModo(modo);
+}
+
+function _aplicarModo(modo) {
+  state.modo = modo;
+  _pintarModoUI();
+  // La 4b ordena los tests según el modo: se reconstruye al volver a entrar
+  const hypCards = document.getElementById('hypothesisCards');
+  if (hypCards) hypCards.innerHTML = '';
+  const results = document.getElementById('resultsContent');
+  if (results && results.children.length) buildResults();
+  saveSession();
+}
+
+// Refleja state.modo en el DOM: clase del body, selector de la fase 1 y
+// aviso de pendientes. Llamado al cambiar de modo y al restaurar sesión.
+function _pintarModoUI() {
+  const breve = state.modo === 'breve';
+  document.body.classList.toggle('modo-breve', breve);
+  if (!breve) document.body.classList.remove('breve-ver-todo');
+  document.querySelectorAll('#modoConsulta .option-btn').forEach(b => {
+    const m = (b.getAttribute('onclick') || '').match(/selectModo\('(\w+)'\)/);
+    b.classList.toggle('selected', !!(m && m[1] === state.modo));
+  });
+  renderBrevePendientes();
+}
+
+// «+ Mostrar campos opcionales»: no se guarda en la sesión (es solo vista).
+function toggleBreveVerTodo() {
+  document.body.classList.toggle('breve-ver-todo');
+}
+
+// Lo que el modo breve ha dejado sin hacer. [] en modo completo.
+// Cada pendiente: { texto, fase } — fase = adónde lleva «Completar».
+function getPendientesBreve() {
+  if (state.modo !== 'breve') return [];
+  const pendientes = [];
+  const data = SYSTEMIC_SCREENING[state.region];
+  if (data) {
+    const porEmbudo = data.sistemas.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
+    const sinCribar = data.sistemas.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
+    if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
+    if (sinCribar.length) pendientes.push({ fase: 2, texto: `Sistemas sin cribar: ${sinCribar.join(', ')}` });
+  } else if (state.maxVisitedIdx >= 1) {
+    pendientes.push({ fase: 2, texto: 'Cribado sistémico sin hacer (falta la región)' });
+  }
+  if (state.irritabilidadDirecta) pendientes.push({ fase: 3, texto: 'Irritabilidad estimada sin la matriz' });
+  const sinTests = state.activeHypotheses
+    .filter(h => HYPOTHESES[h] && !Object.values(state.testResults[h] || {}).some(r => r === 'pos' || r === 'neg'))
+    .map(h => HYPOTHESES[h].name);
+  if (sinTests.length) pendientes.push({ fase: '4b', texto: `Tests de confirmación sin hacer: ${sinTests.join(', ')}` });
+  if (!resumenFormularioPrevio().length) pendientes.push({ fase: 1, texto: 'Formulario previo sin rellenar' });
+  return pendientes;
+}
+
+function _pendientesHTML(pendientes) {
+  return `<ul>${pendientes.map(p => `<li>${p.texto}</li>`).join('')}</ul>`;
+}
+
+// Aviso de la fase 1: valoración breve ya avanzada con pendientes.
+function renderBrevePendientes() {
+  const el = document.getElementById('brevePendientes');
+  if (!el) return;
+  const pendientes = state.maxVisitedIdx >= 2 ? getPendientesBreve() : [];
+  el.innerHTML = pendientes.length ? `<div class="breve-pendientes">
+      <div class="breve-pendientes-title">⏱ Valoración breve con ${pendientes.length} pendiente${pendientes.length > 1 ? 's' : ''}</div>
+      ${_pendientesHTML(pendientes)}
+      <button class="btn btn-secondary" onclick="completarPendientesBreve()">Completar pendientes →</button>
+    </div>` : '';
+}
+
+// Lleva al primer pendiente sin cambiar de modo: el clínico pasa a
+// «Completa» cuando lo haya revisado todo (selectModo pide confirmación).
+function completarPendientesBreve() {
+  document.body.classList.add('breve-ver-todo');
+  const [primero] = getPendientesBreve();
+  if (!primero) return;
+  if (primero.fase === 1) { abrirFormularioPrevio('comun'); return; }
+  const idx = { 2: 1, 3: 2, '4b': 4 }[primero.fase];
+  if (idx !== undefined && idx <= state.maxVisitedIdx) goToPhase(primero.fase);
+}
+
 // ─── PHASE 2 HELPERS ─────────────────────────────────────────
 function selectRegion(regionId, card) {
   // If changing region after having visited phase 3+, ask for confirmation
@@ -663,6 +770,7 @@ function resetPhase3UI() {
   state.severidad = null;
   state.irritabilidad = { dolor: 'Baja (≤3/10)', reposo: 'Ausente', movimiento: 'Al final del rango con SP', discapacidad: 'Mínima', tolerancia: 'Alta' };
   state.irritabilidadNivel = null;
+  state.irritabilidadDirecta = false;
 
   // Reset option-btn selections in phase 3
   document.querySelectorAll('#phase3 .option-btn').forEach(b => b.classList.remove('selected'));
@@ -745,6 +853,7 @@ function buildSistemicoQuestions(regionId) {
   tabsContainer.innerHTML = '';
   panelsContainer.innerHTML = '';
   state.sistemicoAnswers = {};
+  state.sistemicoBreve = {};
 
   // Initialize all answers to NO
   data.sistemas.forEach(sis => {
@@ -768,7 +877,7 @@ function buildSistemicoQuestions(regionId) {
     const tab = document.createElement('button');
     tab.className = 'sistema-tab' + (idx === 0 ? ' active' : '');
     tab.id = `tab_${sis.id}`;
-    tab.innerHTML = `<span class="tab-dot"></span>${sis.icon} ${sis.nombre}`;
+    tab.innerHTML = `<span class="tab-dot"></span>${sis.icon} ${sis.nombre}<span class="embudo-estado" title="Cribado por embudo: sin hallazgos">✓</span>`;
     tab.onclick = () => activeSistemaTab(sis.id, data.sistemas);
     tabsContainer.appendChild(tab);
 
@@ -790,7 +899,7 @@ function buildSistemicoQuestions(regionId) {
     row.innerHTML = `
       <div class="sistema-accordion-header" onclick="toggleAccordionRow('${sis.id}', '${data.sistemas.map(s=>s.id).join(',')}')">
         <span class="sistema-accordion-icon">${sis.icon}</span>
-        <span class="sistema-accordion-name">${sis.nombre}</span>
+        <span class="sistema-accordion-name">${sis.nombre}<span class="embudo-estado" title="Cribado por embudo: sin hallazgos">✓</span></span>
         <span class="sistema-accordion-alert"></span>
         <span class="sistema-accordion-chevron">▶</span>
       </div>
@@ -816,6 +925,7 @@ function buildSistemicoQuestions(regionId) {
 
   wrap.style.display = 'block';
   evaluarCriteriosCompuestos(regionId);
+  data.sistemas.forEach(sis => _pintarEmbudo(sis.id));
   updateSistemicoAlert();
 }
 
@@ -846,13 +956,27 @@ function buildSistemaHTML(sis) {
     html += `</div>`;
   }
 
+  // Modo breve: un SÍ/NO por sistema leyendo sus banderas rojas (embudo).
+  // Con NO se pliegan las preguntas del sistema salvo las de `urgencia`, que
+  // se ven siempre. Oculto por CSS en modo completo.
+  const tieneUrg = sis.preguntas.some(q => q.urgencia);
+  html += `<div class="embudo" data-embudo="${sis.id}">
+      <span class="embudo-q">¿Presenta alguna de estas banderas rojas?
+        <span class="embudo-nota">SÍ abre las preguntas de este sistema una a una.${tieneUrg ? ' Las preguntas de urgencia se hacen siempre.' : ''}</span></span>
+      <div class="sq-btns">
+        <button class="sq-btn si" onclick="selectEmbudo('${sis.id}','SI')">SÍ</button>
+        <button class="sq-btn no" onclick="selectEmbudo('${sis.id}','NO')">NO</button>
+      </div>
+    </div>
+    <div class="sis-body${tieneUrg ? ' tiene-urg' : ''}" data-sis-body="${sis.id}">`;
+
   // Screening questions
   html += `<div class="screening-section-title">❓ Preguntas de Cribado</div>`;
   sis.preguntas.forEach((q, qi) => {
     const s1Badge = (q.s1 ? `<span class="sq2-s1-badge">Screening rápido</span>` : '')
       + (q.urgencia ? `<span class="sq2-urg-badge">Urgencia</span>` : '');
     html += `
-      <div class="sq2${q.alerta ? ' alerta-high' : ''}" id="sq2_${q.id}">
+      <div class="sq2${q.alerta ? ' alerta-high' : ''}${q.urgencia ? ' sq2-urg' : ''}" id="sq2_${q.id}">
         <div class="sq2-badge${q.alerta ? ' alerta' : ''}">${qi + 1}</div>
         <span class="sq2-text">${q.text}${s1Badge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}</span>
         <div class="sq-btns">
@@ -874,6 +998,7 @@ function buildSistemaHTML(sis) {
     html += `<div id="criterioCompuesto_${sis.id}" class="criterio-compuesto-alert"></div>`;
   }
 
+  html += `<div class="sis-extra">`;
   // Referred pain zones
   if (sis.zonasDolor && sis.zonasDolor.length > 0) {
     html += `<div class="screening-section-title" style="margin-top:1rem;">📍 Zonas de Dolor Referido</div>
@@ -906,6 +1031,7 @@ function buildSistemaHTML(sis) {
     }
     html += `</div>`;
   }
+  html += `</div></div>`;   // .sis-extra, .sis-body
   return html;
 }
 
@@ -1159,6 +1285,8 @@ function selectSistQ(btn, id, value, isAlerta, sisId) {
   parent.querySelectorAll('.sq-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   state.sistemicoAnswers[id] = value;
+  // Un SÍ contradice un embudo en NO: el sistema pasa a tener hallazgos
+  if (value === 'SI' && state.sistemicoBreve[sisId] === 'NO') state.sistemicoBreve[sisId] = 'SI';
 
   // Visual feedback on the question row
   const row = document.getElementById(`sq2_${id}`);
@@ -1177,12 +1305,45 @@ function selectSistQ(btn, id, value, isAlerta, sisId) {
     if (tab) tab.classList.toggle('has-alert', hasAlert);
     if (accRow) accRow.classList.toggle('has-alert', hasAlert);
     if (sis.criterioCompuesto) evaluarCriterioCompuesto(sis);
+    _pintarEmbudo(sisId);
   }
 
   updateSistemicoAlert();
   const q = SYSTEMIC_SCREENING[state.region]?.sistemas.flatMap(x => x.preguntas).find(x => x.id === id);
   if (q?.urgencia && value === 'SI') showToast(`🚨 ${q.urgencia}`, 'warning');
   saveSession();
+}
+
+// Embudo del modo breve (ver buildSistemaHTML). NO solo se admite si el
+// sistema no tiene ninguna respuesta SÍ: «sin hallazgos» no puede convivir
+// con un hallazgo marcado.
+function selectEmbudo(sisId, value) {
+  const sis = SYSTEMIC_SCREENING[state.region]?.sistemas.find(s => s.id === sisId);
+  if (!sis) return;
+  if (value === 'NO' && sis.preguntas.some(q => state.sistemicoAnswers[q.id] === 'SI')) {
+    showToast('Este sistema tiene respuestas SÍ: cámbielas a NO antes de marcarlo sin hallazgos', 'warning');
+    return;
+  }
+  state.sistemicoBreve[sisId] = value;
+  _pintarEmbudo(sisId);
+  saveSession();
+}
+
+// Refleja el embudo de un sistema en sus dos copias (panel de escritorio y
+// acordeón móvil) y en su pestaña. Las preguntas quedan a la vista si el
+// embudo es SÍ o si alguna no urgente ya se respondió SÍ (nunca se esconde
+// un hallazgo).
+function _pintarEmbudo(sisId) {
+  const sis = SYSTEMIC_SCREENING[state.region]?.sistemas.find(s => s.id === sisId);
+  if (!sis) return;
+  const v = state.sistemicoBreve[sisId];
+  const abierto = v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
+    b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
+  });
+  document.querySelectorAll(`[data-sis-body="${sisId}"]`).forEach(el => el.classList.toggle('embudo-si', abierto));
+  document.getElementById(`tab_${sisId}`)?.classList.toggle('embudo-no', v === 'NO');
+  document.getElementById(`acc_${sisId}`)?.classList.toggle('embudo-no', v === 'NO');
 }
 
 // Recuadro «URGENCIAS HOY» de la región (SYSTEMIC_SCREENING[region].urgencia,
@@ -1264,6 +1425,7 @@ function selectIrritab(key, btn, value) {
   row.querySelectorAll('.irritab-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   state.irritabilidad[key] = value;
+  _usarMatrizIrritabilidad();
   syncIrritabMobile(key, value);
   calcIrritabilidad();
   saveSession();
@@ -1274,6 +1436,7 @@ function selectIrritabSync(key, btn, value) {
   card.querySelectorAll('.irritab-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   state.irritabilidad[key] = value;
+  _usarMatrizIrritabilidad();
   syncIrritabDesktop(key, value);
   calcIrritabilidad();
   saveSession();
@@ -1304,7 +1467,24 @@ function syncIrritabDesktop(key, value) {
   });
 }
 
+// Modo breve: nivel de irritabilidad elegido directamente, sin la matriz.
+// Queda marcado (irritabilidadDirecta) para que el resumen diga «estimada»
+// y la matriz salga como pendiente. Tocar la matriz lo deshace.
+function selectIrritabDirecta(btn, nivel) {
+  document.querySelectorAll('#irritabDirecta .option-btn').forEach(b => b.classList.toggle('selected', b === btn));
+  state.irritabilidadNivel = nivel;
+  state.irritabilidadDirecta = true;
+  renderIrritabResumen(nivel);
+  saveSession();
+}
+
+function _usarMatrizIrritabilidad() {
+  state.irritabilidadDirecta = false;
+  document.querySelectorAll('#irritabDirecta .option-btn').forEach(b => b.classList.remove('selected'));
+}
+
 function calcIrritabilidad() {
+  if (state.irritabilidadDirecta) { renderIrritabResumen(state.irritabilidadNivel); return; }
   const { dolor, reposo, movimiento, discapacidad, tolerancia } = state.irritabilidad;
   let score = 0;
   const opts = { dolor: ['Baja (≤3/10)','Media (4-6/10)','Alta (≥7/10)'],
@@ -1315,14 +1495,19 @@ function calcIrritabilidad() {
   for (const [k, v] of Object.entries(state.irritabilidad)) {
     score += opts[k].indexOf(v);
   }
-  let nivel = 'Baja', color = 'var(--green)', emoji = '🟢';
-  if (score >= 5 && score <= 9) { nivel = 'Moderada'; color = 'var(--orange)'; emoji = '🟠'; }
-  if (score >= 10) { nivel = 'Alta'; color = 'var(--red)'; emoji = '🔴'; }
+  let nivel = 'Baja';
+  if (score >= 5 && score <= 9) nivel = 'Moderada';
+  if (score >= 10) nivel = 'Alta';
   state.irritabilidadNivel = nivel;
+  renderIrritabResumen(nivel);
+}
+
+function renderIrritabResumen(nivel) {
+  const { color, emoji } = { Baja: { color: 'var(--green)', emoji: '🟢' }, Moderada: { color: 'var(--orange)', emoji: '🟠' }, Alta: { color: 'var(--red)', emoji: '🔴' } }[nivel] || { color: 'var(--green)', emoji: '🟢' };
   const div = document.getElementById('irritabilidadResumen');
   div.innerHTML = `<div class="alert alert-info" style="border-color:${color}33; background:${color}11;">
     <span class="alert-icon">${emoji}</span>
-    <span><strong>Irritabilidad ${nivel}</strong> — ${nivel === 'Baja' ? 'Exploración completa posible. Puede aplicar técnicas más agresivas con seguridad.' : nivel === 'Moderada' ? 'Proceder con precaución. Evitar técnicas de alta intensidad. Valorar la respuesta post-sesión.' : 'Evaluación muy cuidadosa. Priorizar técnicas pasivas de baja intensidad. Sesión breve.'}</span>
+    <span><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — ${nivel === 'Baja' ? 'Exploración completa posible. Puede aplicar técnicas más agresivas con seguridad.' : nivel === 'Moderada' ? 'Proceder con precaución. Evitar técnicas de alta intensidad. Valorar la respuesta post-sesión.' : 'Evaluación muy cuidadosa. Priorizar técnicas pasivas de baja intensidad. Sesión breve.'}</span>
   </div>`;
 }
 
@@ -1332,6 +1517,10 @@ function collectPhase3() {
 }
 
 // ─── PHASE 5 — RESULTS ───────────────────────────────────────
+// Línea fija de transparencia del modo breve: fase 5, 📋 Notas y 📄 Informe.
+// Nunca se omite en breve (docs/modo-breve.md, decisión 3).
+const TEXTO_VALORACION_BREVE = 'Valoración inicial breve: cribado sistémico por sistemas y confirmación diagnóstica no exhaustivos; se completa en próximas sesiones.';
+
 const BR_LABELS = {
   br1: 'Sudor nocturno / Pérdida de peso inexplicada',
   br2: 'Trauma mayor reciente',
@@ -1384,6 +1573,17 @@ function buildResults() {
     .filter(([, v]) => v === 'SI')
     .map(([k]) => BR_LABELS[k]);
   const sqAffirmative = getSistemicoAffirmativeTexts();
+  const pendientesBreve = getPendientesBreve();
+  const sinConfirmar = state.modo === 'breve' && pendientesBreve.some(p => p.fase === '4b');
+
+  // ── Modo breve: transparencia y pendientes, antes que nada
+  if (state.modo === 'breve') {
+    container.innerHTML += `
+    <div class="breve-pendientes">
+      <div class="breve-pendientes-title">⏱ ${TEXTO_VALORACION_BREVE}</div>
+      ${pendientesBreve.length ? `<div>Pendiente para las próximas sesiones:</div>${_pendientesHTML(pendientesBreve)}` : '<div>Sin pendientes.</div>'}
+    </div>`;
+  }
 
   // ── Header summary
   container.innerHTML += `
@@ -1409,7 +1609,7 @@ function buildResults() {
     <div class="summary-section-title">📊 SINSS — Caracterización del Cuadro</div>
     <div class="summary-row"><span class="summary-label">Región valorada</span><span class="summary-value">${state.region ? nombreRegion(state.region) : '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Severidad (EVN)</span><span class="summary-value">${state.severidad}/10</span></div>
-    <div class="summary-row"><span class="summary-label">Irritabilidad</span><span class="summary-value">${state.irritabilidadNivel || '—'}</span></div>
+    <div class="summary-row"><span class="summary-label">Irritabilidad</span><span class="summary-value">${state.irritabilidadNivel || '—'}${state.irritabilidadDirecta && state.irritabilidadNivel ? ' (estimada, sin matriz)' : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Naturaleza</span><span class="summary-value">${state.naturaleza || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Estadio</span><span class="summary-value">${state.estadio || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Estabilidad</span><span class="summary-value">${state.estabilidad || '—'}</span></div>
@@ -1417,7 +1617,7 @@ function buildResults() {
   </div>`;
 
   // ── Hypotheses with tests
-  let hypHtml = `<div class="summary-section"><div class="summary-section-title">🎯 Hipótesis Diagnósticas — Ordenadas por Peso Diagnóstico</div>`;
+  let hypHtml = `<div class="summary-section"><div class="summary-section-title">${sinConfirmar ? '🎯 Hipótesis de Trabajo — Confirmación pendiente' : '🎯 Hipótesis Diagnósticas — Ordenadas por Peso Diagnóstico'}</div>`;
 
   if (sorted.length === 0) {
     const regionLabel = state.region ? nombreRegion(state.region) : 'la región';
@@ -1564,6 +1764,17 @@ function finalizarValoracion() {
     btn.disabled = true;
     setTimeout(() => { btn.textContent = 'Finalizar valoración →'; btn.disabled = false; }, 3000);
   }
+}
+
+// Modo breve: de la fase 4 a los resultados sin pasar por la 4b. Las
+// hipótesis quedan como hipótesis de trabajo y sus tests, como pendientes.
+function verResultadosSinConfirmar() {
+  if (document.getElementById('btnGoConfirm')?.disabled) {
+    showToast('Complete el árbol antes de ver los resultados', 'warning');
+    return;
+  }
+  buildResults();
+  goToPhase(5);
 }
 
 // ─── PHASE 2 VALIDATION ──────────────────────────────────────
@@ -1906,7 +2117,7 @@ function buildPhysiQPayload() {
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? 0,
-    ir: state.irritabilidadNivel,
+    ir: state.irritabilidadNivel && state.irritabilidadDirecta ? `${state.irritabilidadNivel} (estimada)` : state.irritabilidadNivel,
     na: state.naturaleza,
     si: state.sistemicoAlerta,
     br: Object.entries(state.banderasRojas).filter(([, v]) => v === 'SI').map(([k]) => BR_LABELS[k]),
@@ -1921,6 +2132,8 @@ function buildPhysiQPayload() {
         })),
     pn: state.planNotes,
     fp: resumenFormularioPrevio(),
+    md: state.modo === 'breve' ? 'breve' : 'completo',
+    ...(state.modo === 'breve' ? { pe: getPendientesBreve().map(p => p.texto) } : {}),
     ...(state.rom ? { rom: state.rom } : {})
   };
 }
@@ -1929,7 +2142,10 @@ function buildPhysiQPayload() {
 function buildContextSummaryText() {
   const d = buildPhysiQPayload();
   const hyps = (d.h || []).map(h => `  · ${h.name} — ${h.sc}`).join('\n');
-  return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}
+  const breve = d.md === 'breve'
+    ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
+    : '';
+  return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
 Región: ${d.r ? nombreRegion(d.r) : '—'} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}
 Hipótesis:
@@ -1954,6 +2170,8 @@ function buildInformeFisioterapiaText() {
   const region = d.r ? nombreRegion(d.r) : '—';
 
   const hyps = [...d.h].sort((a, b) => (b.lr ?? 1) - (a.lr ?? 1));
+  const breve = d.md === 'breve';
+  const sinConfirmar = breve && hyps.some(h => !Object.values(h.tr || {}).some(r => r === 'pos' || r === 'neg'));
   const impresion = hyps.length
     ? hyps.map(h => `  · ${h.name}`).join('\n')
     : '  · Pendiente de completar la valoración diagnóstica.';
@@ -1973,7 +2191,7 @@ function buildInformeFisioterapiaText() {
 
   return `INFORME DE FISIOTERAPIA${d.p ? `\nPaciente: ${d.p}` : ''}
 Fecha: ${d.d}
-Región valorada: ${region}
+Región valorada: ${region}${breve ? `\n\n${TEXTO_VALORACION_BREVE}` : ''}
 
 MOTIVO DE CONSULTA
 ${d.mo || '—'}
@@ -1988,7 +2206,7 @@ Riesgo psicosocial: ${d.rp || '—'}
 CRIBADO DE SEGURIDAD
 ${seguridad}${sistemico}
 
-IMPRESIÓN CLÍNICA
+IMPRESIÓN CLÍNICA${sinConfirmar ? ' (hipótesis de trabajo, pendiente de confirmar)' : ''}
 ${impresion}
 
 PLAN DE TRATAMIENTO Y RECOMENDACIONES
@@ -2064,6 +2282,8 @@ function saveSession() {
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) state.signoComparable = signoEl.value;
   _updateSessionPanelTitle();
+  // Aviso de pendientes del modo breve: el formulario previo se rellena en la fase 1
+  if (state.currentPhase === 1 && state.modo === 'breve') renderBrevePendientes();
   // After a clear, block writes until a patient name is entered
   if (_sessionCleared) {
     if (!state.patient) { updateResetBtnVisibility(); return; }
@@ -2101,6 +2321,7 @@ function _restoreOptionBtnGroup(groupId, val) {
 }
 
 function _restoreSessionDOM() {
+  _pintarModoUI();
   const patientEl = document.getElementById('patientName');
   if (patientEl) patientEl.value = state.patient || '';
   const motivoEl = document.getElementById('motivoConsulta');
@@ -2152,8 +2373,10 @@ function _restoreSessionDOM() {
       card.classList.toggle('selected', (card.getAttribute('onclick') || '').includes(`'${state.region}'`));
     });
     const savedAnswers = { ...state.sistemicoAnswers };
+    const savedBreve = { ...(state.sistemicoBreve || {}) };
     buildSistemicoQuestions(state.region);
     Object.assign(state.sistemicoAnswers, savedAnswers);
+    state.sistemicoBreve = savedBreve;
     Object.entries(savedAnswers).forEach(([qId, answer]) => {
       const sq2 = document.getElementById(`sq2_${qId}`);
       if (!sq2) return;
@@ -2163,6 +2386,7 @@ function _restoreSessionDOM() {
       });
     });
     evaluarCriteriosCompuestos(state.region);
+    SYSTEMIC_SCREENING[state.region]?.sistemas.forEach(sis => _pintarEmbudo(sis.id));
     updateSistemicoAlert();
     const btnSinss = document.getElementById('btnContinuarSinss');
     if (btnSinss) btnSinss.disabled = false;
@@ -2184,6 +2408,10 @@ function _restoreSessionDOM() {
   document.querySelectorAll('.irritab-card-btns .irritab-btn').forEach(btn => {
     const m = (btn.getAttribute('onclick') || '').match(/selectIrritabSync\('(\w+)',\s*this,\s*'([^']*)'\)/);
     if (m) btn.classList.toggle('selected', state.irritabilidad[m[1]] === m[2]);
+  });
+  document.querySelectorAll('#irritabDirecta .option-btn').forEach(btn => {
+    const m = (btn.getAttribute('onclick') || '').match(/'(\w+)'\)/);
+    btn.classList.toggle('selected', !!(state.irritabilidadDirecta && m && m[1] === state.irritabilidadNivel));
   });
   calcIrritabilidad();
   ['naturaleza', 'estadio', 'estabilidad'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
@@ -2311,6 +2539,8 @@ document.addEventListener('DOMContentLoaded', () => {
         patientEl.value = session.patient;
         state.patient = session.patient;
       }
+      // Modo elegido en la fase 1 antes de salir de ella (maxVisitedIdx 0)
+      if (session.assessmentState?.modo === 'breve') { state.modo = 'breve'; _pintarModoUI(); }
     }
     if (session.rom && !state.rom) state.rom = session.rom;
     _updateSessionPanelTitle();
@@ -2363,6 +2593,7 @@ _initHubIntegration();
 // Named exports for phase4.js / phase4b.js (which import these directly) and
 // for tests/unit.js.
 export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
+  buildContextSummaryText, getPendientesBreve, buildSistemaHTML,
   precargarFormularioPrevio,
   injectQuickInputBar, lockBodyScroll, unlockBodyScroll };
 
@@ -2375,6 +2606,7 @@ Object.assign(window, {
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
+  selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor, updateResetBtnVisibility,
 });
 
