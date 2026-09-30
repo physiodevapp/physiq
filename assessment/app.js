@@ -156,6 +156,7 @@ function goToPhase(n) {
 
   document.getElementById(phases[idx]).classList.add('active');
   state.currentPhase = n;
+  if (n === 3) _pintarEstadioCronologia();
   updateMobilePhaseBar(n);
   // Clean up observers when leaving phases
   if (typeof teardownHypObserver === 'function') teardownHypObserver();
@@ -761,10 +762,20 @@ function selectRegion(regionId, card) {
   applyRegionChange(regionId, card);
 }
 
+// Estadio del SINSS = la cronología de la fase 1 (mismas categorías). Se
+// muestra de solo lectura para no preguntar dos veces lo mismo.
+function _pintarEstadioCronologia() {
+  const el = document.getElementById('estadioCronologia');
+  if (!el) return;
+  const icono = { 'Agudo (<6 semanas)': '🔴', 'Subagudo': '🟡', 'Crónico (>3 meses)': '🔵' }[state.cronologia];
+  el.innerHTML = state.cronologia
+    ? `<span class="estadio-valor">${icono || ''} ${_escapeAttr(state.cronologia)}</span><span class="estadio-fuente">Según la cronología de la fase 1</span>`
+    : `<span class="estadio-fuente">Sin cronología: indíquela en la fase 1.</span>`;
+}
+
 function resetPhase3UI() {
   // Reset state
   state.naturaleza = '';
-  state.estadio = '';
   state.estabilidad = '';
   state.signoComparable = '';
   state.severidad = null;
@@ -1611,7 +1622,6 @@ function buildResults() {
     <div class="summary-row"><span class="summary-label">Severidad (EVN)</span><span class="summary-value">${state.severidad}/10</span></div>
     <div class="summary-row"><span class="summary-label">Irritabilidad</span><span class="summary-value">${state.irritabilidadNivel || '—'}${state.irritabilidadDirecta && state.irritabilidadNivel ? ' (estimada, sin matriz)' : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Naturaleza</span><span class="summary-value">${state.naturaleza || '—'}</span></div>
-    <div class="summary-row"><span class="summary-label">Estadio</span><span class="summary-value">${state.estadio || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Estabilidad</span><span class="summary-value">${state.estabilidad || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Signo comparable</span><span class="summary-value">${state.signoComparable || '—'}</span></div>
   </div>`;
@@ -2415,7 +2425,7 @@ function _restoreSessionDOM() {
     btn.classList.toggle('selected', !!(state.irritabilidadDirecta && m && m[1] === state.irritabilidadNivel));
   });
   calcIrritabilidad();
-  ['naturaleza', 'estadio', 'estabilidad'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
+  ['naturaleza', 'estabilidad'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) signoEl.value = state.signoComparable || '';
   syncQuickPhraseChips('signoComparable');

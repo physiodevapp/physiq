@@ -34,7 +34,6 @@ const state = {
   irritabilidadNivel: 'Baja',
   irritabilidadDirecta: false,  // true si el nivel se eligió directamente (modo breve) y no con la matriz
   naturaleza: '',
-  estadio: '',
   estabilidad: '',
   signoComparable: '',
   // Fase 4
