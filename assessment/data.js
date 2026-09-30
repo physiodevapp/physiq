@@ -83,6 +83,7 @@ export const CIF_TREES = Object.fromEntries(
 //     name: string,               // nombre del cuadro clínico
 //     prom: string,               // PROM recomendado (texto libre)
 //     dosis: string,              // pauta de tratamiento (texto libre); '' = a criterio del clínico
+//     dosisFuente?: string,       // cita de la pauta (guía o ensayo), se muestra bajo la dosis en fase 5; solo con dosis
 //     pronostico?: { horizonte, derivacion, fuente },   // se muestra en fase 5
 //     clusters?: { [id]: { nombre, umbralPos, lr_pos, umbralNeg, lr_neg, sn?, sp?, fuente } },
 //     tests: [

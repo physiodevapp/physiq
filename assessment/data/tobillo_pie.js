@@ -320,7 +320,8 @@ export const hypotheses = {
     id: 'tp1', region: 'tobillo_pie', num: '①',
     name: 'Esguince Lateral Agudo (LPAA y LPC)',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: 'Carga progresiva del miembro afectado con soporte externo (tobillera o vendaje) elegido según gravedad, fase de curación, dolor y preferencia del paciente (A). En los esguinces más graves, inmovilización (de tobillera semirrígida a yeso por debajo de la rodilla) como máximo 10 días (A). Programa estructurado de ejercicio terapéutico, en clínica y en casa: movilidad activa protegida, estiramientos, entrenamiento neuromuscular, reeducación postural y equilibrio (A). Terapia manual sin dolor junto al ejercicio: drenaje linfático, movilización de tejidos blandos y articular, deslizamiento anteroposterior del astrágalo (A). No usar ultrasonido (A). Para prevenir la recidiva: tobillera profiláctica y ejercicio propioceptivo y de equilibrio (A). La guía no fija series ni semanas: los programas estudiados son demasiado diversos para recomendar modalidad o volumen.',
+    dosisFuente: 'Martin 2021, J Orthop Sports Phys Ther 51(4):CPG1–CPG80 (guía de práctica clínica APTA; letra = grado de la recomendación)',
     pronostico: {
       horizonte: 'Ottawa decide la radiografía. Cajón anterior con mejor S y E a los 4–6 días; sin signo del surco, el LPAA no está roto del todo.',
       derivacion: 'Una proporción alta evoluciona a inestabilidad crónica. Si no se recupera: coalición, osteocondritis disecante, sinovitis, pinzamiento posterior secundario, peroneos.',
@@ -431,7 +432,8 @@ export const hypotheses = {
     id: 'tp8', region: 'tobillo_pie', num: '⑧',
     name: 'Tendinopatía del Aquiles, Porción Media',
     prom: 'VISA-A',
-    dosis: '',
+    dosis: 'Ejercicio de carga del tendón (excéntrico, concéntrico, isométrico, isotónico o pliométrico), con la carga más alta que se tolere, como primera línea si no se presume fragilidad estructural del tendón (A); al menos 3 veces por semana a la intensidad más alta tolerada (E). Educación (enfoque de ciencia del dolor o patoanatómico) junto al ejercicio, presencial o por telesalud (B). No indicar reposo completo: seguir con las actividades dentro de la tolerancia al dolor (B). No usar láser de baja intensidad ni ultrasonido solo (C). El tipo de carga, la frecuencia (de 1 al día a 3 por semana), el número de sesiones y la duración (6 semanas a 6 meses) no parecen cambiar el resultado; mejoría esperable de 18–21 puntos en el VISA-A a las 12 semanas.',
+    dosisFuente: 'Chimenti 2024, J Orthop Sports Phys Ther 54(12):CPG1–CPG32 (guía de práctica clínica APTA; letra = grado de la recomendación)',
     pronostico: {
       horizonte: 'Diagnóstico clínico: la patología en imagen es frecuente sin síntomas; neovasos y calcificación no son diagnósticos.',
       derivacion: 'VISA-A mes a mes; entre medias, dolor y rigidez matutinos y EVA en saltos. La bursa retrocalcánea no se trata aislada de la insercional. Dolor nocturno → otro diagnóstico.',
@@ -641,7 +643,8 @@ export const hypotheses = {
     id: 'tp21', region: 'tobillo_pie', num: '㉑',
     name: 'Inestabilidad Crónica del Tobillo',
     prom: 'CAIT o IdFAI',
-    dosis: '',
+    dosis: 'Ejercicio propioceptivo y neuromuscular para la estabilidad postural dinámica y la estabilidad percibida (A). Terapia manual —movilizaciones graduadas, manipulación y movilización con movimiento en carga y sin carga— para la dorsiflexión en carga y el equilibrio dinámico a corto plazo (A); se puede combinar con el ejercicio (B). Tobillera o vendaje nunca como tratamiento único (B). La guía no fija dosis. Orientativo (metaanálisis de 26 ensayos, análisis de subgrupos exploratorio, certeza de muy baja a moderada): terapia manual 1–2 veces por semana durante 4 semanas o menos para el CAIT; entrenamiento multimodal 1–2 veces por semana durante 5–8 semanas para el FAAM.',
+    dosisFuente: 'Martin 2021, J Orthop Sports Phys Ther 51(4):CPG1–CPG80 (guía de práctica clínica APTA; letra = grado de la recomendación) · Liu 2025, BMC Sports Sci Med Rehabil 17:335 (metaanálisis de dosis)',
     pronostico: {
       horizonte: 'CAIT menos de 24, o IdFAI más de 11: indican inestabilidad crónica (cuestionarios aparte de los tres números).',
       derivacion: 'Valorar deficiencias mecánicas y sensoriomotoras: guían el tratamiento.',
@@ -721,7 +724,8 @@ export const hypotheses = {
     id: 'tp26', region: 'tobillo_pie', num: '㉖',
     name: 'Dolor Plantar Crónico del Talón',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: 'Núcleo (A): estiramiento específico de la fascia plantar y del gastrocnemio-sóleo; terapia manual articular (sobre todo la dorsiflexión talocrural) y de tejidos blandos (fascia plantar, gastrocnemio y sóleo); vendaje rígido o elástico con otros tratamientos, efecto a corto plazo (1 a 6 semanas); férula nocturna durante 1–3 meses si hay dolor constante en los primeros pasos de la mañana. Además: ejercicio de fuerza de la musculatura del pie y el tobillo (B); punción seca de puntos gatillo en gastrocnemio, sóleo y musculatura plantar, 1–6 sesiones (B); láser de baja intensidad en 2–3 puntos, mínimo 2 J/punto a 904 nm o 4 J/punto a 780–860 nm (B); plantillas solo combinadas con otros tratamientos, nunca solas (C). No usar ultrasonido para potenciar el estiramiento (A). La dosis del estiramiento no está establecida (estudios de 10 s a 60 min, de 4 días a 8 semanas).',
+    dosisFuente: 'Koc 2023, J Orthop Sports Phys Ther 53(12):CPG1–CPG39 (guía de práctica clínica APTA; letra = grado de la recomendación)',
     pronostico: {
       horizonte: 'Imagen innecesaria si la clínica encaja; ecografía para la fasciopatía. El espolón no se relaciona con el dolor.',
       derivacion: 'Atrapamiento nervioso coexistente en el 20–52 %: valorar el componente neural si no mejora.',

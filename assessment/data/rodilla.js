@@ -497,7 +497,8 @@ export const hypotheses = {
     id: 'ro15', region: 'rodilla', num: '⑮',
     name: 'Apofisitis del Adolescente (Osgood-Schlatter, Sinding-Larsen-Johansson)',
     prom: 'KOOS-12',
-    dosis: '',
+    dosis: 'Solo Osgood-Schlatter: el estudio excluyó el Sinding-Larsen-Johansson. Semanas 0–4: dejar el deporte y las actividades que reproducen el dolor; isométrico de cuádriceps contra la pared 10 × 30 s al día con cada pierna, y puente con los dos pies 3 × 10 cada 2 días. Desde la semana 5, cada 2 días: (1) sentadilla apoyado en la pared, 5 repeticiones manteniendo hasta 20 s, y una repetición más por sesión hasta 10; (2) sentadilla de 3 s bajando, 10 s mantenida y 3 s subiendo, añadiendo series hasta 4 × 10; (3) añadir zancadas. En paralelo, escalera de 11 escalones de actividad (caminar o bici suave → caminar rápido o bici media → carrera lenta → escaleras → carrera media → skipping → saltos → carrera rápida, giros y saltos → calentamiento + media sesión → calentamiento + sesión → partido): subir un escalón solo con dolor ≤2/10 durante la actividad y a la mañana siguiente, y bajar uno si empeora; la sentadilla (nivel 2) sin pasar de 2/10 antes del escalón 3; vuelta completa tras 2 semanas de entrenamiento completo sin dolor. 4 visitas en 12 semanas, con los padres. Resultados: 80 % con éxito a las 12 semanas y 90 % al año; vuelta al deporte del 16 % a las 12 semanas y del 69 % al año.',
+    dosisFuente: 'Rathleff 2020, Orthop J Sports Med 8(4):2325967120911106 (serie de casos, n = 51, 10–14 años, sin grupo control: nivel de evidencia 4; pauta de su apéndice 1)',
     pronostico: {
       horizonte: 'La exploración suele bastar; radiografía si hace falta, y ayuda a descartar fractura aguda y tumor.',
       derivacion: 'El Sinding-Larsen-Johansson es generalmente autolimitado. Entrenar en otras modalidades o en piscina reduce intensidad y duración.',

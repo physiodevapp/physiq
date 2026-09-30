@@ -462,7 +462,8 @@ export const hypotheses = {
     id: 'ce12', region: 'cervical', num: '⑫',
     name: 'Dolor Radicular Cervical',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: '',
+    dosis: 'Fase aguda (menos de 1 mes, dolor de brazo por debajo del codo): fisioterapia 2 veces por semana durante 6 semanas (12 sesiones), sin terapia manual, con ejercicio graduado para fortalecer la musculatura cervical superficial y profunda, orientado a movilizar y estabilizar, más ejercicios en casa a diario. Alternativa de eficacia casi igual: collarín semirrígido de día 3 semanas, retirándolo en las 3 siguientes, con reposo. Ambas redujeron el dolor de brazo unos 12 mm (EVA 0–100) más que esperar, a las 6 semanas. La guía limita el collarín a poco tiempo, en fase aguda y solo si no alivian otros tratamientos. Agudo, guía (C): ejercicios de movilización y estabilización, láser y collarín a corto plazo. Crónico, guía (B): tracción cervical mecánica intermitente (la continua no ha mostrado beneficio) combinada con estiramientos y fortalecimiento más movilización o manipulación cervical y torácica; educación para seguir con la actividad laboral y el ejercicio (B). Vigilar la irritabilidad y ajustar la terapia manual y el ejercicio.',
+    dosisFuente: 'Kuijper 2009, BMJ 339:b3883 (ensayo aleatorizado, n = 205; la lista de ejercicios está en su apéndice web, no revisado) · Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación)',
     pronostico: {
       horizonte: 'RM para compromiso de raíz, solo si la exploración lo indica: los cambios son frecuentes en asintomáticos.',
       derivacion: 'Con más dolor y discapacidad aparece sensibilización central: exploración mínima. La espondilosis que avanza puede comprimir la médula.',
