@@ -449,7 +449,8 @@ export const hypotheses = {
     id: 'tp9', region: 'tobillo_pie', num: '⑨',
     name: 'Tendinopatía Insercional del Aquiles',
     prom: 'VISA-A',
-    dosis: '',
+    dosis: 'Excéntrico de gemelo sin dorsiflexión: de pie y con la rodilla extendida, subir de puntillas con la pierna sana, pasar todo el peso a la afectada y bajar despacio el talón solo hasta el nivel del suelo, nunca por debajo (sin carga en dorsiflexión). 3 × 15, dos veces al día, 7 días por semana, 12 semanas. Se admite dolor durante el ejercicio; si deja de doler, añadir peso en una mochila. Si es bilateral, subir con una prensa de piernas, de pie sobre un cajón, para evitar la fase concéntrica. Avisar de que las 2 primeras semanas pueden doler más el gemelo y la inserción. Desde la 6.ª semana, vuelta lenta a la actividad previa. Resultado: 67 % satisfechos y de vuelta a su actividad (seguimiento medio de 4 meses), con el dolor en carga de 70 a 21 (EVA 0–100).',
+    dosisFuente: 'Jonsson 2008, Br J Sports Med 42:746–749 (estudio piloto sin grupo control, n = 27, 34 tendones, diagnóstico con ecografía)',
     pronostico: {
       horizonte: 'Diagnóstico clínico: la patología en imagen es frecuente sin síntomas; neovasos y calcificación no son diagnósticos.',
       derivacion: 'VISA-A mes a mes; entre medias, dolor y rigidez matutinos y EVA en saltos. La bursa retrocalcánea no se trata aislada de la insercional. Dolor nocturno → otro diagnóstico.',
@@ -524,7 +525,8 @@ export const hypotheses = {
     id: 'tp14', region: 'tobillo_pie', num: '⑭',
     name: 'Tendinopatía del Tibial Posterior',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: 'Estadios I–II. Plantillas a medida durante el 90 % de las horas de vigilia y estiramiento de gemelo (rodilla extendida) y sóleo (rodilla algo flexionada) sobre una cuña, 3 × 30 s cada uno, 2 veces al día. Además, ejercicio resistido del tibial posterior con plantillas y calzado puestos: aducción horizontal del pie con flexión plantar, excéntrico (el que más mejoró) o concéntrico, 5 s por repetición, 3 × 15 dos veces al día, con 1–2 min de descanso entre series; empezar con 0,9 kg y subir de 0,9 kg en 0,9 kg cuando las 45 repeticiones salgan con facilidad, buen control y mínimos o ningún síntoma. 12 semanas, con una revisión semanal de 30 min. Los tres grupos mejoraron; el excéntrico redujo más el dolor y la discapacidad (FFI; diferencias entre grupos P = 0,036–0,048). El estudio usó un aparato de resistencia constante específico: con otra resistencia (p. ej., goma elástica) la pauta no está comprobada.',
+    dosisFuente: 'Kulig 2009, Phys Ther 89(1):26–37 (ensayo aleatorizado, n = 36: plantillas + estiramiento, con o sin ejercicio concéntrico o excéntrico)',
     pronostico: {
       horizonte: 'Ecografía (tendón frente a peritendón); RM para complicaciones. La imagen no se correlaciona necesariamente con los síntomas.',
       derivacion: 'Puede progresar a rotura y pie plano adquirido: no hace ETM + «demasiados dedos» → derivar.',
@@ -643,8 +645,8 @@ export const hypotheses = {
     id: 'tp21', region: 'tobillo_pie', num: '㉑',
     name: 'Inestabilidad Crónica del Tobillo',
     prom: 'CAIT o IdFAI',
-    dosis: 'Ejercicio propioceptivo y neuromuscular para la estabilidad postural dinámica y la estabilidad percibida (A). Terapia manual —movilizaciones graduadas, manipulación y movilización con movimiento en carga y sin carga— para la dorsiflexión en carga y el equilibrio dinámico a corto plazo (A); se puede combinar con el ejercicio (B). Tobillera o vendaje nunca como tratamiento único (B). La guía no fija dosis. Orientativo (metaanálisis de 26 ensayos, análisis de subgrupos exploratorio, certeza de muy baja a moderada): terapia manual 1–2 veces por semana durante 4 semanas o menos para el CAIT; entrenamiento multimodal 1–2 veces por semana durante 5–8 semanas para el FAAM.',
-    dosisFuente: 'Martin 2021, J Orthop Sports Phys Ther 51(4):CPG1–CPG80 (guía de práctica clínica APTA; letra = grado de la recomendación) · Liu 2025, BMC Sports Sci Med Rehabil 17:335 (metaanálisis de dosis)',
+    dosis: 'Ejercicio propioceptivo y neuromuscular para la estabilidad postural dinámica y la estabilidad percibida (A). Terapia manual —movilizaciones graduadas, manipulación y movilización con movimiento en carga y sin carga— para la dorsiflexión en carga y el equilibrio dinámico a corto plazo (A); se puede combinar con el ejercicio (B). Tobillera o vendaje nunca como tratamiento único (B). La guía no fija dosis. Orientativo (metaanálisis de 26 ensayos, análisis de subgrupos exploratorio, certeza de muy baja a moderada): terapia manual 1–2 veces por semana durante 4 semanas o menos para el CAIT; entrenamiento multimodal 1–2 veces por semana durante 5–8 semanas para el FAAM. Protocolo concreto con ensayo (McKeon 2008, adultos jóvenes): 12 sesiones supervisadas de unos 20 min, 3 por semana durante 4 semanas: saltos a estabilización monopodal en 4 direcciones (10 por dirección), salto con alcance (5), saltos no anticipados siguiendo una secuencia, y equilibrio monopodal con ojos abiertos y cerrados. 7 niveles por tarea (saltos de 46, 69 y 91 cm, primero con ayuda de los brazos y luego con las manos en la cadera; al final, desde una plataforma de 15 cm); se sube de nivel tras 10 repeticiones sin error (5 en el salto con alcance). Mejoró la función autorreferida (FADI) y el equilibrio frente a no entrenar.',
+    dosisFuente: 'Martin 2021, J Orthop Sports Phys Ther 51(4):CPG1–CPG80 (guía de práctica clínica APTA; letra = grado de la recomendación) · Liu 2025, BMC Sports Sci Med Rehabil 17:335 (metaanálisis de dosis) · McKeon 2008, Med Sci Sports Exerc 40(10):1810–1819 (ensayo aleatorizado, n = 31)',
     pronostico: {
       horizonte: 'CAIT menos de 24, o IdFAI más de 11: indican inestabilidad crónica (cuestionarios aparte de los tres números).',
       derivacion: 'Valorar deficiencias mecánicas y sensoriomotoras: guían el tratamiento.',

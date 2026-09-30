@@ -480,7 +480,8 @@ export const hypotheses = {
     id: 'ce13', region: 'cervical', num: '⑬',
     name: 'Mareo Cervicogénico',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: '',
+    dosis: 'Mareo cervicogénico crónico (3 meses o más, con inestabilidad y dolor o rigidez cervical; excluidos vértigo, migraña, insuficiencia vertebrobasilar y otras causas de mareo). 2–6 sesiones en 6 semanas, según la respuesta. Opción 1, SNAG de Mulligan: sentado, el paciente mueve la cabeza hacia la dirección que le marea mientras el fisio desliza hacia anterior C2 (flexión o extensión, por la apófisis espinosa) o C1 (rotación, por la apófisis transversa); 6 repeticiones, sin síntomas en la primera sesión y con sobrepresión suave en las siguientes. Desde la 2.ª sesión, autoSNAG en casa con los dedos o una cinta, 6 repeticiones una vez al día. Opción 2, movilización de Maitland de hasta 3 niveles cervicales altos rígidos o dolorosos, normalmente 3 aplicaciones de 30 s por nivel (grado a criterio), más movilidad activa en casa desde la 2.ª sesión (flexión, extensión, rotación e inclinación, 3 veces cada una, una vez al día). Las dos redujeron la intensidad y la frecuencia del mareo frente a placebo al terminar y a las 12 semanas, sin diferencias entre ellas.',
+    dosisFuente: 'Reid 2014, Phys Ther 94(4):466–476 (ensayo aleatorizado doble ciego frente a placebo, n = 86)',
     pronostico: {
       horizonte: 'Identificar la fuente del mareo es clave para que el manejo funcione.',
       derivacion: 'Vértigo rotatorio → vestibular. Golpe en cabeza o cuello → conmoción. Visión doble verdadera en mayores → IVB; súbito en jóvenes → disección. Los dos últimos, urgencias.',

@@ -544,7 +544,8 @@ export const hypotheses = {
     id: 'ca16', region: 'cadera', num: '⑯',
     name: 'Dolor Inguinal Relacionado con el Aductor',
     prom: 'HAGOS (o HOS, iHOT)',
-    dosis: '',
+    dosis: 'Deportistas con dolor inguinal de larga evolución relacionado con el aductor. Entrenamiento activo 3 veces por semana (unos 90 min, en grupos de 2–4) durante 8–12 semanas, sin deporte mientras dure (bici si no duele; trote en llano desde la 6.ª semana si no provoca dolor); se termina cuando ni el tratamiento ni el trote duelen. Los días intermedios, el módulo I en casa. Módulo I (semanas 1–2): aducción isométrica en supino contra un balón entre los pies y entre las rodillas, 10 × 30 s cada una; abdominales rectos y oblicuos 5 × 10; abdominal con flexión de cadera y balón entre las rodillas («navaja») 5 × 10; plato de equilibrio 5 min; tabla de deslizamiento a una pierna, pies paralelos y a 90°, 5 × 1 min por pierna y posición. Módulo II (desde la 3.ª semana, dos vueltas por sesión): abducción y aducción en decúbito lateral 5 × 10; extensión lumbar en prono 5 × 10; abducción y aducción de pie a una pierna con peso o polea 5 × 10; abdominales 5 × 10; «esquí de fondo» a una pierna 5 × 10; desplazamiento lateral en tabla basculante 5 min; plato de equilibrio 5 min; patinaje en tabla de deslizamiento 5 × 1 min. Sin estirar los aductores. Resultado: 23 de 34 volvieron al deporte sin dolor frente a 4 con tratamiento pasivo (OR 12,7; IC 95 % 3,4–47,2).',
+    dosisFuente: 'Hölmich 1999, Lancet 353:439–443 (ensayo aleatorizado, n = 68, frente a fisioterapia pasiva)',
     pronostico: {
       horizonte: 'Ecografía o RM (planos axiales oblicuos para la inserción): edema óseo en la sínfisis, signo de la hendidura secundaria.',
       derivacion: 'AINE y reposo reducen el dolor, pero suele volver al retomar el deporte. La debilidad de cadera aumenta el riesgo: vuelta al deporte con déficit de fuerza <10–20 %.',
