@@ -2104,9 +2104,10 @@
 .fp-pista { font-size: 0.78rem; line-height: 1.5; color: var(--text2); }
 .fp-pista-a { color: var(--text); font-weight: 500; }
 .fp-pista-cita { font-style: italic; font-weight: 400; }
-/* Instrucción para el fisio, no texto del papel: con el tinte de .alert-info
-   para que no se confunda con los .fp-hint grises en cursiva (texto para el paciente) */
-.fp-literal-nota { font-size: 0.74rem; line-height: 1.4; color: var(--accent); background: rgba(79,156,249,0.08); padding: 12px 18px; }
+/* Instrucción para el fisio, no texto del papel: en azul para que no se confunda
+   con los .fp-hint grises en cursiva (texto para el paciente). Sin tinte de fondo:
+   comparte el de la hoja (--surface) para que el degradado de .fp-body parta sin frontera de color */
+.fp-literal-nota { font-size: 0.74rem; line-height: 1.4; color: var(--accent); background: var(--surface); padding: 12px 18px; }
 @media (max-width: 768px) {
   .fp-overlay { align-items: flex-end; }
   .fp-sheet { width: 100%; height: 94vh; border-radius: 16px 16px 0 0; border: none; border-top: 1px solid var(--border2); }
