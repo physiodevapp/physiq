@@ -150,7 +150,7 @@ export const hypotheses = {
     tests: [
       { name: 'Dolor a la palpación del epicóndilo medial', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor reproducible a la palpación directa del epicóndilo medial o tendón común flexor-pronador.' },
       { name: 'Dolor con flexión resistida de antebrazo y pronación', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Reproducción del dolor con resistencia a la flexión de muñeca y/o pronación del antebrazo.' },
-      { name: 'Sonoelastografía confirmatoria', sn: '95.2%', sp: '92%', lr_pos: null, lr_neg: null, criterio: 'Alta precisión diagnóstica por imagen. Datos de fiabilidad limitados para tests clínicos específicos.' }
+      { name: 'Ecografía (si se dispone de informe)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Ecografía convencional (no sonoelastografía): foco hipo o anecoico, tendón no visible, calcificación o irregularidad cortical. Cuenta como hallazgo: S 95,2 %, E 92 %, pero el patrón de referencia fue el propio diagnóstico clínico de un fisiatra y se comparó con 25 codos sin la patología, un diseño que infla la precisión y no mide si la ecografía añade algo al diagnóstico clínico.' , fuente: 'Park 2008 (Arch Phys Med Rehabil 89:738–742; prospectivo, un solo radiólogo)' }
     ]
   },
   co3: {
@@ -159,7 +159,7 @@ export const hypotheses = {
     prom: 'Oxford Elbow Score (MCID: 8–20 pts) o QuickDASH (MCID: 10–16 pts)',
     dosis: 'Movilización activa-asistida en todas las direcciones (flexión, extensión, pronación, supinación) dentro del rango disponible sin dolor. 5 rep lentas × 2 series por dirección. Detener al primer punto de resistencia. Evitar estiramiento agresivo.',
     tests: [
-      { name: 'Test de ROM activo en 4 direcciones', sn: '99%', sp: null, lr_pos: null, lr_neg: null, criterio: 'Para lesiones radiográficas. Extensión completa, flexión a 90°, pronación y supinación completas.' },
+      { name: 'Test de ROM activo en 4 direcciones', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Extensión completa, flexión, pronación y supinación comparadas con el lado sano. Sin cifras para capsulitis: la «S 99 %» que tenía es del test de extensión del codo para descartar fractura tras traumatismo (Appelboam 2008: no extender del todo el codo → radiografía; S 96,8 %), otra condición.' , fuente: 'Appelboam 2008 (BMJ 337:a2428), solo como aclaración: su cifra es para fractura, no para capsulitis' },
       { name: 'Limitación activa Y pasiva comparada con lado sano', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Datos de fiabilidad limitados para tests específicos de capsulitis de codo en literatura.', noData: true }
     ]
   },
@@ -169,8 +169,8 @@ export const hypotheses = {
     prom: 'QuickDASH (MCID: 10–16 puntos)',
     dosis: 'Isométrico de flexión de codo en posición neutra (sin valgo), contracción sostenida 5 seg, 10 rep × 1 serie. Evitar completamente el estrés en valgo. Mantener codo en posición protegida (flexión 70-90°).',
     tests: [
-      { name: 'Ecografía dinámica con estrés en valgo', sn: '96%', sp: '81%', lr_pos: null, lr_neg: null, criterio: 'Delta de apertura articular >1.0 mm comparado con lado contralateral. Técnica de elección no invasiva.' },
-      { name: 'RM con artrograma', sn: '81%', sp: '91%', lr_pos: null, lr_neg: null, criterio: 'Alta especificidad. Gold standard para lesiones del LCC.' },
+      { name: 'Ecografía dinámica con estrés en valgo', sn: '96%', sp: '81%', lr_pos: null, lr_neg: null, criterio: 'Delta de apertura articular >1.0 mm comparado con lado contralateral. Técnica de elección no invasiva.' , fuente: 'Roedl, recogido en Campbell 2020 (Am J Sports Med 48:2819–2827, revisión sistemática; 144 pacientes, referencia intraoperatoria, positivo con apertura ≥1,0 mm frente al lado sano; para rotura completa, umbral de 2,5 mm: S 95 %, E 89 %)' },
+      { name: 'RM con artrograma', sn: '81%', sp: '91%', lr_pos: null, lr_neg: null, criterio: 'Alta especificidad. Gold standard para lesiones del LCC.' , fuente: 'Roedl, recogido en Campbell 2020 (Am J Sports Med 48:2819–2827, revisión sistemática; 144 pacientes, referencia intraoperatoria; la misma precisión que la ecografía convencional en esa cohorte; otros estudios de la revisión, S 81–100 %, E 91–100 %)' },
       { name: 'Test de valgo dinámico (maniobra de ordeño, test de valgo móvil de Mayo)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más confiable que el valgo estático. Reproducción del dolor medial con estrés en valgo dinámico.' }
     ]
   },
@@ -190,8 +190,8 @@ export const hypotheses = {
     prom: 'DASH (MCID: 10–11 pts) o Mayo Elbow Performance Score',
     dosis: 'Movilización activa de flexo-extensión de codo evitando rango terminal de extensión. 10 rep lentas × 2 series, deteniendo 10-15° antes de extensión completa. Evitar movimientos rotatorios combinados que reproduzcan el pinzamiento.',
     tests: [
-      { name: 'Dolor posterolateral en línea articular radiocapitelar a la palpación', sn: '83.3%', sp: null, lr_pos: null, lr_neg: null, criterio: 'Presente en el 83.3% de los casos confirmados artroscópicamente.' },
-      { name: 'Test de plica radiocapitelar posterolateral', sn: '83.3%', sp: '87.5%', lr_pos: null, lr_neg: null, criterio: 'Precisión del 86.3%. RM identifica plica patológica en 70.8% de casos.' }
+      { name: 'Dolor posterolateral en línea articular radiocapitelar a la palpación', sn: '83.3%', sp: null, lr_pos: null, lr_neg: null, criterio: 'Presente en el 83.3% de los casos confirmados artroscópicamente.' , fuente: 'Park 2019 (Medicine 98:e15497): punto de máximo dolor en la línea radiocapitelar en 20 de 24' },
+      { name: 'Test de plica radiocapitelar posterolateral', sn: '83.3%', sp: '87.5%', lr_pos: null, lr_neg: null, criterio: 'Pulgar en la cara posterolateral de la radiocapitelar y antebrazo en pronación; empezar con el codo extendido y flexionar manteniendo la presión. Positivo si el dolor a baja flexión desaparece claramente por encima de 90°. S 83,3 % (IC 95 % 62,6–95,3), E 87,5 %: 24 plicas confirmadas por artroscopia frente a 56 epicondilalgias laterales (el diferencial real). Estudio retrospectivo de los creadores del test. La RM identificó la plica en el 70,8 %.' , fuente: 'Park 2019 (Medicine 98:e15497; retrospectivo, n = 24 frente a 56)' }
     ]
   },
   co7: {
