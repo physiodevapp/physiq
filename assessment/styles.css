@@ -2028,7 +2028,8 @@
 
 /* ─── Formulario previo (formulario.js) ─────────────────────── */
 .fp-card-text { font-size: 0.82rem; color: var(--text2); line-height: 1.5; margin-bottom: 12px; }
-.fp-open-region { width: 100%; margin-bottom: 1rem; }
+.fp-open-region { width: auto; min-width: 280px; margin-bottom: 1rem; }
+@media (max-width: 768px) { .fp-open-region { width: 100%; min-width: 0; } }
 .fp-contador { margin-top: 8px; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); }
 
 .fp-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
