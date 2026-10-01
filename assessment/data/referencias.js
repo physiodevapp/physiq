@@ -49,10 +49,18 @@ export const REFERENCIAS = {
     revision: { fecha: '2026-10', resultado: 'Sustituida por Peat 2006 en los criterios del ACR de rodilla (ro1): su S 95 % / E 69 % sale de la muestra de desarrollo, no del ámbito de un fisio. Solo queda citada como contexto en el texto del test.' },
     nota: 'Texto completo no consultado (Wiley, de pago): el resumen de PubMed no da S ni E.'
   },
-  'Altman 1991': { publicacion: 'Arthritis Rheum', doi: '', revision: null },
+  'Altman 1991': {
+    publicacion: 'Arthritis Rheum 34(5):505–14', doi: '10.1002/art.1780340502',
+    revision: { fecha: '2026-10', resultado: 'S 86 % / E 75 % del árbol clínico comprobadas en el resumen, pero son de la muestra de desarrollo; en atención primaria los criterios no se sostienen (Bierma-Zeinstra 1999, Reijman 2004) y no hay S/E de ese ámbito. Los criterios ACR de cadera (ca1) pasan a hallazgo, sin puntuar.' },
+    nota: 'Texto completo no consultado (Wiley, de pago): la «validación cruzada S 83 %, E 68 %» que citaba la app no está en el resumen y se ha quitado.'
+  },
   'Apelby-Albrecht 2013': { publicacion: '', doi: '', revision: null, nota: 'Citado a través de Thoomes 2026.' },
   'Appelboam 2008': { publicacion: 'BMJ 337:a2428', doi: '', revision: null },
   'Bachmann 2003': { publicacion: 'BMJ 326:417', doi: '', revision: null },
+  'Bierma-Zeinstra 1999': {
+    publicacion: 'J Rheumatol 26(5):1129–33', doi: '',
+    revision: { fecha: '2026-10', resultado: 'Solo resumen leído (PubMed 10332979): el texto completo no es accesible. No da S ni E de los criterios clínicos.' }
+  },
   'Blanpied 2017': { publicacion: 'J Orthop Sports Phys Ther 47(7):A1–A83', doi: '', revision: null },
   'Campbell 2020': { publicacion: 'Am J Sports Med 48:2819–2827', doi: '', revision: null, nota: 'Recoge los datos de Roedl (sin año en la cita).' },
   'Chimenti 2024': { publicacion: 'J Orthop Sports Phys Ther 54(12):CPG1–CPG32', doi: '', revision: null },
@@ -118,6 +126,10 @@ export const REFERENCIAS = {
   'Pitcher 2024': { publicacion: 'Foot Ankle Orthop 9(4)', doi: '', revision: null },
   'Rathleff 2020': { publicacion: 'Orthop J Sports Med 8(4):2325967120911106', doi: '', revision: null },
   'Reid 2014': { publicacion: 'Phys Ther 94(4):466–476', doi: '', revision: null },
+  'Reijman 2004': {
+    publicacion: 'Ann Rheum Dis 63(3):226–32', doi: '10.1136/ard.2003.010348',
+    revision: { fecha: '2026-10', resultado: 'Solo resumen leído: en PMC (PMC1754907) el cuerpo es un PDF escaneado que no se pudo descargar.' }
+  },
   'Reiman 2014': { publicacion: 'J Athl Train 49:820–9', doi: '', revision: null },
   'Reiman 2015': { publicacion: 'Br J Sports Med', doi: '', revision: null },
   'Saueressig 2021': { publicacion: 'J Orthop Sports Phys Ther', doi: '', revision: null },
