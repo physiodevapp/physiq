@@ -6,7 +6,24 @@
 <title>PhysiQ-Assessment — Asistente de Valoración en Fisioterapia</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4f9cf9">
+<meta name="theme-color" content="#0a0d12">
+<script>
+// Apply the theme before first paint (no flash). Mirrors applyTheme() in
+// app.js: the hub is always dark; otherwise stored choice, else the system's.
+(function () {
+  var t = 'dark';
+  try {
+    if (window.self === window.top) {
+      var p = localStorage.getItem('physiq-assessment-theme');
+      t = p === 'light' || p === 'dark' ? p
+        : (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    }
+  } catch (e) {}
+  document.documentElement.setAttribute('data-theme', t);
+  var m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#0a0d12');
+})();
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
