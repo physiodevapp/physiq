@@ -44,7 +44,11 @@ export const REFERENCIAS = {
   },
   'NICE NG226': { publicacion: 'Guía NICE (2022)', doi: '', revision: null },
   'Adib 2023': { publicacion: 'Am J Sports Med', doi: '', revision: null },
-  'Altman 1986': { publicacion: 'Arthritis Rheum', doi: '', revision: null },
+  'Altman 1986': {
+    publicacion: 'Arthritis Rheum 29(8):1039–49', doi: '10.1002/art.1780290816',
+    revision: { fecha: '2026-10', resultado: 'Sustituida por Peat 2006 en los criterios del ACR de rodilla (ro1): su S 95 % / E 69 % sale de la muestra de desarrollo, no del ámbito de un fisio. Solo queda citada como contexto en el texto del test.' },
+    nota: 'Texto completo no consultado (Wiley, de pago): el resumen de PubMed no da S ni E.'
+  },
   'Altman 1991': { publicacion: 'Arthritis Rheum', doi: '', revision: null },
   'Apelby-Albrecht 2013': { publicacion: '', doi: '', revision: null, nota: 'Citado a través de Thoomes 2026.' },
   'Appelboam 2008': { publicacion: 'BMJ 337:a2428', doi: '', revision: null },
@@ -107,6 +111,10 @@ export const REFERENCIAS = {
   'Park 2005': { publicacion: 'J Bone Joint Surg Am', doi: '', revision: null },
   'Park 2008': { publicacion: 'Arch Phys Med Rehabil 89:738–742', doi: '', revision: null },
   'Park 2019': { publicacion: 'Medicine 98:e15497', doi: '', revision: null },
+  'Peat 2006': {
+    publicacion: 'Ann Rheum Dis 65(10):1363–7', doi: '10.1136/ard.2006.051482',
+    revision: { fecha: '2026-10', resultado: 'Texto completo leído (PMC1798313, tabla 3). Más recientes en la misma dirección, solo resumen: Miguel 2019 (Clin Rheumatol) y Wang 2024 (Arthritis Care Res).' }
+  },
   'Pitcher 2024': { publicacion: 'Foot Ankle Orthop 9(4)', doi: '', revision: null },
   'Rathleff 2020': { publicacion: 'Orthop J Sports Med 8(4):2325967120911106', doi: '', revision: null },
   'Reid 2014': { publicacion: 'Phys Ther 94(4):466–476', doi: '', revision: null },
