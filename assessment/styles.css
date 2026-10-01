@@ -319,6 +319,9 @@
     padding: 1.5rem;
     margin-bottom: 1rem;
   }
+  /* The last child's own margin (form-group, option groups…) would add to the
+     card's padding and make the bottom space differ from card to card. */
+  .card > :last-child { margin-bottom: 0; }
   .card-title {
     font-size: 0.8rem;
     font-family: 'DM Mono', monospace;
