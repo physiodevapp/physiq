@@ -33,14 +33,14 @@ export const REFERENCIAS = {
     autores: 'Lluch, López-Cubas, Jones, Jull, Hall y Lewis',
     titulo: 'Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders',
     publicacion: 'ZERAPI', doi: '', revision: null, tarjetas: true,
-    nota: 'Base de las guías clínicas de cada región, de las que son extracto las tarjetas de consulta (repo guia-de-consulta). Los «cap.» que citan los pies de las tarjetas (Powell y Lewis, cap. 3, en hombro; Fondevila Suárez, cap. 5, en lumbar) son capítulos de este libro.'
+    nota: 'Base de las guías clínicas de cada región, de las que son extracto las tarjetas de consulta (repo guia-de-consulta). Los capítulos que citan los pies de las tarjetas (Struyf y Powell y Lewis, cap. 3, en hombro; Fondevila Suárez, cap. 5, en lumbar) son de este libro.'
   },
-  'Goodman 6.ª ed.': {
+  'Goodman 2018': {
     autores: 'Goodman, Heick y Lazaro',
     titulo: 'Differential Diagnosis for Physical Therapists: Screening for Referral',
     publicacion: 'Elsevier, 6.ª edición', doi: '', revision: null,
     citadaComo: ['Criterio de Goodman'],
-    nota: 'Sin año en el registro: no figura en la portada. El cribado de fase 2 lo cita sin año («Criterio de Goodman (cap. 14)»).'
+    nota: 'El cribado de fase 2 lo cita sin año («Criterio de Goodman (cap. 14)»).'
   },
   'NICE NG226': { publicacion: 'Guía NICE (2022)', doi: '', revision: null },
   'Adib 2023': { publicacion: 'Am J Sports Med', doi: '', revision: null },
