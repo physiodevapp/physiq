@@ -2607,11 +2607,30 @@ function applyTheme() {
   const resolved = inHub ? 'dark' : pref === 'system' ? (_themeMQ?.matches ? 'light' : 'dark') : pref;
   document.documentElement?.setAttribute('data-theme', resolved);
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', resolved === 'light' ? '#ffffff' : '#0a0d12');
+  const btn = document.getElementById('themeBtn');
+  if (btn) {
+    const ui = THEME_UI[pref];
+    btn.innerHTML = ui.icon;
+    const txt = `Apariencia: ${ui.label}. Pulsa para cambiar a ${THEME_UI[ui.next].label}`;
+    btn.title = txt; btn.setAttribute('aria-label', txt);
+  }
   document.querySelectorAll('#themeSeg [data-theme-pref]').forEach(b => {
     const on = b.dataset.themePref === pref;
     b.classList.toggle('selected', on);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
+}
+
+const _SVG = d => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const THEME_UI = {
+  system: { next: 'light', label: 'Sistema', icon: _SVG('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>') },
+  light:  { next: 'dark',  label: 'Claro',   icon: _SVG('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>') },
+  dark:   { next: 'system', label: 'Oscuro', icon: _SVG('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>') },
+};
+
+// Header button: one tap cycles Sistema → Claro → Oscuro; its icon shows the current choice.
+function cycleThemePref() {
+  setThemePref(THEME_UI[getThemePref()].next);
 }
 
 function setThemePref(pref) {
@@ -2674,7 +2693,7 @@ Object.assign(window, {
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
-  setThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
+  setThemePref, cycleThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor, updateResetBtnVisibility,
 });
 
