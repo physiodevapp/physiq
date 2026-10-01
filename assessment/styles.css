@@ -30,6 +30,9 @@
     --alert-warning-text: #ffc048;
     --lime: #b4dc50;
     --on-accent: #fff;
+    --scrim: rgba(0,0,0,0.6);
+    --scrim-blur: blur(6px);
+    --modal-shadow: 0 20px 60px rgba(0,0,0,0.5);
     color-scheme: dark;
   }
 
@@ -67,6 +70,8 @@
     --alert-danger-text: #b3202f;
     --alert-warning-text: #8a5300;
     --lime: #5f7d0f;
+    --scrim: rgba(19,26,41,0.38);
+    --modal-shadow: 0 20px 60px rgba(19,26,41,0.22);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1337,8 +1342,9 @@
     position: fixed;
     inset: 0;
     z-index: 400;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(2px);
+    background: var(--scrim);
+    backdrop-filter: var(--scrim-blur);
+    -webkit-backdrop-filter: var(--scrim-blur);
   }
   .phase-sheet-overlay.open { display: block; }
   .phase-sheet {
@@ -1623,8 +1629,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(6px);
+    background: var(--scrim);
+    backdrop-filter: var(--scrim-blur);
+    -webkit-backdrop-filter: var(--scrim-blur);
     animation: fadeUp 0.2s ease;
   }
   .confirm-box {
@@ -1634,7 +1641,7 @@
     padding: 1.8rem;
     max-width: 420px;
     width: 90%;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    box-shadow: var(--modal-shadow);
   }
   .confirm-box-title {
     font-family: 'DM Serif Display', serif;
@@ -2052,7 +2059,7 @@
   }
   .session-btn{display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text3);padding:6px;flex-shrink:0;transition:color 0.2s;}
   .session-btn.active{color:var(--accent);}
-  .session-panel-overlay{display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+  .session-panel-overlay{display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:var(--scrim);backdrop-filter:var(--scrim-blur);-webkit-backdrop-filter:var(--scrim-blur);}
   .session-panel-overlay.open{display:flex;animation:fadeUp 0.2s ease;}
   .session-panel{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.8rem;max-width:420px;width:90%;}
   .session-panel-title{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;touch-action:none;}
@@ -2071,7 +2078,7 @@
   .session-panel-handle{display:none;width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px;touch-action:none;}
   @media (max-width: 768px) {
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-    .session-panel-overlay{align-items:flex-end;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+    .session-panel-overlay{align-items:flex-end;}
     .session-panel-overlay.open{animation:none;}
     .session-panel-overlay.open .session-panel{animation:slideUp 0.3s cubic-bezier(0.32,0.72,0,1);}
     .session-panel{max-width:100%;width:100%;border-radius:16px 16px 0 0;border:none;border-top:1px solid var(--border2);padding:12px 1.4rem 32px;touch-action:none;}
@@ -2085,7 +2092,7 @@
 @media (max-width: 768px) { .fp-open-region { width: 100%; min-width: 0; } }
 .fp-contador { margin-top: 8px; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); }
 
-.fp-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+.fp-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: var(--scrim); backdrop-filter: var(--scrim-blur); -webkit-backdrop-filter: var(--scrim-blur); align-items: center; justify-content: center; }
 .fp-overlay.open { display: flex; animation: fadeUp 0.2s ease; }
 .fp-sheet { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); width: min(720px, 94vw); height: min(88vh, 900px); display: flex; flex-direction: column; overflow: hidden; }
 .fp-sheet-handle { display: none; width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 10px auto 0; flex-shrink: 0; touch-action: none; }
