@@ -1098,6 +1098,26 @@ function razonamientoInlineHTML(sis, q) {
     </details>`;
 }
 
+// «Fisiología, paso a paso»: la cadena causal del mecanismo al síntoma, cada
+// paso con su fuente leída; la metáfora es un extra divulgativo que va después
+// y nunca sustituye a la cadena; `nota` dice lo que la fuente no explica.
+function razonFisiologiaHTML(f) {
+  if (!f) return '';
+  return `<div class="razon-seccion razon-fisio"><div class="razon-etq">Fisiología, paso a paso</div>
+      <ol class="razon-pasos">${f.pasos.map(p => `<li>${p}</li>`).join('')}</ol>
+      ${f.nota ? `<p class="razon-fisio-nota">${f.nota}</p>` : ''}
+      ${f.metafora ? `<p class="razon-metafora"><span aria-hidden="true">💡</span> ${f.metafora}</p>` : ''}
+    </div>`;
+}
+
+// Una cita es un texto o { texto, url }: el enlace abre el artículo (PMC, DOI,
+// NCBI Bookshelf) en otra pestaña; tests/unit.js comprueba que coincide con el
+// `url` del registro data/referencias.js.
+function razonCitaHTML(c) {
+  if (typeof c === 'string') return `<li>${c}</li>`;
+  return `<li>${c.texto} <a class="razon-enlace" href="${c.url}" target="_blank" rel="noopener noreferrer">Abrir ↗</a></li>`;
+}
+
 function _buscarPregunta(sisId, qId) {
   const sis = (SYSTEMIC_SCREENING[state.region]?.sistemas || []).find(s => s.id === sisId);
   const q = sis?.preguntas.find(p => p.id === qId);
@@ -1115,9 +1135,10 @@ function abrirRazonamiento(btn, sisId, qId) {
   document.getElementById('razonContenido').innerHTML = `
     <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}</p></div>
     <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${r.peso}</p></div>
+    ${razonFisiologiaHTML(r.fisiologia)}
     <div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>
     <div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
-      <ul>${(r.citas || r.fuentes).map(c => `<li>${c}</li>`).join('')}</ul></div>`;
+      <ul>${(r.citas || r.fuentes).map(razonCitaHTML).join('')}</ul></div>`;
   document.getElementById('razonContenido').scrollTop = 0;
   _razonOrigen = btn || null;
   // Otra pregunta con el panel ya abierto: solo cambia el contenido.

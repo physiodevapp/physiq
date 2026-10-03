@@ -2347,3 +2347,28 @@
   .razon-ampliar { font-size: 0.8rem; padding: 6px 0 6px 6px; }
 }
 @media print { .razon, .razon-panel, .razon-scrim { display: none !important; } }
+/* Fisiología paso a paso (nivel 2): cadena numerada con conectores; la metáfora
+   va aparte, marcada con 💡, para que nadie la tome por el mecanismo. */
+.razon-pasos { list-style: none; counter-reset: paso; margin: 6px 0 4px; padding: 0; }
+.razon-pasos li {
+  counter-increment: paso; position: relative;
+  padding: 0 0 12px 30px; margin: 0;
+}
+.razon-pasos li::before {
+  content: counter(paso); position: absolute; left: 0; top: 0;
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1px solid var(--accent); color: var(--accent);
+  font-family: 'DM Mono', monospace; font-size: 0.65rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.razon-pasos li:not(:last-child)::after {
+  content: ''; position: absolute; left: 10px; top: 22px; bottom: 2px;
+  border-left: 1px solid var(--border2);
+}
+.razon-fisio-nota { font-size: 0.76rem; color: var(--text3); font-style: italic; }
+.razon-metafora {
+  margin: 4px 0 0; padding: 8px 10px; border-radius: 8px;
+  background: var(--surface2); color: var(--text2); font-size: 0.8rem;
+}
+.razon-enlace { color: var(--accent); white-space: nowrap; text-decoration: none; }
+.razon-enlace:hover { text-decoration: underline; }
