@@ -2268,7 +2268,7 @@ function showToast(message, tone) {
     padding:10px 20px; border-radius:8px; z-index:9999;
     max-width:calc(100vw - 32px); text-align:center;
     box-shadow:0 4px 16px rgba(0,0,0,0.4);
-    animation:fadeUp 0.25s ease;
+    animation:toastUp 0.25s ease;
   `;
   toast.textContent = message;
   document.body.appendChild(toast);

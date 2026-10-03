@@ -286,6 +286,14 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Aviso inferior (showToast): se centra con translateX(-50%), así que su
+     animación debe conservarlo; con fadeUp lo pisaba y el aviso aparecía
+     desplazado a la derecha antes de saltar a su sitio. */
+  @keyframes toastUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
   /* Phase header */
   .phase-header {
     margin-bottom: 2rem;
