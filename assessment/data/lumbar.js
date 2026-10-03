@@ -235,17 +235,17 @@ export const screening = {
             detalle: 'Mecanismo: la endometriosis (tejido endometrial fuera del útero) sangra con cada ciclo y da dolor lumbar, pélvico, de cadera o sacro que empeora justo antes de la regla y en sus primeros días. Los quistes de ovario y los miomas pueden dar un patrón cíclico parecido. El dolor de origen menstrual suele aparecer en la ovulación (días 10–14) y justo antes o durante la regla (días 23–28), y puede referirse al recto, al sacro o al cóccix.\n\nQué buscar con un SÍ: relación con el ciclo (pedir que lo anote si no lo sabe), sangrado entre reglas o tras la menopausia, reglas más largas o abundantes, dolor con las relaciones o al defecar u orinar durante la regla, flujo anormal, DIU, posibilidad de embarazo. Dolor abdominal y lumbar al mismo nivel, alternando, es una bandera roja que requiere derivación.\n\nUrgencia: dolor súbito e intenso en una mujer en edad fértil, sexualmente activa, puede ser un embarazo ectópico roto (urgencia médica).',
             fisiologia: {
               pasos: [
-                'La teoría más aceptada es la menstruación retrógrada: células endometriales vivas refluyen por las trompas y se implantan en el peritoneo. Como eso también ocurre en muchas mujeres sin la enfermedad, hacen falta otros factores, inmunitarios y hormonales.',
-                'Los implantes dependen del estradiol, que estimula su proliferación, adhesión, fibrosis e inflamación, y la formación de vasos y nervios nuevos.',
-                'Con cada ciclo el tejido responde como el endometrio y se llena de sangre que no puede salir: dolor cíclico pélvico, lumbar o sacro, que aumenta antes de la regla y en sus primeros días.',
-                'Según dónde estén los implantes duele la regla, las relaciones, defecar u orinar; si la enfermedad profunda infiltra nervios, el dolor puede ser neuropático.'
+                'Los órganos del abdomen y de la pelvis tienen fibras aferentes viscerales; su actividad normal no llega a la consciencia, pero la que señala dolor sí.',
+                'Esas fibras llegan al asta dorsal de la médula, donde varias neuronas sensitivas, viscerales y somáticas, convergen en la misma vía ascendente: el cerebro no distingue de dónde viene la señal y la atribuye a la piel, el músculo o el hueso. Es el dolor referido.',
+                'Por eso un órgano del abdomen o de la pelvis puede doler en la zona lumbar o sacra. Si el dolor de espalda alterna con dolor abdominal al mismo nivel, o sigue al ciclo menstrual, el origen probable es una víscera y no la columna.',
+                'Un ejemplo ginecológico es la endometriosis: implantes de tejido endometrial fuera del útero que dependen del estradiol y se llenan de sangre con cada ciclo; de ahí el dolor cíclico lumbar, pélvico o sacro.'
               ],
-              nota: 'La intensidad de los síntomas no se corresponde con la extensión de la enfermedad: poco tejido puede doler mucho, y al revés.',
-              metafora: 'Como esquejes de una planta que arraigan fuera de su maceta: se siguen regando con cada ciclo, pero el agua no tiene por dónde salir, y la zona se inflama y cicatriza.'
+              metafora: 'Como varios teléfonos que comparten una sola línea: la centralita (la médula) recibe la llamada del intestino o del útero, pero no sabe desde cuál se hizo, y el cerebro la atribuye a la espalda.'
             },
-            fuentes: ['Goodman 2018', 'Consoli y Carlson 2026'],
+            fuentes: ['Goodman 2018', 'Sanvictores 2023', 'Consoli y Carlson 2026'],
             citas: [
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 14, pp. 555 y 557–561.',
+              { texto: 'Sanvictores 2023 — Sanvictores, Jozsa y Tadi, «Neuroanatomy, Autonomic Nervous System Visceral Afferent Fibers and Pain», StatPearls [Internet], NCBI Bookshelf, última actualización 30 de julio de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK560843/' },
               { texto: 'Consoli y Carlson 2026 — Consoli y Carlson, «Endometriosis», StatPearls [Internet], NCBI Bookshelf, última actualización 17 de junio de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK567777/' }
             ]
           } },
