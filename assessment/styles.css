@@ -2188,7 +2188,7 @@
 /* body.modo-breve la pone selectModo() (app.js). Pliega lo opcional; nunca
    oculta banderas rojas, urgencias ni el árbol. Ver docs/modo-breve.md. */
 .modo-badge, .breve-only, .breve-only-inline, .embudo { display: none; }
-.modo-breve .modo-badge { display: inline-flex; align-items: center; box-sizing: border-box; font-family: 'DM Mono', monospace; font-size: 0.65rem; line-height: 16px; letter-spacing: 1px; color: var(--orange); border: 1px solid var(--orange); border-radius: 6px; padding: 6px 14px; }
+.modo-breve .modo-badge { display: inline-flex; align-items: center; gap: 5px; box-sizing: border-box; font-family: 'DM Mono', monospace; font-size: 0.65rem; line-height: 16px; letter-spacing: 1px; color: var(--orange); border: 1px solid var(--orange); border-radius: 6px; padding: 6px 14px; }
 @media (max-width: 768px) { .modo-breve .modo-badge { padding: 5px 10px; } }
 .modo-breve .breve-only { display: block; }
 .modo-breve .breve-only-inline { display: inline-block; }

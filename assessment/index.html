@@ -151,7 +151,7 @@
       <button class="option-btn" onclick="selectModo('breve')">⏱ Breve (10')</button>
     </div>
     <div class="plan-note-hint breve-only">Consulta breve: se mantienen las banderas rojas, las urgencias y el árbol completo. El cribado por sistemas y la confirmación con tests no son exhaustivos, quedan como pendientes y así consta en las notas y en el informe.</div>
-    <button type="button" class="breve-toggle breve-only" onclick="toggleBreveVerTodo()"><span class="breve-toggle-mas">+ Mostrar campos opcionales (signos vitales, antropometría, psicosocial)</span><span class="breve-toggle-menos">− Ocultar campos opcionales</span></button>
+    <button type="button" class="breve-toggle breve-only" onclick="toggleBreveVerTodo()"><span class="breve-toggle-mas">+ Mostrar campos opcionales (signos vitales, antropometría y, con riesgo psicosocial alto, sus preguntas)</span><span class="breve-toggle-menos">− Ocultar campos opcionales</span></button>
   </div>
 
   <div class="card">
@@ -300,11 +300,13 @@
     </div>
 
     <div id="psicoToolSuggest" class="tool-suggestion" style="display:none; margin-top:12px;"></div>
-    <div id="psicoAltoQuestions" class="breve-opcional" style="display:none; margin-top:12px;">
+    <div id="psicoAltoQuestions" style="display:none; margin-top:12px;">
       <div class="alert alert-warning" style="margin-bottom:12px;">
         <span class="alert-icon">🧠</span>
         <span>Riesgo alto detectado. Dedique 2 minutos a clarificar con preguntas abiertas y valore cuestionario unidimensional específico.</span>
       </div>
+      <!-- El aviso se ve siempre; en modo breve solo se pliegan las preguntas -->
+      <div class="breve-opcional">
       <div class="form-group">
         <label class="form-label">¿El paciente muestra miedo al movimiento o catastrofización?</label>
         <div class="option-group option-group-full" id="psico_miedo">
@@ -330,6 +332,7 @@
         </div>
       </div>
       <div id="psicoRecomendacion" class="tool-suggestion" style="display:none;"></div>
+      </div>
     </div>
   </div>
 
