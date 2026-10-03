@@ -749,7 +749,8 @@ export const hypotheses = {
     id: 'lu5', region: 'lumbar', num: '⑤',
     name: 'Radiculopatía Lumbar (Déficit Neurológico)',
     prom: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 1.5–3.2 pts)',
-    dosis: '',
+    dosis: 'Ejercicio activo como base. Lumbalgia aguda con dolor irradiado: fuerza y resistencia del tronco y activación específica de su musculatura (B). Crónica: activación específica del tronco y control del movimiento (B). Terapia manual solo dentro de un programa con ejercicio (NICE): movilización articular con o sin thrust (B) y movilización neural junto a otros tratamientos, para mejorar a corto plazo (B). No usar tracción (D; NICE: no ofrecer). Información para el autocuidado y animar a mantener la actividad normal (NICE). Las guías hablan de lumbalgia con dolor en la pierna, no específicamente del déficit neurológico, y no fijan series, repeticiones ni semanas: el volumen queda a criterio del clínico.',
+    dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C, «should not» D) · NICE NG59 (rec. 1.2.1, 1.2.6 y 1.2.7; actualizada en julio de 2026)',
     pronostico: {
       horizonte: 'RM de elección. EMG muy específica, poco sensible; útil si clínica e imagen no casan.',
       derivacion: 'Cirugía: déficit significativo en abductores de cadera, flexores plantares o dorsales del pie, o déficit que progresa pese al conservador.',
@@ -765,7 +766,8 @@ export const hypotheses = {
     id: 'lu6', region: 'lumbar', num: '⑥',
     name: 'Dolor Lumbar Discogénico',
     prom: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 1.5–3.2 pts)',
-    dosis: '',
+    dosis: 'Las guías no tienen una pauta específica para el origen discogénico: estas son sus recomendaciones para la lumbalgia en general. Aguda: movilización articular con o sin thrust (A); ejercicio con activación específica del tronco (C); método McKenzie (MDT) (C). Crónica: ejercicio (A) —fuerza y resistencia del tronco, multimodal, activación específica, aeróbico, acuático o general—; movilización articular con o sin thrust (A), siempre dentro de un programa con ejercicio (NICE); MDT (B); educación en neurociencia del dolor junto al ejercicio o la terapia manual (A). Sin series, repeticiones ni semanas fijadas: el volumen queda a criterio del clínico.',
+    dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C) · NICE NG59 (rec. 1.2.7; actualizada en julio de 2026)',
     pronostico: {
       horizonte: 'A 4 años: 13 % mejoró, 7,6 % alivio leve, 12,2 % empeoró, 67,2 % sin cambios. La preferencia direccional predice buen pronóstico.',
       derivacion: 'Componente neuropático o disfuncional → más cronicidad. Con dolor en pierna, diferenciar de dolor radicular.',
@@ -797,7 +799,8 @@ export const hypotheses = {
     id: 'lu8', region: 'lumbar', num: '⑧',
     name: 'Dolor de la Articulación Sacroilíaca',
     prom: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 1.5–3.2 pts)',
-    dosis: '',
+    dosis: 'Manipulación de la sacroilíaca (thrust de alta velocidad y baja amplitud), la intervención con más apoyo en la revisión, siempre junto a ejercicio (NICE: terapia manual solo dentro de un programa con ejercicio). Ejercicio de estabilización lumbopélvica, como en los estudios incluidos: activar y controlar el transverso del abdomen y el multífido, puentes, y abducción y rotación de cadera en decúbito lateral, integrados en las actividades diarias. Los programas duraron de un día a 4 semanas (hasta 8 semanas el de ejercicio). El vendaje neuromuscular no superó al placebo en el ensayo de más calidad. Evidencia de calidad baja o media y sin un volumen reproducible: series y repeticiones a criterio del clínico.',
+    dosisFuente: 'Al-Subahi 2017, J Phys Ther Sci 29(9):1689–1694 (revisión sistemática, 9 estudios de 2004–2014 de calidad baja o media: manipulación, ejercicio y vendaje neuromuscular) · NICE NG59 (rec. 1.2.7; actualizada en julio de 2026)',
     pronostico: {
       horizonte: 'PRPPP: >54 % en el último trimestre, 25 % posparto; la mayoría se recupera, 7–20 % persiste. Recaída del 85 % en el siguiente embarazo.',
       derivacion: 'Predicen persistencia: edad, carga de trabajo alta, lumbalgia previa, mala función muscular. Cribar depresión posparto (×3).',
