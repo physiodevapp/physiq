@@ -1085,6 +1085,8 @@
     margin-bottom: 1.2rem;
   }
   @media (max-width: 600px) { .flags-grid { grid-template-columns: 1fr; } }
+  /* Solo rojas o solo amarillas: la caja ocupa el ancho completo */
+  .flags-grid > .flags-box:only-child { grid-column: 1 / -1; }
 
   .flags-col-title {
     font-family: 'DM Mono', monospace;
