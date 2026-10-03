@@ -2093,7 +2093,9 @@
 .fp-details > summary::-webkit-details-marker { display: none; }
 .fp-details > summary::after { content: '›'; color: var(--text3); font-size: 1.3rem; line-height: 1; transition: transform 0.2s; order: 3; }
 .fp-details[open] > summary::after { transform: rotate(90deg); }
-.fp-summary-titulo { flex: 1 1 auto; font-weight: 600; color: var(--text); font-size: 0.95rem; }
+.fp-summary-titulo { flex: 1 1 auto; min-width: 0; margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-contador { white-space: nowrap; }
+@media (max-width: 480px) { .fp-details > summary .fp-contador { order: 3; flex-basis: 100%; } .fp-details > summary::after { order: 2; } }
 .fp-details[open] > summary { margin-bottom: 12px; }
 .fp-inline { margin-top: 4px; }
 .fp-contador { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); }

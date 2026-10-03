@@ -398,7 +398,7 @@ function _actualizarContador() {
   pinta('fpCont_comun', resumenDe('comun').length);
   pinta('fpCont_region', state.region ? resumenDe(state.region).length : 0);
   const nom = document.getElementById('fpNombreRegion');
-  if (nom) nom.textContent = state.region ? `de la región (${_nombreRegion(state.region).toLowerCase()})` : 'de la región';
+  if (nom) nom.textContent = _nombreRegion(state.region);
 }
 
 export async function precargarFormulario() {
