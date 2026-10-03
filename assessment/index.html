@@ -162,13 +162,15 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">📝 Formulario Previo</div>
-    <div class="fp-card-text">Preguntas generales y de la región (esta última, tras elegirla en la fase 2). Texto libre con teclado o micro.</div>
+  <details class="card fp-details" id="fpDet_comun" ontoggle="fpToggle('comun', this)">
+    <summary class="fp-summary">
+      <span class="fp-summary-titulo">📝 Formulario previo general</span>
+      <span class="fp-contador" id="fpCont_comun">Sin rellenar</span>
+    </summary>
+    <div class="fp-card-text">Preguntas generales previas a la visita. Texto libre con teclado o micro. Las de la región están en la fase 2.</div>
     <div class="plan-note-hint breve-only">Consulta breve: mejor en papel en la sala de espera; transcriba solo lo que se muestra en el árbol como «Refiere el paciente».</div>
-    <button type="button" class="btn btn-secondary fp-open-btn fp-open-region" onclick="abrirFormularioPrevio('comun')">📝 Formulario previo general</button>
-    <div class="fp-contador" id="fpContador">Sin rellenar</div>
-  </div>
+    <div class="fp-inline" id="fpBody_comun"></div>
+  </details>
 
   <div class="card">
     <div class="card-title">Mecanismo de Inicio</div>
@@ -180,7 +182,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>
     <div class="option-group option-group-col" id="cronologia">
@@ -381,7 +383,13 @@
 
     <div id="urgenciaRegion"></div>
 
-    <button type="button" class="btn btn-secondary fp-open-btn fp-open-region" onclick="abrirFormularioPrevio('region')">📝 Formulario previo de la región</button>
+    <details class="card fp-details" id="fpDet_region" ontoggle="fpToggle('region', this)">
+      <summary class="fp-summary">
+        <span class="fp-summary-titulo">📝 Formulario previo <span id="fpNombreRegion">de la región</span></span>
+        <span class="fp-contador" id="fpCont_region">Sin rellenar</span>
+      </summary>
+      <div class="fp-inline" id="fpBody_region"></div>
+    </details>
 
     <!-- Nota clínica -->
     <div class="alert alert-info" style="margin-bottom:1rem;">

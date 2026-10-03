@@ -267,8 +267,7 @@ function _softResetApp() {
   state.resultsBuilt = false;
   state.planNotes = { variableControl: '', ventanaRecuperacion: '', anclajeHabito: '' };
   state.formularioPrevio = { comun: {}, regiones: {} };
-  window.cerrarFormularioPrevio?.();
-  precargarFormularioPrevio();   // refresca el contador de la fase 1
+  precargarFormularioPrevio();   // refresca contadores y desplegables abiertos
 
   // Phase 1 DOM
   const mConsulta = document.getElementById('motivoConsulta');
@@ -364,9 +363,9 @@ function precargarFormularioPrevio() {
     .then(() => renderBrevePendientes())   // «formulario sin rellenar» depende del módulo cargado
     .catch(() => {});
 }
-function abrirFormularioPrevio(tab) {
+function abrirFormularioPrevio(slot) {
   _cargarFormularioMod()
-    .then(m => m.abrirFormularioPrevio(tab))
+    .then(m => m.abrirFormularioPrevio(slot))
     .catch(() => showToast('No se pudo cargar el formulario previo.', 'warning'));
 }
 function resumenFormularioPrevio() {
@@ -742,7 +741,11 @@ function completarPendientesBreve() {
   document.body.classList.add('breve-ver-todo');
   const [primero] = getPendientesBreve();
   if (!primero) return;
-  if (primero.fase === 1) { abrirFormularioPrevio('comun'); return; }
+  if (primero.fase === 1) {
+    if (state.currentPhase !== 1) goToPhase(1);
+    abrirFormularioPrevio('comun');
+    return;
+  }
   const idx = { 2: 1, 3: 2, '4b': 4 }[primero.fase];
   if (idx !== undefined && idx <= state.maxVisitedIdx) goToPhase(primero.fase);
 }
@@ -771,6 +774,20 @@ function _pintarEstadioCronologia() {
   el.innerHTML = state.cronologia
     ? `<span class="estadio-valor">${icono || ''} ${_escapeAttr(state.cronologia)}</span><span class="estadio-fuente">Según la cronología de la fase 1</span>`
     : `<span class="estadio-fuente">Sin cronología: indíquela en la fase 1.</span>`;
+  el.innerHTML += `<button type="button" class="estadio-editar" onclick="irACronologia()">${state.cronologia ? 'Cambiar' : 'Indicar'} en la fase 1 →</button>`;
+}
+
+// Enlace de la tarjeta Estadio (fase 3): vuelve a la fase 1 y lleva al campo.
+function irACronologia() {
+  goToPhase(1);
+  setTimeout(() => {
+    const card = document.getElementById('cardCronologia');
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.remove('flash-destacar');
+    void card.offsetWidth;
+    card.classList.add('flash-destacar');
+  }, 150);
 }
 
 function resetPhase3UI() {
@@ -2006,7 +2023,6 @@ function toggleSessionPanel() {
 function _closeAllOverlays() {
   closePhaseSheet();
   closeSessionPanel();
-  window.cerrarFormularioPrevio?.();
   const banner = document.getElementById('confirmBanner');
   if (banner) {
     banner.remove();
@@ -2665,7 +2681,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, buildInfo
 // and dynamically-generated HTML — those resolve only against the global
 // scope, never a module's private scope.
 Object.assign(window, {
-  abrirFormularioPrevio, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
+  abrirFormularioPrevio, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
   copyInformeFisioterapia, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,

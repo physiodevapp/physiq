@@ -1,13 +1,15 @@
 // ============================================================
 // PhysiQ-Assessment · FORMULARIO.JS
 // Formulario previo a la primera visita (lo rellena el fisioterapeuta).
+// Se pinta en línea: la cara común en un desplegable de la fase 1 y la de la
+// región en otro de la fase 2 (#fpDet_comun / #fpDet_region en index.html).
 // Motor genérico: el contenido vive en formularios/comun.js (cara 1) y
 // formularios/<region>.js (cara 2), un archivo por región. app.js carga este
 // módulo con import() dinámico, así que un fallo aquí nunca rompe el resto
 // de la app.
 // ============================================================
 import { state } from './state.js';
-import { saveSession, injectQuickInputBar, lockBodyScroll, unlockBodyScroll } from './app.js';
+import { saveSession, injectQuickInputBar } from './app.js';
 import COMUN from './formularios/comun.js';
 
 // Regiones con archivo formularios/<region>.js. Al añadir uno, añadirlo aquí
@@ -16,7 +18,6 @@ import COMUN from './formularios/comun.js';
 export const REGIONES_CON_FORMULARIO = ['lumbar', 'cadera', 'cervical', 'rodilla', 'hombro', 'tobillo_pie'];
 const NS_TEXTO = 'No sabría decir';
 const _regiones = {};          // region → esquema | null (sin formulario)
-let _tab = 'comun';
 
 // ─── Carga de esquemas ───────────────────────────────────────
 export async function cargarEsquemaRegion(region) {
@@ -82,7 +83,7 @@ function fpUnica(scope, id, idx) {
   const val = it.opciones[idx];
   // Segundo clic en la opción ya marcada la desmarca (misma convención que .option-btn)
   if (r[id] === val) delete r[id]; else r[id] = val;
-  _guardarYRepintar();
+  _guardarYRepintar(scope);
 }
 
 function fpMulti(scope, id, idx) {
@@ -92,13 +93,13 @@ function fpMulti(scope, id, idx) {
   const set = new Set(r[id] || []);
   set.has(val) ? set.delete(val) : set.add(val);
   if (set.size) r[id] = it.opciones.filter(o => set.has(o)); else delete r[id];
-  _guardarYRepintar();
+  _guardarYRepintar(scope);
 }
 
 function fpEscala(scope, id, val) {
   const r = respuestas(scope);
   if (r[id] === val) delete r[id]; else r[id] = val;
-  _guardarYRepintar();
+  _guardarYRepintar(scope);
 }
 
 function fpMatriz(scope, id, filaIdx, optIdx) {
@@ -108,7 +109,7 @@ function fpMatriz(scope, id, filaIdx, optIdx) {
   const m = { ...(r[id] || {}) };
   if (m[fila] === val) delete m[fila]; else m[fila] = val;
   if (Object.keys(m).length) r[id] = m; else delete r[id];
-  _guardarYRepintar();
+  _guardarYRepintar(scope);
 }
 
 // Texto: no repinta (perdería el foco y el dictado en curso), solo guarda.
@@ -119,12 +120,9 @@ function fpTexto(scope, key, value) {
   saveSession();
 }
 
-function _guardarYRepintar() {
+function _guardarYRepintar(scope) {
   saveSession();
-  const body = document.getElementById('fpBody');
-  const top = body ? body.scrollTop : 0;
-  _pintarCuerpo();
-  if (body) body.scrollTop = top;
+  _pintarScope(scope);
   _actualizarContador();
 }
 
@@ -198,23 +196,26 @@ function textarea(scope, key, etiqueta, lineas, resp, ayuda) {
       oninput="fpTexto('${scope}','${key}',this.value)">${esc(resp[key] || '')}</textarea>`;
 }
 
-function _pintarCuerpo() {
-  const body = document.getElementById('fpBody');
-  if (!body) return;
-  document.querySelectorAll('#fpTabs .fp-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === _tab));
+const _slot = scope => (scope === 'comun' ? 'comun' : 'region');
 
-  const scope = _tab === 'comun' ? 'comun' : state.region;
-  const esquema = _tab === 'comun' ? COMUN : _regiones[state.region];
+// Pinta el formulario de un ámbito ('comun' o el id de la región) en su
+// desplegable. Conserva el scroll de la página: el repintado cambia la altura.
+function _pintarScope(scope) {
+  const body = document.getElementById(`fpBody_${_slot(scope)}`);
+  if (!body) return;
+  const esquema = esquemaDe(scope);
   if (!esquema) {
-    body.innerHTML = `<div class="alert alert-info"><span class="alert-icon">ℹ️</span><span>${
-      !state.region ? 'Elija la región en la fase 2 para ver las preguntas de la región.'
-                    : 'Esta región todavía no tiene formulario propio.'}</span></div>`;
+    body.innerHTML = `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><span>${
+      !scope ? 'Elija la región para ver las preguntas de la región.'
+             : `No hay formulario previo para esta región (${esc(_nombreRegion(scope).toLowerCase())}) todavía.`}</span></div>`;
     return;
   }
+  const y = window.scrollY;
   const resp = respuestas(scope);
   body.innerHTML = `
     <div class="fp-titulo">${esc(esquema.titulo)}</div>
     ${esquema.intro ? `<div class="fp-hint">${esc(esquema.intro)}</div>` : ''}
+    <div class="fp-literal-nota">✍️ Anote las respuestas de texto con las palabras del paciente: se muestran luego como cita.</div>
     ${esquema.secciones.map(s => `
       <div class="fp-seccion">
         <div class="fp-seccion-titulo">${esc(s.titulo)}</div>
@@ -227,137 +228,31 @@ function _pintarCuerpo() {
     const it = buscarItem(esquema, ta.dataset.key);
     injectQuickInputBar(ta.id, (it && it.chips) || []);
   });
+  window.scrollTo({ top: y, behavior: 'instant' });
 }
 
-// Swipe-to-dismiss del bottom sheet en móvil — mismo patrón que
-// `_setupSessionPanelDrag()` en app.js (no el más simple `initSwipe()` de
-// #phaseSheet): el formulario, igual que #sessionPanel, es un modal
-// centrado en escritorio y solo se convierte en bottom sheet por debajo de
-// 768px, así que el arrastre necesita el mismo guard de ancho; y tiene
-// muchos textarea/input enfocados (los ítems `texto`), así que también
-// necesita el blur() del campo activo y la compensación de
-// visualViewport.resize cuando el teclado se cierra a mitad de gesto.
-function _setupFpSheetDrag() {
-  const sheet = document.querySelector('#fpOverlay .fp-sheet');
-  if (!sheet) return;
-  const EASE = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-  let startY = 0, startTime = 0, dragging = false, delta = 0, snapTimer = null;
-  let vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      const newHeight = window.visualViewport.height;
-      if (dragging) startY += newHeight - vvHeight;
-      vvHeight = newHeight;
-    });
-  }
-
-  sheet.addEventListener('touchstart', e => {
-    if (window.innerWidth > 768) return;
-    if (e.touches[0].clientY - sheet.getBoundingClientRect().top > 72) return;
-    if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
-    startY = e.touches[0].clientY;
-    startTime = Date.now();
-    delta = 0;
-    dragging = true;
-    clearTimeout(snapTimer);
-    sheet.style.transition = 'none';
-  }, { passive: true });
-
-  sheet.addEventListener('touchmove', e => {
-    if (!dragging) return;
-    delta = Math.max(0, e.touches[0].clientY - startY);
-    sheet.style.transform = delta > 0 ? `translateY(${delta}px)` : 'translateY(0)';
-  }, { passive: true });
-
-  function onRelease() {
-    if (!dragging) return;
-    dragging = false;
-    const velocity = delta / (Date.now() - startTime);
-    if (delta > 80 || velocity > 0.3) {
-      sheet.style.transition = EASE;
-      sheet.style.transform = 'translateY(110%)';
-      setTimeout(() => {
-        sheet.style.transition = 'none';
-        cerrarFormularioPrevio();
-        sheet.style.transform = '';
-        sheet.style.transition = '';
-      }, 300);
-    } else {
-      sheet.style.transition = EASE;
-      sheet.style.transform = 'translateY(0)';
-      snapTimer = setTimeout(() => {
-        sheet.style.transform = '';
-        sheet.style.transition = '';
-      }, 310);
-    }
-  }
-
-  sheet.addEventListener('touchend', onRelease, { passive: true });
-  sheet.addEventListener('touchcancel', () => {
-    if (!dragging) return;
-    dragging = false;
-    sheet.style.transform = '';
-    sheet.style.transition = '';
-  }, { passive: true });
+// Repinta los desplegables que estén abiertos (cambio de región, reset,
+// restauración de sesión). Los cerrados se pintan al abrirlos (fpToggle).
+function _refrescarInline() {
+  if (document.getElementById('fpDet_comun')?.open) _pintarScope('comun');
+  if (document.getElementById('fpDet_region')?.open) _pintarScope(state.region);
 }
 
-function _asegurarDOM() {
-  if (document.getElementById('fpOverlay')) return;
-  const el = document.createElement('div');
-  el.id = 'fpOverlay';
-  el.className = 'fp-overlay';
-  el.onclick = () => cerrarFormularioPrevio();
-  el.innerHTML = `
-    <div class="fp-sheet" role="dialog" aria-modal="true" aria-label="Formulario previo" onclick="event.stopPropagation()">
-      <div class="fp-sheet-handle"></div>
-      <div class="fp-head">
-        <div class="fp-head-title">📝 Formulario previo</div>
-        <button type="button" class="fp-close" onclick="cerrarFormularioPrevio()" aria-label="Cerrar">✕</button>
-      </div>
-      <div class="fp-tabs" id="fpTabs">
-        <button type="button" class="fp-tab" data-tab="comun" onclick="fpTab('comun')">General</button>
-        <button type="button" class="fp-tab" data-tab="region" id="fpTabRegion" onclick="fpTab('region')">Región</button>
-      </div>
-      <div class="fp-literal-nota">✍️ Anote las respuestas de texto con las palabras del paciente: se muestran luego como cita.</div>
-      <div class="fp-body" id="fpBody"></div>
-      <div class="fp-foot"><button type="button" class="btn btn-primary" onclick="cerrarFormularioPrevio()">Hecho</button></div>
-    </div>`;
-  document.body.appendChild(el);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && el.classList.contains('open')) cerrarFormularioPrevio();
-  });
-  _setupFpSheetDrag();
+async function fpToggle(slot, el) {
+  if (!el.open) return;
+  if (slot === 'region') await cargarEsquemaRegion(state.region);
+  _pintarScope(slot === 'comun' ? 'comun' : state.region);
 }
 
 function _nombreRegion(r) { return r ? (n => n.charAt(0).toUpperCase() + n.slice(1))(r.replace(/_/g, ' y ')) : 'Región'; }
 
-export async function abrirFormularioPrevio(tab) {
-  _asegurarDOM();
-  await cargarEsquemaRegion(state.region);
-  _tab = tab || (state.region && _regiones[state.region] ? 'region' : 'comun');
-  document.getElementById('fpTabRegion').textContent = _nombreRegion(state.region);
-  _pintarCuerpo();
-  document.getElementById('fpBody').scrollTop = 0;
-  document.getElementById('fpOverlay').classList.add('open');
-  lockBodyScroll();
-}
-
-export function cerrarFormularioPrevio() {
-  const el = document.getElementById('fpOverlay');
-  if (!el || !el.classList.contains('open')) return;
-  // Cualquier dictado en curso se para al cerrar
-  el.querySelectorAll('.mic-btn').forEach(b => b._recognition && b._recognition.stop());
-  el.classList.remove('open');
-  unlockBodyScroll();
-  saveSession();
-  _actualizarContador();
-}
-
-function fpTab(tab) {
-  _tab = tab;
-  _pintarCuerpo();
-  document.getElementById('fpBody').scrollTop = 0;
+// Abre el desplegable de un ámbito ('comun' | 'region') y lleva hasta él.
+export async function abrirFormularioPrevio(slot) {
+  const det = document.getElementById(`fpDet_${slot === 'region' ? 'region' : 'comun'}`);
+  if (!det) return;
+  det.open = true;
+  await fpToggle(slot === 'region' ? 'region' : 'comun', det);
+  det.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ─── Lectura (resumen, pistas, contador) ─────────────────────
@@ -496,18 +391,23 @@ function _actualizarPistasFase1() {
 
 function _actualizarContador() {
   _actualizarPistasFase1();
-  const el = document.getElementById('fpContador');
-  if (!el) return;
-  const n = contarRespuestas();
-  el.textContent = n ? `${n} respuesta${n === 1 ? '' : 's'} registrada${n === 1 ? '' : 's'}` : 'Sin rellenar';
+  const pinta = (id, n) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = n ? `${n} respuesta${n === 1 ? '' : 's'}` : 'Sin rellenar';
+  };
+  pinta('fpCont_comun', resumenDe('comun').length);
+  pinta('fpCont_region', state.region ? resumenDe(state.region).length : 0);
+  const nom = document.getElementById('fpNombreRegion');
+  if (nom) nom.textContent = state.region ? `de la región (${_nombreRegion(state.region).toLowerCase()})` : 'de la región';
 }
 
 export async function precargarFormulario() {
   await cargarEsquemaRegion(state.region);
   _actualizarContador();
+  _refrescarInline();
 }
 
 // Exposed for inline onclick/oninput attributes built above — those resolve
 // only against the global scope, never a module's private scope.
-Object.assign(window, { fpUnica, fpMulti, fpEscala, fpMatriz, fpTexto, fpTab, cerrarFormularioPrevio,
+Object.assign(window, { fpUnica, fpMulti, fpEscala, fpMatriz, fpTexto, fpToggle,
   fpPistasPasoHTML: pistasPasoHTML });
