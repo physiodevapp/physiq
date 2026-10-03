@@ -114,6 +114,19 @@
   <div class="phase-sheet-list" id="phaseSheetList"></div>
 </div>
 
+<!-- RAZONAMIENTO DEL CRIBADO (fase 2, nivel 2) — panel lateral sin velo en
+     escritorio, bottom sheet con velo en móvil. Lo rellena abrirRazonamiento() (app.js). -->
+<div class="razon-scrim" id="razonScrim" onclick="cerrarRazonamiento()"></div>
+<aside class="razon-panel" id="razonPanel" role="dialog" aria-labelledby="razonPregunta" aria-hidden="true" tabindex="-1">
+  <div class="razon-handle"></div>
+  <div class="razon-head">
+    <div class="razon-kicker">¿Por qué esta pregunta?</div>
+    <button class="razon-cerrar" id="razonCerrar" onclick="cerrarRazonamiento()" aria-label="Cerrar">×</button>
+    <div class="razon-pregunta" id="razonPregunta"></div>
+  </div>
+  <div class="razon-contenido" id="razonContenido"></div>
+</aside>
+
 <!-- SESSION PANEL -->
 <div class="session-panel-overlay" id="sessionPanelOverlay" onclick="closeSessionPanel()">
   <div class="session-panel" id="sessionPanel" onclick="event.stopPropagation()">

@@ -64,6 +64,10 @@ _sessionCh.onmessage = ({ data }) => {
 };
 
 window.addEventListener('popstate', e => {
+  // Sheet del razonamiento (fase 2, móvil): el atrás lo cierra sin cambiar de
+  // fase, y nuestro propio history.back() al cerrarlo con × no navega.
+  if (_razonPopIgnorar) { _razonPopIgnorar = false; return; }
+  if (_razonHistorial) { cerrarRazonamiento({ desdeHistorial: true }); return; }
   if (_pendingBackNav) {
     // history.go() de limpieza de stack aterrizó; reemplazar y actualizar profundidad
     const { phase: p, idx: i } = _pendingBackNav;
@@ -134,6 +138,9 @@ function goToPhase(n) {
   const phases = ['phase1','phase2','phase3','phase4','phase4b','phase5'];
   const navIds = ['nav1','nav2','nav3','nav4','nav4b','nav5'];
   const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
+
+  // El panel del razonamiento solo tiene sentido en la fase 2
+  if (n !== 2) cerrarRazonamiento({ sinHistorial: true });
 
   // Save current state before leaving
   if (state.currentPhase === 1) collectPhase1();
@@ -876,6 +883,7 @@ function buildSistemicoQuestions(regionId) {
   const panelsContainer = document.getElementById('sistemaPanels');
   const title = document.getElementById('sistemicoTitle');
 
+  cerrarRazonamiento({ sinHistorial: true });
   title.textContent = `Cribado Sistémico — ${data.label}`;
   renderUrgenciaRegion(data);
   tabsContainer.innerHTML = '';
@@ -1006,7 +1014,7 @@ function buildSistemaHTML(sis) {
     html += `
       <div class="sq2${q.alerta ? ' alerta-high' : ''}${q.urgencia ? ' sq2-urg' : ''}" id="sq2_${q.id}">
         <div class="sq2-badge${q.alerta ? ' alerta' : ''}">${qi + 1}</div>
-        <span class="sq2-text">${q.text}${s1Badge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}</span>
+        <div class="sq2-text">${q.text}${s1Badge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}${razonamientoInlineHTML(sis, q)}</div>
         <div class="sq-btns">
           <button class="sq-btn si" onclick="selectSistQ(this,'${q.id}','SI',${q.alerta},'${sis.id}')">SÍ</button>
           <button class="sq-btn no selected" onclick="selectSistQ(this,'${q.id}','NO',${q.alerta},'${sis.id}')">NO</button>
@@ -1062,6 +1070,100 @@ function buildSistemaHTML(sis) {
   html += `</div></div>`;   // .sis-extra, .sis-body
   return html;
 }
+
+// ─── RAZONAMIENTO DEL CRIBADO (fase 2) ───────────────────────
+// Por qué se hace cada pregunta y cuánto pesa un SÍ (docs/razonamiento-cribado.md).
+// Material de apoyo al clínico: nunca entra en el payload ni en los resúmenes.
+// Nivel 1: <details> cerrado bajo la pregunta. Nivel 2 (`detalle`): panel
+// lateral sin velo en escritorio (se sigue contestando con él abierto) y
+// bottom sheet con velo en móvil. Una pregunta sin `razonamiento` no pinta nada.
+const _esMovil = () => window.matchMedia ? window.matchMedia('(max-width: 768px)').matches : false;
+let _razonOrigen = null;       // botón «Ampliar» que abrió el panel (para devolverle el foco)
+let _razonHistorial = false;   // el sheet móvil empujó una entrada al historial
+let _razonPopIgnorar = false;  // el próximo popstate es nuestro history.back(), no el usuario
+
+function razonamientoInlineHTML(sis, q) {
+  const r = q.razonamiento;
+  if (!r) return '';
+  const ampliar = r.detalle
+    ? ` <button type="button" class="razon-ampliar" onclick="abrirRazonamiento(this,'${sis.id}','${q.id}')">Ampliar →</button>`
+    : '';
+  return `<details class="razon">
+      <summary>ⓘ ¿Por qué?</summary>
+      <div class="razon-cuerpo">
+        <p><span class="razon-etq">Por qué</span> ${r.porque}</p>
+        <p><span class="razon-etq">Cuánto pesa</span> ${r.peso}</p>
+        <div class="razon-pie">— ${r.fuentes.join(' · ')}${ampliar}</div>
+      </div>
+    </details>`;
+}
+
+function _buscarPregunta(sisId, qId) {
+  const sis = (SYSTEMIC_SCREENING[state.region]?.sistemas || []).find(s => s.id === sisId);
+  const q = sis?.preguntas.find(p => p.id === qId);
+  return q ? { sis, q } : null;
+}
+
+function abrirRazonamiento(btn, sisId, qId) {
+  const hit = _buscarPregunta(sisId, qId);
+  const r = hit?.q.razonamiento;
+  if (!r || !r.detalle) return;
+  const panel = document.getElementById('razonPanel');
+  const yaAbierto = panel.classList.contains('open');
+  document.getElementById('razonPregunta').textContent = hit.q.text;
+  const parrafos = r.detalle.split('\n\n').map(p => `<p>${p}</p>`).join('');
+  document.getElementById('razonContenido').innerHTML = `
+    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}</p></div>
+    <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${r.peso}</p></div>
+    <div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>
+    <div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
+      <ul>${(r.citas || r.fuentes).map(c => `<li>${c}</li>`).join('')}</ul></div>`;
+  document.getElementById('razonContenido').scrollTop = 0;
+  _razonOrigen = btn || null;
+  // Otra pregunta con el panel ya abierto: solo cambia el contenido.
+  if (!yaAbierto) {
+    const movil = _esMovil();
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden', 'false');
+    panel.setAttribute('aria-modal', movil ? 'true' : 'false');
+    document.body.classList.add('razon-abierto');
+    if (movil) {
+      document.getElementById('razonScrim').classList.add('open');
+      lockBodyScroll();
+      window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+      // El botón atrás del móvil cierra el sheet en vez de cambiar de fase.
+      history.pushState({ phase: state.currentPhase, razon: true }, '');
+      _razonHistorial = true;
+    }
+  }
+  document.getElementById('razonCerrar').focus({ preventScroll: true });
+}
+
+// `desdeHistorial`: lo llama el popstate del botón atrás (la entrada ya salió
+// del historial). `sinHistorial`: cierre forzado (el hub nos oculta, cambio de
+// fase o de región) sin tocar el historial.
+function cerrarRazonamiento({ desdeHistorial = false, sinHistorial = false } = {}) {
+  const panel = document.getElementById('razonPanel');
+  if (!panel || !panel.classList.contains('open')) return;
+  const scrim = document.getElementById('razonScrim');
+  const eraModal = scrim.classList.contains('open');
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
+  panel.style.transform = ''; panel.style.transition = '';
+  scrim.classList.remove('open');
+  document.body.classList.remove('razon-abierto');
+  if (eraModal) { unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); }
+  if (_razonHistorial) {
+    _razonHistorial = false;
+    if (!desdeHistorial && !sinHistorial) { _razonPopIgnorar = true; history.back(); }
+  }
+  if (_razonOrigen && document.contains(_razonOrigen) && !sinHistorial) _razonOrigen.focus({ preventScroll: true });
+  _razonOrigen = null;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('razonPanel')?.classList.contains('open')) cerrarRazonamiento();
+});
 
 // Evaluates one system's criterioCompuesto (if it has one) and (re)renders
 // its banner. Uses querySelectorAll rather than getElementById for the
@@ -2021,6 +2123,7 @@ function toggleSessionPanel() {
 // (e.g. navigating back to hub home) so a stale open dialog isn't still
 // showing when the user returns.
 function _closeAllOverlays() {
+  cerrarRazonamiento({ sinHistorial: true });
   closePhaseSheet();
   closeSessionPanel();
   const banner = document.getElementById('confirmBanner');
@@ -2681,7 +2784,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, buildInfo
 // and dynamically-generated HTML — those resolve only against the global
 // scope, never a module's private scope.
 Object.assign(window, {
-  abrirFormularioPrevio, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
+  abrirFormularioPrevio, abrirRazonamiento, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
   copyInformeFisioterapia, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
@@ -2692,11 +2795,14 @@ Object.assign(window, {
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========
 (function () {
-  function initSwipe(sheet, closeFn) {
+  // `activo`: opcional; el panel del razonamiento solo es sheet en móvil (en
+  // escritorio es un panel lateral y arrastrarlo hacia abajo no tiene sentido).
+  function initSwipe(sheet, closeFn, activo = () => true) {
     let startY = 0, startTime = 0, dragging = false, delta = 0, snapTimer = null;
     const EASE = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
 
     sheet.addEventListener('touchstart', e => {
+      if (!activo()) return;
       if (e.touches[0].clientY - sheet.getBoundingClientRect().top > 72) return;
       startY = e.touches[0].clientY;
       startTime = Date.now();
@@ -2746,5 +2852,7 @@ Object.assign(window, {
 
   const sheet = document.getElementById('phaseSheet');
   if (sheet) initSwipe(sheet, closePhaseSheet);
+  const razon = document.getElementById('razonPanel');
+  if (razon) initSwipe(razon, () => cerrarRazonamiento(), _esMovil);
 }());
 
