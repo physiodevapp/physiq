@@ -783,11 +783,12 @@ export const hypotheses = {
     id: 'lu7', region: 'lumbar', num: '⑦',
     name: 'Dolor Lumbar Facetario',
     prom: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 1.5–3.2 pts)',
-    dosis: '',
+    dosis: 'Las guías no tienen una pauta específica para el dolor facetario: estas son sus recomendaciones para la lumbalgia en general. Aguda: movilización articular con o sin thrust (A); masaje o movilización de partes blandas para aliviar el dolor a corto plazo (B); ejercicio con activación específica del tronco (C). Crónica: ejercicio (A) —fuerza y resistencia del tronco, multimodal, activación específica, aeróbico, acuático o general—; movilización articular con o sin thrust (A); movilización de partes blandas o masaje junto a otros tratamientos, a corto plazo (B); educación en neurociencia del dolor junto al ejercicio o la terapia manual (A). La terapia manual, siempre dentro de un programa con ejercicio (NICE). Sin series, repeticiones ni semanas fijadas: el volumen queda a criterio del clínico.',
+    dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C) · NICE NG59 (rec. 1.2.7; actualizada en julio de 2026)',
     pronostico: {
       horizonte: 'No se puede establecer pronóstico: la degeneración aumenta con la edad sin relación causal demostrada con el dolor. La radiología no es criterio diagnóstico; un bloqueo simple alivia definitivamente a menos del 10 %.',
-      derivacion: '',
-      fuente: 'Tarjeta de consulta lumbar (guía clínica lumbar, ap. 6)'
+      derivacion: 'NICE: considerar derivar para valorar denervación por radiofrecuencia si el tratamiento no quirúrgico no ha funcionado, se piensa que el dolor viene principalmente de estructuras inervadas por la rama medial y el dolor lumbar localizado es moderado o intenso (≥ 5/10) al derivar; la radiofrecuencia solo tras una respuesta positiva a un bloqueo diagnóstico de la rama medial. No ofrecer infiltraciones raquídeas para la lumbalgia.',
+      fuente: 'Tarjeta de consulta lumbar (guía clínica lumbar, ap. 6) · NICE NG59 (rec. 1.3.1–1.3.3, derivación)'
     },
     tests: [
       { name: 'Dolor en extensión, inclinación o rotación hacia el lado del dolor', sn: null, sp: null, lr_pos: '1.29', lr_neg: null, criterio: 'Criterios clínicos tipo Revel. Ningún test clínico ha resultado informativo para el origen facetario: el único test informativo agrupado es la captación facetaria en SPECT (LR+ 2,80, LR− 0,44), una prueba de imagen, no de consulta.', fuente: 'Laslett 2006 (no replica a Revel; referencia: doble bloqueo); Han 2023 (eClinicalMedicine, revisión sistemática: Revel inconsistente, no agrupable)' },
