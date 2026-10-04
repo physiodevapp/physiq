@@ -25,7 +25,7 @@ export const screening = {
       banderasRojas: [
         'Antecedentes de cáncer de próstata, colon, o cualquier tipo',
         'Dolor nocturno intenso que despierta al paciente sin alivio postural',
-        'Pérdida de peso inexplicada (>10% en 2-4 semanas)',
+        'Pérdida de peso inexplicada (>5 % del peso en 6 meses)',
         'Fractura patológica ante trauma menor o fragilidad ósea'
       ],
       banderasAmarillas: ['Dolor lumbar persistente sin mejoría tras 1 mes de tratamiento conservador'],
