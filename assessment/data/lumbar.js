@@ -825,7 +825,8 @@ export const hypotheses = {
     id: 'lu9', region: 'lumbar', num: '⑨',
     name: 'Síndrome de Dolor Miofascial Lumbar',
     prom: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 1.5–3.2 pts)',
-    dosis: '',
+    dosis: 'Las guías no tienen una pauta específica para el dolor miofascial: estas son sus recomendaciones para la lumbalgia en general. Aguda: movilización articular con o sin thrust (A); masaje o movilización de partes blandas para aliviar el dolor a corto plazo (B); ejercicio con activación específica del tronco (C). Crónica: ejercicio (A) —fuerza y resistencia del tronco, multimodal, activación específica, aeróbico, acuático o general—; movilización articular con o sin thrust (A); movilización de partes blandas o masaje junto a otros tratamientos, a corto plazo (B); punción seca junto a otros tratamientos, a corto plazo (C); educación en neurociencia del dolor junto al ejercicio o la terapia manual (A). La terapia manual, masaje incluido, siempre dentro de un programa con ejercicio (NICE). Sin series, repeticiones ni semanas fijadas: el volumen queda a criterio del clínico.',
+    dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C) · NICE NG59 (rec. 1.2.7; actualizada en julio de 2026)',
     tests: [
       { name: 'Banda tensa palpable', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Criterio mínimo. Sin patrón de referencia diagnóstico; la palpación tiene fiabilidad baja.', fuente: 'Lucas 2009 (revisión sistemática de fiabilidad)' },
       { name: 'Punto hipersensible dentro de la banda', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Criterio mínimo.' },
