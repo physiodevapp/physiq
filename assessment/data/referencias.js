@@ -47,7 +47,7 @@ export const REFERENCIAS = {
   },
   'NICE NG59': {
     publicacion: 'Guía NICE «Low back pain and sciatica in over 16s: assessment and management» (2016, actualizada en julio de 2026)', doi: '', url: 'https://www.nice.org.uk/guidance/ng59', revision: null,
-    nota: 'Leídas las recomendaciones en nice.org.uk (2026-10). Pauta de lu5–lu9 y derivación de lu7.'
+    nota: 'Leídas las recomendaciones en nice.org.uk (2026-10). Pauta de lu1, lu3 y lu5–lu9; derivación de lu4 y lu7.'
   },
   'NICE NG226': {
     publicacion: 'Guía NICE (2022)', doi: '',
@@ -98,7 +98,7 @@ export const REFERENCIAS = {
   'Frey 2017': { publicacion: 'Clin J Sport Med 27(3):e36 (resumen de congreso)', doi: '', revision: null, nota: 'Citado a través de Netterström-Wedin 2021 (ref. 21). Resumen de congreso sin DOI propio: «Prospective study of ankle injury in high level athlete to detect the lesion of the distal tibio-fibular syndesmosis (DTFS) in the French national sport institute in Paris».' },
   'Fritz 2005': { publicacion: '', doi: '10.1007/s00586-004-0803-4', revision: null },
   'Genevay 2017': { publicacion: '', doi: '10.1016/j.spinee.2017.05.005', revision: null },
-  'George 2021': { autores: 'George, Fritz, Silfies, Schneider, Beneciuk, Lentz, Gilliam, Hendren y Norman', titulo: 'Interventions for the Management of Acute and Chronic Low Back Pain: Revision 2021', publicacion: 'J Orthop Sports Phys Ther 51(11):CPG1–CPG60', doi: '10.2519/jospt.2021.0304', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10508241/', revision: null, nota: 'Texto completo en PMC10508241 (manuscrito del autor). En ese texto no se ven las letras de grado: se deducen del verbo con la tabla de la propia guía. Pauta de lu5, lu6, lu7 y lu9.' },
+  'George 2021': { autores: 'George, Fritz, Silfies, Schneider, Beneciuk, Lentz, Gilliam, Hendren y Norman', titulo: 'Interventions for the Management of Acute and Chronic Low Back Pain: Revision 2021', publicacion: 'J Orthop Sports Phys Ther 51(11):CPG1–CPG60', doi: '10.2519/jospt.2021.0304', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10508241/', revision: null, nota: 'Texto completo en PMC10508241 (manuscrito del autor). En ese texto no se ven las letras de grado: se deducen del verbo con la tabla de la propia guía. Pauta de lu1–lu7 y lu9.' },
   'Getsoian 2020': { publicacion: 'BMJ Open', doi: '10.1136/bmjopen-2019-035245', revision: null, nota: 'Citado a través de Demont 2022.' },
   'Gill 2025': { autores: 'Gill, Leslie y Minter', titulo: 'Acute Cystitis', publicacion: 'StatPearls [Internet], NBK459322 (act. 2025-11-28)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK459322/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Gomes 2022': { publicacion: 'BMC Musculoskelet Disord 23:885', doi: '10.1186/s12891-022-05831-7', revision: null },

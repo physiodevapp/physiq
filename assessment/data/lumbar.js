@@ -685,7 +685,8 @@ export const hypotheses = {
     id: 'lu1', region: 'lumbar', num: '①',
     name: 'Disfunción Segmentaria Lumbosacra (Déficit de Movilidad)',
     prom: 'ODI (MCID: 8.5 pts) / RMDQ (MCID: 2.5–6.8 pts) / NPRS (MCID: 1.5–3.2 pts)',
-    dosis: 'Manipulación espinal tipo thrust (HVLA) en segmentos hipomóviles, 1-2 aplicaciones. Movilizaciones no-thrust grado I-II en rango medio. Ejercicios de inclinación pélvica en decúbito supino, 8-10 repeticiones cada 2 horas. Educación: mantener actividades habituales.',
+    dosis: 'Movilización articular con o sin thrust para reducir el dolor y la discapacidad, en la lumbalgia aguda y en la crónica (A), siempre dentro de un programa con ejercicio (NICE). Ejercicios repetidos en la dirección que mejore la movilidad y los síntomas (método McKenzie, MDT: C en la aguda, B en la crónica). Información para el autocuidado y animar a mantener la actividad habitual (NICE). Ninguna fuente fija aplicaciones, grados de movilización, repeticiones ni semanas: el volumen queda a criterio del clínico.',
+    dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C, «should not» D) · NICE NG59 (rec. 1.2.1 y 1.2.7; actualizada en julio de 2026)',
     tests: [
       { name: 'Regla de Predicción Clínica de Flynn (4/5 criterios)', sn: null, sp: null, lr_pos: '24.4', lr_neg: null, tipo: 'pronostico', criterio: 'Criterios: síntomas <16 días, sin dolor distal a rodilla, FABQ trabajo <19 pts, ≥1 segmento hipomóvil, ≥1 cadera con >35° rotación interna. Predice la respuesta a la manipulación, no diagnostica la disfunción. Evidencia conflictiva para dolor crónico.', fuente: 'Flynn 2002 (regla pronóstica: probabilidad de éxito con manipulación del 45 % al 95 %)' },
       { name: 'Evaluación de hipomovilidad segmentaria lumbar (PAIVM)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Movilización posteroanterior sobre apófisis espinosas lumbares. Detecta segmentos hipomóviles.' }
@@ -695,7 +696,8 @@ export const hypotheses = {
     id: 'lu2', region: 'lumbar', num: '②',
     name: 'Inestabilidad Espinal Lumbar (Déficit de Coordinación)',
     prom: 'ODI (MCID: 8.5 pts) / RMDQ (MCID: 2.5–6.8 pts)',
-    dosis: 'Activación de transverso abdominal en decúbito supino con retroversión pélvica suave. 5 repeticiones × 5 seg de contracción submáxima (30% CVM). Evitar posiciones de final de rango (flexión/extensión completa) durante las primeras 48 horas.',
+    dosis: 'Activación específica de la musculatura del tronco y ejercicio de control del movimiento: en la lumbalgia crónica con déficit de control del movimiento (A); en la aguda, activación específica del tronco (C). Efecto pequeño: sobre el dolor al terminar el programa, sin efecto al año; sobre la discapacidad, pequeño y mantenido al año. Ninguna fuente fija repeticiones, tiempo de contracción, intensidad ni plazos: el volumen queda a criterio del clínico.',
+    dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C, «should not» D)',
     tests: [
       { name: 'Flexión lumbar ≥ 53° o ausencia de hipomovilidad en la exploración segmentaria', sn: null, sp: null, lr_pos: '4.3', lr_neg: null, criterio: 'Positivo si se cumple cualquiera de las dos. Predice inestabilidad radiológica en flexo-extensión (referencia radiográfica, no clínica).', fuente: 'Fritz 2005 (IC 95 % del LR+: 1,8–10,6)' },
       { name: 'Test de inestabilidad en prono', sn: '61%', sp: '57%', lr_pos: null, lr_neg: null, criterio: 'Prono con el tronco sobre la camilla y pies en el suelo: PA dolorosa que deja de doler al levantar los pies (activación de extensores).', fuente: 'Fritz 2005 (referencia: inestabilidad radiológica)' },
@@ -706,7 +708,8 @@ export const hypotheses = {
     id: 'lu3', region: 'lumbar', num: '③',
     name: 'Dolor Radicular Lumbar',
     prom: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 1.5–3.2 pts)',
-    dosis: 'Ejercicios direccionales que centralicen o abolezcan el dolor (según preferencia direccional). 8-10 repeticiones cada 2 horas. Si extensión centraliza: press-up modificado al 50% ROM. Si flexión centraliza: rodillas al pecho. Evitar posiciones que periferalicen.',
+    dosis: 'Ejercicios repetidos en la dirección que centralice o reduzca el dolor (método McKenzie, MDT: C en la aguda, B en la crónica; más eficaz cuando se ajusta a la preferencia direccional). Con dolor en la pierna: aguda, fuerza y resistencia del tronco y activación específica de su musculatura (B); crónica, activación específica del tronco y control del movimiento (B), y movilización neural junto a otros tratamientos, a corto plazo (B). Terapia manual solo dentro de un programa con ejercicio (NICE). No usar tracción (D; NICE: no ofrecer). Ninguna fuente fija repeticiones, frecuencia ni amplitud: el volumen queda a criterio del clínico.',
+    dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C, «should not» D) · NICE NG59 (rec. 1.2.6 y 1.2.7; actualizada en julio de 2026)',
     pronostico: {
       horizonte: 'Agudo hasta 3 semanas, subagudo hasta 3 meses. Mejora a los 6 meses en el 88 %, recuperación completa en el 65 %. Hernia reabsorbida en al menos dos tercios. Recurrencia 20 %.',
       derivacion: 'RM si sospecha de patología grave, dolor radicular persistente, déficit grave o progresivo, o más de 1 mes sin remisión con conservador.',
@@ -723,11 +726,12 @@ export const hypotheses = {
     id: 'lu4', region: 'lumbar', num: '④',
     name: 'Estenosis Espinal / Claudicación Neurogénica',
     prom: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 2.8 pts para "mucha mejoría")',
-    dosis: 'Flexión lumbar en decúbito supino: rodillas al pecho bilateral, 5 repeticiones × 10 seg, ROM en zona de alivio sintomático. Marcha asistida con bastón o andador que permita flexión anterior de tronco, 2-3 min con descansos frecuentes en sedestación.',
+    dosis: 'Ejercicio general (A en mayores con lumbalgia crónica), con progresión de volumen e intensidad: en los ensayos con estenosis, un programa multimodal de ejercicio general y aeróbico mejoró dolor y discapacidad a los 6 meses, y el ejercicio general individualizado con terapia manual superó al ejercicio en grupo y a la atención médica habitual a los 2 meses. Estiramiento, fortalecimiento y ejercicio aeróbico; evitar caminar cuesta abajo y la extensión lumbar excesiva (Munakomi 2023). Ninguna fuente fija repeticiones ni tiempos: el volumen queda a criterio del clínico.',
+    dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C, «should not» D) · Munakomi 2023, StatPearls, «Spinal Stenosis and Neurogenic Claudication» (tratamiento conservador)',
     pronostico: {
       horizonte: 'Historia natural poco conocida. 15 % mejora solo; hasta 20 % controla los síntomas evitando la extensión. Conservador antes que cirugía.',
-      derivacion: 'Progresión neurológica rápida o deterioro de la calidad de vida. La cirugía no garantiza recuperar los déficits.',
-      fuente: 'Tarjeta de consulta lumbar (guía clínica lumbar, ap. 6)'
+      derivacion: 'Progresión neurológica rápida o deterioro de la calidad de vida. La cirugía no garantiza recuperar los déficits. NICE: no usar infiltraciones epidurales en la claudicación neurógena por estenosis de canal central.',
+      fuente: 'Tarjeta de consulta lumbar (guía clínica lumbar, ap. 6) · NICE NG59 (rec. 1.3.6)'
     },
     clusters: {
       cook: { nombre: 'Cluster de Cook (anamnesis y observación)', umbralPos: 4, lr_pos: '4.6', umbralNeg: 0, lr_neg: '0.19', fuente: 'Cook 2011 (n = 1448). 4 de 5: S 6 %, E 98 %; ninguno: S 96 %' }
