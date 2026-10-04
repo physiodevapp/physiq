@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
+import { SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.cervical
 export const screening = {
@@ -766,7 +766,8 @@ export const hypotheses = {
     id: 'ce1', region: 'cervical', num: '①',
     name: 'Disfunción Articular Cervical',
     prom: 'NDI — Neck Disability Index (MCID: 7.5–18 puntos)',
-    dosis: 'Ejercicios de ROM cervical activo sin supervisión, movimientos suaves en todos los planos. 5-10 repeticiones por dirección, 3-4 veces al día. Límite: ROM sin dolor (0-3/10 VAS).',
+    dosis: 'Se trata como dolor de cuello con déficit de movilidad (categoría de la guía), según la fase. Aguda: manipulación torácica, ejercicios de movilidad cervical y fortalecimiento escapulotorácico y de miembro superior, que además favorecen la adherencia (B); puede añadirse manipulación o movilización cervical (C). Subaguda: ejercicios de resistencia de cuello y cintura escapular (B); manipulación torácica y manipulación o movilización cervical (C). Crónica: abordaje multimodal con manipulación torácica y manipulación o movilización cervical, ejercicio mixto cervical y escapulotorácico (neuromuscular, estiramientos, fuerza, resistencia, aeróbico y componente cognitivo-afectivo) y punción seca, láser o tracción mecánica intermitente (B); educación que promueva una vida activa (C). En la subaguda y la crónica la terapia manual pierde peso y la manipulación no supera a la movilización. La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     tests: [
       { name: 'PAIVM (Movilidad Intervertebral Pasiva Accesoria) C0-C3', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Kappa 0.53-0.72. Movilización segmentaria posteroanterior. Positivo si hipomóvil y reproduce síntomas. Cuenta como hallazgo: las cifras que tenía (S 59–65 %, E 78–87 %, LR+ 2,9–4,9, LR− 0,43–0,49) no aparecen en ninguna fuente localizada, y la evidencia publicada del PAIVM es para dolor facetario confirmado con bloqueo de rama medial (S 90 %, E 73 %), no para el déficit de movilidad, que no tiene patrón de referencia.', fuente: 'Williams 2025 (J Man Manip Ther, revisión de revisiones sistemáticas): evidencia del PAIVM frente a bloqueo facetario' },
       { name: 'ROM Cervical Activo con CROM', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dispositivo CROM con fiabilidad y validez "buena". Reducción de -7° a -89° comparado con controles según dirección.' }
@@ -776,7 +777,8 @@ export const hypotheses = {
     id: 'ce2', region: 'cervical', num: '②',
     name: 'Disfunción Neuromuscular Cervical',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: 'Activación de flexores cervicales profundos con biofeedback de presión (20-22 mmHg). Sostener 5-10 seg sin compensación de musculatura superficial. 5 repeticiones, 1-2 series, en decúbito supino.',
+    dosis: 'Ejercicio neuromuscular (coordinación, propiocepción, entrenamiento postural, coordinación ojo-cabeza-cuello) dentro del abordaje multimodal de la fase crónica (B). El fortalecimiento isométrico de los flexores profundos redujo dolor y discapacidad a corto plazo, pero el entrenamiento con biofeedback de presión no fue mejor que el fortalecimiento de los flexores con pesas. Para dosificar el entrenamiento craneocervical (Lluch 2020): test de flexión craneocervical en supino con biofeedback de presión inflado a 20 mmHg y cinco escalones de 2 mmHg (22–30), sin activar en exceso el esternocleidomastoideo ni los escalenos y sin retraer la cabeza; la resistencia se mide con apoyos repetidos de 5–10 s en cada nivel y el entrenamiento empieza en el nivel inferior al del fallo. Ni la guía ni el libro fijan series ni semanas.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía) · Lluch 2020, cap. 5.3 (Jull y Falla), p. 378 (test de flexión craneocervical para dosificar)',
     tests: [
       { name: 'Test de Flexión Craneocervical (CCFT) con biofeedback de presión', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Alteración a 20-22 mmHg con compensación de musculatura superficial (escaleno, trapecio). Aumento de EMG del trapecio superior (6.18%) y escaleno anterior (2.87%).' },
       { name: 'Test de Reposicionamiento Cabeza-Neutro', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Alterado en dolor cervical crónico idiopático. Evalúa la propiocepción cervical.' }
@@ -786,7 +788,8 @@ export const hypotheses = {
     id: 'ce3', region: 'cervical', num: '③',
     name: 'Radiculopatía Cervical',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: 'Ejercicios de estiramiento cervical suave y estabilización en posición neutra. Evitar compresión foraminal (extensión + rotación ipsilateral). Tracción cervical manual suave si tolera. 3-5 repeticiones de estiramiento suave, 10-15 seg.',
+    dosis: 'Aguda: ejercicios de movilización y estabilización, láser y collarín a corto plazo (C); el collarín, solo poco tiempo, en la fase aguda y si no alivian otros tratamientos. Crónica: tracción cervical mecánica intermitente (la continua no ha mostrado beneficio) combinada con estiramientos y fortalecimiento más movilización o manipulación cervical y torácica (B); educación para seguir con la actividad laboral y el ejercicio (B). Vigilar la irritabilidad y ajustar la terapia manual y el ejercicio; derivar si los síntomas no mejoran o empeoran. Para la fase aguda hay una pauta con volumen de un ensayo (Kuijper 2009) en «Dolor radicular cervical». La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     pronostico: {
       horizonte: 'RM: compresión de raíz o médula. EMG y conducción nerviosa localizan el daño y apoyan el diagnóstico clínico.',
       derivacion: 'Ante cualquier duda de afectación medular → derivar. El aura migrañosa puede presentarse como pérdida de fuerza en el brazo antes de la cefalea, hasta 60 min.',
@@ -806,7 +809,8 @@ export const hypotheses = {
     id: 'ce4', region: 'cervical', num: '④',
     name: 'Cefalea Cervicogénica',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: 'Entrenamiento de flexores craneocervicales (20-22 mmHg), sostener 5-10 seg. Intensidad submáxima (30-40% CVM). 5-8 repeticiones, 1-2 series. Corrección postural suave. Evitar provocar cefalea durante el ejercicio.',
+    dosis: 'Según la fase (dolor de cuello con cefalea). Aguda: instrucción supervisada en ejercicios de movilidad activa (B); autoSNAG C1–2 (C). Subaguda: manipulación y movilización cervical (B); autoSNAG C1–2 (C). Crónica: manipulación o movilización cervical o cervicotorácica combinada con estiramiento, fortalecimiento y resistencia de cuello y cintura escapular (B); el fortalecimiento cervicoescapular con entrenamiento de flexión craneocervical con biofeedback mejoró dolor y función a largo plazo, y los autores de la guía señalan, como opinión, que el entrenamiento craneocervical puede ser especialmente útil. Con algún signo de disfunción temporomandibular, la terapia manual y el ejercicio dirigidos a la ATM mejoraron más que los centrados solo en la región craneocervical. Aplicar antes el cribado vascular del marco IFOMPT. Para dosificar el entrenamiento craneocervical (Lluch 2020): test de flexión craneocervical en supino con biofeedback de presión inflado a 20 mmHg y cinco escalones de 2 mmHg (22–30), sin activar en exceso el esternocleidomastoideo ni los escalenos y sin retraer la cabeza; la resistencia se mide con apoyos repetidos de 5–10 s en cada nivel y el entrenamiento empieza en el nivel inferior al del fallo. La guía no fija series ni semanas (la manipulación 3–4 veces por semana, 12–18 sesiones, superó a una vez por semana a corto plazo, pero no a medio).',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía) · Lluch 2020, cap. 5.3 (Jull y Falla), p. 378 (test de flexión craneocervical para dosificar)',
     pronostico: {
       horizonte: 'La remisión de la cefalea tras tratar el cuello es un buen apoyo diagnóstico. La imagen no confirma ni descarta: solo sirve para descartar patología grave.',
       derivacion: 'Si no cambia al tratar el cuello → revisar ATM y otras formas de cefalea. El 30 % con cervicogénica cumple también criterios de migraña.',
@@ -824,7 +828,8 @@ export const hypotheses = {
     id: 'ce5', region: 'cervical', num: '⑤',
     name: 'Trastornos Asociados a Latigazo Cervical (WAD)',
     prom: 'NDI (MCID: 7.5–18 pts) / EVA dolor (MCID: 2.5 pts)',
-    dosis: 'Ejercicios de ROM cervical activo suave en todos los planos. ROM sin dolor (0-3/10 VAS), evitando movimientos balísticos o de alta velocidad. 5-10 repeticiones por dirección, 2-3 veces al día. Educación sobre pronóstico favorable.',
+    dosis: 'Aguda: educar para volver cuanto antes a las actividades previas que no provoquen síntomas, usar el collarín lo mínimo y hacer ejercicios de postura y movilidad, y tranquilizar: la recuperación se espera en los primeros 2–3 meses (B). Si se prevé una recuperación moderada o lenta con déficits persistentes: movilización manual más ejercicio de fuerza, resistencia, flexibilidad, postura, coordinación, aeróbico y funcional (B). Con riesgo bajo de cronificar: una sola sesión de consejo, ejercicio y educación, un programa completo de ejercicio o TENS (C); el ejercicio supervisado (al menos una sesión y un seguimiento) es preferible al no supervisado, y no se recomiendan programas intensivos en la fase aguda ni en la subaguda. Vigilar la evolución para detectar el retraso y ofrecer rehabilitación más intensiva y educación en dolor (F). Crónica: educación (tranquilizar, animar, pronóstico, manejo del dolor) y movilización con un programa progresivo e individualizado de ejercicio submáximo de fuerza, resistencia, flexibilidad y coordinación con principios cognitivo-conductuales; TENS (C). La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     pronostico: {
       horizonte: 'Peor recuperación con síntomas de estrés postraumático, sobre todo de hiperactivación. Baja expectativa de recuperación: factor pronóstico independiente de más discapacidad (OR 4,2). El mecanismo del accidente no predice el daño estructural.',
       derivacion: 'No prejuzgar: un factor de riesgo no condena a un paciente concreto; el miedo suele ceder al bajar el dolor. Mareo tras golpe en cabeza o cuello: pensar también en vestibular, conmoción y disección.',
@@ -843,7 +848,8 @@ export const hypotheses = {
     id: 'ce6', region: 'cervical', num: '⑥',
     name: 'Debilidad Muscular Cérvico-Escapular',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: 'Fortalecimiento isométrico cérvico-escapular de baja carga. Contracciones isométricas al 20-30% CVM, 5-10 seg. 5-8 repeticiones, 1-2 series. En decúbito supino o sedestación con soporte.',
+    dosis: 'Fortalecimiento escapulotorácico y de miembro superior desde la fase aguda (B, dentro de la pauta del déficit de movilidad). En la crónica, estiramiento y fortalecimiento cervical y escapulotorácico combinados dentro del abordaje multimodal (B), que mejoraron dolor y función a medio y largo plazo; el fortalecimiento isométrico de los flexores profundos del cuello redujo dolor y discapacidad a corto plazo. La guía no fija cargas, series ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     tests: [
       { name: 'Fuerza de Flexión Cervical (dinamometría)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Reducción de -23.81 N en cefalea cervicogénica vs migraña. Medición con dinamómetro isométrico.' },
       { name: 'Fuerza de Extensión Cervical (dinamometría)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Reducción de -11.13 N vs controles (-33.70 N a -55.78 N en cefalea cervicogénica).' }
@@ -853,7 +859,8 @@ export const hypotheses = {
     id: 'ce7', region: 'cervical', num: '⑦',
     name: 'Dolor Mecánico Cervical Inespecífico Crónico',
     prom: 'NDI (MCID: 7.5–18 pts) / PSFS',
-    dosis: 'Programa combinado de fortalecimiento y estiramiento cérvico-escapular de baja intensidad. 5-8 repeticiones de fortalecimiento al 20-30% CVM, 2-3 estiramientos de 15-20 seg. ROM activo en todos los planos.',
+    dosis: 'Fase crónica (dolor de cuello con déficit de movilidad): abordaje multimodal con manipulación torácica y manipulación o movilización cervical, ejercicio mixto cervical y escapulotorácico (neuromuscular, estiramientos, fuerza, resistencia, aeróbico y componente cognitivo-afectivo) y punción seca, láser o tracción mecánica intermitente (B); ejercicios de resistencia de cuello, cintura escapular y tronco, y educación que promueva una vida activa y atienda lo cognitivo y emocional (C). Los programas supervisados de fuerza y estiramiento de cuello y tren superior mejoraron más que un programa individual en casa. Integrar estrategias de adherencia al ejercicio en casa. La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     tests: [
       { name: 'ROM Cervical Activo (reducción en todas las direcciones)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Reducción en todas las direcciones comparado con controles asintomáticos. Medición con CROM.' },
       { name: 'Test de reposicionamiento cabeza-neutro', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Alteraciones propioceptivas. Categorías CIF más frecuentes: b134 Funciones del sueño (27.2%) y b710 Movilidad articular (26.2%).' }
@@ -863,7 +870,7 @@ export const hypotheses = {
     id: 'ce8', region: 'cervical', num: '⑧',
     name: 'Mielopatía Espondilótica Cervical',
     prom: 'NDI (MCID: 10.5–17.5 pts según severidad) / mJOA',
-    dosis: '⚠️ CONSULTA CON ESPECIALISTA antes de iniciar ejercicios. Si autorizado: ejercicios isométricos cervicales suaves en posición neutra. Evitar flexión cervical extrema. Intensidad mínima: 10-20% CVM. 3-5 repeticiones, 1 serie.',
+    dosis: DOSIS_DERIVAR,
     tests: [
       { name: 'Signo de Hoffmann', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Percusión del dedo medio — flexión refleja de pulgar e índice. Positivo indica compromiso de motoneurona superior.' },
       { name: 'Clonus de tobillo/muñeca', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Contracciones rítmicas involuntarias al mantener la dorsiflexión pasiva del pie. Indica hiperreflexia.' },
@@ -875,7 +882,8 @@ export const hypotheses = {
     id: 'ce9', region: 'cervical', num: '⑨',
     name: 'Disfunción Postural Cérvico-Torácica',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: 'Retracción cervical suave (chin tucks) en posición neutra. Sostener posición corregida 5-10 seg. 5-10 repeticiones, 3-4 veces al día. Educación sobre ergonomía y pausas posturales.',
+    dosis: 'La guía no tiene una categoría postural: se trata como dolor de cuello con déficit de movilidad. El ejercicio postural aparece dentro de programas mixtos (en la crónica, B, junto con fuerza, resistencia, estiramientos y aeróbico); el ejercicio postural, de estabilización y de movilidad específico del cuello no superó al ejercicio general, y el ejercicio postural e isométrico añadido a una almohada cervical mejoró dolor y función a corto plazo. La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     tests: [
       { name: 'Evaluación postural de cabeza adelantada (Forward Head Posture)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Reducción del ángulo de lordosis cervical (-0.89° en migraña vs controles). Medición fotografía lateral.' },
       { name: 'Evaluación de cifosis torácica', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Curvatura torácica aumentada asociada a protracción y elevación escapular.' }
@@ -885,7 +893,7 @@ export const hypotheses = {
     id: 'ce10', region: 'cervical', num: '⑩',
     name: 'Disfunción de 1ª Costilla (Articulación Costo-Vertebral Superior)',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: 'Ejercicios respiratorios diafragmáticos suaves. 5-8 respiraciones profundas, 3-4 series al día. Estiramiento suave de escalenos (inclinación lateral contralateral + rotación ipsilateral leve).',
+    dosis: '',
     tests: [
       { name: 'Palpación de 1ª costilla (sensibilidad y restricción)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Datos de fiabilidad limitados/ausentes en literatura. Sensibilidad aumentada y restricción de movilidad a la palpación.', noData: true },
       { name: 'Restricción de rotación cervical ipsilateral', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'La rotación cervical ipsilateral suele estar limitada cuando hay disfunción de 1ª costilla.', noData: true }
@@ -895,7 +903,8 @@ export const hypotheses = {
     id: 'ce11', region: 'cervical', num: '⑪',
     name: 'Fatiga Muscular Cérvico-Escapular',
     prom: 'NDI (MCID: 7.5–18 puntos)',
-    dosis: 'Ejercicios de resistencia de baja intensidad para musculatura cervico-escapular. Contracciones isométricas al 20-30% CVM, 10-15 seg. 3-5 repeticiones, 1-2 series. Resistencia escapular (retracción, depresión) con banda elástica mínima.',
+    dosis: 'Ejercicios de resistencia de cuello y cintura escapular: B en la fase subaguda; C en la crónica, junto con resistencia del tronco y educación para una vida activa. Resistencia y fortalecimiento dieron resultados parecidos entre sí. Única cifra de la guía, como evidencia y no como recomendación: un programa en casa de resistencia de flexores del cuello 3 veces por semana durante un año, más fortalecimiento y estiramiento del miembro superior, mejoró más que el ejercicio aeróbico. La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     tests: [
       { name: 'Test de resistencia de flexores cervicales profundos', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Tiempo de sostén reducido comparado con normas. Evalúa resistencia de la musculatura profunda.' },
       { name: 'Evaluación de fatiga en actividades funcionales prolongadas', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Aumento del dolor o deterioro de la postura con actividades sostenidas (trabajo de escritorio, conducción).' }
@@ -942,7 +951,8 @@ export const hypotheses = {
     id: 'ce14', region: 'cervical', num: '⑭',
     name: 'Dolor Cervical Idiopático',
     prom: 'NDI (MCID: 7.5–18 puntos) / PSFS',
-    dosis: '',
+    dosis: 'Se trata como dolor de cuello con déficit de movilidad (categoría de la guía), según la fase. Aguda: manipulación torácica, ejercicios de movilidad cervical y fortalecimiento escapulotorácico y de miembro superior, que además favorecen la adherencia (B); puede añadirse manipulación o movilización cervical (C). Subaguda: ejercicios de resistencia de cuello y cintura escapular (B); manipulación torácica y manipulación o movilización cervical (C). Crónica: abordaje multimodal con manipulación torácica y manipulación o movilización cervical, ejercicio mixto cervical y escapulotorácico (neuromuscular, estiramientos, fuerza, resistencia, aeróbico y componente cognitivo-afectivo) y punción seca, láser o tracción mecánica intermitente (B); educación que promueva una vida activa (C). En la subaguda y la crónica la terapia manual pierde peso y la manipulación no supera a la movilización. La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
+    dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     pronostico: {
       horizonte: 'Recurrente: tras un episodio, el 50–85 % vuelve a tener dolor en meses o pocos años. Radiografía solo con indicación concreta de la exploración: hay dolor sin cambios y cambios sin dolor.',
       derivacion: 'Dolor constante y sordo → componente inflamatorio. Dolor que no cambia con postura, movimiento ni reposo → banderas rojas. Espondilosis avanzada: posible radiculopatía o mielopatía.',
