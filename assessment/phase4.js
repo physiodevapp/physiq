@@ -6,6 +6,29 @@ import { CIF_TREES, HYPOTHESES } from './data.js';
 import { state } from './state.js';
 import { saveSession, showConfirmBanner, paintNav } from './app.js';
 
+// Derivaciones médicas que piden las respuestas del árbol (`derivacion` en una
+// opción de CIF_TREES): mensajes de las opciones elegidas, en el orden de los
+// pasos. Pura sobre state + CIF_TREES, así que la usan también app.js (fase 5,
+// 📋 Notas, 📄 Informe, payload `dv`) y tests/unit.js.
+export function getDerivacionesArbol() {
+  const tree = CIF_TREES[state.region];
+  if (!tree) return [];
+  return tree.steps.flatMap(step => {
+    const opt = step.options.find(o => o.value === state.treeAnswers[step.id]);
+    return opt?.derivacion ? [opt.derivacion] : [];
+  });
+}
+
+// Pinta (o borra) el aviso de derivación bajo un paso según su respuesta actual.
+function pintarDerivacionPaso(step) {
+  const el = document.getElementById(`deriv_${step.id}`);
+  if (!el) return;
+  const opt = step.options.find(o => o.value === state.treeAnswers[step.id]);
+  el.innerHTML = opt?.derivacion
+    ? `<div class="alert alert-danger" style="margin-top:10px;"><span class="alert-icon">🩺</span><div><strong>Derivación médica.</strong> ${opt.derivacion} El árbol continúa, pero la derivación es prioritaria.</div></div>`
+    : '';
+}
+
 export function initCIFTree() {
   if (!state.region) {
     document.getElementById('cifTree').innerHTML = `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><span>Por favor, seleccione una región en la Fase 2 antes de continuar.</span></div>`;
@@ -56,6 +79,7 @@ export function restoreCIFTree(tree) {
     if (savedOptIdx === -1) return;
 
     optGroup.querySelectorAll('.option-btn')[savedOptIdx].classList.add('selected');
+    pintarDerivacionPaso(step);
 
     // Reconstruir hipótesis acumuladas
     step.options[savedOptIdx].hypothesis.forEach(h => {
@@ -116,7 +140,8 @@ export function renderStep(step) {
           onclick="selectTreeOption('${step.id}', ${i}, '${opt.value}')">
           ${opt.label}
         </button>`).join('')}
-    </div>`;
+    </div>
+    <div id="deriv_${step.id}"></div>`;
   container.appendChild(div);
   // Scroll to new step with offset for fixed navbar (~95px mobile, ~60px desktop)
   setTimeout(() => {
@@ -164,6 +189,7 @@ export function selectTreeOption(stepId, optIdx, value) {
     delete state.treeAnswers[stepId];
     pruneTreeFrom(stepIdx + 1, tree);
     optGroup.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    pintarDerivacionPaso(step);
     rebuildHypotheses(tree);
     saveSession();
     return;
@@ -181,6 +207,7 @@ export function selectTreeOption(stepId, optIdx, value) {
   });
 
   state.treeAnswers[stepId] = value;
+  pintarDerivacionPaso(step);
 
   // Reconstruir hipótesis desde cero (por si cambió una respuesta anterior)
   rebuildHypotheses(tree);
@@ -243,16 +270,19 @@ export function showTreeComplete() {
   if (existing) existing.remove();
 
   const hyps = state.activeHypotheses.map(h => HYPOTHESES[h]).filter(Boolean);
+  // #treeComplete es un contenedor: la derivación (si la hay) va primero, como
+  // alerta propia, y después el resultado del árbol.
   const div = document.createElement('div');
   div.id = 'treeComplete';
   div.style.marginTop = '1.5rem';
-  if (hyps.length === 0) {
-    div.className = 'alert alert-warning';
-    div.innerHTML = `<span style="font-size:1.2rem; flex-shrink:0; line-height:1;">⚠️</span><span><strong>Árbol completado.</strong> No se ha identificado un patrón diagnóstico dominante. Proceda a Fase 4b para revisar las consideraciones clínicas o regrese al árbol para reconsiderar las respuestas.</span>`;
-  } else {
-    div.className = 'alert alert-success';
-    div.innerHTML = `<span style="font-size:1.2rem; flex-shrink:0; line-height:1;">✅</span><span><strong>Árbol completado.</strong> Hipótesis identificadas: <strong>${hyps.map(h => h.name).join(', ')}</strong>. Proceda a confirmar con los tests específicos.</span>`;
-  }
+  const derivaciones = getDerivacionesArbol();
+  const derivHtml = derivaciones.length
+    ? `<div class="alert alert-danger"><span class="alert-icon">🩺</span><div><strong>Derivación médica pendiente.</strong>${derivaciones.map(m => `<div>· ${m}</div>`).join('')}</div></div>`
+    : '';
+  const resultado = hyps.length === 0
+    ? `<div class="alert alert-warning"><span style="font-size:1.2rem; flex-shrink:0; line-height:1;">⚠️</span><span><strong>Árbol completado.</strong> No se ha identificado un patrón diagnóstico dominante. Proceda a Fase 4b para revisar las consideraciones clínicas o regrese al árbol para reconsiderar las respuestas.</span></div>`
+    : `<div class="alert alert-success"><span style="font-size:1.2rem; flex-shrink:0; line-height:1;">✅</span><span><strong>Árbol completado.</strong> Hipótesis identificadas: <strong>${hyps.map(h => h.name).join(', ')}</strong>. Proceda a confirmar con los tests específicos.</span></div>`;
+  div.innerHTML = derivHtml + resultado;
   container.appendChild(div);
   document.getElementById('btnGoConfirm').disabled = false;
   div.scrollIntoView({ behavior: 'smooth' });

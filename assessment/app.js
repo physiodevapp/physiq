@@ -4,7 +4,7 @@
 // ============================================================
 import { state } from './state.js';
 import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
-import { initCIFTree } from './phase4.js';
+import { initCIFTree, getDerivacionesArbol } from './phase4.js';
 import { buildHypothesisCards, teardownHypObserver, restoreHypObserver } from './phase4b.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 
@@ -1736,6 +1736,16 @@ function buildResults() {
     </div>`;
   }
 
+  // ── Derivación médica pedida por el árbol CIF (p. ej., claudicación vascular)
+  const derivacionesArbol = getDerivacionesArbol();
+  if (derivacionesArbol.length) {
+    container.innerHTML += `
+    <div class="alert alert-danger" style="margin-bottom:1rem;">
+      <span class="alert-icon">🩺</span>
+      <div><strong>Derivación médica pendiente.</strong>${derivacionesArbol.map(m => `<div>· ${m}</div>`).join('')}</div>
+    </div>`;
+  }
+
   // ── Header summary
   container.innerHTML += `
   <div class="summary-section">
@@ -2274,6 +2284,7 @@ function buildPhysiQPayload() {
     br: Object.entries(state.banderasRojas).filter(([, v]) => v === 'SI').map(([k]) => BR_LABELS[k]),
     sq: getSistemicoAffirmativeTexts(),
     ur: getUrgenciasActivas(),
+    dv: getDerivacionesArbol(),
     h:  state.activeHypotheses.map(id => ({
           id,
           name: HYPOTHESES[id]?.name ?? id,
@@ -2298,7 +2309,7 @@ function buildContextSummaryText() {
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
 Región: ${d.r ? nombreRegion(d.r) : '—'} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
-Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}
+Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA (árbol CIF): ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
 Variable control: ${d.pn?.variableControl || '—'}
@@ -2333,6 +2344,9 @@ function buildInformeFisioterapiaText() {
   const sistemico = d.sq.length
     ? `\n\nAdemás, durante el cribado el paciente refirió:\n${d.sq.map(s => `  · ${s}`).join('\n')}`
     : '';
+  const derivacion = d.dv?.length
+    ? `\n\nSe recomienda valoración médica:\n${d.dv.map(m => `  · ${m}`).join('\n')}`
+    : '';
 
   // Solo lo marcado con `informe` en formularios/*.js — nunca el formulario entero
   const fpInf = informeFormularioPrevio();
@@ -2355,7 +2369,7 @@ Naturaleza del dolor: ${d.na || '—'}
 Riesgo psicosocial: ${d.rp || '—'}
 
 CRIBADO DE SEGURIDAD
-${seguridad}${sistemico}
+${seguridad}${sistemico}${derivacion}
 
 IMPRESIÓN CLÍNICA${sinConfirmar ? ' (hipótesis de trabajo, pendiente de confirmar)' : ''}
 ${impresion}

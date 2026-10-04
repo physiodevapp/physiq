@@ -53,8 +53,13 @@ export const SYSTEMIC_SCREENING = Object.fromEntries(
 //                                      // solo la rama "no". `next` explícito solo hace
 //                                      // falta para SALTAR a un step que no es el
 //                                      // siguiente del array.
-//             hypothesis: string[]    // ids de HYPOTHESES que esta opción activa
+//             hypothesis: string[],   // ids de HYPOTHESES que esta opción activa
 //                                      // (deben existir y pertenecer a esta misma región)
+//             derivacion?: string     // opcional: la respuesta pide derivación médica
+//                                      // (no urgente hoy, a diferencia de `urgencia` de
+//                                      // fase 2). Se pinta bajo el paso, al completar el
+//                                      // árbol, en fase 5, 📋 Notas, 📄 Informe y payload `dv`
+//                                      // (getDerivacionesArbol, phase4.js). El recorrido sigue.
 //           }, ...
 //         ]
 //       }, ...

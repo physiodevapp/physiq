@@ -645,7 +645,8 @@ export const tree = {
       options: [
         { label: 'SÍ — Dolor bilateral en glúteos/muslos, alivio con "signo del carrito de compras"', value: 'si', next: null, hypothesis: ['lu4'] },
         { label: 'NO — Sin este patrón', value: 'no', next: 'lu_step3', hypothesis: [] },
-        { label: 'VASCULAR — Los síntomas al caminar ceden con solo pararse de pie, sin sentarse ni flexionar: sospecha de claudicación vascular → derivación médica', value: 'vascular', next: 'lu_step3', hypothesis: [] }
+        { label: 'VASCULAR — Los síntomas al caminar ceden con solo pararse de pie, sin sentarse ni flexionar: sospecha de claudicación vascular → derivación médica', value: 'vascular', next: 'lu_step3', hypothesis: [],
+          derivacion: 'Sospecha de claudicación vascular (los síntomas al caminar ceden con solo pararse de pie): derivación médica para valorar la circulación de las piernas.' }
       ]
     },
     {
