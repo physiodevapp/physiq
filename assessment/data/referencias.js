@@ -49,6 +49,10 @@ export const REFERENCIAS = {
     publicacion: 'Guía NICE «Low back pain and sciatica in over 16s: assessment and management» (2016, actualizada en julio de 2026)', doi: '', url: 'https://www.nice.org.uk/guidance/ng59', revision: null,
     nota: 'Leídas las recomendaciones en nice.org.uk (2026-10). Pauta de lu1, lu3 y lu5–lu9; derivación de lu4 y lu7.'
   },
+  'NICE NG126': {
+    publicacion: 'Guía NICE «Ectopic pregnancy and miscarriage: diagnosis and initial management» (2019, actualizada el 17 de junio de 2026)', doi: '', url: 'https://www.nice.org.uk/guidance/ng126', revision: null,
+    nota: 'Leídas las recomendaciones 1.4.1–1.4.7 (síntomas y signos del embarazo ectópico) en nice.org.uk y en el PDF aportado por el usuario (2026-10). Razonamiento del cribado de hombro (h_g1). Las CKS de NICE (cks.nice.org.uk) no son accesibles fuera del Reino Unido.'
+  },
   'NICE NG226': {
     publicacion: 'Guía NICE (2022)', doi: '',
     revision: { fecha: '2026-10', resultado: 'Sin cambios: solo respalda el diagnóstico clínico (edad ≥45, dolor con la actividad, rigidez matutina ausente o ≤30 min), sin S ni E; no puntúa. No se pudo abrir nice.org.uk (bloqueado por la red) para comprobar si hay actualización.' }
@@ -74,6 +78,8 @@ export const REFERENCIAS = {
   'Appelboam 2008': { publicacion: 'BMJ 337:a2428', doi: '10.1136/bmj.a2428', revision: null },
   'Bachmann 2003': { publicacion: 'BMJ 326:417', doi: '10.1136/bmj.326.7386.417', revision: null },
   'Barcelos 2014': { autores: 'Barcelos, Patriota y Netto', titulo: 'Nontraumatic atlantoaxial rotatory subluxation: Grisel syndrome. Case report and literature review', publicacion: 'Global Spine J 4(3):179–186', doi: '10.1055/s-0033-1363936', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4111947/', revision: null, nota: 'Texto completo en PMC4111947 (acceso abierto). Caso clínico y revisión; razonamiento del cribado cervical (cv_n3).' },
+  'Basit 2023': { autores: 'Basit, Pop, Malik y Sharma', titulo: 'Fitz-Hugh-Curtis Syndrome', publicacion: 'StatPearls [Internet], NBK499950 (act. 2023-07-03)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK499950/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
+  'Belyayeva 2024': { autores: 'Belyayeva, Leslie, Rout y Jeong', titulo: 'Acute Pyelonephritis', publicacion: 'StatPearls [Internet], NBK519537 (act. 2024-02-28)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK519537/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Benjamin y Lui 2025': { autores: 'Benjamin y Lui', titulo: 'Vertebrobasilar Insufficiency', publicacion: 'StatPearls [Internet], NBK482259 (act. 2025-12-01)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK482259/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Bierma-Zeinstra 1999': {
     publicacion: 'J Rheumatol 26(5):1129–33', doi: '',
@@ -111,6 +117,7 @@ export const REFERENCIAS = {
   'Gillen 2026': { autores: 'Gillen, Shams y Goyal', titulo: 'Stable Angina', publicacion: 'StatPearls [Internet], NBK559016 (act. 2026-06-17)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK559016/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Gomes 2022': { publicacion: 'BMC Musculoskelet Disord 23:885', doi: '10.1186/s12891-022-05831-7', revision: null },
   'Goodfriend 2022': { autores: 'Goodfriend, Tadi y Koury', titulo: 'Carotid Artery Dissection', publicacion: 'StatPearls [Internet], NBK430835 (act. 2022-12-19)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK430835/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
+  'Grant y John 2025': { autores: 'Grant y John', titulo: 'Cholestatic Jaundice', publicacion: 'StatPearls [Internet], NBK482279 (act. 2025-01-19)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK482279/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Grimaldi 2017': {
     publicacion: 'Br J Sports Med 51(6):519–24', doi: '10.1136/bjsports-2016-096175',
     revision: { fecha: '2026-10', resultado: 'Cifras comprobadas en la tabla 2 de Kinsella 2024. La palpación y la abducción resistida pasan a las cifras agrupadas de Kinsella 2024; Grimaldi queda como dato del estudio de mayor calidad (y como fuente de la derotación, que pasa a hallazgo).' }
@@ -137,8 +144,11 @@ export const REFERENCIAS = {
   'Jain 2026': { autores: 'Jain, Singh, Shah y Grossman', titulo: 'Acute Coronary Syndrome', publicacion: 'StatPearls [Internet], NBK459157 (act. 2026-07-05)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK459157/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Jayarangaiah 2023': { autores: 'Jayarangaiah, Kemp y Theetha Kariyanna', titulo: 'Bone Metastasis', publicacion: 'StatPearls [Internet], NBK507911 (act. 2023-07-31)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK507911/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Jeanmonod y Varacallo 2023': { autores: 'Jeanmonod y Varacallo', titulo: 'Geriatric Cervical Spine Injury', publicacion: 'StatPearls [Internet], NBK470375 (act. 2023-08-04)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470375/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
+  'Jenkins y Vadakekut 2025': { autores: 'Jenkins y Vadakekut', titulo: 'Pelvic Inflammatory Disease', publicacion: 'StatPearls [Internet], NBK499959 (act. 2025-06-02)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK499959/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
+  'Jones 2025': { autores: 'Jones, Santos y Patel', titulo: 'Acute Cholecystitis', publicacion: 'StatPearls [Internet], NBK459171 (act. 2025-07-06)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK459171/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Jonsson 2008': { publicacion: 'Br J Sports Med 42:746–749', doi: '10.1136/bjsm.2007.039545', revision: null },
   'Jull 2007': { publicacion: 'Cephalalgia 27:793–802', doi: '10.1111/j.1468-2982.2007.01345.x', revision: null },
+  'Kalakonda 2022': { autores: 'Kalakonda, Jenkins y John', titulo: 'Physiology, Bilirubin', publicacion: 'StatPearls [Internet], NBK470290 (act. 2022-09-12)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470290/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Karanasios 2022': { publicacion: 'J Hand Ther 35:541–551', doi: '10.1016/j.jht.2021.02.002', revision: null },
   'Kastelein 2008': { publicacion: 'Am J Med', doi: '10.1016/j.amjmed.2008.05.041', revision: null },
   'Katz 1995': { publicacion: '', doi: '10.1002/art.1780380910', revision: null, nota: 'Citado a través de Dobbs 2016.' },
@@ -147,12 +157,14 @@ export const REFERENCIAS = {
   'Kim 2001': { publicacion: 'Arthroscopy 17:160–164', doi: '10.1053/jars.2001.20665', revision: null },
   'Kim 2004': { publicacion: '', doi: '10.1016/j.arthro.2004.08.003', revision: null, nota: 'Solo para la técnica del test.' },
   'Kim 2007': { publicacion: 'Arthroscopy', doi: '10.1016/j.arthro.2007.06.016', revision: null },
+  'Kim y Chang 2021': { autores: 'Kim y Chang', titulo: 'Neuralgic amyotrophy: an underrecognized entity', publicacion: 'J Int Med Res 49(4):03000605211006542', doi: '10.1177/03000605211006542', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8033465/', revision: null, nota: 'Texto completo en PMC8033465 (acceso abierto, leído vía Europe PMC). Revisión narrativa; razonamiento del cribado de hombro (h_n1).' },
   'King y Lowery 2023': { autores: 'King y Lowery', titulo: 'Physiology, Cardiac Output', publicacion: 'StatPearls [Internet], NBK470455 (act. 2023-07-17)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470455/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Kinsella 2024': {
     publicacion: 'J Orthop Sports Phys Ther 54(1):26–49', doi: '10.2519/jospt.2023.11890',
     revision: { fecha: '2026-10', resultado: 'Texto completo leído (tablas 2 y 3). En el texto el LR+ de la abducción resistida aparece como 13,39, que en la tabla 3 es la DOR; se usa el LR+ de la tabla (6,09).' }
   },
   'Koc 2023': { publicacion: 'J Orthop Sports Phys Ther 53(12):CPG1–CPG39', doi: '10.2519/jospt.2023.0303', revision: null },
+  'Krill 2018': { autores: 'Krill, Rosas, Kwon, Dakkak, Nwachukwu y McCormick', titulo: 'A concise evidence-based physical examination for diagnosis of acromioclavicular joint pathology: a systematic review', publicacion: 'Phys Sportsmed 46(1):98–104', doi: '10.1080/00913847.2018.1413920', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6396285/', revision: null, nota: 'Solo leído el resumen de los autores (Europe PMC, 2026-10): el texto completo de PMC6396285 no se pudo descargar. Lo cita Lluch 2020 (cap. 3.1, p. 61, ref. 8) como «S y E >90 %» para Paxinos + O’Brien; el resumen da E 95,8 % y LR+ 2,71 en serie. Contexto del O’Brien para la AC (h7); no puntúa.' },
   'Kuijper 2009': { publicacion: 'BMJ 339:b3883', doi: '10.1136/bmj.b3883', revision: null },
   'Kulig 2009': { publicacion: 'Phys Ther 89(1):26–37', doi: '10.2522/ptj.20080052', revision: null },
   'Lacy 2023': { autores: 'Lacy, Bajaj y Gillis', titulo: 'Atlantoaxial Instability', publicacion: 'StatPearls [Internet], NBK519563 (act. 2023-06-12)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK519563/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
@@ -165,6 +177,7 @@ export const REFERENCIAS = {
   },
   'Leslie 2023': { autores: 'Leslie, Tadi y Tayyeb', titulo: 'Neurogenic Bladder and Neurogenic Lower Urinary Tract Dysfunction', publicacion: 'StatPearls [Internet], NBK560617 (act. 2023-07-04)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK560617/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Leslie 2024': { autores: 'Leslie, Sajjad y Singh', titulo: 'Nocturia', publicacion: 'StatPearls [Internet], NBK518987 (act. 2024-02-17)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK518987/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
+  'Leslie 2025': { autores: 'Leslie, Hamawy y Saleem', titulo: 'Gross and Microscopic Hematuria', publicacion: 'StatPearls [Internet], NBK534213 (act. 2025-11-30)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK534213/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Litaker 2000': { publicacion: 'J Am Geriatr Soc', doi: '10.1111/j.1532-5415.2000.tb03875.x', revision: null },
   'Liu 2025': { publicacion: 'BMC Sports Sci Med Rehabil 17:335', doi: '10.1186/s13102-025-01404-y', revision: null },
   'Lucas 2009': { publicacion: '', doi: '10.1097/ajp.0b013e31817e13b6', revision: null },
@@ -189,6 +202,7 @@ export const REFERENCIAS = {
     revision: { fecha: '2026-10', resultado: 'Sin cambios: texto completo leído (PMC7583647); S, E, LR+ y LR− con sus IC coinciden en los cinco usos. Es la revisión más reciente sobre exploración clínica de la artrosis de cadera.' }
   },
   'Molloy 2003': { publicacion: 'J Bone Joint Surg Br 85-B(3)', doi: '10.1302/0301-620x.85b3.12873', revision: null },
+  'Momodu y Savaliya 2023': { autores: 'Momodu y Savaliya', titulo: 'Septic Arthritis', publicacion: 'StatPearls [Internet], NBK538176 (act. 2023-07-03)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK538176/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Munakomi 2023': { autores: 'Munakomi, Foris y Varacallo', titulo: 'Spinal Stenosis and Neurogenic Claudication', publicacion: 'StatPearls [Internet], NBK430872 (act. 2023-08-13)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK430872/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Narvani 2003': {
     publicacion: 'Knee Surg Sports Traumatol Arthrosc 11(6):403–8', doi: '10.1007/s00167-003-0390-7',
@@ -196,6 +210,8 @@ export const REFERENCIAS = {
   },
   'Netterström-Wedin 2021': { publicacion: 'Phys Ther Sport 49:214–26', doi: '10.1016/j.ptsp.2021.03.005', revision: null },
   'Nunes 2013': { publicacion: 'Phys Ther Sport 14:54–9', doi: '10.1016/j.ptsp.2012.11.003', revision: null },
+  'Oliver y Ashurst 2023': { autores: 'Oliver y Ashurst', titulo: 'Anatomy, Thorax, Phrenic Nerves', publicacion: 'StatPearls [Internet], NBK513325 (act. 2023-07-24)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK513325/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
+  'Pak y Kim 2023': { autores: 'Pak y Kim', titulo: 'Anterior Glenohumeral Joint Dislocation', publicacion: 'StatPearls [Internet], NBK557862 (act. 2023-05-01)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK557862/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Pålsson 2020': {
     publicacion: 'Knee Surg Sports Traumatol Arthrosc 28(10):3382–92', doi: '10.1007/s00167-020-06005-5',
     revision: { fecha: '2026-10', resultado: 'Sin cambios: texto completo leído (PMC7511272); RI en neutro S 29 % (13–44), E 94 % (86–100), kappa 0,43. El mismo estudio da para el FADIR S 80 %, E 24 % (ver Reiman 2015).' }
@@ -209,8 +225,10 @@ export const REFERENCIAS = {
     publicacion: 'Ann Rheum Dis 65(10):1363–7', doi: '10.1136/ard.2006.051482',
     revision: { fecha: '2026-10', resultado: 'Texto completo leído (PMC1798313, tabla 3). Más recientes en la misma dirección, solo resumen: Miguel 2019 (Clin Rheumatol) y Wang 2024 (Arthritis Care Res).' }
   },
+  'Pencle y Varacallo 2023': { autores: 'Pencle y Varacallo', titulo: 'Proximal Humerus Fracture', publicacion: 'StatPearls [Internet], NBK470346 (act. 2023-08-04)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470346/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Pitcher 2024': { publicacion: 'Foot Ankle Orthop 9(4)', doi: '10.1177/24730114241291055', revision: null },
   'Rathleff 2020': { publicacion: 'Orthop J Sports Med 8(4):2325967120911106', doi: '10.1177/2325967120911106', revision: null },
+  'Regunath y Oba 2024': { autores: 'Regunath y Oba', titulo: 'Community-Acquired Pneumonia', publicacion: 'StatPearls [Internet], NBK430749 (act. 2024-01-26)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK430749/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'Reid 2014': { publicacion: 'Phys Ther 94(4):466–476', doi: '10.2522/ptj.20120483', revision: null },
   'Reijman 2004': {
     publicacion: 'Ann Rheum Dis 63(3):226–32', doi: '10.1136/ard.2003.010348',
@@ -242,6 +260,7 @@ export const REFERENCIAS = {
   'Tavakoli 2025': { autores: 'Tavakoli, Britt y Agarwal', titulo: 'Vertebral Artery Dissection', publicacion: 'StatPearls [Internet], NBK441827 (act. 2025-04-06)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK441827/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo.' },
   'Tawa 2017': { publicacion: '', doi: '10.1186/s12891-016-1383-2', revision: null },
   'Thoomes 2026': { publicacion: 'BMC Musculoskelet Disord', doi: '10.1186/s12891-026-09551-0', revision: null },
+  'Vadakekut y Gnugnoli 2025': { autores: 'Vadakekut y Gnugnoli', titulo: 'Ectopic Pregnancy', publicacion: 'StatPearls [Internet], NBK539860 (act. 2025-03-27)', doi: '', url: 'https://www.ncbi.nlm.nih.gov/books/NBK539860/', revision: null, nota: 'Capítulo de StatPearls (NCBI Bookshelf); PDF aportado por el usuario. La clave lleva el año de la última actualización del capítulo. Razonamiento del cribado de hombro.' },
   'van Dijk 1996': { publicacion: 'J Bone Joint Surg Br 78-B(6)', doi: '10.1302/0301-620x78b6.1283', revision: null },
   'Walton 2004': { publicacion: 'J Bone Joint Surg Am', doi: '10.2106/00004623-200404000-00021', revision: null },
   'Warden 2007': { publicacion: 'Am J Sports Med 35:427–36', doi: '10.1177/0363546506294858', revision: null },
