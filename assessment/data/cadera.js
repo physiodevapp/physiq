@@ -803,7 +803,7 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Test FADDIR (Flexión-Aducción-Rotación Interna)', sn: '80%', sp: '24%', lr_pos: null, lr_neg: null, criterio: 'Cadera a 90° de flexión, aducción completa y rotación interna máxima. Positivo: dolor conocido, bloqueo, chasquido o enganche. En pacientes derivados con sospecha de SIFA, S 80 %, E 24 % (LR− 0,83): no puntúa. Un negativo orienta algo en contra, pero no descarta. El valor agrupado de Reiman 2015 (S 99 %, E 5 %, LR− 0,14) sale de pacientes ya operados, con una probabilidad previa del 90 % y un IC del LR− que llega a 0,93.', fuente: 'Pålsson 2020 (Knee Surg Sports Traumatol Arthrosc; 69 caderas de 63 pacientes derivados a atención especializada, 35 con SIFA; referencia: síntomas + morfología cam/pincer + respuesta a infiltración intraarticular; S IC 95 %: 67–93 %, E IC 9–38 %). Reiman 2015 (BJSM, metaanálisis de FAIS/rotura labral, tabla 4: 4 estudios, n = 319, referencia: cirugía, probabilidad previa 90 %; LR− IC 95 %: 0,02–0,93; con artro-RM como referencia, 4 estudios, n = 188: LR− 0,45, IC 0,19–1,09)' },
-      { name: 'Test FABER (Flexión-Abducción-Rotación Externa)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Kappa >0.6 para fiabilidad inter-evaluador. Positivo si reproduce dolor en ingle o ASI. Útil para screening.' },
+      { name: 'Test FABER (Flexión-Abducción-Rotación Externa)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Supino, en posición de 4: el tobillo sobre la rodilla contraria; se estabiliza la EIAS contraria y se baja la rodilla hasta el final del rango con ligera sobrepresión. Positivo: reproduce su dolor conocido o dolor en otra región. Ninguna revisión sistemática ha analizado su exactitud (la técnica varía entre estudios); un Delphi dio un 67 % de consenso sobre su utilidad clínica.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 162' },
       { name: 'Rotación Interna de cadera en posición neutra <24°', sn: '29%', sp: '94%', lr_pos: null, lr_neg: null, criterio: 'Alta especificidad para SIFA cuando es positivo. En el estudio no se midieron grados: prono, cadera en extensión, positivo = RI disminuida (con o sin dolor) según el examinador; el umbral de 24° es de la tarjeta. Fiabilidad moderada (kappa 0,43). Negativa no descarta (S 29 %).', fuente: 'Pålsson 2020 (Knee Surg Sports Traumatol Arthrosc; 69 caderas de 63 pacientes derivados a atención especializada, 35 con SIFA; referencia: síntomas + morfología cam/pincer + respuesta a infiltración intraarticular). S IC 95 %: 13–44 %; E IC 86–100 %' },
       { name: 'Dolor inguinal', sn: '96–100%', sp: null, lr_pos: null, lr_neg: null, criterio: 'Sin dolor inguinal, FAIS y labrum son improbables.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 137' },
       { name: 'Test de flexión-rotación interna', sn: null, sp: null, lr_pos: '1.28', lr_neg: null, criterio: 'Supino, cadera a 90° de flexión y rotación interna. Positivo: dolor conocido, bloqueo, chasquido o enganche. Metaanálisis: S 96 %, E 25 %, LR− 0,15, pero con IC 95 % hasta 1,99 (27 pacientes): la tarjeta lo usa para descartar, la evidencia aún no lo sostiene.', fuente: 'Reiman 2015 (BJSM, metaanálisis de FAIS/rotura labral: 2 estudios, n = 27)' },
@@ -858,7 +858,7 @@ export const hypotheses = {
     dosis: '',
     tests: [
       { name: 'Test de Trendelenburg', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Incapacidad de mantener pelvis nivelada al pararse sobre una pierna — pelvis cae hacia el lado de la pierna levantada.' },
-      { name: 'Dinamometría manual (HHD) de abductores', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Fiabilidad suficiente para medir fuerza abductora. Comparar con lado contralateral.' },
+      { name: 'Dinamometría manual (HHD) de abductores', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Fiabilidad suficiente para medir fuerza abductora. Comparar con lado contralateral.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 172' },
       { name: 'Test de paso lateral + marcha en tándem combinados', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Ambos positivos → probabilidad de debilidad aumenta de 47% a 76%. Ambos negativos → reduce de 47% a 18%.' }
     ]
   },
@@ -909,10 +909,10 @@ export const hypotheses = {
     prom: 'HOOS (MCID: 10–13 puntos)',
     dosis: '',
     tests: [
-      { name: 'Test de Compresión Pélvica', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Datos de fiabilidad limitados. Compresión sobre ambas crestas ilíacas en decúbito lateral. Positivo si reproduce dolor sacroilíaco.', noData: true },
+      { name: 'Test de Compresión Pélvica', sn: '69%', sp: '69%', lr_pos: '2.20', lr_neg: '0.46', criterio: 'Decúbito lateral; presión hacia la camilla sobre la cresta ilíaca de arriba. Positivo: reproduce su dolor conocido. LR+ 2,20 (IC 95 % 1,18–4,09), LR− 0,46 (IC 0,20–0,87); muestra pequeña (48 pacientes, 16 con bloqueo positivo). Si el cluster de Laslett puntúa, este test deja de contar aparte.', fuente: 'Laslett 2005 (Man Ther 10:207–218, tabla 2 y fig. 5; referencia: bloqueo anestésico intraarticular)' },
       { name: 'Test de Patrick (FABER)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Puede provocar dolor sacroilíaco. Sensibilidad sobre ASI sin sensibilidad en L5.' },
       { name: 'Sin sensibilidad por encima de L5', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Criterio clave de diferenciación respecto al origen lumbar.' },
-      { name: 'Cluster de Laslett: 3 o más de 5 tests de provocación positivos', sn: '91%', sp: '78%', lr_pos: null, lr_neg: null, absorbe: [4], criterio: 'Distracción, compresión, thigh thrust, Gaenslen y sacral thrust; positivo si 3 o más reproducen su dolor. Si los síntomas no se centralizan con movimientos repetidos, la especificidad sube al 87 %; positivos con centralización (dolor discal) son falsos positivos. Lluch cita S 85–94 %, E 79 %: se usan las cifras de la revisión de Laslett de 2008 (su estudio de 2005, con 6 tests, daba S 94 %, E 78 %). Si puntúa, el thigh thrust deja de contar aparte. Regla alternativa del estudio de 2005, sin Gaenslen: 2 o más positivos de 4 (distracción, thigh thrust, compresión y sacral thrust) dan S 88 %, E 78 %, LR+ 4,0 (IC 2,13–8,08), LR− 0,16 (IC 0,04–0,47); orden propuesto: thigh thrust y distracción primero, y si los dos son positivos no hace falta seguir; con uno positivo, compresión y, si es negativa, sacral thrust. Con todos los tests negativos se descarta la sacroilíaca.', fuente: 'Laslett 2008 (J Man Manip Ther 16:142–152); Laslett 2005 (Man Ther 10:207–218, tablas 4–6 y fig. 7); Lluch 2020, cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 153' },
+      { name: 'Cluster de Laslett: 3 o más de 5 tests de provocación positivos', sn: '91%', sp: '78%', lr_pos: null, lr_neg: null, absorbe: [0, 4], criterio: 'Distracción, compresión, thigh thrust, Gaenslen y sacral thrust; positivo si 3 o más reproducen su dolor. Si los síntomas no se centralizan con movimientos repetidos, la especificidad sube al 87 %; positivos con centralización (dolor discal) son falsos positivos. Lluch cita S 85–94 %, E 79 %: se usan las cifras de la revisión de Laslett de 2008 (su estudio de 2005, con 6 tests, daba S 94 %, E 78 %). Si puntúa, la compresión y el thigh thrust dejan de contar aparte. Regla alternativa del estudio de 2005, sin Gaenslen: 2 o más positivos de 4 (distracción, thigh thrust, compresión y sacral thrust) dan S 88 %, E 78 %, LR+ 4,0 (IC 2,13–8,08), LR− 0,16 (IC 0,04–0,47); orden propuesto: thigh thrust y distracción primero, y si los dos son positivos no hace falta seguir; con uno positivo, compresión y, si es negativa, sacral thrust. Con todos los tests negativos se descarta la sacroilíaca.', fuente: 'Laslett 2008 (J Man Manip Ther 16:142–152); Laslett 2005 (Man Ther 10:207–218, tablas 4–6 y fig. 7); Lluch 2020, cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 153' },
       { name: 'Thigh thrust', sn: '88%', sp: '69%', lr_pos: '2.80', lr_neg: '0.18', criterio: 'Supino, mano caudal bajo el sacro, cadera a 90° de flexión: carga longitudinal por el fémur hasta 30 s (si no duele, 3–5 empujes). Positivo: reproduce su dolor. El test más sensible de la batería. LR+ 2,80 (IC 95 % 1,66–4,98), LR− 0,18 (IC 0,05–0,55); muestra pequeña (48 pacientes, 16 con bloqueo positivo). Si el cluster de Laslett puntúa, este test deja de contar aparte.', fuente: 'Laslett 2005 (Man Ther 10:207–218, tabla 2; referencia: bloqueo anestésico intraarticular); Lluch 2020, cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 153–154' },
       { name: 'Prueba del dedo (Fortin)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'El paciente señala con la punta del dedo el dolor inferomedial a la EIPS, al menos 2 veces en el mismo punto. Si el dolor no está en esa zona, el dolor sacroilíaco es muy improbable.', fuente: 'Lluch 2020, cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 153' }
     ]
@@ -935,8 +935,8 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Palpación del grupo sospechoso (primero)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Palpar PRIMERO: si no duele, se descarta (exactitud >90 % en aductores y flexores). Aductores (unos 2/3 de las lesiones agudas de la ingle, sobre todo el aductor largo), recto femoral, ilíaco y psoas.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 140; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 168' },
-      { name: 'Resistencia del grupo sospechoso', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Después de palpar: squeeze a 0° o flexión resistida a 90°. Cuenta si reproduce su dolor en el mismo sitio.' },
-      { name: 'Estiramiento del grupo sospechoso', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Cuenta si reproduce su dolor en el mismo sitio.' }
+      { name: 'Resistencia del grupo sospechoso', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Después de palpar: squeeze a 0° o flexión resistida a 90°. Cuenta si reproduce su dolor en el mismo sitio.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 168' },
+      { name: 'Estiramiento del grupo sospechoso', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Cuenta si reproduce su dolor en el mismo sitio.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 168' }
     ]
   },
   ca12: {
@@ -952,8 +952,8 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Log roll', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más RE en el lado afectado, o el borde lateral del pie toca la camilla → laxitud capsular anterior o retroversión.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 160' },
-      { name: 'Movilidad aumentada', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Movilidad AUMENTADA en inestabilidad. Sin síntoma específico: descartar lo intraarticular con flexión-RI y FADDIR.' },
-      { name: 'Episodio de fallo', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Al menos un episodio de fallo.' }
+      { name: 'Movilidad aumentada', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Movilidad AUMENTADA en inestabilidad. Sin síntoma específico: descartar lo intraarticular con flexión-RI y FADDIR.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 135 y 137; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 162' },
+      { name: 'Episodio de fallo', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Al menos un episodio de fallo.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 137' }
     ]
   },
   ca13: {
@@ -968,9 +968,9 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Cribado intraarticular y Thomas positivos', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Flexión-RI, FADDIR y Thomas.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 162–163' },
-      { name: 'Dolor en reposo y nocturno con síntomas mecánicos', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor en reposo y nocturno acompañado de síntomas mecánicos.' },
-      { name: 'Rigidez', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Rigidez de cadera.' },
-      { name: 'IMC >25', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Índice de masa corporal mayor de 25.' }
+      { name: 'Dolor en reposo y nocturno con síntomas mecánicos', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor en reposo y nocturno acompañado de síntomas mecánicos.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 135 y 137' },
+      { name: 'Rigidez', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Rigidez de cadera.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 135' },
+      { name: 'IMC >25', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Índice de masa corporal mayor de 25.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 137' }
     ]
   },
   ca14: {
@@ -985,9 +985,9 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Tinel del femorocutáneo (meralgia)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Meralgia (la más frecuente): Tinel 1 cm medial e inferior a la EIAS; parestesias anterolaterales del muslo.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 141; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 172' },
-      { name: 'Neurodinámico del femorocutáneo', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Reproduce los síntomas anterolaterales del muslo.' },
-      { name: 'Obturador: neurodinámico, sensibilidad del muslo medial y fuerza de aductores', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'A ser posible tras el deporte.' },
-      { name: 'Arch and twist de pie', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Ilioinguinal, iliohipogástrico y genitofemoral.' },
+      { name: 'Neurodinámico del femorocutáneo', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Reproduce los síntomas anterolaterales del muslo.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 172' },
+      { name: 'Obturador: neurodinámico, sensibilidad del muslo medial y fuerza de aductores', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'A ser posible tras el deporte.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 172' },
+      { name: 'Arch and twist de pie', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Ilioinguinal, iliohipogástrico y genitofemoral, cuyos neurodinámicos no están bien descritos. De pie, hiperextensión de tronco rotando hacia el lado contrario y hacia el del dolor. Positivo: reproduce el dolor al rotar al lado contrario y se alivia al rotar hacia el mismo lado.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 172' },
       { name: 'Pudendo: dolor perineal al sentarse o en bici', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor en el periné, sobre todo sentado o en bici (en mujeres, también en las relaciones sexuales), sin déficit sensitivo objetivo.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 141' }
     ]
   },
@@ -999,9 +999,9 @@ export const hypotheses = {
     tests: [
       { name: 'Dolor multifocal, referido y extenso', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Sin criterios clínicos validados. Coexiste con la patología intraarticular y hace los síntomas vagos y cambiantes: NO excluye patología estructural.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 135 y 138' },
       { name: 'Dolor en las AVD', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor en las actividades de la vida diaria.' },
-      { name: 'Fatiga y mal sueño', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Fatiga y mal sueño.' },
-      { name: 'Dificultades de memoria', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dificultades de memoria.' },
-      { name: 'Más comorbilidad; intolerancia al estrés, ansiedad o depresión', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más comorbilidad; intolerancia al estrés, ansiedad o depresión.' }
+      { name: 'Fatiga y mal sueño', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Fatiga y mal sueño.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 138' },
+      { name: 'Dificultades de memoria', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dificultades de memoria.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 138' },
+      { name: 'Más comorbilidad; intolerancia al estrés, ansiedad o depresión', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más comorbilidad; intolerancia al estrés, ansiedad o depresión.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 138' }
     ]
   },
   ca16: {
@@ -1017,7 +1017,7 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Palpación dolorosa de aductores + squeeze doloroso', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Necesario para el diagnóstico (ambos).', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 139–140; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 164' },
-      { name: 'Estiramiento pasivo de aductores', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.' }
+      { name: 'Estiramiento pasivo de aductores', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 164' }
     ]
   },
   ca17: {
@@ -1033,8 +1033,8 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Palpación dolorosa supra o infrainguinal', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Necesario para el diagnóstico.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 139–140; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 164' },
-      { name: 'Flexión resistida con cadera y rodilla a 90°', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.' },
-      { name: 'Flexión resistida o extensión pasiva en Thomas modificado', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor. La extensión pasiva en Thomas modificado es a la vez el test de Thomas para patología intraarticular: interpretarlo junto con la palpación del psoas y la historia.' }
+      { name: 'Flexión resistida con cadera y rodilla a 90°', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 164 y 168' },
+      { name: 'Flexión resistida o extensión pasiva en Thomas modificado', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor. La extensión pasiva en Thomas modificado es a la vez el test de Thomas para patología intraarticular: interpretarlo junto con la palpación del psoas y la historia.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 164 y 168' }
     ]
   },
   ca18: {
@@ -1049,9 +1049,9 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Dolor en la región del canal + palpación dolorosa del canal, sin hernia palpable', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Necesario para el diagnóstico. Explorar de pie y con tos: una hernia palpable excluye este diagnóstico.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 139–140; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 164' },
-      { name: 'Sit-up recto u oblicuo resistido', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.' },
-      { name: 'Valsalva, tos o estornudo', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.' },
-      { name: 'Flexión resistida en Thomas modificado', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.' }
+      { name: 'Sit-up recto u oblicuo resistido', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 164 y 168' },
+      { name: 'Valsalva, tos o estornudo', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 139; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 164' },
+      { name: 'Flexión resistida en Thomas modificado', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 164 y 168' }
     ]
   },
   ca19: {
@@ -1066,7 +1066,7 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Palpación dolorosa de la sínfisis y el hueso adyacente', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Necesario para el diagnóstico.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 139–140; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 164' },
-      { name: 'Resistencia abdominal y squeeze', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor. No hay test de resistencia específico.' }
+      { name: 'Resistencia abdominal y squeeze', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más probable si reproduce el dolor. No hay test de resistencia específico.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 140; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 164' }
     ]
   },
 };
