@@ -895,8 +895,8 @@ export const hypotheses = {
     prom: 'NDI (MCID: 7.5–18 puntos)',
     dosis: '',
     tests: [
-      { name: 'Palpación de 1ª costilla (sensibilidad y restricción)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Datos de fiabilidad limitados/ausentes en literatura. Sensibilidad aumentada y restricción de movilidad a la palpación.', noData: true },
-      { name: 'Restricción de rotación cervical ipsilateral', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'La rotación cervical ipsilateral suele estar limitada cuando hay disfunción de 1ª costilla.', noData: true }
+      { name: 'Palpación de 1ª costilla (sensibilidad y restricción)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Palpación dolorosa de la 1.ª costilla y movimientos accesorios (caudal, anteroposterior, posteroanterior) dolorosos y restringidos. En un Delphi de 12 expertos en terapia manual hubo consenso en que estos hallazgos ayudan a identificar su disfunción; es opinión de expertos y los autores piden estudiar su fiabilidad y validez. Sin S ni E; no puntúa.', fuente: 'Mastromarchi 2021 (J Man Manip Ther 29(3):181–188, Delphi, tabla 2)', noData: true },
+      { name: 'Restricción de rotación cervical ipsilateral', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Rotación cervical activa hacia el lado afectado dolorosa y restringida. En un Delphi de 12 expertos en terapia manual hubo consenso en este hallazgo, pero también en la rotación contralateral dolorosa y restringida, y no en que todos los movimientos cervicales lo estén; es opinión de expertos, sin fiabilidad ni validez estudiadas. Sin S ni E; no puntúa.', fuente: 'Mastromarchi 2021 (J Man Manip Ther 29(3):181–188, Delphi, tabla 2)', noData: true }
     ]
   },
   ce11: {
