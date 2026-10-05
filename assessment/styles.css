@@ -2372,3 +2372,115 @@
 }
 .razon-enlace { color: var(--accent); white-space: nowrap; text-decoration: none; }
 .razon-enlace:hover { text-decoration: underline; }
+
+/* ── Informe narrativo con IA (informe-ia.js) ──────────────────────────────
+   Solo standalone: en el hub el módulo ni se carga; la regla de abajo es la
+   red de seguridad por si el contenedor llegara a tener algo. */
+.in-hub #informeIA { display: none; }
+#informeIA { margin-top: 1.5rem; }
+.ia-titulo { display: flex; align-items: center; gap: 8px; }
+.ia-etiqueta {
+  font-size: 0.62rem; letter-spacing: 1px; padding: 2px 6px; border-radius: 6px;
+  border: 1px solid var(--border2); color: var(--accent);
+}
+.ia-intro { font-size: 0.85rem; color: var(--text2); line-height: 1.5; margin-bottom: 1rem; }
+.ia-estado { font-size: 0.85rem; color: var(--text2); display: flex; align-items: center; gap: 10px; margin-bottom: 0.8rem; }
+.ia-acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 0.8rem; }
+.ia-acciones:last-child { margin-bottom: 0; }
+.ia-btn-descartar { color: var(--text3); }
+.ia-clave { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.ia-clave .form-input { flex: 1 1 200px; min-width: 0; padding: 7px 12px; font-size: 0.85rem; }
+.ia-clave-msg { margin-top: 6px; font-size: 0.8rem; color: var(--red); }
+
+.ia-generador { margin-top: 0.5rem; }
+.ia-generador > summary { display: none; }
+.ia-generador.con-resultado {
+  border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 1rem;
+}
+.ia-generador.con-resultado > summary {
+  display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none;
+  font-size: 0.85rem; color: var(--text2);
+}
+.ia-generador.con-resultado > summary::-webkit-details-marker { display: none; }
+.ia-generador.con-resultado > summary::after { content: '›'; color: var(--text3); font-size: 1.2rem; transition: transform 0.2s; }
+.ia-generador.con-resultado[open] > summary { margin-bottom: 1rem; }
+.ia-generador.con-resultado[open] > summary::after { transform: rotate(90deg); }
+
+.ia-audio-vacio, .ia-audio-info { font-size: 0.85rem; color: var(--text); }
+.ia-opcional, .ia-recuperado { color: var(--text3); }
+.ia-reproductor { width: 100%; max-width: 420px; margin-top: 8px; display: block; }
+.ia-grabando { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--red); }
+.ia-grabando.pausado { color: var(--text2); }
+.ia-punto { width: 10px; height: 10px; border-radius: 50%; background: currentColor; animation: recordPulse 1.2s ease-in-out infinite; }
+.ia-grabando.pausado .ia-punto { animation: none; }
+.ia-crono { font-family: 'DM Mono', monospace; color: var(--text); }
+.ia-consent {
+  display: flex; gap: 10px; align-items: flex-start; margin: 0.8rem 0;
+  font-size: 0.85rem; color: var(--text); line-height: 1.45; cursor: pointer;
+}
+.ia-consent input { margin-top: 3px; accent-color: var(--accent); flex-shrink: 0; }
+.ia-privacidad { margin-top: 0.8rem; font-size: 0.8rem; }
+.ia-turnstile:not(:empty) { margin-bottom: 0.8rem; }
+.ia-btn-generar:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.ia-meta { font-size: 0.75rem; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 0.8rem; }
+.ia-informe {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1rem 1.2rem; font-size: 0.88rem; line-height: 1.6; color: var(--text);
+  overflow-wrap: anywhere;
+}
+.ia-informe h3 { font-family: 'DM Mono', monospace; font-size: 0.78rem; letter-spacing: 1px; color: var(--accent); margin: 1.2rem 0 0.5rem; font-weight: 500; }
+.ia-informe h3:first-child { margin-top: 0; }
+.ia-informe h4 { font-size: 0.9rem; color: var(--text); margin: 0.9rem 0 0.35rem; font-weight: 600; }
+.ia-informe h5, .ia-informe h6 { font-size: 0.85rem; color: var(--text2); margin: 0.7rem 0 0.3rem; font-weight: 600; }
+.ia-informe p { margin: 0 0 0.6rem; }
+.ia-tabla { overflow-x: auto; margin: 0.4rem 0 0.8rem; }
+.ia-tabla table { border-collapse: collapse; font-size: 0.8rem; min-width: 100%; }
+.ia-tabla th, .ia-tabla td { border: 1px solid var(--border2); padding: 5px 8px; text-align: left; }
+.ia-tabla th { color: var(--text2); font-weight: 500; }
+.ia-vista-previa { max-height: 50vh; overflow-y: auto; }
+.ia-vista-previa:empty { display: none; }
+.ia-transcripcion { margin-top: 0.8rem; font-size: 0.82rem; color: var(--text2); }
+.ia-transcripcion > summary { cursor: pointer; }
+.ia-transcripcion-texto { margin-top: 8px; white-space: pre-wrap; line-height: 1.5; color: var(--text2); }
+.ia-spinner {
+  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid var(--border2); border-top-color: var(--accent);
+  animation: iaGira 0.8s linear infinite;
+}
+@keyframes iaGira { to { transform: rotate(360deg); } }
+
+/* ── Grabación de la sesión en la cabecera (grabadora.js) ──────────────────
+   Reutiliza .btn-record (estados recording/paused/recorded). Visible solo
+   fuera del hub y con licencia, o mientras haya una grabación en marcha. */
+.grab-wrap { position: relative; display: none; }
+body.ia-licencia:not(.in-hub) .grab-wrap,
+body.grab-activa:not(.in-hub) .grab-wrap { display: block; }
+.grab-btn { padding: 5px 8px; position: relative; color: var(--text3); }
+.grab-btn.grab-pildora { font-variant-numeric: tabular-nums; }
+.grab-btn.grab-aviso { border-color: var(--orange); color: var(--orange); }
+.grab-crono { font-family: 'DM Mono', monospace; }
+.grab-punto {
+  position: absolute; top: 3px; right: 3px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent2);
+}
+.grab-btn.grab-aviso .grab-punto { background: var(--orange); }
+.grab-menu {
+  /* top/right los pone grabadora.js bajo el botón */
+  position: fixed; z-index: 400;
+  width: max-content; max-width: min(300px, calc(100vw - 32px));
+  background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius);
+  box-shadow: var(--modal-shadow); padding: 12px 14px;
+  font-size: 0.82rem; color: var(--text); text-align: left;
+}
+.grab-menu[hidden] { display: none; }
+@media (max-width: 480px) {
+  .grab-menu { left: 16px !important; right: 16px !important; width: auto; max-width: none; }
+}
+.grab-menu-titulo { font-weight: 500; }
+.grab-menu-titulo.aviso { color: var(--orange); }
+.grab-menu-dato { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
+.grab-menu-nota { font-size: 0.78rem; color: var(--text2); margin-top: 8px; line-height: 1.4; }
+.grab-menu-aviso { font-size: 0.78rem; color: var(--alert-warning-text); margin-top: 8px; line-height: 1.4; }
+.grab-menu-acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ia-audio-pista { font-size: 0.8rem; color: var(--text3); margin-top: 4px; line-height: 1.45; }

@@ -44,6 +44,10 @@
   <div class="header-right">
     <span class="modo-badge" title="Consulta breve (10 min): cribado y confirmación no exhaustivos">⏱<span class="modo-badge-text"> Breve</span></span>
     <span class="phase-indicator" id="phaseIndicator">FASE 1 / 5</span>
+    <!-- Grabación de la sesión (grabadora.js): solo standalone y con licencia -->
+    <div class="grab-wrap">
+      <button id="grabBtn" class="btn-record grab-btn" onclick="grabBtnClick()" type="button" aria-label="Grabar la sesión" title="Grabar la sesión"></button>
+    </div>
     <button class="btn-reset" onclick="resetApp()">↺ <span class="btn-reset-text">Reiniciar</span></button>
     <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
     <button id="themeBtn" class="session-btn theme-btn" onclick="cycleThemePref()" type="button"></button>
@@ -53,6 +57,9 @@
     </button>
   </div>
 </header>
+<!-- Menú de la grabación (grabadora.js): fuera de la cabecera, cuyo z-index
+     queda por debajo de la barra de fase en móvil -->
+<div id="grabMenu" class="grab-menu" hidden></div>
 
 <div class="translate-banner" id="translateBanner">
   🌐 <span>Long-press or right-click → Translate to English</span>
@@ -663,6 +670,8 @@
     <p class="phase-subtitle">Resumen clínico completo generado a partir de la valoración.</p>
   </div>
   <div id="resultsContent"></div>
+  <!-- Informe narrativo con IA: solo standalone; lo pinta informe-ia.js -->
+  <div id="informeIA"></div>
   <div class="nav-buttons">
     <button class="btn btn-secondary" onclick="goToPhase('4b')">← Anterior</button>
     <button class="btn btn-primary" id="btnFinalizar" onclick="finalizarValoracion()">Finalizar valoración →</button>

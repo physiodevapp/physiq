@@ -13,6 +13,7 @@ const APP_SHELL = [
 const NETWORK_ONLY_HOSTS = [
   'workers.dev',
   'api.anthropic.com',
+  'challenges.cloudflare.com',   // Turnstile del informe narrativo: nunca desde caché
 ];
 
 const CDN_HOSTS = [
