@@ -254,7 +254,9 @@ function pintarCabecera() {
   if (_grab) {
     btn.classList.add('grab-pildora', _grab.pausado ? 'paused' : 'recording');
     if (_grab.sinSenal) btn.classList.add('grab-aviso');
-    const icono = _grab.sinSenal ? '⚠' : _grab.pausado ? '⏸' : '<span class="btn-record-dot"></span>';
+    // Pausa con dos barras de CSS, no con «⏸»: Android lo pinta como emoji
+    // ancho y de color, y descuadraba la píldora en la cabecera.
+    const icono = _grab.sinSenal ? '⚠' : _grab.pausado ? '<span class="grab-pausa"></span>' : '<span class="btn-record-dot"></span>';
     btn.innerHTML = `${icono}<span class="grab-crono" id="grabCrono">${fmtTiempo(duracion())}</span>`;
     btn.title = _grab.sinSenal ? 'El micrófono no está dando señal' : _grab.pausado ? 'Grabación en pausa' : 'Grabando la sesión';
   } else {

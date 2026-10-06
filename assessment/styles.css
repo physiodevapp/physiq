@@ -2485,3 +2485,16 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: block; }
 .grab-menu-acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .ia-audio-pista { font-size: 0.8rem; color: var(--text3); margin-top: 4px; line-height: 1.45; }
 .ia-licencia-motivo { margin-top: 4px; font-size: 0.8rem; opacity: 0.9; }
+/* Con una grabación en marcha la cabecera lleva un elemento más (la píldora
+   «● 12:34»): en móvil no cabía junto al chip del modo breve, el logo
+   completo y los iconos. Mientras se graba, el logo se abrevia como en
+   pantallas muy estrechas, el chip breve se queda en su icono y la píldora
+   se compacta. */
+@media (max-width: 520px) {
+  body.grab-activa .logo-sub-word { display: none; }
+  body.grab-activa .logo-sub-initial { display: inline; }
+  body.grab-activa .modo-badge-text { display: none; }
+  body.grab-activa.modo-breve .modo-badge { padding: 5px 8px; }
+  .grab-btn.grab-pildora { padding: 4px 7px; gap: 4px; font-size: 0.7rem; }
+}
+.grab-pausa { width: 7px; height: 9px; border-left: 2px solid currentColor; border-right: 2px solid currentColor; box-sizing: border-box; flex-shrink: 0; }
