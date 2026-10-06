@@ -23,7 +23,7 @@ import {
   getWhisperPrompt, buildNarrativePrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
   informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio,
 } from './lib/informe-narrativo.js';
-import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada } from './lib/licencia-ia.js';
+import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
 import {
   onGrabadora, audioActual, estadoGrabacion, fijarArchivo, quitarAudio, pausar, reanudar, parar, fmtTiempo, fmtMB,
 } from './grabadora.js';
@@ -104,7 +104,8 @@ function pintarLicencia() {
     return;
   }
   if (lic === 'error-red') {
-    el.innerHTML = `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>No se ha podido comprobar la licencia. Revisa la conexión.
+    el.innerHTML = `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>No se ha podido comprobar la licencia.
+      ${detalleLicencia() ? `<div class="ia-licencia-motivo">${esc(detalleLicencia())}</div>` : ''}
       <div class="ia-acciones"><button class="phase5-copy-btn" onclick="iaReintentarLicencia()">Reintentar</button></div></div></div>`;
     return;
   }
@@ -140,8 +141,8 @@ async function iaGuardarClave() {
       return;   // onLicencia repinta y carga Turnstile
     }
     _claveMsg = modo === 'desactivado' ? 'El servidor tiene la generación desactivada; inténtalo más tarde.' : 'Clave no válida.';
-  } catch {
-    _claveMsg = 'No se ha podido comprobar la clave. Revisa la conexión.';
+  } catch (e) {
+    _claveMsg = `No se ha podido comprobar la clave. ${e?.motivo || ''}`.trim();
   }
   pintarLicencia();
 }

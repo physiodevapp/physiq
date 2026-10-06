@@ -2484,3 +2484,4 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: block; }
 .grab-menu-aviso { font-size: 0.78rem; color: var(--alert-warning-text); margin-top: 8px; line-height: 1.4; }
 .grab-menu-acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .ia-audio-pista { font-size: 0.8rem; color: var(--text3); margin-top: 4px; line-height: 1.45; }
+.ia-licencia-motivo { margin-top: 4px; font-size: 0.8rem; opacity: 0.9; }
