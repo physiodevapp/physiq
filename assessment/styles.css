@@ -2193,11 +2193,15 @@
 
 /* Fase 4: «Resultados sin confirmar» solo cuando el árbol está completo */
 #btnGoConfirm:disabled ~ #btnSinConfirmar { opacity: 0.4; pointer-events: none; }
-.btn-sc-short { display: none; }
+.btn-sc-short, .btn-hip-short { display: none; }
 @media (max-width: 768px) {
   .modo-breve .nav-buttons #btnSinConfirmar { flex: 1; }
   .btn-sc-full { display: none; }
   .btn-sc-short { display: inline; }
+  /* Con tres botones (solo en breve), «Continuar → Hipótesis» ocupaba dos
+     líneas: se acorta como «Sin tests →», con la flecha al final. */
+  .modo-breve .btn-hip-full { display: none; }
+  .modo-breve .btn-hip-short { display: inline; }
 }
 
 /* Fase 2: embudo por sistema */
