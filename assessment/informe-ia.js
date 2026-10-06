@@ -21,7 +21,7 @@ import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showT
 import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_TOKENS_INFORME, MAX_AUDIO_BYTES,
   getWhisperPrompt, buildNarrativePrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
-  informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio,
+  informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio, errorLegible,
 } from './lib/informe-narrativo.js';
 import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
 import {
@@ -38,6 +38,7 @@ let _claveMsg = '';
 let _consentido = false;
 let _audioConsentido = null;     // el consentimiento vale para un audio concreto
 let _gen = null;                 // generación en curso: { texto, transcripcion, fase, ctrl }
+let _error = null;               // último fallo al generar: errorLegible() — se muestra hasta el siguiente intento
 let _turnstileToken = null;
 let _turnstileWidget = null;
 let _turnstileFallo = false;
@@ -80,6 +81,7 @@ function esqueleto() {
       <div class="alert alert-info ia-privacidad"><span class="alert-icon">🔒</span><div>Al generar, los datos de esta valoración y el audio (si lo hay) se envían a OpenAI (transcripción) y a Anthropic (redacción) a través del servidor de PhysiQ. Revisa el informe antes de compartirlo.</div></div>
       <div id="iaTurnstile" class="ia-turnstile"></div>
       <div id="iaTurnstileMsg"></div>
+      <div id="iaError"></div>
       <button class="btn btn-primary ia-btn-generar" id="iaGenerar" onclick="iaGenerar()" disabled>Generar informe</button>
     </details>
     <div id="iaProgreso"></div>
@@ -92,6 +94,22 @@ function pintar() {
   pintarResultado();
   pintarGenerador();
   pintarProgreso();
+}
+
+// El fallo se queda a la vista (un toast desaparece en segundos) hasta el
+// siguiente intento, con el texto original de la API debajo para diagnosticar.
+function pintarError() {
+  const el = $('iaError');
+  if (!el) return;
+  if (!_error) { el.innerHTML = ''; return; }
+  const sinAudio = _error.sinAudio && audioActual()
+    ? '<div class="ia-error-salida">Puedes quitar el audio y generar el informe solo con los datos de la valoración; el audio se conserva para reintentarlo después.</div>'
+    : '';
+  el.innerHTML = `<div class="alert alert-warning ia-error"><span class="alert-icon">⚠️</span><div>
+    <strong>No se ha podido generar el informe.</strong> ${esc(_error.texto)}
+    ${sinAudio}
+    ${_error.original ? `<div class="ia-error-original">${esc(_error.original)}</div>` : ''}
+  </div></div>`;
 }
 
 // ── Licencia ─────────────────────────────────────────────────────────────────
@@ -373,6 +391,7 @@ function pintarGenerador() {
   pintarAudio();
   pintarConsent();
   pintarBoton();
+  pintarError();
 }
 
 // ── Generación ───────────────────────────────────────────────────────────────
@@ -417,6 +436,7 @@ async function iaGenerar() {
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 300000);
+  _error = null;
   _gen = { texto: '', transcripcion: '', fase: conAudio ? 'transcribiendo' : 'redactando', ctrl };
   pintar();
 
@@ -460,7 +480,8 @@ async function iaGenerar() {
     } else if (err.name === 'AbortError') {
       if (!_gen?.cancelado) showToast('Tiempo de espera agotado. Inténtalo de nuevo.', 'warning');
     } else {
-      showToast(err.message || 'No se ha podido generar el informe.', 'warning');
+      _error = errorLegible(err.message);
+      showToast('No se ha podido generar el informe.', 'warning');
     }
   } finally {
     clearTimeout(timer);
@@ -508,6 +529,7 @@ function iaCancelar() {
 export function resetInformeIA() {
   if (_gen) { _gen.cancelado = true; _gen.ctrl.abort(); }
   _consentido = false;
+  _error = null;
   pintar();
 }
 

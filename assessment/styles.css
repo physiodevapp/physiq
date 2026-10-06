@@ -2498,3 +2498,6 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: block; }
   .grab-btn.grab-pildora { padding: 4px 7px; gap: 4px; font-size: 0.7rem; }
 }
 .grab-pausa { width: 7px; height: 9px; border-left: 2px solid currentColor; border-right: 2px solid currentColor; box-sizing: border-box; flex-shrink: 0; }
+.ia-error { margin-top: 0.8rem; }
+.ia-error-salida { margin-top: 6px; }
+.ia-error-original { margin-top: 6px; font-family: 'DM Mono', monospace; font-size: 0.7rem; opacity: 0.75; overflow-wrap: anywhere; }

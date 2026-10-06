@@ -396,3 +396,38 @@ export function extensionAudio(mime) {
   if (m.includes('wav'))  return 'wav';
   return 'webm';
 }
+
+// ── Errores de los servicios, en español ─────────────────────────────────────
+// El worker reenvía el mensaje de la API con el servicio delante: «Whisper: …»
+// (transcripción, OpenAI) o «Claude: …» / «Claude (docs): …» (redacción,
+// Anthropic). No se traduce error a error: se reconocen las pocas familias que
+// aparecen por palabras clave estables y el resto cae en un mensaje genérico
+// por servicio. El original se conserva siempre, para diagnosticar.
+// Un mensaje sin servicio delante es nuestro (ya en español) y pasa tal cual.
+// → { texto, original, servicio: 'whisper'|'claude'|null, sinAudio }
+const FAMILIAS_ERROR = [
+  { re: /billing|quota|not active|credit balance|insufficient|payment|plan and billing/i,
+    texto: s => `La cuenta de ${s} que usa PhysiQ no tiene saldo o no está activa. Avisa al administrador de PhysiQ.` },
+  { re: /api[ _-]?key|x-api-key|authentication|unauthori[sz]ed|\b401\b|permission/i,
+    texto: s => `La clave de ${s} que usa PhysiQ no es válida. Avisa al administrador de PhysiQ.` },
+  { re: /rate limit|too many requests|overloaded|\b429\b|\b529\b/i,
+    texto: s => `${s} está saturado ahora mismo. Inténtalo de nuevo en unos minutos.` },
+  { re: /file|format|too short|too large|content size|decode|unsupported|corrupt/i, soloWhisper: true,
+    texto: () => 'El audio no se ha podido procesar: formato no admitido, demasiado corto o demasiado grande.' },
+  { re: /\b50[0234]\b|server error|bad gateway|unavailable|timed? ?out|timeout/i,
+    texto: s => `${s} no responde ahora mismo. Inténtalo más tarde.` },
+];
+
+export function errorLegible(mensaje) {
+  const original = String(mensaje || '').trim();
+  const m = original.match(/^(Whisper|Claude(?: \(docs\))?):\s*([\s\S]*)$/);
+  if (!m) return { texto: original || 'No se ha podido generar el informe.', original: '', servicio: null, sinAudio: false };
+  const servicio = m[1] === 'Whisper' ? 'whisper' : 'claude';
+  const detalle = m[2];
+  const nombre = servicio === 'whisper' ? 'OpenAI (transcripción)' : 'Anthropic (redacción)';
+  const familia = FAMILIAS_ERROR.find(f => f.re.test(detalle) && (!f.soloWhisper || servicio === 'whisper'));
+  const texto = familia
+    ? familia.texto(nombre)
+    : servicio === 'whisper' ? 'No se ha podido transcribir el audio (OpenAI).' : 'No se ha podido redactar el informe (Anthropic).';
+  return { texto, original, servicio, sinAudio: servicio === 'whisper' };
+}
