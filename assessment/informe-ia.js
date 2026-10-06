@@ -286,12 +286,14 @@ export function construirAmpliado() {
     const h = HYPOTHESES[id];
     if (!h) continue;
     const res = state.testResults?.[id] || {};
-    const items = (h.tests || []).map((t, idx) => RESULTADO[res[idx]] ? {
+    // El «Gesto testigo (①) y medida objetiva (②)» es la medida de referencia
+    // para el seguimiento, no una prueba: va sin resultado.
+    const items = (h.tests || []).map((t, idx) => !RESULTADO[res[idx]] ? null : /^Gesto testigo/.test(t.name) ? { test: t.name, referencia: true } : {
       test: t.name, resultado: RESULTADO[res[idx]],
       ...(t.cluster && h.clusters?.[t.cluster] ? { cluster: h.clusters[t.cluster].nombre } : {}),
       ...(t.tipo === 'pronostico' ? { pronostico: true } : {}),
-    } : null).filter(Boolean);
-    if (items.length) tests.push({ hipotesis: h.name, items });
+    }).filter(Boolean);
+    if (items.length) tests.push({ hipotesis: h.name, ...(h.dosis === DOSIS_DERIVAR ? { derivar: true } : {}), items });
     pautas.push({
       hipotesis: h.name,
       derivar: h.dosis === DOSIS_DERIVAR,
