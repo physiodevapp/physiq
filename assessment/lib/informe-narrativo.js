@@ -33,6 +33,13 @@
 //     las fuentes, reglas pronósticas nunca como apoyo diagnóstico, códigos
 //     CIF limitados, derivación una vez al principio del plan, y topes de
 //     tokens holgados (el límite real es el de palabras).
+//   · Segunda revisión (hombro, narrativo sin audio): estructura del narrativo
+//     adaptada a una valoración inicial (fuera cardiorrespiratoria, control
+//     motor, equilibrio y los ejemplos de escalas que no se pasan; subsecciones
+//     opcionales marcadas «[solo si…]»), sin códigos CIF en el narrativo, sin
+//     la etiqueta de puntuación de las hipótesis (se colaba el «LR×»), bloques
+//     de datos con nombres que no invitan a citarlos, notas del plan vacías
+//     fuera, y «Derivar» se mantiene aunque los tests salgan negativos.
 
 export const ORCHESTRATOR_URL = 'https://physiq-orchestrator.edu-gamboa-rodriguez.workers.dev';
 export const TURNSTILE_SITEKEY = '0x4AAAAAADU3dzE5Tw_whVks';   // la misma de physiq-report
@@ -65,12 +72,15 @@ export function getWhisperPrompt(region) {
 }
 
 // ── Bloque de datos de la valoración ──────────────────────────────────────────
-// Parte común: idéntica a buildClinicalContext() de report. Lo añadido va al
-// final del bloque y solo aparece cuando hay datos.
+// Parte común: la de buildClinicalContext() de report, salvo tres cambios
+// deliberados — hipótesis sin su etiqueta de puntuación (el informe acababa
+// citando «LR× 2,0» y «0/4 hallazgos»), notas del plan solo si tienen texto
+// (un «—» acababa como «no se especificó…») y la derivación del árbol sin la
+// palabra «árbol». Lo añadido va al final y solo aparece cuando hay datos.
 export function contextoValoracion(data, nombreRegion = r => r, ampliado = null) {
   if (!data) return '';
   const hyps = (data.h || [])
-    .map(h => `  · ${h.name} — ${h.sc || 'sin evaluar'}`)
+    .map(h => `  · ${h.name}`)
     .join('\n');
   const brText = data.br?.length > 0
     ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
@@ -81,10 +91,13 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
 
   const extra = [];
   if (data.ur?.length) extra.push(`DERIVACIÓN URGENTE indicada en el cribado (debe constar en el informe):\n${data.ur.map(s => `  · ${s}`).join('\n')}`);
-  if (data.dv?.length) extra.push(`Derivación médica indicada por el árbol de decisión (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);
+  if (data.dv?.length) extra.push(`Derivación médica indicada en la exploración (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);
   const sv = signosVitalesTexto(data.sv, data.an);
   if (sv) extra.push(`Signos vitales y antropometría: ${sv}`);
-  if (data.fp?.length) extra.push(`Formulario previo (lo refiere el paciente):\n${data.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
+  if (data.fp?.length) extra.push(`Lo que refiere el paciente antes de la consulta (pregunta → respuesta):\n${data.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
+  const notas = [['Variable de control', data.pn?.variableControl], ['Ventana de recuperación', data.pn?.ventanaRecuperacion], ['Anclaje de hábito', data.pn?.anclajeHabito]]
+    .filter(([, v]) => (v || '').trim());
+  if (notas.length) extra.push(`Notas del plan terapéutico:\n${notas.map(([k, v]) => `  · ${k}: ${v.trim()}`).join('\n')}`);
   extra.push(...bloquesAmpliados(ampliado));
   if (data.md === 'breve') {
     extra.push('Tipo de valoración: inicial breve (consulta corta). Las hipótesis sin tests de confirmación son hipótesis de trabajo, no diagnósticos.'
@@ -103,13 +116,8 @@ Banderas rojas:
 ${brText}
 Cribado sistémico: ${data.si ? '⚠️ Positivo' : 'Negativo'}${sqText}
 
-Hipótesis diagnósticas (por peso diagnóstico):
-${hyps || '  (sin hipótesis registradas)'}
-
-Notas del plan terapéutico:
-  · Variable de control: ${data.pn?.variableControl || '—'}
-  · Ventana de recuperación: ${data.pn?.ventanaRecuperacion || '—'}
-  · Anclaje de hábito: ${data.pn?.anclajeHabito || '—'}${extra.length ? '\n\n' + extra.join('\n\n') : ''}
+Hipótesis de trabajo del fisioterapeuta (de mayor a menor apoyo):
+${hyps || '  (sin hipótesis registradas)'}${extra.length ? '\n\n' + extra.join('\n\n') : ''}
 
 ---`;
 }
@@ -137,7 +145,7 @@ export function bloquesAmpliados(a) {
   if (fase3.length) b.push(fase3.join('\n'));
   if (a.psico?.length) b.push(`Cribado psicosocial detallado:\n${a.psico.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
   if (a.criterios?.length) b.push(`Criterios compuestos del cribado que se cumplen (patrón compatible, no diagnóstico):\n${a.criterios.map(c => `  · ${c.etiqueta} (${c.positivas}/${c.total}): ${c.nota}`).join('\n')}`);
-  if (a.arbol?.length) b.push(`Razonamiento clínico (árbol de decisión CIF; pregunta → respuesta del fisioterapeuta):\n${a.arbol.map(x => `  · ${x.pregunta} → ${x.respuesta}`).join('\n')}`);
+  if (a.arbol?.length) b.push(`Recorrido de la exploración (pregunta clínica → lo que encontró el fisioterapeuta):\n${a.arbol.map(x => `  · ${x.pregunta} → ${x.respuesta}`).join('\n')}`);
   if (a.tests?.length) {
     b.push(`Tests de confirmación realizados (solo estos; no hay otros):\n${a.tests.map(h => `  ${h.hipotesis}:\n${h.items.map(t =>
       `    · ${t.test}: ${t.resultado}${t.cluster ? ` (parte del cluster «${t.cluster}»)` : ''}${t.pronostico ? ' (regla pronóstica, no diagnóstica)' : ''}`).join('\n')}`).join('\n')}`);
@@ -231,88 +239,77 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 2. Usa prosa clínica continua y formal, no listas escuetas. Tono de informe profesional para enviar al paciente o equipo médico.
 3. NO uses ** para negrita ni símbolos markdown, salvo en tablas markdown estándar.
 4. Tablas: cuando haya datos numéricos cuantificables (ROM, fuerza, escalas), genera tablas markdown estándar con sintaxis | columna | columna |. Si no hay datos suficientes, omite la tabla y describe en prosa.
-5. Si una subsección no aplica o no hay datos, omítela limpiamente (no escribas "no evaluado" en cada subsección menor).
-6. Usa la terminología CIF cuando proceda: como máximo unos 10 códigos (b, s, d, e) en todo el informe y solo los que correspondan sin duda al hallazgo descrito; es mejor omitir un código que poner uno dudoso.
+5. Las subsecciones marcadas «[solo si…]» se omiten por completo, título incluido, cuando no hay datos para ellas. No escribas subsecciones para decir que algo no se hizo.
+6. Usa la terminología CIF en la prosa (funciones, estructuras, actividades, participación, factores contextuales), sin códigos alfanuméricos.
 7. ${conAudio
     ? 'La transcripción complementa los datos estructurados.'
     : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos.
 8. ${reglaDerivacion('CONCLUSIONES Y PLAN DE TRATAMIENTO')}
 ${REGLAS_COMUNES}${hasHypotheses ? `
-9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". Contrasta los hallazgos (tests realizados, razonamiento del árbol y, si la hay, la transcripción) con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante. No propongas hipótesis nuevas en esta subsección.
+9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". En dos o tres frases, contrasta los hallazgos (tests realizados, recorrido de la exploración y, si la hay, la transcripción) con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante, sin volver a enumerar los tests uno a uno. No propongas hipótesis nuevas en esta subsección.
 10. Si en la transcripción aparecen hallazgos clínicos explícitos (tests especiales, signos, síntomas objetivos) que sugieran condiciones no cubiertas por las hipótesis recibidas, inclúyelos en "### Hipótesis adicionales a valorar", citando el hallazgo exacto que justifica cada una. Limita el alcance a la región anatómica del contexto estructurado. Omite esta subsección si no hay evidencia explícita.` : ''}
 
 ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin títulos previos:
 
 ## CONDICIÓN DE SALUD Y FACTORES CONTEXTUALES
-[Párrafo introductorio sobre el enfoque biopsicosocial]
+[Dos o tres frases que sitúen el caso (quién, qué región, desde cuándo). No expliques qué es la CIF ni el modelo biopsicosocial]
 
 ### Condición de Salud (Diagnóstico Médico)
-[Solo si los datos o la consulta mencionan un diagnóstico médico o una prueba de imagen: recógelo como antecedente. Si no consta ninguno, omite esta subsección sin comentarlo]
+[Solo si los datos o la consulta mencionan un diagnóstico médico, una cirugía o una prueba de imagen: recógelo como antecedente. Si no consta ninguno, omite esta subsección sin comentarlo]
 
 ### Factores Personales
-[Edad, sexo, profesión, comorbilidades, estilo de vida previo, medicación]
+[Edad, sexo, actividad física y laboral, comorbilidades, medicación, signos vitales y antropometría si constan, y el riesgo psicosocial]
 
 ### Factores Ambientales
-[Domicilio, apoyo familiar, accesibilidad, ayudas técnicas]
+[Solo si hay datos de domicilio, apoyo familiar, trabajo o ayudas técnicas]
 
 ## HISTORIA CLÍNICA Y EVOLUCIÓN
 
 ### Presentación Inicial y Antecedentes
-[Origen del cuadro, evolución cronológica]
+[Mecanismo, inicio, evolución cronológica, episodios previos y comportamiento del dolor a lo largo del día]
 
 ### Intervención Quirúrgica
-[Si aplica: fecha, técnica, hallazgos intraoperatorios]
+[Solo si la hubo y hay detalles que no estén ya en Condición de Salud: fecha, técnica, evolución posquirúrgica]
 
-### Tratamientos Adyuvantes
-[Si aplica: radioterapia, hormonoterapia, infiltraciones, fisioterapia previa]
+### Tratamientos Previos
+[Solo si los hay: qué ha probado y con qué resultado]
+
+### Cribado de Seguridad
+[Banderas rojas y cribado sistémico, en una o dos frases]
 
 ## EVALUACIÓN DE FUNCIONES Y ESTRUCTURAS CORPORALES
 
-### Funciones Neuromusculoesqueléticas y Relacionadas con el Movimiento
+### Dolor
+[Intensidad, irritabilidad, naturaleza, signo comparable y qué lo agrava o alivia]
 
-#### Rango de Movimiento Activo (ROM)
-[Describir y, si hay datos numéricos, generar TABLA markdown con columnas: Articulación | Movimiento | Rango (Izq/Dcha) | Asimetría]
+### Movilidad
+[Hallazgos de movilidad activa y pasiva; si hay datos numéricos, TABLA markdown con columnas: Articulación | Movimiento | Rango (Izq/Dcha) | Asimetría]
 
-#### Fuerza Muscular
-[Describir y, si hay datos numéricos, generar TABLA markdown con columnas: Miotomas | Movimiento | Fuerza (Izq/Dcha) | Asimetría]
+### Fuerza Muscular
+[Solo si se exploró o el paciente refiere debilidad; si hay datos numéricos, TABLA markdown con columnas: Grupo muscular | Movimiento | Fuerza (Izq/Dcha) | Asimetría]
 
-#### Función Cardiorrespiratoria
-[Pruebas ortostáticas, HRV, capacidad aeróbica si aplica]
-
-#### Control Motor
-[Análisis de patrones motores, plataformas de fuerza, si aplica]
-
-#### Equilibrio
-[Estático, dinámico, oscilación, si aplica]
-
-#### Estabilidad Articular
-[Tests de inestabilidad, propiocepción, si aplica]
-
-### Funciones Sensoriales y Dolor
-[Evaluación EVA, dolor neuropático, hiperalgesia, escalas]
+### Pruebas Clínicas
+[Solo si se realizaron: cada test con su resultado, una vez, agrupados por la hipótesis que exploran]
 
 ## ANÁLISIS DEL FUNCIONAMIENTO: LIMITACIONES EN LA ACTIVIDAD Y RESTRICCIONES EN LA PARTICIPACIÓN
 
-### Limitación Funcional Global
-[Visión integradora del impacto biopsicosocial]
-
 ### Limitaciones en las Actividades
-[Pruebas de ejecución: 6MWT, TUG, SCT, Chair Stand, etc. + escalas autorreportadas: EFEI, WOMAC]
+[Las actividades que refiere limitadas o dolorosas, agrupadas, sin enumerarlas una a una]
 
 ### Restricciones en la Participación
-[EQ-5D-5L, ICL, impacto laboral y social]
+[Solo si hay datos de trabajo, ocio, deporte o vida social]
 
 ## CONCLUSIONES Y PLAN DE TRATAMIENTO
 [Si hay derivación, empieza por ella. Después, síntesis clínica integradora con problema primario, hallazgos clave y enfoque terapéutico propuesto en prosa]${hasHypotheses ? `
 
 ### Coherencia con hipótesis de valoración
-[Indica si los hallazgos de la sesión refuerzan, matizan o contradicen las hipótesis recibidas, sin proponer diagnósticos nuevos]
+[Dos o tres frases: si los hallazgos refuerzan, matizan o contradicen las hipótesis recibidas, sin repetir los tests ni proponer diagnósticos nuevos]
 
 ### Hipótesis adicionales a valorar
 [Solo si la transcripción contiene hallazgos explícitos que lo justifiquen: lista cada hipótesis adicional citando el hallazgo exacto. Omite si no hay evidencia explícita]` : ''}
 
 ## SEGUIMIENTO FUNCIONAL
-[Espacio para registrar reevaluaciones futuras. Si no procede en esta sesión, escribir: "Pendiente de reevaluaciones programadas."]
+[Escala recomendada para medir la evolución y cuándo reevaluar o reconsiderar la derivación, sin repetir el plan. Si no hay datos para ello, escribir: "Pendiente de reevaluaciones programadas."]
 
 PRESUPUESTO DE EXTENSIÓN: el informe completo no debe superar las ${PALABRAS_INFORME} palabras en total. Ajusta la profundidad de cada sección para que el informe esté completo y bien cerrado dentro de ese límite. No trunces a mitad de sección.
 
@@ -323,8 +320,12 @@ RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CON
 const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resultado; no menciones tests no realizados uno a uno.
 - Reglas pronósticas (marcadas «regla pronóstica, no diagnóstica», p. ej. la regla de Flynn): predicen la respuesta a un tratamiento. Preséntalas así y nunca las uses para reforzar ni descartar una hipótesis diagnóstica.
 - Lo que no se exploró o no se midió en esta valoración (goniometría, fuerza, escalas…) dilo UNA sola vez, en una frase, donde se describe la exploración; no lo repitas en cada sección o subsección.
-- Discrepancias: los resultados y clasificaciones del fisioterapeuta (tests, NRS, irritabilidad, banderas, hipótesis) prevalecen sobre lo que se diga en la conversación. Si lo que refiere el paciente cambia entre lo que contestó antes de la consulta y lo que cuenta en ella, recoge las dos versiones UNA vez en una frase neutra (p. ej. «niega inicialmente dolor nocturno, aunque en consulta refiere que le dificulta conciliar el sueño»). No elijas tú una de las dos ni las escribas en lugares distintos como si no chocaran.
-- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «PhysiQ», «datos estructurados» ni «árbol de decisión». Escribe «refiere», «en consulta», «en la exploración».
+- Discrepancias: los resultados y clasificaciones del fisioterapeuta (tests, NRS, irritabilidad, banderas, hipótesis) prevalecen sobre lo que se diga en la conversación. Si lo que refiere el paciente cambia entre lo que contestó antes de la consulta y lo que cuenta en ella, recoge las dos versiones UNA vez en una frase neutra (p. ej. «niega inicialmente dolor nocturno, aunque en consulta refiere que le dificulta conciliar el sueño»). No elijas tú una de las dos, no las escribas en lugares distintos como si no chocaran, y no interpretes ni justifiques la discrepancia.
+- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «árbol de decisión» ni «regla de decisión». Escribe «refiere», «en consulta», «en la exploración».
+- Hipótesis: no cites cocientes de probabilidad (LR), pesos, puntuaciones ni recuentos de criterios o hallazgos; describe qué tests apoyan o no cada hipótesis.
+- Lo que refiere el paciente antes de la consulta: resúmelo en prosa, con los negativos relevantes en una frase. No lo transcribas pregunta por pregunta, no escribas «contestó» y omite las respuestas «no sabría decir».
+- Cada dato aparece una sola vez, en la sección que le corresponde; no remitas a otras secciones («como se indicó…»).
+- No crees secciones ni subsecciones que no estén en la estructura.
 - Plan: si los datos incluyen una pauta recomendada por PhysiQ, basa el plan en ella sin proponer dosis, series ni volúmenes distintos; si dice «Derivar», el plan es la derivación.
 - Seguimiento: para medir la evolución, usa la escala recomendada de cada hipótesis cuando la haya.`;
 
@@ -332,7 +333,7 @@ const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resul
 // derivación no urgente el informe no decide si se espera a la valoración
 // médica: esa decisión es del fisioterapeuta.
 function reglaDerivacion(seccion) {
-  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay), plan y pauta, y al final el seguimiento.`;
+  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Una hipótesis cuya pauta dice «Derivar» (fractura, luxación, rotura…) se deriva aunque sus tests clínicos hayan salido negativos, porque no la descartan: nómbrala como sospecha pendiente de confirmar por el médico, salvo que el fisioterapeuta indique otra cosa en consulta o en las notas del plan. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay), plan y pauta, y al final el seguimiento.`;
 }
 
 // ── Ficha breve ───────────────────────────────────────────────────────────────
