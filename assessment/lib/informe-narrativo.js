@@ -45,6 +45,11 @@
 //     negaciones), etiquetas internas limpias (flechas, «(→ Rx)»), IMC
 //     redondeado, el gesto testigo como medida de referencia (no test) y las
 //     pruebas de una hipótesis «Derivar» como comprobaciones que no la descartan.
+//   · Cuarta revisión (hombro posquirúrgico): edad, sexo y lado solo si constan
+//     (inventó «43 años», «varón», «hombro derecho»), ni nombre ni fecha en el
+//     texto, una derivación que el fisioterapeuta descarta no se menciona, «No
+//     sé» ni como «desconoce», síntomas fuera de Limitaciones, un cribado
+//     negativo no «descarta», y Coherencia sin nombrar los tests.
 
 export const ORCHESTRATOR_URL = 'https://physiq-orchestrator.edu-gamboa-rodriguez.workers.dev';
 export const TURNSTILE_SITEKEY = '0x4AAAAAADU3dzE5Tw_whVks';   // la misma de physiq-report
@@ -248,7 +253,7 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 1. **NO GENERES NINGÚN TÍTULO NI SECCIÓN INICIAL DE IDENTIFICACIÓN**. Específicamente PROHIBIDO:
    - NO escribas "INFORME CLÍNICO DE FISIOTERAPIA" ni similar.
    - NO incluyas un bloque inicial con "Paciente:", "Fecha:", "Sesión número:", "Fisioterapeuta:" o cualquier ficha de identificación.
-   - NO repitas el nombre del paciente ni la fecha al inicio.
+   - NO escribas el nombre del paciente ni la fecha en ningún punto del texto, tampoco en la primera frase.
    - El nombre del paciente, la fecha y los datos identificativos se añaden aparte, fuera de tu texto. Repetirlos es un error grave.
    - Tu respuesta DEBE empezar DIRECTAMENTE con "## CONDICIÓN DE SALUD Y FACTORES CONTEXTUALES" sin ningún texto previo.
 
@@ -262,7 +267,7 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
     : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos.
 8. ${reglaDerivacion('CONCLUSIONES Y PLAN DE TRATAMIENTO', false)}
 ${REGLAS_COMUNES}${hasHypotheses ? `
-9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". En dos o tres frases, contrasta los hallazgos (tests realizados, recorrido de la exploración y, si la hay, la transcripción) con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante, sin volver a enumerar los tests uno a uno. Si las comprobaciones de una hipótesis que se deriva salieron negativas, di que la exploración no la apoya pero no la descarta (por eso se deriva); no digas que los hallazgos la refuerzan. No propongas hipótesis nuevas en esta subsección.
+9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". En dos o tres frases, contrasta los hallazgos (tests realizados, recorrido de la exploración y, si la hay, la transcripción) con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante, sin nombrar los tests (ya están en Pruebas Clínicas). Si las comprobaciones de una hipótesis que se deriva salieron negativas, di que la exploración no la apoya pero no la descarta (por eso se deriva); no digas que los hallazgos la refuerzan. No propongas hipótesis nuevas en esta subsección.
 10. Si en la transcripción aparecen hallazgos clínicos explícitos (tests especiales, signos, síntomas objetivos) que sugieran condiciones no cubiertas por las hipótesis recibidas, inclúyelos en "### Hipótesis adicionales a valorar", citando el hallazgo exacto que justifica cada una. Limita el alcance a la región anatómica del contexto estructurado. Omite esta subsección si no hay evidencia explícita.` : ''}
 
 ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin títulos previos:
@@ -274,7 +279,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Solo si los datos o la consulta mencionan un diagnóstico médico, una cirugía o una prueba de imagen: recógelo como antecedente. Si no consta ninguno, omite esta subsección sin comentarlo]
 
 ### Factores Personales
-[Edad, sexo, actividad física y laboral, comorbilidades, medicación, signos vitales y antropometría si constan, y el riesgo psicosocial]
+[Edad y sexo solo si constan en los datos; actividad física y laboral, comorbilidades, medicación, signos vitales y antropometría si constan, y el riesgo psicosocial]
 
 ### Factores Ambientales
 [Solo si hay datos de domicilio, apoyo familiar, trabajo o ayudas técnicas]
@@ -285,13 +290,13 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Mecanismo, inicio, evolución cronológica y episodios previos. La intensidad y la irritabilidad van en Dolor]
 
 ### Intervención Quirúrgica
-[Solo si la hubo y hay detalles que no estén ya en Condición de Salud: fecha, técnica, evolución posquirúrgica]
+[Solo si hay fecha, técnica o evolución posquirúrgica que no estén ya en Condición de Salud; si no, omite esta subsección]
 
 ### Tratamientos Previos
 [Solo si los hay: qué ha probado y con qué resultado]
 
 ### Cribado de Seguridad
-[Banderas rojas y cribado sistémico, en una o dos frases]
+[Banderas rojas y cribado sistémico, en una o dos frases: un resultado negativo «no muestra hallazgos que sugieran…», nunca «descarta»]
 
 ## EVALUACIÓN DE FUNCIONES Y ESTRUCTURAS CORPORALES
 
@@ -310,7 +315,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 ## ANÁLISIS DEL FUNCIONAMIENTO: LIMITACIONES EN LA ACTIVIDAD Y RESTRICCIONES EN LA PARTICIPACIÓN
 
 ### Limitaciones en las Actividades
-[Las actividades que refiere dolorosas o limitadas, agrupadas, sin enumerarlas una a una]
+[Solo las actividades que refiere dolorosas o limitadas, agrupadas en una o dos frases. Los síntomas que refiere o niega (fuerza, bloqueos, hormigueo…) van en Dolor, en una frase; lo cervical, en Pruebas Clínicas]
 
 ### Restricciones en la Participación
 [Solo si refiere afectación del trabajo, el ocio, el deporte o la vida social: describe lo que refiere, sin suponer cómo podría afectarle]
@@ -319,7 +324,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Si hay derivación, empieza por ella. Después, síntesis clínica con el problema principal y el enfoque terapéutico, en prosa, sin volver a enumerar los tests y sin el criterio de reevaluación (va en Seguimiento)]${hasHypotheses ? `
 
 ### Coherencia con hipótesis de valoración
-[Dos o tres frases: si los hallazgos refuerzan, matizan o contradicen las hipótesis recibidas, sin repetir los tests ni proponer diagnósticos nuevos]
+[Dos o tres frases: si los hallazgos refuerzan, matizan o contradicen las hipótesis recibidas, sin nombrar los tests ni proponer diagnósticos nuevos]
 
 ### Hipótesis adicionales a valorar
 [Solo si la transcripción contiene hallazgos explícitos que lo justifiquen: lista cada hipótesis adicional citando el hallazgo exacto. Omite si no hay evidencia explícita]` : ''}
@@ -337,10 +342,12 @@ const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resul
 - Reglas pronósticas (marcadas «regla pronóstica, no diagnóstica», p. ej. la regla de Flynn): predicen la respuesta a un tratamiento. Preséntalas así y nunca las uses para reforzar ni descartar una hipótesis diagnóstica.
 - Lo que no se exploró o no se midió en esta valoración (goniometría, fuerza, escalas…) dilo UNA sola vez, en una frase, donde se describe la exploración; no lo repitas en cada sección o subsección.
 - Discrepancias: los resultados y clasificaciones del fisioterapeuta (tests, NRS, irritabilidad, banderas, hipótesis) prevalecen sobre lo que se diga en la conversación. Si lo que refiere el paciente cambia entre lo que contestó antes de la consulta y lo que cuenta en ella, recoge las dos versiones UNA vez en una frase neutra (p. ej. «niega inicialmente dolor nocturno, aunque en consulta refiere que le dificulta conciliar el sueño»). No elijas tú una de las dos, no las escribas en lugares distintos como si no chocaran, y no interpretes ni justifiques la discrepancia.
-- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «árbol de decisión» ni «regla de decisión». Escribe «refiere», «en consulta», «en la exploración».
+- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «árbol de decisión», «regla de decisión», «notas del plan» ni el nombre de sus campos («variable de control», «ventana de recuperación», «anclaje de hábito»); usa su contenido sin decir de dónde viene. Escribe «refiere», «en consulta», «en la exploración».
 - Hipótesis: no cites cocientes de probabilidad (LR), pesos, puntuaciones ni recuentos de criterios o hallazgos; describe qué tests apoyan o no cada hipótesis.
 - Lo que refiere el paciente antes de la consulta: resúmelo en prosa, con los negativos relevantes en una frase. No lo transcribas pregunta por pregunta y no escribas «contestó».
-- Respuestas «No sé» o «No sabría decir»: omítelas; nunca las conviertas en una negación («no refiere…», «niega…»).
+- Respuestas «No sé» o «No sabría decir»: no las menciones de ninguna forma; ni como negación («no refiere…», «niega…») ni como desconocimiento («desconoce si…»).
+- Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato.
+- Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
 - Cada dato aparece una sola vez, en la sección que le corresponde; no remitas a otras secciones («como se indicó…»).
 - No crees secciones ni subsecciones que no estén en la estructura.
@@ -351,7 +358,7 @@ const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resul
 // derivación no urgente el informe no decide si se espera a la valoración
 // médica: esa decisión es del fisioterapeuta.
 function reglaDerivacion(seccion, conSeguimiento = true) {
-  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Una hipótesis cuya pauta dice «Derivar» (fractura, luxación, rotura…) se deriva aunque sus tests clínicos hayan salido negativos, porque no la descartan: nómbrala como sospecha pendiente de confirmar por el médico, salvo que el fisioterapeuta indique otra cosa en consulta o en las notas del plan. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay) y después plan y pauta${conSeguimiento ? ', y al final el seguimiento' : ''}.`;
+  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Una hipótesis cuya pauta dice «Derivar» (fractura, luxación, rotura…) se deriva aunque sus tests clínicos hayan salido negativos, porque no la descartan: nómbrala como sospecha pendiente de confirmar por el médico, salvo que el fisioterapeuta indique otra cosa en consulta o en las notas del plan; si indica que no procede (p. ej. la lesión ya está diagnosticada y tratada), no menciones esa derivación en ningún punto del informe. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay) y después plan y pauta${conSeguimiento ? ', y al final el seguimiento' : ''}.`;
 }
 
 // ── Ficha breve ───────────────────────────────────────────────────────────────
