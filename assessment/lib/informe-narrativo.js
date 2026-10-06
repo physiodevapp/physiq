@@ -59,7 +59,7 @@ export function getWhisperPrompt(region) {
 // ── Bloque de datos de la valoración ──────────────────────────────────────────
 // Parte común: idéntica a buildClinicalContext() de report. Lo añadido va al
 // final del bloque y solo aparece cuando hay datos.
-export function contextoValoracion(data, nombreRegion = r => r) {
+export function contextoValoracion(data, nombreRegion = r => r, ampliado = null) {
   if (!data) return '';
   const hyps = (data.h || [])
     .map(h => `  · ${h.name} — ${h.sc || 'sin evaluar'}`)
@@ -77,6 +77,7 @@ export function contextoValoracion(data, nombreRegion = r => r) {
   const sv = signosVitalesTexto(data.sv, data.an);
   if (sv) extra.push(`Signos vitales y antropometría: ${sv}`);
   if (data.fp?.length) extra.push(`Formulario previo (lo refiere el paciente):\n${data.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
+  extra.push(...bloquesAmpliados(ampliado));
   if (data.md === 'breve') {
     extra.push('Tipo de valoración: inicial breve (consulta corta). Las hipótesis sin tests de confirmación son hipótesis de trabajo, no diagnósticos.'
       + (data.pe?.length ? `\nPendiente de completar:\n${data.pe.map(s => `  · ${s}`).join('\n')}` : ''));
@@ -84,7 +85,7 @@ export function contextoValoracion(data, nombreRegion = r => r) {
 
   return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
 NOTA: estos datos proceden de una valoración clínica estructurada y son más fiables que la transcripción. Úsalos como fuente prioritaria cuando haya discrepancias.
-Paciente: ${data.p || '—'} · Región: ${data.r ? nombreRegion(data.r) : '—'} · Fecha: ${data.d || '—'}
+Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''} · Región: ${data.r ? nombreRegion(data.r) : '—'} · Fecha: ${data.d || '—'}
 Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
 NRS: ${data.nr ?? '—'}/10
@@ -103,6 +104,47 @@ Notas del plan terapéutico:
   · Anclaje de hábito: ${data.pn?.anclajeHabito || '—'}${extra.length ? '\n\n' + extra.join('\n\n') : ''}
 
 ---`;
+}
+
+// ── Datos ampliados de las fases (informe-ia.js los reúne del estado) ────────
+// No viajan en buildPhysiQPayload() — ese resumen es el contrato con
+// physiq-report —, solo en este prompt. Forma:
+//   { edad, signoComparable, estabilidad,
+//     irritabilidad: { dolor, reposo, movimiento, discapacidad, tolerancia } | null,
+//     psico: [{ q, a }], criterios: [{ etiqueta, positivas, total, nota }],
+//     arbol: [{ pregunta, respuesta }],
+//     tests: [{ hipotesis, items: [{ test, resultado, cluster?, pronostico? }] }],
+//     pautas: [{ hipotesis, derivar, pauta, fuente, pronostico?, prom }] }
+// Cada bloque solo aparece si tiene datos.
+export function bloquesAmpliados(a) {
+  if (!a) return [];
+  const b = [];
+  const fase3 = [];
+  if (a.signoComparable) fase3.push(`Signo comparable (movimiento que reproduce los síntomas): ${a.signoComparable}`);
+  if (a.estabilidad) fase3.push(`Evolución reciente del cuadro: ${a.estabilidad}`);
+  if (a.irritabilidad) {
+    const i = a.irritabilidad;
+    fase3.push(`Detalle de la irritabilidad: nivel de dolor ${i.dolor || '—'}; dolor en reposo ${i.reposo || '—'}; dolor con movimiento ${i.movimiento || '—'}; discapacidad ${i.discapacidad || '—'}; tolerancia al estrés físico ${i.tolerancia || '—'}`);
+  }
+  if (fase3.length) b.push(fase3.join('\n'));
+  if (a.psico?.length) b.push(`Cribado psicosocial detallado:\n${a.psico.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
+  if (a.criterios?.length) b.push(`Criterios compuestos del cribado que se cumplen (patrón compatible, no diagnóstico):\n${a.criterios.map(c => `  · ${c.etiqueta} (${c.positivas}/${c.total}): ${c.nota}`).join('\n')}`);
+  if (a.arbol?.length) b.push(`Razonamiento clínico (árbol de decisión CIF; pregunta → respuesta del fisioterapeuta):\n${a.arbol.map(x => `  · ${x.pregunta} → ${x.respuesta}`).join('\n')}`);
+  if (a.tests?.length) {
+    b.push(`Tests de confirmación realizados (solo estos; no hay otros):\n${a.tests.map(h => `  ${h.hipotesis}:\n${h.items.map(t =>
+      `    · ${t.test}: ${t.resultado}${t.cluster ? ` (parte del cluster «${t.cluster}»)` : ''}${t.pronostico ? ' (regla pronóstica, no diagnóstica)' : ''}`).join('\n')}`).join('\n')}`);
+  }
+  if (a.pautas?.length) {
+    b.push(`Pauta recomendada por PhysiQ para cada hipótesis (basada en guías; no propongas dosis distintas):\n${a.pautas.map(p => [
+      `  ${p.hipotesis}:`,
+      p.derivar ? '    · Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico.' : p.pauta ? `    · Pauta: ${p.pauta}` : '    · Pauta: a criterio del fisioterapeuta (la guía no la fija).',
+      p.fuente ? `    · Fuente: ${p.fuente}` : '',
+      p.pronostico?.horizonte ? `    · Pronóstico: ${p.pronostico.horizonte}` : '',
+      p.pronostico?.derivacion ? `    · Cuándo reconsiderar o derivar: ${p.pronostico.derivacion}` : '',
+      p.prom ? `    · Escala recomendada para el seguimiento: ${p.prom}` : '',
+    ].filter(Boolean).join('\n')).join('\n')}`);
+  }
+  return b;
 }
 
 function signosVitalesTexto(sv, an) {
@@ -156,8 +198,8 @@ ${rows}
 // ── Prompt narrativo ──────────────────────────────────────────────────────────
 // `{{TRANSCRIPT}}` lo sustituye el worker por la transcripción de Whisper, o
 // por un aviso de «no disponible» cuando no se adjunta audio.
-export function buildNarrativePrompt(data, { conAudio, nombreRegion } = {}) {
-  const clinicalCtx = contextoValoracion(data, nombreRegion);
+export function buildNarrativePrompt(data, { conAudio, nombreRegion, ampliado } = {}) {
+  const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
   const romCtx = contextoROM(data?.rom);
   const hasHypotheses = (data?.h || []).length > 0;
   const region = data?.r ? (nombreRegion ? nombreRegion(data.r) : data.r) : '—';
@@ -186,8 +228,9 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 7. ${conAudio
     ? 'La transcripción complementa los datos estructurados; si discrepan, prevalecen los datos estructurados.'
     : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos.
-8. Si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita en CONCLUSIONES Y PLAN DE TRATAMIENTO.${hasHypotheses ? `
-9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". Contrasta los hallazgos de la transcripción con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante. No propongas hipótesis nuevas en esta subsección.
+8. Si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita en CONCLUSIONES Y PLAN DE TRATAMIENTO.
+${REGLAS_COMUNES}${hasHypotheses ? `
+9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". Contrasta los hallazgos (tests realizados, razonamiento del árbol y, si la hay, la transcripción) con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante. No propongas hipótesis nuevas en esta subsección.
 10. Si en la transcripción aparecen hallazgos clínicos explícitos (tests especiales, signos, síntomas objetivos) que sugieran condiciones no cubiertas por las hipótesis recibidas, inclúyelos en "### Hipótesis adicionales a valorar", citando el hallazgo exacto que justifica cada una. Limita el alcance a la región anatómica del contexto estructurado. Omite esta subsección si no hay evidencia explícita.` : ''}
 
 ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin títulos previos:
@@ -268,6 +311,58 @@ PRESUPUESTO DE EXTENSIÓN: el informe completo no debe superar las ${PALABRAS_IN
 RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CONDICIÓN DE SALUD Y FACTORES CONTEXTUALES" como primer texto, sin nada antes.`;
 }
 
+// Reglas que comparten las dos plantillas (narrativa y ficha breve).
+const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resultado; no menciones tests no realizados uno a uno.
+- Lo que no se exploró o no se midió en esta valoración (goniometría, fuerza, escalas…) dilo UNA sola vez, en una frase, donde se describe la exploración; no lo repitas en cada sección o subsección.
+- Plan: si los datos incluyen una pauta recomendada por PhysiQ, basa el plan en ella sin proponer dosis, series ni volúmenes distintos; si dice «Derivar», el plan es la derivación.
+- Seguimiento: para medir la evolución, usa la escala recomendada de cada hipótesis cuando la haya.`;
+
+// ── Ficha breve ───────────────────────────────────────────────────────────────
+// Adaptada de la plantilla «brief» de physiq-report (buildPrompt(), rama
+// brief): tres secciones en prosa, ~550 palabras. Mismas diferencias que la
+// narrativa (identificación aparte, sin audio, datos ampliados, reglas comunes).
+export const PALABRAS_FICHA = 550;
+export const MAX_TOKENS_FICHA = 1500;
+
+export function buildFichaBrevePrompt(data, { conAudio, nombreRegion, ampliado } = {}) {
+  const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
+  const romCtx = contextoROM(data?.rom);
+  const hasHypotheses = (data?.h || []).length > 0;
+  const region = data?.r ? (nombreRegion ? nombreRegion(data.r) : data.r) : '—';
+
+  return `Eres un fisioterapeuta clínico experto en documentación CIF-APTA.
+Genera un informe clínico breve en español a partir de los datos de la valoración${conAudio ? ' y de la transcripción de la sesión' : ''}. El informe debe estar escrito en prosa clínica continua, sin listas de ítems, y no superar las ${PALABRAS_FICHA} palabras en total.
+
+PACIENTE: ${data?.p || '—'} | Fecha: ${data?.d || '—'} | Región valorada: ${region} | Diagnóstico médico: no aportado
+
+${clinicalCtx ? clinicalCtx + '\n\n' : ''}${romCtx ? romCtx + '\n\n' : ''}TRANSCRIPCIÓN:
+{{TRANSCRIPT}}
+
+INSTRUCCIONES:
+1. No escribas título ni ficha de identificación (paciente, fecha…): se añaden aparte. Empieza directamente con "## PRESENTACIÓN CLÍNICA".
+2. Usa EXACTAMENTE estas tres secciones con prefijo ##:
+   ## PRESENTACIÓN CLÍNICA
+   ## HALLAZGOS Y CODIFICACIÓN CIF
+   ## OBJETIVOS Y PLAN
+3. Escribe en prosa continua dentro de cada sección, sin viñetas ni listas.
+4. En ## HALLAZGOS Y CODIFICACIÓN CIF incluye los códigos CIF alfanuméricos relevantes entre paréntesis inline, integrados en la prosa. Ejemplo: "Se constata limitación del rango de flexión de hombro (b7101) con dolor asociado al movimiento activo (b28016)."
+5. ${conAudio
+    ? 'La transcripción complementa los datos estructurados; si discrepan, prevalecen los datos estructurados.'
+    : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos; no escribas "No evaluado".
+6. Si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita en ## OBJETIVOS Y PLAN.
+${REGLAS_COMUNES}
+7. Límite estricto: ${PALABRAS_FICHA} palabras totales entre las tres secciones.${hasHypotheses ? '\n8. En ## HALLAZGOS Y CODIFICACIÓN CIF añade una frase de contraste con las hipótesis de valoración recibidas: indica si los hallazgos las refuerzan, matizan o contradicen, citando el hallazgo que lo justifica.' : ''}`;
+}
+
+// Plantillas disponibles: lo que necesita la tarjeta para generar y validar.
+export const PLANTILLAS = {
+  narrativo: { nombre: 'Narrativo', palabras: PALABRAS_INFORME, maxTokens: MAX_TOKENS_INFORME, ultima: 'SEGUIMIENTO FUNCIONAL', prompt: (d, o) => buildNarrativePrompt(d, o) },
+  breve:     { nombre: 'Ficha breve', palabras: PALABRAS_FICHA, maxTokens: MAX_TOKENS_FICHA, ultima: 'OBJETIVOS Y PLAN', prompt: (d, o) => buildFichaBrevePrompt(d, o) },
+};
+
+// Por defecto, la que encaja con el tipo de consulta.
+export const plantillaPorDefecto = modo => (modo === 'breve' ? 'breve' : 'narrativo');
+
 // ── Huella de la valoración ───────────────────────────────────────────────────
 // Para avisar de que la valoración cambió después de generar el informe. La
 // fecha (`d`) se excluye: cambia sola al pasar la medianoche.
@@ -307,10 +402,11 @@ export function parseSSEBlock(block) {
 }
 
 // Misma comprobación que detectTruncation() de report (plantilla narrativa).
-export function informeTruncado(texto) {
+export function informeTruncado(texto, plantilla = 'narrativo') {
   const t = (texto || '').trimEnd();
   if (!t) return true;
-  const hasLastSection = t.toUpperCase().includes('SEGUIMIENTO FUNCIONAL');
+  const ultima = plantilla === 'breve' ? 'OBJETIVOS Y PLAN' : 'SEGUIMIENTO FUNCIONAL';
+  const hasLastSection = t.toUpperCase().includes(ultima);
   const lastChar = t[t.length - 1];
   return !hasLastSection || !'.!?)»"\''.includes(lastChar);
 }
@@ -375,7 +471,7 @@ export function markdownAHtml(md) {
 // ── Texto final para compartir ────────────────────────────────────────────────
 // La identificación la pone assessment, no Claude (regla 1 del prompt).
 export function textoParaCompartir(informe, data, nombreRegion = r => r) {
-  return `INFORME DE FISIOTERAPIA${data?.p ? `\nPaciente: ${data.p}` : ''}
+  return `INFORME DE FISIOTERAPIA${data?.p ? `\nPaciente: ${data.p}` : ''}${data?.ed != null ? `\nEdad: ${data.ed} años` : ''}
 Fecha: ${data?.d || '—'}
 Región valorada: ${data?.r ? nombreRegion(data.r) : '—'}
 

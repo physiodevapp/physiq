@@ -17,10 +17,11 @@
 // no puede mezclarse con una valoración real.
 
 import { state } from './state.js';
+import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data.js';
 import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast } from './app.js';
 import {
-  ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_TOKENS_INFORME, MAX_AUDIO_BYTES,
-  getWhisperPrompt, buildNarrativePrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
+  ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto,
+  getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
   informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio, errorLegible,
 } from './lib/informe-narrativo.js';
 import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
@@ -38,6 +39,9 @@ let _claveMsg = '';
 let _consentido = false;
 let _audioConsentido = null;     // el consentimiento vale para un audio concreto
 let _gen = null;                 // generación en curso: { texto, transcripcion, fase, ctrl }
+let _plantilla = null;           // 'narrativo' | 'breve' elegida a mano; null = la del tipo de consulta
+let _resultadoAbierto = false;   // el informe generado se muestra plegado hasta que se abre
+let _vivoAbierto = false;        // «Ver mientras se escribe», mientras dura una generación
 let _error = null;               // último fallo al generar: errorLegible() — se muestra hasta el siguiente intento
 let _turnstileToken = null;
 let _turnstileWidget = null;
@@ -76,6 +80,7 @@ function esqueleto() {
     <div id="iaResultado"></div>
     <details id="iaGenerador" class="ia-generador" open>
       <summary id="iaGenSummary">Generar un informe nuevo</summary>
+      <div id="iaPlantilla" class="ia-plantilla"></div>
       <div id="iaAudio"></div>
       <div id="iaConsent"></div>
       <div class="alert alert-info ia-privacidad"><span class="alert-icon">🔒</span><div>Al generar, los datos de esta valoración y el audio (si lo hay) se envían a OpenAI (transcripción) y a Anthropic (redacción) a través del servidor de PhysiQ. Revisa el informe antes de compartirlo.</div></div>
@@ -209,30 +214,41 @@ function consumirToken() {
 }
 
 // ── Resultado ────────────────────────────────────────────────────────────────
+// Plegado: a la vista quedan la fecha, los avisos y las acciones (compartir
+// es lo habitual); el texto completo, al desplegar, sin scroll interno.
 function pintarResultado() {
   const el = $('iaResultado');
   const inf = state.informeIA;
   if (!inf?.texto || _gen) { el.innerHTML = ''; return; }
   const fecha = inf.fecha ? new Date(inf.fecha).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : '';
+  const plantilla = PLANTILLAS[inf.plantilla] || PLANTILLAS.narrativo;
   el.innerHTML = `
     <div id="iaAvisoHuella"></div>
-    <div class="ia-meta">Generado ${esc(fecha)} · ${inf.conAudio ? 'con audio de la sesión' : 'solo con los datos de la valoración'}</div>
-    ${informeTruncado(inf.texto) ? '<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>El informe parece incompleto: la última sección no se ha generado. Puedes generarlo de nuevo.</div></div>' : ''}
-    <div class="ia-informe">${markdownAHtml(inf.texto)}</div>
-    ${inf.transcripcion && inf.conAudio ? `<details class="ia-transcripcion"><summary>Transcripción del audio</summary><div class="ia-transcripcion-texto">${esc(inf.transcripcion)}</div></details>` : ''}
+    ${informeTruncado(inf.texto, inf.plantilla) ? '<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>El informe parece incompleto: la última sección no se ha generado. Puedes generarlo de nuevo.</div></div>' : ''}
+    <details class="ia-resultado-det" id="iaResultadoDet"${_resultadoAbierto ? ' open' : ''}>
+      <summary>
+        <span class="ia-resultado-titulo">📄 ${esc(plantilla.nombre)}</span>
+        <span class="ia-meta">${esc(fecha)} · ${inf.conAudio ? 'con audio' : 'sin audio'} · ${contarPalabras(inf.texto)} palabras</span>
+      </summary>
+      <div class="ia-informe">${markdownAHtml(inf.texto)}</div>
+      ${inf.transcripcion && inf.conAudio ? `<details class="ia-transcripcion"><summary>Transcripción del audio</summary><div class="ia-transcripcion-texto">${esc(inf.transcripcion)}</div></details>` : ''}
+    </details>
     <div class="ia-acciones">
       <button class="phase5-copy-btn" onclick="iaCompartir()">📤 Compartir</button>
       <button class="phase5-copy-btn" onclick="iaCopiar()">Copiar</button>
       <button class="phase5-copy-btn ia-btn-descartar" onclick="iaDescartarInforme()">Descartar</button>
     </div>`;
+  $('iaResultadoDet').addEventListener('toggle', e => { _resultadoAbierto = e.target.open; });
   refrescarHuella();
 }
+
+const contarPalabras = t => (String(t || '').replace(/[#|*-]/g, ' ').match(/\S+/g) || []).length;
 
 function refrescarHuella() {
   const el = $('iaAvisoHuella');
   if (!el) return;
   const inf = state.informeIA;
-  const cambio = inf?.huella && inf.huella !== huellaPayload(buildPhysiQPayload());
+  const cambio = inf?.huella && inf.huella !== huellaActual();
   el.innerHTML = cambio
     ? '<div class="alert alert-warning"><span class="alert-icon">✎</span><div>La valoración ha cambiado desde que se generó este informe. Genera uno nuevo si quieres que lo refleje.</div></div>'
     : '';
@@ -242,6 +258,74 @@ function _refrescarHuellaDiferido() {
   clearTimeout(_huellaTimer);
   _huellaTimer = setTimeout(refrescarHuella, 400);
 }
+
+// ── Datos ampliados de las cinco fases (ver bloquesAmpliados) ───────────────
+// Lo que el resumen compartido con physiq-report no lleva y el informe sí
+// necesita: edad, fase 3 en detalle, psicosocial, criterios compuestos,
+// recorrido del árbol, tests de la 4b con su resultado y la pauta de la fase 5.
+const PSICO = [
+  ['psico_miedo', 'Miedo al movimiento o catastrofización'],
+  ['psico_autoef', 'Signos de baja autoeficacia o desesperanza'],
+  ['psico_emocional', 'Componente emocional significativo (ansiedad, depresión)'],
+];
+const RESULTADO = { pos: 'positivo', neg: 'negativo' };
+
+export function construirAmpliado() {
+  const tree = CIF_TREES[state.region];
+  const arbol = (tree?.steps || [])
+    .filter(st => state.treeAnswers?.[st.id] != null)
+    .map(st => {
+      const op = st.options.find(o => o.value === state.treeAnswers[st.id]);
+      return { pregunta: st.question, respuesta: op?.label || state.treeAnswers[st.id] };
+    });
+
+  const tests = [];
+  const pautas = [];
+  for (const id of state.activeHypotheses || []) {
+    const h = HYPOTHESES[id];
+    if (!h) continue;
+    const res = state.testResults?.[id] || {};
+    const items = (h.tests || []).map((t, idx) => RESULTADO[res[idx]] ? {
+      test: t.name, resultado: RESULTADO[res[idx]],
+      ...(t.cluster && h.clusters?.[t.cluster] ? { cluster: h.clusters[t.cluster].nombre } : {}),
+      ...(t.tipo === 'pronostico' ? { pronostico: true } : {}),
+    } : null).filter(Boolean);
+    if (items.length) tests.push({ hipotesis: h.name, items });
+    pautas.push({
+      hipotesis: h.name,
+      derivar: h.dosis === DOSIS_DERIVAR,
+      pauta: h.dosis === DOSIS_DERIVAR ? '' : (h.dosis || ''),
+      fuente: h.dosisFuente || '',
+      ...(h.pronostico ? { pronostico: h.pronostico } : {}),
+      prom: h.prom || '',
+    });
+  }
+
+  const criterios = [];
+  for (const sis of SYSTEMIC_SCREENING[state.region]?.sistemas || []) {
+    const c = sis.criterioCompuesto;
+    if (!c) continue;
+    const edad = state.edadPaciente;
+    const positivas = c.ids.filter(q => state.sistemicoAnswers?.[q] === 'SI').length;
+    // Misma regla que evaluarCriterioCompuesto() en app.js
+    if (edad != null && !isNaN(edad) && edad < c.filtro.edadMax && state.cronologia === c.filtro.evolucion && positivas >= c.minPositivas) {
+      criterios.push({ etiqueta: c.etiqueta, positivas, total: c.ids.length, nota: c.nota });
+    }
+  }
+
+  return {
+    edad: state.edadPaciente ?? null,
+    signoComparable: (state.signoComparable || '').trim(),
+    estabilidad: state.estabilidad || '',
+    // Con el nivel elegido directamente (modo breve) la matriz no se rellenó
+    irritabilidad: state.irritabilidadDirecta ? null : (state.irritabilidad || null),
+    psico: state.riesgoPsico === 'Alto' ? PSICO.filter(([k]) => state[k]).map(([k, q]) => ({ q, a: state[k] })) : [],
+    criterios, arbol, tests, pautas,
+  };
+}
+
+// Huella de todo lo que entra en el prompt: el resumen y los datos ampliados.
+const huellaActual = () => huellaPayload({ ...buildPhysiQPayload(), _ampliado: construirAmpliado() });
 
 function textoInforme() {
   return textoParaCompartir(state.informeIA?.texto || '', state.informeIA?.datos || buildPhysiQPayload(), nombreRegion);
@@ -388,21 +472,62 @@ function pintarGenerador() {
   det.classList.toggle('con-resultado', hayInforme);
   if (!hayInforme || audioActual() || estadoGrabacion().fase !== 'parado') det.open = true;
   if (!activo) return;
+  pintarPlantilla();
   pintarAudio();
   pintarConsent();
   pintarBoton();
   pintarError();
 }
 
+// Narrativo o ficha breve; por defecto, la que encaja con el tipo de consulta
+// (ficha en modo breve). La elección a mano dura lo que la página.
+const plantillaActual = () => _plantilla || plantillaPorDefecto(state.modo);
+
+function pintarPlantilla() {
+  const el = $('iaPlantilla');
+  if (!el) return;
+  const actual = plantillaActual();
+  el.innerHTML = `
+    <div class="ia-plantilla-label">Tipo de informe</div>
+    <div class="option-group ia-plantilla-opciones">
+      ${Object.entries(PLANTILLAS).map(([k, p]) => `<button type="button" class="option-btn${k === actual ? ' selected' : ''}" onclick="iaPlantilla('${k}')">${esc(p.nombre)} <span class="ia-plantilla-palabras">~${p.palabras} palabras</span></button>`).join('')}
+    </div>`;
+}
+
+function iaPlantilla(k) {
+  if (!PLANTILLAS[k]) return;
+  _plantilla = k;
+  pintarPlantilla();
+}
+
 // ── Generación ───────────────────────────────────────────────────────────────
+// Durante la generación, una línea de progreso (palabras y sección en curso);
+// el texto, en un desplegable cerrado y sin scroll interno, para no meter una
+// caja con scroll dentro de la página en el móvil.
 function pintarProgreso() {
   const el = $('iaProgreso');
   if (!_gen) { el.innerHTML = ''; return; }
-  const fase = _gen.fase === 'transcribiendo' ? 'Transcribiendo el audio…' : 'Redactando el informe…';
   el.innerHTML = `
-    <div class="ia-estado ia-progreso"><span class="ia-spinner"></span>${fase}</div>
-    <div class="ia-informe ia-vista-previa" id="iaVistaPrevia">${markdownAHtml(_gen.texto)}</div>
+    <div class="ia-estado ia-progreso"><span class="ia-spinner"></span><span id="iaProgresoTexto">${textoProgreso()}</span></div>
+    <details class="ia-vivo" id="iaVivo"${_vivoAbierto ? ' open' : ''}><summary>Ver mientras se escribe</summary>
+      <div class="ia-informe" id="iaVistaPrevia">${markdownAHtml(_gen.texto)}</div>
+    </details>
     <div class="ia-acciones"><button class="phase5-copy-btn ia-btn-descartar" onclick="iaCancelar()">Cancelar</button></div>`;
+  $('iaVivo').addEventListener('toggle', e => {
+    _vivoAbierto = e.target.open;
+    if (_vivoAbierto) refrescarVistaPrevia();
+  });
+}
+
+function textoProgreso() {
+  if (!_gen) return '';
+  if (_gen.fase === 'transcribiendo') return 'Transcribiendo el audio…';
+  const n = contarPalabras(_gen.texto);
+  if (!n) return 'Redactando el informe…';
+  const secciones = _gen.texto.match(/^##\s+(.+)$/gm);
+  const actual = secciones ? secciones[secciones.length - 1].replace(/^##\s+/, '').trim() : '';
+  const bonito = actual ? actual.charAt(0) + actual.slice(1).toLowerCase() : '';
+  return `Redactando… · ${n} palabras${bonito ? ` · ${esc(bonito)}` : ''}`;
 }
 
 let _vistaPendiente = false;
@@ -411,8 +536,12 @@ function refrescarVistaPrevia() {
   _vistaPendiente = true;
   requestAnimationFrame(() => {
     _vistaPendiente = false;
+    if (!_gen) return;
+    const t = $('iaProgresoTexto');
+    if (t) t.innerHTML = textoProgreso();
     const v = $('iaVistaPrevia');
-    if (v && _gen) v.innerHTML = markdownAHtml(_gen.texto);
+    // Solo se repinta el texto si el desplegable está abierto
+    if (v && v.closest('details')?.open) v.innerHTML = markdownAHtml(_gen.texto);
   });
 }
 
@@ -422,6 +551,8 @@ async function iaGenerar() {
   if (motivoBloqueo()) { pintarBoton(); return; }
   saveSession();   // vuelca al estado lo último escrito (notas del plan, etc.)
   const datos = buildPhysiQPayload();
+  const ampliado = construirAmpliado();
+  const plantilla = plantillaActual();
   const audio = audioActual();
   const conAudio = !!audio;
   const fd = new FormData();
@@ -431,13 +562,14 @@ async function iaGenerar() {
     fd.append('file', audio.blob, nombre);
   }
   fd.append('whisperHint', getWhisperPrompt(datos.r));
-  fd.append('prompt', buildNarrativePrompt(datos, { conAudio, nombreRegion }));
-  fd.append('maxTokens', String(MAX_TOKENS_INFORME));
+  fd.append('prompt', PLANTILLAS[plantilla].prompt(datos, { conAudio, nombreRegion, ampliado }));
+  fd.append('maxTokens', String(PLANTILLAS[plantilla].maxTokens));
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 300000);
   _error = null;
   _gen = { texto: '', transcripcion: '', fase: conAudio ? 'transcribiendo' : 'redactando', ctrl };
+  _vivoAbierto = false;
   pintar();
 
   const token = consumirToken();
@@ -464,14 +596,16 @@ async function iaGenerar() {
       transcripcion: conAudio ? _gen.transcripcion : '',
       fecha: new Date().toISOString(),
       conAudio,
-      huella: huellaPayload(datos),
-      datos: { p: datos.p, d: datos.d, r: datos.r },
+      plantilla,
+      huella: huellaPayload({ ...datos, _ampliado: ampliado }),
+      datos: { p: datos.p, d: datos.d, r: datos.r, ed: ampliado.edad },
     };
     saveSession();
     // Con el informe guardado, el audio ya no hace falta en el dispositivo.
     if (conAudio && audioActual() === audio) quitarAudio();
     const det = $('iaGenerador');
     if (det) det.open = false;
+    _resultadoAbierto = false;
     showToast('✓ Informe narrativo generado', 'success');
   } catch (err) {
     if (err instanceof ModoDemo) {
@@ -496,7 +630,7 @@ async function leerStream(res) {
   const decoder = new TextDecoder();
   let buf = '';
   const procesar = ev => {
-    if (ev.type === 'transcript') { _gen.transcripcion = ev.data.text ?? ''; _gen.fase = 'redactando'; pintarProgreso(); }
+    if (ev.type === 'transcript') { _gen.transcripcion = ev.data.text ?? ''; _gen.fase = 'redactando'; refrescarVistaPrevia(); }
     else if (ev.type === 'report_chunk') { _gen.texto += ev.data.text ?? ''; refrescarVistaPrevia(); }
     else if (ev.type === 'error') throw new Error(ev.data.message || 'Error desconocido');
     else if (ev.type === 'done') return true;
@@ -537,5 +671,5 @@ export function resetInformeIA() {
 Object.assign(window, {
   iaMostrarClave, iaGuardarClave, iaReintentarLicencia,
   iaPararGrabacion, iaPausarGrabacion, iaReanudarGrabacion, iaArchivo, iaQuitarAudio, iaConsent,
-  iaGenerar, iaCancelar, iaCompartir, iaCopiar, iaDescartarInforme,
+  iaGenerar, iaCancelar, iaCompartir, iaCopiar, iaDescartarInforme, iaPlantilla,
 });

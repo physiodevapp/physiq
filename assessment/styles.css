@@ -2438,8 +2438,36 @@
 .ia-tabla table { border-collapse: collapse; font-size: 0.8rem; min-width: 100%; }
 .ia-tabla th, .ia-tabla td { border: 1px solid var(--border2); padding: 5px 8px; text-align: left; }
 .ia-tabla th { color: var(--text2); font-weight: 500; }
-.ia-vista-previa { max-height: 50vh; overflow-y: auto; }
-.ia-vista-previa:empty { display: none; }
+.ia-vivo { margin-top: 0.6rem; font-size: 0.82rem; color: var(--text2); }
+.ia-vivo > summary { cursor: pointer; }
+.ia-vivo[open] > summary { margin-bottom: 0.6rem; }
+.ia-progreso { font-variant-numeric: tabular-nums; }
+
+/* Tipo de informe (narrativo / ficha breve) */
+.ia-plantilla { margin-bottom: 1rem; }
+.ia-plantilla-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+.ia-plantilla-palabras { font-size: 0.72rem; color: var(--text3); margin-left: 4px; }
+.ia-plantilla .option-btn.selected .ia-plantilla-palabras { color: inherit; opacity: 0.75; }
+
+/* Informe generado: plegado, con título y metadatos en la cabecera */
+.ia-resultado-det {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 0.2rem;
+}
+.ia-resultado-det > summary {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
+  padding: 0.8rem 2rem 0.8rem 1rem; cursor: pointer; list-style: none; position: relative;
+}
+.ia-resultado-det > summary::-webkit-details-marker { display: none; }
+.ia-resultado-det > summary::after {
+  content: '›'; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+  color: var(--text3); font-size: 1.2rem; transition: transform 0.2s;
+}
+.ia-resultado-det[open] > summary::after { transform: translateY(-50%) rotate(90deg); }
+.ia-resultado-det > summary .ia-meta { margin-bottom: 0; }
+.ia-resultado-titulo { font-size: 0.92rem; font-weight: 600; color: var(--text); }
+.ia-resultado-det > .ia-informe { border: none; border-top: 1px solid var(--border); border-radius: 0 0 var(--radius) var(--radius); }
+.ia-resultado-det > .ia-transcripcion { padding: 0 1.2rem 1rem; }
 .ia-transcripcion { margin-top: 0.8rem; font-size: 0.82rem; color: var(--text2); }
 .ia-transcripcion > summary { cursor: pointer; }
 .ia-transcripcion-texto { margin-top: 8px; white-space: pre-wrap; line-height: 1.5; color: var(--text2); }
