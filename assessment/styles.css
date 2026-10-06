@@ -2463,11 +2463,34 @@
 
 /* ── Grabación de la sesión en la cabecera (grabadora.js) ──────────────────
    Reutiliza .btn-record (estados recording/paused/recorded). Visible solo
-   fuera del hub y con licencia, o mientras haya una grabación en marcha. */
-.grab-wrap { position: relative; display: none; }
+   fuera del hub y con licencia, o mientras haya una grabación en marcha.
+   Toque = pausa/reanudar; pulsación larga = descartar (grab-manteniendo
+   rellena la píldora mientras se mantiene); con ratón, la papelera. */
+.grab-wrap { position: relative; display: none; align-items: center; gap: 4px; }
 body.ia-licencia:not(.in-hub) .grab-wrap,
-body.grab-activa:not(.in-hub) .grab-wrap { display: block; }
-.grab-btn { padding: 5px 8px; position: relative; color: var(--text3); }
+body.grab-activa:not(.in-hub) .grab-wrap { display: flex; }
+.grab-btn {
+  padding: 5px 8px; position: relative; overflow: hidden; color: var(--text3);
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation;
+}
+.grab-btn::after {
+  content: ''; position: absolute; inset: 0; background: var(--red); opacity: 0.22;
+  transform: scaleX(0); transform-origin: left; pointer-events: none;
+}
+.grab-btn.grab-manteniendo::after { transform: scaleX(1); transition: transform 0.6s linear; }
+/* La pausa tiene que verse: una pausa sin querer que pase desapercibida deja
+   parte de la consulta sin grabar. */
+.grab-btn.grab-pildora.paused { background: color-mix(in srgb, var(--orange) 14%, transparent); }
+.grab-btn.paused .grab-pausa { animation: grabParpadeo 1.4s ease-in-out infinite; }
+@keyframes grabParpadeo { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) {
+  .grab-btn.paused .grab-pausa { animation: none; }
+  .grab-btn.grab-manteniendo::after { transition: none; }
+}
+.grab-desc { display: none; padding: 5px 7px; color: var(--text3); }
+@media (hover: hover) and (pointer: fine) {
+  body.grab-activa .grab-desc { display: flex; }
+}
 .grab-btn.grab-pildora { font-variant-numeric: tabular-nums; }
 .grab-btn.grab-aviso { border-color: var(--orange); color: var(--orange); }
 .grab-crono { font-family: 'DM Mono', monospace; }

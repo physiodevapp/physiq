@@ -47,6 +47,8 @@
     <!-- Grabación de la sesión (grabadora.js): solo standalone y con licencia -->
     <div class="grab-wrap">
       <button id="grabBtn" class="btn-record grab-btn" onclick="grabBtnClick()" type="button" aria-label="Grabar la sesión" title="Grabar la sesión"></button>
+      <!-- Con ratón (sin pulsación larga): descartar la grabación en curso -->
+      <button id="grabDescBtn" class="btn-record grab-desc" onclick="grabDescartar()" type="button" aria-label="Descartar grabación" title="Descartar grabación"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
     </div>
     <button class="btn-reset" onclick="resetApp()">↺ <span class="btn-reset-text">Reiniciar</span></button>
     <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
