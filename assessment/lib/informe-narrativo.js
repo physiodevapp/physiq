@@ -27,13 +27,21 @@
 //   · El bloque de datos incluye lo que buildClinicalContext() de report no
 //     lee del payload y no puede faltar en un informe: derivaciones (ur, dv),
 //     formulario previo (fp), signos vitales y modo breve.
+//   · Revisión con informes reales (2026-10-06): sin «Diagnóstico médico: no
+//     aportado» fijo (contradecía lo que el paciente contaba), regla de
+//     discrepancias en vez de «prevalecen los datos estructurados», sin citar
+//     las fuentes, reglas pronósticas nunca como apoyo diagnóstico, códigos
+//     CIF limitados, derivación una vez al principio del plan, y topes de
+//     tokens holgados (el límite real es el de palabras).
 
 export const ORCHESTRATOR_URL = 'https://physiq-orchestrator.edu-gamboa-rodriguez.workers.dev';
 export const TURNSTILE_SITEKEY = '0x4AAAAAADU3dzE5Tw_whVks';   // la misma de physiq-report
 export const LICENSE_KEY_STORAGE = 'physiq-license-key';        // la guarda el hub; compartida por origen
 
-// Mismo par tokens/palabras que el paso 3 del selector de report (5000 → 2000).
-export const MAX_TOKENS_INFORME = 5000;
+// Palabras como en el paso 3 del selector de report (2000). El tope de tokens
+// va holgado a propósito: solo evita que se corte (se paga lo generado); la
+// extensión la marca la instrucción de palabras.
+export const MAX_TOKENS_INFORME = 7000;
 export const PALABRAS_INFORME = 2000;
 // Límite de la API de transcripción de OpenAI.
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
@@ -84,7 +92,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
   }
 
   return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
-NOTA: estos datos proceden de una valoración clínica estructurada y son más fiables que la transcripción. Úsalos como fuente prioritaria cuando haya discrepancias.
+NOTA: estos datos proceden de una valoración clínica estructurada. Los resultados y clasificaciones del fisioterapeuta son la fuente prioritaria; para lo que refiere el paciente, sigue la regla de discrepancias de las instrucciones.
 Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''} · Región: ${data.r ? nombreRegion(data.r) : '—'} · Fecha: ${data.d || '—'}
 Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
@@ -206,7 +214,7 @@ export function buildNarrativePrompt(data, { conAudio, nombreRegion, ampliado } 
 
   return `Eres un fisioterapeuta clínico experto en documentación según el modelo CIF de la OMS y el marco APTA. Genera un informe clínico narrativo, formal e institucional en español, siguiendo la estructura exacta indicada.
 
-PACIENTE: ${data?.p || '—'} | Fecha: ${data?.d || '—'} | Región valorada: ${region} | Diagnóstico médico: no aportado
+PACIENTE: ${data?.p || '—'} | Fecha: ${data?.d || '—'} | Región valorada: ${region}
 
 ${clinicalCtx ? clinicalCtx + '\n\n' : ''}${romCtx ? romCtx + '\n\n' : ''}TRANSCRIPCIÓN DE LA SESIÓN:
 {{TRANSCRIPT}}
@@ -224,11 +232,11 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 3. NO uses ** para negrita ni símbolos markdown, salvo en tablas markdown estándar.
 4. Tablas: cuando haya datos numéricos cuantificables (ROM, fuerza, escalas), genera tablas markdown estándar con sintaxis | columna | columna |. Si no hay datos suficientes, omite la tabla y describe en prosa.
 5. Si una subsección no aplica o no hay datos, omítela limpiamente (no escribas "no evaluado" en cada subsección menor).
-6. Usa la terminología CIF cuando proceda (códigos b, s, d, e si emergen del contexto).
+6. Usa la terminología CIF cuando proceda: como máximo unos 10 códigos (b, s, d, e) en todo el informe y solo los que correspondan sin duda al hallazgo descrito; es mejor omitir un código que poner uno dudoso.
 7. ${conAudio
-    ? 'La transcripción complementa los datos estructurados; si discrepan, prevalecen los datos estructurados.'
+    ? 'La transcripción complementa los datos estructurados.'
     : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos.
-8. Si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita en CONCLUSIONES Y PLAN DE TRATAMIENTO.
+8. ${reglaDerivacion('CONCLUSIONES Y PLAN DE TRATAMIENTO')}
 ${REGLAS_COMUNES}${hasHypotheses ? `
 9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". Contrasta los hallazgos (tests realizados, razonamiento del árbol y, si la hay, la transcripción) con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante. No propongas hipótesis nuevas en esta subsección.
 10. Si en la transcripción aparecen hallazgos clínicos explícitos (tests especiales, signos, síntomas objetivos) que sugieran condiciones no cubiertas por las hipótesis recibidas, inclúyelos en "### Hipótesis adicionales a valorar", citando el hallazgo exacto que justifica cada una. Limita el alcance a la región anatómica del contexto estructurado. Omite esta subsección si no hay evidencia explícita.` : ''}
@@ -239,7 +247,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Párrafo introductorio sobre el enfoque biopsicosocial]
 
 ### Condición de Salud (Diagnóstico Médico)
-[Diagnósticos preoperatorios, postoperatorios, por imagen si aplica, en formato narrativo o lista breve]
+[Solo si los datos o la consulta mencionan un diagnóstico médico o una prueba de imagen: recógelo como antecedente. Si no consta ninguno, omite esta subsección sin comentarlo]
 
 ### Factores Personales
 [Edad, sexo, profesión, comorbilidades, estilo de vida previo, medicación]
@@ -295,7 +303,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [EQ-5D-5L, ICL, impacto laboral y social]
 
 ## CONCLUSIONES Y PLAN DE TRATAMIENTO
-[Síntesis clínica integradora con problema primario, hallazgos clave y enfoque terapéutico propuesto en prosa]${hasHypotheses ? `
+[Si hay derivación, empieza por ella. Después, síntesis clínica integradora con problema primario, hallazgos clave y enfoque terapéutico propuesto en prosa]${hasHypotheses ? `
 
 ### Coherencia con hipótesis de valoración
 [Indica si los hallazgos de la sesión refuerzan, matizan o contradicen las hipótesis recibidas, sin proponer diagnósticos nuevos]
@@ -313,16 +321,26 @@ RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CON
 
 // Reglas que comparten las dos plantillas (narrativa y ficha breve).
 const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resultado; no menciones tests no realizados uno a uno.
+- Reglas pronósticas (marcadas «regla pronóstica, no diagnóstica», p. ej. la regla de Flynn): predicen la respuesta a un tratamiento. Preséntalas así y nunca las uses para reforzar ni descartar una hipótesis diagnóstica.
 - Lo que no se exploró o no se midió en esta valoración (goniometría, fuerza, escalas…) dilo UNA sola vez, en una frase, donde se describe la exploración; no lo repitas en cada sección o subsección.
+- Discrepancias: los resultados y clasificaciones del fisioterapeuta (tests, NRS, irritabilidad, banderas, hipótesis) prevalecen sobre lo que se diga en la conversación. Si lo que refiere el paciente cambia entre lo que contestó antes de la consulta y lo que cuenta en ella, recoge las dos versiones UNA vez en una frase neutra (p. ej. «niega inicialmente dolor nocturno, aunque en consulta refiere que le dificulta conciliar el sueño»). No elijas tú una de las dos ni las escribas en lugares distintos como si no chocaran.
+- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «PhysiQ», «datos estructurados» ni «árbol de decisión». Escribe «refiere», «en consulta», «en la exploración».
 - Plan: si los datos incluyen una pauta recomendada por PhysiQ, basa el plan en ella sin proponer dosis, series ni volúmenes distintos; si dice «Derivar», el plan es la derivación.
 - Seguimiento: para medir la evolución, usa la escala recomendada de cada hipótesis cuando la haya.`;
+
+// Derivaciones: una sola vez, al principio de la sección del plan. Con una
+// derivación no urgente el informe no decide si se espera a la valoración
+// médica: esa decisión es del fisioterapeuta.
+function reglaDerivacion(seccion) {
+  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay), plan y pauta, y al final el seguimiento.`;
+}
 
 // ── Ficha breve ───────────────────────────────────────────────────────────────
 // Adaptada de la plantilla «brief» de physiq-report (buildPrompt(), rama
 // brief): tres secciones en prosa, ~550 palabras. Mismas diferencias que la
 // narrativa (identificación aparte, sin audio, datos ampliados, reglas comunes).
 export const PALABRAS_FICHA = 550;
-export const MAX_TOKENS_FICHA = 1500;
+export const MAX_TOKENS_FICHA = 2500;   // holgado: ver MAX_TOKENS_INFORME
 
 export function buildFichaBrevePrompt(data, { conAudio, nombreRegion, ampliado } = {}) {
   const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
@@ -333,7 +351,7 @@ export function buildFichaBrevePrompt(data, { conAudio, nombreRegion, ampliado }
   return `Eres un fisioterapeuta clínico experto en documentación CIF-APTA.
 Genera un informe clínico breve en español a partir de los datos de la valoración${conAudio ? ' y de la transcripción de la sesión' : ''}. El informe debe estar escrito en prosa clínica continua, sin listas de ítems, y no superar las ${PALABRAS_FICHA} palabras en total.
 
-PACIENTE: ${data?.p || '—'} | Fecha: ${data?.d || '—'} | Región valorada: ${region} | Diagnóstico médico: no aportado
+PACIENTE: ${data?.p || '—'} | Fecha: ${data?.d || '—'} | Región valorada: ${region}
 
 ${clinicalCtx ? clinicalCtx + '\n\n' : ''}${romCtx ? romCtx + '\n\n' : ''}TRANSCRIPCIÓN:
 {{TRANSCRIPT}}
@@ -345,11 +363,11 @@ INSTRUCCIONES:
    ## HALLAZGOS Y CODIFICACIÓN CIF
    ## OBJETIVOS Y PLAN
 3. Escribe en prosa continua dentro de cada sección, sin viñetas ni listas.
-4. En ## HALLAZGOS Y CODIFICACIÓN CIF incluye los códigos CIF alfanuméricos relevantes entre paréntesis inline, integrados en la prosa. Ejemplo: "Se constata limitación del rango de flexión de hombro (b7101) con dolor asociado al movimiento activo (b28016)."
+4. En ## HALLAZGOS Y CODIFICACIÓN CIF incluye los códigos CIF alfanuméricos relevantes entre paréntesis inline, integrados en la prosa: como máximo unos 6 y solo los que correspondan sin duda al hallazgo descrito; es mejor omitir un código que poner uno dudoso. Ejemplo: "Se constata limitación del rango de flexión de hombro (b7101) con dolor asociado al movimiento activo (b28016)."
 5. ${conAudio
-    ? 'La transcripción complementa los datos estructurados; si discrepan, prevalecen los datos estructurados.'
+    ? 'La transcripción complementa los datos estructurados.'
     : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos; no escribas "No evaluado".
-6. Si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita en ## OBJETIVOS Y PLAN.
+6. ${reglaDerivacion('## OBJETIVOS Y PLAN')}
 ${REGLAS_COMUNES}
 7. Límite estricto: ${PALABRAS_FICHA} palabras totales entre las tres secciones.${hasHypotheses ? '\n8. En ## HALLAZGOS Y CODIFICACIÓN CIF añade una frase de contraste con las hipótesis de valoración recibidas: indica si los hallazgos las refuerzan, matizan o contradicen, citando el hallazgo que lo justifica.' : ''}`;
 }

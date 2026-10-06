@@ -1183,23 +1183,6 @@
   .sq2-text { flex: 1; font-size: 0.84rem; color: var(--text2); line-height: 1.5; }
   .sq2-btns { display: flex; gap: 5px; flex-shrink: 0; }
 
-  /* Screening rápido badge */
-  .sq2-s1-badge {
-    display: inline-block;
-    margin-left: 8px;
-    padding: 1px 7px;
-    border-radius: 10px;
-    font-size: 0.6rem;
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    background: rgba(56,217,169,0.1);
-    border: 1px solid rgba(56,217,169,0.25);
-    color: var(--accent2);
-    vertical-align: middle;
-    white-space: nowrap;
-  }
-
   /* Composite screening criterion (e.g. Goodman's 2-of-4 inflammatory-back-
      pain rule) — resulting alert (or missing-edad hint), rendered only for
      systems that declare a criterioCompuesto (see data.js, l_espondilo).

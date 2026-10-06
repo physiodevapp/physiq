@@ -1052,12 +1052,11 @@ function buildSistemaHTML(sis) {
   // Screening questions
   html += `<div class="screening-section-title">❓ Preguntas de Cribado</div>`;
   sis.preguntas.forEach((q, qi) => {
-    const s1Badge = (q.s1 ? `<span class="sq2-s1-badge">Screening rápido</span>` : '')
-      + (q.urgencia ? `<span class="sq2-urg-badge">Urgencia</span>` : '');
+    const urgBadge = q.urgencia ? `<span class="sq2-urg-badge">Urgencia</span>` : '';
     html += `
       <div class="sq2${q.alerta ? ' alerta-high' : ''}${q.urgencia ? ' sq2-urg' : ''}" id="sq2_${q.id}">
         <div class="sq2-badge${q.alerta ? ' alerta' : ''}">${qi + 1}</div>
-        <div class="sq2-text">${q.text}${s1Badge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}${razonamientoInlineHTML(sis, q)}</div>
+        <div class="sq2-text">${q.text}${urgBadge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}${razonamientoInlineHTML(sis, q)}</div>
         <div class="sq-btns">
           <button class="sq-btn si" onclick="selectSistQ(this,'${q.id}','SI',${q.alerta},'${sis.id}')">SÍ</button>
           <button class="sq-btn no selected" onclick="selectSistQ(this,'${q.id}','NO',${q.alerta},'${sis.id}')">NO</button>
