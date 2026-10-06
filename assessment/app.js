@@ -2146,7 +2146,20 @@ function _showSessionState(st) {
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h9M5 4V2h3v2M3.5 4l.5 7h5l.5-7"/></svg>
           </button>
         </div>
-      </div>`;
+      </div>
+      <div class="session-io">
+        <button type="button" class="session-io-btn" id="sessionExport"${state.maxVisitedIdx > 0 ? '' : ' disabled'}>⬇ Exportar</button>
+        <button type="button" class="session-io-btn" id="sessionImport">⬆ Importar</button>
+        <input type="file" id="sessionImportFile" accept=".json,application/json" hidden>
+      </div>
+      <div class="session-io-nota">Valoración completa en un archivo .json, con los datos clínicos y el nombre del paciente.${state.maxVisitedIdx > 0 ? '' : ' Se puede exportar a partir de la fase 2.'}</div>`;
+    panel.querySelector('#sessionExport').onclick = exportarValoracionArchivo;
+    panel.querySelector('#sessionImport').onclick = () => panel.querySelector('#sessionImportFile').click();
+    panel.querySelector('#sessionImportFile').onchange = e => {
+      const f = e.target.files?.[0];
+      e.target.value = '';
+      if (f) importarValoracionArchivo(f);
+    };
     const input = panel.querySelector('#patientName');
     input.value = state.patient || '';
     input.addEventListener('keydown', e => { if (e.key === 'Enter') closeSessionPanel(); });
@@ -2183,6 +2196,63 @@ function _showSessionState(st) {
       clearSession().then(() => { _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); });
     };
   }
+}
+
+// ─── Exportar / importar la valoración (.json) ─────────────────
+// Para repetir pruebas con los mismos datos (p. ej. regenerar el informe
+// narrativo tras cambiar el prompt). Lógica pura en lib/valoracion-json.js,
+// cargado solo al usarlo. Importar guarda el estado como sesión y recarga: lo
+// restaura el mismo código que al abrir la app.
+let _importando = false;   // bloquea saveSession(): el DOM aún tiene la valoración anterior
+
+async function exportarValoracionArchivo() {
+  saveSession();   // vuelca al estado lo último escrito (motivo, signo comparable…)
+  try {
+    const VJ = await import('./lib/valoracion-json.js');
+    const ahora = new Date();
+    const nombre = VJ.nombreArchivo(state.patient, ahora);
+    const archivo = new File([JSON.stringify(VJ.exportarValoracion(state, ahora), null, 2)], nombre, { type: 'application/json' });
+    // En el móvil, la hoja de compartir permite guardarlo en Archivos/Drive
+    if (window.matchMedia?.('(pointer: coarse)').matches && navigator.canShare?.({ files: [archivo] })) {
+      try { await navigator.share({ files: [archivo], title: nombre }); return; }
+      catch (e) { if (e?.name === 'AbortError') return; }
+    }
+    const url = URL.createObjectURL(archivo);
+    const a = Object.assign(document.createElement('a'), { href: url, download: nombre });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast(`✓ Valoración exportada: ${nombre}`, 'success');
+  } catch {
+    showToast('No se ha podido exportar la valoración.', 'warning');
+  }
+}
+
+async function importarValoracionArchivo(file) {
+  let r;
+  try {
+    const VJ = await import('./lib/valoracion-json.js');
+    r = VJ.leerImportacion(await file.text(), Object.keys(SYSTEMIC_SCREENING));
+  } catch {
+    showToast('No se ha podido leer el archivo.', 'warning');
+    return;
+  }
+  if (!r.ok) { showToast(r.error, 'warning'); return; }
+  closeSessionPanel();
+  const quien = r.paciente ? `de «${r.paciente}»` : 'sin nombre de paciente';
+  const cuando = r.exportado ? `, exportada el ${new Date(r.exportado).toLocaleDateString('es-ES')}` : '';
+  showConfirmBanner('Importar valoración',
+    `Se sustituirá la valoración en curso por la del archivo (${quien}${cuando}).${_avisoAudioSesion()}`,
+    'Importar', () => _aplicarImportacion(r));
+}
+
+async function _aplicarImportacion(r) {
+  _importando = true;
+  try { await _grabMod?.descartarTodo(); } catch { /* el audio no impide importar */ }
+  await clearSession();   // sin restos de la sesión anterior (payload final, ROM…)
+  await writeSession({ patient: r.paciente, date: new Date().toLocaleDateString('es-ES'), assessmentState: r.assessmentState });
+  location.reload();
 }
 
 function toggleSessionPanel() {
@@ -2485,6 +2555,7 @@ function updateResetBtnVisibility() {
 }
 
 function saveSession() {
+  if (_importando) return;
   const patientEl = document.getElementById('patientName');
   if (patientEl) state.patient = patientEl.value;
   const motivoEl = document.getElementById('motivoConsulta');

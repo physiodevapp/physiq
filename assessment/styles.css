@@ -2067,6 +2067,12 @@
   .session-panel-clear{display:none;background:none;border:1px solid var(--red);border-radius:8px;padding:8px;cursor:pointer;color:var(--red);flex-shrink:0;align-items:center;justify-content:center;align-self:stretch;transition:opacity 0.2s;}
   .session-panel-clear:hover{opacity:0.7;}
   .session-panel.has-session .session-panel-clear{display:flex;}
+  /* Exportar / importar: dos botones a partes iguales, sin desbordar a 320 px */
+  .session-io{display:flex;gap:8px;margin-top:14px;}
+  .session-io-btn{flex:1 1 0;min-width:0;min-height:40px;background:none;border:1px solid var(--border2);border-radius:8px;padding:8px;color:var(--text2);font-family:inherit;font-size:0.82rem;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color 0.2s,color 0.2s;}
+  .session-io-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+  .session-io-btn:disabled{opacity:0.45;cursor:default;}
+  .session-io-nota{margin-top:8px;font-size:0.72rem;line-height:1.4;color:var(--text3);}
   .in-hub .theme-btn{display:none;}
   body:not(.in-hub) .btn-translate{display:none;}
   .session-panel-handle{display:none;width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px;touch-action:none;}
