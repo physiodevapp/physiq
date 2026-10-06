@@ -402,6 +402,15 @@
         <div class="region-sub">Tobillo, retropié y pie</div>
       </div>
     </div>
+    <div class="lado-wrap" id="ladoWrap" hidden>
+      <div class="field-label">Lado afectado <span class="lado-opcional">(opcional)</span></div>
+      <div class="option-group lado-group" id="lado">
+        <button class="option-btn" onclick="selectOption('lado', this, 'Derecho')">Derecho</button>
+        <button class="option-btn" onclick="selectOption('lado', this, 'Izquierdo')">Izquierdo</button>
+        <button class="option-btn" onclick="selectOption('lado', this, 'Bilateral')">Bilateral</button>
+        <button class="option-btn lado-central" onclick="selectOption('lado', this, 'Central')">Central</button>
+      </div>
+    </div>
   </div>
 
   <div id="sistemicoQuestions" style="display:none;">

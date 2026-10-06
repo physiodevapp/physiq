@@ -262,6 +262,7 @@ function _softResetApp() {
   state.psico_autoef = '';
   state.psico_emocional = '';
   state.region = '';
+  state.lado = '';
   state.sistemicoAnswers = {};
   state.sistemicoBreve = {};
   state.sistemicoAlerta = false;
@@ -305,6 +306,7 @@ function _softResetApp() {
 
   // Phase 2 DOM
   document.querySelectorAll('.region-card').forEach(c => c.classList.remove('selected'));
+  _pintarLado();
   ['sistemaTabs', 'sistemaPanels', 'urgenciaRegion'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '';
@@ -912,6 +914,7 @@ function applyRegionChange(regionId, card) {
     paintNav(1);
   }
   state.region = regionId;
+  _pintarLado();
   buildSistemicoQuestions(regionId);
   precargarFormularioPrevio();
   saveSession();
@@ -1743,6 +1746,28 @@ function nombreRegion(r) {
   return n.charAt(0).toUpperCase() + n.slice(1);
 }
 
+// Región con el lado afectado, si se indicó: 'Hombro (derecho)'.
+function regionConLado(r, lado) {
+  if (!r) return '—';
+  return lado ? `${nombreRegion(r)} (${lado.toLowerCase()})` : nombreRegion(r);
+}
+
+// «Central» solo tiene sentido en la columna.
+const REGIONES_COLUMNA = ['cervical', 'lumbar'];
+
+// Selector de lado (fase 2): visible con una región elegida; «Central» solo en
+// columna (si se cambia a otra región con «Central» marcado, se borra).
+function _pintarLado() {
+  const wrap = document.getElementById('ladoWrap');
+  if (!wrap) return;
+  wrap.hidden = !state.region;
+  const columna = REGIONES_COLUMNA.includes(state.region);
+  wrap.querySelector('.lado-central')?.toggleAttribute('hidden', !columna);
+  if (state.lado === 'Central' && !columna) state.lado = '';
+  wrap.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  _restoreOptionBtnGroup('lado', state.lado);
+}
+
 function buildResults() {
   const container = document.getElementById('resultsContent');
   container.innerHTML = '';
@@ -1810,7 +1835,7 @@ function buildResults() {
   container.innerHTML += `
   <div class="summary-section">
     <div class="summary-section-title">📊 SINSS — Caracterización del Cuadro</div>
-    <div class="summary-row"><span class="summary-label">Región valorada</span><span class="summary-value">${state.region ? nombreRegion(state.region) : '—'}</span></div>
+    <div class="summary-row"><span class="summary-label">Región valorada</span><span class="summary-value">${regionConLado(state.region, state.lado)}</span></div>
     <div class="summary-row"><span class="summary-label">Severidad (EVN)</span><span class="summary-value">${state.severidad}/10</span></div>
     <div class="summary-row"><span class="summary-label">Irritabilidad</span><span class="summary-value">${state.irritabilidadNivel || '—'}${state.irritabilidadDirecta && state.irritabilidadNivel ? ' (estimada, sin matriz)' : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Naturaleza</span><span class="summary-value">${state.naturaleza || '—'}</span></div>
@@ -2385,6 +2410,7 @@ function buildPhysiQPayload() {
   return {
     p:  state.patient ?? '',
     r:  state.region,
+    la: state.lado || '',
     d:  new Date().toLocaleDateString('es-ES'),
     mo: state.motivoConsulta,
     sv: state.signosVitales,
@@ -2423,7 +2449,7 @@ function buildContextSummaryText() {
     ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
-Región: ${d.r ? nombreRegion(d.r) : '—'} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
+Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA (árbol CIF): ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
@@ -2444,7 +2470,7 @@ function copyContextToClipboard() {
 // pasted straight into a letterhead template and handed over as-is.
 function buildInformeFisioterapiaText() {
   const d = buildPhysiQPayload();
-  const region = d.r ? nombreRegion(d.r) : '—';
+  const region = regionConLado(d.r, d.la);
 
   const hyps = [...d.h].sort((a, b) => (b.lr ?? 1) - (a.lr ?? 1));
   const breve = d.md === 'breve';
@@ -2625,6 +2651,7 @@ function _restoreSessionDOM() {
   updateImcColor();
 
   ['mecanismo', 'cronologia', 'riesgoPsico'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
+  _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
     document.querySelectorAll('#banderasRojas .sq-btn').forEach(btn => {

@@ -88,6 +88,13 @@ export function limpiarEtiqueta(texto) {
   return partes.length > 1 ? `${partes[0]} — orienta a: ${partes.slice(1).join('; ')}` : partes[0];
 }
 
+// Región con el lado afectado si se indicó (payload `la`): «Hombro (derecho)».
+export function regionTexto(data, nombreRegion = r => r) {
+  if (!data?.r) return '—';
+  const n = nombreRegion ? nombreRegion(data.r) : data.r;
+  return data.la ? `${n} (${String(data.la).toLowerCase()})` : n;
+}
+
 // ── Bloque de datos de la valoración ──────────────────────────────────────────
 // Parte común: la de buildClinicalContext() de report, salvo tres cambios
 // deliberados — hipótesis sin su etiqueta de puntuación (el informe acababa
@@ -123,7 +130,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
 
   return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
 NOTA: estos datos proceden de una valoración clínica estructurada. Los resultados y clasificaciones del fisioterapeuta son la fuente prioritaria; para lo que refiere el paciente, sigue la regla de discrepancias de las instrucciones.
-Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''} · Región: ${data.r ? nombreRegion(data.r) : '—'} · Fecha: ${data.d || '—'}
+Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''} · Región: ${regionTexto(data, nombreRegion)} · Fecha: ${data.d || '—'}
 Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
 NRS: ${data.nr ?? '—'}/10
@@ -239,7 +246,7 @@ export function buildNarrativePrompt(data, { conAudio, nombreRegion, ampliado } 
   const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
   const romCtx = contextoROM(data?.rom);
   const hasHypotheses = (data?.h || []).length > 0;
-  const region = data?.r ? (nombreRegion ? nombreRegion(data.r) : data.r) : '—';
+  const region = regionTexto(data, nombreRegion);
 
   return `Eres un fisioterapeuta clínico experto en documentación según el modelo CIF de la OMS y el marco APTA. Genera un informe clínico narrativo, formal e institucional en español, siguiendo la estructura exacta indicada.
 
@@ -372,7 +379,7 @@ export function buildFichaBrevePrompt(data, { conAudio, nombreRegion, ampliado }
   const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
   const romCtx = contextoROM(data?.rom);
   const hasHypotheses = (data?.h || []).length > 0;
-  const region = data?.r ? (nombreRegion ? nombreRegion(data.r) : data.r) : '—';
+  const region = regionTexto(data, nombreRegion);
 
   return `Eres un fisioterapeuta clínico experto en documentación CIF-APTA.
 Genera un informe clínico breve en español a partir de los datos de la valoración${conAudio ? ' y de la transcripción de la sesión' : ''}. El informe debe estar escrito en prosa clínica continua, sin listas de ítems, y no superar las ${PALABRAS_FICHA} palabras en total.
@@ -517,7 +524,7 @@ export function markdownAHtml(md) {
 export function textoParaCompartir(informe, data, nombreRegion = r => r) {
   return `INFORME DE FISIOTERAPIA${data?.p ? `\nPaciente: ${data.p}` : ''}${data?.ed != null ? `\nEdad: ${data.ed} años` : ''}
 Fecha: ${data?.d || '—'}
-Región valorada: ${data?.r ? nombreRegion(data.r) : '—'}
+Región valorada: ${regionTexto(data, nombreRegion)}
 
 ${markdownATexto(informe)}
 

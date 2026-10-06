@@ -599,7 +599,7 @@ async function iaGenerar() {
       conAudio,
       plantilla,
       huella: huellaPayload({ ...datos, _ampliado: ampliado }),
-      datos: { p: datos.p, d: datos.d, r: datos.r, ed: ampliado.edad },
+      datos: { p: datos.p, d: datos.d, r: datos.r, la: datos.la, ed: ampliado.edad },
     };
     saveSession();
     // Con el informe guardado, el audio ya no hace falta en el dispositivo.

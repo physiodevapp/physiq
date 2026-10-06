@@ -25,6 +25,7 @@ const state = {
   psico_miedo: '', psico_autoef: '', psico_emocional: '',
   // Fase 2
   region: '',
+  lado: '',               // 'Derecho' | 'Izquierdo' | 'Bilateral' | 'Central' (solo cervical/lumbar) | '' — opcional
   sistemicoAnswers: {},
   sistemicoAlerta: false,
   sistemicoBreve: {},     // solo modo breve: { [sisId]: 'SI'|'NO' } — respuesta del embudo por sistema

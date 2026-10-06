@@ -493,6 +493,16 @@
     flex-wrap: wrap;
     gap: 8px;
   }
+  /* Lado afectado (fase 2, bajo la región): botones a partes iguales que
+     pasan a dos filas en pantallas estrechas en vez de desbordar. */
+  .lado-wrap { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .lado-wrap[hidden] { display: none; }
+  .lado-opcional { text-transform: none; letter-spacing: 0; }
+  .lado-group .option-btn { flex: 1 1 calc(25% - 8px); min-width: 72px; min-height: 40px; text-align: center; padding: 8px 6px; }
+  /* Con «Central» (columna) son cuatro: en pantalla estrecha, 2×2 en vez de 3 + 1 */
+  @media (max-width: 420px) {
+    .lado-group:has(.lado-central:not([hidden])) .option-btn { flex-basis: calc(50% - 4px); }
+  }
   .option-btn {
     background: var(--surface2);
     border: 1px solid var(--border2);
