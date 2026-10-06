@@ -539,7 +539,7 @@ export const screening = {
       ],
       banderasAmarillas: [],
       preguntas: [
-        { id: 'h_t1', text: '¿Tras una caída sobre el hombro o el codo, perdió de golpe movilidad del brazo o nota el hombro deformado? (Tener en cuenta la osteoporosis.)', alerta: true, s1: true,
+        { id: 'h_t1', urgencia: 'Sospecha de fractura o luxación sin reducir tras una caída: no forzar la movilidad, explorar el nervio axilar (sensibilidad de la cara externa del brazo y contracción del deltoides) y derivar hoy para radiografía.', text: '¿Tras una caída sobre el hombro o el codo, perdió de golpe movilidad del brazo o nota el hombro deformado? (Tener en cuenta la osteoporosis.)', alerta: true, s1: true,
           razonamiento: {
             porque: 'Una caída sobre el hombro, el codo o el brazo extendido puede luxar la articulación o fracturar el húmero o la clavícula. La pérdida brusca de movilidad y la deformidad son sus señales, y con osteoporosis basta una caída de poca energía para romper el húmero.',
             peso: 'Es una bandera roja: ante la sospecha de una fractura o una luxación sin reducir, Lluch indica derivación inmediata y radiografía. En consulta ayudan el test de aprensión ósea y la percusión olécranon-manubrio, con buen valor para la luxación anterior y las fracturas de clavícula y húmero. Un dolor desproporcionado a la lesión, o que no se resuelve con el tratamiento tras un traumatismo, también pide atención médica inmediata (Goodman).',
