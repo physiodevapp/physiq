@@ -2574,9 +2574,13 @@ function _anotarRecarga(sha) { try { sha ? sessionStorage.setItem(_CLAVE_RECARGA
 const _versionPendiente = () => !!_versionNueva && _shaRecargado() === _versionNueva.sha;
 
 function _versionPanelHTML() {
-  const actual = `Versión ${textoVersion()}`;
-  if (!_versionNueva) return `${actual} <button type="button" class="session-version-btn" id="sessionVersionComprobar">Comprobar</button>`;
-  return `${actual} · <span class="session-version-nueva">${_versionPendiente() ? 'la nueva aún se está publicando' : 'hay una más reciente'}</span>
+  // Texto a la izquierda y botón a la derecha, centrado en vertical aunque el
+  // texto ocupe dos líneas (el aviso de versión nueva va en la segunda)
+  // Versión y fecha no se parten por dentro: si no caben, la fecha baja entera
+  const [sha, fecha] = textoVersion().split(' · ');
+  const actual = `<span class="nw">Versión ${sha}</span>${fecha ? ` · <span class="nw">${fecha}</span>` : ''}`;
+  if (!_versionNueva) return `<span class="session-version-txt">${actual}</span><button type="button" class="session-version-btn" id="sessionVersionComprobar">Comprobar</button>`;
+  return `<span class="session-version-txt">${actual}<span class="session-version-nueva">${_versionPendiente() ? 'la nueva aún se está publicando' : 'hay una más reciente'}</span></span>
     <button type="button" class="session-version-btn" id="sessionVersionRecargar">Recargar</button>`;
 }
 

@@ -2106,9 +2106,11 @@
   .session-io-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
   .session-io-btn:disabled{opacity:0.45;cursor:default;}
   .session-io-nota{margin-top:8px;font-size:0.72rem;line-height:1.4;color:var(--text3);}
-  .session-version{margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--text3);display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;}
-  .session-version-nueva{color:var(--orange);}
-  .session-version-btn{background:none;border:1px solid var(--accent);border-radius:6px;padding:2px 8px;color:var(--accent);font-family:inherit;font-size:inherit;cursor:pointer;}
+  .session-version{margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--text3);display:flex;align-items:center;justify-content:space-between;gap:6px;}
+  .session-version-nueva{display:block;color:var(--orange);}
+  .session-version-txt{flex:1;min-width:0;line-height:1.5;}
+  .session-version-txt .nw{white-space:nowrap;}
+  .session-version-btn{flex-shrink:0;margin-left:auto;background:none;border:1px solid var(--accent);border-radius:6px;padding:2px 6px;color:var(--accent);font-family:inherit;font-size:inherit;cursor:pointer;}
   .in-hub .theme-btn{display:none;}
   body:not(.in-hub) .btn-translate{display:none;}
   .session-panel-handle{display:none;width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px;touch-action:none;}

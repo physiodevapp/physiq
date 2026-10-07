@@ -5,15 +5,19 @@
 // escribe version.json con lo mismo. La app compara su versión (la que se
 // cargó) con version.json (la publicada, pedida sin caché): si difieren, avisa
 // de que hay una versión nueva. Con 'dev' (local) no se comprueba nada.
-export const VERSION_SHA = '8c18e04';
-export const VERSION_FECHA = '2026-10-07T16:14:02Z';
+export const VERSION_SHA = '3a54306';
+export const VERSION_FECHA = '2026-10-07T17:47:06Z';
 
-// «a1b2c3d · 7 oct 2026, 14:32» (hora local), o «dev» fuera del despliegue.
-export function textoVersion(sha = VERSION_SHA, fecha = VERSION_FECHA) {
+// «a1b2c3d · 7 oct, 14:32» (hora local; el año solo si no es el actual, para
+// que quepa en una línea del panel en el móvil), o «dev» fuera del despliegue.
+export function textoVersion(sha = VERSION_SHA, fecha = VERSION_FECHA, ahora = new Date()) {
   if (!sha || sha === 'dev') return 'dev';
   const d = fecha ? new Date(fecha) : null;
   if (!d || isNaN(d)) return sha;
-  const f = d.toLocaleString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const f = d.toLocaleString('es-ES', {
+    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+    ...(d.getFullYear() !== ahora.getFullYear() ? { year: 'numeric' } : {}),
+  });
   return `${sha} · ${f}`;
 }
 
