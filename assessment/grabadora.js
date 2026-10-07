@@ -40,6 +40,18 @@ const TOPE_BYTES = MAX_AUDIO_BYTES - 1024 * 1024;   // margen para el último tr
 // este tiempo la grabación se cierra y queda como audio de la sesión.
 export const PAUSA_MAX_MS = 20 * 60 * 1000;
 const LARGO_MS = 600;  // pulsación larga sobre la píldora → descartar
+// Silencio: un micrófono sin permiso real, silenciado por hardware o el que no
+// es (Chrome en un ordenador elige el predeterminado del sistema) graba un
+// audio mudo sin ningún error, y Whisper lo «transcribe» con texto de relleno.
+// Se mide el nivel con un AnalyserNode mientras se graba (no en pausa).
+export const UMBRAL_SONIDO = 0.008;             // RMS de la señal (−1…1): la voz queda muy por encima
+export const SILENCIO_INICIO_MS = 8000;         // sin ningún sonido desde que empezó
+export const SILENCIO_MS = 45000;               // sin sonido a media consulta (exploración callada)
+const MEDIR_MS = 100;
+// ¿Hay que avisar? msSinSonido cuenta solo tiempo grabando, no en pausa.
+export function silencioDetectado({ huboSonido, msSinSonido }) {
+  return msSinSonido >= (huboSonido ? SILENCIO_MS : SILENCIO_INICIO_MS);
+}
 
 let _grab = null;      // grabación en curso
 let _audio = null;     // { blob, meta, url, recuperado? } — grabado o adjunto
@@ -72,7 +84,7 @@ export const idAudio = () => (_grab || _audio ? _idAudio : null);
 
 export function estadoGrabacion() {
   if (!_grab) return { fase: 'parado' };
-  return { fase: _grab.pausado ? 'pausado' : 'grabando', duracionMs: duracion(), bytes: _grab.bytes, sinSenal: _grab.sinSenal };
+  return { fase: _grab.pausado ? 'pausado' : 'grabando', duracionMs: duracion(), bytes: _grab.bytes, sinSenal: _grab.sinSenal, silencio: _grab.silencio };
 }
 
 export async function fijarArchivo(file) {
@@ -177,7 +189,8 @@ export async function grabar() {
   _idAudio++;
   const g = { rec, stream, partes: [], n: 0, bytes: 0, desde: Date.now(), acumulado: 0, pausado: false,
     descartar: false, cierre: null, sinSenal: false, avisado: false, mime: rec.mimeType || mime,
-    timer: null, timerPausa: null, alCerrar: [] };
+    timer: null, timerPausa: null, alCerrar: [],
+    nivel: null, huboSonido: false, msSinSonido: 0, silencio: false, avisoSilencio: false };
   const meta = () => ({ origen: 'grabacion', mime: g.mime, duracionMs: duracion(), fecha: new Date().toISOString() });
 
   rec.ondataavailable = e => {
@@ -197,6 +210,7 @@ export async function grabar() {
   };
   rec.onstop = () => {
     clearInterval(g.timer);
+    pararNivel(g);
     clearTimeout(g.timerPausa);
     g.stream.getTracks().forEach(t => t.stop());
     soltarWakeLock();
@@ -235,10 +249,57 @@ export async function grabar() {
   // Trozos de 10 s: si la página se cierra, se pierde como mucho lo último.
   rec.start(10000);
   g.timer = setInterval(() => avisar('tick'), 500);
+  iniciarNivel(g);
   _grab = g;
   document.body.classList.add('grab-activa');
   pedirWakeLock();
   avisar();
+}
+
+// ── Nivel de sonido ──────────────────────────────────────────────────────────
+// Sin AudioContext (o si el navegador lo deja suspendido) no se mide ni se avisa:
+// mejor ningún aviso que uno falso.
+function iniciarNivel(g) {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  try {
+    const ctx = new AC();
+    const analizador = ctx.createAnalyser();
+    // ~90 ms de señal cada 100 ms: casi continuo, para no perder palabras sueltas
+    analizador.fftSize = 4096;
+    ctx.createMediaStreamSource(g.stream).connect(analizador);
+    ctx.resume?.().catch(() => {});
+    g.nivel = { ctx, analizador, buf: new Float32Array(analizador.fftSize), timer: setInterval(() => medirNivel(g), MEDIR_MS) };
+  } catch { g.nivel = null; }
+}
+function pararNivel(g) {
+  clearInterval(g.nivel?.timer);
+  g.nivel?.ctx.close?.().catch(() => {});
+  g.nivel = null;
+}
+function medirNivel(g) {
+  const n = g.nivel;
+  if (!n || g.pausado || n.ctx.state !== 'running') return;
+  n.analizador.getFloatTimeDomainData(n.buf);
+  let suma = 0;
+  for (let i = 0; i < n.buf.length; i++) suma += n.buf[i] * n.buf[i];
+  if (Math.sqrt(suma / n.buf.length) >= UMBRAL_SONIDO) {
+    g.huboSonido = true;
+    g.msSinSonido = 0;
+    if (g.silencio) { g.silencio = false; avisar(); }
+    return;
+  }
+  g.msSinSonido += MEDIR_MS;
+  if (!g.silencio && silencioDetectado(g)) {
+    g.silencio = true;
+    if (!g.avisoSilencio) {
+      g.avisoSilencio = true;
+      showToast(g.huboSonido
+        ? 'Hace un rato que no se oye nada en la grabación. Si estáis hablando, revisa el micrófono.'
+        : 'No se oye nada en la grabación: revisa el micrófono (permiso, silenciado o el que no es).', 'warning');
+    }
+    avisar();
+  }
 }
 
 export function pausar() {
@@ -291,12 +352,13 @@ function pintarCabecera() {
   btn.classList.remove('recording', 'paused', 'recorded', 'grab-aviso', 'grab-pildora');
   if (_grab) {
     btn.classList.add('grab-pildora', _grab.pausado ? 'paused' : 'recording');
-    if (_grab.sinSenal) btn.classList.add('grab-aviso');
+    const aviso = _grab.sinSenal || _grab.silencio;
+    if (aviso) btn.classList.add('grab-aviso');
     // Pausa con dos barras de CSS, no con «⏸»: Android lo pinta como emoji
     // ancho y de color, y descuadraba la píldora en la cabecera.
-    const icono = _grab.sinSenal ? '⚠' : _grab.pausado ? '<span class="grab-pausa"></span>' : '<span class="btn-record-dot"></span>';
+    const icono = aviso ? '⚠' : _grab.pausado ? '<span class="grab-pausa"></span>' : '<span class="btn-record-dot"></span>';
     btn.innerHTML = `${icono}<span class="grab-crono" id="grabCrono">${fmtTiempo(duracion())}</span>`;
-    btn.title = (_grab.sinSenal ? 'El micrófono no está dando señal · ' : '')
+    btn.title = (_grab.sinSenal ? 'El micrófono no está dando señal · ' : _grab.silencio ? 'No se oye nada · revisa el micrófono · ' : '')
       + (_grab.pausado ? 'En pausa · toca para reanudar' : 'Grabando · toca para pausar');
   } else {
     btn.innerHTML = ICONO_MIC + (_audio ? '<span class="grab-punto"></span>' : '');

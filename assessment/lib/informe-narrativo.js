@@ -727,6 +727,36 @@ export function errorConexion(err, { seOculto = false } = {}) {
   return { texto: seOculto ? TEXTO_CONEXION_SEGUNDO_PLANO : TEXTO_CONEXION_PERDIDA, original: mensaje, servicio: null, sinAudio: false };
 }
 
+// ── Transcripción sin voz ─────────────────────────────────────────────────────
+// Con un audio en silencio (micrófono equivocado, pausado, muy bajo) Whisper no
+// devuelve un texto vacío: «alucina» frases de los subtítulos con que se
+// entrenó («Subtítulos realizados por la comunidad de Amara.org», repetida).
+// Visto en una prueba real (2026-10): el informe salió marcado «con audio»
+// sin nada del audio. Se detecta al llegar la transcripción, antes de redactar.
+const RELLENO_WHISPER = [
+  /subt[ií]tul(?:os|ado)[^.!?\n]*amara\.org/gi,
+  /\bamara\.org\b/gi,
+  /¡?\s*suscr[ií]bete[^.!?\n]*[.!]?/gi,
+  /(?:muchas )?gracias por ver(?: el v[ií]deo)?[.!]?/gi,
+  /thank(?:s| you) for watching[.!]?/gi,
+  /subt[ií]tulos (?:en espa[ñn]ol|por [^.!?\n]*)[.!]?/gi,
+];
+export function transcripcionSinVoz(texto) {
+  const t = String(texto || '').trim();
+  if (!t) return true;
+  const resto = RELLENO_WHISPER.reduce((acc, re) => acc.replace(re, ' '), t).replace(/[\s.,;:!?¡¿«»"'-]+/g, ' ').trim();
+  if (resto.split(' ').filter(Boolean).length < 4) return true;     // solo relleno, o casi nada
+  // Una misma frase repetida que ocupa casi todo el texto: otra forma de alucinar
+  const frases = t.split(/(?<=[.!?])\s+/).map(f => f.trim().toLowerCase()).filter(Boolean);
+  if (frases.length >= 3) {
+    const cuenta = {};
+    for (const f of frases) cuenta[f] = (cuenta[f] || 0) + 1;
+    if (Math.max(...Object.values(cuenta)) / frases.length >= 0.8) return true;
+  }
+  return false;
+}
+export const TEXTO_SIN_VOZ = 'No se ha entendido ninguna voz en el audio: la transcripción ha salido vacía o con texto de relleno, lo típico de una grabación en silencio. Revisa el micrófono (en Chrome, el icono de la barra de direcciones o Configuración › Privacidad › Micrófono) y vuelve a grabar, o genera el informe sin audio.';
+
 export function errorLegible(mensaje) {
   const original = String(mensaje || '').trim();
   const m = original.match(/^(Whisper|Claude(?: \(docs\))?):\s*([\s\S]*)$/);

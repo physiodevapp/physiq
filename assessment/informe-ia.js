@@ -26,6 +26,7 @@ import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
   informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio, errorLegible, errorConexion,
+  transcripcionSinVoz, TEXTO_SIN_VOZ,
 } from './lib/informe-narrativo.js';
 import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
 import {
@@ -417,7 +418,8 @@ function pintarAudio() {
         <span>${g.fase === 'pausado' ? 'Grabación en pausa' : 'Grabación en curso'}</span>
         <span class="ia-crono" id="iaCrono">${fmtTiempo(g.duracionMs)}</span>
       </div>
-      ${g.sinSenal ? '<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>El micrófono no está dando señal.</div></div>' : ''}
+      ${g.sinSenal ? '<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>El micrófono no está dando señal.</div></div>'
+        : g.silencio ? '<div class="alert alert-warning ia-aviso-silencio"><span class="alert-icon">⚠️</span><div>No se oye nada en la grabación. Revisa que el navegador use el micrófono correcto y que no esté silenciado; si no, el informe saldrá sin lo hablado.</div></div>' : ''}
       <div class="ia-audio-pista">Al generar el informe, la grabación se cierra y se usa. Para pausarla o reanudarla, toca la píldora de la cabecera.</div>`;
     return;
   }
@@ -588,6 +590,10 @@ function refrescarVistaPrevia() {
 }
 
 class ModoDemo extends Error {}
+// Whisper devolvió una transcripción sin voz (silencio o texto de relleno
+// como «Subtítulos realizados por la comunidad de Amara.org»): se corta antes
+// de redactar, para no gastar un informe que ignoraría el audio.
+class SinVoz extends Error {}
 
 // Pantalla encendida mientras se genera (como al grabar, grabadora.js): el
 // bloqueo automático de la pantalla suspende la página y corta el stream. El
@@ -637,7 +643,7 @@ async function iaGenerar() {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 300000);
   _error = null;
-  _gen = { texto: '', transcripcion: '', fase: conAudio ? 'transcribiendo' : 'redactando', ctrl, oculto: false };
+  _gen = { texto: '', transcripcion: '', fase: conAudio ? 'transcribiendo' : 'redactando', ctrl, oculto: false, conAudio };
   _vivoAbierto = false;
   pedirWakeLockGen();
   pintar();
@@ -678,7 +684,11 @@ async function iaGenerar() {
     _resultadoAbierto = false;
     showToast('✓ Informe narrativo generado', 'success');
   } catch (err) {
-    if (err instanceof ModoDemo) {
+    if (err instanceof SinVoz) {
+      // Se conserva el audio: se puede escuchar, quitar o reintentar.
+      _error = { texto: TEXTO_SIN_VOZ, original: '', sinAudio: true };
+      showToast('El audio no contiene voz reconocible.', 'warning');
+    } else if (err instanceof ModoDemo) {
       marcarSinLicencia();
       showToast('Este navegador no tiene una licencia PhysiQ válida.', 'warning');
     } else if (err.name === 'AbortError') {
@@ -702,7 +712,11 @@ async function leerStream(res) {
   const decoder = new TextDecoder();
   let buf = '';
   const procesar = ev => {
-    if (ev.type === 'transcript') { _gen.transcripcion = ev.data.text ?? ''; _gen.fase = 'redactando'; refrescarVistaPrevia(); }
+    if (ev.type === 'transcript') {
+      _gen.transcripcion = ev.data.text ?? '';
+      if (_gen.conAudio && transcripcionSinVoz(_gen.transcripcion)) throw new SinVoz();
+      _gen.fase = 'redactando'; refrescarVistaPrevia();
+    }
     else if (ev.type === 'report_chunk') { _gen.texto += ev.data.text ?? ''; refrescarVistaPrevia(); }
     else if (ev.type === 'error') throw new Error(ev.data.message || 'Error desconocido');
     else if (ev.type === 'done') return true;
