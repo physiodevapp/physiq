@@ -53,6 +53,11 @@
 //     texto, una derivación que el fisioterapeuta descarta no se menciona, «No
 //     sé» ni como «desconoce», síntomas fuera de Limitaciones, un cribado
 //     negativo no «descarta», y Coherencia sin nombrar los tests.
+//   · Quinta revisión (hombro posquirúrgico, con y sin edad/lado/motivo): sin
+//     fisiopatología ni especulación que no estén en los datos, ejemplos
+//     negativos en Limitaciones, las subsecciones opcionales sin «no se dispone
+//     de información», y el criterio de reevaluación de la pauta solo en
+//     Seguimiento aunque venga dentro del texto de la pauta.
 
 export const ORCHESTRATOR_URL = 'https://physiq-orchestrator.edu-gamboa-rodriguez.workers.dev';
 export const TURNSTILE_SITEKEY = '0x4AAAAAADU3dzE5Tw_whVks';   // la misma de physiq-report
@@ -107,7 +112,7 @@ export function regionTexto(data, nombreRegion = r => r) {
 export function contextoValoracion(data, nombreRegion = r => r, ampliado = null) {
   if (!data) return '';
   const hyps = (data.h || [])
-    .map(h => `  · ${limpiarEtiqueta(h.name)}${h.dt ? ' (ya diagnosticada y tratada por el médico: no se deriva)' : ''}`)
+    .map(h => `  · ${limpiarEtiqueta(h.name)}${h.dt ? ' (diagnóstico ya confirmado y tratado por el médico: es un antecedente)' : ''}`)
     .join('\n');
   const brText = data.br?.length > 0
     ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
@@ -186,8 +191,8 @@ export function bloquesAmpliados(a) {
     b.push(`Pauta recomendada por PhysiQ para cada hipótesis (basada en guías; no propongas dosis distintas):\n${a.pautas.map(p => [
       `  ${limpiarEtiqueta(p.hipotesis)}:`,
       p.tratada ? (p.operada
-        ? '    · Ya diagnosticada e intervenida: no se deriva; el plan sigue el protocolo del cirujano.'
-        : '    · Ya diagnosticada y tratada por el médico: no se deriva por ella.')
+        ? '    · Diagnóstico ya confirmado e intervenido: el plan sigue el protocolo del cirujano.'
+        : '    · Diagnóstico ya confirmado y tratado por el médico.')
       : p.derivar ? '    · Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico.' : p.pauta ? `    · Pauta: ${p.pauta}` : '    · Pauta: a criterio del fisioterapeuta (la guía no la fija).',
       p.fuente ? `    · Fuente: ${p.fuente}` : '',
       p.pronostico?.horizonte ? `    · Pronóstico: ${p.pronostico.horizonte}` : '',
@@ -289,7 +294,7 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 2. Usa prosa clínica continua y formal, no listas escuetas. Tono de informe profesional para enviar al paciente o equipo médico.
 3. NO uses ** para negrita ni símbolos markdown, salvo en tablas markdown estándar.
 4. Tablas: cuando haya datos numéricos cuantificables (ROM, fuerza, escalas), genera tablas markdown estándar con sintaxis | columna | columna |. Si no hay datos suficientes, omite la tabla y describe en prosa.
-5. Las subsecciones marcadas «[solo si…]» se omiten por completo, título incluido, cuando no hay datos para ellas. No escribas subsecciones para decir que algo no se hizo.
+5. Las subsecciones marcadas «[solo si…]» se omiten por completo, título incluido, cuando no hay datos para ellas. No escribas subsecciones para decir que algo no se hizo o que «no se dispone de información».
 6. Usa la terminología CIF en la prosa (funciones, estructuras, actividades, participación, factores contextuales), sin códigos alfanuméricos.
 7. ${conAudio
     ? 'La transcripción complementa los datos estructurados.'
@@ -344,13 +349,13 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 ## ANÁLISIS DEL FUNCIONAMIENTO: LIMITACIONES EN LA ACTIVIDAD Y RESTRICCIONES EN LA PARTICIPACIÓN
 
 ### Limitaciones en las Actividades
-[Solo las actividades que refiere dolorosas o limitadas, agrupadas en una o dos frases. Los síntomas que refiere o niega (fuerza, bloqueos, hormigueo…) van en Dolor, en una frase; lo cervical, en Pruebas Clínicas]
+[Solo las actividades que refiere dolorosas o limitadas, agrupadas en una o dos frases. Si aquí aparece fuerza, crujidos, bloqueos, enganches, hormigueo, «brazo muerto», inestabilidad, luxaciones o el cuello, está mal: los síntomas que refiere o niega van en Dolor, en una frase, y lo cervical en Pruebas Clínicas]
 
 ### Restricciones en la Participación
 [Solo si refiere afectación del trabajo, el ocio, el deporte o la vida social: describe lo que refiere, sin suponer cómo podría afectarle]
 
 ## CONCLUSIONES Y PLAN DE TRATAMIENTO
-[Si hay derivación, empieza por ella. Después, síntesis clínica con el problema principal y el enfoque terapéutico, en prosa, sin volver a enumerar los tests y sin el criterio de reevaluación (va en Seguimiento)]${hasHypotheses ? `
+[Si hay derivación, empieza por ella. Después, síntesis clínica con el problema principal y el enfoque terapéutico, en prosa, sin volver a enumerar los tests. El criterio de reevaluación o derivación por falta de mejoría (p. ej. «si no mejora en 12 semanas») va en Seguimiento, aunque venga dentro del texto de la pauta]${hasHypotheses ? `
 
 ### Coherencia con hipótesis de valoración
 [Dos o tres frases: si los hallazgos refuerzan, matizan o contradicen las hipótesis recibidas, sin nombrar los tests ni proponer diagnósticos nuevos]
@@ -378,12 +383,14 @@ const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resul
 - Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato.
 - Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
+- No añadas causas, mecanismos ni fases de curación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, reparación tisular, desuso), ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
+- Cada recomendación del plan aparece una sola vez.
 - Cada dato aparece una sola vez, en la sección que le corresponde; no remitas a otras secciones («como se indicó…»).
 - No crees secciones ni subsecciones que no estén en la estructura.
 - Plan: si los datos incluyen una pauta recomendada por PhysiQ, basa el plan en ella sin proponer dosis, series ni volúmenes distintos; si dice «Derivar», el plan es la derivación.
 - Seguimiento: para medir la evolución, usa la escala recomendada de cada hipótesis cuando la haya.
 - Paciente operado (si los datos incluyen «Cirugía»): el plan se supedita al protocolo y a las restricciones del cirujano; no propongas nada que las contradiga, y las pautas de PhysiQ solo valen si son compatibles con ellas. Si no hay protocolo, di UNA vez, al principio del plan, que las restricciones están pendientes de confirmar con el cirujano.
-- Hipótesis «ya diagnosticada y tratada por el médico»: no la derives ni la presentes como sospecha; es un diagnóstico ya confirmado.`;
+- Hipótesis con diagnóstico ya confirmado y tratado: preséntala como antecedente (en Condición de Salud), no como sospecha ni como hipótesis de trabajo. No la derives y no escribas que «no se deriva» o que «no procede derivar»: simplemente no hables de derivación por ella.`;
 
 // Derivaciones: una sola vez, al principio de la sección del plan. Con una
 // derivación no urgente el informe no decide si se espera a la valoración
