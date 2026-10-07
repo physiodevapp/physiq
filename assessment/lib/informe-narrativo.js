@@ -630,6 +630,27 @@ const FAMILIAS_ERROR = [
     texto: s => `${s} no responde ahora mismo. Inténtalo más tarde.` },
 ];
 
+// ── Conexión cortada durante la generación ───────────────────────────────────
+// La generación es una petición en streaming de 1–3 minutos. En el móvil, si la
+// pantalla se apaga, se bloquea o se cambia de app, el navegador suspende la
+// página y corta sus conexiones: fetch() o la lectura del stream fallan con un
+// TypeError de red («Load failed» en iOS, «Failed to fetch» / «network error»
+// en Chrome). No es un error del servidor ni de las APIs, así que no pasa por
+// errorLegible(): se dice qué ha pasado y que basta con volver a generar.
+// → { texto, original, servicio: null, sinAudio: false } | null (no es un corte)
+export const TEXTO_CONEXION_SEGUNDO_PLANO = 'Se ha cortado la conexión porque la pantalla se apagó, el móvil se bloqueó o se salió de la app mientras se generaba. Vuelve a pulsar «Generar informe» y mantén la pantalla encendida hasta que termine.';
+export const TEXTO_CONEXION_PERDIDA = 'Se ha perdido la conexión con el servidor mientras se generaba. Comprueba la conexión y vuelve a pulsar «Generar informe».';
+const RE_RED = /load failed|failed to fetch|network ?error|networkerror|network connection was lost|connection (was )?(reset|closed|aborted)|err_|internet connection appears to be offline/i;
+
+export function errorConexion(err, { seOculto = false } = {}) {
+  const mensaje = String(err?.message || '');
+  // Los fallos de red de fetch son TypeError con uno de estos textos; un
+  // TypeError de otro tipo es un fallo de código, y un mensaje de la API que
+  // hable de «connection» llega como Error: ninguno de los dos es un corte.
+  if (err?.name !== 'TypeError' || !RE_RED.test(mensaje)) return null;
+  return { texto: seOculto ? TEXTO_CONEXION_SEGUNDO_PLANO : TEXTO_CONEXION_PERDIDA, original: mensaje, servicio: null, sinAudio: false };
+}
+
 export function errorLegible(mensaje) {
   const original = String(mensaje || '').trim();
   const m = original.match(/^(Whisper|Claude(?: \(docs\))?):\s*([\s\S]*)$/);

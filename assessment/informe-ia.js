@@ -24,7 +24,7 @@ import { esPosquirurgico } from './lib/posquirurgico.js';
 import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
-  informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio, errorLegible,
+  informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio, errorLegible, errorConexion,
 } from './lib/informe-narrativo.js';
 import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
 import {
@@ -517,6 +517,7 @@ function pintarProgreso() {
     <details class="ia-vivo" id="iaVivo"${_vivoAbierto ? ' open' : ''}><summary>Ver mientras se escribe</summary>
       <div class="ia-informe" id="iaVistaPrevia">${markdownAHtml(_gen.texto)}</div>
     </details>
+    <div class="ia-nota-pantalla">Mantén la pantalla encendida y la app abierta hasta que termine: si el móvil se bloquea o cambias de app, la generación se corta.</div>
     <div class="ia-acciones"><button class="phase5-copy-btn ia-btn-descartar" onclick="iaCancelar()">Cancelar</button></div>`;
   $('iaVivo').addEventListener('toggle', e => {
     _vivoAbierto = e.target.open;
@@ -552,6 +553,26 @@ function refrescarVistaPrevia() {
 
 class ModoDemo extends Error {}
 
+// Pantalla encendida mientras se genera (como al grabar, grabadora.js): el
+// bloqueo automático de la pantalla suspende la página y corta el stream. El
+// navegador suelta el wake lock al ocultar la página; al volver se pide otra
+// vez, y se apunta que hubo un paso por segundo plano para explicar el fallo.
+let _wakeLockGen = null;
+function pedirWakeLockGen() {
+  navigator.wakeLock?.request('screen').then(l => {
+    if (_gen) _wakeLockGen = l; else l.release().catch(() => {});
+  }).catch(() => {});
+}
+function soltarWakeLockGen() {
+  _wakeLockGen?.release?.().catch(() => {});
+  _wakeLockGen = null;
+}
+document.addEventListener('visibilitychange', () => {
+  if (!_gen) return;
+  if (document.visibilityState === 'hidden') _gen.oculto = true;
+  else pedirWakeLockGen();
+});
+
 async function iaGenerar() {
   if (motivoBloqueo()) { pintarBoton(); return; }
   // Generar es el final de la consulta: la grabación en curso se cierra aquí.
@@ -580,8 +601,9 @@ async function iaGenerar() {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 300000);
   _error = null;
-  _gen = { texto: '', transcripcion: '', fase: conAudio ? 'transcribiendo' : 'redactando', ctrl };
+  _gen = { texto: '', transcripcion: '', fase: conAudio ? 'transcribiendo' : 'redactando', ctrl, oculto: false };
   _vivoAbierto = false;
+  pedirWakeLockGen();
   pintar();
 
   const token = consumirToken();
@@ -626,11 +648,13 @@ async function iaGenerar() {
     } else if (err.name === 'AbortError') {
       if (!_gen?.cancelado) showToast('Tiempo de espera agotado. Inténtalo de nuevo.', 'warning');
     } else {
-      _error = errorLegible(err.message);
+      // El audio no se toca: solo se borra con el informe ya guardado.
+      _error = errorConexion(err, { seOculto: !!_gen?.oculto || document.visibilityState === 'hidden' }) || errorLegible(err.message);
       showToast('No se ha podido generar el informe.', 'warning');
     }
   } finally {
     clearTimeout(timer);
+    soltarWakeLockGen();
     ctrl.abort();   // suelta el stream si se salió antes de leerlo entero (p. ej. modo demo)
     _gen = null;
     pintar();

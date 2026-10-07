@@ -2448,6 +2448,7 @@
 .ia-vivo > summary { cursor: pointer; }
 .ia-vivo[open] > summary { margin-bottom: 0.6rem; }
 .ia-progreso { font-variant-numeric: tabular-nums; }
+.ia-nota-pantalla { font-size: 0.75rem; line-height: 1.4; color: var(--text3); margin-top: 0.6rem; }
 
 /* Tipo de informe (narrativo / ficha breve) */
 .ia-plantilla { margin-bottom: 1rem; }
