@@ -2628,7 +2628,7 @@ function _mostrarAvisoVersion() {
   aviso.className = 'version-aviso';
   aviso.setAttribute('role', 'status');
   aviso.innerHTML = `<span class="version-aviso-texto">${_versionPendiente() ? 'La versión nueva aún se está publicando: prueba en unos minutos' : 'Hay una versión nueva'}</span>
-    <button type="button" class="version-aviso-btn" id="versionAvisoRecargar">Recargar</button>
+    <button type="button" class="version-aviso-btn" id="versionAvisoRecargar">Actualizar</button>
     <button type="button" class="version-aviso-cerrar" id="versionAvisoCerrar" aria-label="Cerrar aviso" title="Ahora no">×</button>`;
   document.body.appendChild(aviso);
   aviso.querySelector('#versionAvisoRecargar').onclick = recargarVersionNueva;
@@ -2666,15 +2666,15 @@ function recargarVersionNueva() {
     saveSession();
     _anotarRecarga(_versionNueva?.sha || '');
     const btn = document.getElementById('versionAvisoRecargar');
-    if (btn) { btn.disabled = true; btn.textContent = 'Recargando…'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Actualizando…'; }
     await _refrescarArchivosApp();
     location.reload();
   };
   if (!(state.patient || '').trim() && _hasAssessmentData()) {
     closeSessionPanel();
-    showConfirmBanner('Recargar la app',
-      'La valoración en curso no tiene nombre de paciente, así que no está guardada y se perderá al recargar. Para conservarla, escribe un nombre en el panel de sesión antes de recargar.',
-      'Recargar igualmente', recargar);
+    showConfirmBanner('Actualizar la app',
+      'La valoración en curso no tiene nombre de paciente, así que no está guardada y se perderá al actualizar. Para conservarla, escribe un nombre en el panel de sesión antes de actualizar.',
+      'Actualizar igualmente', recargar);
     return;
   }
   recargar();
