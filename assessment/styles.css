@@ -2474,6 +2474,16 @@
 .ia-vivo[open] > summary { margin-bottom: 0.6rem; }
 .ia-progreso { font-variant-numeric: tabular-nums; }
 .ia-nota-pantalla { font-size: 0.75rem; line-height: 1.4; color: var(--text3); margin-top: 0.6rem; }
+/* Revisión automática del informe (lib/revision-informe.js) */
+.ia-revision { border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: var(--radius); padding: 0.6rem 0.9rem; margin-bottom: 0.8rem; font-size: 0.82rem; color: var(--text2); background: var(--surface2); }
+.ia-revision-alta { border-left-color: var(--red); }
+.ia-revision-ok { border-left-color: var(--green); color: var(--text3); }
+.ia-revision > summary { cursor: pointer; font-weight: 600; color: var(--text); }
+.ia-revision ul { margin: 0.5rem 0 0.3rem; padding-left: 1.1rem; }
+.ia-revision li { margin-bottom: 0.45rem; line-height: 1.4; }
+.ia-revision li.ia-rev-alto { color: var(--red); }
+.ia-rev-cita { display: block; color: var(--text3); font-style: italic; margin-top: 0.15rem; overflow-wrap: anywhere; }
+.ia-rev-nota { font-size: 0.72rem; color: var(--text3); }
 
 /* Tipo de informe (narrativo / ficha breve) */
 .ia-plantilla { margin-bottom: 1rem; }

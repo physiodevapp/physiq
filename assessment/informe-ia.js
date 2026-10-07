@@ -21,6 +21,7 @@ import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data
 import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA } from './app.js';
 import { esTratada, hipotesis, hipotesisActivas } from './phase4b.js';
 import { esPosquirurgico, cirugiaPayload, pautaHipPosq } from './lib/posquirurgico.js';
+import { revisarInforme } from './lib/revision-informe.js';
 import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
@@ -227,6 +228,7 @@ function pintarResultado() {
   const plantilla = PLANTILLAS[inf.plantilla] || PLANTILLAS.narrativo;
   el.innerHTML = `
     <div id="iaAvisoHuella"></div>
+    <div id="iaRevision"></div>
     ${informeTruncado(inf.texto, inf.plantilla) ? '<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>El informe parece incompleto: la última sección no se ha generado. Puedes generarlo de nuevo.</div></div>' : ''}
     <details class="ia-resultado-det" id="iaResultadoDet"${_resultadoAbierto ? ' open' : ''}>
       <summary>
@@ -245,6 +247,32 @@ function pintarResultado() {
   refrescarHuella();
 }
 
+// Revisión automática (lib/revision-informe.js): compara el texto con los
+// datos actuales de la valoración y lista «puntos a revisar». Sin red ni IA;
+// se recalcula con la huella, así que sigue los cambios de la valoración.
+function pintarRevision() {
+  const el = $('iaRevision');
+  const inf = state.informeIA;
+  if (!el || !inf?.texto) return;
+  let puntos;
+  try {
+    puntos = revisarInforme(inf.texto, {
+      datos: buildPhysiQPayload(), ampliado: construirAmpliado(), plantilla: inf.plantilla || 'narrativo',
+      transcripcion: inf.conAudio ? inf.transcripcion : '', nombreRegion,
+    });
+  } catch { el.innerHTML = ''; return; }   // una regla rota nunca tumba la tarjeta
+  if (!puntos.length) {
+    el.innerHTML = '<div class="ia-revision ia-revision-ok">✓ Sin incidencias en las comprobaciones automáticas. Revisa el informe antes de compartirlo.</div>';
+    return;
+  }
+  const altos = puntos.some(p => p.nivel === 'alto');
+  el.innerHTML = `<details class="ia-revision${altos ? ' ia-revision-alta' : ''}"${altos ? ' open' : ''}>
+      <summary>⚠ ${puntos.length} ${puntos.length === 1 ? 'punto' : 'puntos'} a revisar en el informe</summary>
+      <ul>${puntos.map(p => `<li class="ia-rev-${p.nivel}">${esc(p.mensaje)}${p.cita ? `<span class="ia-rev-cita">«${esc(p.cita)}»</span>` : ''}</li>`).join('')}</ul>
+      <div class="ia-rev-nota">Comprobaciones automáticas del texto frente a la valoración: pueden señalar algo correcto. No cambian el informe.</div>
+    </details>`;
+}
+
 const contarPalabras = t => (String(t || '').replace(/[#|*-]/g, ' ').match(/\S+/g) || []).length;
 
 function refrescarHuella() {
@@ -255,6 +283,7 @@ function refrescarHuella() {
   el.innerHTML = cambio
     ? '<div class="alert alert-warning"><span class="alert-icon">✎</span><div>La valoración ha cambiado desde que se generó este informe. Genera uno nuevo si quieres que lo refleje.</div></div>'
     : '';
+  pintarRevision();
 }
 let _huellaTimer = null;
 function _refrescarHuellaDiferido() {
