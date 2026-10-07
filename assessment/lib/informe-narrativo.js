@@ -65,6 +65,13 @@
 //     bastaba: seguía en Limitaciones y negando lo que no sabía), un protocolo
 //     verbal no se pone en duda, ni secuelas ni «fases», ni frases de «no se
 //     dispone de…», y el gesto testigo fuera (no lleva valor).
+//   · Séptima revisión (el mismo caso): indicaciones de Movilidad y Pruebas
+//     Clínicas reescritas (invitaban a «no se dispone de mediciones» y a
+//     «descartar»), ni secuelas ni evolución esperable en ninguna forma, y las
+//     filas del formulario con `iaTexto` llegan con su nombre clínico (tradujo
+//     «dedos doblados hacia la palma» como «dedos en resorte»).
+
+import { ladoTexto } from './region.js';
 
 export const ORCHESTRATOR_URL = 'https://physiq-orchestrator.edu-gamboa-rodriguez.workers.dev';
 export const TURNSTILE_SITEKEY = '0x4AAAAAADU3dzE5Tw_whVks';   // la misma de physiq-report
@@ -107,7 +114,7 @@ export function limpiarEtiqueta(texto) {
 export function regionTexto(data, nombreRegion = r => r) {
   if (!data?.r) return '—';
   const n = nombreRegion ? nombreRegion(data.r) : data.r;
-  return data.la ? `${n} (${String(data.la).toLowerCase()})` : n;
+  return data.la ? `${n} (${ladoTexto(data.r, data.la)})` : n;
 }
 
 // ── Bloque de datos de la valoración ──────────────────────────────────────────
@@ -369,13 +376,13 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Intensidad, irritabilidad, naturaleza y signo comparable. Las actividades que provocan el dolor van en Limitaciones en las Actividades]
 
 ### Movilidad
-[Hallazgos de movilidad activa y pasiva; si hay datos numéricos, TABLA markdown con columnas: Articulación | Movimiento | Rango (Izq/Dcha) | Asimetría]
+[Hallazgos de movilidad activa y pasiva; si hay mediciones, TABLA markdown con columnas: Articulación | Movimiento | Rango (Izq/Dcha) | Asimetría. Si no las hay, describe los hallazgos sin mencionar que faltan mediciones]
 
 ### Fuerza Muscular
 [Solo si se exploró o el paciente refiere debilidad; si hay datos numéricos, TABLA markdown con columnas: Grupo muscular | Movimiento | Fuerza (Izq/Dcha) | Asimetría]
 
 ### Pruebas Clínicas
-[Solo si se realizaron: los hallazgos del recorrido de la exploración y los tests, cada uno una vez, agrupados por la hipótesis que exploran. Lo que se descarta de otra región (p. ej. la columna cervical) se dice aquí y solo aquí]
+[Solo si se realizaron: los hallazgos del recorrido de la exploración y los tests, cada uno una vez, agrupados por la hipótesis que exploran. Si la exploración de otra región (p. ej. la columna cervical) no reproduce los síntomas, dilo aquí y solo aquí, como «no muestra hallazgos que sugieran…», sin nombrar estructuras ni síndromes que no estén en los datos]
 
 ## ANÁLISIS DEL FUNCIONAMIENTO: LIMITACIONES EN LA ACTIVIDAD Y RESTRICCIONES EN LA PARTICIPACIÓN
 
@@ -414,7 +421,7 @@ const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resul
 - Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato.
 - Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
-- No añadas causas, mecanismos, secuelas ni fases de curación o de recuperación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, «fase de consolidación», reparación tisular, desuso, «secuela esperada»), ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
+- No añadas causas, mecanismos, secuelas ni fases de curación o de recuperación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, «fase de consolidación», reparación tisular, desuso); tampoco atribuyas los hallazgos a secuelas ni a la evolución esperable de la lesión o de la cirugía, ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
 - Cada recomendación del plan aparece una sola vez.
 - Cada dato aparece una sola vez, en la sección que le corresponde; no remitas a otras secciones («como se indicó…»).
 - No crees secciones ni subsecciones que no estén en la estructura.

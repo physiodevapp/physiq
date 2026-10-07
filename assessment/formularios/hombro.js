@@ -74,7 +74,7 @@ export default {
           filas: [
             { id: 'diabetes', texto: 'Diabetes o el azúcar alto' },
             { id: 'tiroides', texto: 'Problemas de tiroides' },
-            { id: 'dupuytren', texto: 'Dedos que se le quedan doblados hacia la palma' },
+            { id: 'dupuytren', texto: 'Dedos que se le quedan doblados hacia la palma', iaTexto: 'Contractura de Dupuytren (dedos que se quedan doblados hacia la palma)' },
             { id: 'laxitud', texto: 'Articulaciones más flexibles de lo normal' }
           ] }
       ]

@@ -256,9 +256,9 @@ export async function abrirFormularioPrevio(slot) {
 }
 
 // ─── Lectura (resumen, pistas, contador) ─────────────────────
-function textoRespuesta(it, v, resp) {
+function textoRespuesta(it, v, resp, paraIA = false) {
   if (it.tipo === 'matriz') {
-    return it.filas.filter(f => v[f.id]).map(f => `${f.texto}: ${v[f.id]}`).join(' · ');
+    return it.filas.filter(f => v[f.id]).map(f => `${(paraIA && f.iaTexto) || f.texto}: ${v[f.id]}`).join(' · ');
   }
   let t = Array.isArray(v) ? v.join(', ') : v === 'ns' ? 'No sabría decir' : String(v);
   if (it.tipo === 'escala' && v !== 'ns') t = `${v}/${it.max}`;
@@ -311,7 +311,7 @@ function resumenIADe(scope) {
     else if (Array.isArray(v)) v = v.filter(x => !esNS(x));
     else if (esNS(v)) return;
     if (vacio(v)) return;
-    out.push({ g: it.ia, q: preguntaCorta(it, s), a: textoRespuesta(it, v, resp) });
+    out.push({ g: it.ia, q: preguntaCorta(it, s), a: textoRespuesta(it, v, resp, true) });
   }));
   return out;
 }

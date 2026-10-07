@@ -12,6 +12,7 @@ import {
   cqConProtocolo, fechaSemanasTexto, TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE, TEXTO_NOTA_TRAUMA, ETIQUETA_TRATADA,
 } from './lib/posquirurgico.js';
 import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
+import { ladoTexto } from './lib/region.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
 // Reference-counted: several overlays (confirm-banner, session panel,
@@ -1931,7 +1932,7 @@ function _cirugiaResultadosHTML(cq) {
 // Región con el lado afectado, si se indicó: 'Hombro (derecho)'.
 function regionConLado(r, lado) {
   if (!r) return '—';
-  return lado ? `${nombreRegion(r)} (${lado.toLowerCase()})` : nombreRegion(r);
+  return lado ? `${nombreRegion(r)} (${ladoTexto(r, lado)})` : nombreRegion(r);
 }
 
 // «Central» solo tiene sentido en la columna.

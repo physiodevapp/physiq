@@ -17,7 +17,9 @@
 //                                   de dolor coloreada (verde→rojo) de fase 3, en vez
 //                                   de la fila plana de botones — solo para escalas
 //                                   que sí son de intensidad de dolor/severidad
-//   matriz { filas: [{id, texto}], opciones }   una respuesta por fila
+//   matriz { filas: [{id, texto, iaTexto?}], opciones }   una respuesta por fila;
+//                                   `iaTexto`: nombre clínico de la fila solo para el
+//                                   informe con IA, cuando el texto del papel es ambiguo
 //   texto  { lineas?, chips? }      texto libre (teclado o micro)
 //   mostrarSi: { id, valores }      solo se muestra si la pregunta `id`
 //                                   (de este mismo formulario) tiene uno de esos valores
