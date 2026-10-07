@@ -14,7 +14,7 @@
 // en su criterio. La tarjeta no da dosis («Dosis y progresión no están en la
 // guía»): dosis '' en todas.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.tobillo_pie
 // Árbol, nodo 1 (cinco P, monoartritis con fiebre, debilidad simétrica con
@@ -32,6 +32,7 @@ export const screening = {
     ]
   },
   sistemas: [
+    SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
     {
       // Tarjeta tobillo y pie (guía de consulta): URGENCIA (compartimental y neurovascular,
       // rotura del Aquiles, Ottawa) y BANDERAS «Lisfranc», «Fractura de calcáneo»,
@@ -47,7 +48,7 @@ export const screening = {
       ],
       banderasAmarillas: [],
       preguntas: [
-        { id: 'tp_t1', urgencia: 'Sospecha de síndrome compartimental o compromiso neurovascular tras lesión del mediopié: cirugía urgente, derivación hoy.', text: '¿Tras una lesión grave del mediopié, tiene el pie pálido o frío, dormido u hormigueante, sin pulso, o un dolor desproporcionado (cinco P)?', alerta: true, s1: true,
+        { id: 'tp_t1', notaPosquirurgica: true, urgencia: 'Sospecha de síndrome compartimental o compromiso neurovascular tras lesión del mediopié: cirugía urgente, derivación hoy.', text: '¿Tras una lesión grave del mediopié, tiene el pie pálido o frío, dormido u hormigueante, sin pulso, o un dolor desproporcionado (cinco P)?', alerta: true, s1: true,
           razonamiento: {
             porque: 'Los músculos del pie y de la pierna están encerrados en compartimentos de fascia que casi no se estiran. Tras una lesión grave (una fractura-luxación de Lisfranc, un aplastamiento), la hinchazón o el sangrado suben la presión dentro del compartimento: primero se frena la salida de la sangre venosa y, si la presión supera a la arterial, también la entrada, y nervios y músculos se quedan sin oxígeno. Además, al luxarse el 2.º metatarsiano puede caer el flujo arterial del pie. De ahí el dolor desproporcionado, el hormigueo, la palidez y la frialdad.',
             peso: 'Es una urgencia quirúrgica: con la fasciotomía en las primeras 6 horas la función se recupera casi por completo; a las 12 horas, solo dos tercios quedan con función normal, y en los casos muy tardíos puede acabar en amputación (Torlincasi). No hay que esperar a ver las cinco P: salvo el hormigueo, que puede ser precoz, son signos tardíos, y el pulso puede seguir palpándose con la extremidad muy comprometida. Los primeros datos son un compartimento tenso, «como de madera», y un dolor desproporcionado que al principio aparece sobre todo al estirar los músculos de forma pasiva (Torlincasi; en el pie, al mover pasivamente los dedos, Stern). Con este cuadro tras una lesión del mediopié, derivación urgente hoy (Lluch).',

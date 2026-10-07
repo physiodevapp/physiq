@@ -204,6 +204,45 @@
     </div>
   </div>
 
+  <!-- Paciente posquirúrgico (docs/posquirurgico.md): visible con body.posquirurgico -->
+  <div class="card solo-posq" id="cardCirugia">
+    <div class="card-title">Cirugía</div>
+    <div class="plan-note-hint">El plan y los informes se supeditan al protocolo del cirujano.</div>
+    <div class="form-group">
+      <label class="form-label" for="cirIntervencion">Intervención</label>
+      <textarea class="form-input" id="cirIntervencion" rows="2" placeholder="Ej: Osteosíntesis de maléolo peroneo derecho" oninput="updateCirugia('intervencion', this.value)"></textarea>
+    </div>
+    <div class="vitals-row">
+      <div class="form-group">
+        <label class="form-label" for="cirFecha">Fecha de la cirugía</label>
+        <input type="date" class="form-input" id="cirFecha" oninput="updateCirugia('fecha', this.value)">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="cirSemanas">O semanas aprox.</label>
+        <input type="number" class="form-input" id="cirSemanas" min="0" max="520" step="1" placeholder="Ej: 6" oninput="updateCirugia('semanasAprox', this.value)">
+      </div>
+    </div>
+    <div class="cir-semanas" id="cirSemanasTxt"></div>
+    <div class="form-group">
+      <div class="form-label">Protocolo del cirujano</div>
+      <div class="option-group option-group-full" id="cirProtocolo">
+        <button class="option-btn" onclick="selectCirProtocolo(this, 'Escrito')">Escrito</button>
+        <button class="option-btn" onclick="selectCirProtocolo(this, 'Verbal')">Verbal</button>
+        <button class="option-btn" onclick="selectCirProtocolo(this, 'No hay')">No hay</button>
+      </div>
+      <div id="cirSinProtocolo"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="cirRestricciones">Restricciones y protocolo</label>
+      <textarea class="form-input" id="cirRestricciones" rows="2" placeholder="Carga, rango, inmovilización, precauciones, plazos…" oninput="updateCirugia('restricciones', this.value)"></textarea>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Complicaciones</div>
+      <div class="option-group cir-complicaciones" id="cirComplicaciones"></div>
+      <input type="text" class="form-input cir-comp-otra" id="cirCompOtra" placeholder="Otra (texto libre)" oninput="updateCirugia('complicacionOtra', this.value)">
+    </div>
+  </div>
+
   <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>

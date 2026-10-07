@@ -10,12 +10,17 @@ import { saveSession, showConfirmBanner, paintNav } from './app.js';
 // opción de CIF_TREES): mensajes de las opciones elegidas, en el orden de los
 // pasos. Pura sobre state + CIF_TREES, así que la usan también app.js (fase 5,
 // 📋 Notas, 📄 Informe, payload `dv`) y tests/unit.js.
+// Una opción con `resoluble: true` (hoy codo co_step1 FRACTURA / LUXACIÓN)
+// admite «Ya diagnosticada y tratada» (docs/posquirurgico.md, decisión 5):
+// marcada (state.derivacionResuelta[stepId]), su derivación no sale en
+// ningún sitio.
 export function getDerivacionesArbol() {
   const tree = CIF_TREES[state.region];
   if (!tree) return [];
   return tree.steps.flatMap(step => {
     const opt = step.options.find(o => o.value === state.treeAnswers[step.id]);
-    return opt?.derivacion ? [opt.derivacion] : [];
+    if (!opt?.derivacion) return [];
+    return opt.resoluble && state.derivacionResuelta?.[step.id] ? [] : [opt.derivacion];
   });
 }
 
@@ -24,10 +29,30 @@ function pintarDerivacionPaso(step) {
   const el = document.getElementById(`deriv_${step.id}`);
   if (!el) return;
   const opt = step.options.find(o => o.value === state.treeAnswers[step.id]);
-  el.innerHTML = opt?.derivacion
-    ? `<div class="alert alert-danger" style="margin-top:10px;"><span class="alert-icon">🩺</span><div><strong>Derivación médica.</strong> ${opt.derivacion} El árbol continúa, pero la derivación es prioritaria.</div></div>`
-    : '';
+  if (!opt?.derivacion) { el.innerHTML = ''; return; }
+  const resuelta = opt.resoluble && !!state.derivacionResuelta?.[step.id];
+  const casilla = opt.resoluble ? `<label class="dx-tratada" style="margin:8px 0 0;">
+      <input type="checkbox" ${resuelta ? 'checked' : ''} onchange="toggleDerivacionArbolResuelta('${step.id}', this.checked)">
+      <span>Ya diagnosticada y tratada<span class="dx-tratada-ayuda">El médico ya la ha diagnosticado y tratado (p. ej., operada): no se pide derivación.</span></span>
+    </label>` : '';
+  el.innerHTML = resuelta
+    ? `<div class="alert alert-info" style="margin-top:10px;"><span class="alert-icon">🏥</span><div><strong>Ya diagnosticada y tratada:</strong> sin derivación por esta respuesta.</div></div>${casilla}`
+    : `<div class="alert alert-danger" style="margin-top:10px;"><span class="alert-icon">🩺</span><div><strong>Derivación médica.</strong> ${opt.derivacion} El árbol continúa, pero la derivación es prioritaria.</div></div>${casilla}`;
 }
+
+export function toggleDerivacionArbolResuelta(stepId, valor) {
+  const step = CIF_TREES[state.region]?.steps.find(s => s.id === stepId);
+  if (!step) return;
+  if (!state.derivacionResuelta) state.derivacionResuelta = {};
+  if (valor) state.derivacionResuelta[stepId] = true;
+  else delete state.derivacionResuelta[stepId];
+  pintarDerivacionPaso(step);
+  // El aviso de «Árbol completado» repite las derivaciones pendientes
+  if (document.getElementById('treeComplete')) showTreeComplete({ sinScroll: true });
+  saveSession();
+}
+
+const olvidarResueltaPaso = stepId => { if (state.derivacionResuelta) delete state.derivacionResuelta[stepId]; };
 
 export function initCIFTree() {
   if (!state.region) {
@@ -108,6 +133,7 @@ export function resetCIFTree() {
     'Reiniciar',
     () => {
       state.activeHypotheses = [];
+      CIF_TREES[state.region]?.steps.forEach(st => olvidarResueltaPaso(st.id));
       state.treeAnswers = {};
       state.stepsCompleted = [];
       state.testResults = {};
@@ -185,6 +211,7 @@ export function selectTreeOption(stepId, optIdx, value) {
   // answer, but this step itself goes back to unanswered rather than staying
   // selected. Otherwise the only way to undo a step is "↺ Reiniciar árbol",
   // which throws away every other answer too.
+  olvidarResueltaPaso(stepId);   // otra respuesta (o ninguna): la marca no se hereda
   if (prevValue === value) {
     delete state.treeAnswers[stepId];
     pruneTreeFrom(stepIdx + 1, tree);
@@ -230,6 +257,7 @@ export function pruneTreeFrom(fromIdx, tree) {
     const stepEl = document.getElementById(tree.steps[i].id);
     if (stepEl) stepEl.remove();
     delete state.treeAnswers[tree.steps[i].id];
+    olvidarResueltaPaso(tree.steps[i].id);
   }
   // Marcar 4b y 5 como invalidados si ya habían sido visitados
   if (state.maxVisitedIdx >= 4) {
@@ -264,7 +292,7 @@ export function checkTreeComplete(tree) {
   }
 }
 
-export function showTreeComplete() {
+export function showTreeComplete({ sinScroll = false } = {}) {
   const container = document.getElementById('cifTree');
   const existing = document.getElementById('treeComplete');
   if (existing) existing.remove();
@@ -285,7 +313,7 @@ export function showTreeComplete() {
   div.innerHTML = derivHtml + resultado;
   container.appendChild(div);
   document.getElementById('btnGoConfirm').disabled = false;
-  div.scrollIntoView({ behavior: 'smooth' });
+  if (!sinScroll) div.scrollIntoView({ behavior: 'smooth' });
 }
 
 // Exposed for inline onclick attributes (index.html static markup + this
@@ -293,3 +321,4 @@ export function showTreeComplete() {
 // global scope, never a module's private scope.
 window.resetCIFTree = resetCIFTree;
 window.selectTreeOption = selectTreeOption;
+window.toggleDerivacionArbolResuelta = toggleDerivacionArbolResuelta;

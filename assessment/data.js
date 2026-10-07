@@ -60,6 +60,10 @@ export const SYSTEMIC_SCREENING = Object.fromEntries(
 //                                      // fase 2). Se pinta bajo el paso, al completar el
 //                                      // árbol, en fase 5, 📋 Notas, 📄 Informe y payload `dv`
 //                                      // (getDerivacionesArbol, phase4.js). El recorrido sigue.
+//             resoluble?: true        // opcional, solo con `derivacion`: admite «Ya
+//                                      // diagnosticada y tratada» (state.derivacionResuelta
+//                                      // [step.id]); marcada, la derivación no sale en ningún
+//                                      // sitio (docs/posquirurgico.md). Hoy: codo co_step1.
 //           }, ...
 //         ]
 //       }, ...

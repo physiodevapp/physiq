@@ -19,6 +19,8 @@
 import { state } from './state.js';
 import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data.js';
 import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast } from './app.js';
+import { esTratada } from './phase4b.js';
+import { esPosquirurgico } from './lib/posquirurgico.js';
 import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
@@ -285,6 +287,11 @@ export function construirAmpliado() {
   for (const id of state.activeHypotheses || []) {
     const h = HYPOTHESES[id];
     if (!h) continue;
+    // «Ya diagnosticada y tratada»: ni derivación ni tests (no aplican)
+    if (esTratada(id)) {
+      pautas.push({ hipotesis: h.name, derivar: false, tratada: true, operada: esPosquirurgico(state.mecanismo), pauta: '', fuente: '', prom: h.prom || '' });
+      continue;
+    }
     const res = state.testResults?.[id] || {};
     // El «Gesto testigo (①) y medida objetiva (②)» es la medida de referencia
     // para el seguimiento, no una prueba: va sin resultado.

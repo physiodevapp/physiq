@@ -2,9 +2,39 @@
 // PhysiQ-Assessment · PHASE4B.JS
 // Confirmación de hipótesis — scoring bayesiano con LR
 // ============================================================
-import { HYPOTHESES } from './data.js';
+import { HYPOTHESES, DOSIS_DERIVAR } from './data.js';
 import { state } from './state.js';
 import { saveSession, showConfirmBanner } from './app.js';
+import { ETIQUETA_TRATADA } from './lib/posquirurgico.js';
+
+// «Ya diagnosticada y tratada» (docs/posquirurgico.md, decisión 5): una
+// hipótesis «Derivar» (fractura, rotura, luxación, gota, mielopatía) que el
+// médico ya ha diagnosticado y tratado. No se deriva en ningún resumen y sus
+// tests no aplican: no puntúan, aunque lo contestado se conserva.
+export function esTratada(hId) {
+  return HYPOTHESES[hId]?.dosis === DOSIS_DERIVAR && !!state.derivacionResuelta?.[hId];
+}
+
+// Marca o desmarca y deja la puntuación coherente (sin tocar el DOM).
+export function marcarTratada(hId, valor) {
+  if (HYPOTHESES[hId]?.dosis !== DOSIS_DERIVAR) return;
+  if (!state.derivacionResuelta) state.derivacionResuelta = {};
+  if (valor) state.derivacionResuelta[hId] = true;
+  else delete state.derivacionResuelta[hId];
+  const hyp = HYPOTHESES[hId];
+  if (valor) state.hypothesisScores[hId] = { totalLR: 1, label: ETIQUETA_TRATADA, colorClass: 'hyp-neutral' };
+  else if (state.testResults[hId]) state.hypothesisScores[hId] = (({ totalLR, label, colorClass }) => ({ totalLR, label, colorClass }))(calcLRScore(hyp, state.testResults[hId]));
+  else delete state.hypothesisScores[hId];
+}
+
+function casillaTratadaHTML(hId) {
+  if (HYPOTHESES[hId]?.dosis !== DOSIS_DERIVAR) return '';
+  return `<label class="dx-tratada">
+      <input type="checkbox" ${esTratada(hId) ? 'checked' : ''} onchange="toggleDiagnosticoTratado('${hId}', this.checked)">
+      <span>Ya diagnosticada y tratada<span class="dx-tratada-ayuda">El médico ya la ha diagnosticado y tratado (p. ej., operada): no se pide derivación y sus tests no aplican.</span></span>
+    </label>`;
+}
+export { casillaTratadaHTML };
 
 export function buildHypothesisCards() {
   const container = document.getElementById('hypothesisCards');
@@ -42,20 +72,27 @@ export function buildHypothesisCards() {
       hyp.tests.forEach((t, i) => { state.testResults[hId][i] = 'nd'; });
     }
 
+    const tratada = esTratada(hId);
+    const testsHtml = `${Object.keys(hyp.clusters || {}).map(cid => buildClusterBox(hyp, cid)).join('')}
+        ${buildTestList(hId, hyp)}`;
     const card = document.createElement('div');
-    card.className = 'hypothesis-card hyp-orange';
+    // Al reconstruir (vuelta atrás, casilla «tratada») se conserva la puntuación
+    const previa = tratada ? { label: ETIQUETA_TRATADA, colorClass: 'hyp-neutral' } : state.hypothesisScores[hId];
+    card.className = `hypothesis-card ${previa?.colorClass || 'hyp-orange'}`;
     card.id = `hypcard_${hId}`;
     card.innerHTML = `
       <div class="hypothesis-header" onclick="toggleHypCard('${hId}')">
         <span class="hyp-color-dot"></span>
         <span class="hyp-name" title="${hyp.name}">${hyp.name}</span>
-        <span class="hyp-score" id="score_${hId}">Sin evaluar</span>
+        <span class="hyp-score" id="score_${hId}">${previa?.label || 'Sin evaluar'}</span>
         <span class="hyp-chevron">▾</span>
       </div>
       <div class="hypothesis-body">
-        <p style="font-size:0.8rem; color:var(--text3); margin-bottom:1rem;">Realice los tests e indique el resultado para calcular el peso diagnóstico.</p>
-        ${Object.keys(hyp.clusters || {}).map(cid => buildClusterBox(hyp, cid)).join('')}
-        ${buildTestList(hId, hyp)}
+        ${casillaTratadaHTML(hId)}
+        ${tratada
+          ? `<details class="dx-tratada-tests"><summary>Tests no aplicables: diagnóstico ya confirmado</summary>${testsHtml}</details>`
+          : `<p style="font-size:0.8rem; color:var(--text3); margin-bottom:1rem;">Realice los tests e indique el resultado para calcular el peso diagnóstico.</p>
+        ${testsHtml}`}
         <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border);">
           <div style="font-size:0.72rem; color:var(--accent); font-family:'DM Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">PROM Recomendado</div>
           <span class="prom-badge">${hyp.prom}</span>
@@ -264,11 +301,12 @@ export function clearAllTests() {
         if (!hyp) return;
         state.testResults[hId] = {};
         hyp.tests.forEach((t, i) => { state.testResults[hId][i] = 'nd'; });
+        if (esTratada(hId)) marcarTratada(hId, true);   // sigue «diagnosticada y tratada»
       });
       // Re-renderizar y restaurar color naranja inicial
       buildHypothesisCards();
       // Resetear color de todas las tarjetas a naranja (sin puntuación)
-      state.activeHypotheses.forEach(hId => {
+      state.activeHypotheses.filter(hId => !esTratada(hId)).forEach(hId => {
         const card = document.getElementById('hypcard_' + hId);
         if (card) {
           card.className = 'hypothesis-card hyp-orange';
@@ -419,7 +457,9 @@ export function recalcHypScore(hId) {
   const hyp = HYPOTHESES[hId];
   const results = state.testResults[hId];
   if (!hyp || !results) return;
-  const { totalLR, label, colorClass } = calcLRScore(hyp, results);
+  const { totalLR, label, colorClass } = esTratada(hId)
+    ? { totalLR: 1, label: ETIQUETA_TRATADA, colorClass: 'hyp-neutral' }
+    : calcLRScore(hyp, results);
   state.hypothesisScores[hId] = { totalLR, label, colorClass };
   const card = document.getElementById(`hypcard_${hId}`);
   card.className = `hypothesis-card ${colorClass}`;

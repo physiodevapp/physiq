@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.rodilla
 export const screening = {
@@ -22,6 +22,7 @@ export const screening = {
     ]
   },
   sistemas: [
+    SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
     {
       id: 'ro_vascular', icon: '🩸', nombre: 'Vascular',
       banderasRojas: [
@@ -322,7 +323,7 @@ export const screening = {
               { texto: 'Killeen y Cardenas 2025 — Killeen y Cardenas, «Hemarthrosis», StatPearls [Internet], NCBI Bookshelf, última actualización 7 de noviembre de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK525999/' }
             ]
           } },
-        { id: 'ro_t2', urgencia: 'Sospecha de rotura del aparato extensor (Ottawa no lo detecta): derivación hoy; la reparación precoz da mejores resultados.', text: '¿Tras una caída o un frenazo con la rodilla doblada, notó un chasquido y ahora no puede levantar la pierna estirada ni mantener la rodilla estirada?', alerta: true, s1: true,
+        { id: 'ro_t2', notaPosquirurgica: true, urgencia: 'Sospecha de rotura del aparato extensor (Ottawa no lo detecta): derivación hoy; la reparación precoz da mejores resultados.', text: '¿Tras una caída o un frenazo con la rodilla doblada, notó un chasquido y ahora no puede levantar la pierna estirada ni mantener la rodilla estirada?', alerta: true, s1: true,
           razonamiento: {
             porque: 'El aparato extensor (cuádriceps, su tendón, la rótula y el tendón rotuliano) es el que estira la rodilla. Si se rompe uno de sus eslabones al frenar o caer con la rodilla doblada, el músculo sigue contrayéndose pero su fuerza ya no llega a la tibia: la persona nota un chasquido y no puede levantar la pierna estirada ni mantener la rodilla estirada.',
             peso: 'No poder elevar la pierna extendida tras un traumatismo es el dato clave: la tríada típica de la rotura del tendón del cuádriceps es dolor agudo, imposibilidad de elevar la pierna estirada y un hueco palpable encima de la rótula (Pope); en la del rotuliano, el hueco está debajo y la rótula queda más alta que la del otro lado (Mabrouk y Siwiec). Las roturas completas se operan, y cuanto antes mejor: en el cuádriceps se aconseja reparar en las 48–72 horas, y pasadas 2 semanas el tendón puede retraerse hasta 5 cm (Pope); en el rotuliano, el retraso diagnóstico empeora el resultado (Mabrouk y Siwiec). Derivación hoy.',
@@ -344,7 +345,7 @@ export const screening = {
               'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 196–197.'
             ]
           } },
-        { id: 'ro_t3', urgencia: 'Sospecha de luxación o lesión multiligamentosa: valorar función neurovascular y derivar hoy, antes de forzar la exploración.', text: '¿Fue un traumatismo de alta energía (accidente, golpe contra el salpicadero o en la parte delantera e interna de la rodilla, o la rodilla se le fue hacia atrás) con la rodilla muy hinchada de inmediato?', alerta: true, s1: true,
+        { id: 'ro_t3', notaPosquirurgica: true, urgencia: 'Sospecha de luxación o lesión multiligamentosa: valorar función neurovascular y derivar hoy, antes de forzar la exploración.', text: '¿Fue un traumatismo de alta energía (accidente, golpe contra el salpicadero o en la parte delantera e interna de la rodilla, o la rodilla se le fue hacia atrás) con la rodilla muy hinchada de inmediato?', alerta: true, s1: true,
           razonamiento: {
             porque: 'Para que la tibia se salga del fémur hace falta mucha energía (accidente, deporte a alta velocidad, golpe de salpicadero, hiperextensión), y se rompen varios ligamentos a la vez. La arteria poplítea cruza el hueco poplíteo fija por arriba y por abajo, así que al desplazarse la tibia se estira o se rompe; el nervio peroneo, que rodea la cabeza del peroné, también sufre.',
             peso: 'Casi la mitad de las luxaciones de rodilla se reducen solas antes de llegar al médico o pasan desapercibidas (Mohseni), así que una rodilla de aspecto normal tras un traumatismo de alta energía con hinchazón inmediata no la descarta. Las lesiones vasculares aparecen en el 5–15 % de las luxaciones (hasta el 40 % en algunas series) y las del nervio peroneo en el 10–40 %; un pulso del pie palpable no excluye una lesión de la poplítea, porque las colaterales pueden mantenerlo, y una isquemia de más de 6 horas se ha asociado a tasas de amputación de hasta el 86 % (Mohseni). Por eso: pulsos, sensibilidad y fuerza del pie e índice tobillo-brazo antes de forzar la exploración, y derivación hoy.',
@@ -366,7 +367,7 @@ export const screening = {
               'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 219 y 221–222.'
             ]
           } },
-        { id: 'ro_t4', urgencia: 'Compromiso neurovascular tras traumatismo: pulsos distales, cribado neurológico e índice tobillo-brazo; derivación médica hoy.', text: '¿Desde el traumatismo nota el pie o la pierna más fríos o más calientes, dormidos, con hormigueo o con menos fuerza?', alerta: true, s1: true,
+        { id: 'ro_t4', notaPosquirurgica: true, urgencia: 'Compromiso neurovascular tras traumatismo: pulsos distales, cribado neurológico e índice tobillo-brazo; derivación médica hoy.', text: '¿Desde el traumatismo nota el pie o la pierna más fríos o más calientes, dormidos, con hormigueo o con menos fuerza?', alerta: true, s1: true,
           razonamiento: {
             porque: 'Tras una fractura de meseta tibial o una luxación, pueden quedar comprometidos la arteria poplítea, los nervios o los compartimentos musculares de la pierna. Los cambios de temperatura del pie indican que el riego ha cambiado; el adormecimiento, el hormigueo o la debilidad, que sufren los nervios, por estiramiento directo o por falta de riego. Lluch lo describe en la fractura de meseta: cambios de temperatura, adormecimiento, parestesias o debilidad por afectación neurovascular.',
             peso: 'Es una urgencia: Lluch pide valorar pulsos, hacer un cribado neurológico y medir el índice tobillo-brazo, y ante una diferencia de pulsos entre las piernas el umbral para medirlo debe ser bajo (Malik y Herron). Un pie sin pulso es una urgencia ortopédica. Hay que pensar también en el síndrome compartimental: aparece en horas, a veces hasta 48 horas después; el 75 % se asocia a fracturas, sobre todo de tibia; el primer signo objetivo es un compartimento tenso, duro como la madera, con un dolor desproporcionado que aumenta al estirar los músculos de forma pasiva, y el pulso suele conservarse hasta muy tarde (Torlincasi). Derivación hoy.',

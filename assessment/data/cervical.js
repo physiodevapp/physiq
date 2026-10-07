@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.cervical
 export const screening = {
@@ -21,6 +21,7 @@ export const screening = {
     ]
   },
   sistemas: [
+    SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
     {
       id: 'cv_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [
@@ -455,7 +456,7 @@ export const screening = {
               'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 5.3 (Jull y Falla), pp. 370–371 y tabla 1, p. 383.'
             ]
           } },
-        { id: 'cv_ar3', text: '¿El dolor empezó tras un traumatismo importante (sobre todo si es mayor) o un golpe peligroso, como una flexión con compresión en un deporte de colisión, y necesita sujetarse la cabeza o apenas puede mover el cuello?', alerta: true, s1: true, urgencia: 'Sospecha de fractura, subluxación, luxación o inestabilidad cervical alta traumática: derivación a urgencias hoy.',
+        { id: 'cv_ar3', notaPosquirurgica: true, text: '¿El dolor empezó tras un traumatismo importante (sobre todo si es mayor) o un golpe peligroso, como una flexión con compresión en un deporte de colisión, y necesita sujetarse la cabeza o apenas puede mover el cuello?', alerta: true, s1: true, urgencia: 'Sospecha de fractura, subluxación, luxación o inestabilidad cervical alta traumática: derivación a urgencias hoy.',
           razonamiento: {
             porque: 'Un traumatismo importante, o uno menor en una persona mayor, puede romper una vértebra o los ligamentos que mantienen unida la columna cervical alta. Sujetarse la cabeza con las manos, el espasmo muscular de defensa y la movilidad muy limitada son la forma de proteger una columna que puede ser inestable; el marco IFOMPT incluye sujetarse la cabeza entre las conductas que sugieren inestabilidad cervical alta.',
             peso: 'Un SÍ es una derivación urgente hoy, sin explorar la movilidad. Es la única bandera roja cervical con evidencia sólida (nivel 1): las reglas de decisión que combinan el mecanismo de la lesión, la edad y la exploración (la regla canadiense de la columna cervical) tienen una sensibilidad cercana al 100 % para fractura. En los mayores de 65 años, esa regla ya pide imagen por la edad, y una caída desde la propia altura basta.',

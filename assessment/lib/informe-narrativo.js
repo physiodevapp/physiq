@@ -45,6 +45,9 @@
 //     negaciones), etiquetas internas limpias (flechas, «(→ Rx)»), IMC
 //     redondeado, el gesto testigo como medida de referencia (no test) y las
 //     pruebas de una hipótesis «Derivar» como comprobaciones que no la descartan.
+//   · Paciente posquirúrgico (docs/posquirurgico.md): bloque «Cirugía» (payload
+//     `cq`), plan supeditado al protocolo del cirujano, y las hipótesis
+//     «Derivar» marcadas «ya diagnosticada y tratada» (`dt`) no se derivan.
 //   · Cuarta revisión (hombro posquirúrgico): edad, sexo y lado solo si constan
 //     (inventó «43 años», «varón», «hombro derecho»), ni nombre ni fecha en el
 //     texto, una derivación que el fisioterapeuta descarta no se menciona, «No
@@ -104,7 +107,7 @@ export function regionTexto(data, nombreRegion = r => r) {
 export function contextoValoracion(data, nombreRegion = r => r, ampliado = null) {
   if (!data) return '';
   const hyps = (data.h || [])
-    .map(h => `  · ${limpiarEtiqueta(h.name)}`)
+    .map(h => `  · ${limpiarEtiqueta(h.name)}${h.dt ? ' (ya diagnosticada y tratada por el médico: no se deriva)' : ''}`)
     .join('\n');
   const brText = data.br?.length > 0
     ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
@@ -114,6 +117,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
     : '';
 
   const extra = [];
+  if (data.cq) extra.push(bloqueCirugia(data.cq));
   if (data.ur?.length) extra.push(`DERIVACIÓN URGENTE indicada en el cribado (debe constar en el informe):\n${data.ur.map(s => `  · ${s}`).join('\n')}`);
   if (data.dv?.length) extra.push(`Derivación médica indicada en la exploración (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);
   const sv = signosVitalesTexto(data.sv, data.an);
@@ -154,7 +158,7 @@ ${hyps || '  (sin hipótesis registradas)'}${extra.length ? '\n\n' + extra.join(
 //     psico: [{ q, a }], criterios: [{ etiqueta, positivas, total, nota }],
 //     arbol: [{ pregunta, respuesta }],
 //     tests: [{ hipotesis, items: [{ test, resultado, cluster?, pronostico? }] }],
-//     pautas: [{ hipotesis, derivar, pauta, fuente, pronostico?, prom }] }
+//     pautas: [{ hipotesis, derivar, tratada?, operada?, pauta, fuente, pronostico?, prom }] }
 // Cada bloque solo aparece si tiene datos.
 export function bloquesAmpliados(a) {
   if (!a) return [];
@@ -181,7 +185,10 @@ export function bloquesAmpliados(a) {
   if (a.pautas?.length) {
     b.push(`Pauta recomendada por PhysiQ para cada hipótesis (basada en guías; no propongas dosis distintas):\n${a.pautas.map(p => [
       `  ${limpiarEtiqueta(p.hipotesis)}:`,
-      p.derivar ? '    · Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico.' : p.pauta ? `    · Pauta: ${p.pauta}` : '    · Pauta: a criterio del fisioterapeuta (la guía no la fija).',
+      p.tratada ? (p.operada
+        ? '    · Ya diagnosticada e intervenida: no se deriva; el plan sigue el protocolo del cirujano.'
+        : '    · Ya diagnosticada y tratada por el médico: no se deriva por ella.')
+      : p.derivar ? '    · Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico.' : p.pauta ? `    · Pauta: ${p.pauta}` : '    · Pauta: a criterio del fisioterapeuta (la guía no la fija).',
       p.fuente ? `    · Fuente: ${p.fuente}` : '',
       p.pronostico?.horizonte ? `    · Pronóstico: ${p.pronostico.horizonte}` : '',
       p.pronostico?.derivacion ? `    · Cuándo reconsiderar o derivar: ${p.pronostico.derivacion}` : '',
@@ -189,6 +196,21 @@ export function bloquesAmpliados(a) {
     ].filter(Boolean).join('\n')).join('\n')}`);
   }
   return b;
+}
+
+// Paciente posquirúrgico (payload `cq`, lib/posquirurgico.js): el plan se
+// supedita al protocolo del cirujano (regla en REGLAS_COMUNES).
+function bloqueCirugia(cq) {
+  const fecha = cq.fe ? `${cq.fe}${cq.se != null ? ` (${cq.se} semanas)` : ''}` : cq.se != null ? `hace unas ${cq.se} semanas` : '';
+  const conProt = cq.pr === 'Escrito' || cq.pr === 'Verbal';
+  return [
+    'Cirugía (paciente posquirúrgico):',
+    `  · Intervención: ${cq.iv || 'sin detallar'}`,
+    fecha ? `  · Fecha: ${fecha}` : '',
+    `  · Protocolo del cirujano: ${conProt ? cq.pr.toLowerCase() : 'no hay o no se ha indicado; restricciones pendientes de confirmar con el cirujano'}`,
+    cq.re ? `  · Restricciones: ${cq.re}` : '',
+    cq.co?.length ? `  · Complicaciones: ${cq.co.join(', ')}` : '',
+  ].filter(Boolean).join('\n');
 }
 
 function signosVitalesTexto(sv, an) {
@@ -359,13 +381,15 @@ const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resul
 - Cada dato aparece una sola vez, en la sección que le corresponde; no remitas a otras secciones («como se indicó…»).
 - No crees secciones ni subsecciones que no estén en la estructura.
 - Plan: si los datos incluyen una pauta recomendada por PhysiQ, basa el plan en ella sin proponer dosis, series ni volúmenes distintos; si dice «Derivar», el plan es la derivación.
-- Seguimiento: para medir la evolución, usa la escala recomendada de cada hipótesis cuando la haya.`;
+- Seguimiento: para medir la evolución, usa la escala recomendada de cada hipótesis cuando la haya.
+- Paciente operado (si los datos incluyen «Cirugía»): el plan se supedita al protocolo y a las restricciones del cirujano; no propongas nada que las contradiga, y las pautas de PhysiQ solo valen si son compatibles con ellas. Si no hay protocolo, di UNA vez, al principio del plan, que las restricciones están pendientes de confirmar con el cirujano.
+- Hipótesis «ya diagnosticada y tratada por el médico»: no la derives ni la presentes como sospecha; es un diagnóstico ya confirmado.`;
 
 // Derivaciones: una sola vez, al principio de la sección del plan. Con una
 // derivación no urgente el informe no decide si se espera a la valoración
 // médica: esa decisión es del fisioterapeuta.
 function reglaDerivacion(seccion, conSeguimiento = true) {
-  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Una hipótesis cuya pauta dice «Derivar» (fractura, luxación, rotura…) se deriva aunque sus tests clínicos hayan salido negativos, porque no la descartan: nómbrala como sospecha pendiente de confirmar por el médico, salvo que el fisioterapeuta indique otra cosa en consulta o en las notas del plan; si indica que no procede (p. ej. la lesión ya está diagnosticada y tratada), no menciones esa derivación en ningún punto del informe. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay) y después plan y pauta${conSeguimiento ? ', y al final el seguimiento' : ''}.`;
+  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Una hipótesis cuya pauta dice «Derivar» (fractura, luxación, rotura…) y no está marcada como ya diagnosticada y tratada se deriva aunque sus tests clínicos hayan salido negativos, porque no la descartan: nómbrala como sospecha pendiente de confirmar por el médico, salvo que el fisioterapeuta indique otra cosa en consulta o en las notas del plan; si indica que no procede (p. ej. la lesión ya está diagnosticada y tratada), no menciones esa derivación en ningún punto del informe. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay) y después plan y pauta${conSeguimiento ? ', y al final el seguimiento' : ''}.`;
 }
 
 // ── Ficha breve ───────────────────────────────────────────────────────────────
@@ -418,7 +442,10 @@ export const plantillaPorDefecto = modo => (modo === 'breve' ? 'breve' : 'narrat
 // Para avisar de que la valoración cambió después de generar el informe. La
 // fecha (`d`) se excluye: cambia sola al pasar la medianoche.
 export function huellaPayload(data) {
-  const { d, ...resto } = data || {};
+  // Fuera lo que cambia solo con el paso de los días: la fecha y las semanas
+  // desde la cirugía (cq.se), que se calculan al vuelo.
+  const { d, cq, ...resto } = data || {};
+  if (cq) resto.cq = (({ se, ...x }) => x)(cq);
   const s = JSON.stringify(resto);
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) {

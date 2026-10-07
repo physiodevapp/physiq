@@ -19,6 +19,10 @@ const state = {
   signosVitales: { fc: null, fr: null, spo2: null, tas: null, tad: null },
   antropometria: { talla: null, peso: null },  // imc se calcula al vuelo, no se persiste (ver calcImc en app.js)
   mecanismo: '',
+  // Tarjeta «Cirugía» (solo se usa con mecanismo Post-quirúrgico; ver
+  // docs/posquirurgico.md y lib/posquirurgico.js). Las semanas desde `fecha`
+  // se calculan al mostrarlas; `semanasAprox` solo cuando no hay fecha.
+  cirugia: { intervencion: '', fecha: '', semanasAprox: null, protocolo: '', restricciones: '', complicaciones: [], complicacionOtra: '' },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',
@@ -45,6 +49,9 @@ const state = {
   // Fase 4b
   testResults: {},
   hypothesisScores: {},
+  // «Ya diagnosticada y tratada»: { [hypId | stepId]: true } — hipótesis con
+  // DOSIS_DERIVAR y derivaciones del árbol con `resoluble` que no se derivan.
+  derivacionResuelta: {},
   // Fase 5
   resultsBuilt: false,
   // Notas del Plan

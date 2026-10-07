@@ -5,12 +5,13 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.codo
 export const screening = {
   label: 'Codo y Antebrazo',
   sistemas: [
+    SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
     {
       id: 'co_trauma', icon: '🦴', nombre: 'Traumático (Fractura o Luxación)',
       banderasRojas: [
@@ -20,7 +21,7 @@ export const screening = {
       ],
       banderasAmarillas: [],
       preguntas: [
-        { id: 'co_t1', urgencia: 'Sospecha de fractura tras un traumatismo (el codo no llega a estirarse del todo: casi un 50 % de fracturas): derivación hoy para radiografía, sin forzar la extensión.', text: '¿Se ha caído o se ha dado un golpe en el codo en los últimos días y no consigue estirarlo del todo? (Prueba de extensión del codo: brazos al frente con las palmas hacia arriba, comparar con el otro lado.)', alerta: true, s1: true,
+        { id: 'co_t1', notaPosquirurgica: true, urgencia: 'Sospecha de fractura tras un traumatismo (el codo no llega a estirarse del todo: casi un 50 % de fracturas): derivación hoy para radiografía, sin forzar la extensión.', text: '¿Se ha caído o se ha dado un golpe en el codo en los últimos días y no consigue estirarlo del todo? (Prueba de extensión del codo: brazos al frente con las palmas hacia arriba, comparar con el otro lado.)', alerta: true, s1: true,
           razonamiento: {
             porque: 'Tras una caída o un golpe, una fractura del codo (en adultos, sobre todo de la cabeza del radio) llena de líquido la articulación, y un codo con derrame agudo se mantiene en flexión: no llega a estirarse del todo. La prueba de extensión del codo aprovecha ese signo para decidir quién necesita una radiografía.',
             peso: 'Pesa: en el estudio de validación de Appelboam (1740 pacientes de urgencias), quien no conseguía estirar del todo el codo tenía casi un 50 % de probabilidad de fractura, y debe derivarse para radiografía; Lluch indica que las fracturas agudas requieren atención médica. Si lo estira del todo, la fractura es muy improbable en el adulto (LR− 0,03) y algo menos segura en el niño (LR− 0,11); aun así, una fractura del olécranon puede permitir la extensión.',
@@ -43,7 +44,7 @@ export const screening = {
                 'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 18, p. 704.'
             ]
           } },
-        { id: 'co_t2', urgencia: 'Sospecha de luxación o compromiso neurovascular tras un traumatismo: explorar sensibilidad, color y temperatura de la mano, no movilizar el codo y derivar hoy.', text: '¿Tras una caída o un golpe, el codo se ve deformado, o la mano está dormida, fría o pálida?', alerta: true, s1: true,
+        { id: 'co_t2', notaPosquirurgica: true, urgencia: 'Sospecha de luxación o compromiso neurovascular tras un traumatismo: explorar sensibilidad, color y temperatura de la mano, no movilizar el codo y derivar hoy.', text: '¿Tras una caída o un golpe, el codo se ve deformado, o la mano está dormida, fría o pálida?', alerta: true, s1: true,
           razonamiento: {
             porque: 'El codo es la segunda articulación que más se luxa, después del hombro, casi siempre por una caída sobre la mano extendida. El hueso desplazado deforma el codo y puede atrapar los nervios y los vasos que lo cruzan: de ahí la mano dormida, fría o pálida.',
             peso: 'Alto: Lluch indica que las fracturas y luxaciones agudas requieren atención médica y que la exploración neurovascular es crítica justo después de una luxación. Goodman pide atención médica inmediata ante un traumatismo con dolor desproporcionado (fractura, síndrome compartimental). Derivación inmediata.',
@@ -363,7 +364,7 @@ export const tree = {
       question: '¿Hubo un evento traumático, hay deformidad muscular característica o es un niño o adolescente?',
       options: [
         { label: 'SÍ — Pérdida del contorno normal del brazo (a veces sutil), hinchazón y debilidad en flexión/supinación', value: 'biceps', next: null, hypothesis: ['co7'] },
-        { label: 'FRACTURA / LUXACIÓN — Caída o golpe con deformidad del codo, o el codo no llega a estirarse del todo: sospecha de fractura o luxación → derivación médica', value: 'fractura', next: 'co_step2', hypothesis: [],
+        { label: 'FRACTURA / LUXACIÓN — Caída o golpe con deformidad del codo, o el codo no llega a estirarse del todo: sospecha de fractura o luxación → derivación médica', value: 'fractura', next: 'co_step2', hypothesis: [], resoluble: true,
           derivacion: 'Sospecha de fractura o luxación tras un traumatismo (deformidad, o el codo no llega a estirarse del todo: casi un 50 % de fracturas en Appelboam 2008): derivación médica para radiografía; antes, explorar la sensibilidad, el color y la temperatura de la mano.' },
         { label: 'NIÑO O ADOLESCENTE — Esqueleto inmaduro: tirón del brazo extendido en un menor de 5 años, lanzador joven con dolor medial, o dolor lateral insidioso entre los 7 y los 12 años', value: 'nino', next: 'co_step2', hypothesis: ['co14', 'co15', 'co16'] },
         { label: 'NO — Sin traumatismo significativo ni deformidad', value: 'no', next: 'co_step2', hypothesis: [] }

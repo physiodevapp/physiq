@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
 
 // ── Fase 2 · SYSTEMIC_SCREENING.lumbar
 export const screening = {
@@ -20,6 +20,7 @@ export const screening = {
     ]
   },
   sistemas: [
+    SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
     {
       id: 'l_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [

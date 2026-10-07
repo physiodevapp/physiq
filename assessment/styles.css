@@ -2555,3 +2555,18 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: flex; }
 .ia-error { margin-top: 0.8rem; }
 .ia-error-salida { margin-top: 6px; }
 .ia-error-original { margin-top: 6px; font-family: 'DM Mono', monospace; font-size: 0.7rem; opacity: 0.75; overflow-wrap: anywhere; }
+
+/* ── Paciente posquirúrgico (docs/posquirurgico.md) ───────────
+   Todo lo que solo existe con mecanismo Post-quirúrgico cuelga de
+   body.posquirurgico (_pintarCirugiaUI en app.js), como .modo-breve. */
+.solo-posq { display: none; }
+body.posquirurgico .solo-posq { display: block; }
+.cir-semanas:not(:empty) { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); margin: -4px 0 12px; }
+.cir-complicaciones { flex-wrap: wrap; }
+.cir-complicaciones .option-btn { width: auto; flex: 0 0 auto; padding: 8px 12px; font-size: 0.8rem; min-height: 40px; }
+.cir-comp-otra { margin-top: 8px; }
+.nota-posq { margin: 6px 0 2px; font-size: 0.78rem; line-height: 1.45; color: var(--text2); border-left: 2px solid var(--accent); padding-left: 8px; }
+.dx-tratada { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 1rem; padding: 10px 12px; font-size: 0.85rem; color: var(--text); line-height: 1.45; cursor: pointer; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); }
+.dx-tratada input { margin-top: 3px; accent-color: var(--accent); flex-shrink: 0; }
+.dx-tratada-ayuda { display: block; font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
+.dx-tratada-tests > summary { cursor: pointer; font-size: 0.8rem; color: var(--text3); margin-bottom: 8px; }
