@@ -11,6 +11,7 @@ import {
   COMPLICACIONES, cirugiaVacia, esPosquirurgico, semanasCirugia, semanasTexto, conProtocolo, cirugiaPayload,
   cqConProtocolo, fechaSemanasTexto, TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE, TEXTO_NOTA_TRAUMA, ETIQUETA_TRATADA,
 } from './lib/posquirurgico.js';
+import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
 // Reference-counted: several overlays (confirm-banner, session panel,
@@ -2365,7 +2366,8 @@ function _showSessionState(st) {
         <button type="button" class="session-io-btn" id="sessionImport">⬆ Importar</button>
         <input type="file" id="sessionImportFile" accept=".json,application/json" hidden>
       </div>
-      <div class="session-io-nota">Valoración completa en un archivo .json, con los datos clínicos y el nombre del paciente.${state.maxVisitedIdx > 0 ? '' : ' Se puede exportar a partir de la fase 2.'}</div>`;
+      <div class="session-io-nota">Valoración completa en un archivo .json, con los datos clínicos y el nombre del paciente.${state.maxVisitedIdx > 0 ? '' : ' Se puede exportar a partir de la fase 2.'}</div>
+      <div class="session-version" id="sessionVersion">${_versionPanelHTML()}</div>`;
     panel.querySelector('#sessionExport').onclick = exportarValoracionArchivo;
     panel.querySelector('#sessionImport').onclick = () => panel.querySelector('#sessionImportFile').click();
     panel.querySelector('#sessionImportFile').onchange = e => {
@@ -2387,6 +2389,7 @@ function _showSessionState(st) {
       saveSession();
     });
     panel.querySelector('#sessionPanelClear').onclick = () => _showSessionState('delete');
+    panel.querySelector('#sessionVersionRecargar')?.addEventListener('click', recargarVersionNueva);
     setTimeout(() => input.focus(), 60);
 
   } else if (st === 'delete') {
@@ -2466,6 +2469,74 @@ async function _aplicarImportacion(r) {
   await clearSession();   // sin restos de la sesión anterior (payload final, ROM…)
   await writeSession({ patient: r.paciente, date: new Date().toLocaleDateString('es-ES'), assessmentState: r.assessmentState });
   location.reload();
+}
+
+// ─── Versión desplegada ────────────────────────────────────────
+// La versión cargada (lib/version.js, la escribe deploy-to-hub.yml) se ve al
+// pie del panel de sesión. Al arrancar y al volver a la app se pide
+// version.json sin caché: si es otra, un aviso ofrece recargar. Sirve para
+// saber, tras un merge, si ya ha llegado el despliegue a este dispositivo.
+let _versionNueva = null;          // { sha, fecha } publicada, si es distinta de la cargada
+let _versionComprobada = 0;        // ms de la última comprobación (máx. una por minuto)
+let _versionAvisoCerrado = '';     // sha cuyo aviso se cerró: no se vuelve a mostrar
+
+function _versionPanelHTML() {
+  const actual = `Versión ${textoVersion()}`;
+  if (!_versionNueva) return actual;
+  return `${actual} · <span class="session-version-nueva">hay una más reciente</span>
+    <button type="button" class="session-version-btn" id="sessionVersionRecargar">Recargar</button>`;
+}
+
+async function comprobarVersion() {
+  if (VERSION_SHA === 'dev') return;   // sin despliegue que comparar (local)
+  if (Date.now() - _versionComprobada < 60000) return;
+  _versionComprobada = Date.now();
+  let publicada;
+  try {
+    const r = await fetch(`./version.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (!r.ok) return;
+    publicada = await r.json();
+  } catch { return; }   // sin conexión: nada que decir
+  if (!esVersionNueva(publicada)) return;
+  _versionNueva = publicada;
+  const v = document.getElementById('sessionVersion');
+  if (v) {
+    v.innerHTML = _versionPanelHTML();
+    v.querySelector('#sessionVersionRecargar')?.addEventListener('click', recargarVersionNueva);
+  }
+  _mostrarAvisoVersion();
+}
+
+function _mostrarAvisoVersion() {
+  if (!_versionNueva || _versionAvisoCerrado === _versionNueva.sha) return;
+  if (document.getElementById('versionAviso')) return;
+  const aviso = document.createElement('div');
+  aviso.id = 'versionAviso';
+  aviso.className = 'version-aviso';
+  aviso.setAttribute('role', 'status');
+  aviso.innerHTML = `<span class="version-aviso-texto">Hay una versión nueva</span>
+    <button type="button" class="version-aviso-btn" id="versionAvisoRecargar">Recargar</button>
+    <button type="button" class="version-aviso-cerrar" id="versionAvisoCerrar" aria-label="Cerrar aviso" title="Ahora no">×</button>`;
+  document.body.appendChild(aviso);
+  aviso.querySelector('#versionAvisoRecargar').onclick = recargarVersionNueva;
+  aviso.querySelector('#versionAvisoCerrar').onclick = () => {
+    _versionAvisoCerrado = _versionNueva?.sha || '';
+    aviso.remove();
+  };
+}
+
+// Recargar guarda la sesión, pero solo se guarda con nombre de paciente: sin
+// él, una valoración empezada se perdería, así que se pide confirmación.
+function recargarVersionNueva() {
+  const recargar = () => { saveSession(); setTimeout(() => location.reload(), 150); };
+  if (!(state.patient || '').trim() && _hasAssessmentData()) {
+    closeSessionPanel();
+    showConfirmBanner('Recargar la app',
+      'La valoración en curso no tiene nombre de paciente, así que no está guardada y se perderá al recargar. Para conservarla, escribe un nombre en el panel de sesión antes de recargar.',
+      'Recargar igualmente', () => location.reload());
+    return;
+  }
+  recargar();
 }
 
 function toggleSessionPanel() {
@@ -3019,6 +3090,7 @@ document.addEventListener('DOMContentLoaded', () => {
       saveSession();
       _closeAllOverlays();
     }
+    else comprobarVersion();
   });
 
   document.getElementById('patientName')?.addEventListener('blur', saveSession);
@@ -3060,6 +3132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
+comprobarVersion();
 
 // ─── HUB INTEGRATION ─────────────────────────────────────────
 // physiq-assessment runs inside an iframe in the PhysiQ hub. Moved here (was
