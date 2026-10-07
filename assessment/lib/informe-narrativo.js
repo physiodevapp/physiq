@@ -81,6 +81,9 @@
 //     «medicamentos», al aumento del entrenamiento); reparto de palabras por
 //     sección (dio ~740 de 550); y sexo, nuevo campo opcional de la fase 1
 //     (deducía «sentada», «la paciente» del nombre).
+//   · Novena revisión (la misma ficha): códigos CIF de una lista cerrada
+//     (CODIGOS_CIF; puso d4103 «sentarse» a las cuclillas) y PALABRAS_FICHA
+//     de 550 a 700 (con 550 salían ~700 igualmente, sin relleno).
 
 import { ladoTexto } from './region.js';
 
@@ -456,7 +459,58 @@ function reglaDerivacion(seccion, conSeguimiento = true) {
 // Adaptada de la plantilla «brief» de physiq-report (buildPrompt(), rama
 // brief): tres secciones en prosa, ~550 palabras. Mismas diferencias que la
 // narrativa (identificación aparte, sin audio, datos ampliados, reglas comunes).
-export const PALABRAS_FICHA = 550;
+export const PALABRAS_FICHA = 700;      // con 550 daba ~700 siempre: es lo que cabe con una pauta de guía larga
+
+// Códigos CIF que la ficha puede usar (OMS, CIF 2001): lista cerrada para
+// fisioterapia musculoesquelética, porque con «solo los que correspondan sin
+// duda» seguía equivocándose (e1101 «medicamentos» por el entrenamiento,
+// d4103 «sentarse» por las cuclillas). Todos comprobados contra el buscador
+// de la OMS (apps.who.int/classifications/icfbrowser, 2026-10). Revisar con
+// el clínico al cambiarla.
+export const CODIGOS_CIF = [
+  ['b134', 'funciones del sueño'],
+  ['b2401', 'mareo'],
+  ['b265', 'funciones táctiles'],
+  ['b28010', 'dolor en cabeza y cuello'],
+  ['b28013', 'dolor de espalda'],
+  ['b28014', 'dolor en miembro superior'],
+  ['b28015', 'dolor en miembro inferior'],
+  ['b28016', 'dolor en articulaciones'],
+  ['b7100', 'movilidad de una sola articulación'],
+  ['b7101', 'movilidad de varias articulaciones'],
+  ['b7150', 'estabilidad de una sola articulación'],
+  ['b7300', 'fuerza de músculos aislados y grupos musculares'],
+  ['b7301', 'fuerza de los músculos de una extremidad'],
+  ['b740', 'resistencia muscular'],
+  ['b770', 'funciones relacionadas con el patrón de la marcha'],
+  ['b7800', 'sensación de rigidez muscular'],
+  ['d4101', 'ponerse en cuclillas'],
+  ['d4102', 'ponerse de rodillas'],
+  ['d4103', 'sentarse'],
+  ['d4104', 'ponerse de pie'],
+  ['d4105', 'inclinarse'],
+  ['d4151', 'permanecer en cuclillas'],
+  ['d4153', 'permanecer sentado'],
+  ['d4154', 'permanecer de pie'],
+  ['d4300', 'levantar objetos'],
+  ['d440', 'uso fino de la mano'],
+  ['d4452', 'alcanzar'],
+  ['d4454', 'lanzar'],
+  ['d4500', 'andar distancias cortas'],
+  ['d4501', 'andar distancias largas'],
+  ['d4502', 'andar sobre diferentes superficies'],
+  ['d4551', 'trepar (incluye subir y bajar escaleras)'],
+  ['d4552', 'correr'],
+  ['d4553', 'saltar'],
+  ['d4554', 'nadar'],
+  ['d4751', 'conducir vehículos con motor'],
+  ['d510', 'lavarse'],
+  ['d5202', 'cuidado del pelo'],
+  ['d540', 'vestirse'],
+  ['d640', 'realizar los quehaceres de la casa'],
+  ['d850', 'trabajo remunerado'],
+  ['d9201', 'deportes'],
+];
 export const MAX_TOKENS_FICHA = 2500;   // holgado: ver MAX_TOKENS_INFORME
 
 export function buildFichaBrevePrompt(data, { conAudio, nombreRegion, ampliado } = {}) {
@@ -480,7 +534,7 @@ INSTRUCCIONES:
    ## HALLAZGOS Y CODIFICACIÓN CIF
    ## OBJETIVOS Y PLAN
 3. Escribe en prosa continua dentro de cada sección, sin viñetas ni listas.
-4. En ## HALLAZGOS Y CODIFICACIÓN CIF incluye los códigos CIF alfanuméricos relevantes entre paréntesis inline, integrados en la prosa: como máximo unos 6, solo de funciones corporales (b) y de actividades y participación (d), y solo los que correspondan sin duda al hallazgo descrito; es mejor omitir un código que poner uno dudoso. No uses códigos de factores ambientales (e) ni de estructuras (s). Ejemplo: "Se constata limitación del rango de flexión de hombro (b7101) con dolor asociado al movimiento activo (b28016)."
+4. En ## HALLAZGOS Y CODIFICACIÓN CIF incluye los códigos CIF alfanuméricos relevantes entre paréntesis inline, integrados en la prosa: como máximo unos 6, elegidos SOLO de esta lista y solo si el término corresponde exactamente al hallazgo descrito; si ningún código de la lista encaja, no pongas código: ${CODIGOS_CIF.map(([c, t]) => `${c} ${t}`).join('; ')}. Ejemplo: "Se constata limitación del rango de flexión de hombro (b7101) con dolor asociado al movimiento activo (b28016)."
 5. ${conAudio
     ? 'La transcripción complementa los datos estructurados.'
     : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos; no escribas "No evaluado".
