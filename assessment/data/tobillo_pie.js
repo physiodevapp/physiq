@@ -703,7 +703,8 @@ export const hypotheses = {
     id: 'tp2', region: 'tobillo_pie', num: '②',
     name: 'Lesión de la Sindesmosis',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: 'Solo la lesión aguda y aislada estable: ligamento tibioperoneo anterior inferior roto, con o sin el interóseo, y deltoideo íntegro. Con el deltoideo roto es inestable: derivar, porque el consenso indica cirugía. Tratamiento conservador: 3 semanas sin carga, al principio con reposo y hielo; después, bota de marcha 3 semanas, con ejercicios propioceptivos desde que termina la descarga. Vuelta a las actividades normales según tolerancia. El consenso no da un protocolo de rehabilitación ni un plazo de vuelta al deporte, y no se pronuncia a favor ni en contra de AINE o corticoides. Se apoya en 4 estudios (143 tobillos, todos de deportistas profesionales), con 23 días de media fuera del deporte (7–42).',
+    dosisFuente: 'van Dijk 2016, Knee Surg Sports Traumatol Arthrosc 24(4):1217–27 (consenso ESSKA-AFAS tras una revisión sistemática; nivel de evidencia IV)',
     pronostico: {
       horizonte: 'Si LTPAI y squeeze son positivos, hace falta imagen: la RM tiene una precisión de hasta el 95 %.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 263'
@@ -1197,7 +1198,8 @@ export const hypotheses = {
     id: 'tp33', region: 'tobillo_pie', num: '㉝',
     name: 'Fractura de Estrés del Cuello de un Metatarsiano (Fractura de Marcha)',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: 'Fractura de estrés de bajo riesgo: la diáfisis del 2.º al 4.º metatarsiano lo es (la base del 2.º y la diáfisis proximal del 5.º son de alto riesgo). Fase 1: dejar de correr y modificar la actividad guiándose por el dolor, hasta no tener dolor durante ni después de las actividades diarias. En el antepié puede ayudar un calzado de suela rígida. Caminar solo lo imprescindible y con marcha normal; si duele, descarga parcial con muletas, y si no se consigue una marcha sin dolor, un periodo corto con bota o sin carga. Desde el principio, buscar los factores de riesgo (cambios de entrenamiento, superficie o calzado, fracturas de estrés previas, IMC menor de 19, ingesta de energía, calcio y vitamina D, historia menstrual) y fortalecer la musculatura intrínseca del pie. Mantener la forma con bici, natación o carrera en piscina sin dolor. AINE solo unos días, porque enmascaran el dolor que guía la progresión. Fase 2: tras 5 días seguidos sin dolor en las actividades diarias, programa graduado de carrera en días alternos: de caminar 30 minutos a alternar caminar y trotar, después aumentar el ritmo hasta 30 minutos a ritmo normal, y por último días seguidos. Se sube de nivel solo si no hay síntomas durante ni después de la sesión; si aparecen, se para y se vuelve al último nivel superado. Es opinión de expertos: no hay un protocolo validado.',
+    dosisFuente: 'Warden 2014, J Orthop Sports Phys Ther 44(10):749–65 (comentario clínico; nivel de evidencia 5; programa de carrera de su tabla 3)',
     pronostico: {
       horizonte: 'Radiografía poco sensible al principio; RM de elección; TC para caracterizar.',
       derivacion: '3–4 meses hasta el deporte tras una no complicada; complicada si no se resuelve con reposo relativo. Varias → causas sistémicas (RED-S, endocrinas, densidad ósea).',
@@ -1240,7 +1242,8 @@ export const hypotheses = {
     id: 'tp36', region: 'tobillo_pie', num: '㊱',
     name: 'Apofisitis y Osteocondrosis Pediátricas (Sever, Iselin, Köhler, Freiberg)',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: 'Solo las apofisitis (Sever, Iselin y la del tibial posterior); Köhler y Freiberg son osteocondrosis y esta pauta no se les aplica. No hay estudios de tratamiento de estas apofisitis: la pauta es por analogía con la de Osgood-Schlatter, otra apofisitis por tracción. Reducir temporalmente el deporte y las actividades que provocan dolor, y volver de forma gradual con una escalera de actividad guiada por el dolor: subir un escalón solo con dolor de 2/10 o menos durante la actividad y a la mañana siguiente, y bajar uno si empeora. Fortalecimiento progresivo y educación sobre la carga al niño y a los padres. Los ejercicios del estudio son de rodilla: para el pie no hay un equivalente probado. En la Osgood-Schlatter, el 80 % mejoró a las 12 semanas y el 90 % al año.',
+    dosisFuente: 'Rathleff 2020, Orthop J Sports Med 8(4):2325967120911106 (Osgood-Schlatter, aplicado por analogía: no hay estudios en Sever ni Iselin; serie de casos, n = 51, 10–14 años, nivel de evidencia 4)',
     pronostico: {
       horizonte: 'Apofisitis: imagen rara vez necesaria. Köhler y Freiberg: radiografía característica (mirar el otro pie en Köhler).',
       derivacion: 'Las apofisitis suelen resolverse en 6–12 meses, a veces hasta 2 años. Osteoma osteoide sin alivio por AINE → otras causas.',

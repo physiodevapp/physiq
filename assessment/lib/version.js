@@ -5,8 +5,8 @@
 // escribe version.json con lo mismo. La app compara su versión (la que se
 // cargó) con version.json (la publicada, pedida sin caché): si difieren, avisa
 // de que hay una versión nueva. Con 'dev' (local) no se comprueba nada.
-export const VERSION_SHA = '330f9ac';
-export const VERSION_FECHA = '2026-10-07T21:38:47Z';
+export const VERSION_SHA = 'b4a362d';
+export const VERSION_FECHA = '2026-10-07T21:40:45Z';
 
 // «a1b2c3d · 7 oct, 14:32» (hora local; el año solo si no es el actual, para
 // que quepa en una línea del panel en el móvil), o «dev» fuera del despliegue.
