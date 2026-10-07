@@ -41,6 +41,12 @@ const primera = (texto, re) => {
 const RE_SOBRE10 = /(\d{1,2})\s*(?:[-–]\s*(\d{1,2})\s*)?(?:\/|sobre)\s*10\b/g;
 const notaDe = m => (m[2] ? `${Number(m[1])}-${Number(m[2])}` : String(Number(m[1])));
 const notasSobre10 = t => [...String(t || '').matchAll(RE_SOBRE10)].map(notaDe);
+// En la transcripción se dice «un ocho de diez» (Whisper: «un 8 de 10»): también
+// valen «de 10» y los números en letra.
+const NUMEROS = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez'];
+const RE_HABLADO = new RegExp(`\\b(\\d{1,2}|${NUMEROS.join('|')})\\s+(?:de|sobre)\\s+(?:10|diez)\\b`, 'gi');
+const notasHabladas = t => [...sinAcentos(String(t || '')).matchAll(RE_HABLADO)]
+  .map(m => (/^\d/.test(m[1]) ? String(Number(m[1])) : String(NUMEROS.indexOf(m[1].toLowerCase()))));
 
 // Palabras distintivas del nombre de una hipótesis (para ver si se nombra)
 const VACIAS = new Set(['sindrome', 'lesion', 'dolor', 'tendinopatia', 'rotura', 'del', 'de', 'la', 'las', 'los', 'con', 'por', 'y', 'o', 'en', 'test']);
@@ -71,8 +77,13 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // ── Datos personales que contradicen la valoración o no constan ──
   const la = datos.la || '';
   const lados = { Derecho: 'izquierd', Izquierdo: 'derech' };
-  if (lados[la] && (r = primera(t, new RegExp(lados[la] === 'izquierd' ? 'izquierd[oa]s?' : 'derech[oa]s?', 'i'))))
-    out.push(punto('lado', 'alto', `El lado registrado es ${la.toLowerCase()} y el informe habla del otro lado.`, r.cita));
+  if (lados[la] && (r = primera(t, new RegExp(lados[la] === 'izquierd' ? 'izquierd[oa]s?' : 'derech[oa]s?', 'i')))) {
+    // Si el paciente habló del otro lado en la consulta, mencionarlo puede ser
+    // correcto: se avisa igual, pero como algo a comprobar, no como contradicción.
+    if (new RegExp(lados[la]).test(sinAcentos(transcripcion)))
+      out.push(punto('lado-otro', 'medio', 'En la consulta se habla del otro lado: comprueba que el informe no cambie el lado afectado ni le añada plan.', r.cita));
+    else out.push(punto('lado', 'alto', `El lado registrado es ${la.toLowerCase()} y el informe habla del otro lado.`, r.cita));
+  }
   else if (!la && (r = primera(t, /\b(derech|izquierd)[oa]s?\b/i)) && !/derech|izquierd/.test(sinAcentos(transcripcion)))
     out.push(punto('lado-no-consta', 'medio', 'El informe indica un lado que no consta en la valoración.', r.cita));
 
@@ -96,7 +107,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     out.push(punto('sexo-no-consta', 'medio', 'El informe indica el sexo y no consta en la valoración.', r.cita));
 
   // Intensidades «N/10» que no aparecen en ningún dato
-  const validas = new Set(notasSobre10(fuente));
+  const validas = new Set([...notasSobre10(fuente), ...notasHabladas(transcripcion)]);
   for (const m of t.matchAll(RE_SOBRE10)) {
     if (!validas.has(notaDe(m))) {
       out.push(punto('nrs', 'alto', `El informe da una intensidad (${m[0].trim()}) que no figura en la valoración${datos.nr != null ? ` (NRS ${datos.nr}/10)` : ''}.`, fraseEn(t, m.index)));
@@ -142,7 +153,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   }
   if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b/i)))
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
-  if ((r = primera(t, /\b(transcripci[oó]n|grabaci[oó]n|formulario|cuestionario previo|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/i)))
+  if ((r = primera(t, /\b(transcripci[oó]n|grabaci[oó]n|formulario|cuestionario|conversaci[oó]n cl[ií]nica|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/i)))
     out.push(punto('fuentes', 'medio', 'Nombra de dónde sale un dato (formulario, transcripción, PhysiQ…).', r.cita));
   if ((r = primera(t, /\bsecuela|fase de (consolidaci[oó]n|reparaci[oó]n|cicatrizaci[oó]n|remodelaci[oó]n|inflamaci[oó]n|proliferaci[oó]n)/i)) && !/secuela|fase de/.test(fuenteN))
     out.push(punto('fisiopatologia', 'medio', 'Atribuye los hallazgos a secuelas o fases de curación que no están en los datos.', r.cita));
