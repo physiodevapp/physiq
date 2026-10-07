@@ -19,7 +19,7 @@ export default {
     {
       titulo: 'Qué le provoca el dolor',
       items: [
-        { id: 'provoca', tipo: 'matriz', texto: '¿Le aparece o le aumenta el dolor al…?', opciones: SNN,
+        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Le aparece o le aumenta el dolor al…?', opciones: SNN,
           filas: [
             { id: 'elevar', texto: 'Levantar el brazo, por delante o por un lado' },
             { id: 'encima', texto: 'Hacer cosas con el brazo por encima de la cabeza' },
@@ -34,10 +34,10 @@ export default {
     {
       titulo: 'Lo que nota en el hombro',
       items: [
-        { id: 'limita', tipo: 'unica', texto: '¿Qué le limita más?',
+        { id: 'limita', tipo: 'unica', ia: 'sintomas', texto: '¿Qué le limita más?',
           opciones: ['Sobre todo el dolor', 'Sobre todo que el brazo no llega, está rígido', 'Las dos cosas por igual',
             'Empezó con dolor y cada vez está más rígido', NS] },
-        { id: 'nota', tipo: 'matriz', texto: '¿Nota alguna de estas cosas?', opciones: SNN,
+        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Nota alguna de estas cosas?', opciones: SNN,
           filas: [
             { id: 'fuerza', texto: 'Que le falta fuerza en ese brazo' },
             { id: 'crujidos', texto: 'Crujidos o roce al moverlo' },
@@ -50,7 +50,7 @@ export default {
     {
       titulo: 'El hombro y el cuello',
       items: [
-        { id: 'cuello', tipo: 'unica', texto: '¿El dolor del hombro cambia cuando mueve el cuello?',
+        { id: 'cuello', tipo: 'unica', ia: 'sintomas', texto: '¿El dolor del hombro cambia cuando mueve el cuello?',
           ayuda: 'Aunque le duela también el cuello, fíjese solo en el hombro',
           opciones: ['No cambia', 'Sí, aumenta', 'Sí, disminuye', NS] }
       ]
@@ -58,19 +58,19 @@ export default {
     {
       titulo: 'Sensación de que el hombro se sale',
       items: [
-        { id: 'miedo', tipo: 'unica', texto: '¿Le da inseguridad o miedo poner el brazo arriba y hacia atrás, como al lanzar?', opciones: ['No', 'Sí', NS] },
-        { id: 'salido', tipo: 'unica', informe: 'Luxación o subluxación previa', texto: '¿Alguna vez se le ha salido el hombro de su sitio, o ha notado que «algo se iba»?',
+        { id: 'miedo', tipo: 'unica', ia: 'sintomas', texto: '¿Le da inseguridad o miedo poner el brazo arriba y hacia atrás, como al lanzar?', opciones: ['No', 'Sí', NS] },
+        { id: 'salido', tipo: 'unica', ia: 'historia', informe: 'Luxación o subluxación previa', texto: '¿Alguna vez se le ha salido el hombro de su sitio, o ha notado que «algo se iba»?',
           opciones: ['No', 'Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio', NS] },
-        { id: 'veces', tipo: 'unica', informe: 'Número de veces', texto: 'Si se le ha salido: ¿cuántas veces?', opciones: ['Una', 'Varias', NS],
+        { id: 'veces', tipo: 'unica', ia: 'historia', informe: 'Número de veces', texto: 'Si se le ha salido: ¿cuántas veces?', opciones: ['Una', 'Varias', NS],
           mostrarSi: { id: 'salido', valores: ['Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio'] } },
-        { id: 'ultima', tipo: 'texto', informe: 'Última vez', texto: '¿Cuándo fue la última?', lineas: 1,
+        { id: 'ultima', tipo: 'texto', ia: 'historia', informe: 'Última vez', texto: '¿Cuándo fue la última?', lineas: 1,
           mostrarSi: { id: 'salido', valores: ['Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio'] } }
       ]
     },
     {
       titulo: 'Otras cosas que nos ayudan',
       items: [
-        { id: 'antecedentes', tipo: 'matriz', texto: '¿Le han dicho alguna vez que tiene…?', opciones: SNN,
+        { id: 'antecedentes', tipo: 'matriz', ia: 'contexto', texto: '¿Le han dicho alguna vez que tiene…?', opciones: SNN,
           filas: [
             { id: 'diabetes', texto: 'Diabetes o el azúcar alto' },
             { id: 'tiroides', texto: 'Problemas de tiroides' },
@@ -82,14 +82,14 @@ export default {
     {
       titulo: 'Trabajo, deporte y ejercicio',
       items: [
-        { id: 'actividades', tipo: 'multi', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
+        { id: 'actividades', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
           opciones: ['Trabajar con los brazos por encima de la cabeza', 'Levantar pesas', 'Nadar', 'Lanzar', 'Gimnasia', 'Ninguna', NS] },
-        { id: 'deporte', tipo: 'texto', texto: '¿Qué deporte o ejercicio hace?',
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?',
           ayuda: 'Si NO hace deporte ni ejercicio de forma habitual, deje en blanco esta pregunta y las dos siguientes', lineas: 1,
           chips: ['Natación', 'Gimnasio', 'Pádel', 'Tenis', 'Balonmano', 'Voleibol'] },
-        { id: 'cambios', tipo: 'multi', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
+        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
           opciones: ['Entreno más días u horas', 'Entreno más fuerte o con más peso', 'Empecé o volví hace poco', 'No ha cambiado nada', NS] },
-        { id: 'lanza', tipo: 'unica', texto: 'Si lanza: desde que le duele, ¿ha perdido velocidad o puntería?', opciones: ['No', 'Sí', NS] }
+        { id: 'lanza', tipo: 'unica', ia: 'actividades', texto: 'Si lanza: desde que le duele, ¿ha perdido velocidad o puntería?', opciones: ['No', 'Sí', NS] }
       ]
     }
   ],

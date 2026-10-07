@@ -394,6 +394,10 @@ function abrirFormularioPrevio(slot) {
 function resumenFormularioPrevio() {
   return _fpMod ? _fpMod.resumenFormularioPrevio() : [];
 }
+// Lo mismo agrupado y sin «No sé», para el informe con IA (informe-ia.js)
+function resumenFormularioIA() {
+  return _fpMod ? _fpMod.resumenFormularioIA() : [];
+}
 
 // ─── INFORME NARRATIVO CON IA (informe-ia.js, solo standalone) ───
 // Fuera del hub no hay physiq-report al lado, así que la fase 5 ofrece generar
@@ -3151,7 +3155,7 @@ _iniciarGrabadora();
 // ─── PUBLIC API ──────────────────────────────────────────────
 // Named exports for phase4.js / phase4b.js (which import these directly) and
 // for tests/unit.js.
-export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
+export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, resumenFormularioIA, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
   buildContextSummaryText, getPendientesBreve, buildSistemaHTML,
   precargarFormularioPrevio, nombreRegion, showToast,
   injectQuickInputBar, lockBodyScroll, unlockBodyScroll };

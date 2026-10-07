@@ -43,7 +43,8 @@
 //   · Tercera revisión (hombro, con el JSON exportado): cada dato asignado a
 //     una sola sección, respuestas «No sé» omitidas (no convertidas en
 //     negaciones), etiquetas internas limpias (flechas, «(→ Rx)»), IMC
-//     redondeado, el gesto testigo como medida de referencia (no test) y las
+//     redondeado, el gesto testigo como medida de referencia (no test; desde la
+//     sexta revisión no va: sin valor solo producía una frase vacía) y las
 //     pruebas de una hipótesis «Derivar» como comprobaciones que no la descartan.
 //   · Paciente posquirúrgico (docs/posquirurgico.md): bloque «Cirugía» (payload
 //     `cq`), plan supeditado al protocolo del cirujano, y las hipótesis
@@ -58,6 +59,12 @@
 //     negativos en Limitaciones, las subsecciones opcionales sin «no se dispone
 //     de información», y el criterio de reevaluación de la pauta solo en
 //     Seguimiento aunque venga dentro del texto de la pauta.
+//   · Sexta revisión (hombro posquirúrgico con la tarjeta Cirugía): el
+//     formulario previo llega agrupado por la sección del informe en la que va
+//     cada respuesta (grupo `ia` del esquema) y sin «No sé» (la regla sola no
+//     bastaba: seguía en Limitaciones y negando lo que no sabía), un protocolo
+//     verbal no se pone en duda, ni secuelas ni «fases», ni frases de «no se
+//     dispone de…», y el gesto testigo fuera (no lleva valor).
 
 export const ORCHESTRATOR_URL = 'https://physiq-orchestrator.edu-gamboa-rodriguez.workers.dev';
 export const TURNSTILE_SITEKEY = '0x4AAAAAADU3dzE5Tw_whVks';   // la misma de physiq-report
@@ -127,7 +134,12 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
   if (data.dv?.length) extra.push(`Derivación médica indicada en la exploración (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);
   const sv = signosVitalesTexto(data.sv, data.an);
   if (sv) extra.push(`Signos vitales y antropometría: ${sv}`);
-  if (data.fp?.length) extra.push(`Lo que refiere el paciente antes de la consulta (pregunta → respuesta):\n${data.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
+  // Con datos ampliados, el formulario va agrupado por sección y sin «No sé»
+  // (bloqueFormulario); sin ellos, el `fp` del payload tal cual.
+  if (ampliado?.formulario) {
+    const f = bloqueFormulario(ampliado.formulario);
+    if (f) extra.push(f);
+  } else if (data.fp?.length) extra.push(`Lo que refiere el paciente antes de la consulta (pregunta → respuesta):\n${data.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
   const notas = [['Variable de control', data.pn?.variableControl], ['Ventana de recuperación', data.pn?.ventanaRecuperacion], ['Anclaje de hábito', data.pn?.anclajeHabito]]
     .filter(([, v]) => (v || '').trim());
   if (notas.length) extra.push(`Notas del plan terapéutico:\n${notas.map(([k, v]) => `  · ${k}: ${v.trim()}`).join('\n')}`);
@@ -155,6 +167,26 @@ ${hyps || '  (sin hipótesis registradas)'}${extra.length ? '\n\n' + extra.join(
 ---`;
 }
 
+// ── Lo que refiere el paciente antes de la consulta, por grupos ─────────────
+// Cada pregunta del formulario lleva en su esquema el grupo `ia` y cada grupo
+// dice a qué sección del informe va: sin esto, los síntomas que refiere o
+// niega (fuerza, crujidos, hormigueo…) acababan en «Limitaciones» aunque el
+// prompt lo prohibiera con ejemplos. Las respuestas «No sé» ya no llegan.
+export const GRUPOS_FORMULARIO = [
+  ['historia', 'Inicio, evolución y tratamientos previos (van en Presentación Inicial y Antecedentes, o en Tratamientos Previos)'],
+  ['sintomas', 'Síntomas que refiere o niega y cómo se comporta el dolor (van en Dolor, o en Fuerza Muscular si es debilidad)'],
+  ['actividades', 'Actividades y posturas que le provocan o aumentan el dolor, o que le cuestan (van en Limitaciones en las Actividades)'],
+  ['contexto', 'Salud general, trabajo, deporte y ejercicio (van en Factores Personales, o en Restricciones en la Participación si refiere que le afecta)'],
+];
+export function bloqueFormulario(items) {
+  if (!items?.length) return '';
+  const grupos = GRUPOS_FORMULARIO
+    .map(([g, titulo]) => [titulo, items.filter(x => x.g === g)])
+    .filter(([, xs]) => xs.length)
+    .map(([titulo, xs]) => `  ${titulo}:\n${xs.map(x => `    · ${x.q} → ${x.a}`).join('\n')}`);
+  return `Lo que refiere el paciente antes de la consulta, agrupado por la sección del informe en la que va cada cosa (pregunta → respuesta):\n${grupos.join('\n')}`;
+}
+
 // ── Datos ampliados de las fases (informe-ia.js los reúne del estado) ────────
 // No viajan en buildPhysiQPayload() — ese resumen es el contrato con
 // physiq-report —, solo en este prompt. Forma:
@@ -163,6 +195,7 @@ ${hyps || '  (sin hipótesis registradas)'}${extra.length ? '\n\n' + extra.join(
 //     psico: [{ q, a }], criterios: [{ etiqueta, positivas, total, nota }],
 //     arbol: [{ pregunta, respuesta }],
 //     tests: [{ hipotesis, items: [{ test, resultado, cluster?, pronostico? }] }],
+//     formulario: [{ g, q, a }] (g = grupo de GRUPOS_FORMULARIO),
 //     pautas: [{ hipotesis, derivar, tratada?, operada?, pauta, fuente, pronostico?, prom }] }
 // Cada bloque solo aparece si tiene datos.
 export function bloquesAmpliados(a) {
@@ -180,9 +213,7 @@ export function bloquesAmpliados(a) {
   if (a.criterios?.length) b.push(`Criterios compuestos del cribado que se cumplen (patrón compatible, no diagnóstico):\n${a.criterios.map(c => `  · ${c.etiqueta} (${c.positivas}/${c.total}): ${c.nota}`).join('\n')}`);
   if (a.arbol?.length) b.push(`Recorrido de la exploración (pregunta clínica → lo que encontró el fisioterapeuta):\n${a.arbol.map(x => `  · ${limpiarEtiqueta(x.pregunta)} → ${limpiarEtiqueta(x.respuesta)}`).join('\n')}`);
   if (a.tests?.length) {
-    const item = t => t.referencia
-      ? `    · ${limpiarEtiqueta(t.test)}: registrado como medida de referencia para el seguimiento (no es una prueba diagnóstica; no tiene resultado positivo ni negativo)`
-      : `    · ${limpiarEtiqueta(t.test)}: ${t.resultado}${t.cluster ? ` (parte del cluster «${t.cluster}»)` : ''}${t.pronostico ? ' (regla pronóstica, no diagnóstica)' : ''}`;
+    const item = t => `    · ${limpiarEtiqueta(t.test)}: ${t.resultado}${t.cluster ? ` (parte del cluster «${t.cluster}»)` : ''}${t.pronostico ? ' (regla pronóstica, no diagnóstica)' : ''}`;
     b.push(`Tests de confirmación realizados (solo estos; no hay otros):\n${a.tests.map(h => `  ${limpiarEtiqueta(h.hipotesis)}${h.derivar
       ? ' — comprobaciones de una hipótesis que se deriva: no son tests diagnósticos ni pruebas de imagen, y un resultado negativo no la descarta'
       : ''}:\n${h.items.map(item).join('\n')}`).join('\n')}`);
@@ -294,7 +325,7 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 2. Usa prosa clínica continua y formal, no listas escuetas. Tono de informe profesional para enviar al paciente o equipo médico.
 3. NO uses ** para negrita ni símbolos markdown, salvo en tablas markdown estándar.
 4. Tablas: cuando haya datos numéricos cuantificables (ROM, fuerza, escalas), genera tablas markdown estándar con sintaxis | columna | columna |. Si no hay datos suficientes, omite la tabla y describe en prosa.
-5. Las subsecciones marcadas «[solo si…]» se omiten por completo, título incluido, cuando no hay datos para ellas. No escribas subsecciones para decir que algo no se hizo o que «no se dispone de información».
+5. Las subsecciones marcadas «[solo si…]» se omiten por completo, título incluido, cuando no hay datos para ellas. No escribas subsecciones ni frases para decir que algo no se hizo, no se midió o «no se dispone de…» (p. ej. «no se dispone de mediciones goniométricas»): lo que no consta, simplemente no se menciona.
 6. Usa la terminología CIF en la prosa (funciones, estructuras, actividades, participación, factores contextuales), sin códigos alfanuméricos.
 7. ${conAudio
     ? 'La transcripción complementa los datos estructurados.'
@@ -383,13 +414,13 @@ const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resul
 - Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato.
 - Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
-- No añadas causas, mecanismos ni fases de curación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, reparación tisular, desuso), ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
+- No añadas causas, mecanismos, secuelas ni fases de curación o de recuperación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, «fase de consolidación», reparación tisular, desuso, «secuela esperada»), ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
 - Cada recomendación del plan aparece una sola vez.
 - Cada dato aparece una sola vez, en la sección que le corresponde; no remitas a otras secciones («como se indicó…»).
 - No crees secciones ni subsecciones que no estén en la estructura.
 - Plan: si los datos incluyen una pauta recomendada por PhysiQ, basa el plan en ella sin proponer dosis, series ni volúmenes distintos; si dice «Derivar», el plan es la derivación.
 - Seguimiento: para medir la evolución, usa la escala recomendada de cada hipótesis cuando la haya.
-- Paciente operado (si los datos incluyen «Cirugía»): el plan se supedita al protocolo y a las restricciones del cirujano; no propongas nada que las contradiga, y las pautas de PhysiQ solo valen si son compatibles con ellas. Si no hay protocolo, di UNA vez, al principio del plan, que las restricciones están pendientes de confirmar con el cirujano.
+- Paciente operado (si los datos incluyen «Cirugía»): el plan se supedita al protocolo y a las restricciones del cirujano; no propongas nada que las contradiga, y las pautas de PhysiQ solo valen si son compatibles con ellas. Si no hay protocolo, di UNA vez, al principio del plan, que las restricciones están pendientes de confirmar con el cirujano. Si hay protocolo (escrito o verbal), sigue sus restricciones tal como constan: no pidas confirmarlo con el cirujano ni lo matices porque sea verbal.
 - Hipótesis con diagnóstico ya confirmado y tratado: preséntala como antecedente (en Condición de Salud), no como sospecha ni como hipótesis de trabajo. No la derives y no escribas que «no se deriva» o que «no procede derivar»: simplemente no hables de derivación por ella.`;
 
 // Derivaciones: una sola vez, al principio de la sección del plan. Con una

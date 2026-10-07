@@ -17,7 +17,7 @@ export default {
     {
       titulo: 'Qué le provoca el dolor',
       items: [
-        { id: 'provoca', tipo: 'matriz', texto: '¿Le aparece o le aumenta el dolor al…?', ayuda: 'En cada línea, Sí o No. Si duda, «No sé».', opciones: SNN,
+        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Le aparece o le aumenta el dolor al…?', ayuda: 'En cada línea, Sí o No. Si duda, «No sé».', opciones: SNN,
           filas: [
             { id: 'agacharse', texto: 'Agacharse o sentarse en una silla baja' },
             { id: 'coche', texto: 'Entrar o salir del coche' },
@@ -36,7 +36,7 @@ export default {
     {
       titulo: 'Lo que nota en la cadera',
       items: [
-        { id: 'nota', tipo: 'matriz', texto: '¿Nota alguna de estas cosas?', ayuda: 'En cada línea, Sí o No. Si duda, «No sé».', opciones: SNN,
+        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Nota alguna de estas cosas?', ayuda: 'En cada línea, Sí o No. Si duda, «No sé».', opciones: SNN,
           filas: [
             { id: 'chasquido', texto: 'Un chasquido o un clic que le duele' },
             { id: 'bloqueo', texto: 'Que la cadera se engancha o se bloquea' },
@@ -49,7 +49,7 @@ export default {
     {
       titulo: 'De pequeño',
       items: [
-        { id: 'infancia', tipo: 'unica', texto: 'De niño o adolescente, ¿tuvo algún problema en las caderas? (le trataron, llevó férula o arnés, cojeaba, le operaron)',
+        { id: 'infancia', tipo: 'unica', ia: 'contexto', texto: 'De niño o adolescente, ¿tuvo algún problema en las caderas? (le trataron, llevó férula o arnés, cojeaba, le operaron)',
           opciones: ['No', NS, 'Sí'], detalle: { opcion: 'Sí', etiqueta: '¿Cuál?' } }
       ]
     },
@@ -57,14 +57,14 @@ export default {
       titulo: 'Deporte y ejercicio',
       intro: 'Si NO hace deporte ni ejercicio de forma habitual, salte este apartado: ha terminado.',
       items: [
-        { id: 'deporte', tipo: 'texto', texto: '¿Qué deporte o ejercicio hace?', lineas: 1,
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?', lineas: 1,
           chips: ['Correr', 'Fútbol', 'Gimnasio', 'Pádel', 'Ciclismo', 'Baile'] },
-        { id: 'dias', tipo: 'unica', texto: '¿Cuántos días a la semana?', opciones: ['1 o 2', '3 o 4', '5 o más', NS] },
-        { id: 'cambios', tipo: 'multi', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
+        { id: 'dias', tipo: 'unica', ia: 'contexto', texto: '¿Cuántos días a la semana?', opciones: ['1 o 2', '3 o 4', '5 o más', NS] },
+        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
           opciones: ['Entreno más días u horas', 'Entreno más fuerte', 'Empecé o volví hace poco', 'Cambié de superficie o de calzado', 'No ha cambiado nada', NS] },
-        { id: 'gesto', tipo: 'unica', texto: '¿Empezó de golpe haciendo alguno de estos gestos?',
+        { id: 'gesto', tipo: 'unica', ia: 'historia', texto: '¿Empezó de golpe haciendo alguno de estos gestos?',
           opciones: ['Chutar', 'Esprintar', 'Cambiar de dirección', 'Estirarme', 'No', NS] },
-        { id: 'cuando_duele', tipo: 'multi', texto: 'Con el deporte, ¿cuándo le duele? (puede marcar varias)',
+        { id: 'cuando_duele', tipo: 'multi', ia: 'sintomas', texto: 'Con el deporte, ¿cuándo le duele? (puede marcar varias)',
           opciones: ['Mientras lo hago', 'Al acabar', 'Al día siguiente, sobre todo por la mañana', 'Se me pasa al calentar', 'Con descanso mejora, pero vuelve al retomar', NS] }
       ]
     }

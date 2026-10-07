@@ -20,22 +20,22 @@ export default {
       titulo: 'Si empezó con un golpe, una caída o un mal gesto',
       intro: 'Si en la hoja 1 contestó que NO hubo nada concreto que lo desencadenara, salte este apartado.',
       items: [
-        { id: 'que_paso', tipo: 'multi', texto: '¿Qué pasó? (puede marcar varias)',
+        { id: 'que_paso', tipo: 'multi', ia: 'historia', texto: '¿Qué pasó? (puede marcar varias)',
           opciones: ['Giré o cambié de dirección con el pie apoyado', 'Frené en seco', 'Caí mal de un salto',
             'Me caí de rodillas', 'Un golpe por fuera de la rodilla que la metió hacia dentro',
             'Un golpe justo debajo de la rodilla, por delante, con ella doblada (como contra el salpicadero)',
             'Un golpe por dentro, o la rodilla se me fue hacia fuera, con la pierna estirada',
             'Noté que la rótula se salía de su sitio', 'Ninguna de estas', NS] },
-        { id: 'chasquido', tipo: 'unica', texto: '¿Oyó o notó un chasquido en ese momento?', opciones: SNNS },
-        { id: 'pudo_seguir', tipo: 'unica', texto: '¿Pudo seguir con lo que estaba haciendo?', opciones: ['Sí', 'No, tuve que parar', NS] },
-        { id: 'hinchazon', tipo: 'unica', texto: '¿Se le hinchó la rodilla?',
+        { id: 'chasquido', tipo: 'unica', ia: 'historia', texto: '¿Oyó o notó un chasquido en ese momento?', opciones: SNNS },
+        { id: 'pudo_seguir', tipo: 'unica', ia: 'historia', texto: '¿Pudo seguir con lo que estaba haciendo?', opciones: ['Sí', 'No, tuve que parar', NS] },
+        { id: 'hinchazon', tipo: 'unica', ia: 'historia', texto: '¿Se le hinchó la rodilla?',
           opciones: ['Sí, enseguida, al poco de pasar', 'Sí, horas después: esa noche o a la mañana siguiente', 'No se hinchó', NS] }
       ]
     },
     {
       titulo: 'Qué le provoca el dolor',
       items: [
-        { id: 'provoca', tipo: 'matriz', texto: '¿Le aparece o le aumenta el dolor al…?', ayuda: MATRIZ_AYUDA, opciones: SNN,
+        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Le aparece o le aumenta el dolor al…?', ayuda: MATRIZ_AYUDA, opciones: SNN,
           filas: [
             { id: 'cuclillas', texto: 'Ponerse en cuclillas' },
             { id: 'escaleras', texto: 'Subir o bajar escaleras' },
@@ -47,13 +47,13 @@ export default {
             { id: 'pivotar', texto: 'Girar o pivotar sobre esa pierna' },
             { id: 'de_pie', texto: 'Estar de pie con la rodilla estirada del todo' }
           ] },
-        { id: 'reposo', tipo: 'unica', texto: '¿Le duele también estando quieto, sin hacer nada?', opciones: SNNS }
+        { id: 'reposo', tipo: 'unica', ia: 'sintomas', texto: '¿Le duele también estando quieto, sin hacer nada?', opciones: SNNS }
       ]
     },
     {
       titulo: 'Lo que nota en la rodilla',
       items: [
-        { id: 'nota', tipo: 'matriz', texto: '¿Nota alguna de estas cosas?', ayuda: MATRIZ_AYUDA, opciones: SNN,
+        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Nota alguna de estas cosas?', ayuda: MATRIZ_AYUDA, opciones: SNN,
           filas: [
             { id: 'trabada', texto: 'Se queda trabada y no la puede estirar o doblar' },
             { id: 'engancha', texto: 'Se engancha un momento al moverla y luego sigue' },
@@ -64,20 +64,20 @@ export default {
             { id: 'detras', texto: 'Hinchazón o tirantez por detrás de la rodilla' },
             { id: 'hormigueo', texto: 'Hormigueo, quemazón o piel dormida en la pierna' }
           ] },
-        { id: 'rigidez', tipo: 'unica', texto: 'Por la mañana, ¿está rígido al levantarse?',
+        { id: 'rigidez', tipo: 'unica', ia: 'sintomas', texto: 'Por la mañana, ¿está rígido al levantarse?',
           opciones: ['No', 'Sí, menos de media hora', 'Sí, media hora o más', NS] }
       ]
     },
     {
       titulo: 'La rodilla y el tobillo',
       items: [
-        { id: 'tobillo', tipo: 'unica', texto: '¿Le duele la rodilla al mover el tobillo? (fíjese solo en la rodilla)', opciones: SNNS }
+        { id: 'tobillo', tipo: 'unica', ia: 'sintomas', texto: '¿Le duele la rodilla al mover el tobillo? (fíjese solo en la rodilla)', opciones: SNNS }
       ]
     },
     {
       titulo: 'Trabajo, deporte y ejercicio',
       items: [
-        { id: 'actividad', tipo: 'multi', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
+        { id: 'actividad', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
           opciones: ['Trabajar de rodillas o en cuclillas', 'Correr', 'Bicicleta', 'Deportes con saltos', 'Ninguna', NS] }
       ]
     },
@@ -85,10 +85,10 @@ export default {
       titulo: 'Si hace deporte o ejercicio',
       intro: 'Si NO hace deporte ni ejercicio de forma habitual, salte el resto: ha terminado.',
       items: [
-        { id: 'cambios', tipo: 'multi', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
+        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
           opciones: ['Entreno más días u horas', 'Entreno más fuerte', 'Empecé o volví hace poco', 'Cambié de calzado',
             'Cambié la posición en la bicicleta', 'No ha cambiado nada', NS] },
-        { id: 'dolor_deporte', tipo: 'multi', texto: 'Cuando hace deporte, el dolor… (puede marcar varias)',
+        { id: 'dolor_deporte', tipo: 'multi', ia: 'sintomas', texto: 'Cuando hace deporte, el dolor… (puede marcar varias)',
           opciones: ['Se me pasa al calentar', 'Acaba obligándome a bajar el ritmo o a parar', NS] }
       ]
     }

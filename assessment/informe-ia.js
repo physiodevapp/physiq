@@ -18,7 +18,7 @@
 
 import { state } from './state.js';
 import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data.js';
-import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast } from './app.js';
+import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA } from './app.js';
 import { esTratada } from './phase4b.js';
 import { esPosquirurgico } from './lib/posquirurgico.js';
 import {
@@ -293,9 +293,10 @@ export function construirAmpliado() {
       continue;
     }
     const res = state.testResults?.[id] || {};
-    // El «Gesto testigo (①) y medida objetiva (②)» es la medida de referencia
-    // para el seguimiento, no una prueba: va sin resultado.
-    const items = (h.tests || []).map((t, idx) => !RESULTADO[res[idx]] ? null : /^Gesto testigo/.test(t.name) ? { test: t.name, referencia: true } : {
+    // El «Gesto testigo (①) y medida objetiva (②)» no es una prueba y no
+    // guarda ningún valor: solo daba una frase vacía («se registraron gestos
+    // testigo…»). No va al prompt.
+    const items = (h.tests || []).map((t, idx) => !RESULTADO[res[idx]] || /^Gesto testigo/.test(t.name) ? null : {
       test: t.name, resultado: RESULTADO[res[idx]],
       ...(t.cluster && h.clusters?.[t.cluster] ? { cluster: h.clusters[t.cluster].nombre } : {}),
       ...(t.tipo === 'pronostico' ? { pronostico: true } : {}),
@@ -331,6 +332,9 @@ export function construirAmpliado() {
     irritabilidad: state.irritabilidadDirecta ? null : (state.irritabilidad || null),
     psico: state.riesgoPsico === 'Alto' ? PSICO.filter(([k]) => state[k]).map(([k, q]) => ({ q, a: state[k] })) : [],
     criterios, arbol, tests, pautas,
+    // Formulario previo agrupado por sección del informe y sin «No sé»
+    // (sustituye en el prompt al `fp` del payload)
+    formulario: resumenFormularioIA(),
   };
 }
 

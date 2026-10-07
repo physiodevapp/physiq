@@ -17,20 +17,20 @@ export default {
     {
       titulo: 'Dónde nota los síntomas',
       items: [
-        { id: 'pierna_hasta', tipo: 'unica', informe: 'Dolor irradiado a la pierna', texto: 'Además de la espalda, ¿le baja el dolor por la pierna?',
+        { id: 'pierna_hasta', tipo: 'unica', ia: 'sintomas', informe: 'Dolor irradiado a la pierna', texto: 'Además de la espalda, ¿le baja el dolor por la pierna?',
           opciones: ['No, se queda en la espalda', 'Hasta la nalga', 'Hasta la rodilla', 'Por debajo de la rodilla', 'Hasta el pie', NS] },
-        { id: 'pierna_lado', tipo: 'unica', informe: 'Pierna afectada', texto: 'Pierna', opciones: ['Derecha', 'Izquierda', 'Las dos'],
+        { id: 'pierna_lado', tipo: 'unica', ia: 'sintomas', informe: 'Pierna afectada', texto: 'Pierna', opciones: ['Derecha', 'Izquierda', 'Las dos'],
           mostrarSi: { id: 'pierna_hasta', valores: ['Hasta la nalga', 'Hasta la rodilla', 'Por debajo de la rodilla', 'Hasta el pie'] } },
-        { id: 'cambia_lado', tipo: 'unica', texto: '¿El dolor le cambia de lado de unos días a otros?', opciones: ['Sí', 'No', NS] },
-        { id: 'pierna_tipo', tipo: 'multi', texto: '¿Cómo es ese dolor de pierna, si lo tiene? (puede marcar varias)',
+        { id: 'cambia_lado', tipo: 'unica', ia: 'sintomas', texto: '¿El dolor le cambia de lado de unos días a otros?', opciones: ['Sí', 'No', NS] },
+        { id: 'pierna_tipo', tipo: 'multi', ia: 'sintomas', texto: '¿Cómo es ese dolor de pierna, si lo tiene? (puede marcar varias)',
           opciones: ['Quemazón', 'Como calambres o descargas', 'Hormigueo', 'Zona dormida', 'Distinto a cualquier dolor que haya tenido antes', 'No tengo dolor de pierna', NS] },
-        { id: 'debilidad', tipo: 'unica', informe: 'Pérdida de fuerza en la pierna', texto: '¿Ha notado pérdida de fuerza en la pierna, que se le doble o que tropiece?', opciones: ['Sí', 'No', NS] }
+        { id: 'debilidad', tipo: 'unica', ia: 'sintomas', informe: 'Pérdida de fuerza en la pierna', texto: '¿Ha notado pérdida de fuerza en la pierna, que se le doble o que tropiece?', opciones: ['Sí', 'No', NS] }
       ]
     },
     {
       titulo: 'Qué lo empeora y qué lo alivia',
       items: [
-        { id: 'empeora', tipo: 'matriz', texto: '¿Qué le empeora?', ayuda: 'En cada línea, Sí o No. Si duda, «No sé».', opciones: SNN,
+        { id: 'empeora', tipo: 'matriz', ia: 'actividades', texto: '¿Qué le empeora?', ayuda: 'En cada línea, Sí o No. Si duda, «No sé».', opciones: SNN,
           filas: [
             { id: 'toser', texto: 'Al toser, estornudar o hacer fuerza en el baño' },
             { id: 'sentado', texto: 'Estando sentado un rato' },
@@ -40,23 +40,23 @@ export default {
             { id: 'de_pie', texto: 'Estando de pie parado un rato' },
             { id: 'caminando', texto: 'Caminando' }
           ] },
-        { id: 'que_alivia', tipo: 'unica', texto: 'Si le empeora caminando o de pie, ¿qué hace que se le pase?',
+        { id: 'que_alivia', tipo: 'unica', ia: 'sintomas', texto: 'Si le empeora caminando o de pie, ¿qué hace que se le pase?',
           opciones: ['Sentarme', 'Inclinarme hacia delante o apoyarme en el carro de la compra', 'Basta con pararme quieto de pie', 'No se me pasa', 'No me pasa esto', NS] },
-        { id: 'bici_carro', tipo: 'unica', texto: '¿Aguanta más rato en bicicleta o empujando un carro que caminando normal?', opciones: ['Sí', 'No', 'No lo he probado'] },
-        { id: 'postura_alivio', tipo: 'unica', texto: '¿Hay alguna postura o movimiento que se lo alivie de verdad?',
+        { id: 'bici_carro', tipo: 'unica', ia: 'sintomas', texto: '¿Aguanta más rato en bicicleta o empujando un carro que caminando normal?', opciones: ['Sí', 'No', 'No lo he probado'] },
+        { id: 'postura_alivio', tipo: 'unica', ia: 'sintomas', texto: '¿Hay alguna postura o movimiento que se lo alivie de verdad?',
           opciones: ['Sí', 'No, nada se lo quita', NS], detalle: { opcion: 'Sí', etiqueta: '¿Cuál?' } }
       ]
     },
     {
       titulo: 'Otras cosas',
       items: [
-        { id: 'cadera', tipo: 'unica', texto: '¿Tiene también dolor en la ingle o en la cadera, o le cuesta cruzar las piernas o ponerse los calcetines?', opciones: ['Sí', 'No', NS] },
-        { id: 'embarazo', tipo: 'unica', texto: '¿Está embarazada, o ha dado a luz en el último año?', opciones: ['Sí', 'No', 'No procede'] },
-        { id: 'traumatismo', tipo: 'unica', texto: '¿Ha tenido alguna vez un golpe fuerte en la pelvis, la espalda o el coxis — una caída, un accidente — o le han operado de la columna?',
+        { id: 'cadera', tipo: 'unica', ia: 'sintomas', texto: '¿Tiene también dolor en la ingle o en la cadera, o le cuesta cruzar las piernas o ponerse los calcetines?', opciones: ['Sí', 'No', NS] },
+        { id: 'embarazo', tipo: 'unica', ia: 'contexto', texto: '¿Está embarazada, o ha dado a luz en el último año?', opciones: ['Sí', 'No', 'No procede'] },
+        { id: 'traumatismo', tipo: 'unica', ia: 'historia', texto: '¿Ha tenido alguna vez un golpe fuerte en la pelvis, la espalda o el coxis — una caída, un accidente — o le han operado de la columna?',
           opciones: ['Sí', 'No', NS], detalle: { opcion: 'Sí', etiqueta: '¿Qué pasó?' } },
-        { id: 'deporte', tipo: 'texto', texto: '¿Hace algún deporte o actividad repetitiva?', ayuda: 'Cuál, cuántos días por semana, y si ha cambiado algo últimamente', lineas: 1,
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Hace algún deporte o actividad repetitiva?', ayuda: 'Cuál, cuántos días por semana, y si ha cambiado algo últimamente', lineas: 1,
           chips: ['Correr', 'Caminar', 'Gimnasio', 'Pádel', 'Natación', 'Ciclismo'] },
-        { id: 'algo_mas', tipo: 'texto', texto: '¿Hay algo más que quiera contarme, o algo que le preocupe de este problema?', lineas: 2 }
+        { id: 'algo_mas', tipo: 'texto', ia: 'contexto', texto: '¿Hay algo más que quiera contarme, o algo que le preocupe de este problema?', lineas: 2 }
       ]
     }
   ],

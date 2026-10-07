@@ -292,6 +292,34 @@ export function resumenFormularioPrevio() {
   return [...resumenDe('comun'), ...(state.region ? resumenDe(state.region) : [])];
 }
 
+// Lo que va al informe con IA: [{ g, q, a }], con `g` = el grupo `ia` del
+// esquema (cada grupo va a su sección del informe) y sin las respuestas
+// «No sé» / «No sabría decir» — ni las filas de una matriz con «No sé»: el
+// modelo las convertía en negaciones aunque el prompt lo prohibía.
+export const GRUPOS_IA = ['historia', 'sintomas', 'actividades', 'contexto'];
+const esNS = x => x === 'ns' || x === NS_TEXTO || x === 'No sé';
+
+function resumenIADe(scope) {
+  const esquema = esquemaDe(scope);
+  if (!esquema) return [];
+  const resp = scope === 'comun' ? fp().comun : (fp().regiones[scope] || {});
+  const out = [];
+  esquema.secciones.forEach(s => s.items.forEach(it => {
+    if (!visible(it, resp)) return;
+    let v = resp[it.id];
+    if (it.tipo === 'matriz' && v && typeof v === 'object') v = Object.fromEntries(Object.entries(v).filter(([, x]) => !esNS(x)));
+    else if (Array.isArray(v)) v = v.filter(x => !esNS(x));
+    else if (esNS(v)) return;
+    if (vacio(v)) return;
+    out.push({ g: it.ia, q: preguntaCorta(it, s), a: textoRespuesta(it, v, resp) });
+  }));
+  return out;
+}
+
+export function resumenFormularioIA() {
+  return [...resumenIADe('comun'), ...(state.region ? resumenIADe(state.region) : [])];
+}
+
 // Lo que va al 📄 Informe (paciente/médico): solo los items con `informe` en
 // el esquema, con esa etiqueta en vez de la pregunta. «No sabría decir» no
 // aporta nada al médico y se omite. Items seguidos con la misma etiqueta
