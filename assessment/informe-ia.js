@@ -701,6 +701,8 @@ async function iaGenerar() {
   } finally {
     clearTimeout(timer);
     soltarWakeLockGen();
+    _cerrarDlgCancelar?.();   // la generación ya acabó: no queda nada que cancelar
+    _cerrarDlgCancelar = null;
     ctrl.abort();   // suelta el stream si se salió antes de leerlo entero (p. ej. modo demo)
     _gen = null;
     pintar();
@@ -736,7 +738,23 @@ async function leerStream(res) {
   }
 }
 
+// «Cancelar» pide confirmación: lo escrito se pierde y repetir es esperar
+// otra vez (y probablemente volver a pagar las APIs), y en el móvil el botón
+// queda bajo el texto que se va escribiendo. Mientras el diálogo está abierto
+// la generación sigue; si acaba (bien o con error), el diálogo se cierra solo.
+let _cerrarDlgCancelar = null;
 function iaCancelar() {
+  if (!_gen) return;
+  _cerrarDlgCancelar = showConfirmBanner('Cancelar la generación',
+    'Se perderá lo que lleva escrito el informe. El audio se conserva y podrás volver a generarlo.',
+    // «Sí, cancelar» se queda en «Cancelar» por debajo de 480 px, para que el
+    // botón no ocupe dos líneas
+    '<span class="btn-text-full">Sí, cancelar</span><span class="btn-text-short">Cancelar</span>',
+    cancelarGeneracion, { cancelLabel: 'Seguir' });
+}
+
+function cancelarGeneracion() {
+  _cerrarDlgCancelar = null;
   if (!_gen) return;
   _gen.cancelado = true;
   _gen.ctrl.abort();

@@ -914,10 +914,13 @@
     white-space: nowrap;
     font-family: 'DM Mono', monospace;
   }
-  .phase5-copy-btn .btn-text-short { display: none; }
+  .phase5-copy-btn .btn-text-short,
+  .confirm-box-btns .btn-text-short { display: none; }
   @media (max-width: 480px) {
-    .phase5-copy-btn .btn-text-full { display: none; }
-    .phase5-copy-btn .btn-text-short { display: inline; }
+    .phase5-copy-btn .btn-text-full,
+    .confirm-box-btns .btn-text-full { display: none; }
+    .phase5-copy-btn .btn-text-short,
+    .confirm-box-btns .btn-text-short { display: inline; }
   }
 
   /* Summary / Results */
