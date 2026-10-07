@@ -5,11 +5,12 @@
 import { state } from './state.js';
 import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
-import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML } from './phase4b.js';
+import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas } from './phase4b.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 import {
   COMPLICACIONES, cirugiaVacia, esPosquirurgico, semanasCirugia, semanasTexto, conProtocolo, cirugiaPayload,
   cqConProtocolo, fechaSemanasTexto, TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE, TEXTO_NOTA_TRAUMA, ETIQUETA_TRATADA,
+  ETIQUETA_HIP_POSQ, pautaHipPosq,
 } from './lib/posquirurgico.js';
 import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { ladoTexto } from './lib/region.js';
@@ -650,6 +651,9 @@ function selectOption(groupId, btn, value) {
   }
   if (groupId === 'mecanismo') {
     _pintarCirugiaUI();
+    // `pq1` y la casilla «Tratada con la cirugía» dependen del mecanismo
+    sincronizarTratadas();
+    _invalidar4b();
     // El sistema posquirúrgico aparece o desaparece del cribado ya pintado
     if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
   }
@@ -758,15 +762,24 @@ function _pintarCirugiaDerivados() {
   }
 }
 
+// La tarjeta de `pq1` en la 4b lleva la intervención, el protocolo y las
+// restricciones: se vacía para que se reconstruya al volver a la 4b.
+function _invalidar4b() {
+  const cards = document.getElementById('hypothesisCards');
+  if (cards) cards.innerHTML = '';
+}
+
 function updateCirugia(campo, valor) {
   if (campo === 'semanasAprox') valor = valor === '' ? null : Number(valor);
   state.cirugia[campo] = valor;
+  if (campo === 'intervencion' || campo === 'restricciones') _invalidar4b();
   if (campo === 'fecha' || campo === 'semanasAprox') _pintarCirugiaDerivados();
   saveSession();
 }
 
 function selectCirProtocolo(btn, valor) {
   state.cirugia.protocolo = state.cirugia.protocolo === valor ? '' : valor;
+  _invalidar4b();
   document.querySelectorAll('#cirProtocolo .option-btn').forEach(b => {
     b.classList.toggle('selected', b.textContent.trim() === state.cirugia.protocolo);
   });
@@ -1947,6 +1960,28 @@ function _textoTratada(cq) {
   return `Ya intervenida: seguir el protocolo del cirujano${cq.re ? ` (${_escHTML(cq.re)})` : ''}.`;
 }
 
+// Tarjeta de `pq1` en la fase 5: sin tests ni puntuación; la pauta es el
+// protocolo del cirujano. Va la primera, sin medalla de puesto.
+function _hipPosqResultadosHTML(hyp, cq) {
+  const color = '#8b95a7';
+  return `
+      <div style="background:var(--surface2); border:1px solid ${color}33; border-radius:var(--radius-lg); padding:1.2rem; margin-bottom:1rem;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
+          <span style="width:12px;height:12px;border-radius:50%;background:${color};flex-shrink:0;"></span>
+          <span style="font-weight:600; color:var(--text); font-size:0.95rem;">🏥 ${_escHTML(hyp.name)}</span>
+          <span style="margin-left:auto; font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--text3);">${ETIQUETA_HIP_POSQ}</span>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">PROM Recomendado</div>
+          <span class="prom-badge">${hyp.prom}</span>
+        </div>
+        <div>
+          <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent2); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🏥 Protocolo del cirujano</div>
+          <div class="exercise-box">${_escHTML(pautaHipPosq(cq))}</div>
+        </div>
+      </div>`;
+}
+
 // Recuadro de la fase 5 con la cirugía (docs/posquirurgico.md, punto 4).
 function _cirugiaResultadosHTML(cq) {
   const cabecera = [cq.iv && _escHTML(cq.iv), fechaSemanasTexto(cq), cq.pr && `Protocolo: ${cq.pr.toLowerCase()}`].filter(Boolean).join(' · ');
@@ -1999,11 +2034,11 @@ function buildResults() {
     btnFinalizar.title = inHub ? '' : 'Comparte el resumen clínico por email, WhatsApp, etc.';
   }
 
-  // Sort hypotheses by score
-  const sorted = [...state.activeHypotheses]
-    .map(h => ({ id: h, score: state.hypothesisScores[h]?.totalLR || 1, hyp: HYPOTHESES[h] }))
+  // Sort hypotheses by score (`pq1`, la posquirúrgica, siempre la primera)
+  const sorted = hipotesisActivas()
+    .map(h => ({ id: h, score: state.hypothesisScores[h]?.totalLR || 1, hyp: hipotesis(h) }))
     .filter(x => x.hyp)
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => (b.hyp.posquirurgica ? 1 : 0) - (a.hyp.posquirurgica ? 1 : 0) || b.score - a.score);
 
   const brAffirmative = Object.entries(state.banderasRojas)
     .filter(([, v]) => v === 'SI')
@@ -2080,11 +2115,13 @@ function buildResults() {
   } else {
     sorted.forEach((item, rank) => {
       const { id, hyp, score } = item;
+      if (hyp.posquirurgica) { hypHtml += _hipPosqResultadosHTML(hyp, cq); return; }
       const scoreInfo = state.hypothesisScores[id];
       const tratada = esTratada(id);
       const colorClass = scoreInfo?.colorClass || 'hyp-orange';
       const colorMap = { 'hyp-green': '#38d9a9', 'hyp-orange': '#ff9f43', 'hyp-red': '#ff6b6b', 'hyp-neutral': '#8b95a7' };
-      const rankEmoji = ['🥇','🥈','🥉'][rank] || `${rank+1}º`;
+      const puesto = rank - (sorted[0]?.hyp.posquirurgica ? 1 : 0);
+      const rankEmoji = ['🥇','🥈','🥉'][puesto] || `${puesto+1}º`;
       const dotColor = colorMap[colorClass] || '#ff9f43';
 
       // Tests summary
@@ -2784,14 +2821,16 @@ function buildPhysiQPayload() {
     sq: getSistemicoAffirmativeTexts(),
     ur: getUrgenciasActivas(),
     dv: getDerivacionesArbol(),
-    h:  state.activeHypotheses.map(id => ({
+    h:  hipotesisActivas().map(id => hipotesis(id)?.posquirurgica
+        ? { id, name: hipotesis(id).name, sc: ETIQUETA_HIP_POSQ, lr: null, tr: {}, pq: true }
+        : {
           id,
           name: HYPOTHESES[id]?.name ?? id,
           sc:   state.hypothesisScores[id]?.label ?? 'Sin evaluar',
           lr:   state.hypothesisScores[id]?.totalLR ?? null,
           tr:   state.testResults[id] ?? {},
           ...(esTratada(id) ? { dt: true } : {})
-        })),
+        }),
     pn: state.planNotes,
     fp: resumenFormularioPrevio(),
     md: state.modo === 'breve' ? 'breve' : 'completo',
@@ -2840,9 +2879,9 @@ function buildInformeFisioterapiaText() {
   const d = buildPhysiQPayload();
   const region = regionConLado(d.r, d.la);
 
-  const hyps = [...d.h].sort((a, b) => (b.lr ?? 1) - (a.lr ?? 1));
+  const hyps = [...d.h].sort((a, b) => (b.pq ? 1 : 0) - (a.pq ? 1 : 0) || (b.lr ?? 1) - (a.lr ?? 1));
   const breve = d.md === 'breve';
-  const sinConfirmar = breve && hyps.some(h => !Object.values(h.tr || {}).some(r => r === 'pos' || r === 'neg'));
+  const sinConfirmar = breve && hyps.some(h => !h.pq && !h.dt && !Object.values(h.tr || {}).some(r => r === 'pos' || r === 'neg'));
   const impresion = hyps.length
     ? hyps.map(h => `  · ${h.name}${h.dt ? (d.cq ? ' (intervenida quirúrgicamente)' : ' (diagnosticada y tratada)') : ''}`).join('\n')
     : '  · Pendiente de completar la valoración diagnóstica.';

@@ -2,45 +2,109 @@
 // PhysiQ-Assessment · PHASE4B.JS
 // Confirmación de hipótesis — scoring bayesiano con LR
 // ============================================================
-import { HYPOTHESES, DOSIS_DERIVAR } from './data.js';
+import { HYPOTHESES, DOSIS_DERIVAR, HIP_POSQUIRURGICA } from './data.js';
 import { state } from './state.js';
 import { saveSession, showConfirmBanner } from './app.js';
-import { ETIQUETA_TRATADA } from './lib/posquirurgico.js';
+import {
+  ETIQUETA_TRATADA, ETIQUETA_HIP_POSQ, ID_HIP_POSQ, esPosquirurgico, hipotesisConPosq,
+  nombreHipPosq, cirugiaPayload, pautaHipPosq,
+} from './lib/posquirurgico.js';
+
+// Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
+// HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
+export function hipotesis(id) {
+  if (id !== ID_HIP_POSQ) return HYPOTHESES[id];
+  return {
+    ...HIP_POSQUIRURGICA,
+    region: state.region,
+    name: nombreHipPosq(state.cirugia),
+    prom: HIP_POSQUIRURGICA.promPorRegion[state.region] || '',
+    dosis: '',
+  };
+}
+
+// Hipótesis activas: con mecanismo Post-quirúrgico, `pq1` la primera y
+// después las del árbol (state.activeHypotheses solo guarda las del árbol).
+export function hipotesisActivas() {
+  return hipotesisConPosq(state.mecanismo, state.activeHypotheses || []);
+}
 
 // «Ya diagnosticada y tratada» (docs/posquirurgico.md, decisión 5): una
 // hipótesis «Derivar» (fractura, rotura, luxación, gota, mielopatía) que el
 // médico ya ha diagnosticado y tratado. No se deriva en ningún resumen y sus
-// tests no aplican: no puntúan, aunque lo contestado se conserva.
+// tests no aplican: no puntúan, aunque lo contestado se conserva. Con
+// mecanismo Post-quirúrgico la casilla está en todas las hipótesis del árbol
+// («Tratada con la cirugía»: la artrosis tras la prótesis); si el mecanismo
+// cambia, la marca de una que no es «Derivar» se conserva pero no cuenta.
+function admiteTratada(hId) {
+  const h = HYPOTHESES[hId];
+  return !!h && (h.dosis === DOSIS_DERIVAR || esPosquirurgico(state.mecanismo));
+}
+
 export function esTratada(hId) {
-  return HYPOTHESES[hId]?.dosis === DOSIS_DERIVAR && !!state.derivacionResuelta?.[hId];
+  return admiteTratada(hId) && !!state.derivacionResuelta?.[hId];
+}
+
+function puntuar(hId) {
+  if (esTratada(hId)) state.hypothesisScores[hId] = { totalLR: 1, label: ETIQUETA_TRATADA, colorClass: 'hyp-neutral' };
+  else if (state.testResults[hId]) state.hypothesisScores[hId] = (({ totalLR, label, colorClass }) => ({ totalLR, label, colorClass }))(calcLRScore(HYPOTHESES[hId], state.testResults[hId]));
+  else delete state.hypothesisScores[hId];
 }
 
 // Marca o desmarca y deja la puntuación coherente (sin tocar el DOM).
 export function marcarTratada(hId, valor) {
-  if (HYPOTHESES[hId]?.dosis !== DOSIS_DERIVAR) return;
+  if (!admiteTratada(hId)) return;
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   if (valor) state.derivacionResuelta[hId] = true;
   else delete state.derivacionResuelta[hId];
-  const hyp = HYPOTHESES[hId];
-  if (valor) state.hypothesisScores[hId] = { totalLR: 1, label: ETIQUETA_TRATADA, colorClass: 'hyp-neutral' };
-  else if (state.testResults[hId]) state.hypothesisScores[hId] = (({ totalLR, label, colorClass }) => ({ totalLR, label, colorClass }))(calcLRScore(hyp, state.testResults[hId]));
-  else delete state.hypothesisScores[hId];
+  puntuar(hId);
+}
+
+// Tras cambiar el mecanismo: las marcas que dejan de contar (o vuelven a
+// contar) recalculan su puntuación.
+export function sincronizarTratadas() {
+  Object.keys(state.derivacionResuelta || {}).forEach(hId => { if (HYPOTHESES[hId]) puntuar(hId); });
 }
 
 function casillaTratadaHTML(hId) {
-  if (HYPOTHESES[hId]?.dosis !== DOSIS_DERIVAR) return '';
+  if (!admiteTratada(hId)) return '';
+  const derivar = HYPOTHESES[hId].dosis === DOSIS_DERIVAR;
   return `<label class="dx-tratada">
       <input type="checkbox" ${esTratada(hId) ? 'checked' : ''} onchange="toggleDiagnosticoTratado('${hId}', this.checked)">
-      <span>Ya diagnosticada y tratada<span class="dx-tratada-ayuda">El médico ya la ha diagnosticado y tratado (p. ej., operada): no se pide derivación y sus tests no aplican.</span></span>
+      <span>${derivar
+        ? 'Ya diagnosticada y tratada<span class="dx-tratada-ayuda">El médico ya la ha diagnosticado y tratado (p. ej., operada): no se pide derivación y sus tests no aplican.</span>'
+        : 'Tratada con la cirugía<span class="dx-tratada-ayuda">La operación ya la ha tratado (p. ej., artrosis tras una prótesis): sus tests no aplican y no se da su pauta.</span>'}</span>
     </label>`;
 }
 export { casillaTratadaHTML };
+
+// Tarjeta de `pq1` en la 4b: sin tests (la cirugía es un hecho). El nombre y
+// la pauta llevan texto libre de la tarjeta «Cirugía»: se escapan.
+const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function tarjetaPosqHTML(hyp) {
+  return `
+      <div class="hypothesis-header" onclick="toggleHypCard('${hyp.id}')">
+        <span class="hyp-color-dot"></span>
+        <span class="hyp-name" title="${esc(hyp.name)}">${esc(hyp.name)}</span>
+        <span class="hyp-score" id="score_${hyp.id}">${ETIQUETA_HIP_POSQ}</span>
+        <span class="hyp-chevron">▾</span>
+      </div>
+      <div class="hypothesis-body">
+        <p style="font-size:0.8rem; color:var(--text2); margin-bottom:0.6rem;">La cirugía es un hecho: no hay tests que confirmar. Las demás hipótesis son lo que aporta la exploración.</p>
+        <div class="exercise-box">${esc(pautaHipPosq(cirugiaPayload(state.mecanismo, state.cirugia)))}</div>
+        <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border);">
+          <div style="font-size:0.72rem; color:var(--accent); font-family:'DM Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">PROM Recomendado</div>
+          <span class="prom-badge">${hyp.prom}</span>
+        </div>
+      </div>`;
+}
 
 export function buildHypothesisCards() {
   const container = document.getElementById('hypothesisCards');
   container.innerHTML = '';
 
-  if (state.activeHypotheses.length === 0) {
+  const activas = hipotesisActivas();
+  if (activas.length === 0) {
     const regionLabel = state.region ? state.region.charAt(0).toUpperCase() + state.region.slice(1) : 'la región';
     const showCS = state.cronologia === 'Crónico (>3 meses)' && state.riesgoPsico === 'Alto';
     container.innerHTML = `
@@ -63,9 +127,17 @@ export function buildHypothesisCards() {
     return;
   }
 
-  state.activeHypotheses.forEach(hId => {
-    const hyp = HYPOTHESES[hId];
+  activas.forEach(hId => {
+    const hyp = hipotesis(hId);
     if (!hyp) return;
+    if (hyp.posquirurgica) {
+      const card = document.createElement('div');
+      card.className = 'hypothesis-card hyp-neutral';
+      card.id = `hypcard_${hId}`;
+      card.innerHTML = tarjetaPosqHTML(hyp);
+      container.appendChild(card);
+      return;
+    }
     // Preservar resultados existentes al retroceder — solo inicializar si no existen
     if (!state.testResults[hId]) {
       state.testResults[hId] = {};

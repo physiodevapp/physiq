@@ -49,6 +49,9 @@
 //   · Paciente posquirúrgico (docs/posquirurgico.md): bloque «Cirugía» (payload
 //     `cq`), plan supeditado al protocolo del cirujano, y las hipótesis
 //     «Derivar» marcadas «ya diagnosticada y tratada» (`dt`) no se derivan.
+//     La hipótesis posquirúrgica genérica (`pq: true` en `h[]`) es la condición
+//     de salud, con el protocolo del cirujano como pauta, y con Post-quirúrgico
+//     cualquier hipótesis puede ir marcada «tratada con la cirugía» (`dt`).
 //   · Cuarta revisión (hombro posquirúrgico): edad, sexo y lado solo si constan
 //     (inventó «43 años», «varón», «hombro derecho»), ni nombre ni fecha en el
 //     texto, una derivación que el fisioterapeuta descarta no se menciona, «No
@@ -134,7 +137,9 @@ export function regionTexto(data, nombreRegion = r => r) {
 export function contextoValoracion(data, nombreRegion = r => r, ampliado = null) {
   if (!data) return '';
   const hyps = (data.h || [])
-    .map(h => `  · ${limpiarEtiqueta(h.name)}${h.dt ? ' (diagnóstico ya confirmado y tratado por el médico: es un antecedente)' : ''}`)
+    .map(h => `  · ${limpiarEtiqueta(h.name)}${h.pq
+      ? ' (la cirugía es la condición de salud, no una hipótesis por confirmar)'
+      : h.dt ? ' (diagnóstico ya confirmado y tratado por el médico: es un antecedente)' : ''}`)
     .join('\n');
   const brText = data.br?.length > 0
     ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
@@ -212,7 +217,7 @@ export function bloqueFormulario(items) {
 //     arbol: [{ pregunta, respuesta }],
 //     tests: [{ hipotesis, items: [{ test, resultado, cluster?, pronostico? }] }],
 //     formulario: [{ g, q, a }] (g = grupo de GRUPOS_FORMULARIO),
-//     pautas: [{ hipotesis, derivar, tratada?, operada?, pauta, fuente, pronostico?, prom }] }
+//     pautas: [{ hipotesis, derivar, tratada?, operada?, posquirurgica?, pauta, fuente, pronostico?, prom }] }
 // Cada bloque solo aparece si tiene datos.
 export function bloquesAmpliados(a) {
   if (!a) return [];
@@ -237,7 +242,8 @@ export function bloquesAmpliados(a) {
   if (a.pautas?.length) {
     b.push(`Pauta recomendada por PhysiQ para cada hipótesis (basada en guías; no propongas dosis distintas):\n${a.pautas.map(p => [
       `  ${limpiarEtiqueta(p.hipotesis)}:`,
-      p.tratada ? (p.operada
+      p.posquirurgica ? `    · Pauta: ${p.pauta}`
+      : p.tratada ? (p.operada
         ? '    · Diagnóstico ya confirmado e intervenido: el plan sigue el protocolo del cirujano.'
         : '    · Diagnóstico ya confirmado y tratado por el médico.')
       : p.derivar ? '    · Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico.' : p.pauta ? `    · Pauta: ${p.pauta}` : '    · Pauta: a criterio del fisioterapeuta (la guía no la fija).',

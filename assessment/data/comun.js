@@ -407,3 +407,24 @@ export const SIS_POSQUIRURGICO = {
       } }
   ]
 };
+
+// Hipótesis posquirúrgica genérica (docs/posquirurgico.md, «Propuesta:
+// hipótesis posquirúrgica genérica»). No es de ninguna región ni sale de
+// ningún árbol, así que no está en HYPOTHESES: phase4b.js la pone la primera
+// con mecanismo Post-quirúrgico. Sin tests ni dosis propia (manda el protocolo
+// del cirujano). El PROM es el que la región ya usa en sus hipótesis (unit
+// test), sin fuentes nuevas.
+export const HIP_POSQUIRURGICA = {
+  id: 'pq1',
+  posquirurgica: true,
+  tests: [],
+  promPorRegion: {
+    hombro: 'QuickDASH (MCID: 8.0–15.9 pts)',
+    cadera: 'HOOS (MCID: 10–13 puntos)',
+    cervical: 'NDI (MCID: 7.5–18 puntos)',
+    lumbar: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 1.5–3.2 pts)',
+    rodilla: 'KOOS-12',
+    codo: 'QuickDASH',
+    tobillo_pie: 'FAAM o LEFS',
+  },
+};

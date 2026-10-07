@@ -19,8 +19,8 @@
 import { state } from './state.js';
 import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data.js';
 import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA } from './app.js';
-import { esTratada } from './phase4b.js';
-import { esPosquirurgico } from './lib/posquirurgico.js';
+import { esTratada, hipotesis, hipotesisActivas } from './phase4b.js';
+import { esPosquirurgico, cirugiaPayload, pautaHipPosq } from './lib/posquirurgico.js';
 import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
@@ -284,9 +284,15 @@ export function construirAmpliado() {
 
   const tests = [];
   const pautas = [];
-  for (const id of state.activeHypotheses || []) {
-    const h = HYPOTHESES[id];
+  for (const id of hipotesisActivas()) {
+    const h = hipotesis(id);
     if (!h) continue;
+    // Posquirúrgica genérica (`pq1`): la cirugía es la condición de salud; sin
+    // tests, y la pauta es el protocolo del cirujano
+    if (h.posquirurgica) {
+      pautas.push({ hipotesis: h.name, derivar: false, posquirurgica: true, pauta: pautaHipPosq(cirugiaPayload(state.mecanismo, state.cirugia)), fuente: '', prom: h.prom || '' });
+      continue;
+    }
     // «Ya diagnosticada y tratada»: ni derivación ni tests (no aplican)
     if (esTratada(id)) {
       pautas.push({ hipotesis: h.name, derivar: false, tratada: true, operada: esPosquirurgico(state.mecanismo), pauta: '', fuente: '', prom: h.prom || '' });

@@ -92,3 +92,28 @@ export const TEXTO_SIN_PROTOCOLO = 'Restricciones pendientes de confirmar con el
 export const TEXTO_PAUTA_COMPATIBLE = 'Solo si es compatible con el protocolo del cirujano; donde difieran, prevalece el protocolo.';
 export const TEXTO_NOTA_TRAUMA = 'En el operado, lo que cuenta es el cambio respecto a lo esperable según el protocolo, no el déficit que ya deja la cirugía.';
 export const ETIQUETA_TRATADA = '🏥 Diagnosticada y tratada';
+
+// ── Hipótesis posquirúrgica genérica (`pq1`, docs/posquirurgico.md) ─────────
+// No sale del árbol: con mecanismo Post-quirúrgico va la primera de la lista
+// de hipótesis, delante de las del árbol (state.activeHypotheses no la guarda).
+export const ID_HIP_POSQ = 'pq1';
+export const NOMBRE_HIP_POSQ = 'Rehabilitación posquirúrgica';
+export const ETIQUETA_HIP_POSQ = '🏥 Condición conocida: no se puntúa';
+export const TEXTO_PAUTA_POSQ = 'Seguir el protocolo del cirujano';
+
+export function hipotesisConPosq(mecanismo, ids = []) {
+  const arbol = ids.filter(id => id !== ID_HIP_POSQ);
+  return esPosquirurgico(mecanismo) ? [ID_HIP_POSQ, ...arbol] : arbol;
+}
+
+// «Postoperatorio: PTC derecha»; sin intervención, el nombre fijo.
+export function nombreHipPosq(cir) {
+  const iv = (cir?.intervencion || '').trim();
+  return iv ? `Postoperatorio: ${iv}` : NOMBRE_HIP_POSQ;
+}
+
+// Pauta de `pq1`: el protocolo y sus restricciones, o el aviso sin protocolo.
+export function pautaHipPosq(cq) {
+  if (!cqConProtocolo(cq)) return `${TEXTO_SIN_PROTOCOLO}.${cq?.re ? ` Restricciones referidas: ${cq.re}` : ''}`;
+  return `${TEXTO_PAUTA_POSQ}${cq.re ? `: ${cq.re}` : '.'}`;
+}
