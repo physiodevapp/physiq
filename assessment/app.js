@@ -1908,6 +1908,39 @@ function nombreRegion(r) {
 
 const _escHTML = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+// Fase 5, tarjeta de hipótesis: la pauta y el pronóstico se pliegan para
+// reducir el scroll. La pauta deja a la vista su primera frase; lo que es
+// seguridad (🚑 Derivación, «ya diagnosticada y tratada», la nota
+// posquirúrgica) nunca se pliega. Al imprimir se despliega todo (ver
+// _desplegarParaImprimir).
+// Primera frase: hasta el primer punto seguido de espacio y mayúscula (o «, ¿,
+// paréntesis), así «rec. 1.3.1» o «p. ej.» no la cortan.
+// Una frase de menos de 40 caracteres («Estadios I–II.») no dice nada sola: se
+// le suma la siguiente. Una muy larga se recorta a 3 líneas por CSS.
+// → { primera, resto } (resto '' si la pauta es una sola frase)
+function partirPrimeraFrase(texto) {
+  const t = String(texto || '').trim();
+  const re = /[.!?](?=\s+[A-ZÁÉÍÓÚÑ¿«(])/g;
+  let m;
+  while ((m = re.exec(t))) {
+    const fin = m.index + 1;
+    if (fin >= 40) return { primera: t.slice(0, fin), resto: t.slice(fin).trim() };
+  }
+  return { primera: t, resto: '' };
+}
+
+function _pautaPlegableHTML(dosis, fuente) {
+  const { primera, resto } = partirPrimeraFrase(dosis);
+  const fuenteHTML = fuente ? `<div class="test-source" style="margin:4px 0 0;">${fuente}</div>` : '';
+  if (!resto) return `<div class="exercise-box">${dosis}</div>${fuenteHTML}`;
+  return `<details class="pauta-det">
+    <summary class="exercise-box"><span class="pauta-det-primera">${primera}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
+    <div class="pauta-det-resto">${resto}</div>
+    ${fuenteHTML}
+    <button type="button" class="pauta-det-menos" onclick="const d=this.closest('details'); d.open=false; d.scrollIntoView({block:'nearest'})">Ocultar pauta ▴</button>
+  </details>`;
+}
+
 // Texto de la pauta de una hipótesis «Derivar» marcada como tratada.
 function _textoTratada(cq) {
   if (!cq) return 'Diagnóstico médico ya confirmado y tratado: sin derivación por esta hipótesis.';
@@ -2056,7 +2089,7 @@ function buildResults() {
 
       // Tests summary
       const results = state.testResults[id] || {};
-      const testsHtml = hyp.tests.map((t, i) => {
+      const filaTest = (t, i) => {
         const res = results[i];
         const resLabel = res === 'pos' ? '<span style="color:var(--green)">✓ Positivo</span>' : res === 'neg' ? '<span style="color:var(--red)">✗ Negativo</span>' : '<span style="color:var(--text3)">Sin datos</span>';
         const statsStr = [t.sn && `Sn:${t.sn}`, t.sp && `Sp:${t.sp}`, t.lr_pos && `LR+:${t.lr_pos}`, t.lr_neg && `LR-:${t.lr_neg}`].filter(Boolean).join(' | ');
@@ -2067,7 +2100,14 @@ function buildResults() {
           </div>
           ${statsStr ? `<div style="color:var(--text3); font-size:0.7rem; font-family:'DM Mono',monospace; margin-top:2px;">${statsStr}</div>` : ''}
         </div>`;
-      }).join('');
+      };
+      // Los tests hechos (pos/neg), a la vista; los «Sin datos», juntos y plegados
+      const hechos = hyp.tests.map((t, i) => [t, i]).filter(([, i]) => results[i] === 'pos' || results[i] === 'neg');
+      const sinHacer = hyp.tests.map((t, i) => [t, i]).filter(([, i]) => results[i] !== 'pos' && results[i] !== 'neg');
+      const testsHtml = hechos.map(([t, i]) => filaTest(t, i)).join('')
+        + (sinHacer.length ? `<details class="tests-sin-datos"><summary>${sinHacer.length === hyp.tests.length ? 'Ningún test realizado' : sinHacer.length === 1 ? '1 test sin hacer' : `${sinHacer.length} tests sin hacer`}</summary>
+            ${sinHacer.map(([t, i]) => filaTest(t, i)).join('')}
+          </details>` : '');
 
       hypHtml += `
       <div style="background:var(--surface2); border:1px solid ${dotColor}33; border-radius:var(--radius-lg); padding:1.2rem; margin-bottom:1rem;">
@@ -2087,16 +2127,18 @@ function buildResults() {
         </div>
         <div>
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent2); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">${tratada ? ETIQUETA_TRATADA : hyp.dosis === DOSIS_DERIVAR ? '🚑 Derivación' : hyp.dosisFuente ? '💊 Pauta de Tratamiento' : '💊 Dosis Día 1 (Baja Fricción)'}</div>
-          <div class="exercise-box">${tratada ? _textoTratada(cq) : hyp.dosis || '<em style="color:var(--text3)">Sin dosis de referencia: a criterio del clínico.</em>'}</div>
-          ${!tratada && hyp.dosis && hyp.dosisFuente ? `<div class="test-source" style="margin:4px 0 0;">${hyp.dosisFuente}</div>` : ''}
+          ${!tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR
+            ? _pautaPlegableHTML(hyp.dosis, hyp.dosisFuente)
+            : `<div class="exercise-box">${tratada ? _textoTratada(cq) : hyp.dosis || '<em style="color:var(--text3)">Sin dosis de referencia: a criterio del clínico.</em>'}</div>
+          ${!tratada && hyp.dosis && hyp.dosisFuente ? `<div class="test-source" style="margin:4px 0 0;">${hyp.dosisFuente}</div>` : ''}`}
           ${cq && !tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR ? `<div class="nota-posq" style="margin-top:6px;">🏥 ${TEXTO_PAUTA_COMPATIBLE}</div>` : ''}
         </div>
-        ${hyp.pronostico ? `<div style="margin-top:1rem;">
-          <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🧭 Pronóstico y derivación</div>
+        ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;">
+          <summary style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase;">🧭 Pronóstico y derivación</summary>
           <div style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${hyp.pronostico.horizonte}</div>
           ${hyp.pronostico.derivacion ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${hyp.pronostico.derivacion}</div>` : ''}
           ${hyp.pronostico.fuente ? `<div class="test-source" style="margin:4px 0 0;">${hyp.pronostico.fuente}</div>` : ''}
-        </div>` : ''}
+        </details>` : ''}
       </div>`;
     });
   }
@@ -3133,6 +3175,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Al imprimir, lo plegado de la fase 5 (pauta, pronóstico, tests sin hacer)
+// sale desplegado; después se deja como estaba.
+let _plegadosImpresion = [];
+window.addEventListener('beforeprint', () => {
+  _plegadosImpresion = [...document.querySelectorAll('#phase5 details:not([open])')];
+  _plegadosImpresion.forEach(d => { d.open = true; });
+});
+window.addEventListener('afterprint', () => {
+  _plegadosImpresion.forEach(d => { d.open = false; });
+  _plegadosImpresion = [];
+});
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
@@ -3235,7 +3289,7 @@ _iniciarGrabadora();
 export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, resumenFormularioIA, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
   buildContextSummaryText, getPendientesBreve, buildSistemaHTML,
   precargarFormularioPrevio, nombreRegion, showToast,
-  injectQuickInputBar, lockBodyScroll, unlockBodyScroll };
+  injectQuickInputBar, lockBodyScroll, unlockBodyScroll, partirPrimeraFrase };
 
 // Exposed on window for inline onclick/oninput attributes across index.html
 // and dynamically-generated HTML — those resolve only against the global

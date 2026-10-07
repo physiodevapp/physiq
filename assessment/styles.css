@@ -975,6 +975,26 @@
   }
   .exercise-box strong { color: var(--text); }
 
+  /* Fase 5: pauta, pronóstico y tests sin hacer, plegados (app.js,
+     _pautaPlegableHTML). La pauta deja a la vista su primera frase. */
+  .pauta-det > summary { list-style: none; cursor: pointer; }
+  .pauta-det > summary::-webkit-details-marker { display: none; }
+  .pauta-det[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; padding-bottom: 0.4rem; }
+  .pauta-det:not([open]) .pauta-det-primera { display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .pauta-det-mas { display: block; margin-top: 6px; color: var(--accent); font-size: 0.78rem; }
+  .pauta-det-mas::after { content: ' ▾'; }
+  .pauta-det[open] .pauta-det-mas { display: none; }
+  .pauta-det-resto {
+    background: var(--surface2); border: 1px solid var(--border2); border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 0 1rem 1rem; font-size: 0.83rem; color: var(--text2); line-height: 1.6;
+  }
+  .pauta-det-menos { background: none; border: none; padding: 6px 0 0; color: var(--accent); font-family: inherit; font-size: 0.78rem; cursor: pointer; }
+  @media print { .pauta-det-menos { display: none; } }
+  .pronostico-det > summary, .tests-sin-datos > summary { cursor: pointer; }
+  .pronostico-det[open] > summary { margin-bottom: 6px; }
+  .tests-sin-datos > summary { font-size: 0.75rem; color: var(--text3); padding: 6px 0; }
+
   /* Print button */
   .btn-print {
     background: linear-gradient(135deg, var(--accent2), #2ab89a);
@@ -1780,7 +1800,7 @@
     .sq2-text { font-size: 0.9rem; }
     .flag-item { font-size: 0.85rem; }
     .impact-item { font-size: 0.85rem; }
-    .exercise-box { font-size: 0.85rem; }
+    .exercise-box, .pauta-det-resto { font-size: 0.85rem; }
     .form-input { font-size: 0.85rem; }
     .form-label { font-size: 0.85rem; }
     /* Nav buttons fijos en la parte inferior */
