@@ -2434,7 +2434,7 @@ function _showSessionState(st) {
       saveSession();
     });
     panel.querySelector('#sessionPanelClear').onclick = () => _showSessionState('delete');
-    panel.querySelector('#sessionVersionRecargar')?.addEventListener('click', recargarVersionNueva);
+    _engancharVersionPanel(panel);
     setTimeout(() => input.focus(), 60);
 
   } else if (st === 'delete') {
@@ -2518,37 +2518,62 @@ async function _aplicarImportacion(r) {
 
 // ─── Versión desplegada ────────────────────────────────────────
 // La versión cargada (lib/version.js, la escribe deploy-to-hub.yml) se ve al
-// pie del panel de sesión. Al arrancar y al volver a la app se pide
-// version.json sin caché: si es otra, un aviso ofrece recargar. Sirve para
-// saber, tras un merge, si ya ha llegado el despliegue a este dispositivo.
+// pie del panel de sesión. Al arrancar, al volver a la app y con «Comprobar»
+// del panel se pide version.json: si es otra, un aviso ofrece recargar. Sirve
+// para saber, tras un merge, si ya ha llegado el despliegue a este dispositivo.
+//
+// version.json se pide por su URL normal (sin ?t=…), igual que el código: así
+// los dos salen del mismo estado del servidor y de la CDN de GitHub Pages
+// (~10 min). Con un ?t= único, version.json llegaba nuevo mientras
+// lib/version.js seguía en caché, y el aviso volvía a salir tras recargar.
 let _versionNueva = null;          // { sha, fecha } publicada, si es distinta de la cargada
 let _versionComprobada = 0;        // ms de la última comprobación (máx. una por minuto)
 let _versionAvisoCerrado = '';     // sha cuyo aviso se cerró: no se vuelve a mostrar
+const _CLAVE_RECARGA = 'physiq-assessment-recarga';   // sessionStorage: sha por el que ya se recargó
+
+function _shaRecargado() { try { return sessionStorage.getItem(_CLAVE_RECARGA) || ''; } catch { return ''; } }
+function _anotarRecarga(sha) { try { sha ? sessionStorage.setItem(_CLAVE_RECARGA, sha) : sessionStorage.removeItem(_CLAVE_RECARGA); } catch { /* sin almacenamiento: solo se pierde el aviso de «aún publicándose» */ } }
+// Ya se recargó por esta versión y sigue sin llegar: aún se está publicando.
+const _versionPendiente = () => !!_versionNueva && _shaRecargado() === _versionNueva.sha;
 
 function _versionPanelHTML() {
   const actual = `Versión ${textoVersion()}`;
-  if (!_versionNueva) return actual;
-  return `${actual} · <span class="session-version-nueva">hay una más reciente</span>
+  if (!_versionNueva) return `${actual} <button type="button" class="session-version-btn" id="sessionVersionComprobar">Comprobar</button>`;
+  return `${actual} · <span class="session-version-nueva">${_versionPendiente() ? 'la nueva aún se está publicando' : 'hay una más reciente'}</span>
     <button type="button" class="session-version-btn" id="sessionVersionRecargar">Recargar</button>`;
 }
 
-async function comprobarVersion() {
-  if (VERSION_SHA === 'dev') return;   // sin despliegue que comparar (local)
-  if (Date.now() - _versionComprobada < 60000) return;
+function _engancharVersionPanel(v) {
+  v.querySelector('#sessionVersionRecargar')?.addEventListener('click', recargarVersionNueva);
+  v.querySelector('#sessionVersionComprobar')?.addEventListener('click', () => comprobarVersion({ manual: true }));
+}
+
+// manual: desde «Comprobar» del panel — sin el límite de una por minuto y
+// diciendo siempre el resultado.
+async function comprobarVersion({ manual = false } = {}) {
+  if (VERSION_SHA === 'dev') { if (manual) showToast('Versión de desarrollo: no hay despliegue con el que comparar.', 'warning'); return; }
+  if (!manual && Date.now() - _versionComprobada < 60000) return;
   _versionComprobada = Date.now();
   let publicada;
   try {
-    const r = await fetch(`./version.json?t=${Date.now()}`, { cache: 'no-store' });
-    if (!r.ok) return;
+    const r = await fetch('./version.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error(String(r.status));
     publicada = await r.json();
-  } catch { return; }   // sin conexión: nada que decir
-  if (!esVersionNueva(publicada)) return;
+  } catch {   // sin conexión: nada que decir, salvo si se pidió a mano
+    if (manual) showToast('No se ha podido comprobar la versión (¿sin conexión?).', 'warning');
+    return;
+  }
+  if (!esVersionNueva(publicada)) {
+    _versionNueva = null;
+    _anotarRecarga('');
+    document.getElementById('versionAviso')?.remove();
+    if (manual) showToast(`✓ Estás en la última versión (${textoVersion()})`, 'success');
+    return;
+  }
   _versionNueva = publicada;
   const v = document.getElementById('sessionVersion');
-  if (v) {
-    v.innerHTML = _versionPanelHTML();
-    v.querySelector('#sessionVersionRecargar')?.addEventListener('click', recargarVersionNueva);
-  }
+  if (v) { v.innerHTML = _versionPanelHTML(); _engancharVersionPanel(v); }
+  if (manual) _versionAvisoCerrado = '';
   _mostrarAvisoVersion();
 }
 
@@ -2559,7 +2584,7 @@ function _mostrarAvisoVersion() {
   aviso.id = 'versionAviso';
   aviso.className = 'version-aviso';
   aviso.setAttribute('role', 'status');
-  aviso.innerHTML = `<span class="version-aviso-texto">Hay una versión nueva</span>
+  aviso.innerHTML = `<span class="version-aviso-texto">${_versionPendiente() ? 'La versión nueva aún se está publicando: prueba en unos minutos' : 'Hay una versión nueva'}</span>
     <button type="button" class="version-aviso-btn" id="versionAvisoRecargar">Recargar</button>
     <button type="button" class="version-aviso-cerrar" id="versionAvisoCerrar" aria-label="Cerrar aviso" title="Ahora no">×</button>`;
   document.body.appendChild(aviso);
@@ -2570,15 +2595,43 @@ function _mostrarAvisoVersion() {
   };
 }
 
+// Antes de recargar se vuelven a pedir al servidor (cache: 'reload') los
+// archivos propios que ha cargado esta página, para que la caché HTTP del
+// navegador no sirva el código anterior aunque la página no esté bajo el
+// service worker. Como mucho 4 s: si tarda, se recarga igual.
+async function _refrescarArchivosApp() {
+  const urls = [...new Set(performance.getEntriesByType('resource').map(e => e.name))].filter(u => {
+    try {
+      const x = new URL(u);
+      return x.origin === location.origin && /\.(js|css)$/.test(x.pathname);
+    } catch { return false; }
+  });
+  try { await navigator.serviceWorker?.getRegistration().then(r => r?.update()); } catch { /* sin SW */ }
+  await Promise.race([
+    Promise.allSettled(urls.map(u => fetch(u, { cache: 'reload' }))),
+    new Promise(r => setTimeout(r, 4000)),
+  ]);
+}
+
 // Recargar guarda la sesión, pero solo se guarda con nombre de paciente: sin
-// él, una valoración empezada se perdería, así que se pide confirmación.
+// él, una valoración empezada se perdería, así que se pide confirmación. Se
+// anota por qué versión se recarga: si tras recargar sigue sin llegar, el
+// aviso dice que aún se está publicando en vez de repetir «Hay una versión
+// nueva» una y otra vez.
 function recargarVersionNueva() {
-  const recargar = () => { saveSession(); setTimeout(() => location.reload(), 150); };
+  const recargar = async () => {
+    saveSession();
+    _anotarRecarga(_versionNueva?.sha || '');
+    const btn = document.getElementById('versionAvisoRecargar');
+    if (btn) { btn.disabled = true; btn.textContent = 'Recargando…'; }
+    await _refrescarArchivosApp();
+    location.reload();
+  };
   if (!(state.patient || '').trim() && _hasAssessmentData()) {
     closeSessionPanel();
     showConfirmBanner('Recargar la app',
       'La valoración en curso no tiene nombre de paciente, así que no está guardada y se perderá al recargar. Para conservarla, escribe un nombre en el panel de sesión antes de recargar.',
-      'Recargar igualmente', () => location.reload());
+      'Recargar igualmente', recargar);
     return;
   }
   recargar();
