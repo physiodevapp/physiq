@@ -878,11 +878,13 @@ export const hypotheses = {
     name: 'Luxación Bloqueada o Fractura (→ Rx)',
     prom: 'QuickDASH (MCID: 8.0–15.9 pts)',
     dosis: DOSIS_DERIVAR,
+    pronostico: {
+      horizonte: 'Luxación bloqueada: traumatismo previo, cualquier edad, rigidez activa y pasiva similar al congelado; imagen: Rx simple. Fractura: traumatismo previo, osteoporosis; imagen: Rx, y RM si es una fractura no desplazada del troquíter.',
+      derivacion: 'Traumatismo previo + rigidez activa y pasiva → luxación bloqueada o fractura → Rx. No explorar más hasta tenerla.',
+      fuente: 'Lluch 2020, cap. 3.1.1 (Powell y Lewis), tabla 2, p. 75; Tarjeta de consulta hombro (guía clínica de hombro, ap. 5)'
+    },
     tests: [
-      { name: 'Rx antes de nada', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Traumatismo previo + rigidez activa y pasiva → luxación bloqueada o fractura → Rx. No explorar más hasta tenerla.', fuente: 'Tarjeta de consulta hombro (guía clínica de hombro, ap. 5)' },
-      { name: 'Luxación bloqueada', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Traumatismo previo, cualquier edad, rigidez activa y pasiva similar al congelado. Imagen: Rx simple.', fuente: 'Lluch 2020, cap. 3.1.1 (Powell y Lewis), tabla 2, p. 75' },
-      { name: 'Fractura', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Traumatismo previo, osteoporosis. Imagen: Rx; RM si fractura no desplazada del troquíter.', fuente: 'Lluch 2020, cap. 3.1.1 (Powell y Lewis), tabla 2, p. 75' },
-      { name: 'Test de aprensión ósea y percusión olécranon-manubrio', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Test de aprensión ósea; signo de percusión olécranon-manubrio (buen valor para luxación anterior y fracturas de clavícula y húmero).', fuente: 'Lluch 2020, cap. 3.1 (Struyf), p. 54' }
+      { name: 'Test de aprensión ósea y percusión olécranon-manubrio', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Solo con la Rx ya hecha: con traumatismo previo y rigidez activa y pasiva, no explorar más hasta tenerla. Test de aprensión ósea; signo de percusión olécranon-manubrio (buen valor para luxación anterior y fracturas de clavícula y húmero).', fuente: 'Lluch 2020, cap. 3.1 (Struyf), p. 54' }
     ]
   },
 };
