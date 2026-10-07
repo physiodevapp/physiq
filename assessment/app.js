@@ -258,6 +258,7 @@ function _softResetApp() {
   state.treeModified = false;
   state.motivoConsulta = '';
   state.edadPaciente = null;
+  state.sexo = '';
   state.signosVitales = { fc: null, fr: null, spo2: null, tas: null, tad: null };
   state.antropometria = { talla: null, peso: null };
   state.mecanismo = '';
@@ -296,6 +297,7 @@ function _softResetApp() {
   if (mConsulta) mConsulta.value = '';
   const edadEl = document.getElementById('edadPaciente');
   if (edadEl) edadEl.value = '';
+  document.querySelectorAll('#sexo .option-btn').forEach(b => b.classList.remove('selected'));
   ['vitalFc', 'vitalFr', 'vitalSpo2', 'vitalTas', 'vitalTad', 'vitalTalla', 'vitalPeso'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.value = ''; el.classList.remove('vital-green', 'vital-orange', 'vital-red'); }
@@ -2846,6 +2848,7 @@ function _hasAssessmentData() {
   return state.maxVisitedIdx > 0
     || !!state.motivoConsulta
     || state.edadPaciente !== null
+    || !!state.sexo
     || _hasVitalsData()
     || !!state.mecanismo
     || !!state.cirugia?.intervencion
@@ -2932,7 +2935,7 @@ function _restoreSessionDOM() {
   updateImcDisplay();
   updateImcColor();
 
-  ['mecanismo', 'cronologia', 'riesgoPsico'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
+  ['mecanismo', 'cronologia', 'riesgoPsico', 'sexo'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
   // Sesiones anteriores al posquirúrgico: sin cirugia / derivacionResuelta
   state.cirugia = { ...cirugiaVacia(), ...(state.cirugia || {}) };
   if (!state.derivacionResuelta) state.derivacionResuelta = {};

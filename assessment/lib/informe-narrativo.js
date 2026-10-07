@@ -70,6 +70,14 @@
 //     «descartar»), ni secuelas ni evolución esperable en ninguna forma, y las
 //     filas del formulario con `iaTexto` llegan con su nombre clínico (tradujo
 //     «dedos doblados hacia la palma» como «dedos en resorte»).
+//   · Octava revisión (ficha breve, rodilla en modo breve): en la ficha, ni
+//     nombre ni fecha en el texto; fuera la regla «lo no explorado dilo una
+//     vez» (invitaba a «no se realizó goniometría…»); en modo breve, decir una
+//     vez que es breve y qué queda pendiente (dijo «cribado negativo» con un
+//     cribado solo por embudo); códigos CIF solo b y d (puso e1101,
+//     «medicamentos», al aumento del entrenamiento); reparto de palabras por
+//     sección (dio ~740 de 550); y sexo, nuevo campo opcional de la fase 1
+//     (deducía «sentada», «la paciente» del nombre).
 
 import { ladoTexto } from './region.js';
 
@@ -153,12 +161,13 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
   extra.push(...bloquesAmpliados(ampliado));
   if (data.md === 'breve') {
     extra.push('Tipo de valoración: inicial breve (consulta corta). Las hipótesis sin tests de confirmación son hipótesis de trabajo, no diagnósticos.'
+      + ' Dilo UNA vez en el informe, en una frase, junto con lo que queda pendiente de completar en la próxima sesión (la lista de abajo, en lenguaje clínico); no presentes como completo lo que está pendiente (p. ej., si el cribado sistémico fue abreviado, no escribas que el cribado sistémico fue negativo sin más).'
       + (data.pe?.length ? `\nPendiente de completar:\n${data.pe.map(s => `  · ${s}`).join('\n')}` : ''));
   }
 
   return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
 NOTA: estos datos proceden de una valoración clínica estructurada. Los resultados y clasificaciones del fisioterapeuta son la fuente prioritaria; para lo que refiere el paciente, sigue la regla de discrepancias de las instrucciones.
-Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''} · Región: ${regionTexto(data, nombreRegion)} · Fecha: ${data.d || '—'}
+Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''}${ampliado?.sexo ? ` · Sexo: ${ampliado.sexo.toLowerCase()}` : ''} · Región: ${regionTexto(data, nombreRegion)} · Fecha: ${data.d || '—'}
 Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
 NRS: ${data.nr ?? '—'}/10
@@ -412,13 +421,13 @@ RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CON
 // Reglas que comparten las dos plantillas (narrativa y ficha breve).
 const REGLAS_COMUNES = `- Tests: describe solo los tests realizados con su resultado; no menciones tests no realizados uno a uno.
 - Reglas pronósticas (marcadas «regla pronóstica, no diagnóstica», p. ej. la regla de Flynn): predicen la respuesta a un tratamiento. Preséntalas así y nunca las uses para reforzar ni descartar una hipótesis diagnóstica.
-- Lo que no se exploró o no se midió en esta valoración (goniometría, fuerza, escalas…) dilo UNA sola vez, en una frase, donde se describe la exploración; no lo repitas en cada sección o subsección.
+- Lo que no consta (mediciones, fuerza, escalas, pruebas no realizadas…) no se menciona: no escribas que no se hizo, no se midió o no se dispone de ello.
 - Discrepancias: los resultados y clasificaciones del fisioterapeuta (tests, NRS, irritabilidad, banderas, hipótesis) prevalecen sobre lo que se diga en la conversación. Si lo que refiere el paciente cambia entre lo que contestó antes de la consulta y lo que cuenta en ella, recoge las dos versiones UNA vez en una frase neutra (p. ej. «niega inicialmente dolor nocturno, aunque en consulta refiere que le dificulta conciliar el sueño»). No elijas tú una de las dos, no las escribas en lugares distintos como si no chocaran, y no interpretes ni justifiques la discrepancia.
 - No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «árbol de decisión», «regla de decisión», «notas del plan» ni el nombre de sus campos («variable de control», «ventana de recuperación», «anclaje de hábito»); usa su contenido sin decir de dónde viene. Escribe «refiere», «en consulta», «en la exploración».
 - Hipótesis: no cites cocientes de probabilidad (LR), pesos, puntuaciones ni recuentos de criterios o hallazgos; describe qué tests apoyan o no cada hipótesis.
 - Lo que refiere el paciente antes de la consulta: resúmelo en prosa, con los negativos relevantes en una frase. No lo transcribas pregunta por pregunta y no escribas «contestó».
 - Respuestas «No sé» o «No sabría decir»: no las menciones de ninguna forma; ni como negación («no refiere…», «niega…») ni como desconocimiento («desconoce si…»).
-- Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato.
+- Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato. Si consta el sexo, concuerda el género con él («la paciente», «sentada»); si no consta, redacta sin marcar el género (p. ej. «refiere dolor al permanecer en sedestación», no «sentada» ni «sentado»).
 - Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
 - No añadas causas, mecanismos, secuelas ni fases de curación o de recuperación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, «fase de consolidación», reparación tisular, desuso); tampoco atribuyas los hallazgos a secuelas ni a la evolución esperable de la lesión o de la cirugía, ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
@@ -459,19 +468,19 @@ ${clinicalCtx ? clinicalCtx + '\n\n' : ''}${romCtx ? romCtx + '\n\n' : ''}TRANSC
 {{TRANSCRIPT}}
 
 INSTRUCCIONES:
-1. No escribas título ni ficha de identificación (paciente, fecha…): se añaden aparte. Empieza directamente con "## PRESENTACIÓN CLÍNICA".
+1. No escribas título ni ficha de identificación (paciente, fecha…): se añaden aparte. Tampoco escribas el nombre del paciente ni la fecha en ningún punto del texto, ni en la primera frase. Empieza directamente con "## PRESENTACIÓN CLÍNICA".
 2. Usa EXACTAMENTE estas tres secciones con prefijo ##:
    ## PRESENTACIÓN CLÍNICA
    ## HALLAZGOS Y CODIFICACIÓN CIF
    ## OBJETIVOS Y PLAN
 3. Escribe en prosa continua dentro de cada sección, sin viñetas ni listas.
-4. En ## HALLAZGOS Y CODIFICACIÓN CIF incluye los códigos CIF alfanuméricos relevantes entre paréntesis inline, integrados en la prosa: como máximo unos 6 y solo los que correspondan sin duda al hallazgo descrito; es mejor omitir un código que poner uno dudoso. Ejemplo: "Se constata limitación del rango de flexión de hombro (b7101) con dolor asociado al movimiento activo (b28016)."
+4. En ## HALLAZGOS Y CODIFICACIÓN CIF incluye los códigos CIF alfanuméricos relevantes entre paréntesis inline, integrados en la prosa: como máximo unos 6, solo de funciones corporales (b) y de actividades y participación (d), y solo los que correspondan sin duda al hallazgo descrito; es mejor omitir un código que poner uno dudoso. No uses códigos de factores ambientales (e) ni de estructuras (s). Ejemplo: "Se constata limitación del rango de flexión de hombro (b7101) con dolor asociado al movimiento activo (b28016)."
 5. ${conAudio
     ? 'La transcripción complementa los datos estructurados.'
     : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos; no escribas "No evaluado".
 6. ${reglaDerivacion('## OBJETIVOS Y PLAN')}
 ${REGLAS_COMUNES}
-7. Límite estricto: ${PALABRAS_FICHA} palabras totales entre las tres secciones.${hasHypotheses ? '\n8. En ## HALLAZGOS Y CODIFICACIÓN CIF añade una frase de contraste con las hipótesis de valoración recibidas: indica si los hallazgos las refuerzan, matizan o contradicen, citando el hallazgo que lo justifica. Si las comprobaciones de una hipótesis que se deriva salieron negativas, di que no la apoyan pero no la descartan.' : ''}`;
+7. Límite estricto: ${PALABRAS_FICHA} palabras totales entre las tres secciones, repartidas más o menos así: PRESENTACIÓN CLÍNICA ${Math.round(PALABRAS_FICHA * 0.33)}, HALLAZGOS Y CODIFICACIÓN CIF ${Math.round(PALABRAS_FICHA * 0.37)}, OBJETIVOS Y PLAN ${Math.round(PALABRAS_FICHA * 0.30)}. En la presentación, solo lo que define el problema (inicio, evolución, síntomas y negativos relevantes, actividades que lo provocan); no repases todas las respuestas.${hasHypotheses ? '\n8. En ## HALLAZGOS Y CODIFICACIÓN CIF añade una frase de contraste con las hipótesis de valoración recibidas: indica si los hallazgos las refuerzan, matizan o contradicen, citando el hallazgo que lo justifica. Si las comprobaciones de una hipótesis que se deriva salieron negativas, di que no la apoyan pero no la descartan.' : ''}`;
 }
 
 // Plantillas disponibles: lo que necesita la tarjeta para generar y validar.
@@ -594,7 +603,7 @@ export function markdownAHtml(md) {
 // ── Texto final para compartir ────────────────────────────────────────────────
 // La identificación la pone assessment, no Claude (regla 1 del prompt).
 export function textoParaCompartir(informe, data, nombreRegion = r => r) {
-  return `INFORME DE FISIOTERAPIA${data?.p ? `\nPaciente: ${data.p}` : ''}${data?.ed != null ? `\nEdad: ${data.ed} años` : ''}
+  return `INFORME DE FISIOTERAPIA${data?.p ? `\nPaciente: ${data.p}` : ''}${data?.ed != null ? `\nEdad: ${data.ed} años` : ''}${data?.sx ? `\nSexo: ${data.sx}` : ''}
 Fecha: ${data?.d || '—'}
 Región valorada: ${regionTexto(data, nombreRegion)}
 

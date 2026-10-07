@@ -254,7 +254,7 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="breve-opcional">Signos Vitales y Antropometría</span><span class="breve-only-inline">Edad</span></div>
+    <div class="card-title"><span class="breve-opcional">Signos Vitales y Antropometría</span><span class="breve-only-inline">Edad y sexo</span></div>
     <div class="plan-note-hint breve-opcional">Opcional — no se usan en el algoritmo actual; útiles como referencia evolutiva entre valoraciones.</div>
     <div class="vitals-row vitals-row-3 breve-opcional">
       <div class="form-group">
@@ -285,6 +285,13 @@
       <div class="form-group">
         <label class="form-label">Edad (años)</label>
         <input type="number" class="form-input" id="edadPaciente" min="0" max="120" placeholder="Ej: 45" oninput="updateEdadPaciente(this.value)">
+      </div>
+    </div>
+    <div class="form-group sexo-wrap">
+      <label class="form-label">Sexo <span class="lado-opcional">(opcional)</span></label>
+      <div class="option-group sexo-group" id="sexo">
+        <button class="option-btn" onclick="selectOption('sexo', this, 'Mujer')">Mujer</button>
+        <button class="option-btn" onclick="selectOption('sexo', this, 'Hombre')">Hombre</button>
       </div>
     </div>
     <div class="vitals-row breve-opcional">

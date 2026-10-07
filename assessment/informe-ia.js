@@ -326,6 +326,7 @@ export function construirAmpliado() {
 
   return {
     edad: state.edadPaciente ?? null,
+    sexo: state.sexo || '',
     signoComparable: (state.signoComparable || '').trim(),
     estabilidad: state.estabilidad || '',
     // Con el nivel elegido directamente (modo breve) la matriz no se rellenó
@@ -632,7 +633,7 @@ async function iaGenerar() {
       conAudio,
       plantilla,
       huella: huellaPayload({ ...datos, _ampliado: ampliado }),
-      datos: { p: datos.p, d: datos.d, r: datos.r, la: datos.la, ed: ampliado.edad },
+      datos: { p: datos.p, d: datos.d, r: datos.r, la: datos.la, ed: ampliado.edad, sx: ampliado.sexo },
     };
     saveSession();
     // Con el informe guardado, el audio ya no hace falta en el dispositivo.

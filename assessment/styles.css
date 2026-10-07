@@ -498,6 +498,9 @@
   .lado-wrap { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
   .lado-wrap[hidden] { display: none; }
   .lado-opcional { text-transform: none; letter-spacing: 0; }
+  /* Sexo (fase 1, junto a la edad): dos botones del mismo ancho */
+  .sexo-wrap { margin-top: 4px; }
+  .sexo-group .option-btn { flex: 1 1 calc(50% - 4px); min-height: 40px; text-align: center; padding: 8px 6px; }
   .lado-group .option-btn { flex: 1 1 calc(25% - 8px); min-width: 72px; min-height: 40px; text-align: center; padding: 8px 6px; }
   /* Con «Central» (columna) son cuatro: en pantalla estrecha, 2×2 en vez de 3 + 1 */
   @media (max-width: 420px) {

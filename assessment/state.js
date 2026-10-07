@@ -16,6 +16,7 @@ const state = {
   patient: '',
   motivoConsulta: '',
   edadPaciente: null,     // años; input #edadPaciente — usado por criterioCompuesto (fase 2)
+  sexo: '',               // 'Mujer' | 'Hombre' | '' — opcional (#sexo); solo lo lee el informe con IA
   signosVitales: { fc: null, fr: null, spo2: null, tas: null, tad: null },
   antropometria: { talla: null, peso: null },  // imc se calcula al vuelo, no se persiste (ver calcImc en app.js)
   mecanismo: '',
