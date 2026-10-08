@@ -24,7 +24,7 @@ export default {
             { id: 'elevar', texto: 'Levantar el brazo, por delante o por un lado' },
             { id: 'encima', texto: 'Hacer cosas con el brazo por encima de la cabeza' },
             { id: 'peinarse', texto: 'Peinarse' },
-            { id: 'espalda', texto: 'Llevar la mano a la espalda (sujetador, bolsillo)' },
+            { id: 'espalda', texto: 'Llevar la mano a la espalda (sujetador, bolsillo)', iaTexto: 'Llevar la mano a la espalda' },
             { id: 'cruzar', texto: 'Cruzar el brazo por delante (lavarse la otra axila)' },
             { id: 'empujar', texto: 'Empujar o cargar peso con el brazo por delante' },
             { id: 'brusco', texto: 'Hacer un movimiento rápido o brusco sin esperarlo' }

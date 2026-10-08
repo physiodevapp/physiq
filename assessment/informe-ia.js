@@ -309,7 +309,10 @@ export function construirAmpliado() {
     .filter(st => state.treeAnswers?.[st.id] != null)
     .map(st => {
       const op = st.options.find(o => o.value === state.treeAnswers[st.id]);
-      return { pregunta: st.question, respuesta: op?.label || state.treeAnswers[st.id] };
+      // Si lo que la respuesta «orienta a» ya está diagnosticado y tratado, que
+      // el prompt lo sepa (si no, lo lee como una sospecha abierta)
+      const tratada = (op?.hypothesis || []).some(h => esTratada(h));
+      return { pregunta: st.question, respuesta: op?.label || state.treeAnswers[st.id], ...(tratada ? { tratada: true } : {}) };
     });
 
   const tests = [];

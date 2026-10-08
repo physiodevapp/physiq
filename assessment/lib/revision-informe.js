@@ -48,6 +48,17 @@ const RE_HABLADO = new RegExp(`\\b(\\d{1,2}|${NUMEROS.join('|')})\\s+(?:de|sobre
 const notasHabladas = t => [...sinAcentos(String(t || '')).matchAll(RE_HABLADO)]
   .map(m => (/^\d/.test(m[1]) ? String(Number(m[1])) : String(NUMEROS.indexOf(m[1].toLowerCase()))));
 
+// Síntomas que el paciente puede negar antes de la consulta y describir en ella
+// (regla «discrepancia-separada»): grupos de sinónimos, sobre texto sin acentos.
+const SINTOMAS = [
+  ['Hormigueo', /hormigue|parestesi|adormec|acorchad|entumec|piel dormida|se (?:le|me) duerme|mano dormida/],
+  ['Dolor nocturno', /noche|nocturn|despiert|despertar/],
+  ['Sedestación', /sedestaci|\bsentad[oa]s?\b/],
+];
+const NEGACION = /\b(niega|no refiere|no presenta|no describe|no nota|no manifiesta|no aparece|no le|no hay|sin)\b/;
+const frases = t => t.split(/(?<=[.!?])\s+|\n+/).map(f => f.replace(/^[#\s]+/, '').trim()).filter(Boolean);
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
 // Palabras distintivas del nombre de una hipótesis (para ver si se nombra)
 const VACIAS = new Set(['sindrome', 'lesion', 'dolor', 'tendinopatia', 'rotura', 'del', 'de', 'la', 'las', 'los', 'con', 'por', 'y', 'o', 'en', 'test']);
 const clavesHipotesis = nombre => sinAcentos(limpiarEtiqueta(nombre)).replace(/[()]/g, ' ')
@@ -180,6 +191,39 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     out.push(punto('fuentes', 'medio', 'Nombra de dónde sale un dato (formulario, transcripción, PhysiQ…).', r.cita));
   if ((r = primera(t, /\bsecuela|fase de (consolidaci[oó]n|reparaci[oó]n|cicatrizaci[oó]n|remodelaci[oó]n|inflamaci[oó]n|proliferaci[oó]n)/i)) && !/secuela|fase de/.test(fuenteN))
     out.push(punto('fisiopatologia', 'medio', 'Atribuye los hallazgos a secuelas o fases de curación que no están en los datos.', r.cita));
+  // Hallazgos atribuidos a la evolución de la cirugía o de la lesión (Pedro:
+  // «coherente con la evolución esperable en el período posquirúrgico»). No
+  // cuenta el «contexto traumático»: eso sí puede venir del recorrido.
+  if ((r = primera(t, /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|compatible con el (?:contexto|per[ií]odo) (?:posquir|postquir|postoperat)/i)))
+    out.push(punto('atribucion', 'medio', 'Atribuye los hallazgos a la evolución esperable de la cirugía o de la lesión; describe lo encontrado.', r.cita));
+  // Una discrepancia escrita en dos frases como si no chocaran (Pedro: «Niega…
+  // parestesias» y «Describe episodios de parestesia»; Lucía: «No refiere dolor
+  // en sedestación» y «la sedestación… aumentaría el dolor»). Las dos versiones
+  // en la misma frase («no le despierta…, aunque también describe
+  // despertares») es lo correcto y no cuenta.
+  for (const [nombre, re] of SINTOMAS) {
+    let neg = null, afi = null;
+    for (const f of frases(t)) {
+      const fn = sinAcentos(f);
+      const m = re.exec(fn);
+      if (!m) continue;
+      const c = /\b(aunque|pero|si bien|sin embargo)\b/.exec(fn.slice(m.index));
+      if (c && re.test(fn.slice(m.index + c.index))) continue;
+      if (NEGACION.test(fn.slice(0, m.index))) neg ??= f; else afi ??= f;
+    }
+    if (neg && afi) {
+      out.push(punto('discrepancia-separada', 'medio', `${nombre}: lo niega en una frase y lo describe en otra. Si las dos versiones son del paciente, van juntas en una sola frase neutra.`, neg.length > 220 ? neg.slice(0, 217) + '…' : neg));
+      break;
+    }
+  }
+  // La fecha de la cirugía, una sola vez
+  const fe = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(datos.cq?.fe || '');
+  if (fe) {
+    const dia = Number(fe[1]), mes = Number(fe[2]);
+    const reFe = new RegExp(`\\b0?${dia}(?:\\s+de\\s+${MESES[mes - 1]}|\\/0?${mes}\\/)`, 'gi');
+    const veces = [...t.matchAll(reFe)];
+    if (veces.length > 1) out.push(punto('repetido', 'medio', `La fecha de la cirugía aparece ${veces.length} veces; va una sola vez.`, fraseEn(t, veces[1].index)));
+  }
 
   // ── Códigos CIF ──
   const codigos = [...t.matchAll(/\b([bdes]\d{3,5})\b/g)];
