@@ -5,7 +5,7 @@
 import { state } from './state.js';
 import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
-import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas } from './phase4b.js';
+import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML } from './phase4b.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 import {
   COMPLICACIONES, cirugiaVacia, esPosquirurgico, semanasCirugia, semanasTexto, conProtocolo, cirugiaPayload,
@@ -1964,7 +1964,7 @@ function _cabeceraHipHTML(color, sombra, nombreHTML, etiqueta, colorNombre) {
           <span class="hyp5-punto" style="background:${color};${sombra}"></span>
           <div class="hyp5-titulos">
             <div class="hyp5-nombre" style="color:${colorNombre};">${nombreHTML}</div>
-            <div class="hyp5-etiqueta">${etiqueta}</div>
+            <div class="hyp5-etiqueta">${etiquetaHipHTML(etiqueta)}</div>
           </div>
         </div>`;
 }

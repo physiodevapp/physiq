@@ -991,6 +991,12 @@
   .hyp5-titulos { flex: 1; min-width: 0; }
   .hyp5-nombre { font-weight: 600; font-size: 0.95rem; line-height: 1.35; }
   .hyp5-etiqueta { margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.7rem; line-height: 1.4; color: var(--text3); }
+  /* Etiqueta de puntuación (4b y fase 5, etiquetaHipHTML): el emoji en su
+     columna, el texto con sangría colgante y el salto tras el «·». */
+  .hyp-etq { display: inline-flex; align-items: baseline; gap: 0.4em; max-width: 100%; }
+  .hyp-etq-icono { flex-shrink: 0; }
+  .hyp-etq-texto { min-width: 0; }
+  .hyp-etq-parte { white-space: nowrap; }
 
   /* Fase 5: pauta, pronóstico y tests sin hacer, plegados (app.js,
      _pautaPlegableHTML). La pauta deja a la vista su primera frase. */

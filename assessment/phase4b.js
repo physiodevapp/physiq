@@ -81,12 +81,26 @@ export { casillaTratadaHTML };
 // Tarjeta de `pq1` en la 4b: sin tests (la cirugía es un hecho). El nombre y
 // la pauta llevan texto libre de la tarjeta «Cirugía»: se escapan.
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// Etiqueta de puntuación de una hipótesis (cabecera de la 4b y tarjeta de la
+// fase 5): el emoji inicial va aparte para que, si la etiqueta parte en dos
+// líneas, la segunda quede alineada con el texto (sangría colgante, como el
+// punto del título), y cada parte separada por «·» no se parte por dentro, así
+// que el salto cae tras el «·». La etiqueta guardada sigue siendo texto plano
+// con emoji (📋 Notas, payload `sc`): esto solo cambia cómo se pinta.
+export function etiquetaHipHTML(label) {
+  const txt = String(label ?? '');
+  const m = txt.match(/^(\p{Extended_Pictographic}\uFE0F?)\s*(.*)$/su);
+  const partes = (m ? m[2] : txt).split(' · ');
+  const texto = partes.map((p, i) => `<span class="hyp-etq-parte">${esc(p)}${i < partes.length - 1 ? ' ·' : ''}</span>`).join(' ');
+  return `<span class="hyp-etq">${m ? `<span class="hyp-etq-icono">${m[1]}</span>` : ''}<span class="hyp-etq-texto">${texto}</span></span>`;
+}
 function tarjetaPosqHTML(hyp) {
   return `
       <div class="hypothesis-header" onclick="toggleHypCard('${hyp.id}')">
         <span class="hyp-color-dot"></span>
         <span class="hyp-name" title="${esc(hyp.name)}">${esc(hyp.name)}</span>
-        <span class="hyp-score" id="score_${hyp.id}">${ETIQUETA_HIP_POSQ}</span>
+        <span class="hyp-score" id="score_${hyp.id}">${etiquetaHipHTML(ETIQUETA_HIP_POSQ)}</span>
         <span class="hyp-chevron">▾</span>
       </div>
       <div class="hypothesis-body">
@@ -156,7 +170,7 @@ export function buildHypothesisCards() {
       <div class="hypothesis-header" onclick="toggleHypCard('${hId}')">
         <span class="hyp-color-dot"></span>
         <span class="hyp-name" title="${hyp.name}">${hyp.name}</span>
-        <span class="hyp-score" id="score_${hId}">${previa?.label || 'Sin evaluar'}</span>
+        <span class="hyp-score" id="score_${hId}">${etiquetaHipHTML(previa?.label || 'Sin evaluar')}</span>
         <span class="hyp-chevron">▾</span>
       </div>
       <div class="hypothesis-body">
@@ -384,7 +398,7 @@ export function clearAllTests() {
           card.className = 'hypothesis-card hyp-orange';
         }
         const score = document.getElementById('score_' + hId);
-        if (score) score.textContent = 'Sin evaluar';
+        if (score) score.innerHTML = etiquetaHipHTML('Sin evaluar');
       });
       saveSession();
     }
@@ -535,7 +549,7 @@ export function recalcHypScore(hId) {
   state.hypothesisScores[hId] = { totalLR, label, colorClass };
   const card = document.getElementById(`hypcard_${hId}`);
   card.className = `hypothesis-card ${colorClass}`;
-  document.getElementById(`score_${hId}`).textContent = label;
+  document.getElementById(`score_${hId}`).innerHTML = etiquetaHipHTML(label);
 }
 
 // Exposed for inline onclick attributes (index.html static markup + this
