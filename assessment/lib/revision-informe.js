@@ -57,6 +57,19 @@ const SINTOMAS = [
 ];
 const NEGACION = /\b(niega|no refiere|no presenta|no describe|no nota|no manifiesta|no aparece|no le|no hay|sin)\b/;
 const frases = t => t.split(/(?<=[.!?])\s+|\n+/).map(f => f.replace(/^[#\s]+/, '').trim()).filter(Boolean);
+// Síntomas que el modelo puede sacar de un ejemplo del prompt: [nombre, raíz
+// en el texto sin acentos]. Solo cuenta si la raíz no aparece en los datos ni
+// en la transcripción (Lucía sí dijo «¿te despierta por la noche?»).
+const INVENTABLES = [
+  ['despertares nocturnos', /despert|despiert/],
+];
+// Títulos de la plantilla narrativa, en orden, sacados del propio prompt (así
+// no hay una segunda lista que mantener)
+let _titulos = null;
+const titulosNarrativo = () => (_titulos ??= PLANTILLAS.narrativo
+  .prompt({ p: '', r: '', d: '', h: [{ name: 'H' }], br: [], sq: [], pn: {} }, { conAudio: false, nombreRegion: r => r, ampliado: null })
+  .split('ESTRUCTURA OBLIGATORIA')[1].split('\n')
+  .filter(l => /^#{2,3} /.test(l)).map(l => l.replace(/^#+\s*/, '').trim()));
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 // Palabras distintivas del nombre de una hipótesis (para ver si se nombra)
@@ -185,16 +198,19 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a/i.exec(t.slice(0, iSeg));
     if (m) out.push(punto('seguimiento-fuera', 'medio', 'El criterio de reconsiderar o derivar si no mejora aparece fuera de Seguimiento.', fraseEn(t, m.index)));
   }
-  if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b/i)))
+  if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b|no se refieren? tratamientos|no constan? tratamientos|sin tratamientos previos/i)))
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
-  if ((r = primera(t, /\b(transcripci[oó]n|grabaci[oó]n|formulario|cuestionario|conversaci[oó]n cl[ií]nica|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/i)))
+  if ((r = primera(t, /\b(transcripci[oó]n|grabaci[oó]n|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/i)))
+    out.push(punto('fuentes', 'medio', 'Nombra de dónde sale un dato (formulario, transcripción, PhysiQ…).', r.cita));
+  // «el cuestionario inicial» sí; «el cuestionario QuickDASH» (una escala con nombre) no
+  else if ((r = primera(t, /\b[Cc]uestionario\b(?!\s+[A-ZÁÉÍÓÚ])/)))
     out.push(punto('fuentes', 'medio', 'Nombra de dónde sale un dato (formulario, transcripción, PhysiQ…).', r.cita));
   if ((r = primera(t, /\bsecuela|fase de (consolidaci[oó]n|reparaci[oó]n|cicatrizaci[oó]n|remodelaci[oó]n|inflamaci[oó]n|proliferaci[oó]n)/i)) && !/secuela|fase de/.test(fuenteN))
     out.push(punto('fisiopatologia', 'medio', 'Atribuye los hallazgos a secuelas o fases de curación que no están en los datos.', r.cita));
   // Hallazgos atribuidos a la evolución de la cirugía o de la lesión (Pedro:
   // «coherente con la evolución esperable en el período posquirúrgico»). No
   // cuenta el «contexto traumático»: eso sí puede venir del recorrido.
-  if ((r = primera(t, /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|compatible con el (?:contexto|per[ií]odo) (?:posquir|postquir|postoperat)/i)))
+  if ((r = primera(t, /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|(?:compatible|coherente)s? con el (?:contexto|per[ií]odo|escenario|momento) (?:posquir|postquir|postoperat)/i)))
     out.push(punto('atribucion', 'medio', 'Atribuye los hallazgos a la evolución esperable de la cirugía o de la lesión; describe lo encontrado.', r.cita));
   // Una discrepancia escrita en dos frases como si no chocaran (Pedro: «Niega…
   // parestesias» y «Describe episodios de parestesia»; Lucía: «No refiere dolor
@@ -223,6 +239,30 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     const reFe = new RegExp(`\\b0?${dia}(?:\\s+de\\s+${MESES[mes - 1]}|\\/0?${mes}\\/)`, 'gi');
     const veces = [...t.matchAll(reFe)];
     if (veces.length > 1) out.push(punto('repetido', 'medio', `La fecha de la cirugía aparece ${veces.length} veces; va una sola vez.`, fraseEn(t, veces[1].index)));
+  }
+
+  // Síntomas que no constan en ningún sitio: el modelo copió el ejemplo de
+  // discrepancias del prompt («despertares ocasionales al girarse en la cama»)
+  // en un paciente que no habló de la noche más que para el dolor al tumbarse.
+  for (const [nombre, re] of INVENTABLES) {
+    if ((r = primera(tn, re)) && !re.test(fuenteN)) {
+      out.push(punto('inventado', 'alto', `Habla de ${nombre} y no consta en la valoración ni en la consulta (¿copiado de un ejemplo?).`, fraseEn(t, r.m.index)));
+      break;
+    }
+  }
+  // Secciones y subsecciones en el orden de la plantilla (movió Intervención
+  // Quirúrgica y Cribado de Seguridad a la primera sección)
+  if (plantilla === 'narrativo') {
+    const lineas = t.split('\n').map(l => sinAcentos(l.replace(/^#+\s*/, '').trim()));
+    let prev = -1;
+    const fuera = [];
+    for (const h of titulosNarrativo()) {
+      const i = lineas.indexOf(sinAcentos(h));
+      if (i < 0) continue;
+      if (i < prev) fuera.push(`«${h}»`); else prev = i;
+    }
+    if (fuera.length)
+      out.push(punto('estructura', 'medio', `Fuera del orden de la plantilla: ${fuera.join(', ')}. Cada subsección va dentro de su sección.`));
   }
 
   // ── Códigos CIF ──
