@@ -119,6 +119,14 @@
 //     van con etiquetas neutras), «en la conversación», un síntoma atribuido a
 //     un mecanismo, lo pendiente repetido fuera de su frase, y el cribado por
 //     embudo ya no sale como «Negativo».
+//   · Decimocuarta revisión (Javier, cervical, derivación urgente, riesgo
+//     psicosocial alto): con la derivación urgente escribió un plan entero
+//     «una vez descartado…» con mmHg y segundos (con `ur` ya no van las
+//     pautas, solo la escala), nombró «hemorragia subaracnoidea» y «patología
+//     intracraneal», repitió la derivación en cribado, coherencia y
+//     seguimiento, clasificó mal el IMC («normopeso» con 25,2) y escribió
+//     «ansiedad», que venía de la etiqueta del ítem psicosocial (las respuestas
+//     detalladas van ahora sin etiquetas diagnósticas).
 
 import { ladoTexto } from './region.js';
 
@@ -203,7 +211,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
   const notas = [['Para dosificar la carga', data.pn?.variableControl], ['Recuperación entre sesiones', data.pn?.ventanaRecuperacion], ['Cuándo hacer los ejercicios', data.pn?.anclajeHabito]]
     .filter(([, v]) => (v || '').trim());
   if (notas.length) extra.push(`Indicaciones del fisioterapeuta para el plan:\n${notas.map(([k, v]) => `  · ${k}: ${v.trim()}`).join('\n')}`);
-  extra.push(...bloquesAmpliados(ampliado));
+  extra.push(...bloquesAmpliados(ampliado, { urgente: !!data.ur?.length }));
   if (data.md === 'breve') {
     // Con cirugía, «restricciones pendientes de confirmar con el cirujano» ya
     // tiene su sitio (al principio del plan, regla del paciente operado): en la
@@ -265,7 +273,10 @@ export function bloqueFormulario(items) {
 //     formulario: [{ g, q, a }] (g = grupo de GRUPOS_FORMULARIO),
 //     pautas: [{ hipotesis, derivar, tratada?, operada?, posquirurgica?, pauta, fuente, pronostico?, prom }] }
 // Cada bloque solo aparece si tiene datos.
-export function bloquesAmpliados(a) {
+// urgente: hay una derivación urgente (payload `ur`): el plan es la derivación,
+// así que las pautas no van (con ellas escribió un plan con mmHg y segundos
+// «una vez descartado…»); solo la escala para el seguimiento.
+export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (!a) return [];
   const b = [];
   const fase3 = [];
@@ -285,7 +296,11 @@ export function bloquesAmpliados(a) {
       ? ' — comprobaciones de una hipótesis que se deriva: no son tests diagnósticos ni pruebas de imagen, y un resultado negativo no la descarta'
       : ''}:\n${h.items.map(item).join('\n')}`).join('\n')}`);
   }
-  if (a.pautas?.length) {
+  if (a.pautas?.length && urgente) {
+    const proms = a.pautas.filter(p => p.prom).map(p => `  · ${limpiarEtiqueta(p.hipotesis)}: ${p.prom}`);
+    b.push('Plan: derivación urgente. La pauta de fisioterapia se decidirá después de la valoración médica: no propongas tratamiento, técnicas ni dosis, tampoco condicionados («una vez descartado…»).'
+      + (proms.length ? `\nEscala recomendada para el seguimiento:\n${proms.join('\n')}` : ''));
+  } else if (a.pautas?.length) {
     b.push(`Pauta recomendada por PhysiQ para cada hipótesis (basada en guías; no propongas dosis distintas):\n${a.pautas.map(p => [
       `  ${limpiarEtiqueta(p.hipotesis)}:`,
       p.posquirurgica ? `    · Pauta: ${p.pauta}`
@@ -492,6 +507,7 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - No deduzcas la frecuencia ni la regularidad de una actividad («practica… de forma habitual», «regular») cuando solo consta cuál es, ni desde cuándo la dejó.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
 - No atribuyas un síntoma a un mecanismo o a un proceso que no conste (p. ej. «la rigidez matutina sugiere un componente degenerativo»): descríbelo tal como lo refiere.
+- Las cifras (IMC, tensión arterial, frecuencia cardíaca…) se dan tal cual, sin clasificarlas («normopeso», «hipertensión»…) si los datos no lo hacen.
 - No añadas diagnósticos diferenciales que no estén en los datos: nombra la sospecha que consta (p. ej. «sospecha de claudicación vascular») sin contraponerla a otras («más que neurógena»).
 - No añadas causas, mecanismos, secuelas ni fases de curación o de recuperación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, «fase de consolidación», reparación tisular, desuso); tampoco atribuyas los hallazgos a secuelas ni a la evolución esperable de la lesión o de la cirugía, ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
 - Cada recomendación del plan aparece una sola vez.
@@ -506,7 +522,7 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 // derivación no urgente el informe no decide si se espera a la valoración
 // médica: esa decisión es del fisioterapeuta.
 function reglaDerivacion(seccion, conSeguimiento = true) {
-  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Una hipótesis cuya pauta dice «Derivar» (fractura, luxación, rotura…) y no está marcada como ya diagnosticada y tratada se deriva aunque sus tests clínicos hayan salido negativos, porque no la descartan: nómbrala como sospecha pendiente de confirmar por el médico, salvo que el fisioterapeuta indique otra cosa en consulta o en las notas del plan; si indica que no procede (p. ej. la lesión ya está diagnosticada y tratada), no menciones esa derivación en ningún punto del informe. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay) y después plan y pauta${conSeguimiento ? ', y al final el seguimiento' : ''}.`;
+  return `Derivaciones: si los datos indican una derivación urgente o una derivación médica, hazla constar de forma explícita UNA sola vez, al principio de ${seccion}, con su motivo (en los hallazgos puedes describir el signo que la motiva, sin repetir la derivación). Si es urgente o la pauta de la hipótesis dice «Derivar», el plan es la derivación. Con una derivación urgente no escribas ningún plan de tratamiento, técnica ni dosis, tampoco para después («una vez descartado…»); como mucho, que la valoración de fisioterapia se retomará tras la valoración médica, si el fisioterapeuta lo indicó. No repitas la derivación en el cribado (describe solo el signo), en la coherencia ni en el seguimiento. No nombres los diagnósticos que el médico deberá descartar ni ningún diagnóstico que no esté en los datos. Una hipótesis cuya pauta dice «Derivar» (fractura, luxación, rotura…) y no está marcada como ya diagnosticada y tratada se deriva aunque sus tests clínicos hayan salido negativos, porque no la descartan: nómbrala como sospecha pendiente de confirmar por el médico, salvo que el fisioterapeuta indique otra cosa en consulta o en las notas del plan; si indica que no procede (p. ej. la lesión ya está diagnosticada y tratada), no menciones esa derivación en ningún punto del informe. Si es una derivación médica no urgente, presenta igualmente el plan de fisioterapia propuesto y no decidas por tu cuenta si se espera a la valoración médica o se trata en paralelo, salvo que el fisioterapeuta lo indique en consulta o en las notas del plan. Orden de ${seccion}: derivación (si la hay) y después plan y pauta${conSeguimiento ? ', y al final el seguimiento' : ''}.`;
 }
 
 // ── Ficha breve ───────────────────────────────────────────────────────────────

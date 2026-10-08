@@ -296,10 +296,12 @@ function _refrescarHuellaDiferido() {
 // Lo que el resumen compartido con physiq-report no lleva y el informe sí
 // necesita: edad, fase 3 en detalle, psicosocial, criterios compuestos,
 // recorrido del árbol, tests de la 4b con su resultado y la pauta de la fase 5.
+// Sin las etiquetas diagnósticas del ítem de la fase 1: con «(ansiedad,
+// depresión)» el informe convirtió un «sí» en «ansiedad»
 const PSICO = [
-  ['psico_miedo', 'Miedo al movimiento o catastrofización'],
-  ['psico_autoef', 'Signos de baja autoeficacia o desesperanza'],
-  ['psico_emocional', 'Componente emocional significativo (ansiedad, depresión)'],
+  ['psico_miedo', 'Miedo al movimiento'],
+  ['psico_autoef', 'Baja autoeficacia'],
+  ['psico_emocional', 'Componente emocional'],
 ];
 const RESULTADO = { pos: 'positivo', neg: 'negativo' };
 

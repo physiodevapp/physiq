@@ -70,6 +70,7 @@ const titulosNarrativo = () => (_titulos ??= PLANTILLAS.narrativo
   .prompt({ p: '', r: '', d: '', h: [{ name: 'H' }], br: [], sq: [], pn: {} }, { conAudio: false, nombreRegion: r => r, ampliado: null })
   .split('ESTRUCTURA OBLIGATORIA')[1].split('\n')
   .filter(l => /^#{2,3} /.test(l)).map(l => l.replace(/^#+\s*/, '').trim()));
+const RE_DIAGNOSTICOS = /\b(hemorragi\w*|aneurism\w*|intracraneal\w*|ictus|meningitis|tumor\w*|neoplasi\w*|neoplasic\w*|cancer\w*|metasta\w*|diseccion\w*|trombosis|infarto)\b/g;
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 // Palabras distintivas del nombre de una hipótesis (para ver si se nombra)
@@ -177,7 +178,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   for (const m of t.matchAll(/\bdescart(?:a|an|ar|ado|ada|ados|adas|ando|e|en)\b/gi)) {
     const antes = t.slice(Math.max(0, m.index - 12), m.index).toLowerCase();
     if (/\bno (la|lo|las|los|se)?\s*$/.test(antes)) continue;     // «no la descarta» es correcto
-    if (/deriv/i.test(t.slice(t.lastIndexOf('.', m.index) + 1, m.index))) continue;   // «se deriva… para descartar» es correcto
+    if (/deriv|valoraci[oó]n m[eé]dica|urgencias/i.test(t.slice(t.lastIndexOf('.', m.index) + 1, m.index))) continue;   // «se deriva / requiere valoración médica… para descartar» es correcto
     out.push(punto('descarta', 'medio', 'Dice que algo se «descarta»: un resultado negativo «no muestra hallazgos que sugieran…».', fraseEn(t, m.index)));
     break;
   }
@@ -282,6 +283,30 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     }
     if (fuera.length)
       out.push(punto('estructura', 'medio', `Fuera del orden de la plantilla: ${fuera.join(', ')}. Cada subsección va dentro de su sección.`));
+  }
+
+  // Con derivación urgente, el plan es la derivación: nada de tratamiento en
+  // CONCLUSIONES Y PLAN (escribió un plan con mmHg y segundos «una vez descartado…»)
+  if (datos.ur?.length) {
+    const ini = tn.search(/conclusiones y plan|objetivos y plan/);
+    const fin = tn.search(/coherencia con hipotesis|seguimiento funcional/);
+    const plan = ini >= 0 ? t.slice(ini, fin > ini ? fin : undefined) : '';
+    const m = /\b(manipulaci[oó]n|movilizaci[oó]n|biofeedback|mmHg|series|repeticiones|ejercicio terap[eé]utico|programa de ejercicio|terapia manual)/i.exec(plan);
+    if (m) out.push(punto('plan-urgente', 'alto', 'Hay una derivación urgente y el plan propone tratamiento; el plan es la derivación.', fraseEn(t, ini + m.index)));
+  }
+  // Diagnósticos graves que no están ni en los datos ni en la consulta
+  // («hemorragia subaracnoidea», «patología intracraneal»)
+  const dx = [...tn.matchAll(RE_DIAGNOSTICOS)].filter(m => !fuenteN.includes(m[1].slice(0, 7)));
+  if (dx.length) {
+    const nombres = [...new Set(dx.map(m => t.slice(m.index, m.index + m[1].length).toLowerCase()))];
+    out.push(punto('diagnostico', 'medio', `Nombra diagnósticos que no están en los datos: ${nombres.map(n => `«${n}»`).join(', ')}.`, fraseEn(t, dx[0].index)));
+  }
+  // El IMC clasificado, y mal («normopeso» con 25,2)
+  const imc = Number(datos.an?.imc);
+  if (imc && (r = primera(tn, /\b(normopeso|peso normal|sobrepeso|obesidad)\b/))) {
+    const cat = imc < 18.5 ? 'bajo' : imc < 25 ? 'normo' : imc < 30 ? 'sobre' : 'obes';
+    const dice = /sobrepeso/.test(r.m[1]) ? 'sobre' : /obesidad/.test(r.m[1]) ? 'obes' : 'normo';
+    if (cat !== dice) out.push(punto('imc', 'medio', `Clasifica el IMC (${imc.toFixed(1).replace('.', ',')}) como «${r.m[1]}», que no le corresponde; las cifras van sin clasificar.`, fraseEn(t, r.m.index)));
   }
 
   // ── Códigos CIF ──
