@@ -127,6 +127,16 @@
 //     seguimiento, clasificó mal el IMC («normopeso» con 25,2) y escribió
 //     «ansiedad», que venía de la etiqueta del ítem psicosocial (las respuestas
 //     detalladas van ahora sin etiquetas diagnósticas).
+//   · Decimoquinta revisión (Daniel, cadera, dolor inguinal del psoas, con
+//     audio): leyó «supra o infrainguinal» como las dos (los tests con «o»
+//     positivos llevan ahora en los datos «positivo si se cumple al menos una»),
+//     usó el pronóstico como plan («ecografía para descartar bursitis o
+//     comunicación de la vaina», vuelta al deporte con déficit de fuerza
+//     <10–20 %; pronóstico y «Cuándo reconsiderar» van marcados como contexto
+//     para el fisioterapeuta y la imagen se recoge solo como la indicó él),
+//     convirtió «hace tres semanas» en «tres semanas después del inicio»,
+//     inventó una derivación y volvió a llenar Limitaciones de «no refiere
+//     limitación al…» (las matrices de actividades llegan ya sin los «No»).
 
 import { ladoTexto } from './region.js';
 
@@ -291,7 +301,11 @@ export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (a.criterios?.length) b.push(`Criterios compuestos del cribado que se cumplen (patrón compatible, no diagnóstico):\n${a.criterios.map(c => `  · ${c.etiqueta} (${c.positivas}/${c.total}): ${c.nota}`).join('\n')}`);
   if (a.arbol?.length) b.push(`Hallazgos de la exploración (pregunta clínica → lo que encontró el fisioterapeuta):\n${a.arbol.map(x => `  · ${limpiarEtiqueta(x.pregunta)} → ${limpiarEtiqueta(x.respuesta)}${x.tratada ? ' (ya diagnosticada y tratada: es un antecedente)' : ''}`).join('\n')}`);
   if (a.tests?.length) {
-    const item = t => `    · ${limpiarEtiqueta(t.test)}: ${t.resultado}${t.cluster ? ` (parte del cluster «${t.cluster}»)` : ''}${t.pronostico ? ' (regla pronóstica, no diagnóstica)' : ''}`;
+    // Un test con alternativas en el nombre («dolorosa o con menos movilidad»,
+    // «supra o infrainguinal») es positivo con una sola: la regla del prompt
+    // no bastó (Andrea: «dolor y restricción»; Daniel: «tanto supra como infrainguinal»)
+    const conAlternativas = t => t.resultado === 'positivo' && / o /i.test(limpiarEtiqueta(t.test));
+    const item = t => `    · ${limpiarEtiqueta(t.test)}: ${t.resultado}${conAlternativas(t) ? ' (positivo si se cumple al menos una de las alternativas: descríbelo con las mismas palabras, sin afirmar las dos)' : ''}${t.cluster ? ` (parte del cluster «${t.cluster}»)` : ''}${t.pronostico ? ' (regla pronóstica, no diagnóstica)' : ''}`;
     b.push(`Tests de confirmación realizados (solo estos; no hay otros):\n${a.tests.map(h => `  ${limpiarEtiqueta(h.hipotesis)}${h.derivar
       ? ' — comprobaciones de una hipótesis que se deriva: no son tests diagnósticos ni pruebas de imagen, y un resultado negativo no la descarta'
       : ''}:\n${h.items.map(item).join('\n')}`).join('\n')}`);
@@ -309,8 +323,11 @@ export function bloquesAmpliados(a, { urgente = false } = {}) {
         : '    · Diagnóstico ya confirmado y tratado por el médico.')
       : p.derivar ? '    · Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico.' : p.pauta ? `    · Pauta: ${p.pauta}` : '    · Pauta: a criterio del fisioterapeuta (la guía no la fija).',
       p.fuente ? `    · Fuente: ${p.fuente}` : '',
-      p.pronostico?.horizonte ? `    · Pronóstico: ${p.pronostico.horizonte}` : '',
-      p.pronostico?.derivacion ? `    · Cuándo reconsiderar o derivar: ${p.pronostico.derivacion}` : '',
+      // Marcados como contexto: sin la marca, el informe convirtió el
+      // pronóstico en plan («ecografía para descartar bursitis o comunicación
+      // de la vaina», «vuelta al deporte con déficit de fuerza <10–20 %»)
+      p.pronostico?.horizonte ? `    · Pronóstico (contexto para el fisioterapeuta: no es plan ni explicación al paciente): ${p.pronostico.horizonte}` : '',
+      p.pronostico?.derivacion ? `    · Cuándo reconsiderar o derivar (contexto para el fisioterapeuta: no es plan ni explicación al paciente): ${p.pronostico.derivacion}` : '',
       p.prom ? `    · Escala recomendada para el seguimiento: ${p.prom}` : '',
     ].filter(Boolean).join('\n')).join('\n')}`);
   }
@@ -503,7 +520,9 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato. Si consta el sexo, concuerda el género con él; si no consta, redacta sin marcar el género, ni en los sustantivos ni en los adjetivos (p. ej. «refiere dolor al permanecer en sedestación», «la persona atendida» o simplemente «refiere…»).
 - Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - Los tests y la exploración «apoyan» una hipótesis o «son compatibles» con ella; no escribas que la «confirman» ni que establecen el diagnóstico.
-- El pronóstico y «Cuándo reconsiderar o derivar» son información para el fisioterapeuta: úsalos para el seguimiento, sin convertirlos en acciones del plan ni en explicaciones al paciente («se informa a la paciente de…») que no consten, y sin usarlos para interpretar los hallazgos o los tests (p. ej. «la lesión aislada es infrecuente» no va junto a los resultados de los tests).
+- El pronóstico y «Cuándo reconsiderar o derivar» son contexto para el fisioterapeuta: no los conviertas en acciones del plan, criterios de vuelta a la actividad ni explicaciones al paciente («se informa a la paciente de…») que no consten, y no los uses para interpretar los hallazgos o los tests (p. ej. «la lesión aislada es infrecuente» no va junto a los resultados de los tests). En Seguimiento, como mucho, el criterio de no mejoría que figure en ellos o en la pauta.
+- Pruebas de imagen y derivaciones: recógelas solo como las indicó el fisioterapeuta, sin añadir qué se busca con ellas («para descartar…») ni derivaciones o pruebas que nadie indicó.
+- Tiempos: «hace X» se refiere al día de la consulta; no lo conviertas en «X después del inicio» ni en otra fecha (con «me miró hace tres semanas» escribió «tres semanas después del inicio»).
 - No deduzcas la frecuencia ni la regularidad de una actividad («practica… de forma habitual», «regular») cuando solo consta cuál es, ni desde cuándo la dejó.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
 - No atribuyas un síntoma a un mecanismo o a un proceso que no conste (p. ej. «la rigidez matutina sugiere un componente degenerativo»): descríbelo tal como lo refiere.

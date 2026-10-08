@@ -307,7 +307,11 @@ function resumenIADe(scope) {
   esquema.secciones.forEach(s => s.items.forEach(it => {
     if (!visible(it, resp)) return;
     let v = resp[it.id];
-    if (it.tipo === 'matriz' && v && typeof v === 'object') v = Object.fromEntries(Object.entries(v).filter(([, x]) => !esNS(x)));
+    // En una matriz de actividades solo van las filas «Sí»: con los «No»
+    // («Caminar: No», «Toser: No») el informe llenaba Limitaciones de «no
+    // refiere limitación al…» aunque el prompt lo prohíba (Andrea, Daniel).
+    // Los «No» de los síntomas sí van: «niega bloqueo» es un dato.
+    if (it.tipo === 'matriz' && v && typeof v === 'object') v = Object.fromEntries(Object.entries(v).filter(([, x]) => !esNS(x) && !(it.ia === 'actividades' && x === 'No')));
     else if (Array.isArray(v)) v = v.filter(x => !esNS(x));
     else if (esNS(v)) return;
     if (vacio(v)) return;

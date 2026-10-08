@@ -47,6 +47,22 @@ const NUMEROS = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete
 const RE_HABLADO = new RegExp(`\\b(\\d{1,2}|${NUMEROS.join('|')})\\s+(?:de|sobre)\\s+(?:10|diez)\\b`, 'gi');
 const notasHabladas = t => [...sinAcentos(String(t || '')).matchAll(RE_HABLADO)]
   .map(m => (/^\d/.test(m[1]) ? String(Number(m[1])) : String(NUMEROS.indexOf(m[1].toLowerCase()))));
+// …y la respuesta suelta a la pregunta: «¿Cuánto te duele de 0 a 10? Ahora un
+// 4. El domingo… llegó a un 7» (Daniel: el 7 salía como intensidad inventada).
+// Solo «un/una N» en los ~250 caracteres que siguen a la pregunta.
+const RE_PREGUNTA_10 = /\b(?:0|cero) a (?:10|diez)\b/g;
+const RE_UN_N = new RegExp(`\\b(?:un|una)\\s+(\\d{1,2}|${NUMEROS.join('|')})\\b`, 'gi');
+const notasTrasPregunta = t => {
+  const n = sinAcentos(String(t || ''));
+  const out = [];
+  for (const p of n.matchAll(RE_PREGUNTA_10)) {
+    for (const m of n.slice(p.index + p[0].length, p.index + p[0].length + 250).matchAll(RE_UN_N)) {
+      const v = /^\d/.test(m[1]) ? Number(m[1]) : NUMEROS.indexOf(m[1].toLowerCase());
+      if (v >= 0 && v <= 10) out.push(String(v));
+    }
+  }
+  return out;
+};
 
 // Síntomas que el paciente puede negar antes de la consulta y describir en ella
 // (regla «discrepancia-separada»): grupos de sinónimos, sobre texto sin acentos.
@@ -71,6 +87,8 @@ const titulosNarrativo = () => (_titulos ??= PLANTILLAS.narrativo
   .split('ESTRUCTURA OBLIGATORIA')[1].split('\n')
   .filter(l => /^#{2,3} /.test(l)).map(l => l.replace(/^#+\s*/, '').trim()));
 const RE_DIAGNOSTICOS = /\b(hemorragi\w*|aneurism\w*|intracraneal\w*|ictus|meningitis|tumor\w*|neoplasi\w*|neoplasic\w*|cancer\w*|metasta\w*|diseccion\w*|trombosis|infarto)\b/g;
+// Palabras de «para descartar X» que no nombran nada concreto
+const GENERICAS_DESCARTAR = new Set(['patologia', 'patologias', 'causas', 'origen', 'lesiones', 'afectacion', 'condiciones', 'condicion', 'alteracion', 'alteraciones', 'compromiso', 'presencia', 'posible', 'posibles', 'estructural', 'estructurales', 'procesos', 'proceso', 'problemas', 'subyacente', 'persistente', 'relevante', 'relevantes', 'grave', 'graves', 'otras', 'otros']);
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 // Regla «fuentes»: nombrar de dónde sale un dato
@@ -171,7 +189,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     out.push(punto('genero', 'medio', 'El sexo no consta y el informe marca el género; redacta sin marcarlo.', r.cita));
 
   // Intensidades «N/10» que no aparecen en ningún dato
-  const validas = new Set([...notasSobre10(fuente), ...notasHabladas(transcripcion)]);
+  const validas = new Set([...notasSobre10(fuente), ...notasHabladas(transcripcion), ...notasTrasPregunta(transcripcion)]);
   for (const m of t.matchAll(RE_SOBRE10)) {
     if (!validas.has(notaDe(m))) {
       out.push(punto('nrs', 'alto', `El informe da una intensidad (${m[0].trim()}) que no figura en la valoración${datos.nr != null ? ` (NRS ${datos.nr}/10)` : ''}.`, fraseEn(t, m.index)));
@@ -209,7 +227,25 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // ── Reglas de redacción ──
   if ((r = primera(t, /\bLR\s*[+−-]?|cociente(s)? de probabilidad|likelihood|\d+\s*\/\s*\d+\s+hallazgos|peso (alto|bajo|moderado)\b|puntuaci[oó]n del test/i)))
     out.push(punto('jerga', 'medio', 'Usa jerga de puntuación (LR, pesos, recuentos) que no va en el informe.', r.cita));
+  // «para descartar X» con una X que no consta en ningún sitio (Daniel: «ecografía
+  // para descartar bursitis…»; la bursitis no estaba en los datos). Se miran las
+  // palabras de contenido hasta « o », la coma o el punto; los diagnósticos
+  // graves ya los cubre la regla «diagnostico».
+  const frasesInventadas = new Set();
+  for (const m of tn.matchAll(/\bpara descartar\s+([^.,;]{3,120})/g)) {
+    const objeto = m[1].split(/\s+o\s+|\s+u\s+/)[0];
+    const nuevas = objeto.split(/[^a-z0-9ñ]+/)
+      .filter(w => w.length >= 6 && !GENERICAS_DESCARTAR.has(w) && !new RegExp(RE_DIAGNOSTICOS.source).test(w))
+      .filter(w => !fuenteN.includes(w.slice(0, 6)));
+    if (nuevas.length) {
+      const frase = fraseEn(t, m.index);
+      frasesInventadas.add(frase);
+      out.push(punto('descartar-inventado', 'medio', `Dice que algo se busca «descartar» (${nuevas.join(', ')}) y no consta en la valoración ni en la consulta.`, frase));
+      break;
+    }
+  }
   for (const m of t.matchAll(/\bdescart(?:a|an|ar|ado|ada|ados|adas|ando|e|en)\b/gi)) {
+    if (frasesInventadas.has(fraseEn(t, m.index))) continue;   // ya lo dice «descartar-inventado»
     const antes = t.slice(Math.max(0, m.index - 12), m.index).toLowerCase();
     if (/\bno (la|lo|las|los|se)?\s*$/.test(antes)) continue;     // «no la descarta» es correcto
     if (/deriv|valoraci[oó]n m[eé]dica|urgencias/i.test(t.slice(t.lastIndexOf('.', m.index) + 1, m.index))) continue;   // «se deriva / requiere valoración médica… para descartar» es correcto
@@ -238,6 +274,15 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   if (plantilla === 'narrativo' && iSeg > 0) {
     const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a/i.exec(t.slice(0, iSeg));
     if (m) out.push(punto('seguimiento-fuera', 'medio', 'El criterio de reconsiderar o derivar si no mejora aparece fuera de Seguimiento.', fraseEn(t, m.index)));
+  }
+  // Lo que no le empeora no va en Limitaciones (Andrea: «Niega dolor al toser…»;
+  // Daniel: «No refiere limitación al ponerse los zapatos…»)
+  const iLim = tn.search(/limitaciones en (?:las )?actividades/);
+  if (plantilla === 'narrativo' && iLim >= 0) {
+    const finLim = tn.slice(iLim + 10).search(/restricciones en (?:la )?participacion|conclusiones y plan|\n#{1,3} /);
+    const lim = t.slice(iLim, finLim >= 0 ? iLim + 10 + finLim : undefined);
+    const m = /\b(?:no refiere (?:limitaci[oó]n|dificultad|dolor|aumento|molestias?)|niega (?:dolor|limitaci[oó]n|dificultad|molestias?)|no (?:le )?(?:provoca|aumenta|empeora)n?|sin (?:dolor|dificultad|limitaci[oó]n) (?:al|para))\b/i.exec(lim);
+    if (m) out.push(punto('limitaciones-negativas', 'medio', 'Limitaciones enumera lo que no le empeora; ahí solo van las actividades que le cuestan.', fraseEn(t, iLim + m.index)));
   }
   if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b|no se refieren? tratamientos|no constan? tratamientos|sin tratamientos previos/i)))
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
