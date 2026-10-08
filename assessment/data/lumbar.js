@@ -878,7 +878,7 @@ export const hypotheses = {
       fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), p. 322'
     },
     clusters: {
-      laslett: { nombre: 'Tests de provocación SI (3 de 5)', umbralPos: 3, umbralNeg: 2, sn: null, sp: null, lr_pos: '2.44', lr_neg: '0.31', fuente: 'Han 2023 (eClinicalMedicine, revisión sistemática, 6 estudios; LR+ IC 95 %: 1,50–3,98, LR− 0,21–0,47; referencia: bloqueo anestésico). Misma regla que la tarjeta lumbar: 3 de 5 positivos. Saueressig 2021 (JOSPT, metaanálisis, 5 estudios): LR+ 2,13, LR− 0,33, certeza muy baja (GRADE); descarta mejor de lo que confirma' }
+      laslett: { nombre: 'Tests de provocación SI (3 de 5)', umbralPos: 3, umbralNeg: 2, sn: null, sp: null, lr_pos: '2.13', lr_neg: '0.33', fuente: 'Saueressig 2021 (J Orthop Sports Phys Ther 51:422–431; metaanálisis bivariante, 5 estudios; LR+ IC 95 %: 1,2–3,9, LR− 0,11–0,72; referencia: bloqueo anestésico intraarticular; incluye el estudio de los creadores, Laslett 2003): certeza muy baja (GRADE); descarta mejor de lo que confirma. Misma regla que la tarjeta lumbar: 3 de 5 positivos. Han 2023 (eClinicalMedicine, revisión sistemática, 6 estudios, sin aclarar el modelo y con dos publicaciones de la misma población): LR+ 2,44, LR− 0,31' }
     },
     tests: [
       { name: 'Distracción', sn: null, sp: null, lr_pos: null, lr_neg: null, cluster: 'laslett', criterio: 'Supino: presión posterolateral sobre ambas EIAS. Positivo: reproduce el dolor conocido.' },
