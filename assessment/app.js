@@ -2596,8 +2596,9 @@ const _versionPendiente = () => !!_versionNueva && _shaRecargado() === _versionN
 
 function _versionPanelHTML() {
   // Una línea: versión a la izquierda y un solo botón a la derecha, que es
-  // «Comprobar» o, con una versión más nueva publicada, «Actualizar» en naranja
-  // (el aviso flotante ya lo explica, así que no se repite en texto).
+  // «Comprobar» (contorno) o, con una versión más nueva publicada, «Actualizar»
+  // en azul relleno, como el del aviso flotante (que ya lo explica, así que no
+  // se repite en texto).
   // Versión y fecha no se parten por dentro: si no caben, la fecha baja entera.
   const [sha, fecha] = textoVersion().split(' · ');
   const actual = `<span class="nw">Versión ${sha}</span>${fecha ? ` · <span class="nw">${fecha}</span>` : ''}`;
