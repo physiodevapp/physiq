@@ -2369,7 +2369,7 @@ function buildPhaseSheetList() {
 
 // ─── CONFIRM BANNER (reemplaza confirm() nativo) ─────────────
 // opts.cancelLabel cambia el texto del botón de cerrar («Cancelar» por
-// defecto). Devuelve una función que cierra el diálogo sin confirmar, para
+// defecto); opts.onCancel se llama al cancelar (botón, velo o Escape). Devuelve una función que cierra el diálogo sin confirmar, para
 // quien necesite cerrarlo desde fuera (p. ej. si lo que se iba a confirmar ya
 // no tiene sentido); no hace nada si ya está cerrado.
 function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
@@ -2396,18 +2396,21 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
   // si otro código retira el diálogo (_closeAllOverlays, otro diálogo encima).
   const alTeclado = e => {
     if (!overlay.isConnected) { document.removeEventListener('keydown', alTeclado); return; }
-    if (e.key === 'Escape') { e.preventDefault(); dismiss(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancelar(); }
   };
   const dismiss = () => {
     document.removeEventListener('keydown', alTeclado);
     if (!overlay.isConnected) return;
     overlay.remove(); unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
   };
+  // Cancelar a mano (botón, velo o Escape) llama a opts.onCancel; el dismiss()
+  // devuelto, para cerrarlo desde el código, no.
+  const cancelar = () => { if (!overlay.isConnected) return; dismiss(); opts.onCancel?.(); };
   let empiezaEnVelo = false;
   overlay.addEventListener('pointerdown', e => { empiezaEnVelo = e.target === overlay; });
-  overlay.addEventListener('click', e => { if (e.target === overlay && empiezaEnVelo) dismiss(); });
+  overlay.addEventListener('click', e => { if (e.target === overlay && empiezaEnVelo) cancelar(); });
   document.addEventListener('keydown', alTeclado);
-  document.getElementById('confirmCancel').onclick = dismiss;
+  document.getElementById('confirmCancel').onclick = cancelar;
   document.getElementById('confirmAction').onclick = () => { dismiss(); onConfirm(); };
   return dismiss;
 }
@@ -2491,29 +2494,10 @@ function _showSessionState(st) {
       panel.classList.toggle('has-session', !!name);
       saveSession();
     });
-    panel.querySelector('#sessionPanelClear').onclick = () => _showSessionState('delete');
+    panel.querySelector('#sessionPanelClear').onclick = promptClearSession;
     _engancharVersionPanel(panel);
     setTimeout(() => input.focus(), 60);
 
-  } else if (st === 'delete') {
-    panel.innerHTML = `
-      <div class="session-panel-handle"></div>
-      <div class="session-panel-title">${label || 'Sin sesión activa'}</div>
-      <div class="confirm-box-text" style="margin:12px 0 0;">¿Borrar y empezar de nuevo?${_avisoAudioSesion()}</div>
-      <div class="confirm-box-btns" style="margin-top:1rem;">
-        <button class="confirm-btn-cancel" id="confirmCancel">Cancelar</button>
-        <button class="confirm-btn-ok" id="confirmAction">Borrar sesión</button>
-      </div>`;
-    panel.querySelector('#confirmCancel').onclick = () => _showSessionState('edit');
-    panel.querySelector('#confirmAction').onclick = () => {
-      closeSessionPanel();
-      _descartarAudioSesion();
-      _sessionGen++; _sessionCleared = true;
-      state.patient = '';
-      updateSessionChip(null);
-      _softResetApp(); goToPhase(1);
-      clearSession().then(() => { _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); });
-    };
   }
 }
 
@@ -2809,14 +2793,30 @@ function updateSessionChip(session) {
   _updateSessionPanelTitle();
 }
 
+// «Borrar sesión»: el mismo diálogo centrado que el resto de confirmaciones
+// (iconos, velo, Escape). Se cierra el panel de sesión mientras tanto; si se
+// cancela, se vuelve a abrir, que es donde estaba quien pulsó la papelera.
 function promptClearSession() {
-  _showSessionState('delete');
-  const overlay = document.getElementById('sessionPanelOverlay');
-  if (overlay && !overlay.classList.contains('open')) {
-    overlay.classList.add('open');
-    lockBodyScroll();
-    window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
-  }
+  const panelAbierto = document.getElementById('sessionPanelOverlay')?.classList.contains('open');
+  closeSessionPanel();
+  const nombre = (state.patient || '').trim();
+  showConfirmBanner('Borrar sesión',
+    `Se borrarán todos los datos${nombre ? ` de «${_escHTML(nombre)}»` : ' de la valoración'} y la app volverá al inicio.${_avisoAudioSesion()}`,
+    'Borrar sesión', _borrarSesion,
+    { onCancel: () => { if (panelAbierto) toggleSessionPanel(); } });
+}
+
+function _borrarSesion() {
+  _descartarAudioSesion();
+  _sessionGen++; _sessionCleared = true;
+  state.patient = '';
+  // El panel sigue en el DOM con el nombre escrito, y saveSession() vuelca ese
+  // campo al estado: hay que vaciarlo o el nombre volvería.
+  const campo = document.getElementById('patientName');
+  if (campo) campo.value = '';
+  updateSessionChip(null);
+  _softResetApp(); goToPhase(1);
+  clearSession().then(() => { _sessionCh.postMessage({ type: 'SESSION_CLEAR' }); });
 }
 
 // ─── PHYSIQ EXPORT ───────────────────────────────────────────
