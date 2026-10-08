@@ -2390,10 +2390,23 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
   document.body.appendChild(overlay);
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  // Tocar el velo o pulsar Escape = el botón de cerrar: nunca la acción. Solo
+  // cuenta un toque que empieza y acaba en el velo (no seleccionar texto del
+  // recuadro y soltar fuera). Se quita el listener de teclado al cerrar, también
+  // si otro código retira el diálogo (_closeAllOverlays, otro diálogo encima).
+  const alTeclado = e => {
+    if (!overlay.isConnected) { document.removeEventListener('keydown', alTeclado); return; }
+    if (e.key === 'Escape') { e.preventDefault(); dismiss(); }
+  };
   const dismiss = () => {
+    document.removeEventListener('keydown', alTeclado);
     if (!overlay.isConnected) return;
     overlay.remove(); unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
   };
+  let empiezaEnVelo = false;
+  overlay.addEventListener('pointerdown', e => { empiezaEnVelo = e.target === overlay; });
+  overlay.addEventListener('click', e => { if (e.target === overlay && empiezaEnVelo) dismiss(); });
+  document.addEventListener('keydown', alTeclado);
   document.getElementById('confirmCancel').onclick = dismiss;
   document.getElementById('confirmAction').onclick = () => { dismiss(); onConfirm(); };
   return dismiss;
