@@ -1980,7 +1980,7 @@ function _textoTratada(cq) {
 function _hipPosqResultadosHTML(hyp, cq) {
   const color = '#8b95a7';
   return `
-      <div style="background:var(--surface2); border:1px solid ${color}33; border-radius:var(--radius-lg); padding:1.2rem; margin-bottom:1rem;">
+      <div class="hyp5-card" style="border-color:${color}33;">
         ${_cabeceraHipHTML(color, '', `🏥 ${_escHTML(hyp.name)}`, ETIQUETA_HIP_POSQ.replace(/^🏥\s*/, ''), 'var(--text)')}
         <div style="margin-bottom:1rem;">
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">PROM Recomendado</div>
@@ -2158,7 +2158,7 @@ function buildResults() {
           </details>` : '');
 
       hypHtml += `
-      <div style="background:var(--surface2); border:1px solid ${dotColor}33; border-radius:var(--radius-lg); padding:1.2rem; margin-bottom:1rem;">
+      <div class="hyp5-card" style="border-color:${dotColor}33;">
         ${_cabeceraHipHTML(dotColor, `box-shadow:0 0 8px ${dotColor}66;`, `${rankEmoji} ${hyp.name}`, scoreInfo?.label || 'Sin evaluar', dotColor)}
         ${casillaTratadaHTML(id)}
         <div style="margin-bottom:1rem;">

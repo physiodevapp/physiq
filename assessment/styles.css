@@ -986,6 +986,7 @@
   .exercise-box strong { color: var(--text); }
 
   /* Cabecera de las tarjetas de hipótesis de la fase 5 (_cabeceraHipHTML) */
+  .hyp5-card { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 1.2rem; margin-bottom: 1rem; }
   .hyp5-cab { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 1rem; }
   .hyp5-punto { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 0.3rem; }
   .hyp5-titulos { flex: 1; min-width: 0; }
@@ -1884,6 +1885,14 @@
     .sq2-btns .sq-btn { min-height: 46px; font-size: 0.9rem; }
     .sq2-text { font-size: 0.95rem; }
     /* Sticky header ajuste para pantalla pequeña */
+    /* Fase 5 (lectura, varios marcos anidados): los bloques de primer nivel a
+       todo el ancho, como bandas, y menos relleno en la caja de cada hipótesis
+       y en la pauta, para que el texto no quede en una columna estrecha. Las
+       alertas y los pendientes de modo breve siguen como recuadros. */
+    #phase5 .summary-section, #phase5 .ia-card { margin-left: -1rem; margin-right: -1rem; border-left: none; border-right: none; border-radius: 0; }
+    #phase5 .hyp5-card { padding: 0.75rem; }
+    #phase5 .exercise-box { padding: 0.75rem; }
+    #phase5 .pauta-det-resto { padding: 0 0.75rem 0.75rem; }
     .hyp-context-banner { top: 88px; }
     .sis-context-banner { top: 88px; }
     /* irritab tabla oculta en móvil — usa cards */
