@@ -73,6 +73,40 @@ const titulosNarrativo = () => (_titulos ??= PLANTILLAS.narrativo
 const RE_DIAGNOSTICOS = /\b(hemorragi\w*|aneurism\w*|intracraneal\w*|ictus|meningitis|tumor\w*|neoplasi\w*|neoplasic\w*|cancer\w*|metasta\w*|diseccion\w*|trombosis|infarto)\b/g;
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
+// Regla «fuentes»: nombrar de dónde sale un dato
+const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
+// Regla «atribucion»: hallazgos atribuidos a la evolución de la cirugía o la lesión
+const RE_ATRIBUCION = /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|(?:compatible|coherente)s? con el (?:contexto|per[ií]odo|escenario|momento) (?:posquir|postquir|postoperat)/i;
+// Regla «frecuencia»: actividades (raíz sobre texto sin acentos) y las
+// expresiones de frecuencia que el modelo añade a una actividad nombrada.
+const ACTIVIDADES = [
+  ['la carrera', /\bcorr(?:e|er|o|iendo|edor\w*)\b|\bcarrera|\brunning\b|\bfooting\b/],
+  ['el ciclismo', /\bbici\w*|\bciclis\w*/],
+  ['el gimnasio', /\bgimnasio|\bpesas\b|\bmusculacion/],
+  ['la natación', /\bnad(?:a|ar|o)\b|\bnatacion|\bpiscina/],
+  ['caminar', /\bcamin(?:a|ar|o|atas?)\b|\bsenderis\w*|\bpase(?:a|ar|o|os)\b/],
+  ['el deporte de raqueta', /\bpadel\b|\btenis\b/],
+  ['el fútbol', /\bfutbol\w*/],
+];
+const RE_FRECUENCIA = /\b(?:con regularidad|regularmente|habitualmente|de (?:forma|manera|modo) (?:regular|habitual)|(?:actividad|practica|ejercicio|deporte|entrenamiento)\w*(?: (?:fisica|deportiva|fisico))? (?:regular|habitual)(?:es)?)\b/;
+// En los datos o en la consulta: una frecuencia dicha para la actividad
+const RE_FRECUENCIA_FUENTE = /a menudo|habitual|regular|frecuen|todos los dias|cada (?:dia|semana|manana|tarde|fin de semana|lunes|martes|miercoles|jueves|viernes|sabado|domingo)|\d+ (?:veces|dias) (?:a|por|en) la semana|veces (?:a|por) (?:la )?semana|los (?:lunes|martes|miercoles|jueves|viernes|sabados|domingos)|siempre/;
+export function frecuenciaInferida(texto, fuente) {
+  // Por líneas y frases, sin cortar en «?»: la pregunta va con su respuesta
+  // («¿hace a menudo…? → Correr»; «¿Sales en bici? Sí, cada domingo.»)
+  const lineasFuente = sinAcentos(fuente).split(/\n|(?<=[.!])\s+/);
+  for (const f of frases(texto)) {
+    const fn = sinAcentos(f);
+    if (!RE_FRECUENCIA.test(fn)) continue;
+    for (const [actividad, re] of ACTIVIDADES) {
+      if (!re.test(fn)) continue;
+      if (lineasFuente.some(l => re.test(l) && RE_FRECUENCIA_FUENTE.test(l))) continue;
+      return { actividad, cita: f.length > 220 ? f.slice(0, 217) + '…' : f };
+    }
+  }
+  return null;
+}
+
 // Palabras distintivas del nombre de una hipótesis (para ver si se nombra)
 const VACIAS = new Set(['sindrome', 'lesion', 'dolor', 'tendinopatia', 'rotura', 'del', 'de', 'la', 'las', 'los', 'con', 'por', 'y', 'o', 'en', 'test']);
 const clavesHipotesis = nombre => sinAcentos(limpiarEtiqueta(nombre)).replace(/[()]/g, ' ')
@@ -209,7 +243,6 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
   // En modo breve, «el formulario previo» dentro de la frase de lo pendiente
   // es un pendiente, no una fuente: se sigue buscando
-  const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
   r = null;
   for (const m of t.matchAll(RE_FUENTES)) {
     if (datos.md === 'breve' && /formulario/i.test(m[0]) && /pendiente/i.test(t.slice(t.lastIndexOf('.', m.index) + 1, m.index))) continue;
@@ -226,8 +259,15 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // Hallazgos atribuidos a la evolución de la cirugía o de la lesión (Pedro:
   // «coherente con la evolución esperable en el período posquirúrgico»). No
   // cuenta el «contexto traumático»: eso sí puede venir del recorrido.
-  if ((r = primera(t, /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|(?:compatible|coherente)s? con el (?:contexto|per[ií]odo|escenario|momento) (?:posquir|postquir|postoperat)/i)))
+  if ((r = primera(t, RE_ATRIBUCION)))
     out.push(punto('atribucion', 'medio', 'Atribuye los hallazgos a la evolución esperable de la cirugía o de la lesión; describe lo encontrado.', r.cita));
+  // Frecuencia inferida: solo consta que hace una actividad y el informe dice
+  // que la hace «con regularidad» o «de forma habitual» (Pedro: «Practica
+  // ciclismo de manera habitual», cuando echa de menos la bici; Javier: «Acude
+  // al gimnasio con regularidad», por unas pesas un sábado). Vale si los datos
+  // o la consulta dan una frecuencia para esa misma actividad (Lucía: «¿hace a
+  // menudo…? → Correr»).
+  if ((r = frecuenciaInferida(t, fuente))) out.push(punto('frecuencia', 'medio', `Dice que ${r.actividad} es algo que hace con regularidad o de forma habitual, y no consta con qué frecuencia; describe solo lo que refiere.`, r.cita));
   // Una discrepancia escrita en dos frases como si no chocaran (Pedro: «Niega…
   // parestesias» y «Describe episodios de parestesia»; Lucía: «No refiere dolor
   // en sedestación» y «la sedestación… aumentaría el dolor»). Las dos versiones
@@ -347,3 +387,17 @@ export function quitarCabeceraYPie(texto) {
 
 // Para la herramienta y los tests: notas «N/10» de un texto
 export { notasSobre10 };
+
+// Patrones de algunas reglas, para que la medición de la capa 3
+// (lib/verificacion-informe.js) reconozca un punto que la capa 1 ya cubre
+// aunque cite otra frase. Sin la bandera g (se usan con .test).
+const sinG = re => new RegExp(re.source, re.flags.replace('g', ''));
+export const PATRONES_CAPA1 = {
+  atribucion: RE_ATRIBUCION,
+  fuentes: sinG(RE_FUENTES),
+  diagnostico: sinG(RE_DIAGNOSTICOS),   // sobre texto sin acentos
+  frecuencia: RE_FRECUENCIA,            // sobre texto sin acentos
+  sintomas: SINTOMAS,                   // [nombre, patrón] sobre texto sin acentos
+  negacion: NEGACION,                   // sobre texto sin acentos
+};
+export { sinAcentos };
