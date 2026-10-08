@@ -206,7 +206,16 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   }
   if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b|no se refieren? tratamientos|no constan? tratamientos|sin tratamientos previos/i)))
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
-  if ((r = primera(t, /\b(transcripci[oó]n|grabaci[oó]n|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/i)))
+  // En modo breve, «el formulario previo» dentro de la frase de lo pendiente
+  // es un pendiente, no una fuente: se sigue buscando
+  const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
+  r = null;
+  for (const m of t.matchAll(RE_FUENTES)) {
+    if (datos.md === 'breve' && /formulario/i.test(m[0]) && /pendiente/i.test(t.slice(t.lastIndexOf('.', m.index) + 1, m.index))) continue;
+    r = { m, cita: fraseEn(t, m.index) };
+    break;
+  }
+  if (r)
     out.push(punto('fuentes', 'medio', 'Nombra de dónde sale un dato (formulario, transcripción, PhysiQ…).', r.cita));
   // «el cuestionario inicial» sí; «el cuestionario QuickDASH» (una escala con nombre) no
   else if ((r = primera(t, /\bcuestionario\b(?!\s+(?:de\s+|del\s+)?[A-ZÁÉÍÓÚ])/)))
@@ -238,6 +247,10 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
       break;
     }
   }
+  // «Pendiente de confirmar con el cirujano», una sola vez (lo dijo cuatro)
+  const confirmaCir = [...t.matchAll(/confirm\w*[^.]{0,40}cirujano/gi)];
+  if (confirmaCir.length >= 3)
+    out.push(punto('repetido', 'medio', `Lo pendiente de confirmar con el cirujano aparece ${confirmaCir.length} veces; va una sola vez, al principio del plan.`, fraseEn(t, confirmaCir[1].index)));
   // La fecha de la cirugía, una sola vez
   const fe = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(datos.cq?.fe || '');
   if (fe) {

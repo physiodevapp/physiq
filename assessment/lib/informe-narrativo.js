@@ -110,6 +110,15 @@
 //     de dolor cambiando la fecha; negativos en Limitaciones; el signo
 //     comparable repetido en Movilidad (ahora «[solo si…]»), y un diferencial
 //     no pedido («más que neurógeno»).
+//   · Decimotercera revisión (Carmen, tobillo posquirúrgico sin protocolo,
+//     modo breve, ficha breve con audio): desarrolló «KTW» como un test que no
+//     existe (regla de siglas; el test se llama ahora «KTW (rodilla a la
+//     pared)»), dijo «pendiente de confirmar con el cirujano» cuatro veces (la
+//     lista de pendientes de modo breve ya no lo trae cuando hay cirugía), llamó
+//     «variable de control» a la ventana de recuperación (las notas del plan
+//     van con etiquetas neutras), «en la conversación», un síntoma atribuido a
+//     un mecanismo, lo pendiente repetido fuera de su frase, y el cribado por
+//     embudo ya no sale como «Negativo».
 
 import { ladoTexto } from './region.js';
 
@@ -189,15 +198,23 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
     const f = bloqueFormulario(ampliado.formulario);
     if (f) extra.push(f);
   } else if (data.fp?.length) extra.push(`Lo que refiere el paciente antes de la consulta (pregunta → respuesta):\n${data.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
-  const notas = [['Variable de control', data.pn?.variableControl], ['Ventana de recuperación', data.pn?.ventanaRecuperacion], ['Anclaje de hábito', data.pn?.anclajeHabito]]
+  // Etiquetas neutras, no los nombres de los campos: con «Ventana de
+  // recuperación: …» el informe escribió «la variable de control…»
+  const notas = [['Para dosificar la carga', data.pn?.variableControl], ['Recuperación entre sesiones', data.pn?.ventanaRecuperacion], ['Cuándo hacer los ejercicios', data.pn?.anclajeHabito]]
     .filter(([, v]) => (v || '').trim());
-  if (notas.length) extra.push(`Notas del plan terapéutico:\n${notas.map(([k, v]) => `  · ${k}: ${v.trim()}`).join('\n')}`);
+  if (notas.length) extra.push(`Indicaciones del fisioterapeuta para el plan:\n${notas.map(([k, v]) => `  · ${k}: ${v.trim()}`).join('\n')}`);
   extra.push(...bloquesAmpliados(ampliado));
   if (data.md === 'breve') {
+    // Con cirugía, «restricciones pendientes de confirmar con el cirujano» ya
+    // tiene su sitio (al principio del plan, regla del paciente operado): en la
+    // lista salía otra vez y el informe lo dijo cuatro veces
+    const pe = (data.pe || []).filter(s => !(data.cq && /cirujano/i.test(s)));
     extra.push('Tipo de valoración: inicial breve (consulta corta). Las hipótesis sin tests de confirmación son hipótesis de trabajo, no diagnósticos.'
-      + ' Dilo UNA vez en el informe, en una frase, junto con lo que queda pendiente de completar en la próxima sesión (la lista de abajo, en lenguaje clínico); no presentes como completo lo que está pendiente (p. ej., si el cribado sistémico fue abreviado, no escribas que el cribado sistémico fue negativo sin más).'
-      + (data.pe?.length ? `\nPendiente de completar:\n${data.pe.map(s => `  · ${s}`).join('\n')}` : ''));
+      + ' Dilo UNA vez en el informe, en una frase, junto con lo que queda pendiente de completar en la próxima sesión (la lista de abajo, en lenguaje clínico); lo pendiente se dice solo en esa frase, sin repetirlo en otras secciones («no se realizaron tests…»); no presentes como completo lo que está pendiente (p. ej., si el cribado sistémico fue abreviado, no escribas que el cribado sistémico fue negativo sin más).'
+      + (pe.length ? `\nPendiente de completar:\n${pe.map(s => `  · ${s}`).join('\n')}` : ''));
   }
+  // 8: el cribado solo por embudo no es un «Negativo» sin más
+  const embudo = data.md === 'breve' && (data.pe || []).some(s => /embudo/i.test(s));
 
   return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
 NOTA: estos datos proceden de una valoración clínica estructurada. Los resultados y clasificaciones del fisioterapeuta son la fuente prioritaria; para lo que refiere el paciente, sigue la regla de discrepancias de las instrucciones.
@@ -209,7 +226,7 @@ Irritabilidad: ${data.ir || '—'} · Naturaleza: ${data.na || '—'}
 Riesgo psicosocial: ${data.rp || '—'}
 Banderas rojas:
 ${brText}
-Cribado sistémico: ${data.si ? '⚠️ Positivo' : 'Negativo'}${sqText}
+Cribado sistémico: ${data.si ? '⚠️ Positivo' : embudo ? 'sin hallazgos en el embudo (cribado abreviado)' : 'Negativo'}${sqText}
 
 Hipótesis de trabajo del fisioterapeuta (de mayor a menor apoyo):
 ${hyps || '  (sin hipótesis registradas)'}${extra.length ? '\n\n' + extra.join('\n\n') : ''}
@@ -455,6 +472,7 @@ RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CON
 
 // Reglas que comparten las dos plantillas (narrativa y ficha breve).
 const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo muestran la forma de escribir: nunca copies su contenido ni añadas un síntoma, un dato o una frase que no conste en los datos o en la consulta.
+- Siglas: escríbelas tal como vienen en los datos; no desarrolles una sigla que los datos no desarrollan (desarrolló «KTW» como un test inexistente).
 - Tests: describe solo los tests realizados con su resultado; no menciones tests no realizados uno a uno. Si el nombre de un test da alternativas («dolorosa o con menos movilidad»), descríbelo con esas mismas palabras: no afirmes las dos.
 - Reglas pronósticas (marcadas «regla pronóstica, no diagnóstica», p. ej. la regla de Flynn): predicen la respuesta a un tratamiento. Preséntalas así y nunca las uses para reforzar ni descartar una hipótesis diagnóstica.
 - Lo que no consta (mediciones, fuerza, escalas, pruebas no realizadas…) no se menciona: no escribas que no se hizo, no se midió o no se dispone de ello.
@@ -463,7 +481,7 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - Que prevalezca una clasificación del fisioterapeuta (p. ej. riesgo psicosocial bajo) no borra lo que refiere el paciente: mantén la clasificación tal cual y recoge lo referido UNA vez, como algo que refiere (p. ej. «refiere cierto temor a que el tobillo vuelva a fallar al bajar escaleras»), sin reclasificar ni interpretar.
 - Atribuye cada indicación a quien la dio: lo que indica el fisioterapeuta en la consulta es una indicación del plan, no del cirujano ni del médico, y viceversa. No escribas que algo «ya se le había indicado» si no consta, ni presentes un consejo (p. ej. «puede hacer bicicleta estática») como algo que el paciente ya hace.
 - Si en la consulta el paciente habla de otra zona u otro lado (p. ej. molestias en la otra rodilla), menciónalo UNA vez como algo que refiere el paciente («refiere también…»), en la sección que le corresponde y nunca en Pruebas Clínicas, sin cambiar la región ni el lado valorados. No le añadas plan, seguimiento, prevención ni medidas que no consten en los datos o en la consulta.
-- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «recorrido de la exploración», «árbol de decisión», «regla de decisión», «notas del plan» ni el nombre de sus campos («variable de control», «ventana de recuperación», «anclaje de hábito»); usa su contenido sin decir de dónde viene. Escribe «refiere» o «en la exploración»; tampoco contrapongas «inicialmente» y «en consulta».
+- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «recorrido de la exploración», «en la conversación», «en consulta», «árbol de decisión», «regla de decisión», «notas del plan» ni el nombre de sus campos («variable de control», «ventana de recuperación», «anclaje de hábito»); usa su contenido sin decir de dónde viene. Escribe «refiere» o «en la exploración»; tampoco contrapongas «inicialmente» y «en consulta».
 - Hipótesis: no cites cocientes de probabilidad (LR), pesos, puntuaciones ni recuentos de criterios o hallazgos; describe qué tests apoyan o no cada hipótesis.
 - Lo que refiere el paciente antes de la consulta: resúmelo en prosa, con los negativos relevantes en una frase. No lo transcribas pregunta por pregunta y no escribas «contestó».
 - Respuestas «No sé» o «No sabría decir»: no las menciones de ninguna forma; ni como negación («no refiere…», «niega…») ni como desconocimiento («desconoce si…»).
@@ -473,6 +491,7 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - El pronóstico y «Cuándo reconsiderar o derivar» son información para el fisioterapeuta: úsalos para el seguimiento, sin convertirlos en acciones del plan ni en explicaciones al paciente («se informa a la paciente de…») que no consten, y sin usarlos para interpretar los hallazgos o los tests (p. ej. «la lesión aislada es infrecuente» no va junto a los resultados de los tests).
 - No deduzcas la frecuencia ni la regularidad de una actividad («practica… de forma habitual», «regular») cuando solo consta cuál es, ni desde cuándo la dejó.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
+- No atribuyas un síntoma a un mecanismo o a un proceso que no conste (p. ej. «la rigidez matutina sugiere un componente degenerativo»): descríbelo tal como lo refiere.
 - No añadas diagnósticos diferenciales que no estén en los datos: nombra la sospecha que consta (p. ej. «sospecha de claudicación vascular») sin contraponerla a otras («más que neurógena»).
 - No añadas causas, mecanismos, secuelas ni fases de curación o de recuperación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, «fase de consolidación», reparación tisular, desuso); tampoco atribuyas los hallazgos a secuelas ni a la evolución esperable de la lesión o de la cirugía, ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
 - Cada recomendación del plan aparece una sola vez.
@@ -480,7 +499,7 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - No crees secciones ni subsecciones que no estén en la estructura, ni cambies ninguna de sección o de orden.
 - Plan: si los datos incluyen una pauta recomendada por PhysiQ, basa el plan en ella sin proponer dosis, series ni volúmenes distintos; si dice «Derivar», el plan es la derivación.
 - Seguimiento: para medir la evolución, usa la escala recomendada de cada hipótesis cuando la haya. No añadas coordinación, comunicación ni reevaluaciones con otros profesionales (cirujano, médico, equipo quirúrgico) que no consten.
-- Paciente operado (si los datos incluyen «Cirugía»): el plan se supedita al protocolo y a las restricciones del cirujano; no propongas nada que las contradiga, y las pautas de PhysiQ solo valen si son compatibles con ellas. Si no hay protocolo, di UNA vez, al principio del plan, que las restricciones están pendientes de confirmar con el cirujano. Si hay protocolo (escrito o verbal), sigue sus restricciones tal como constan: no pidas confirmarlo con el cirujano ni lo matices porque sea verbal. La intervención (técnica y fecha) y el protocolo con sus restricciones se describen UNA sola vez; en el plan basta con una frase que lo supedite al protocolo del cirujano, sin volver a enunciar las restricciones. La cirugía y sus restricciones no son factores ambientales.
+- Paciente operado (si los datos incluyen «Cirugía»): el plan se supedita al protocolo y a las restricciones del cirujano; no propongas nada que las contradiga, y las pautas de PhysiQ solo valen si son compatibles con ellas. Si no hay protocolo, di UNA vez, al principio del plan, que las restricciones están pendientes de confirmar con el cirujano, y no lo repitas en ninguna otra parte (ni en la presentación, ni en lo pendiente, ni en los objetivos). Si hay protocolo (escrito o verbal), sigue sus restricciones tal como constan: no pidas confirmarlo con el cirujano ni lo matices porque sea verbal. La intervención (técnica y fecha) y el protocolo con sus restricciones se describen UNA sola vez; en el plan basta con una frase que lo supedite al protocolo del cirujano, sin volver a enunciar las restricciones. La cirugía y sus restricciones no son factores ambientales.
 - Hipótesis con diagnóstico ya confirmado y tratado: preséntala como antecedente (en Condición de Salud), no como sospecha ni como hipótesis de trabajo. No la derives y no escribas que «no se deriva» o que «no procede derivar»: simplemente no hables de derivación por ella.`;
 
 // Derivaciones: una sola vez, al principio de la sección del plan. Con una

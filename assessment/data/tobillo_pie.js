@@ -611,7 +611,7 @@ export const tree = {
       tag: 'Paso 9 — Tobillo sin Traumatismo: Anterior',
       question: 'Dolor sin traumatismo en el tobillo, ANTERIOR: ¿qué lo explica?',
       options: [
-        { label: 'PINZAMIENTO ANTERIOR — KTW', value: 'pinz_ant', next: null, hypothesis: ['tp20'] },
+        { label: 'PINZAMIENTO ANTERIOR — KTW (rodilla a la pared)', value: 'pinz_ant', next: null, hypothesis: ['tp20'] },
         { label: 'NINGUNO — Sin dolor anterior o no lo explica', value: 'no', next: null, hypothesis: [] }
       ]
     },
@@ -967,7 +967,7 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Palpación del seno del tarso', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor conocido a la palpación del seno del tarso', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 257' },
-      { name: 'Estrés en inversión de la subastragalina o KTW con pronación', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'a menudo también con el estrés en inversión de la subastragalina o el KTW con pronación excesiva.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 257' },
+      { name: 'Estrés en inversión de la subastragalina o KTW (rodilla a la pared) con pronación', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'a menudo también con el estrés en inversión de la subastragalina o el KTW con pronación excesiva.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 257' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Palpación del seno del tarso o KTW con pronación → EVA. ② KTW en cm frente al lado sano.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' }
     ]
   },
@@ -999,7 +999,7 @@ export const hypotheses = {
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 257–259 y 263'
     },
     tests: [
-      { name: 'KTW', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'El KTW reproduce el dolor y muestra limitación.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 259' },
+      { name: 'KTW (rodilla a la pared)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'El KTW reproduce el dolor y muestra limitación.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 259' },
       { name: 'Palpación anterior', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Hinchazón y palpación dolorosa y engrosada: interlínea anterior, astragaloescafoidea, seno del tarso, LTPAI, LPAA.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 259' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Zancada o KTW en carga → EVA. ② KTW en cm frente al lado sano.', fuente: 'Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5)' },
       // Test añadido (no está en la tarjeta), al final de tests[] para no desplazar resultados guardados.
