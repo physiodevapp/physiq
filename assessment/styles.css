@@ -985,6 +985,13 @@
   }
   .exercise-box strong { color: var(--text); }
 
+  /* Cabecera de las tarjetas de hipótesis de la fase 5 (_cabeceraHipHTML) */
+  .hyp5-cab { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 1rem; }
+  .hyp5-punto { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 0.3rem; }
+  .hyp5-titulos { flex: 1; min-width: 0; }
+  .hyp5-nombre { font-weight: 600; font-size: 0.95rem; line-height: 1.35; }
+  .hyp5-etiqueta { margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 0.7rem; line-height: 1.4; color: var(--text3); }
+
   /* Fase 5: pauta, pronóstico y tests sin hacer, plegados (app.js,
      _pautaPlegableHTML). La pauta deja a la vista su primera frase. */
   .pauta-det > summary { list-style: none; cursor: pointer; }

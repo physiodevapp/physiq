@@ -1954,6 +1954,21 @@ function _pautaPlegableHTML(dosis, fuente) {
   </details>`;
 }
 
+// Cabecera de una tarjeta de hipótesis de la fase 5, en dos filas: punto +
+// nombre (el punto alineado con la primera línea, el nombre con todo el ancho)
+// y, debajo, la etiqueta de peso alineada con el nombre. En una sola fila, con
+// nombres largos el nombre y la etiqueta se partían en columnas estrechas y el
+// punto quedaba a media altura.
+function _cabeceraHipHTML(color, sombra, nombreHTML, etiqueta, colorNombre) {
+  return `<div class="hyp5-cab">
+          <span class="hyp5-punto" style="background:${color};${sombra}"></span>
+          <div class="hyp5-titulos">
+            <div class="hyp5-nombre" style="color:${colorNombre};">${nombreHTML}</div>
+            <div class="hyp5-etiqueta">${etiqueta}</div>
+          </div>
+        </div>`;
+}
+
 // Texto de la pauta de una hipótesis «Derivar» marcada como tratada.
 function _textoTratada(cq) {
   if (!cq) return 'Diagnóstico médico ya confirmado y tratado: sin derivación por esta hipótesis.';
@@ -1966,11 +1981,7 @@ function _hipPosqResultadosHTML(hyp, cq) {
   const color = '#8b95a7';
   return `
       <div style="background:var(--surface2); border:1px solid ${color}33; border-radius:var(--radius-lg); padding:1.2rem; margin-bottom:1rem;">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
-          <span style="width:12px;height:12px;border-radius:50%;background:${color};flex-shrink:0;"></span>
-          <span style="font-weight:600; color:var(--text); font-size:0.95rem;">🏥 ${_escHTML(hyp.name)}</span>
-          <span style="margin-left:auto; font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--text3);">${ETIQUETA_HIP_POSQ}</span>
-        </div>
+        ${_cabeceraHipHTML(color, '', `🏥 ${_escHTML(hyp.name)}`, ETIQUETA_HIP_POSQ.replace(/^🏥\s*/, ''), 'var(--text)')}
         <div style="margin-bottom:1rem;">
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">PROM Recomendado</div>
           <span class="prom-badge">${hyp.prom}</span>
@@ -2148,11 +2159,7 @@ function buildResults() {
 
       hypHtml += `
       <div style="background:var(--surface2); border:1px solid ${dotColor}33; border-radius:var(--radius-lg); padding:1.2rem; margin-bottom:1rem;">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
-          <span style="width:12px;height:12px;border-radius:50%;background:${dotColor};flex-shrink:0;box-shadow:0 0 8px ${dotColor}66;"></span>
-          <span style="font-weight:600; color:${dotColor}; font-size:0.95rem;">${rankEmoji} ${hyp.name}</span>
-          <span style="margin-left:auto; font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--text3);">${scoreInfo?.label || 'Sin evaluar'}</span>
-        </div>
+        ${_cabeceraHipHTML(dotColor, `box-shadow:0 0 8px ${dotColor}66;`, `${rankEmoji} ${hyp.name}`, scoreInfo?.label || 'Sin evaluar', dotColor)}
         ${casillaTratadaHTML(id)}
         <div style="margin-bottom:1rem;">
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;">Tests Realizados</div>
