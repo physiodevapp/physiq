@@ -151,6 +151,29 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     out.push(punto('descarta', 'medio', 'Dice que algo se «descarta»: un resultado negativo «no muestra hallazgos que sugieran…».', fraseEn(t, m.index)));
     break;
   }
+  // «confirma la hipótesis»: los tests apoyan, no confirman. No cuentan «pendiente
+  // de confirmar» (modo breve) ni «confirmar con el cirujano» (posquirúrgico).
+  for (const m of t.matchAll(/\bconfirm(?:a|an|ado|ada|ados|adas|ar|aría|arían)\b/gi)) {
+    const antes = t.slice(Math.max(0, m.index - 30), m.index).toLowerCase();
+    const frase = fraseEn(t, m.index);
+    if (/pendientes? de\s*$|por\s*$|sin\s*$|\bno (?:se |la |lo )?\s*$/.test(antes) || /cirujano/i.test(frase)) continue;
+    // Lo confirmado es la hipótesis o el diagnóstico (antes o justo después), no un síntoma
+    const cerca = t.slice(Math.max(0, m.index - 60), m.index + 70);
+    if (!/hip[oó]tesis|diagn[oó]stic|s[ií]ndrome|patolog[ií]a|lesi[oó]n|tendinopat|rotura/i.test(cerca)) continue;
+    out.push(punto('confirma', 'medio', 'Dice que la exploración o los tests «confirman»: apoyan o son compatibles con una hipótesis.', frase));
+    break;
+  }
+  // La edad una sola vez (en Factores Personales)
+  if (ampliado?.edad != null) {
+    const veces = [...t.matchAll(new RegExp(`\\b${Number(ampliado.edad)}\\s+años\\b`, 'g'))];
+    if (veces.length > 1) out.push(punto('repetido', 'medio', `La edad (${ampliado.edad} años) aparece ${veces.length} veces; va una sola vez, en Factores Personales.`, fraseEn(t, veces[1].index)));
+  }
+  // El criterio de reconsiderar o derivar por falta de mejoría, solo en Seguimiento
+  const iSeg = t.search(/SEGUIMIENTO FUNCIONAL/i);
+  if (plantilla === 'narrativo' && iSeg > 0) {
+    const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a/i.exec(t.slice(0, iSeg));
+    if (m) out.push(punto('seguimiento-fuera', 'medio', 'El criterio de reconsiderar o derivar si no mejora aparece fuera de Seguimiento.', fraseEn(t, m.index)));
+  }
   if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b/i)))
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
   if ((r = primera(t, /\b(transcripci[oó]n|grabaci[oó]n|formulario|cuestionario|conversaci[oó]n cl[ií]nica|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/i)))
