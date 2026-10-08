@@ -176,6 +176,9 @@
   .btn-reset { line-height: 16px; }
   .btn-reset.visible { display: inline-flex; align-items: center; gap: 0.3rem; }
   .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
+  /* Icono vectorial de 16 px, como el del micrófono (antes era el carácter «↺»
+     a tamaño de texto y se veía diminuto al lado) */
+  .btn-reset-icono { flex-shrink: 0; }
 
   /* Progress bar */
   .progress-bar-wrap {
@@ -1719,7 +1722,7 @@
     .logo-main { font-size: 1.2rem; }
     .logo-sub { font-size: 1.2rem; letter-spacing: -0.5px; }
     .phase-indicator { display: none; }
-    .btn-reset { padding: 5px 10px; font-size: 0.75rem; }
+    .btn-reset { padding: 5px 8px; font-size: 0.75rem; }
     .progress-bar-wrap { top: 0; z-index: 300; background: transparent; }
     .phase-nav {
       top: 55px; height: 40px; padding: 0 0.5rem;
