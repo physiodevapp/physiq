@@ -135,8 +135,20 @@ export function iniciarGrabadora() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && _menuAbierto) cerrarMenu(); });
   window.addEventListener('resize', () => { if (_menuAbierto) cerrarMenu(); });
   document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      // En el móvil, al cambiar de app o bloquear la pantalla el sistema deja
+      // de dar audio a la página, pero el crono (tiempo de reloj) seguía
+      // sumando: se pausa aquí, con lo grabado ya en IDB, y al volver se avisa.
+      // En el ordenador cambiar de pestaña no corta el micrófono: no se pausa.
+      if (_grab && !_grab.pausado && !conRaton()) { pausar(); _grab.pausaAuto = true; }
+      return;
+    }
+    if (_grab?.pausaAuto) {
+      _grab.pausaAuto = false;
+      if (_grab.pausado) showToast('Grabación en pausa: la app pasó a segundo plano. Toca la grabación para seguir.', 'warning');
+    }
     // El navegador suelta el wake lock al ocultar la página; al volver, se pide otra vez.
-    if (document.visibilityState === 'visible' && _grab && !_grab.pausado) pedirWakeLock();
+    if (_grab && !_grab.pausado) pedirWakeLock();
   });
   // Lo grabado se recupera al volver, pero así no se corta sin querer.
   window.addEventListener('beforeunload', e => {
