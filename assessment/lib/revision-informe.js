@@ -377,6 +377,20 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   return out.sort((a, b) => (a.nivel === b.nivel ? 0 : a.nivel === 'alto' ? -1 : 1));
 }
 
+// «Antes de compartir, comprueba»: los fallos graves que ninguna regla de
+// texto ve y que el verificador con IA (capa 3, aparcada) sí detectaba en
+// todas las pasadas. Lista fija para el clínico, sin red ni coste; el punto
+// de los tests con «o» solo sale si se hizo alguno, y los nombra.
+export function comprobacionesManuales({ ampliado = null } = {}) {
+  const conO = [...new Set((ampliado?.tests || []).flatMap(g => g.items || [])
+    .map(i => i.test).filter(n => / o /i.test(n || '')))];
+  return [
+    'Cada indicación del plan se atribuye a quien la dio (fisioterapeuta, cirujano, médico), y un consejo no aparece como algo que el paciente ya hace.',
+    ...(conO.length ? [`Los tests con alternativas en el nombre se describen con esas mismas palabras, sin afirmar las dos: ${conO.map(n => `«${n}»`).join(', ')}.`] : []),
+    'No hay plan, seguimiento ni prevención para otra zona o el otro lado que nadie indicó.',
+  ];
+}
+
 // Texto compartido/copiado → texto del informe: fuera la cabecera local
 // (textoParaCompartir) y el pie «redacción asistida por IA».
 export function quitarCabeceraYPie(texto) {

@@ -2522,6 +2522,10 @@
 /* Revisión automática del informe (lib/revision-informe.js) */
 .ia-revision { border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: var(--radius); padding: 0.6rem 0.9rem; margin-bottom: 0.8rem; font-size: 0.82rem; color: var(--text2); background: var(--surface2); }
 .ia-revision-alta { border-left-color: var(--red); }
+.ia-comprobar { border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 0.6rem 0.9rem; margin-bottom: 0.8rem; font-size: 0.82rem; color: var(--text2); background: var(--surface2); }
+.ia-comprobar-titulo { font-weight: 600; color: var(--text); }
+.ia-comprobar ul { margin: 0.4rem 0 0; padding-left: 1.1rem; }
+.ia-comprobar li { margin-bottom: 0.35rem; line-height: 1.4; }
 .ia-revision-ok { border-left-color: var(--green); color: var(--text3); }
 .ia-revision > summary { cursor: pointer; font-weight: 600; color: var(--text); }
 .ia-revision ul { margin: 0.5rem 0 0.3rem; padding-left: 1.1rem; }

@@ -21,7 +21,7 @@ import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data
 import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA } from './app.js';
 import { esTratada, hipotesis, hipotesisActivas } from './phase4b.js';
 import { esPosquirurgico, cirugiaPayload, pautaHipPosq } from './lib/posquirurgico.js';
-import { revisarInforme } from './lib/revision-informe.js';
+import { revisarInforme, comprobacionesManuales } from './lib/revision-informe.js';
 import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
@@ -230,6 +230,7 @@ function pintarResultado() {
   el.innerHTML = `
     <div id="iaAvisoHuella"></div>
     <div id="iaRevision"></div>
+    <div id="iaComprobar"></div>
     ${informeTruncado(inf.texto, inf.plantilla) ? '<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>El informe parece incompleto: la última sección no se ha generado. Puedes generarlo de nuevo.</div></div>' : ''}
     <details class="ia-resultado-det" id="iaResultadoDet"${_resultadoAbierto ? ' open' : ''}>
       <summary>
@@ -255,6 +256,7 @@ function pintarRevision() {
   const el = $('iaRevision');
   const inf = state.informeIA;
   if (!el || !inf?.texto) return;
+  pintarComprobaciones();
   let puntos;
   try {
     puntos = revisarInforme(inf.texto, {
@@ -272,6 +274,17 @@ function pintarRevision() {
       <ul>${puntos.map(p => `<li class="ia-rev-${p.nivel}">${esc(p.mensaje)}${p.cita ? `<span class="ia-rev-cita">«${esc(p.cita)}»</span>` : ''}</li>`).join('')}</ul>
       <div class="ia-rev-nota">Comprobaciones automáticas del texto frente a la valoración: pueden señalar algo correcto. No cambian el informe.</div>
     </details>`;
+}
+
+// Lo que el clínico mira a ojo antes de compartir (comprobacionesManuales):
+// siempre visible, aparte de los puntos automáticos.
+function pintarComprobaciones() {
+  const el = $('iaComprobar');
+  if (!el) return;
+  let items;
+  try { items = comprobacionesManuales({ ampliado: construirAmpliado() }); } catch { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="ia-comprobar"><div class="ia-comprobar-titulo">☑ Antes de compartir, comprueba:</div>
+      <ul>${items.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>`;
 }
 
 const contarPalabras = t => (String(t || '').replace(/[#|*-]/g, ' ').match(/\S+/g) || []).length;
