@@ -616,6 +616,10 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
+  /* Un botón que queda solo en la última fila ocupa toda la fila, en vez de
+     dejar un hueco (7 regiones: con 3 columnas sobra 1, con 2 también). Las
+     filas completas no cambian. */
+  .region-grid > .region-card:last-child:nth-child(3n+1) { grid-column: 1 / -1; }
   .region-card {
     background: var(--surface2);
     border: 1px solid var(--border2);
@@ -1733,6 +1737,8 @@
     .card { padding: 1.1rem; }
     .card-title { font-size: 0.72rem; }
     .region-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .region-grid > .region-card:last-child:nth-child(3n+1) { grid-column: auto; }
+    .region-grid > .region-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
     /* A fixed 50% basis would force every row to 2 columns, splitting the
        4-item (fc/fr/spo2/edad) row across two lines — a min-basis instead
        lets it keep as many items together as fit, only wrapping what
