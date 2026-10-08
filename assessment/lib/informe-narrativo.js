@@ -102,6 +102,14 @@
 //     habitual» deducido, y el bloque «Recorrido de la exploración» pasa a
 //     «Hallazgos de la exploración» (lo citaba: «el recorrido de la exploración
 //     confirmó…»), con los de movilidad solo en Movilidad.
+//   · Duodécima revisión (Andrea, lumbar, sin sexo registrado): dedujo el
+//     género del nombre («sentada», «la paciente»; «sentada» era justo el
+//     ejemplo negativo del prompt), así que el bloque de datos dice «Sexo: no
+//     consta» y la regla ya no lleva ejemplos con género; un test con «o»
+//     («dolorosa o con menos movilidad») se leyó como «y»; reconcilió dos picos
+//     de dolor cambiando la fecha; negativos en Limitaciones; el signo
+//     comparable repetido en Movilidad (ahora «[solo si…]»), y un diferencial
+//     no pedido («más que neurógeno»).
 
 import { ladoTexto } from './region.js';
 
@@ -193,7 +201,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
 
   return `## DATOS DE VALORACIÓN ESTRUCTURADA (PhysiQ-Assessment)
 NOTA: estos datos proceden de una valoración clínica estructurada. Los resultados y clasificaciones del fisioterapeuta son la fuente prioritaria; para lo que refiere el paciente, sigue la regla de discrepancias de las instrucciones.
-Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''}${ampliado?.sexo ? ` · Sexo: ${ampliado.sexo.toLowerCase()}` : ''} · Región: ${regionTexto(data, nombreRegion)} · Fecha: ${data.d || '—'}
+Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''}${ampliado?.sexo ? ` · Sexo: ${ampliado.sexo.toLowerCase()}` : ampliado ? ` · Sexo: no consta (no lo deduzcas del nombre; redacta sin marcar el género)` : ''} · Región: ${regionTexto(data, nombreRegion)} · Fecha: ${data.d || '—'}
 Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
 NRS: ${data.nr ?? '—'}/10
@@ -412,7 +420,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Intensidad, irritabilidad, naturaleza y signo comparable. Las actividades que provocan el dolor van en Limitaciones en las Actividades]
 
 ### Movilidad
-[Hallazgos de movilidad activa y pasiva; si hay mediciones, TABLA markdown con columnas: Articulación | Movimiento | Rango (Izq/Dcha) | Asimetría. Si no las hay, describe los hallazgos sin mencionar que faltan mediciones]
+[Solo si hay hallazgos de movilidad distintos del signo comparable (que va en Dolor): movilidad activa y pasiva; si hay mediciones, TABLA markdown con columnas: Articulación | Movimiento | Rango (Izq/Dcha) | Asimetría. Si no las hay, describe los hallazgos sin mencionar que faltan mediciones]
 
 ### Fuerza Muscular
 [Solo si se exploró o el paciente refiere debilidad; si hay datos numéricos, TABLA markdown con columnas: Grupo muscular | Movimiento | Fuerza (Izq/Dcha) | Asimetría]
@@ -423,7 +431,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 ## ANÁLISIS DEL FUNCIONAMIENTO: LIMITACIONES EN LA ACTIVIDAD Y RESTRICCIONES EN LA PARTICIPACIÓN
 
 ### Limitaciones en las Actividades
-[Solo las actividades que refiere dolorosas o limitadas, agrupadas en una o dos frases. Si aquí aparece fuerza, crujidos, bloqueos, enganches, hormigueo, «brazo muerto», inestabilidad, luxaciones o el cuello, está mal: los síntomas que refiere o niega van en Dolor, en una frase, y lo cervical en Pruebas Clínicas]
+[Solo las actividades que refiere dolorosas o limitadas, agrupadas en una o dos frases; lo que no le empeora no se enumera aquí (si es relevante, va en Dolor, en una frase). Si aquí aparece fuerza, crujidos, bloqueos, enganches, hormigueo, «brazo muerto», inestabilidad, luxaciones o el cuello, está mal: los síntomas que refiere o niega van en Dolor, en una frase, y lo cervical en Pruebas Clínicas]
 
 ### Restricciones en la Participación
 [Solo si refiere afectación del trabajo, el ocio, el deporte o la vida social: describe lo que refiere, sin suponer cómo podría afectarle]
@@ -447,10 +455,10 @@ RECORDATORIO FINAL: tu respuesta DEBE empezar literalmente con la cadena "## CON
 
 // Reglas que comparten las dos plantillas (narrativa y ficha breve).
 const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo muestran la forma de escribir: nunca copies su contenido ni añadas un síntoma, un dato o una frase que no conste en los datos o en la consulta.
-- Tests: describe solo los tests realizados con su resultado; no menciones tests no realizados uno a uno.
+- Tests: describe solo los tests realizados con su resultado; no menciones tests no realizados uno a uno. Si el nombre de un test da alternativas («dolorosa o con menos movilidad»), descríbelo con esas mismas palabras: no afirmes las dos.
 - Reglas pronósticas (marcadas «regla pronóstica, no diagnóstica», p. ej. la regla de Flynn): predicen la respuesta a un tratamiento. Preséntalas así y nunca las uses para reforzar ni descartar una hipótesis diagnóstica.
 - Lo que no consta (mediciones, fuerza, escalas, pruebas no realizadas…) no se menciona: no escribas que no se hizo, no se midió o no se dispone de ello.
-- Discrepancias: los resultados y clasificaciones del fisioterapeuta (tests, NRS, irritabilidad, banderas, hipótesis) prevalecen sobre lo que se diga en la conversación. Si lo que refiere el paciente cambia entre lo que contestó antes de la consulta y lo que cuenta en ella, recoge las dos versiones UNA vez, en una sola frase neutra y en la sección que le corresponde (un síntoma, en Dolor), sin decir de dónde sale cada una (p. ej. «refiere que el dolor no baja a la pierna, aunque también describe alguna punzada en la nalga al agacharse»). También es una discrepancia cuando lo cuenta con otras palabras (p. ej. «rigidez por la mañana: No» frente a «al levantarme me cuesta arrancar»: «no refiere rigidez matutina, aunque al levantarse le cuesta arrancar los primeros minutos»). No elijas tú una de las dos, no las escribas en lugares distintos como si no chocaran, y no interpretes ni justifiques la discrepancia.
+- Discrepancias: los resultados y clasificaciones del fisioterapeuta (tests, NRS, irritabilidad, banderas, hipótesis) prevalecen sobre lo que se diga en la conversación. Si lo que refiere el paciente cambia entre lo que contestó antes de la consulta y lo que cuenta en ella, recoge las dos versiones UNA vez, en una sola frase neutra y en la sección que le corresponde (un síntoma, en Dolor), sin decir de dónde sale cada una (p. ej. «refiere que el dolor no baja a la pierna, aunque también describe alguna punzada en la nalga al agacharse»). También es una discrepancia cuando lo cuenta con otras palabras (p. ej. «rigidez por la mañana: No» frente a «al levantarme me cuesta arrancar»: «no refiere rigidez matutina, aunque al levantarse le cuesta arrancar los primeros minutos»). No elijas tú una de las dos, no las escribas en lugares distintos como si no chocaran, no cambies fechas ni circunstancias para que encajen como si fueran dos episodios distintos, y no interpretes ni justifiques la discrepancia.
 - Lo que solo consta en una de las dos (antes de la consulta o en ella) no es una discrepancia: recógelo tal cual. No escribas que algo «no se menciona», «no se confirma» o «no se recoge» en la consulta, ni lo pongas en condicional («provocaría»).
 - Que prevalezca una clasificación del fisioterapeuta (p. ej. riesgo psicosocial bajo) no borra lo que refiere el paciente: mantén la clasificación tal cual y recoge lo referido UNA vez, como algo que refiere (p. ej. «refiere cierto temor a que el tobillo vuelva a fallar al bajar escaleras»), sin reclasificar ni interpretar.
 - Atribuye cada indicación a quien la dio: lo que indica el fisioterapeuta en la consulta es una indicación del plan, no del cirujano ni del médico, y viceversa. No escribas que algo «ya se le había indicado» si no consta, ni presentes un consejo (p. ej. «puede hacer bicicleta estática») como algo que el paciente ya hace.
@@ -459,12 +467,13 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - Hipótesis: no cites cocientes de probabilidad (LR), pesos, puntuaciones ni recuentos de criterios o hallazgos; describe qué tests apoyan o no cada hipótesis.
 - Lo que refiere el paciente antes de la consulta: resúmelo en prosa, con los negativos relevantes en una frase. No lo transcribas pregunta por pregunta y no escribas «contestó».
 - Respuestas «No sé» o «No sabría decir»: no las menciones de ninguna forma; ni como negación («no refiere…», «niega…») ni como desconocimiento («desconoce si…»).
-- Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato. Si consta el sexo, concuerda el género con él («la paciente», «sentada»); si no consta, redacta sin marcar el género (p. ej. «refiere dolor al permanecer en sedestación», no «sentada» ni «sentado»).
+- Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato. Si consta el sexo, concuerda el género con él; si no consta, redacta sin marcar el género, ni en los sustantivos ni en los adjetivos (p. ej. «refiere dolor al permanecer en sedestación», «la persona atendida» o simplemente «refiere…»).
 - Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - Los tests y la exploración «apoyan» una hipótesis o «son compatibles» con ella; no escribas que la «confirman» ni que establecen el diagnóstico.
 - El pronóstico y «Cuándo reconsiderar o derivar» son información para el fisioterapeuta: úsalos para el seguimiento, sin convertirlos en acciones del plan ni en explicaciones al paciente («se informa a la paciente de…») que no consten, y sin usarlos para interpretar los hallazgos o los tests (p. ej. «la lesión aislada es infrecuente» no va junto a los resultados de los tests).
 - No deduzcas la frecuencia ni la regularidad de una actividad («practica… de forma habitual», «regular») cuando solo consta cuál es, ni desde cuándo la dejó.
 - No afirmes negativos que no estén en los datos: si un síntoma no aparece (p. ej. el dolor nocturno), no lo menciones.
+- No añadas diagnósticos diferenciales que no estén en los datos: nombra la sospecha que consta (p. ej. «sospecha de claudicación vascular») sin contraponerla a otras («más que neurógena»).
 - No añadas causas, mecanismos, secuelas ni fases de curación o de recuperación que no estén en los datos (p. ej. inmovilización, adherencias capsulares, consolidación ósea, «fase de consolidación», reparación tisular, desuso); tampoco atribuyas los hallazgos a secuelas ni a la evolución esperable de la lesión o de la cirugía, ni especules sobre cómo podría afectarle una actividad que no refiere limitada. Describe lo encontrado; la interpretación se limita a relacionar hallazgos que sí constan.
 - Cada recomendación del plan aparece una sola vez.
 - Cada dato aparece una sola vez, en la sección que le corresponde; no remitas a otras secciones («como se indicó…»).

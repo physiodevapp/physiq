@@ -129,6 +129,11 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   else if (sexo === 'Hombre' && (r = primera(t, reMujer))) out.push(punto('sexo', 'alto', 'El sexo registrado es hombre y el informe dice otra cosa.', r.cita));
   else if (!sexo && (r = primera(t, new RegExp(`${reMujer.source}|${reHombre.source}`, 'i'))) && !/mujer|hombre|varon/.test(sinAcentos(transcripcion)))
     out.push(punto('sexo-no-consta', 'medio', 'El informe indica el sexo y no consta en la valoración.', r.cita));
+  // Sin sexo registrado, el género tampoco se marca (dedujo «sentada», «la
+  // paciente» del nombre). Lista corta y segura: «operado» o «intervenida»
+  // pueden ser de un familiar o de la fractura.
+  if (!sexo && (r = primera(t, /\b(?:la|el|al|del) paciente\b|\b(?:sentad|tumbad|acostad|quiet|cansad|preocupad)[oa]s?\b/i)))
+    out.push(punto('genero', 'medio', 'El sexo no consta y el informe marca el género; redacta sin marcarlo.', r.cita));
 
   // Intensidades «N/10» que no aparecen en ningún dato
   const validas = new Set([...notasSobre10(fuente), ...notasHabladas(transcripcion)]);
@@ -172,6 +177,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   for (const m of t.matchAll(/\bdescart(?:a|an|ar|ado|ada|ados|adas|ando|e|en)\b/gi)) {
     const antes = t.slice(Math.max(0, m.index - 12), m.index).toLowerCase();
     if (/\bno (la|lo|las|los|se)?\s*$/.test(antes)) continue;     // «no la descarta» es correcto
+    if (/deriv/i.test(t.slice(t.lastIndexOf('.', m.index) + 1, m.index))) continue;   // «se deriva… para descartar» es correcto
     out.push(punto('descarta', 'medio', 'Dice que algo se «descarta»: un resultado negativo «no muestra hallazgos que sugieran…».', fraseEn(t, m.index)));
     break;
   }
@@ -203,7 +209,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   if ((r = primera(t, /\b(transcripci[oó]n|grabaci[oó]n|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/i)))
     out.push(punto('fuentes', 'medio', 'Nombra de dónde sale un dato (formulario, transcripción, PhysiQ…).', r.cita));
   // «el cuestionario inicial» sí; «el cuestionario QuickDASH» (una escala con nombre) no
-  else if ((r = primera(t, /\b[Cc]uestionario\b(?!\s+[A-ZÁÉÍÓÚ])/)))
+  else if ((r = primera(t, /\bcuestionario\b(?!\s+(?:de\s+|del\s+)?[A-ZÁÉÍÓÚ])/)))
     out.push(punto('fuentes', 'medio', 'Nombra de dónde sale un dato (formulario, transcripción, PhysiQ…).', r.cita));
   if ((r = primera(t, /\bsecuela|fase de (consolidaci[oó]n|reparaci[oó]n|cicatrizaci[oó]n|remodelaci[oó]n|inflamaci[oó]n|proliferaci[oó]n)/i)) && !/secuela|fase de/.test(fuenteN))
     out.push(punto('fisiopatologia', 'medio', 'Atribuye los hallazgos a secuelas o fases de curación que no están en los datos.', r.cita));
