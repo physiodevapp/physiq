@@ -2682,3 +2682,12 @@ body.posquirurgico .solo-posq { display: block; }
 @media (max-width: 768px) { .version-aviso { top: 104px; } }
 @media (max-width: 480px) { .version-aviso { top: 98px; } }
 @media (max-height: 500px) and (max-width: 900px) { .version-aviso { top: 91px; } }
+/* Con la barra fija de contexto visible (sistema en la fase 2, hipótesis en la
+   4b; solo ≤768 px, una línea de 39 px) el aviso baja justo debajo, en vez de
+   quedar tapado por ella (z-index 200 > 150) o taparla si se subiera. */
+@media (max-width: 768px) {
+  body:has(.sis-context-banner.visible, .hyp-context-banner.visible) .version-aviso { top: 139px; }
+}
+@media (max-width: 480px) {
+  body:has(.sis-context-banner.visible, .hyp-context-banner.visible) .version-aviso { top: 133px; }
+}
