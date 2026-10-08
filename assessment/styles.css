@@ -1885,14 +1885,23 @@
     .sq2-btns .sq-btn { min-height: 46px; font-size: 0.9rem; }
     .sq2-text { font-size: 0.95rem; }
     /* Sticky header ajuste para pantalla pequeña */
-    /* Fase 5 (lectura, varios marcos anidados): los bloques de primer nivel a
-       todo el ancho, como bandas, y menos relleno en la caja de cada hipótesis
-       y en la pauta, para que el texto no quede en una columna estrecha. Las
-       alertas y los pendientes de modo breve siguen como recuadros. */
-    #phase5 .summary-section, #phase5 .ia-card { margin-left: -1rem; margin-right: -1rem; border-left: none; border-right: none; border-radius: 0; }
-    #phase5 .hyp5-card { padding: 0.75rem; }
-    #phase5 .exercise-box { padding: 0.75rem; }
-    #phase5 .pauta-det-resto { padding: 0 0.75rem 0.75rem; }
+    /* Móvil: una sola regla en todas las fases. Primer nivel (cards,
+       sistemas del cribado, preguntas del árbol, hipótesis de la 4b,
+       secciones de la fase 5) → bandas de borde a borde, sin borde lateral
+       ni esquinas. Segundo nivel (preguntas de cribado, tests, caja de
+       hipótesis y pauta) → tarjeta con marco y relleno de 12 px. Las alertas
+       y los pendientes de modo breve siguen como recuadros. El margen
+       negativo es el relleno lateral de .main (1rem). */
+    .main .card, .sistema-accordion-row, .tree-question, .hypothesis-card, .summary-section {
+      margin-left: -1rem; margin-right: -1rem;
+      border-left: none; border-right: none; border-radius: 0;
+    }
+    .sistema-accordion-body .card { margin: 0; }
+    .sq2, .test-item, .hyp5-card, .exercise-box { padding: 0.75rem; }
+    .pauta-det-resto { padding: 0 0.75rem 0.75rem; }
+    .hypothesis-body { padding: 0 0.9rem 0.9rem; }
+    /* Nombre de la hipótesis en la 4b: hasta dos líneas en vez de cortarlo */
+    .hyp-name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3; }
     .hyp-context-banner { top: 88px; }
     .sis-context-banner { top: 88px; }
     /* irritab tabla oculta en móvil — usa cards */
