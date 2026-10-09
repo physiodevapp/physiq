@@ -363,9 +363,12 @@ export const tree = {
       tag: 'Paso 1 — Trauma, Integridad Muscular y Edad',
       question: '¿Hubo un evento traumático, hay deformidad muscular característica o es un niño o adolescente?',
       options: [
-        { label: 'SÍ — Pérdida del contorno normal del brazo (a veces sutil), hinchazón y debilidad en flexión/supinación', value: 'biceps', next: null, hypothesis: ['co7'] },
+        { label: 'SÍ — Pérdida del contorno normal del brazo (a veces sutil), hinchazón y debilidad en flexión/supinación', value: 'biceps', next: null, hypothesis: ['co7'],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'SÍ — Deformidad del contorno del brazo (orienta a: rotura distal del bíceps)' },
         { label: 'FRACTURA / LUXACIÓN — Caída o golpe con deformidad del codo, o el codo no llega a estirarse del todo: sospecha de fractura o luxación → derivación médica', value: 'fractura', next: 'co_step2', hypothesis: [], resoluble: true,
-          derivacion: 'Sospecha de fractura o luxación tras un traumatismo (deformidad, o el codo no llega a estirarse del todo: casi un 50 % de fracturas en Appelboam 2008): derivación médica para radiografía; antes, explorar la sensibilidad, el color y la temperatura de la mano.' },
+          derivacion: 'Sospecha de fractura o luxación tras un traumatismo (deformidad, o el codo no llega a estirarse del todo: casi un 50 % de fracturas en Appelboam 2008): derivación médica para radiografía; antes, explorar la sensibilidad, el color y la temperatura de la mano.',
+          iaTexto: 'FRACTURA / LUXACIÓN — Sospecha de fractura o luxación: derivación médica' },
         { label: 'NIÑO O ADOLESCENTE — Esqueleto inmaduro: tirón del brazo extendido en un menor de 5 años, lanzador joven con dolor medial, o dolor lateral insidioso entre los 7 y los 12 años', value: 'nino', next: 'co_step2', hypothesis: ['co14', 'co15', 'co16'] },
         { label: 'NO — Sin traumatismo significativo ni deformidad', value: 'no', next: 'co_step2', hypothesis: [] }
       ]
@@ -384,9 +387,13 @@ export const tree = {
       tag: 'Paso 3 — Evaluación Neuromuscular y Sensitiva',
       question: '¿Presenta parestesias, debilidad intrínseca de la mano o dolor quemante en el antebrazo?',
       options: [
-        { label: 'SÍ — Zona medial: parestesias en 4º y 5º dedo, Tinel positivo en surco epitrócleo-olecraniano', value: 'cubital', next: null, hypothesis: ['co8'] },
-        { label: 'SÍ — Zona dorsal/lateral: dolor en el dorso del antebrazo proximal, distal al epicóndilo, o debilidad para extender los dedos', value: 'radial', next: null, hypothesis: ['co9'] },
-        { label: 'SÍ — Zona anterior: dolor en el antebrazo anterior, parestesias del 1.º al 3.º dedo o debilidad de la flexión del pulgar y del índice', value: 'mediano', next: null, hypothesis: ['co13'] },
+        { label: 'SÍ — Zona medial: parestesias en 4º y 5º dedo, Tinel positivo en surco epitrócleo-olecraniano', value: 'cubital', next: null, hypothesis: ['co8'],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'SÍ — Síntomas neurales en la zona medial (orienta a: nervio cubital)' },
+        { label: 'SÍ — Zona dorsal/lateral: dolor en el dorso del antebrazo proximal, distal al epicóndilo, o debilidad para extender los dedos', value: 'radial', next: null, hypothesis: ['co9'],
+          iaTexto: 'SÍ — Síntomas neurales en la zona dorsal o lateral (orienta a: nervio radial)' },
+        { label: 'SÍ — Zona anterior: dolor en el antebrazo anterior, parestesias del 1.º al 3.º dedo o debilidad de la flexión del pulgar y del índice', value: 'mediano', next: null, hypothesis: ['co13'],
+          iaTexto: 'SÍ — Síntomas neurales en la zona anterior (orienta a: nervio mediano)' },
         { label: 'NO — Sin síntomas neurales', value: 'no', next: 'co_step4', hypothesis: [] }
       ]
     },

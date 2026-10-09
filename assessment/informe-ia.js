@@ -28,7 +28,7 @@ import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto, MODOS_AUDIO,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
   informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio, errorLegible, errorConexion,
-  transcripcionSinVoz, TEXTO_SIN_VOZ,
+  transcripcionSinVoz, TEXTO_SIN_VOZ, textoOpcionIA,
 } from './lib/informe-narrativo.js';
 import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
 import {
@@ -439,14 +439,14 @@ export function construirAmpliado() {
       // Si lo que la respuesta «orienta a» ya está diagnosticado y tratado, que
       // el prompt lo sepa (si no, lo lee como una sospecha abierta)
       const tratada = (op?.hypothesis || []).some(h => esTratada(h));
-      // `iaPregunta`/`iaTexto`: el texto del paso o de la opción solo para el
-      // prompt, cuando el de pantalla lleva cifras o patrones didácticos
-      // `iaSinPista` en el paso: de la opción elegida solo va el nombre (lo que
-      // hay antes de « — »); la pista de exploración que sigue («Pinza, 2–6 cm»)
-      // la leía como un hallazgo (Sergio, ronda 19)
-      const etiqueta = op?.iaTexto || (st.iaSinPista && op?.label && !/^(NO|NINGUN[OA])\b/.test(op.label) ? op.label.split(' — ')[0] : op?.label);
-      return { pregunta: st.iaPregunta || st.question, respuesta: etiqueta || state.treeAnswers[st.id], ...(tratada ? { tratada: true } : {}) };
-    });
+      // `iaPregunta` y textoOpcionIA() (lib/informe-narrativo.js): al prompt va
+      // la conclusión de la opción, no su detalle (pistas, criterios, umbrales);
+      // el NINGUNO de un paso de zona no va
+      const respuesta = op ? textoOpcionIA(op) : state.treeAnswers[st.id];
+      if (respuesta == null) return null;
+      return { pregunta: st.iaPregunta || st.question, respuesta, ...(tratada ? { tratada: true } : {}) };
+    })
+    .filter(Boolean);
 
   const tests = [];
   const pautas = [];

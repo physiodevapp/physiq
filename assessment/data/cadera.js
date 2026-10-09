@@ -663,8 +663,11 @@ export const tree = {
       tag: 'Paso 1 — Diferenciación Proximal (Clearing)',
       question: '¿El dolor podría ser referido desde la columna lumbar o la articulación sacroilíaca?',
       options: [
-        { label: 'SÍ — SACROILÍACA: señala con el dedo el dolor inferomedial a la EIPS (no solo en la línea media ni por encima de L5) y 3 o más de 5 tests de provocación positivos', value: 'si_asi', next: null, hypothesis: ['ca10'] },
-        { label: 'SÍ — LUMBAR: el dolor cambia con movimientos repetidos de la espalda, o la elevación de la pierna recta o el slump reproducen su dolor', value: 'si_lumbar', next: null, hypothesis: [] },
+        { label: 'SÍ — SACROILÍACA: señala con el dedo el dolor inferomedial a la EIPS (no solo en la línea media ni por encima de L5) y 3 o más de 5 tests de provocación positivos', value: 'si_asi', next: null, hypothesis: ['ca10'],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'SÍ — Orienta a la articulación sacroilíaca' },
+        { label: 'SÍ — LUMBAR: el dolor cambia con movimientos repetidos de la espalda, o la elevación de la pierna recta o el slump reproducen su dolor', value: 'si_lumbar', next: null, hypothesis: [],
+          iaTexto: 'SÍ — Orienta a la columna lumbar' },
         { label: 'NO — Origen coxofemoral: la cojera (unas 7 veces) y la rotación interna limitada (unas 14 veces) orientan más a la cadera que a la columna', value: 'no', next: null, hypothesis: [],
           // Solo para el informe con IA: con las cifras de la etiqueta escribió que Daniel cojeaba y tenía la rotación interna limitada
           iaTexto: 'NO — El dolor no parece referido desde la columna lumbar ni la sacroilíaca' }
@@ -699,8 +702,11 @@ export const tree = {
       tag: 'Paso 3 — Intraarticular (Joven/Activo)',
       question: '¿Sospecha de origen intraarticular: dolor inguinal ligado al movimiento con FADDIR o flexión-RI positivos? Estos tests descartan; positivos no confirman.',
       options: [
-        { label: 'SÍ — Compatible con pinzamiento femoroacetabular (SIFA), sin confirmar: seguir con Thomas', value: 'sifa', next: null, hypothesis: ['ca2'] },
-        { label: 'SÍ, con chasquido doloroso, bloqueo o fallo — Posible desgarro labral', value: 'labrum', next: null, hypothesis: ['ca2', 'ca3'] },
+        { label: 'SÍ — Compatible con pinzamiento femoroacetabular (SIFA), sin confirmar: seguir con Thomas', value: 'sifa', next: null, hypothesis: ['ca2'],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'SÍ — Compatible con pinzamiento femoroacetabular, sin confirmar' },
+        { label: 'SÍ, con chasquido doloroso, bloqueo o fallo — Posible desgarro labral', value: 'labrum', next: null, hypothesis: ['ca2', 'ca3'],
+          iaTexto: 'SÍ — Orienta a desgarro labral' },
         { label: 'NO — FADDIR y flexión-RI negativos: origen intraarticular improbable', value: 'no', next: 'ca_step4', hypothesis: [] }
       ]
     },
@@ -725,9 +731,13 @@ export const tree = {
       tag: 'Paso 4 — Cuadrante Lateral',
       question: '¿El dolor se localiza en la CARA EXTERNA de la cadera (trocánter mayor)?',
       options: [
-        { label: 'SÍ — Sensibilidad en trocánter mayor y dolor en apoyo monopodal <30s', value: 'tendino', next: null, hypothesis: ['ca4'] },
-        { label: 'SÍ — Con marcha de Trendelenburg o debilidad medida en abductores', value: 'debilidad', next: null, hypothesis: ['ca5'] },
-        { label: 'SÍ — Calidad deficiente en sentadilla monopodal o step-down', value: 'control', next: null, hypothesis: ['ca6'] },
+        { label: 'SÍ — Sensibilidad en trocánter mayor y dolor en apoyo monopodal <30s', value: 'tendino', next: null, hypothesis: ['ca4'],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'SÍ — Orienta a tendinopatía glútea' },
+        { label: 'SÍ — Con marcha de Trendelenburg o debilidad medida en abductores', value: 'debilidad', next: null, hypothesis: ['ca5'],
+          iaTexto: 'SÍ — Debilidad de abductores' },
+        { label: 'SÍ — Calidad deficiente en sentadilla monopodal o step-down', value: 'control', next: null, hypothesis: ['ca6'],
+          iaTexto: 'SÍ — Déficit de control en apoyo monopodal' },
         { label: 'NO — Sin dolor lateral', value: 'no', next: 'ca_step5', hypothesis: [] }
       ]
     },
@@ -736,9 +746,13 @@ export const tree = {
       tag: 'Paso 5 — Cuadrante Posterior',
       question: '¿El dolor se localiza en el GLÚTEO o zona isquiática?',
       options: [
-        { label: 'Dolor profundo en glúteo que empeora al sentarse (ciática) — posible Síndrome Piriforme', value: 'piriforme', next: null, hypothesis: ['ca7'] },
-        { label: 'Dolor que empeora con zancada larga al caminar — posible Pinzamiento Isquiofemoral', value: 'isquiof', next: null, hypothesis: ['ca8'] },
-        { label: 'Sensibilidad sobre tuberosidad isquiática — posible Tendinopatía Proximal Isquiotibiales', value: 'isquiotib', next: null, hypothesis: ['ca9'] },
+        { label: 'Dolor profundo en glúteo que empeora al sentarse (ciática) — posible Síndrome Piriforme', value: 'piriforme', next: null, hypothesis: ['ca7'],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'Orienta a síndrome piriforme' },
+        { label: 'Dolor que empeora con zancada larga al caminar — posible Pinzamiento Isquiofemoral', value: 'isquiof', next: null, hypothesis: ['ca8'],
+          iaTexto: 'Orienta a pinzamiento isquiofemoral' },
+        { label: 'Sensibilidad sobre tuberosidad isquiática — posible Tendinopatía Proximal Isquiotibiales', value: 'isquiotib', next: null, hypothesis: ['ca9'],
+          iaTexto: 'Orienta a tendinopatía proximal de isquiotibiales' },
         { label: 'Sin localización clara posterior', value: 'no', next: null, hypothesis: [] }
       ]
     },

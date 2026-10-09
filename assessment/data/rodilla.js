@@ -540,7 +540,9 @@ export const tree = {
       question: '¿Niño o adolescente con dolor de rodilla sin mecanismo conocido? → EXPLORAR PRIMERO LA CADERA (epifisiólisis, Perthes). Solo si el cribado es normal, seguir en la rodilla.',
       options: [
         { label: 'SÍ — Cribado de cadera alterado: derivar (epifisiólisis, Perthes)', value: 'cadera_alterada', next: null, hypothesis: [] },
-        { label: 'SÍ — Cribado de cadera normal: seguir en la rodilla', value: 'cadera_normal', next: null, hypothesis: [] },
+        { label: 'SÍ — Cribado de cadera normal: seguir en la rodilla', value: 'cadera_normal', next: null, hypothesis: [],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'SÍ — Niño o adolescente con cribado de cadera normal' },
         { label: 'NO — Adulto, o hay mecanismo conocido', value: 'no', next: null, hypothesis: [] }
       ]
     },

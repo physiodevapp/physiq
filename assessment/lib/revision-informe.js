@@ -101,7 +101,7 @@ const GENERICAS_DESCARTAR = new Set(['patologia', 'patologias', 'causas', 'orige
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 // Regla «fuentes»: nombrar de dónde sale un dato
-const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|dictado|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
+const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|dictado|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta,? (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
 // Regla «atribucion»: hallazgos atribuidos a la evolución de la cirugía o la lesión
 const RE_ATRIBUCION = /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|(?:compatible|coherente)s? con el (?:contexto|per[ií]odo|escenario|momento) (?:posquir|postquir|postoperat)/i;
 // Regla «frecuencia»: actividades (raíz sobre texto sin acentos) y las
@@ -271,6 +271,17 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // extensión pasiva en Thomas modificado es el más específico»)
   if ((r = primera(t, RE_PROPIEDADES_TEST)) && !RE_PROPIEDADES_TEST.test(fuente))
     out.push(punto('test-propiedades', 'medio', 'Atribuye a un test una sensibilidad o especificidad que no está en los datos; describe solo el resultado.', r.cita));
+
+  // Indicación de otro profesional que el informe no recoge (Sergio, dos de dos:
+  // «Su médico de cabecera le dijo que dejara de correr y le recetó ibuprofeno»,
+  // y el informe no nombra al médico). Solo con transcripción: el profesional
+  // tiene que aparecer en el informe; qué dijo, lo comprueba el fisio.
+  {
+    const trN = sinAcentos(String(transcripcion || ''));
+    const m = /\b(medico|cirujano|traumatologo|reumatologo|enfermer[oa]|podologo|osteopata|quiropractico)\b[^.]{0,80}?\b(?:le|les)\s+(?:dijo|indico|receto|mando|recomendo|prescribio|puso|pidio)\b/.exec(trN);
+    if (m && !new RegExp(`\\b${m[1]}`).test(tn))
+      out.push(punto('indicacion-omitida', 'medio', `En la consulta se cita una indicación del ${m[1].replace('medico', 'médico').replace('traumatologo', 'traumatólogo').replace('reumatologo', 'reumatólogo').replace('podologo', 'podólogo').replace('osteopata', 'osteópata').replace('quiropractico', 'quiropráctico')} y el informe no lo menciona; recógela atribuida a él, aunque choque con la del fisioterapeuta.`));
+  }
 
   // ── Identificación: la añade la app fuera del texto ──
   const nombre = String(datos.p || '').trim();
@@ -458,12 +469,12 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
 
   // Constantes clasificadas («signos vitales dentro de parámetros habituales» con
   // solo una FC de 58, Daniel): las cifras van tal cual, sin clasificar
-  if ((r = primera(tn, /\b(?:dentro de (?:los )?(?:parametros|limites|rangos?|valores) (?:normales|habituales|de normalidad|fisiologicos)|(?:signos vitales|constantes(?: vitales)?) (?:normales|estables|sin alteraciones)|normotens\w*|normocardic\w*|eupneic\w*)/)))
+  if ((r = primera(tn, /\b(?:dentro de (?:los )?(?:parametros|limites|rangos?|valores) (?:normales|habituales|esperables|adecuados|de normalidad|fisiologicos)|(?:signos vitales|constantes(?: vitales)?) (?:normales|estables|sin alteraciones)|normotens\w*|normocardic\w*|eupneic\w*)/)))
     out.push(punto('constantes', 'medio', 'Clasifica las constantes («dentro de parámetros habituales», «normotenso»…); las cifras van sin clasificar.', fraseEn(t, r.m.index)));
   // Prueba de imagen con un motivo que nadie dio («ecografía… para valorar la
   // presencia de líquido…», Daniel, dictado; el motivo venía del pronóstico).
   // Cuenta si la transcripción o los datos no ligan la imagen a ese motivo.
-  for (const m of tn.matchAll(/\b(ecograf\w*|resonancia|radiograf\w*|\brx\b|\brm\b|tac|prueba de imagen|estudio de imagen)\b[^.]{0,120}?\bpara (descartar|valorar|estudiar|evaluar|objetivar|confirmar|comprobar|detectar|identificar|buscar)\b/g)) {
+  for (const m of tn.matchAll(/\b(ecograf\w*|resonancia|radiograf\w*|\brx\b|\brm\b|tac|prueba de imagen|estudio de imagen)\b[^.]{0,120}?\bpara (descartar|valorar|estudiar|evaluar|objetivar|confirmar|comprobar|detectar|identificar|buscar|una (?:valoracion|evaluacion)|un estudio)\b/g)) {
     const frase = fraseEn(t, m.index);
     if (frasesInventadas.has(frase)) continue;   // ya lo dice «descartar-inventado»
     const fuenteImagen = sinAcentos(`${transcripcion || ''}`).toLowerCase();

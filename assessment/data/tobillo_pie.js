@@ -548,7 +548,9 @@ export const tree = {
         { label: 'APOFISITIS DEL TIBIAL POSTERIOR o KÖHLER — Navicular (menores de 10, cojera)', value: 'navicular', next: null, hypothesis: ['tp36'] },
         { label: 'FREIBERG — Cabeza del 2.º–4.º MT (14–18 años)', value: 'freiberg', next: null, hypothesis: ['tp36'] },
         { label: 'OSTEOCONDRITIS DISECANTE — Esguince que no se resuelve, bloqueo', value: 'ocd', next: null, hypothesis: ['tp25'] },
-        { label: 'OSTEOMA OSTEOIDE — Dolor nocturno con alivio rápido por AINE: derivar', value: 'osteoma', next: null, hypothesis: [] },
+        { label: 'OSTEOMA OSTEOIDE — Dolor nocturno con alivio rápido por AINE: derivar', value: 'osteoma', next: null, hypothesis: [],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'OSTEOMA OSTEOIDE — Sospecha: derivar' },
         { label: 'NO — Adulto, o hay mecanismo claro', value: 'no', next: null, hypothesis: [] }
       ]
     },
@@ -566,8 +568,6 @@ export const tree = {
     {
       // Nodo 7, POSTERIOR.
       id: 'tp_step6',
-      // Solo para el informe con IA: de la opción va solo el nombre, sin la pista de exploración (ronda 19: «Pinza, 2–6 cm» salió como prueba hecha)
-      iaSinPista: true,
       tag: 'Paso 6 — Tobillo sin Traumatismo: Posterior',
       question: 'Dolor sin traumatismo en el tobillo, POSTERIOR: ¿qué lo explica?',
       options: [
@@ -584,7 +584,6 @@ export const tree = {
     {
       // Nodo 7, MEDIAL.
       id: 'tp_step7',
-      iaSinPista: true,
       tag: 'Paso 7 — Tobillo sin Traumatismo: Medial',
       question: 'Dolor sin traumatismo en el tobillo, MEDIAL: ¿qué lo explica?',
       options: [
@@ -611,7 +610,6 @@ export const tree = {
     {
       // Nodo 7, ANTERIOR.
       id: 'tp_step9',
-      iaSinPista: true,
       tag: 'Paso 9 — Tobillo sin Traumatismo: Anterior',
       question: 'Dolor sin traumatismo en el tobillo, ANTERIOR: ¿qué lo explica?',
       options: [
@@ -622,7 +620,6 @@ export const tree = {
     {
       // Nodo 8, TALÓN PLANTAR.
       id: 'tp_step10',
-      iaSinPista: true,
       tag: 'Paso 10 — Pie: Talón Plantar',
       question: 'Dolor en el pie, TALÓN PLANTAR: ¿qué lo explica?',
       options: [
@@ -640,7 +637,9 @@ export const tree = {
       question: 'Dolor en el pie, MEDIOPIÉ: ¿qué lo explica?',
       options: [
         { label: 'CALCANEOCUBOIDEA', value: 'calcaneocuboidea', next: null, hypothesis: ['tp29'] },
-        { label: 'NAVICULAR (punto N), CUBOIDES O CUÑAS — Fractura de estrés', value: 'estres', next: null, hypothesis: ['tp30'] },
+        { label: 'NAVICULAR (punto N), CUBOIDES O CUÑAS — Fractura de estrés', value: 'estres', next: null, hypothesis: ['tp30'],
+          // iaEntera: al informe con IA va entera, porque lo que sigue al guion es el diagnóstico
+          iaEntera: true },
         { label: 'LISFRANC', value: 'lisfranc', next: null, hypothesis: ['tp4'] },
         { label: 'COALICIÓN', value: 'coalicion', next: null, hypothesis: ['tp23'] },
         { label: 'NINGUNO — Sin dolor en el mediopié o nada de esto lo explica', value: 'no', next: null, hypothesis: [] }
@@ -654,9 +653,13 @@ export const tree = {
       options: [
         { label: '1.ª MTF', value: 'mtf', next: null, hypothesis: ['tp31'] },
         { label: 'BASE DEL 2.º MT', value: 'base2', next: null, hypothesis: ['tp32'] },
-        { label: 'CUELLO DE MT — Fractura de marcha', value: 'cuello', next: null, hypothesis: ['tp33'] },
-        { label: '5.º MT — Fractura', value: 'mt5', next: null, hypothesis: ['tp5'] },
-        { label: 'MORTON — O bursitis intermetatarsiana', value: 'morton', next: null, hypothesis: ['tp34'] },
+        { label: 'CUELLO DE MT — Fractura de marcha', value: 'cuello', next: null, hypothesis: ['tp33'],
+          // iaEntera: al informe con IA va entera, porque lo que sigue al guion es el diagnóstico
+          iaEntera: true },
+        { label: '5.º MT — Fractura', value: 'mt5', next: null, hypothesis: ['tp5'],
+          iaEntera: true },
+        { label: 'MORTON — O bursitis intermetatarsiana', value: 'morton', next: null, hypothesis: ['tp34'],
+          iaEntera: true },
         { label: 'GOTA — Derivar para confirmar (con fiebre y malestar → artritis infecciosa: urgencia)', value: 'gota', next: null, hypothesis: ['tp35'] },
         { label: 'NINGUNO — Sin dolor en el antepié o nada de esto lo explica', value: 'no', next: null, hypothesis: [] }
       ]

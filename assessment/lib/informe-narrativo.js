@@ -170,6 +170,11 @@
 //     «AQUILES PORCIÓN MEDIA — Pinza, 2–6 cm»: `iaSinPista` en los pasos de
 //     tobillo por zona), separó la hinchazón del dictado del «niega hinchazón»
 //     del formulario y omitió que el médico le dijo que dejara de correr.
+//   · Vigésima revisión (Sergio otra vez, con las rondas 18 y 19): sin ningún
+//     fallo alto; la pinza desapareció y la hinchazón ya no se negaba, pero
+//     volvió a omitir la indicación del médico, clasificó las constantes
+//     («parámetros esperables») y dio un motivo a la ecografía. Con ella, la
+//     revisión de los 7 árboles: textoOpcionIA() en lugar de parches por paso.
 
 import { ladoTexto } from './region.js';
 
@@ -336,6 +341,35 @@ export function bloqueFormulario(items, { conAudio = false } = {}) {
 // urgente: hay una derivación urgente (payload `ur`): el plan es la derivación,
 // así que las pautas no van (con ellas escribió un plan con mmHg y segundos
 // «una vez descartado…»); solo la escala para el seguimiento.
+// ── Texto de una respuesta del árbol para el prompt ─────────────────────────
+// Casi todas las opciones son «CONCLUSIÓN — detalle», y el detalle no es un
+// hallazgo de este paciente: pistas de exploración («Pinza, 2–6 cm»), criterios
+// en «A, B o C» («Spurling, ULNT1 o alivio con abducción»), umbrales («RI <24°»)
+// o instrucciones («palpar primero»). El modelo los daba por hechos (la cojera
+// de Daniel, el bloqueo de Marta, la pinza de Sergio). Regla general (revisión
+// de los 7 árboles, 2026-10): al prompt va solo la conclusión, salvo
+//   · `iaTexto` (texto propio, p. ej. las preguntas con varios «SÍ»);
+//   · `iaEntera` (el detalle es el diagnóstico: «5.º MT — Fractura»);
+//   · NO / NINGUNO, que resumen lo que se descartó, y lo que lleva una
+//     derivación («derivar», «urgencia», «malignidad»), que va entero;
+//   · el NINGUNO de un paso de zona («Sin dolor medial o nada de esto lo
+//     explica»), que no va: acababa en listas de «no se identifican hallazgos…».
+// → string, o null si la respuesta no se envía.
+const RE_NINGUNO_ZONA = /^(?:Sin dolor|Ningún mecanismo|Seguir por zona)|nada de esto lo explica|nada lo reproduce/i;
+export function textoOpcionIA(op) {
+  if (!op) return null;
+  if (op.iaTexto) return op.iaTexto;
+  const label = String(op.label || '');
+  if (op.iaEntera) return label;
+  const i = label.indexOf(' — ');
+  if (i < 0) return label;
+  const cab = label.slice(0, i).trim(), det = label.slice(i + 3);
+  if (/^NINGUN[OA]\b/.test(cab) && RE_NINGUNO_ZONA.test(det)) return null;
+  if (/^(?:NO|NINGUN[OA]|NO CONCLUYENTE)\b/.test(cab)) return label;
+  if (/deriv|urgencia|malignidad/i.test(det)) return label;
+  return cab;
+}
+
 export const AVISO_HALLAZGOS = 'Cada línea es la conclusión del fisioterapeuta: los signos, síntomas o criterios que nombran la pregunta o la opción describen un patrón, no hallazgos de este paciente; no los afirmes si no constan en otro dato o en la consulta.';
 export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (!a) return [];
@@ -586,7 +620,7 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - Discrepancias: los resultados y clasificaciones del fisioterapeuta (tests, NRS, irritabilidad, banderas, hipótesis) prevalecen sobre lo que se diga en la conversación. Si lo que refiere el paciente cambia entre lo que contestó antes de la consulta y lo que cuenta en ella, recoge las dos versiones UNA vez, en una sola frase neutra y en la sección que le corresponde (un síntoma, en Dolor), sin decir de dónde sale cada una (p. ej. «refiere que el dolor no baja a la pierna, aunque también describe alguna punzada en la nalga al agacharse»). También es una discrepancia cuando lo cuenta con otras palabras (p. ej. «rigidez por la mañana: No» frente a «al levantarme me cuesta arrancar»: «no refiere rigidez matutina, aunque al levantarse le cuesta arrancar los primeros minutos»). No elijas tú una de las dos, no las escribas en lugares distintos como si no chocaran, no cambies fechas ni circunstancias para que encajen como si fueran dos episodios distintos, y no interpretes ni justifiques la discrepancia.
 - Lo que solo consta en una de las dos (antes de la consulta o en ella) no es una discrepancia: recógelo tal cual. No escribas que algo «no se menciona», «no se confirma» o «no se recoge» en la consulta, ni lo pongas en condicional («provocaría»).
 - Que prevalezca una clasificación del fisioterapeuta (p. ej. riesgo psicosocial bajo) no borra lo que refiere el paciente: mantén la clasificación tal cual y recoge lo referido UNA vez, como algo que refiere (p. ej. «refiere cierto temor a que el tobillo vuelva a fallar al bajar escaleras»), sin reclasificar ni interpretar.
-- Atribuye cada indicación a quien la dio: lo que indica el fisioterapeuta en la consulta es una indicación del plan, no del cirujano ni del médico, y viceversa. No escribas que algo «ya se le había indicado» si no consta, ni presentes un consejo (p. ej. «puede hacer bicicleta estática») como algo que el paciente ya hace.
+- Atribuye cada indicación a quien la dio: lo que indica el fisioterapeuta en la consulta es una indicación del plan, no del cirujano ni del médico, y viceversa. No escribas que algo «ya se le había indicado» si no consta, ni presentes un consejo (p. ej. «puede hacer bicicleta estática») como algo que el paciente ya hace. Si otro profesional (médico, cirujano…) dio una indicación, recógela atribuida a él aunque choque con la del fisioterapeuta: las dos, cada una con su autor, sin omitir ninguna.
 - Si en la consulta el paciente habla de otra zona u otro lado (p. ej. molestias en la otra rodilla), menciónalo UNA vez como algo que refiere el paciente («refiere también…»), en la sección que le corresponde y nunca en Pruebas Clínicas, sin cambiar la región ni el lado valorados. No le añadas plan, seguimiento, prevención ni medidas que no consten en los datos o en la consulta.
 - No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «dictado», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «recorrido de la exploración», «en la conversación», «en consulta», «árbol de decisión», «regla de decisión», «notas del plan» ni el nombre de sus campos («variable de control», «ventana de recuperación», «anclaje de hábito»); usa su contenido sin decir de dónde viene. Escribe «refiere» o «en la exploración»; tampoco contrapongas «inicialmente» y «en consulta».
 - Hipótesis: no cites cocientes de probabilidad (LR), pesos, puntuaciones ni recuentos de criterios o hallazgos; describe qué tests apoyan o no cada hipótesis.

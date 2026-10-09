@@ -43,9 +43,6 @@ export const SYSTEMIC_SCREENING = Object.fromEntries(
 //         question: string,           // texto de la pregunta
 //         iaPregunta?: string,        // opcional: la pregunta solo para el prompt del
 //                                      // informe con IA, sin cifras ni citas (rodilla ro_step1b)
-//         iaSinPista?: true,          // opcional: al prompt del informe con IA solo va el nombre de
-//                                      // la opción (antes de « — »), sin la pista de exploración
-//                                      // (tobillo tp_step6, 7, 9 y 10)
 //         options: [
 //           {
 //             label: string,          // texto del botón
@@ -65,9 +62,13 @@ export const SYSTEMIC_SCREENING = Object.fromEntries(
 //                                      // fase 2). Se pinta bajo el paso, al completar el
 //                                      // árbol, en fase 5, 📋 Notas, 📄 Informe y payload `dv`
 //                                      // (getDerivacionesArbol, phase4.js). El recorrido sigue.
-//             iaTexto?: string        // opcional: la opción solo para el prompt del informe
-//                                      // con IA, cuando la etiqueta trae cifras o un patrón que
-//                                      // el modelo leía como hallazgos (cadera ca_step1/ca_step2)
+//             iaTexto?: string        // opcional: la opción solo para el prompt del informe con
+//                                      // IA. Por defecto el prompt recibe solo la conclusión (lo que
+//                                      // hay antes de « — »; textoOpcionIA, lib/informe-narrativo.js);
+//                                      // iaTexto hace falta cuando eso no basta (varios «SÍ» en la
+//                                      // misma pregunta, «descripción — posible X»)
+//             iaEntera?: true         // opcional: al prompt va la etiqueta entera, porque lo que
+//                                      // sigue al guion es el diagnóstico («5.º MT — Fractura»)
 //             resoluble?: true        // opcional, solo con `derivacion`: admite «Ya
 //                                      // diagnosticada y tratada» (state.derivacionResuelta
 //                                      // [step.id]); marcada, la derivación no sale en ningún

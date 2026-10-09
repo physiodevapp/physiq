@@ -643,8 +643,11 @@ export const tree = {
       tag: 'Paso 1 — Cribado Proximal (Clearing)',
       question: '¿El dolor se reproduce con movimientos cervicales, compresión axial o palpación de la primera costilla?',
       options: [
-        { label: 'SÍ — Reproducción con movimientos cervicales (test de Spurling o similar)', value: 'cervical', next: null, hypothesis: ['h6'] },
-        { label: 'SÍ — Restricción de movilidad en 1ª costilla y dolor en zona de transición', value: '1costilla', next: null, hypothesis: ['h9'] },
+        { label: 'SÍ — Reproducción con movimientos cervicales (test de Spurling o similar)', value: 'cervical', next: null, hypothesis: ['h6'],
+          // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
+          iaTexto: 'SÍ — Se reproduce con los movimientos cervicales (orienta a: origen cervical)' },
+        { label: 'SÍ — Restricción de movilidad en 1ª costilla y dolor en zona de transición', value: '1costilla', next: null, hypothesis: ['h9'],
+          iaTexto: 'SÍ — Restricción de la 1.ª costilla (orienta a: 1.ª costilla)' },
         { label: 'NO — No se reproduce con cervical ni 1ª costilla', value: 'no', next: 'h_step2', hypothesis: [] }
       ]
     },
@@ -666,7 +669,9 @@ export const tree = {
       tag: 'Paso 2b — Rigidez activa = pasiva',
       question: 'La movilidad pasiva GH (sobre todo la RE) está limitada igual que la activa. ¿Hubo traumatismo previo?',
       options: [
-        { label: 'SÍ — Traumatismo previo → luxación bloqueada o fractura → Rx', value: 'trauma', next: null, hypothesis: ['h11'] },
+        { label: 'SÍ — Traumatismo previo → luxación bloqueada o fractura → Rx', value: 'trauma', next: null, hypothesis: ['h11'],
+          // iaEntera: al informe con IA va entera, porque lo que sigue al guion es el diagnóstico
+          iaEntera: true },
         { label: 'NO — Mayor edad + crepitación → artrosis GH (Rx)', value: 'artrosis', next: null, hypothesis: ['h10'] },
         { label: 'NO — Resto → hombro congelado', value: 'congelado', next: null, hypothesis: ['h1'] }
       ]
