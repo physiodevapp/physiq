@@ -1196,6 +1196,11 @@ export const hypotheses = {
     name: 'Dolor en la Base del 2.º Metatarsiano',
     prom: 'FAAM o LEFS',
     dosis: '',
+    pronostico: {
+      horizonte: 'Si se sospecha una fractura de estrés, la radiografía es muy poco sensible; la RM es la prueba de elección.',
+      derivacion: 'Si es una fractura de estrés, la base del 2.º metatarsiano es una localización de alto riesgo: tiende a retrasar o no consolidar y a completarse, y la vuelta a la carrera es más larga sea cual sea su grado. Derivar para confirmarla con imagen; la pauta de vuelta a la carrera de la fractura de marcha (bajo riesgo) no se le aplica.',
+      fuente: 'Warden 2014, J Orthop Sports Phys Ther 44(10):749–65, p. 755 y tabla 1'
+    },
     tests: [
       { name: 'Palpación de la base del 2.º MT y de Lisfranc', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor a la palpación de la base del 2.º MT y de la articulación de Lisfranc. Mediotarsiana posiblemente rígida.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 278' },
       { name: 'Estrés frente a sinovitis', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Estrés o fractura de estrés de la base del 2.º MT: dolor nocturno, sin efecto de calentamiento. Sinovitis: sin dolor nocturno, con efecto de calentamiento.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 278–279' },
