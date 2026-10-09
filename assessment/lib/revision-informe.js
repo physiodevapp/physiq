@@ -520,6 +520,29 @@ export function comprobacionesManuales({ ampliado = null, formularioYAudio = fal
   ];
 }
 
+// Marcas «Revisado» (state.informeIA.revisados, array de claves). Los puntos
+// se recalculan con cada cambio de la valoración, así que la clave es la regla
+// y la frase citada: un punto que desaparece pierde su marca y uno nuevo sale
+// sin marcar. Las comprobaciones manuales, por su texto.
+export const clavePunto = p => `p|${p.id}|${p.cita || p.mensaje}`;
+export const claveComprobacion = t => `c|${t}`;
+
+// Recuento para las cabeceras y el menú de «Compartir»
+export function resumenRevisados(puntos = [], comprobaciones = [], revisados = []) {
+  const hechos = new Set(revisados || []);
+  const pendPuntos = puntos.filter(p => !hechos.has(clavePunto(p)));
+  const pendComprob = comprobaciones.filter(t => !hechos.has(claveComprobacion(t)));
+  return {
+    puntos: puntos.length,
+    puntosPendientes: pendPuntos.length,
+    altosPendientes: pendPuntos.filter(p => p.nivel === 'alto').length,
+    comprobaciones: comprobaciones.length,
+    comprobacionesPendientes: pendComprob.length,
+    total: puntos.length + comprobaciones.length,
+    pendientes: pendPuntos.length + pendComprob.length,
+  };
+}
+
 // Texto compartido/copiado → texto del informe: fuera la cabecera local
 // (textoParaCompartir) y el pie «redacción asistida por IA».
 export function quitarCabeceraYPie(texto) {

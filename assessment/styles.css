@@ -72,6 +72,7 @@
     --lime: #5f7d0f;
     --scrim: rgba(19,26,41,0.38);
     --modal-shadow: 0 20px 60px rgba(19,26,41,0.22);
+    color-scheme: light;   /* native controls (checkboxes, date inputs) in light style */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -2541,6 +2542,18 @@
 .ia-revision li.ia-rev-alto { color: var(--red); }
 .ia-rev-cita { display: block; color: var(--text3); font-style: italic; margin-top: 0.15rem; overflow-wrap: anywhere; }
 .ia-rev-nota { font-size: 0.72rem; color: var(--text3); }
+/* Marcas «Revisado» (iaMarcarRevisado, informe-ia.js): la casilla a la
+   izquierda; un punto marcado se atenúa con ✓, nunca se oculta. Las cajas
+   pasan a verde cuando todo está marcado. */
+.ia-revision ul, .ia-comprobar ul { list-style: none; padding-left: 0; }
+.ia-rev-item { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+.ia-rev-check { flex-shrink: 0; width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--green); cursor: pointer; }
+.ia-rev-hecho > .ia-rev-item > span { opacity: 0.55; }
+.ia-revision li.ia-rev-alto.ia-rev-hecho { color: var(--text2); }
+.ia-revision-hecha { border-left-color: var(--green); }
+.ia-comprobar-cuenta { font-weight: 400; color: var(--text3); font-family: 'DM Mono', monospace; font-size: 0.72rem; white-space: nowrap; }
+.ia-comprobar-hecha { border-left-color: var(--green); }
+.ia-comprobar-hecha .ia-comprobar-cuenta { color: var(--green); }
 
 /* Tipo de informe (narrativo / ficha breve) */
 .ia-plantilla { margin-bottom: 1rem; }

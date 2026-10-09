@@ -10,6 +10,7 @@
 // ============================================================
 
 import { slugPaciente, fechaArchivo, exportarValoracion } from './valoracion-json.js';
+import { clavePunto, claveComprobacion } from './revision-informe.js';
 
 // `audio` del nombre de los ficheros: como en tests/fixtures/informes
 const tipoAudio = inf => !inf.conAudio ? 'sin-audio' : inf.dictado ? 'dictado' : 'audio';
@@ -19,18 +20,21 @@ export function nombrePaquete(paciente, ahora = new Date()) {
 }
 
 // Puntos y comprobaciones en el mismo formato que tools/revisar-informe.mjs
-export function textoRevision(puntos = [], comprobaciones = []) {
+export function textoRevision(puntos = [], comprobaciones = [], revisados = []) {
+  const hechos = new Set(revisados || []);
+  const marca = clave => hechos.has(clave) ? ' [revisado]' : '';
   const altos = puntos.filter(p => p.nivel === 'alto').length;
+  const nRev = puntos.filter(p => hechos.has(clavePunto(p))).length;
   const lineas = [puntos.length
-    ? `PUNTOS A REVISAR (comprobaciones automáticas): ${puntos.length}${altos ? `, ${altos} de nivel alto` : ''}`
+    ? `PUNTOS A REVISAR (comprobaciones automáticas): ${puntos.length}${altos ? `, ${altos} de nivel alto` : ''}; marcados como revisados: ${nRev}`
     : 'PUNTOS A REVISAR (comprobaciones automáticas): sin incidencias', ''];
   for (const p of puntos) {
-    lineas.push(`[${p.nivel.toUpperCase()}] ${p.id}: ${p.mensaje}`);
+    lineas.push(`[${p.nivel.toUpperCase()}] ${p.id}: ${p.mensaje}${marca(clavePunto(p))}`);
     if (p.cita) lineas.push(`   «${p.cita}»`);
     lineas.push('');
   }
   if (comprobaciones.length) {
-    lineas.push('ANTES DE COMPARTIR, COMPRUEBA', ...comprobaciones.map(c => `- ${c}`), '');
+    lineas.push('ANTES DE COMPARTIR, COMPRUEBA', ...comprobaciones.map(c => `- ${c}${marca(claveComprobacion(c))}`), '');
   }
   return lineas.join('\n');
 }
@@ -77,7 +81,7 @@ export function ficherosPaquete({ inf, informe, state, puntos = [], comprobacion
     { nombre: 'info.txt', texto: info },
     { nombre: nInforme, texto: informe.endsWith('\n') ? informe : informe + '\n' },
     ...(conTranscripcion ? [{ nombre: nTranscripcion, texto: inf.transcripcion.trim() + '\n' }] : []),
-    { nombre: 'revision.txt', texto: textoRevision(puntos, comprobaciones) },
+    { nombre: 'revision.txt', texto: textoRevision(puntos, comprobaciones, inf.revisados) },
     { nombre: nValoracion, texto: JSON.stringify(valoracion, null, 2) + '\n' },
     ...(inf.prompt ? [{ nombre: 'prompt.txt', texto: inf.prompt }] : []),
   ];

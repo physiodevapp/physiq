@@ -3010,11 +3010,12 @@ async function abrirMenuCompartir() {
   const overlay = document.getElementById('compartirOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
   const conIA = !_enHub() && !!state.informeIA?.texto;
-  let rev = { puntos: 0, altos: 0 };
+  // Puntos automáticos + «Antes de compartir», y cuántos siguen sin marcar
+  let rev = { total: 0, pendientes: 0, altosPendientes: 0 };
   if (conIA) { try { rev = (await _cargarInformeIA()).estadoRevisionIA(); } catch { /* sin recuento */ } }
-  const detalleIA = rev.puntos
-    ? `<span class="compartir-op-aviso${rev.altos ? ' alto' : ''}">⚠ ${rev.puntos} ${rev.puntos === 1 ? 'punto' : 'puntos'} a revisar</span>`
-    : 'Documentación clínica, revisada sin incidencias automáticas';
+  const detalleIA = rev.pendientes
+    ? `<span class="compartir-op-aviso${rev.altosPendientes ? ' alto' : ''}">⚠ ${rev.pendientes === rev.total ? rev.total : `${rev.pendientes} de ${rev.total}`} ${rev.total === 1 ? 'punto' : 'puntos'} sin revisar</span>`
+    : rev.total ? `✓ ${rev.total === 1 ? 'Punto revisado' : `${rev.total} puntos revisados`}` : 'Documentación clínica';
   document.getElementById('compartirOpciones').innerHTML =
     _opcionCompartir('compartirInformePaciente', 'Para el paciente / médico', 'Informe de fisioterapia en lenguaje llano')
     + (conIA ? _opcionCompartir('compartirInformeIA', 'Informe clínico (IA)', detalleIA) : '')
