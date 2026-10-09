@@ -245,7 +245,6 @@ function pintarResultado() {
       ${inf.transcripcion && inf.conAudio ? `<details class="ia-transcripcion"><summary>${inf.dictado ? 'Transcripción del dictado' : 'Transcripción del audio'}</summary><div class="ia-transcripcion-texto">${esc(inf.transcripcion)}</div></details>` : ''}
     </details>
     <div class="ia-acciones">
-      <button class="phase5-copy-btn" onclick="iaCompartir()">📤 Compartir</button>
       <button class="phase5-copy-btn ia-btn-descartar" onclick="iaDescartarInforme()">Descartar</button>
     </div>
     ${BOTON_PAQUETE}`;
@@ -456,15 +455,15 @@ function textoInforme() {
 }
 
 // Compartir y copiar en una sola acción (compartirTexto, app.js): hoja de
-// compartir en táctil, copiar con ratón. También desde «📄 Informe» de la
-// cabecera de la fase 5 (compartirInformeIA).
+// compartir en táctil, copiar con ratón. Desde el menú de «📤 Compartir» de la
+// barra inferior de la fase 5 (compartirInformeIA).
 function iaCompartir() {
   registrarValoracionCompleta();
   compartirTexto(textoInforme(), { titulo: 'Informe de fisioterapia — PhysiQ-Assessment', copiado: '✓ Informe narrativo copiado al portapapeles' });
 }
 export function compartirInformeIA() { if (state.informeIA?.texto) iaCompartir(); }
 
-// Para el menú de «📄 Informe»: cuántos puntos a revisar tiene el informe IA
+// Para el menú de «📤 Compartir»: cuántos puntos a revisar tiene el informe IA
 export function estadoRevisionIA() {
   const inf = state.informeIA;
   if (!inf?.texto) return { puntos: 0, altos: 0 };
@@ -882,5 +881,5 @@ export function resetInformeIA() {
 Object.assign(window, {
   iaMostrarClave, iaGuardarClave, iaReintentarLicencia,
   iaArchivo, iaQuitarAudio, iaConsent,
-  iaGenerar, iaCancelar, iaCompartir, iaDescartarInforme, iaPlantilla, iaModoAudio, iaPaqueteRevision,
+  iaGenerar, iaCancelar, iaDescartarInforme, iaPlantilla, iaModoAudio, iaPaqueteRevision,
 });
