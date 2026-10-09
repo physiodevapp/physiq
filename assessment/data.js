@@ -43,6 +43,9 @@ export const SYSTEMIC_SCREENING = Object.fromEntries(
 //         question: string,           // texto de la pregunta
 //         iaPregunta?: string,        // opcional: la pregunta solo para el prompt del
 //                                      // informe con IA, sin cifras ni citas (rodilla ro_step1b)
+//         iaSinPista?: true,          // opcional: al prompt del informe con IA solo va el nombre de
+//                                      // la opción (antes de « — »), sin la pista de exploración
+//                                      // (tobillo tp_step6, 7, 9 y 10)
 //         options: [
 //           {
 //             label: string,          // texto del botón

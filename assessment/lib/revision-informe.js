@@ -50,7 +50,9 @@ const notasHabladas = t => [...sinAcentos(String(t || '')).matchAll(RE_HABLADO)]
 // …y la respuesta suelta a la pregunta: «¿Cuánto te duele de 0 a 10? Ahora un
 // 4. El domingo… llegó a un 7» (Daniel: el 7 salía como intensidad inventada).
 // Solo «un/una N» en los ~250 caracteres que siguen a la pregunta.
-const RE_PREGUNTA_10 = /\b(?:0|cero) a (?:10|diez)\b/g;
+// Desde la ronda 19 también tras una cifra «N sobre/de 10» ya dicha (Sergio:
+// «Ahora… un 2 sobre 10; corriendo llega a un 5 y por la mañana… a un 4»).
+const RE_PREGUNTA_10 = new RegExp(`\\b(?:0|cero) a (?:10|diez)\\b|\\b(?:\\d{1,2}|${NUMEROS.join('|')})\\s+(?:de|sobre)\\s+(?:10|diez)\\b`, 'g');
 const RE_UN_N = new RegExp(`\\b(?:un|una)\\s+(\\d{1,2}|${NUMEROS.join('|')})\\b`, 'gi');
 const notasTrasPregunta = t => {
   const n = sinAcentos(String(t || ''));
@@ -74,6 +76,9 @@ const SINTOMAS = [
   // (no «inestabilidad», «fallo» ni «cede» sueltos: test de inestabilidad, mareo o
   // inestabilidad, entrenar hasta el fallo, el hormigueo que cede)
   ['Fallo articular', /\bfall(?:a|e|aba|ado)\b|\bfallo (?:articular|de la)\b|\bepisodios? de fallo\b|\b(?:rodilla|cadera|tobillo) (?:cede|ceda|cedia)\b|se (?:le|me) (?:va|iba|fue)\b|como si (?:se )?(?:cediera|doblara)/],
+  // Sergio: «nota el tendón algo hinchado» en Presentación y «niega… hinchazón visible» en Dolor.
+  // Después de «fallo articular»: la hinchazón puede ser de otra zona (Marta: posterior)
+  ['Hinchazón', /hinchad|hinchaz|tumefacc|\bedema/],
 ];
 const NEGACION = /\b(niega|no refiere|no presenta|no describe|no nota|no manifiesta|no aparece|no le|no hay|sin)\b/;
 const frases = t => t.split(/(?<=[.!?])\s+|\n+/).map(f => f.replace(/^[#\s]+/, '').trim()).filter(Boolean);
@@ -329,7 +334,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   if (plantilla === 'narrativo' && iSeg > 0) {
     // «en caso de ausencia de mejoría», «si no mejora» (no «la ausencia de mejoría con
     // movimientos repetidos», un hallazgo: Andrea) (Daniel, dictado: «En caso de ausencia de mejoría… se solicitará valoración ecográfica»)
-    const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a|(?:en caso de|ante(?: la)?|si hay)\s+(?:una\s+)?(?:ausencia|falta) de mejor[ií]a|\b(?:si|en caso de)\s+no\s+(?:mejora|mejorar|mejorase)\b/i.exec(t.slice(0, iSeg));
+    const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a|(?:en caso de|ante(?: la)?|si hay)\s+(?:una\s+)?(?:ausencia|falta) de mejor[ií]a|\b(?:si|en caso de)\s+no\s+(?:mejora|mejorar|mejorase)\b|\ben caso de no (?:observarse|objetivarse|producirse|apreciarse|haber) (?:una )?mejor[ií]a/i.exec(t.slice(0, iSeg));
     if (m) out.push(punto('seguimiento-fuera', 'medio', 'El criterio de reconsiderar o derivar si no mejora aparece fuera de Seguimiento.', fraseEn(t, m.index)));
   }
   // Lo que no le empeora no va en Limitaciones (Andrea: «Niega dolor al toser…»;
@@ -341,7 +346,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     const m = /\b(?:no refiere (?:limitaci[oó]n|dificultad|dolor|aumento|molestias?)|niega (?:dolor|limitaci[oó]n|dificultad|molestias?)|no (?:le )?(?:provoca|aumenta|empeora)n?|sin (?:dolor|dificultad|limitaci[oó]n) (?:al|para))\b/i.exec(lim);
     if (m) out.push(punto('limitaciones-negativas', 'medio', 'Limitaciones enumera lo que no le empeora; ahí solo van las actividades que le cuestan.', fraseEn(t, iLim + m.index)));
   }
-  if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b|no se refieren? tratamientos|no constan? tratamientos|sin tratamientos previos/i)))
+  if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no ha sido (?:objeto de )?explora|no se ha explorado|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b|no se refieren? tratamientos|no constan? tratamientos|sin tratamientos previos/i)))
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
   // En modo breve, «el formulario previo» dentro de la frase de lo pendiente
   // es un pendiente, no una fuente: se sigue buscando

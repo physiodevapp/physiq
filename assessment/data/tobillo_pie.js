@@ -566,6 +566,8 @@ export const tree = {
     {
       // Nodo 7, POSTERIOR.
       id: 'tp_step6',
+      // Solo para el informe con IA: de la opción va solo el nombre, sin la pista de exploración (ronda 19: «Pinza, 2–6 cm» salió como prueba hecha)
+      iaSinPista: true,
       tag: 'Paso 6 — Tobillo sin Traumatismo: Posterior',
       question: 'Dolor sin traumatismo en el tobillo, POSTERIOR: ¿qué lo explica?',
       options: [
@@ -582,6 +584,7 @@ export const tree = {
     {
       // Nodo 7, MEDIAL.
       id: 'tp_step7',
+      iaSinPista: true,
       tag: 'Paso 7 — Tobillo sin Traumatismo: Medial',
       question: 'Dolor sin traumatismo en el tobillo, MEDIAL: ¿qué lo explica?',
       options: [
@@ -608,6 +611,7 @@ export const tree = {
     {
       // Nodo 7, ANTERIOR.
       id: 'tp_step9',
+      iaSinPista: true,
       tag: 'Paso 9 — Tobillo sin Traumatismo: Anterior',
       question: 'Dolor sin traumatismo en el tobillo, ANTERIOR: ¿qué lo explica?',
       options: [
@@ -618,6 +622,7 @@ export const tree = {
     {
       // Nodo 8, TALÓN PLANTAR.
       id: 'tp_step10',
+      iaSinPista: true,
       tag: 'Paso 10 — Pie: Talón Plantar',
       question: 'Dolor en el pie, TALÓN PLANTAR: ¿qué lo explica?',
       options: [

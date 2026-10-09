@@ -164,6 +164,12 @@
 //     vez «se le iba» del «niega… fallo» (aviso en la indicación de Dolor) y
 //     copió «la persona atendida», el ejemplo para cuando no consta el sexo
 //     (quitado: ya consta que no se marca el género).
+//   · Decimonovena revisión (Sergio, Aquiles dictado, todavía sin la ronda 18):
+//     dio la pista de exploración de la opción del árbol como prueba hecha
+//     («la exploración mediante pinza confirma dolor entre los 2 y 6 cm», de
+//     «AQUILES PORCIÓN MEDIA — Pinza, 2–6 cm»: `iaSinPista` en los pasos de
+//     tobillo por zona), separó la hinchazón del dictado del «niega hinchazón»
+//     del formulario y omitió que el médico le dijo que dejara de correr.
 
 import { ladoTexto } from './region.js';
 

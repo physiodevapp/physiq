@@ -379,7 +379,11 @@ export function construirAmpliado() {
       const tratada = (op?.hypothesis || []).some(h => esTratada(h));
       // `iaPregunta`/`iaTexto`: el texto del paso o de la opción solo para el
       // prompt, cuando el de pantalla lleva cifras o patrones didácticos
-      return { pregunta: st.iaPregunta || st.question, respuesta: op?.iaTexto || op?.label || state.treeAnswers[st.id], ...(tratada ? { tratada: true } : {}) };
+      // `iaSinPista` en el paso: de la opción elegida solo va el nombre (lo que
+      // hay antes de « — »); la pista de exploración que sigue («Pinza, 2–6 cm»)
+      // la leía como un hallazgo (Sergio, ronda 19)
+      const etiqueta = op?.iaTexto || (st.iaSinPista && op?.label && !/^(NO|NINGUN[OA])\b/.test(op.label) ? op.label.split(' — ')[0] : op?.label);
+      return { pregunta: st.iaPregunta || st.question, respuesta: etiqueta || state.treeAnswers[st.id], ...(tratada ? { tratada: true } : {}) };
     });
 
   const tests = [];
