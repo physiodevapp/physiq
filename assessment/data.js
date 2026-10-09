@@ -41,6 +41,8 @@ export const SYSTEMIC_SCREENING = Object.fromEntries(
 //         id: string,                // único dentro del árbol (id del <div> renderizado)
 //         tag: string,                // etiqueta corta ("Paso N — ...")
 //         question: string,           // texto de la pregunta
+//         iaPregunta?: string,        // opcional: la pregunta solo para el prompt del
+//                                      // informe con IA, sin cifras ni citas (rodilla ro_step1b)
 //         options: [
 //           {
 //             label: string,          // texto del botón
@@ -60,6 +62,9 @@ export const SYSTEMIC_SCREENING = Object.fromEntries(
 //                                      // fase 2). Se pinta bajo el paso, al completar el
 //                                      // árbol, en fase 5, 📋 Notas, 📄 Informe y payload `dv`
 //                                      // (getDerivacionesArbol, phase4.js). El recorrido sigue.
+//             iaTexto?: string        // opcional: la opción solo para el prompt del informe
+//                                      // con IA, cuando la etiqueta trae cifras o un patrón que
+//                                      // el modelo leía como hallazgos (cadera ca_step1/ca_step2)
 //             resoluble?: true        // opcional, solo con `derivacion`: admite «Ya
 //                                      // diagnosticada y tratada» (state.derivacionResuelta
 //                                      // [step.id]); marcada, la derivación no sale en ningún

@@ -508,6 +508,8 @@ export const tree = {
       id: 'ro_step1b',
       tag: 'Paso 1b — Regla de Ottawa y Aparato Extensor',
       question: '¿Algún criterio de Ottawa (≥55 años · cabeza del peroné · rótula aislada · no flexiona 90° · no carga cuatro pasos)? Y en toda rodilla traumática con dolor anterior, elevación de la pierna extendida. Alternativa a Ottawa: Pittsburgh — contusión o caída MÁS (<12 o >50 años, o no puede caminar); S ≈99 % con E ≈60 %, pide menos radiografías (Seaberg y Jackson 1994; Seaberg 1998).',
+      // Solo para el informe con IA: sin las cifras de S/E ni las citas, que el prompt no lleva en ningún otro sitio
+      iaPregunta: '¿Algún criterio de Ottawa (≥55 años · cabeza del peroné · rótula aislada · no flexiona 90° · no carga cuatro pasos)? Y en toda rodilla traumática con dolor anterior, elevación de la pierna extendida.',
       options: [
         { label: 'OTTAWA POSITIVO — DERIVAR PARA RADIOGRAFÍA antes de seguir explorando', value: 'ottawa', next: null, hypothesis: ['ro11'] },
         { label: 'NO ELEVA LA PIERNA EXTENDIDA — Aparato extensor, que Ottawa no detecta: derivar hoy', value: 'extensor', next: null, hypothesis: [] },

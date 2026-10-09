@@ -665,7 +665,9 @@ export const tree = {
       options: [
         { label: 'SÍ — SACROILÍACA: señala con el dedo el dolor inferomedial a la EIPS (no solo en la línea media ni por encima de L5) y 3 o más de 5 tests de provocación positivos', value: 'si_asi', next: null, hypothesis: ['ca10'] },
         { label: 'SÍ — LUMBAR: el dolor cambia con movimientos repetidos de la espalda, o la elevación de la pierna recta o el slump reproducen su dolor', value: 'si_lumbar', next: null, hypothesis: [] },
-        { label: 'NO — Origen coxofemoral: la cojera (unas 7 veces) y la rotación interna limitada (unas 14 veces) orientan más a la cadera que a la columna', value: 'no', next: null, hypothesis: [] }
+        { label: 'NO — Origen coxofemoral: la cojera (unas 7 veces) y la rotación interna limitada (unas 14 veces) orientan más a la cadera que a la columna', value: 'no', next: null, hypothesis: [],
+          // Solo para el informe con IA: con las cifras de la etiqueta escribió que Daniel cojeaba y tenía la rotación interna limitada
+          iaTexto: 'NO — El dolor no parece referido desde la columna lumbar ni la sacroilíaca' }
       ]
     },
     {
@@ -685,7 +687,9 @@ export const tree = {
       question: '¿El perfil es degenerativo (edad ≥45 años, rigidez matutina breve)?',
       options: [
         { label: 'SÍ — Edad ≥45 años, rigidez matutina <1 hora, rotación interna <24°', value: 'si', next: null, hypothesis: ['ca1'] },
-        { label: 'NO — Paciente joven/activo con síntomas mecánicos', value: 'no', next: 'ca_step3', hypothesis: [] }
+        { label: 'NO — Paciente joven/activo con síntomas mecánicos', value: 'no', next: 'ca_step3', hypothesis: [],
+          // Solo para el informe con IA: leyó el «no» como «ausencia de rigidez matutina» (era «No sé») y añadía síntomas mecánicos
+          iaTexto: 'NO — Perfil no degenerativo' }
       ]
     },
     {

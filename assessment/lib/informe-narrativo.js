@@ -145,6 +145,18 @@
 //     envía), clasificó las constantes, dio solo una versión del chasquido
 //     (formulario frente a consulta) y repitió el criterio de no mejoría en el
 //     plan.
+//   · Decimoséptima revisión (Daniel dictado otra vez, ya con el modo
+//     dictado, y Marta, rodilla dictada): leyó como hallazgos los rasgos que
+//     nombra la opción del árbol («la cojera (unas 7 veces)…» → «patrón de
+//     cojera»; «trauma rotacional con síntomas de bloqueo o chasquidos» →
+//     Marta con bloqueo y chasquidos que el formulario negaba) — `iaTexto` /
+//     `iaPregunta` en el árbol y aviso en la cabecera de los hallazgos —;
+//     siguió dando una sola versión cuando el formulario y la consulta
+//     difieren, o las dos en secciones distintas — recordatorio debajo del
+//     formulario cuando hay audio —; atribuyó al médico la resonancia que
+//     pedía el fisio («pediremos») e inventó un test «más específico».
+//     Whisper transcribe «no la he hecho» como «no la ha hecho»: la regla del
+//     dictado lo dice.
 
 import { ladoTexto } from './region.js';
 
@@ -205,7 +217,7 @@ export function regionTexto(data, nombreRegion = r => r) {
 // citando «LR× 2,0» y «0/4 hallazgos»), notas del plan solo si tienen texto
 // (un «—» acababa como «no se especificó…») y la derivación del árbol sin la
 // palabra «árbol». Lo añadido va al final y solo aparece cuando hay datos.
-export function contextoValoracion(data, nombreRegion = r => r, ampliado = null) {
+export function contextoValoracion(data, nombreRegion = r => r, ampliado = null, { conAudio = false } = {}) {
   if (!data) return '';
   const hyps = (data.h || [])
     .map(h => `  · ${limpiarEtiqueta(h.name)}${h.pq
@@ -228,7 +240,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null)
   // Con datos ampliados, el formulario va agrupado por sección y sin «No sé»
   // (bloqueFormulario); sin ellos, el `fp` del payload tal cual.
   if (ampliado?.formulario) {
-    const f = bloqueFormulario(ampliado.formulario);
+    const f = bloqueFormulario(ampliado.formulario, { conAudio });
     if (f) extra.push(f);
   } else if (data.fp?.length) extra.push(`Lo que refiere el paciente antes de la consulta (pregunta → respuesta):\n${data.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
   // Etiquetas neutras, no los nombres de los campos: con «Ventana de
@@ -278,13 +290,18 @@ export const GRUPOS_FORMULARIO = [
   ['actividades', 'Actividades y posturas que le provocan o aumentan el dolor, o que le cuestan (van en Limitaciones en las Actividades)'],
   ['contexto', 'Salud general, trabajo, deporte y ejercicio (van en Factores Personales, o en Restricciones en la Participación si refiere que le afecta)'],
 ];
-export function bloqueFormulario(items) {
+// Con audio, un recordatorio justo debajo: la regla general de discrepancias
+// (REGLAS_COMUNES) falló tres veces con Daniel (chasquido «que le duele: Sí»
+// frente a «no le duele») y una con Marta (falla: No frente a «se le iba»,
+// escritos en dos secciones). Sin ejemplo de contenido, para que no lo copie.
+export const RECORDATORIO_DISCREPANCIAS = 'Si en la consulta el paciente dice otra cosa sobre alguna de estas respuestas, escribe las dos versiones juntas, en una sola frase y en una sola sección; no recojas solo una ni las pongas en sitios distintos.';
+export function bloqueFormulario(items, { conAudio = false } = {}) {
   if (!items?.length) return '';
   const grupos = GRUPOS_FORMULARIO
     .map(([g, titulo]) => [titulo, items.filter(x => x.g === g)])
     .filter(([, xs]) => xs.length)
     .map(([titulo, xs]) => `  ${titulo}:\n${xs.map(x => `    · ${x.q} → ${x.a}`).join('\n')}`);
-  return `Lo que refiere el paciente antes de la consulta, agrupado por la sección del informe en la que va cada cosa (pregunta → respuesta):\n${grupos.join('\n')}`;
+  return `Lo que refiere el paciente antes de la consulta, agrupado por la sección del informe en la que va cada cosa (pregunta → respuesta):\n${grupos.join('\n')}${conAudio ? `\n  ${RECORDATORIO_DISCREPANCIAS}` : ''}`;
 }
 
 // ── Datos ampliados de las fases (informe-ia.js los reúne del estado) ────────
@@ -301,6 +318,7 @@ export function bloqueFormulario(items) {
 // urgente: hay una derivación urgente (payload `ur`): el plan es la derivación,
 // así que las pautas no van (con ellas escribió un plan con mmHg y segundos
 // «una vez descartado…»); solo la escala para el seguimiento.
+export const AVISO_HALLAZGOS = 'Cada línea es la conclusión del fisioterapeuta: los signos, síntomas o criterios que nombran la pregunta o la opción describen un patrón, no hallazgos de este paciente; no los afirmes si no constan en otro dato o en la consulta.';
 export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (!a) return [];
   const b = [];
@@ -314,7 +332,11 @@ export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (fase3.length) b.push(fase3.join('\n'));
   if (a.psico?.length) b.push(`Cribado psicosocial detallado:\n${a.psico.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
   if (a.criterios?.length) b.push(`Criterios compuestos del cribado que se cumplen (patrón compatible, no diagnóstico):\n${a.criterios.map(c => `  · ${c.etiqueta} (${c.positivas}/${c.total}): ${c.nota}`).join('\n')}`);
-  if (a.arbol?.length) b.push(`Hallazgos de la exploración (pregunta clínica → lo que encontró el fisioterapeuta):\n${a.arbol.map(x => `  · ${limpiarEtiqueta(x.pregunta)} → ${limpiarEtiqueta(x.respuesta)}${x.tratada ? ' (ya diagnosticada y tratada: es un antecedente)' : ''}`).join('\n')}`);
+  // La cabecera avisa de que la pregunta y la opción describen un patrón: con
+  // «Trauma rotacional con síntomas de bloqueo o chasquidos» escribió que Marta
+  // tuvo bloqueo y chasquidos (el formulario decía que no), y con «la cojera
+  // (unas 7 veces)…» que Daniel cojeaba.
+  if (a.arbol?.length) b.push(`Hallazgos de la exploración (pregunta clínica → lo que encontró el fisioterapeuta). ${AVISO_HALLAZGOS}\n${a.arbol.map(x => `  · ${limpiarEtiqueta(x.pregunta)} → ${limpiarEtiqueta(x.respuesta)}${x.tratada ? ' (ya diagnosticada y tratada: es un antecedente)' : ''}`).join('\n')}`);
   if (a.tests?.length) {
     // Un test con alternativas en el nombre («dolorosa o con menos movilidad»,
     // «supra o infrainguinal») es positivo con una sola: la regla del prompt
@@ -431,14 +453,14 @@ function cabeceraAudio(dictado, ficha) {
 function reglaAudio(conAudio, dictado) {
   if (!conAudio) return 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.';
   if (!dictado) return 'La transcripción complementa los datos estructurados.';
-  return 'El dictado complementa los datos estructurados. En él habla solo el fisioterapeuta: lo que dice en primera persona («he hecho», «mis indicaciones», «le sugiero», «pediremos») son sus hallazgos e indicaciones; lo que introduce con «refiere», «dice» o «comenta» es lo que refiere el paciente. Lo que dice que no ha hecho («no la he hecho») no se hizo: no lo describas como realizado ni lo menciones.';
+  return 'El dictado complementa los datos estructurados. En él habla solo el fisioterapeuta: lo que dice en primera persona («he hecho», «mis indicaciones», «le sugiero», «pediremos») son sus hallazgos e indicaciones; lo que introduce con «refiere», «dice» o «comenta» es lo que refiere el paciente. Lo que dice que no ha hecho («no la he hecho») no se hizo: no lo describas como realizado ni lo menciones. La transcripción puede convertir «he» en «ha» («no la ha hecho», «no la ha explorado»): es lo mismo, lo que el fisioterapeuta no hizo.';
 }
 
 // ── Prompt narrativo ──────────────────────────────────────────────────────────
 // `{{TRANSCRIPT}}` lo sustituye el worker por la transcripción de Whisper, o
 // por un aviso de «no disponible» cuando no se adjunta audio.
 export function buildNarrativePrompt(data, { conAudio, nombreRegion, ampliado, dictado = false } = {}) {
-  const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
+  const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado, { conAudio });
   const romCtx = contextoROM(data?.rom);
   const hasHypotheses = (data?.h || []).length > 0;
   const region = regionTexto(data, nombreRegion);
@@ -638,7 +660,7 @@ export const CODIGOS_CIF = [
 export const MAX_TOKENS_FICHA = 2500;   // holgado: ver MAX_TOKENS_INFORME
 
 export function buildFichaBrevePrompt(data, { conAudio, nombreRegion, ampliado, dictado = false } = {}) {
-  const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
+  const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado, { conAudio });
   const romCtx = contextoROM(data?.rom);
   const hasHypotheses = (data?.h || []).length > 0;
   const region = regionTexto(data, nombreRegion);

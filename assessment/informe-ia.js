@@ -377,7 +377,9 @@ export function construirAmpliado() {
       // Si lo que la respuesta «orienta a» ya está diagnosticado y tratado, que
       // el prompt lo sepa (si no, lo lee como una sospecha abierta)
       const tratada = (op?.hypothesis || []).some(h => esTratada(h));
-      return { pregunta: st.question, respuesta: op?.label || state.treeAnswers[st.id], ...(tratada ? { tratada: true } : {}) };
+      // `iaPregunta`/`iaTexto`: el texto del paso o de la opción solo para el
+      // prompt, cuando el de pantalla lleva cifras o patrones didácticos
+      return { pregunta: st.iaPregunta || st.question, respuesta: op?.iaTexto || op?.label || state.treeAnswers[st.id], ...(tratada ? { tratada: true } : {}) };
     });
 
   const tests = [];

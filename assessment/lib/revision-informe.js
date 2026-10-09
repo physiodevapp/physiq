@@ -70,6 +70,10 @@ const SINTOMAS = [
   ['Hormigueo', /hormigue|parestesi|adormec|acorchad|entumec|piel dormida|se (?:le|me) duerme|mano dormida/],
   ['Dolor nocturno', /noche|nocturn|despiert|despertar/],
   ['Sedestación', /sedestaci|\bsentad[oa]s?\b/],
+  // Marta: «se le iba» al pivotar en Presentación y «niega que le falle o ceda» en Dolor
+  // (no «inestabilidad», «fallo» ni «cede» sueltos: test de inestabilidad, mareo o
+  // inestabilidad, entrenar hasta el fallo, el hormigueo que cede)
+  ['Fallo articular', /\bfall(?:a|e|aba|ado)\b|\bfallo (?:articular|de la)\b|se (?:le|me) (?:va|iba|fue)\b|como si (?:se )?(?:cediera|doblara)/],
 ];
 const NEGACION = /\b(niega|no refiere|no presenta|no describe|no nota|no manifiesta|no aparece|no le|no hay|sin)\b/;
 const frases = t => t.split(/(?<=[.!?])\s+|\n+/).map(f => f.replace(/^[#\s]+/, '').trim()).filter(Boolean);
@@ -126,6 +130,7 @@ export function frecuenciaInferida(texto, fuente) {
 }
 
 // Palabras distintivas del nombre de una hipótesis (para ver si se nombra)
+const RE_PROPIEDADES_TEST = /\b(m[aá]s|muy|alta|elevada|gran) (espec[ií]fic|sensib)\w*/i;
 const VACIAS = new Set(['sindrome', 'lesion', 'dolor', 'tendinopatia', 'rotura', 'del', 'de', 'la', 'las', 'los', 'con', 'por', 'y', 'o', 'en', 'test']);
 const clavesHipotesis = nombre => sinAcentos(limpiarEtiqueta(nombre)).replace(/[()]/g, ' ')
   .split(/[^a-z0-9ñ]+/).filter(w => w.length >= 4 && !VACIAS.has(w));
@@ -210,6 +215,10 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
       if (!clave) continue;
       const i = tn.indexOf(clave);
       if (i < 0) continue;
+      // Otra fila con esa misma palabra contestada «No» justifica la negación
+      // (Marta: chasquido al lesionarse «No sabría decir», y «crujidos,
+      // chasquidos o resaltes al moverla: No»)
+      if ((datos.fp || []).some(o => String(o.a).split(' · ').some(x => /:\s*No$/.test(x.trim()) && sinAcentos(x).includes(clave)))) continue;
       const frase = fraseEn(t, i);
       if (/\b(no|niega|sin|ni)\b/i.test(frase)) {
         out.push(punto('no-se', 'medio', `El paciente respondió «No sé» sobre «${etiqueta.trim()}» y el informe lo da como negativo.`, frase));
@@ -217,6 +226,42 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
       }
     }
   }
+
+  // Una fila del formulario marcada «Sí» que el informe niega sin dar las dos
+  // versiones (Daniel, tres veces: «Un chasquido o un clic que le duele: Sí» y
+  // en la consulta «no le duele»; el informe solo dio la segunda). Si la fila
+  // habla de dolor, lo que se mira es que el informe diga que no duele; si no,
+  // una negación antes de la palabra clave en la misma cláusula. Las dos
+  // versiones unidas por «aunque / pero…» no cuentan (aunque a veces solo es
+  // una concesión: el diálogo de Daniel, «…aunque no le resulta doloroso»).
+  contradicho: for (const { a } of datos.fp || []) {
+    for (const par of String(a).split(' · ')) {
+      const fila = /^(.*):\s*Sí$/.exec(par.trim());
+      if (!fila) continue;
+      const clave = sinAcentos(fila[1]).split(/[^a-z0-9ñ]+/).filter(w => w.length >= 6 && !VACIAS.has(w)).sort((x, y) => y.length - x.length)[0];
+      if (!clave) continue;
+      const dolor = /\bduele|dolor/.test(sinAcentos(fila[1]));
+      for (const f of frases(t)) {
+        const fn = sinAcentos(f);
+        const i = fn.indexOf(clave);
+        if (i < 0) continue;
+        const ini = fn.lastIndexOf(',', i) + 1;
+        const fin = fn.slice(i).search(/[,;]/);
+        const clausula = fn.slice(ini, fin < 0 ? fn.length : i + fin);
+        const niega = dolor
+          ? /\b(no (le )?(duele|resulta doloros\w*|es doloros\w*|molesta)|indolor\w*|sin dolor)\b/.test(clausula)
+          : /\b(niega|no refiere|no presenta|no nota|no le|sin)\b/.test(clausula.slice(0, i - ini));
+        if (niega && !/\b(aunque|pero|si bien|sin embargo)\b/.test(fn)) {
+          out.push(punto('formulario-contradicho', 'medio', `Antes de la consulta respondió «${fila[1].trim()}: Sí» y el informe lo niega sin dar las dos versiones; si en la consulta lo dijo distinto, van las dos en la misma frase.`, f.length > 220 ? f.slice(0, 217) + '…' : f));
+          break contradicho;
+        }
+      }
+    }
+  }
+  // Propiedades de un test que los datos nunca llevan (Daniel: «el test de
+  // extensión pasiva en Thomas modificado es el más específico»)
+  if ((r = primera(t, RE_PROPIEDADES_TEST)) && !RE_PROPIEDADES_TEST.test(fuente))
+    out.push(punto('test-propiedades', 'medio', 'Atribuye a un test una sensibilidad o especificidad que no está en los datos; describe solo el resultado.', r.cita));
 
   // ── Identificación: la añade la app fuera del texto ──
   const nombre = String(datos.p || '').trim();
@@ -232,13 +277,18 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // palabras de contenido hasta « o », la coma o el punto; los diagnósticos
   // graves ya los cubre la regla «diagnostico».
   const frasesInventadas = new Set();
+  const frasesRegla = new Set();
   for (const m of tn.matchAll(/\bpara descartar\s+([^.,;]{3,120})/g)) {
     const objeto = m[1].split(/\s+o\s+|\s+u\s+/)[0];
     const nuevas = objeto.split(/[^a-z0-9ñ]+/)
       .filter(w => w.length >= 6 && !GENERICAS_DESCARTAR.has(w) && !new RegExp(RE_DIAGNOSTICOS.source).test(w))
       .filter(w => !fuenteN.includes(w.slice(0, 6)));
+    const fraseD = fraseEn(t, m.index);
+    // Una regla de decisión que está en los datos dice ella misma qué descarta
+    // (Marta: «Los criterios de Ottawa para descartar fractura…»)
+    if (/\bottawa\b/i.test(fraseD) && /ottawa/.test(fuenteN)) { frasesRegla.add(fraseD); continue; }
     if (nuevas.length) {
-      const frase = fraseEn(t, m.index);
+      const frase = fraseD;
       frasesInventadas.add(frase);
       out.push(punto('descartar-inventado', 'medio', `Dice que algo se busca «descartar» (${nuevas.join(', ')}) y no consta en la valoración ni en la consulta.`, frase));
       break;
@@ -246,8 +296,9 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   }
   for (const m of t.matchAll(/\bdescart(?:a|an|ar|ado|ada|ados|adas|ando|e|en)\b/gi)) {
     if (frasesInventadas.has(fraseEn(t, m.index))) continue;   // ya lo dice «descartar-inventado»
+    if (frasesRegla.has(fraseEn(t, m.index))) continue;        // «Ottawa para descartar fractura»: lo dice la regla
     const antes = t.slice(Math.max(0, m.index - 12), m.index).toLowerCase();
-    if (/\bno (la|lo|las|los|se)?\s*$/.test(antes)) continue;     // «no la descarta» es correcto
+    if (/\b(no|tampoco) (la|lo|las|los|se)?\s*$/.test(antes)) continue;     // «no la descarta», «tampoco la descarta» son correctos
     if (/deriv|valoraci[oó]n m[eé]dica|urgencias/i.test(t.slice(t.lastIndexOf('.', m.index) + 1, m.index))) continue;   // «se deriva / requiere valoración médica… para descartar» es correcto
     out.push(punto('descarta', 'medio', 'Dice que algo se «descarta»: un resultado negativo «no muestra hallazgos que sugieran…».', fraseEn(t, m.index)));
     break;
