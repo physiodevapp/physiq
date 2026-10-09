@@ -18,7 +18,7 @@
 
 import { state } from './state.js';
 import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data.js';
-import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA } from './app.js';
+import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA, compartirTexto, registrarValoracionCompleta } from './app.js';
 import { esTratada, hipotesis, hipotesisActivas } from './phase4b.js';
 import { esPosquirurgico, cirugiaPayload, pautaHipPosq } from './lib/posquirurgico.js';
 import { revisarInforme, comprobacionesManuales } from './lib/revision-informe.js';
@@ -245,7 +245,6 @@ function pintarResultado() {
     </details>
     <div class="ia-acciones">
       <button class="phase5-copy-btn" onclick="iaCompartir()">📤 Compartir</button>
-      <button class="phase5-copy-btn" onclick="iaCopiar()">Copiar</button>
       <button class="phase5-copy-btn ia-btn-descartar" onclick="iaDescartarInforme()">Descartar</button>
     </div>
     ${BOTON_PAQUETE}`;
@@ -451,19 +450,23 @@ function textoInforme() {
   return textoParaCompartir(state.informeIA?.texto || '', state.informeIA?.datos || buildPhysiQPayload(), nombreRegion);
 }
 
+// Compartir y copiar en una sola acción (compartirTexto, app.js): hoja de
+// compartir en táctil, copiar con ratón. También desde «📄 Informe» de la
+// cabecera de la fase 5 (compartirInformeIA).
 function iaCompartir() {
-  const text = textoInforme();
-  if (navigator.share) {
-    navigator.share({ title: 'Informe de fisioterapia — PhysiQ-Assessment', text }).catch(() => {});
-  } else {
-    iaCopiar();
-  }
+  registrarValoracionCompleta();
+  compartirTexto(textoInforme(), { titulo: 'Informe de fisioterapia — PhysiQ-Assessment', copiado: '✓ Informe narrativo copiado al portapapeles' });
 }
+export function compartirInformeIA() { if (state.informeIA?.texto) iaCompartir(); }
 
-function iaCopiar() {
-  navigator.clipboard.writeText(textoInforme())
-    .then(() => showToast('✓ Informe narrativo copiado al portapapeles', 'success'))
-    .catch(() => showToast('No se pudo copiar el informe.', 'warning'));
+// Para el menú de «📄 Informe»: cuántos puntos a revisar tiene el informe IA
+export function estadoRevisionIA() {
+  const inf = state.informeIA;
+  if (!inf?.texto) return { puntos: 0, altos: 0 };
+  try {
+    const p = puntosRevision(inf);
+    return { puntos: p.length, altos: p.filter(x => x.nivel === 'alto').length };
+  } catch { return { puntos: 0, altos: 0 }; }
 }
 
 function iaDescartarInforme() {
@@ -874,5 +877,5 @@ export function resetInformeIA() {
 Object.assign(window, {
   iaMostrarClave, iaGuardarClave, iaReintentarLicencia,
   iaArchivo, iaQuitarAudio, iaConsent,
-  iaGenerar, iaCancelar, iaCompartir, iaCopiar, iaDescartarInforme, iaPlantilla, iaModoAudio, iaPaqueteRevision,
+  iaGenerar, iaCancelar, iaCompartir, iaDescartarInforme, iaPlantilla, iaModoAudio, iaPaqueteRevision,
 });

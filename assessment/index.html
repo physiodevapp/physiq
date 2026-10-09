@@ -720,8 +720,8 @@
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0.5rem;flex-wrap:wrap;">
       <h1 class="phase-title" style="margin-bottom:0;">Informe de Valoración</h1>
       <div style="display:flex;gap:8px;flex-shrink:0;">
-        <button class="phase5-copy-btn" onclick="copyInformeFisioterapia()" title="Copiar informe para el paciente y su médico de cabecera">📄 <span class="btn-text-full">Copiar informe</span><span class="btn-text-short">Informe</span></button>
-        <button class="phase5-copy-btn" onclick="copyContextToClipboard()" title="Copiar notas clínicas">📋 <span class="btn-text-full">Copiar notas</span><span class="btn-text-short">Notas</span></button>
+        <button class="phase5-copy-btn" id="btnInforme" onclick="compartirInforme(this)" title="Compartir o copiar el informe (para el paciente y su médico, o el informe clínico con IA si lo hay)">📄 Informe</button>
+        <button class="phase5-copy-btn" id="btnNotas" onclick="compartirNotas()" title="Compartir o copiar las notas clínicas">📋 Notas</button>
       </div>
     </div>
     <p class="phase-subtitle">Resumen clínico completo generado a partir de la valoración.</p>

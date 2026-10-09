@@ -2038,14 +2038,8 @@ function buildResults() {
   const container = document.getElementById('resultsContent');
   container.innerHTML = '';
 
-  // Outside the hub there's no report app to relay the assessment to — offer
-  // sharing it directly instead of the hub-only "enviado al informe" flow.
-  const btnFinalizar = document.getElementById('btnFinalizar');
-  if (btnFinalizar) {
-    const inHub = document.body.classList.contains('in-hub');
-    btnFinalizar.textContent = inHub ? 'Finalizar valoración →' : '📤 Compartir informe';
-    btnFinalizar.title = inHub ? '' : 'Comparte el resumen clínico por email, WhatsApp, etc.';
-  }
+  // #btnFinalizar solo se ve en el hub (CSS): fuera, compartir está en
+  // «📄 Informe» / «📋 Notas» de la cabecera de la fase.
 
   // Sort hypotheses by score (`pq1`, la posquirúrgica, siempre la primera)
   const sorted = hipotesisActivas()
@@ -2243,32 +2237,21 @@ function buildResults() {
   _montarInformeIA();
 }
 
-function finalizarValoracion() {
-  const btn = document.getElementById('btnFinalizar');
+// Guarda la valoración completa en IDB y la anuncia por BroadcastChannel:
+// physiq-report la lee de IDB al abrirse aunque nadie escuche ahora. En el hub
+// lo hace «Finalizar valoración»; fuera, cada vez que se comparte desde la fase 5.
+export function registrarValoracionCompleta() {
   const _assessmentPayload = buildPhysiQPayload();
-  const now = new Date();
-  // Always persist — physiq-report reads this from IDB on its own load too,
-  // independent of the broadcast below, so this is never wasted even when
-  // nothing is listening for the broadcast right now (standalone use).
-  writeSession({ assessment: _assessmentPayload, patient: state.patient || '', date: now.toLocaleDateString('es-ES') })
+  writeSession({ assessment: _assessmentPayload, patient: state.patient || '', date: new Date().toLocaleDateString('es-ES') })
     .then(session => {
       if (session) updateSessionChip(session);
       _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT', assessment: _assessmentPayload });
     });
+}
 
-  // Outside the hub there's no report app around to relay to — share the
-  // patient/GP-facing report directly (not the clinician shorthand) instead
-  // of the "enviado al informe" confirmation.
-  if (!document.body.classList.contains('in-hub')) {
-    const text = buildInformeFisioterapiaText();
-    if (navigator.share) {
-      navigator.share({ title: 'Informe de valoración — PhysiQ-Assessment', text }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text).then(() => showToast('✓ Informe copiado al portapapeles', 'success'));
-    }
-    return;
-  }
-
+function finalizarValoracion() {
+  const btn = document.getElementById('btnFinalizar');
+  registrarValoracionCompleta();
   if (btn) {
     btn.textContent = '✓ Enviado al informe';
     btn.disabled = true;
@@ -2902,10 +2885,24 @@ Ventana recuperación: ${d.pn?.ventanaRecuperacion || '—'}
 Anclaje hábito: ${d.pn?.anclajeHabito || '—'}`;
 }
 
-function copyContextToClipboard() {
-  navigator.clipboard.writeText(buildContextSummaryText()).then(() => {
-    showCopyFeedback();
-  });
+// Compartir y copiar son una sola acción: en táctil (fuera del hub) la hoja de
+// compartir del sistema, que ya incluye «Copiar»; con ratón, o en el hub (el
+// iframe suele bloquear navigator.share), se copia y se avisa. Mismo criterio
+// que «⬇ Exportar».
+export async function compartirTexto(text, { titulo, copiado }) {
+  if (!_enHub() && window.matchMedia?.('(pointer: coarse)').matches && navigator.share) {
+    try { await navigator.share({ title: titulo, text }); return; }
+    catch (e) { if (e?.name === 'AbortError') return; }
+  }
+  try { await navigator.clipboard.writeText(text); showToast(copiado, 'success'); }
+  catch { showToast('No se ha podido copiar el texto.', 'warning'); }
+}
+
+// «📋 Notas»: el resumen clínico abreviado
+function compartirNotas() {
+  _cerrarMenuInforme();
+  if (!_enHub()) registrarValoracionCompleta();
+  compartirTexto(buildContextSummaryText(), { titulo: 'Notas clínicas — PhysiQ-Assessment', copiado: '✓ Notas clínicas copiadas al portapapeles' });
 }
 
 // Same underlying data as buildContextSummaryText(), but reworded for a
@@ -2977,14 +2974,60 @@ PLAN DE TRATAMIENTO Y RECOMENDACIONES${planQx}
 Informe generado con PhysiQ-Assessment el ${d.d}.`;
 }
 
-function copyInformeFisioterapia() {
-  navigator.clipboard.writeText(buildInformeFisioterapiaText()).then(() => {
-    showToast('✓ Informe copiado — listo para pegar en tu plantilla', 'success');
-  });
+// «📄 Informe»: sin informe IA, el informe para el paciente / médico. Con
+// informe IA (solo fuera del hub) se elige cuál: son documentos para lectores
+// distintos, así que nunca se sustituye uno por otro sin preguntar.
+function compartirInformePaciente() {
+  _cerrarMenuInforme();
+  if (!_enHub()) registrarValoracionCompleta();
+  compartirTexto(buildInformeFisioterapiaText(), { titulo: 'Informe de fisioterapia — PhysiQ-Assessment', copiado: '✓ Informe copiado — listo para pegar en tu plantilla' });
 }
 
-function showCopyFeedback() {
-  showToast('✓ Contexto clínico copiado al portapapeles', 'success');
+async function compartirInforme(btn) {
+  if (_enHub() || !state.informeIA?.texto) { compartirInformePaciente(); return; }
+  if (document.getElementById('informeMenu')) { _cerrarMenuInforme(); return; }
+  let rev = { puntos: 0, altos: 0 };
+  try { rev = (await _cargarInformeIA()).estadoRevisionIA(); } catch { /* sin recuento */ }
+  const menu = document.createElement('div');
+  menu.id = 'informeMenu';
+  menu.className = 'grab-menu informe-menu';
+  menu.setAttribute('role', 'menu');
+  const detalleIA = rev.puntos
+    ? `<span class="informe-menu-aviso${rev.altos ? ' alto' : ''}">⚠ ${rev.puntos} ${rev.puntos === 1 ? 'punto' : 'puntos'} a revisar</span>`
+    : 'Documentación clínica, revisada sin incidencias automáticas';
+  menu.innerHTML = `
+    <div class="grab-menu-titulo">¿Qué informe?</div>
+    <button type="button" class="informe-menu-op" role="menuitem" onclick="compartirInformePaciente()">
+      <span class="informe-menu-nombre">Para el paciente / médico</span>
+      <span class="informe-menu-sub">Resumen estructurado de la valoración</span>
+    </button>
+    <button type="button" class="informe-menu-op" role="menuitem" onclick="compartirInformeIA()">
+      <span class="informe-menu-nombre">Informe clínico (IA)</span>
+      <span class="informe-menu-sub">${detalleIA}</span>
+    </button>`;
+  document.body.appendChild(menu);
+  const r = btn.getBoundingClientRect();
+  menu.style.top = `${Math.round(r.bottom + 6)}px`;
+  menu.style.right = `${Math.max(16, Math.round(innerWidth - r.right))}px`;
+  setTimeout(() => document.addEventListener('pointerdown', _fueraMenuInforme), 0);
+  document.addEventListener('keydown', _escMenuInforme);
+  window.addEventListener('scroll', _cerrarMenuInforme, { passive: true });   // es fijo: no se queda flotando
+}
+
+function compartirInformeIA() {
+  _cerrarMenuInforme();
+  _cargarInformeIA().then(m => m.compartirInformeIA()).catch(() => {});
+}
+
+function _fueraMenuInforme(e) {
+  if (!e.target.closest('#informeMenu, .phase5-copy-btn')) _cerrarMenuInforme();
+}
+function _escMenuInforme(e) { if (e.key === 'Escape') _cerrarMenuInforme(); }
+function _cerrarMenuInforme() {
+  document.getElementById('informeMenu')?.remove();
+  document.removeEventListener('pointerdown', _fueraMenuInforme);
+  document.removeEventListener('keydown', _escMenuInforme);
+  window.removeEventListener('scroll', _cerrarMenuInforme);
 }
 
 function showToast(message, tone) {
@@ -3423,8 +3466,8 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, resumenFo
 // and dynamically-generated HTML — those resolve only against the global
 // scope, never a module's private scope.
 Object.assign(window, {
-  abrirFormularioPrevio, abrirRazonamiento, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, copyContextToClipboard,
-  copyInformeFisioterapia, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirFormularioPrevio, abrirRazonamiento, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
+  compartirInforme, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
