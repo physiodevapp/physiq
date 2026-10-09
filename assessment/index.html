@@ -155,6 +155,16 @@
   </div>
 </div>
 
+<!-- COMPARTIR (fase 5): hoja inferior en móvil, diálogo centrado en ancho —
+     mismo patrón que el panel de sesión. Las opciones las pinta abrirMenuCompartir() -->
+<div class="session-panel-overlay" id="compartirOverlay" onclick="cerrarMenuCompartir()">
+  <div class="session-panel compartir-panel" id="compartirPanel" role="dialog" aria-modal="true" aria-labelledby="compartirTitulo" tabindex="-1" onclick="event.stopPropagation()">
+    <div class="session-panel-handle"></div>
+    <div class="session-panel-title" id="compartirTitulo">¿Qué quieres compartir?</div>
+    <div class="compartir-opciones" id="compartirOpciones"></div>
+  </div>
+</div>
+
 <main class="main">
 
 <!-- ==================== FASE 1: TRIAGE ==================== -->
@@ -725,7 +735,7 @@
   <div id="informeIA"></div>
   <div class="nav-buttons">
     <button class="btn btn-secondary" onclick="goToPhase('4b')">← Anterior</button>
-    <button class="btn btn-primary" id="btnCompartir" onclick="abrirMenuCompartir(this)" aria-haspopup="menu" title="Compartir o copiar el informe para el paciente / médico, el informe clínico con IA o las notas clínicas">📤 Compartir</button>
+    <button class="btn btn-primary" id="btnCompartir" onclick="abrirMenuCompartir()" aria-haspopup="dialog" aria-controls="compartirOverlay" title="Compartir o copiar el informe para el paciente / médico, el informe clínico con IA o las notas clínicas">📤 Compartir</button>
   </div>
 </div>
 

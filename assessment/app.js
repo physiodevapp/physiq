@@ -72,10 +72,12 @@ _sessionCh.onmessage = ({ data }) => {
 };
 
 window.addEventListener('popstate', e => {
-  // Sheet del razonamiento (fase 2, móvil): el atrás lo cierra sin cambiar de
-  // fase, y nuestro propio history.back() al cerrarlo con × no navega.
-  if (_razonPopIgnorar) { _razonPopIgnorar = false; return; }
+  // Sheets del razonamiento (fase 2) y de compartir (fase 5), en móvil: el
+  // atrás los cierra sin cambiar de fase, y nuestro propio history.back() al
+  // cerrarlos de otra forma no navega.
+  if (_popIgnorar) { _popIgnorar = false; return; }
   if (_razonHistorial) { cerrarRazonamiento({ desdeHistorial: true }); return; }
+  if (_compartirHistorial) { cerrarMenuCompartir({ desdeHistorial: true }); return; }
   if (_pendingBackNav) {
     // history.go() de limpieza de stack aterrizó; reemplazar y actualizar profundidad
     const { phase: p, idx: i } = _pendingBackNav;
@@ -1304,7 +1306,7 @@ function buildSistemaHTML(sis) {
 const _esMovil = () => window.matchMedia ? window.matchMedia('(max-width: 768px)').matches : false;
 let _razonOrigen = null;       // botón «Ampliar» que abrió el panel (para devolverle el foco)
 let _razonHistorial = false;   // el sheet móvil empujó una entrada al historial
-let _razonPopIgnorar = false;  // el próximo popstate es nuestro history.back(), no el usuario
+let _popIgnorar = false;      // el próximo popstate es nuestro history.back() (razonamiento o compartir), no el usuario
 
 function razonamientoInlineHTML(sis, q) {
   const r = q.razonamiento;
@@ -1400,7 +1402,7 @@ function cerrarRazonamiento({ desdeHistorial = false, sinHistorial = false } = {
   if (eraModal) { unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); }
   if (_razonHistorial) {
     _razonHistorial = false;
-    if (!desdeHistorial && !sinHistorial) { _razonPopIgnorar = true; history.back(); }
+    if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
   }
   if (_razonOrigen && document.contains(_razonOrigen) && !sinHistorial) _razonOrigen.focus({ preventScroll: true });
   _razonOrigen = null;
@@ -2264,7 +2266,7 @@ export function registrarValoracionCompleta() {
 // Hub: «Enviar al informe» del menú de «📤 Compartir». physiq-report lo lee
 // de IDB; la navegación hasta él es cosa del hub.
 function finalizarValoracion() {
-  _cerrarMenuCompartir();
+  cerrarMenuCompartir();
   registrarValoracionCompleta();
   showToast('✓ Valoración enviada al informe', 'success');
 }
@@ -2703,6 +2705,7 @@ function toggleSessionPanel() {
 // showing when the user returns.
 function _closeAllOverlays() {
   cerrarRazonamiento({ sinHistorial: true });
+  cerrarMenuCompartir({ sinHistorial: true });
   closePhaseSheet();
   closeSessionPanel();
   const banner = document.getElementById('confirmBanner');
@@ -2910,7 +2913,7 @@ export async function compartirTexto(text, { titulo, copiado }) {
 
 // «Notas clínicas» del menú de «📤 Compartir»: el resumen clínico abreviado
 function compartirNotas() {
-  _cerrarMenuCompartir();
+  cerrarMenuCompartir();
   registrarValoracionCompleta();
   compartirTexto(buildContextSummaryText(), { titulo: 'Notas clínicas — PhysiQ-Assessment', copiado: '✓ Notas clínicas copiadas al portapapeles' });
 }
@@ -2988,63 +2991,73 @@ Informe generado con PhysiQ-Assessment el ${d.d}.`;
 // cada documento — son para lectores distintos, así que siempre se elige.
 // Cada opción registra la valoración completa (registrarValoracionCompleta).
 function compartirInformePaciente() {
-  _cerrarMenuCompartir();
+  cerrarMenuCompartir();
   registrarValoracionCompleta();
   compartirTexto(buildInformeFisioterapiaText(), { titulo: 'Informe de fisioterapia — PhysiQ-Assessment', copiado: '✓ Informe copiado — listo para pegar en tu plantilla' });
 }
 
-const _opcionMenu = (accion, nombre, sub) => `
-    <button type="button" class="informe-menu-op" role="menuitem" onclick="${accion}()">
-      <span class="informe-menu-nombre">${nombre}</span>
-      <span class="informe-menu-sub">${sub}</span>
+const _opcionCompartir = (accion, nombre, sub) => `
+    <button type="button" class="compartir-op" onclick="${accion}()">
+      <span class="compartir-op-nombre">${nombre}</span>
+      <span class="compartir-op-sub">${sub}</span>
     </button>`;
 
-async function abrirMenuCompartir(btn) {
-  if (document.getElementById('informeMenu')) { _cerrarMenuCompartir(); return; }
+// Hoja inferior en móvil / diálogo centrado en ancho (mismo patrón y CSS que
+// el panel de sesión). En móvil empuja una entrada al historial, como el
+// panel del razonamiento: el atrás de Android la cierra sin cambiar de fase.
+let _compartirHistorial = false;
+async function abrirMenuCompartir() {
+  const overlay = document.getElementById('compartirOverlay');
+  if (!overlay || overlay.classList.contains('open')) return;
   const conIA = !_enHub() && !!state.informeIA?.texto;
   let rev = { puntos: 0, altos: 0 };
   if (conIA) { try { rev = (await _cargarInformeIA()).estadoRevisionIA(); } catch { /* sin recuento */ } }
   const detalleIA = rev.puntos
-    ? `<span class="informe-menu-aviso${rev.altos ? ' alto' : ''}">⚠ ${rev.puntos} ${rev.puntos === 1 ? 'punto' : 'puntos'} a revisar</span>`
+    ? `<span class="compartir-op-aviso${rev.altos ? ' alto' : ''}">⚠ ${rev.puntos} ${rev.puntos === 1 ? 'punto' : 'puntos'} a revisar</span>`
     : 'Documentación clínica, revisada sin incidencias automáticas';
-  const menu = document.createElement('div');
-  menu.id = 'informeMenu';
-  menu.className = 'grab-menu informe-menu';
-  menu.setAttribute('role', 'menu');
-  menu.innerHTML = `
-    <div class="grab-menu-titulo">¿Qué quieres compartir?</div>`
-    + _opcionMenu('compartirInformePaciente', 'Para el paciente / médico', 'Informe de fisioterapia en lenguaje llano')
-    + (conIA ? _opcionMenu('compartirInformeIA', 'Informe clínico (IA)', detalleIA) : '')
-    + _opcionMenu('compartirNotas', 'Notas clínicas', 'Resumen abreviado para ti, con puntuaciones')
-    + (_enHub() ? _opcionMenu('finalizarValoracion', 'Enviar al informe', 'Deja la valoración lista en physiq-report') : '');
-  document.body.appendChild(menu);
-  // Abre hacia donde hay sitio: en móvil el botón está en la barra fija de abajo
-  const r = btn.getBoundingClientRect();
-  if (r.top > innerHeight / 2) menu.style.bottom = `${Math.round(innerHeight - r.top + 6)}px`;
-  else menu.style.top = `${Math.round(r.bottom + 6)}px`;
-  menu.style.right = `${Math.max(16, Math.round(innerWidth - r.right))}px`;
-  btn.setAttribute('aria-expanded', 'true');
-  setTimeout(() => document.addEventListener('pointerdown', _fueraMenuCompartir), 0);
-  document.addEventListener('keydown', _escMenuCompartir);
-  window.addEventListener('scroll', _cerrarMenuCompartir, { passive: true });   // es fijo: no se queda flotando
+  document.getElementById('compartirOpciones').innerHTML =
+    _opcionCompartir('compartirInformePaciente', 'Para el paciente / médico', 'Informe de fisioterapia en lenguaje llano')
+    + (conIA ? _opcionCompartir('compartirInformeIA', 'Informe clínico (IA)', detalleIA) : '')
+    + _opcionCompartir('compartirNotas', 'Notas clínicas', 'Resumen abreviado para ti, con puntuaciones')
+    + (_enHub() ? _opcionCompartir('finalizarValoracion', 'Enviar al informe', 'Deja la valoración lista en physiq-report') : '');
+  overlay.classList.add('open');
+  document.getElementById('btnCompartir')?.setAttribute('aria-expanded', 'true');
+  lockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  if (_esMovil()) {
+    history.pushState({ phase: state.currentPhase, compartir: true }, '');
+    _compartirHistorial = true;
+  }
+  document.getElementById('compartirPanel').focus({ preventScroll: true });
+}
+
+// `desdeHistorial`: lo llama el popstate del atrás. `sinHistorial`: cierre
+// forzado (el hub nos oculta) sin tocar el historial.
+function cerrarMenuCompartir({ desdeHistorial = false, sinHistorial = false } = {}) {
+  const overlay = document.getElementById('compartirOverlay');
+  if (!overlay?.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  const panel = document.getElementById('compartirPanel');
+  panel.style.transform = ''; panel.style.transition = '';
+  unlockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
+  if (_compartirHistorial) {
+    _compartirHistorial = false;
+    if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
+  }
+  const btn = document.getElementById('btnCompartir');
+  btn?.setAttribute('aria-expanded', 'false');
+  if (!sinHistorial) btn?.focus({ preventScroll: true });
 }
 
 function compartirInformeIA() {
-  _cerrarMenuCompartir();
+  cerrarMenuCompartir();
   _cargarInformeIA().then(m => m.compartirInformeIA()).catch(() => {});
 }
 
-function _fueraMenuCompartir(e) {
-  if (!e.target.closest('#informeMenu, #btnCompartir')) _cerrarMenuCompartir();
-}
-function _escMenuCompartir(e) { if (e.key === 'Escape') _cerrarMenuCompartir(); }
-function _cerrarMenuCompartir() {
-  document.getElementById('informeMenu')?.remove();
-  document.getElementById('btnCompartir')?.setAttribute('aria-expanded', 'false');
-  document.removeEventListener('pointerdown', _fueraMenuCompartir);
-  document.removeEventListener('keydown', _escMenuCompartir);
-  window.removeEventListener('scroll', _cerrarMenuCompartir);
-}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('compartirOverlay')?.classList.contains('open')) cerrarMenuCompartir();
+});
 
 function showToast(message, tone) {
   const existing = document.getElementById('appToast');
@@ -3483,7 +3496,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, resumenFo
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
@@ -3553,5 +3566,7 @@ Object.assign(window, {
   if (sheet) initSwipe(sheet, closePhaseSheet);
   const razon = document.getElementById('razonPanel');
   if (razon) initSwipe(razon, () => cerrarRazonamiento(), _esMovil);
+  const compartir = document.getElementById('compartirPanel');
+  if (compartir) initSwipe(compartir, () => cerrarMenuCompartir(), _esMovil);
 }());
 

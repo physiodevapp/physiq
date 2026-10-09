@@ -2648,19 +2648,22 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: flex; }
 .grab-menu-nota { font-size: 0.78rem; color: var(--text2); margin-top: 8px; line-height: 1.4; }
 .grab-menu-aviso { font-size: 0.78rem; color: var(--alert-warning-text); margin-top: 8px; line-height: 1.4; }
 .grab-menu-acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-/* «📤 Compartir» de la fase 5: elegir qué documento se comparte
-   (abrirMenuCompartir, app.js). Reutiliza la caja de .grab-menu. */
-.informe-menu-op {
+/* «📤 Compartir» de la fase 5 (abrirMenuCompartir, app.js): hoja inferior en
+   móvil y diálogo centrado en ancho, con la caja y el velo del panel de sesión
+   (.session-panel-overlay / .session-panel); aquí solo las opciones. */
+.compartir-opciones { display: flex; flex-direction: column; gap: 8px; }
+.compartir-op {
   display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%;
-  margin-top: 8px; padding: 10px 12px; min-height: 44px; text-align: left; cursor: pointer;
+  padding: 12px 14px; min-height: 52px; text-align: left; cursor: pointer;
   background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius);
-  color: var(--text); font-family: inherit; font-size: 0.85rem;
+  color: var(--text); font-family: inherit; font-size: 0.9rem;
 }
-.informe-menu-nombre { font-weight: 500; }
-.informe-menu-sub { font-size: 0.75rem; color: var(--text3); }
-.informe-menu-aviso { color: var(--alert-warning-text); }
-.informe-menu-aviso.alto { color: var(--red); }
-@media (hover: hover) { .informe-menu-op:hover { border-color: var(--accent); } }
+.compartir-op-nombre { font-weight: 500; }
+.compartir-op-sub { font-size: 0.78rem; color: var(--text3); }
+.compartir-op-aviso { color: var(--alert-warning-text); }
+.compartir-op-aviso.alto { color: var(--red); }
+.compartir-panel:focus { outline: none; }
+@media (hover: hover) { .compartir-op:hover { border-color: var(--accent); } }
 .ia-audio-pista { font-size: 0.8rem; color: var(--text3); margin-top: 4px; line-height: 1.45; }
 .ia-licencia-motivo { margin-top: 4px; font-size: 0.8rem; opacity: 0.9; }
 /* Con una grabación en marcha la cabecera lleva un elemento más (la píldora
