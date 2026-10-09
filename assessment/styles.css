@@ -524,7 +524,10 @@
     max-width: 100%;
     line-height: 1.3;
   }
-  .option-btn:hover { border-color: var(--accent); color: var(--text); }
+  /* :hover solo con ratón: en táctil se queda pegado en el último botón tocado
+     y un botón recién deseleccionado parecía seguir marcado (borde de color).
+     Igual en .nrs-btn, .test-result-btn, .fp-escala-btn y .region-card. */
+  @media (hover: hover) { .option-btn:hover { border-color: var(--accent); color: var(--text); } }
   .option-btn.selected {
     background: rgba(79,156,249,0.12);
     border-color: var(--accent);
@@ -632,7 +635,7 @@
     transition: all 0.2s;
     text-align: center;
   }
-  .region-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  @media (hover: hover) { .region-card:hover { border-color: var(--accent); transform: translateY(-2px); } }
   .region-card.selected {
     background: rgba(79,156,249,0.1);
     border-color: var(--accent);
@@ -905,7 +908,7 @@
   .test-result-btn.pos.selected { background: rgba(56,217,169,0.12); border-color: var(--green); color: var(--green); }
   .test-result-btn.neg.selected { background: rgba(255,107,107,0.12); border-color: var(--red); color: var(--red); }
   .test-result-btn.nd.selected { background: rgba(90,110,138,0.2); border-color: var(--text3); color: var(--text2); }
-  .test-result-btn:hover { border-color: var(--text2); color: var(--text2); }
+  @media (hover: hover) { .test-result-btn:hover { border-color: var(--text2); color: var(--text2); } }
 
   /* Phase 5 header actions — "Copiar informe" (patient/GP) vs "Copiar notas"
      (clinician shorthand); full wording on wider screens, short single-word
@@ -1630,7 +1633,7 @@
     align-items: center;
     justify-content: center;
   }
-  .nrs-btn:hover { border-color: var(--text3); color: var(--text); }
+  @media (hover: hover) { .nrs-btn:hover { border-color: var(--text3); color: var(--text); } }
   /* Color gradient: 0-2 green, 3-4 yellow-green, 5-6 yellow, 7-8 orange, 9-10 red */
   .nrs-btn.nrs-0, .nrs-btn.nrs-1, .nrs-btn.nrs-2 {
     border-color: rgba(56,217,169,0.3);
@@ -2219,7 +2222,7 @@
   align-items: center;
   justify-content: center;
 }
-.fp-escala-btn:hover { border-color: var(--text3); color: var(--text); }
+@media (hover: hover) { .fp-escala-btn:hover { border-color: var(--text3); color: var(--text); } }
 .fp-escala-btn.sev-b0 { border-color: rgba(56,217,169,0.3); }
 .fp-escala-btn.sev-b1 { border-color: rgba(180,220,80,0.3); }
 .fp-escala-btn.sev-b2 { border-color: rgba(255,212,59,0.3); }
@@ -2539,6 +2542,21 @@
 .ia-plantilla-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
 .ia-plantilla-palabras { font-size: 0.72rem; color: var(--text3); margin-left: 4px; }
 .ia-plantilla .option-btn.selected .ia-plantilla-palabras { color: inherit; opacity: 0.75; }
+.ia-op-corto { display: none; }
+/* Selectores «Tipo de informe» y «Qué hay en el audio» en pantalla estrecha:
+   dos columnas iguales, como un selector de dos opciones, con la etiqueta en
+   dos líneas (nombre + detalle), para que quepan en una fila a 320 px. */
+@media (max-width: 480px) {
+  .ia-plantilla-opciones { display: grid; grid-template-columns: 1fr 1fr; }
+  .ia-plantilla-opciones .option-btn {
+    width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; line-height: 1.25; padding: 8px 6px; white-space: normal;
+  }
+  .ia-plantilla-opciones .ia-op-full { display: none; }
+  .ia-plantilla-opciones .ia-op-corto { display: contents; }
+  .ia-plantilla-opciones .ia-op-sub { display: block; margin: 2px 0 0; font-size: 0.72rem; color: var(--text3); font-weight: 400; }
+  .ia-plantilla-opciones .option-btn.selected .ia-op-sub { color: inherit; opacity: 0.75; }
+}
 
 /* Informe generado: plegado, con título y metadatos en la cabecera */
 .ia-resultado-det {

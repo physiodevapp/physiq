@@ -254,7 +254,7 @@ NOTA: estos datos proceden de una valoración clínica estructurada. Los resulta
 Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.edad} años` : ''}${ampliado?.sexo ? ` · Sexo: ${ampliado.sexo.toLowerCase()}` : ampliado ? ` · Sexo: no consta (no lo deduzcas del nombre; redacta sin marcar el género)` : ''} · Región: ${regionTexto(data, nombreRegion)} · Fecha: ${data.d || '—'}
 Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
-NRS: ${data.nr ?? '—'}/10
+NRS: ${data.nr != null ? `${data.nr}/10` : 'no registrado'}
 Irritabilidad: ${data.ir || '—'} · Naturaleza: ${data.na || '—'}
 Riesgo psicosocial: ${data.rp || '—'}
 Banderas rojas:
@@ -417,9 +417,10 @@ ${rows}
 // informe atribuía al médico indicaciones del fisio y daba por hechas pruebas
 // que no se hicieron. Dictado por el fisio (Daniel, decimosexta revisión) salió
 // bien sin tocar las reglas; el prompt solo tiene que saber quién habla.
+// `corto` + `sub`: la etiqueta en dos líneas del selector en pantallas estrechas
 export const MODOS_AUDIO = {
-  dialogo: { nombre: 'Consulta (diálogo)' },
-  dictado: { nombre: 'Dictado del fisioterapeuta' },
+  dialogo: { nombre: 'Consulta (diálogo)', corto: 'Consulta', sub: 'diálogo' },
+  dictado: { nombre: 'Dictado del fisioterapeuta', corto: 'Dictado', sub: 'del fisioterapeuta' },
 };
 
 function cabeceraAudio(dictado, ficha) {

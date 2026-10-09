@@ -1769,12 +1769,15 @@ function updateSistemicoAlert() {
 // ─── PHASE 3 HELPERS ─────────────────────────────────────────
 
 
+// Un segundo toque sobre el número marcado lo deja «no registrado» (null):
+// el NRS es opcional y un 0 por defecto llegaba a los resúmenes como dato.
 function selectNRS(btn, val) {
+  const quitar = state.severidad === val;
   document.querySelectorAll('.nrs-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.severidad = val;
+  if (!quitar) btn.classList.add('selected');
+  state.severidad = quitar ? null : val;
   const label = document.getElementById('nrsLabel');
-  if (label) label.textContent = `${val}/10 — ${NRS_LABELS[val]}`;
+  if (label) label.textContent = quitar ? '— Sin seleccionar —' : `${val}/10 — ${NRS_LABELS[val]}`;
   saveSession();
 }
 
@@ -1883,7 +1886,6 @@ function renderIrritabResumen(nivel) {
 }
 
 function collectPhase3() {
-  state.severidad = state.severidad ?? 0;
   state.signoComparable = document.getElementById('signoComparable').value;
 }
 
@@ -2104,7 +2106,7 @@ function buildResults() {
   <div class="summary-section">
     <div class="summary-section-title">📊 SINSS — Caracterización del Cuadro</div>
     <div class="summary-row"><span class="summary-label">Región valorada</span><span class="summary-value">${regionConLado(state.region, state.lado)}</span></div>
-    <div class="summary-row"><span class="summary-label">Severidad (EVN)</span><span class="summary-value">${state.severidad}/10</span></div>
+    <div class="summary-row"><span class="summary-label">Severidad (EVN)</span><span class="summary-value">${state.severidad != null ? `${state.severidad}/10` : 'No registrada'}</span></div>
     <div class="summary-row"><span class="summary-label">Irritabilidad</span><span class="summary-value">${state.irritabilidadNivel || '—'}${state.irritabilidadDirecta && state.irritabilidadNivel ? ' (estimada, sin matriz)' : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Naturaleza</span><span class="summary-value">${state.naturaleza || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Estabilidad</span><span class="summary-value">${state.estabilidad || '—'}</span></div>
@@ -2848,7 +2850,7 @@ function buildPhysiQPayload() {
     ...(getCirugiaPayload() ? { cq: getCirugiaPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
-    nr: state.severidad ?? 0,
+    nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
     ir: state.irritabilidadNivel && state.irritabilidadDirecta ? `${state.irritabilidadNivel} (estimada)` : state.irritabilidadNivel,
     na: state.naturaleza,
     si: state.sistemicoAlerta,
@@ -2891,7 +2893,7 @@ function buildContextSummaryText() {
     ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
-Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr}/10 · Irritabilidad: ${d.ir}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}
+Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA (árbol CIF): ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
@@ -2956,8 +2958,7 @@ ${d.mo || '—'}
 Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
 
 VALORACIÓN
-Intensidad del dolor referida: ${d.nr}/10
-Irritabilidad del cuadro: ${d.ir || '—'}
+${d.nr != null ? `Intensidad del dolor referida: ${d.nr}/10\n` : ''}Irritabilidad del cuadro: ${d.ir || '—'}
 Naturaleza del dolor: ${d.na || '—'}
 Riesgo psicosocial: ${d.rp || '—'}
 

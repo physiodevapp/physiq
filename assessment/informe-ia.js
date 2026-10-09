@@ -539,7 +539,7 @@ function pintarModoAudio() {
   el.innerHTML = `
     <div class="ia-plantilla-label">Qué hay en el audio</div>
     <div class="option-group ia-plantilla-opciones">
-      ${Object.entries(MODOS_AUDIO).map(([k, m]) => `<button type="button" class="option-btn${k === _modoAudio ? ' selected' : ''}" onclick="iaModoAudio('${k}')">${esc(m.nombre)}</button>`).join('')}
+      ${Object.entries(MODOS_AUDIO).map(([k, m]) => `<button type="button" class="option-btn${k === _modoAudio ? ' selected' : ''}" onclick="iaModoAudio('${k}')"><span class="ia-op-full">${esc(m.nombre)}</span><span class="ia-op-corto"><span class="ia-op-nombre">${esc(m.corto)}</span><span class="ia-op-sub">${esc(m.sub)}</span></span></button>`).join('')}
     </div>
     ${_modoAudio === 'dictado' ? `<ul class="ia-consejos-dictado">
       <li>Di también lo que no has hecho («la palpación por debajo no la he hecho»).</li>
@@ -627,7 +627,7 @@ function pintarPlantilla() {
   el.innerHTML = `
     <div class="ia-plantilla-label">Tipo de informe</div>
     <div class="option-group ia-plantilla-opciones">
-      ${Object.entries(PLANTILLAS).map(([k, p]) => `<button type="button" class="option-btn${k === actual ? ' selected' : ''}" onclick="iaPlantilla('${k}')">${esc(p.nombre)} <span class="ia-plantilla-palabras">~${p.palabras} palabras</span></button>`).join('')}
+      ${Object.entries(PLANTILLAS).map(([k, p]) => `<button type="button" class="option-btn${k === actual ? ' selected' : ''}" onclick="iaPlantilla('${k}')"><span class="ia-op-nombre">${esc(p.nombre)}</span> <span class="ia-plantilla-palabras ia-op-sub">~${p.palabras} palabras</span></button>`).join('')}
     </div>`;
 }
 
