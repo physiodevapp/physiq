@@ -11,7 +11,7 @@
 //   · buildNarrativePrompt  ← physiq-report/app.js, buildPrompt(), rama narrativa
 //   · contextoValoracion    ← physiq-report/lib/payload.js, buildClinicalContext()
 //   · contextoROM           ← physiq-report/lib/payload.js, buildROMContext()
-//   · WHISPER_PROMPTS       ← physiq-report/app.js, WHISPER_PROMPTS / getWhisperPrompt()
+//   · WHISPER_PROMPTS       ← physiq-report/app.js, WHISPER_PROMPTS / getWhisperPrompt() (más tobillo_pie, el añadido de cadera y la pista de dictado)
 // Ningún test puede vigilar los dos repos a la vez: si cambia la estructura del
 // informe narrativo en report, revisar este archivo a mano.
 //
@@ -137,6 +137,14 @@
 //     convirtió «hace tres semanas» en «tres semanas después del inicio»,
 //     inventó una derivación y volvió a llenar Limitaciones de «no refiere
 //     limitación al…» (las matrices de actividades llegan ya sin los «No»).
+//   · Decimosexta revisión (Daniel, el mismo caso dictado por el fisio): con
+//     el dictado la atribución de indicaciones y lo no realizado salieron bien
+//     (modo dictado: cabecera «DICTADO DEL FISIOTERAPEUTA», regla de quién
+//     habla y pista de Whisper); siguió usando el pronóstico como motivo de la
+//     ecografía pese a la marca de contexto (la línea «Pronóstico» ya no se
+//     envía), clasificó las constantes, dio solo una versión del chasquido
+//     (formulario frente a consulta) y repitió el criterio de no mejoría en el
+//     plan.
 
 import { ladoTexto } from './region.js';
 
@@ -166,8 +174,15 @@ const WHISPER_PROMPTS = {
 // la única pista que no viene de allí.
 WHISPER_PROMPTS.tobillo_pie = 'Fisioterapia. Tobillo y pie. Esguince lateral de tobillo, inestabilidad crónica de tobillo, sindesmosis, tendinopatía aquílea, rotura del tendón de Aquiles, fascitis plantar, tendinopatía peronea, tibial posterior, metatarsalgia, neuroma de Morton, fractura de estrés. Ligamento peroneoastragalino anterior, calcaneoperoneo, astrágalo, calcáneo, quinto metatarsiano. Reglas de Ottawa, cajón anterior, inversión forzada, squeeze test, test de Thompson, Royal London, windlass, lunge test. FAAM, CAIT, VISA-A, FFI.';
 
-export function getWhisperPrompt(region) {
-  return WHISPER_PROMPTS[region] || WHISPER_PROMPTS.default;
+// Añadido a la pista de cadera de report: con Daniel, Whisper escribió
+// «ingla» y «tomas modificado».
+WHISPER_PROMPTS.cadera += ' Ingle, dolor inguinal, psoas ilíaco, Thomas modificado, aductores, pubalgia.';
+
+// En dictado, la pista dice que narra el fisio en primera persona (Whisper
+// escribió «físio», «ingla» y «tomas modificado»).
+export function getWhisperPrompt(region, { dictado = false } = {}) {
+  const pista = WHISPER_PROMPTS[region] || WHISPER_PROMPTS.default;
+  return dictado ? `Dictado de un fisioterapeuta: el paciente refiere…, en la exploración…, mis indicaciones como fisio. ${pista}` : pista;
 }
 
 // Etiquetas de los datos clínicos escritas para la pantalla («A → B», «(→ Rx)»):
@@ -323,10 +338,10 @@ export function bloquesAmpliados(a, { urgente = false } = {}) {
         : '    · Diagnóstico ya confirmado y tratado por el médico.')
       : p.derivar ? '    · Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico.' : p.pauta ? `    · Pauta: ${p.pauta}` : '    · Pauta: a criterio del fisioterapeuta (la guía no la fija).',
       p.fuente ? `    · Fuente: ${p.fuente}` : '',
-      // Marcados como contexto: sin la marca, el informe convirtió el
-      // pronóstico en plan («ecografía para descartar bursitis o comunicación
-      // de la vaina», «vuelta al deporte con déficit de fuerza <10–20 %»)
-      p.pronostico?.horizonte ? `    · Pronóstico (contexto para el fisioterapeuta: no es plan ni explicación al paciente): ${p.pronostico.horizonte}` : '',
+      // El horizonte del pronóstico ya no se envía: aun marcado como contexto,
+      // el informe lo convertía en plan («ecografía para descartar bursitis»,
+      // «para valorar líquido alrededor del tendón del psoas»). «Cuándo
+      // reconsiderar» sí, marcado (vuelta al deporte con déficit <10–20 %).
       p.pronostico?.derivacion ? `    · Cuándo reconsiderar o derivar (contexto para el fisioterapeuta: no es plan ni explicación al paciente): ${p.pronostico.derivacion}` : '',
       p.prom ? `    · Escala recomendada para el seguimiento: ${p.prom}` : '',
     ].filter(Boolean).join('\n')).join('\n')}`);
@@ -397,10 +412,31 @@ ${rows}
 ---`;
 }
 
+// ── Audio: consulta (diálogo) o dictado del fisioterapeuta ───────────────────
+// En el diálogo, Whisper no separa las voces y la entonación se pierde: el
+// informe atribuía al médico indicaciones del fisio y daba por hechas pruebas
+// que no se hicieron. Dictado por el fisio (Daniel, decimosexta revisión) salió
+// bien sin tocar las reglas; el prompt solo tiene que saber quién habla.
+export const MODOS_AUDIO = {
+  dialogo: { nombre: 'Consulta (diálogo)' },
+  dictado: { nombre: 'Dictado del fisioterapeuta' },
+};
+
+function cabeceraAudio(dictado, ficha) {
+  if (dictado) return 'DICTADO DEL FISIOTERAPEUTA (transcripción de lo que narra el fisioterapeuta al terminar la consulta):';
+  return ficha ? 'TRANSCRIPCIÓN:' : 'TRANSCRIPCIÓN DE LA SESIÓN:';
+}
+
+function reglaAudio(conAudio, dictado) {
+  if (!conAudio) return 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.';
+  if (!dictado) return 'La transcripción complementa los datos estructurados.';
+  return 'El dictado complementa los datos estructurados. En él habla solo el fisioterapeuta: lo que dice en primera persona («he hecho», «mis indicaciones», «le sugiero», «pediremos») son sus hallazgos e indicaciones; lo que introduce con «refiere», «dice» o «comenta» es lo que refiere el paciente. Lo que dice que no ha hecho («no la he hecho») no se hizo: no lo describas como realizado ni lo menciones.';
+}
+
 // ── Prompt narrativo ──────────────────────────────────────────────────────────
 // `{{TRANSCRIPT}}` lo sustituye el worker por la transcripción de Whisper, o
 // por un aviso de «no disponible» cuando no se adjunta audio.
-export function buildNarrativePrompt(data, { conAudio, nombreRegion, ampliado } = {}) {
+export function buildNarrativePrompt(data, { conAudio, nombreRegion, ampliado, dictado = false } = {}) {
   const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
   const romCtx = contextoROM(data?.rom);
   const hasHypotheses = (data?.h || []).length > 0;
@@ -410,7 +446,7 @@ export function buildNarrativePrompt(data, { conAudio, nombreRegion, ampliado } 
 
 PACIENTE: ${data?.p || '—'} | Fecha: ${data?.d || '—'} | Región valorada: ${region}
 
-${clinicalCtx ? clinicalCtx + '\n\n' : ''}${romCtx ? romCtx + '\n\n' : ''}TRANSCRIPCIÓN DE LA SESIÓN:
+${clinicalCtx ? clinicalCtx + '\n\n' : ''}${romCtx ? romCtx + '\n\n' : ''}${cabeceraAudio(conAudio && dictado, false)}
 {{TRANSCRIPT}}
 
 INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
@@ -427,9 +463,7 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 4. Tablas: cuando haya datos numéricos cuantificables (ROM, fuerza, escalas), genera tablas markdown estándar con sintaxis | columna | columna |. Si no hay datos suficientes, omite la tabla y describe en prosa.
 5. Las subsecciones marcadas «[solo si…]» se omiten por completo, título incluido, cuando no hay datos para ellas. No escribas subsecciones ni frases para decir que algo no se hizo, no se midió o «no se dispone de…» (p. ej. «no se dispone de mediciones goniométricas»): lo que no consta, simplemente no se menciona.
 6. Usa la terminología CIF en la prosa (funciones, estructuras, actividades, participación, factores contextuales), sin códigos alfanuméricos.
-7. ${conAudio
-    ? 'La transcripción complementa los datos estructurados.'
-    : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos.
+7. ${reglaAudio(conAudio, dictado)} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos.
 8. ${reglaDerivacion('CONCLUSIONES Y PLAN DE TRATAMIENTO', false)}
 ${REGLAS_COMUNES}${hasHypotheses ? `
 9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". En dos o tres frases, contrasta los hallazgos (tests realizados, hallazgos de la exploración y, si la hay, la transcripción) con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante, sin nombrar los tests (ya están en Pruebas Clínicas). Si las comprobaciones de una hipótesis que se deriva salieron negativas, di que la exploración no la apoya pero no la descarta (por eso se deriva); no digas que los hallazgos la refuerzan. No propongas hipótesis nuevas en esta subsección.
@@ -513,14 +547,14 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - Que prevalezca una clasificación del fisioterapeuta (p. ej. riesgo psicosocial bajo) no borra lo que refiere el paciente: mantén la clasificación tal cual y recoge lo referido UNA vez, como algo que refiere (p. ej. «refiere cierto temor a que el tobillo vuelva a fallar al bajar escaleras»), sin reclasificar ni interpretar.
 - Atribuye cada indicación a quien la dio: lo que indica el fisioterapeuta en la consulta es una indicación del plan, no del cirujano ni del médico, y viceversa. No escribas que algo «ya se le había indicado» si no consta, ni presentes un consejo (p. ej. «puede hacer bicicleta estática») como algo que el paciente ya hace.
 - Si en la consulta el paciente habla de otra zona u otro lado (p. ej. molestias en la otra rodilla), menciónalo UNA vez como algo que refiere el paciente («refiere también…»), en la sección que le corresponde y nunca en Pruebas Clínicas, sin cambiar la región ni el lado valorados. No le añadas plan, seguimiento, prevención ni medidas que no consten en los datos o en la consulta.
-- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «recorrido de la exploración», «en la conversación», «en consulta», «árbol de decisión», «regla de decisión», «notas del plan» ni el nombre de sus campos («variable de control», «ventana de recuperación», «anclaje de hábito»); usa su contenido sin decir de dónde viene. Escribe «refiere» o «en la exploración»; tampoco contrapongas «inicialmente» y «en consulta».
+- No menciones de dónde sale cada dato: nada de «transcripción», «grabación», «dictado», «formulario», «cuestionario», «PhysiQ», «datos estructurados», «datos recibidos», «razonamiento clínico», «recorrido de la exploración», «en la conversación», «en consulta», «árbol de decisión», «regla de decisión», «notas del plan» ni el nombre de sus campos («variable de control», «ventana de recuperación», «anclaje de hábito»); usa su contenido sin decir de dónde viene. Escribe «refiere» o «en la exploración»; tampoco contrapongas «inicialmente» y «en consulta».
 - Hipótesis: no cites cocientes de probabilidad (LR), pesos, puntuaciones ni recuentos de criterios o hallazgos; describe qué tests apoyan o no cada hipótesis.
 - Lo que refiere el paciente antes de la consulta: resúmelo en prosa, con los negativos relevantes en una frase. No lo transcribas pregunta por pregunta y no escribas «contestó».
 - Respuestas «No sé» o «No sabría decir»: no las menciones de ninguna forma; ni como negación («no refiere…», «niega…») ni como desconocimiento («desconoce si…»).
 - Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato. Si consta el sexo, concuerda el género con él; si no consta, redacta sin marcar el género, ni en los sustantivos ni en los adjetivos (p. ej. «refiere dolor al permanecer en sedestación», «la persona atendida» o simplemente «refiere…»).
 - Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - Los tests y la exploración «apoyan» una hipótesis o «son compatibles» con ella; no escribas que la «confirman» ni que establecen el diagnóstico.
-- El pronóstico y «Cuándo reconsiderar o derivar» son contexto para el fisioterapeuta: no los conviertas en acciones del plan, criterios de vuelta a la actividad ni explicaciones al paciente («se informa a la paciente de…») que no consten, y no los uses para interpretar los hallazgos o los tests (p. ej. «la lesión aislada es infrecuente» no va junto a los resultados de los tests). En Seguimiento, como mucho, el criterio de no mejoría que figure en ellos o en la pauta.
+- «Cuándo reconsiderar o derivar» es contexto para el fisioterapeuta: no lo conviertas en acciones del plan, criterios de vuelta a la actividad ni explicaciones al paciente («se informa a la paciente de…») que no consten, y no lo uses para interpretar los hallazgos o los tests (p. ej. «la lesión aislada es infrecuente» no va junto a los resultados de los tests). En Seguimiento, como mucho, el criterio de no mejoría que figure en él o en la pauta.
 - Pruebas de imagen y derivaciones: recógelas solo como las indicó el fisioterapeuta, sin añadir qué se busca con ellas («para descartar…») ni derivaciones o pruebas que nadie indicó.
 - Tiempos: «hace X» se refiere al día de la consulta; no lo conviertas en «X después del inicio» ni en otra fecha (con «me miró hace tres semanas» escribió «tres semanas después del inicio»).
 - No deduzcas la frecuencia ni la regularidad de una actividad («practica… de forma habitual», «regular») cuando solo consta cuál es, ni desde cuándo la dejó.
@@ -602,18 +636,18 @@ export const CODIGOS_CIF = [
 ];
 export const MAX_TOKENS_FICHA = 2500;   // holgado: ver MAX_TOKENS_INFORME
 
-export function buildFichaBrevePrompt(data, { conAudio, nombreRegion, ampliado } = {}) {
+export function buildFichaBrevePrompt(data, { conAudio, nombreRegion, ampliado, dictado = false } = {}) {
   const clinicalCtx = contextoValoracion(data, nombreRegion, ampliado);
   const romCtx = contextoROM(data?.rom);
   const hasHypotheses = (data?.h || []).length > 0;
   const region = regionTexto(data, nombreRegion);
 
   return `Eres un fisioterapeuta clínico experto en documentación CIF-APTA.
-Genera un informe clínico breve en español a partir de los datos de la valoración${conAudio ? ' y de la transcripción de la sesión' : ''}. El informe debe estar escrito en prosa clínica continua, sin listas de ítems, y no superar las ${PALABRAS_FICHA} palabras en total.
+Genera un informe clínico breve en español a partir de los datos de la valoración${conAudio ? (dictado ? ' y del dictado del fisioterapeuta' : ' y de la transcripción de la sesión') : ''}. El informe debe estar escrito en prosa clínica continua, sin listas de ítems, y no superar las ${PALABRAS_FICHA} palabras en total.
 
 PACIENTE: ${data?.p || '—'} | Fecha: ${data?.d || '—'} | Región valorada: ${region}
 
-${clinicalCtx ? clinicalCtx + '\n\n' : ''}${romCtx ? romCtx + '\n\n' : ''}TRANSCRIPCIÓN:
+${clinicalCtx ? clinicalCtx + '\n\n' : ''}${romCtx ? romCtx + '\n\n' : ''}${cabeceraAudio(conAudio && dictado, true)}
 {{TRANSCRIPT}}
 
 INSTRUCCIONES:
@@ -624,9 +658,7 @@ INSTRUCCIONES:
    ## OBJETIVOS Y PLAN
 3. Escribe en prosa continua dentro de cada sección, sin viñetas ni listas.
 4. En ## HALLAZGOS Y CODIFICACIÓN CIF incluye los códigos CIF alfanuméricos relevantes entre paréntesis inline, integrados en la prosa: como máximo unos 6, elegidos SOLO de esta lista y solo si el término corresponde exactamente al hallazgo descrito; si ningún código de la lista encaja, no pongas código: ${CODIGOS_CIF.map(([c, t]) => `${c} ${t}`).join('; ')}. Ejemplo: "Se constata limitación del rango de flexión de hombro (b7101) con dolor asociado al movimiento activo (b28016)."
-5. ${conAudio
-    ? 'La transcripción complementa los datos estructurados.'
-    : 'No hay transcripción de la sesión: redacta el informe exclusivamente con los datos de la valoración estructurada.'} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos; no escribas "No evaluado".
+5. ${reglaAudio(conAudio, dictado)} No inventes mediciones, pruebas, escalas ni datos personales que no aparezcan en los datos recibidos; no escribas "No evaluado".
 6. ${reglaDerivacion('## OBJETIVOS Y PLAN')}
 ${REGLAS_COMUNES}
 7. Límite estricto: ${PALABRAS_FICHA} palabras totales entre las tres secciones, repartidas más o menos así: PRESENTACIÓN CLÍNICA ${Math.round(PALABRAS_FICHA * 0.33)}, HALLAZGOS Y CODIFICACIÓN CIF ${Math.round(PALABRAS_FICHA * 0.37)}, OBJETIVOS Y PLAN ${Math.round(PALABRAS_FICHA * 0.30)}. En la presentación, solo lo que define el problema (inicio, evolución, síntomas y negativos relevantes, actividades que lo provocan); no repases todas las respuestas.${hasHypotheses ? '\n8. En ## HALLAZGOS Y CODIFICACIÓN CIF añade una frase de contraste con las hipótesis de valoración recibidas: indica si los hallazgos las refuerzan, matizan o contradicen, citando el hallazgo que lo justifica. Si las comprobaciones de una hipótesis que se deriva salieron negativas, di que no la apoyan pero no la descartan.' : ''}`;

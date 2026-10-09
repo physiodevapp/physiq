@@ -92,7 +92,7 @@ const GENERICAS_DESCARTAR = new Set(['patologia', 'patologias', 'causas', 'orige
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 // Regla «fuentes»: nombrar de dónde sale un dato
-const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
+const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|dictado|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
 // Regla «atribucion»: hallazgos atribuidos a la evolución de la cirugía o la lesión
 const RE_ATRIBUCION = /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|(?:compatible|coherente)s? con el (?:contexto|per[ií]odo|escenario|momento) (?:posquir|postquir|postoperat)/i;
 // Regla «frecuencia»: actividades (raíz sobre texto sin acentos) y las
@@ -272,7 +272,9 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // El criterio de reconsiderar o derivar por falta de mejoría, solo en Seguimiento
   const iSeg = t.search(/SEGUIMIENTO FUNCIONAL/i);
   if (plantilla === 'narrativo' && iSeg > 0) {
-    const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a/i.exec(t.slice(0, iSeg));
+    // «en caso de ausencia de mejoría», «si no mejora» (no «la ausencia de mejoría con
+    // movimientos repetidos», un hallazgo: Andrea) (Daniel, dictado: «En caso de ausencia de mejoría… se solicitará valoración ecográfica»)
+    const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a|(?:en caso de|ante(?: la)?|si hay)\s+(?:una\s+)?(?:ausencia|falta) de mejor[ií]a|\b(?:si|en caso de)\s+no\s+(?:mejora|mejorar|mejorase)\b/i.exec(t.slice(0, iSeg));
     if (m) out.push(punto('seguimiento-fuera', 'medio', 'El criterio de reconsiderar o derivar si no mejora aparece fuera de Seguimiento.', fraseEn(t, m.index)));
   }
   // Lo que no le empeora no va en Limitaciones (Andrea: «Niega dolor al toser…»;
@@ -394,6 +396,24 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     if (cat !== dice) out.push(punto('imc', 'medio', `Clasifica el IMC (${imc.toFixed(1).replace('.', ',')}) como «${r.m[1]}», que no le corresponde; las cifras van sin clasificar.`, fraseEn(t, r.m.index)));
   }
 
+  // Constantes clasificadas («signos vitales dentro de parámetros habituales» con
+  // solo una FC de 58, Daniel): las cifras van tal cual, sin clasificar
+  if ((r = primera(tn, /\b(?:dentro de (?:los )?(?:parametros|limites|rangos?|valores) (?:normales|habituales|de normalidad|fisiologicos)|(?:signos vitales|constantes(?: vitales)?) (?:normales|estables|sin alteraciones)|normotens\w*|normocardic\w*|eupneic\w*)/)))
+    out.push(punto('constantes', 'medio', 'Clasifica las constantes («dentro de parámetros habituales», «normotenso»…); las cifras van sin clasificar.', fraseEn(t, r.m.index)));
+  // Prueba de imagen con un motivo que nadie dio («ecografía… para valorar la
+  // presencia de líquido…», Daniel, dictado; el motivo venía del pronóstico).
+  // Cuenta si la transcripción o los datos no ligan la imagen a ese motivo.
+  for (const m of tn.matchAll(/\b(ecograf\w*|resonancia|radiograf\w*|\brx\b|\brm\b|tac|prueba de imagen|estudio de imagen)\b[^.]{0,120}?\bpara (descartar|valorar|estudiar|evaluar|objetivar|confirmar|comprobar|detectar|identificar|buscar)\b/g)) {
+    const frase = fraseEn(t, m.index);
+    if (frasesInventadas.has(frase)) continue;   // ya lo dice «descartar-inventado»
+    const fuenteImagen = sinAcentos(`${transcripcion || ''}`).toLowerCase();
+    const raiz = m[1].slice(0, 5);
+    // El fisio lo dio: «ecografía para ver…» en la consulta o el dictado
+    if (new RegExp(`${raiz}\\w*[^.]{0,80}\\bpara\\b`).test(fuenteImagen)) continue;
+    out.push(punto('imagen-motivo', 'medio', 'Añade para qué es la prueba de imagen; recógela solo como la indicó el fisioterapeuta.', frase));
+    break;
+  }
+
   // ── Códigos CIF ──
   const codigos = [...t.matchAll(/\b([bdes]\d{3,5})\b/g)];
   if (plantilla === 'breve') {
@@ -426,13 +446,17 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
 // texto ve y que el verificador con IA (capa 3, aparcada) sí detectaba en
 // todas las pasadas. Lista fija para el clínico, sin red ni coste; el punto
 // de los tests con «o» solo sale si se hizo alguno, y los nombra.
-export function comprobacionesManuales({ ampliado = null } = {}) {
+// `formularioYAudio`: hay formulario previo y el informe se hizo con audio; lo
+// que el paciente dice en uno y otro puede diferir y el informe tiende a dar
+// solo una versión (Daniel, dos veces: el chasquido doloroso en el formulario).
+export function comprobacionesManuales({ ampliado = null, formularioYAudio = false } = {}) {
   const conO = [...new Set((ampliado?.tests || []).flatMap(g => g.items || [])
     .map(i => i.test).filter(n => / o /i.test(n || '')))];
   return [
     'Cada indicación del plan se atribuye a quien la dio (fisioterapeuta, cirujano, médico), y un consejo no aparece como algo que el paciente ya hace.',
     ...(conO.length ? [`Los tests con alternativas en el nombre se describen con esas mismas palabras, sin afirmar las dos: ${conO.map(n => `«${n}»`).join(', ')}.`] : []),
     'No hay plan, seguimiento ni prevención para otra zona o el otro lado que nadie indicó.',
+    ...(formularioYAudio ? ['Si lo que el paciente dijo en consulta difiere del formulario previo (un síntoma, una cifra de dolor), el informe da las dos versiones.'] : []),
   ];
 }
 

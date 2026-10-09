@@ -2695,3 +2695,8 @@ body.posquirurgico .solo-posq { display: block; }
 @media (max-width: 480px) {
   body:has(.sis-context-banner.visible, .hyp-context-banner.visible) .version-aviso { top: 133px; }
 }
+.ia-consejos-dictado { margin: 8px 0 0; padding-left: 1.2rem; font-size: 0.8rem; color: var(--text2); line-height: 1.45; }
+.ia-consejos-dictado li + li { margin-top: 3px; }
+#iaModoAudio { margin-top: 1rem; }
+#iaModoAudio:empty { margin: 0; }
+.ia-rev-paquete { display: flex; justify-content: flex-end; margin: -0.3rem 0 0.8rem; }

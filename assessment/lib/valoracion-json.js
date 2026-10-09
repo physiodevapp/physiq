@@ -31,12 +31,17 @@ export function exportarValoracion(state, ahora = new Date()) {
   };
 }
 
-// valoracion-<paciente>-<AAAA-MM-DD>.json, sin acentos ni símbolos
-export function nombreArchivo(paciente, ahora = new Date()) {
-  const slug = String(paciente || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+// Nombre del paciente para un nombre de archivo: sin acentos ni símbolos
+export function slugPaciente(paciente) {
+  return String(paciente || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'sin-nombre';
-  const f = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
-  return `valoracion-${slug}-${f}.json`;
+}
+
+export const fechaArchivo = ahora => `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+
+// valoracion-<paciente>-<AAAA-MM-DD>.json
+export function nombreArchivo(paciente, ahora = new Date()) {
+  return `valoracion-${slugPaciente(paciente)}-${fechaArchivo(ahora)}.json`;
 }
 
 // Hay algo que exportar: la restauración solo se dispara pasada la fase 1.
