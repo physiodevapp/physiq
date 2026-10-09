@@ -271,6 +271,7 @@ const BOTON_PAQUETE = `<div class="ia-rev-paquete"><button type="button" class="
 // Lo pintado ahora, para marcar «Revisado» por índice sin repintar la caja
 // (que perdería si estaba abierta o cerrada)
 let _revPuntos = [];
+let _revAbierta = null;    // abierta/cerrada a mano; null = por defecto (abierta con un alto sin revisar)
 let _revComprob = [];
 const _revisados = () => new Set(state.informeIA?.revisados || []);
 
@@ -293,7 +294,8 @@ function pintarRevision() {
   }
   const hechos = _revisados();
   const { altosPendientes } = resumenRevisados(puntos, [], inf.revisados);
-  el.innerHTML = `<details class="ia-revision"${altosPendientes ? ' open' : ''}>
+  const abierta = _revAbierta ?? altosPendientes > 0;
+  el.innerHTML = `<details class="ia-revision"${abierta ? ' open' : ''}>
       <summary></summary>
       <ul>${puntos.map((p, i) => {
         const hecho = hechos.has(clavePunto(p));
@@ -301,6 +303,7 @@ function pintarRevision() {
       }).join('')}</ul>
       <div class="ia-rev-nota">Comprobaciones automáticas del texto frente a la valoración: pueden señalar algo correcto. No cambian el informe. Marca cada una como revisada cuando la hayas mirado.</div>
     </details>`;
+  el.querySelector('details.ia-revision').addEventListener('toggle', e => { _revAbierta = e.target.open; });
   cabeceraRevision();
 }
 
@@ -412,7 +415,10 @@ function refrescarHuella() {
   pintarRevision();
 }
 let _huellaTimer = null;
-function _refrescarHuellaDiferido() {
+function _refrescarHuellaDiferido(e) {
+  // Las casillas «Revisado» y demás controles de la tarjeta no son datos de la
+  // valoración: repintar por ellas cerraba la caja de puntos al marcar uno
+  if (e?.target?.closest?.('#informeIA')) return;
   clearTimeout(_huellaTimer);
   _huellaTimer = setTimeout(refrescarHuella, 400);
 }
@@ -856,6 +862,7 @@ async function iaGenerar() {
     const det = $('iaGenerador');
     if (det) det.open = false;
     _resultadoAbierto = false;
+    _revAbierta = null;   // informe nuevo: la caja de puntos vuelve a su apertura por defecto
     showToast('✓ Informe narrativo generado', 'success');
   } catch (err) {
     if (err instanceof SinVoz) {
