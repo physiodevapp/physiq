@@ -101,7 +101,7 @@ const GENERICAS_DESCARTAR = new Set(['patologia', 'patologias', 'causas', 'orige
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 // Regla «fuentes»: nombrar de dónde sale un dato
-const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|dictado|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta,? (?:refiere|menciona|comenta|describe|indica|afirma)|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
+const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|dictado|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta,? (?:refiere|menciona|comenta|describe|indica|afirma)|antes de la consulta|(?:durante|en) la presente consulta|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
 // Regla «atribucion»: hallazgos atribuidos a la evolución de la cirugía o la lesión
 const RE_ATRIBUCION = /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|(?:compatible|coherente)s? con el (?:contexto|per[ií]odo|escenario|momento) (?:posquir|postquir|postoperat)/i;
 // Regla «frecuencia»: actividades (raíz sobre texto sin acentos) y las
@@ -368,7 +368,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     const m = /\b(?:no refiere (?:limitaci[oó]n|dificultad|dolor|aumento|molestias?)|niega (?:dolor|limitaci[oó]n|dificultad|molestias?)|no (?:le )?(?:provoca|aumenta|empeora)n?|sin (?:dolor|dificultad|limitaci[oó]n) (?:al|para))\b/i.exec(lim);
     if (m) out.push(punto('limitaciones-negativas', 'medio', 'Limitaciones enumera lo que no le empeora; ahí solo van las actividades que le cuestan.', fraseEn(t, iLim + m.index)));
   }
-  if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no ha sido (?:objeto de )?explora|no se ha explorado|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b|no se refieren? tratamientos|no constan? tratamientos|sin tratamientos previos/i)))
+  if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no ha sido (?:objeto de )?explora|no fue explorad|no se ha explorado|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b|no se refieren? tratamientos|no constan? tratamientos|sin tratamientos previos/i)))
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
   // En modo breve, «el formulario previo» dentro de la frase de lo pendiente
   // es un pendiente, no una fuente: se sigue buscando
