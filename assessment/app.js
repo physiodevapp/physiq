@@ -2500,7 +2500,6 @@ function _showSessionState(st) {
     });
     panel.querySelector('#sessionPanelClear').onclick = promptClearSession;
     _engancharVersionPanel(panel);
-    setTimeout(() => input.focus(), 60);
 
   }
 }
