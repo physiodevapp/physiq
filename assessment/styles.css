@@ -2699,4 +2699,11 @@ body.posquirurgico .solo-posq { display: block; }
 .ia-consejos-dictado li + li { margin-top: 3px; }
 #iaModoAudio { margin-top: 1rem; }
 #iaModoAudio:empty { margin: 0; }
-.ia-rev-paquete { display: flex; justify-content: flex-end; margin: -0.3rem 0 0.8rem; }
+.ia-acciones:has(+ .ia-rev-paquete) { margin-bottom: 0; }
+.ia-rev-paquete { margin-top: 4px; }
+.ia-rev-paquete-btn {
+  background: none; border: none; padding: 0; min-height: 40px; cursor: pointer;
+  font-family: inherit; font-size: 0.8rem; color: var(--text3);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.ia-rev-paquete-btn:hover { color: var(--text2); }

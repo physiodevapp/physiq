@@ -234,7 +234,6 @@ function pintarResultado() {
     <div id="iaAvisoHuella"></div>
     <div id="iaRevision"></div>
     <div id="iaComprobar"></div>
-    ${BOTON_PAQUETE}
     ${informeTruncado(inf.texto, inf.plantilla) ? '<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>El informe parece incompleto: la última sección no se ha generado. Puedes generarlo de nuevo.</div></div>' : ''}
     <details class="ia-resultado-det" id="iaResultadoDet"${_resultadoAbierto ? ' open' : ''}>
       <summary>
@@ -248,7 +247,8 @@ function pintarResultado() {
       <button class="phase5-copy-btn" onclick="iaCompartir()">📤 Compartir</button>
       <button class="phase5-copy-btn" onclick="iaCopiar()">Copiar</button>
       <button class="phase5-copy-btn ia-btn-descartar" onclick="iaDescartarInforme()">Descartar</button>
-    </div>`;
+    </div>
+    ${BOTON_PAQUETE}`;
   $('iaResultadoDet').addEventListener('toggle', e => { _resultadoAbierto = e.target.open; });
   refrescarHuella();
 }
@@ -263,9 +263,11 @@ function puntosRevision(inf) {
   });
 }
 
-// Bajo las cajas de revisión y «Antes de compartir», siempre a la vista
-const BOTON_PAQUETE = `<div class="ia-rev-paquete"><button type="button" class="phase5-copy-btn" onclick="iaPaqueteRevision()"
-    title="Descarga un .zip con el informe, la transcripción, los puntos a revisar y la valoración, para revisar el informe. Contiene datos clínicos y el nombre del paciente.">⬇ <span class="btn-text-full">Paquete de revisión</span><span class="btn-text-short">Revisión</span></button></div>`;
+// Herramienta de soporte, no parte del flujo revisar → leer → compartir: al
+// final, en su propia línea y con aspecto de enlace, para que no se tome por
+// otra forma de compartir con el paciente. Siempre con el texto completo.
+const BOTON_PAQUETE = `<div class="ia-rev-paquete"><button type="button" class="ia-rev-paquete-btn" onclick="iaPaqueteRevision()"
+    title="Descarga un .zip con el informe, la transcripción, los puntos a revisar y la valoración, para revisar el informe. Contiene datos clínicos y el nombre del paciente.">⬇ Paquete de revisión</button></div>`;
 
 function pintarRevision() {
   const el = $('iaRevision');
