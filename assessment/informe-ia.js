@@ -16,6 +16,7 @@
 // se descarta — el informe de ejemplo del worker es de un paciente ficticio y
 // no puede mezclarse con una valoración real.
 
+import { ramaPauta } from './lib/pauta.js';
 import { state } from './state.js';
 import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data.js';
 import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA, compartirTexto, registrarValoracionCompleta } from './app.js';
@@ -411,7 +412,9 @@ export function construirAmpliado() {
     pautas.push({
       hipotesis: h.name,
       derivar: h.dosis === DOSIS_DERIVAR,
-      pauta: h.dosis === DOSIS_DERIVAR ? '' : (h.dosis || ''),
+      // Con ramas (lib/pauta.js), solo la de este caso: con la pauta entera de ro2
+      // copió la rama degenerativa en una rotura traumática
+      pauta: h.dosis === DOSIS_DERIVAR ? '' : (ramaPauta(h, state)?.texto || h.dosis || ''),
       fuente: h.dosisFuente || '',
       ...(h.pronostico ? { pronostico: h.pronostico } : {}),
       prom: h.prom || '',

@@ -1021,6 +1021,12 @@
   .pronostico-det > summary, .tests-sin-datos > summary { cursor: pointer; }
   .pronostico-det[open] > summary { margin-bottom: 6px; }
   .tests-sin-datos > summary { font-size: 0.75rem; color: var(--text3); padding: 6px 0; }
+  /* Pauta partida por situación (_pautaConRamasHTML): título de la rama de este
+     caso y las otras plegadas */
+  .pauta-rama-tit { font-size: 0.75rem; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+  .pauta-otras { margin-top: 8px; }
+  .pauta-otras > summary { cursor: pointer; font-size: 0.75rem; color: var(--text3); padding: 6px 0; }
+  .pauta-otra { font-size: 0.8rem; color: var(--text2); line-height: 1.55; padding: 6px 0 8px; border-top: 1px solid var(--border); }
 
   /* Print button */
   .btn-print {

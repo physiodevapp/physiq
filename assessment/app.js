@@ -14,6 +14,7 @@ import {
 } from './lib/posquirurgico.js';
 import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { ladoTexto } from './lib/region.js';
+import { ramaPauta } from './lib/pauta.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
 // Reference-counted: several overlays (confirm-banner, session panel,
@@ -1956,6 +1957,20 @@ function _pautaPlegableHTML(dosis, fuente) {
   </details>`;
 }
 
+// Pauta partida por situación (lib/pauta.js): la rama que encaja con este caso
+// delante, con su título, y las demás plegadas en «Otras situaciones». Sin rama
+// que encaje (o sin ramas), la pauta entera como siempre.
+function _pautaConRamasHTML(hyp) {
+  const r = ramaPauta(hyp, state);
+  if (!r) return _pautaPlegableHTML(hyp.dosis, hyp.dosisFuente);
+  const otras = r.otras.length
+    ? `<details class="pauta-otras"><summary>Otras situaciones (${r.otras.length})</summary>
+        ${r.otras.map(o => `<div class="pauta-otra"><div class="pauta-rama-tit">${o.titulo}</div>${o.texto}</div>`).join('')}
+      </details>`
+    : '';
+  return `<div class="pauta-rama-tit">Para este caso: ${r.rama.titulo}</div>${_pautaPlegableHTML(r.texto, hyp.dosisFuente)}${otras}`;
+}
+
 // Cabecera de una tarjeta de hipótesis de la fase 5, en dos filas: punto +
 // nombre (el punto alineado con la primera línea, el nombre con todo el ancho)
 // y, debajo, la etiqueta de peso alineada con el nombre. En una sola fila, con
@@ -2168,7 +2183,7 @@ function buildResults() {
         <div>
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent2); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">${tratada ? ETIQUETA_TRATADA : hyp.dosis === DOSIS_DERIVAR ? '🚑 Derivación' : hyp.dosisFuente ? '💊 Pauta de Tratamiento' : '💊 Dosis Día 1 (Baja Fricción)'}</div>
           ${!tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR
-            ? _pautaPlegableHTML(hyp.dosis, hyp.dosisFuente)
+            ? _pautaConRamasHTML(hyp)
             : `<div class="exercise-box">${tratada ? _textoTratada(cq) : hyp.dosis || '<em style="color:var(--text3)">Sin dosis de referencia: a criterio del clínico.</em>'}</div>
           ${!tratada && hyp.dosis && hyp.dosisFuente ? `<div class="test-source" style="margin:4px 0 0;">${hyp.dosisFuente}</div>` : ''}`}
           ${cq && !tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR ? `<div class="nota-posq" style="margin-top:6px;">🏥 ${TEXTO_PAUTA_COMPATIBLE}</div>` : ''}

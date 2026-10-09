@@ -98,6 +98,11 @@ export const CIF_TREES = Object.fromEntries(
 //     prom: string,               // PROM recomendado (texto libre)
 //     dosis: string,              // pauta de tratamiento (texto libre); '' = a criterio del clínico
 //     dosisFuente?: string,       // cita de la pauta (guía o ensayo), se muestra bajo la dosis en fase 5; solo con dosis
+//     dosisRamas?: [{ si: { mecanismo?, arbol?: { [stepId]: value } }, titulo, texto }],
+//                                // la pauta partida por situación (lib/pauta.js): la primera
+//                                // rama que encaja va delante en fase 5 y sola al informe con
+//                                // IA; los textos son frases de `dosis` (test). Hoy: ro2
+//     dosisComun?: string,        // con dosisRamas: lo que vale para todas (va tras la rama)
 //     pronostico?: { horizonte, derivacion, fuente },   // se muestra en fase 5
 //     clusters?: { [id]: { nombre, umbralPos, lr_pos, umbralNeg, lr_neg, sn?, sp?, fuente } },
 //     tests: [
