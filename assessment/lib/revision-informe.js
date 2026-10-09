@@ -73,7 +73,7 @@ const SINTOMAS = [
   // Marta: «se le iba» al pivotar en Presentación y «niega que le falle o ceda» en Dolor
   // (no «inestabilidad», «fallo» ni «cede» sueltos: test de inestabilidad, mareo o
   // inestabilidad, entrenar hasta el fallo, el hormigueo que cede)
-  ['Fallo articular', /\bfall(?:a|e|aba|ado)\b|\bfallo (?:articular|de la)\b|se (?:le|me) (?:va|iba|fue)\b|como si (?:se )?(?:cediera|doblara)/],
+  ['Fallo articular', /\bfall(?:a|e|aba|ado)\b|\bfallo (?:articular|de la)\b|\bepisodios? de fallo\b|\b(?:rodilla|cadera|tobillo) (?:cede|ceda|cedia)\b|se (?:le|me) (?:va|iba|fue)\b|como si (?:se )?(?:cediera|doblara)/],
 ];
 const NEGACION = /\b(niega|no refiere|no presenta|no describe|no nota|no manifiesta|no aparece|no le|no hay|sin)\b/;
 const frases = t => t.split(/(?<=[.!?])\s+|\n+/).map(f => f.replace(/^[#\s]+/, '').trim()).filter(Boolean);
@@ -192,6 +192,10 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // pueden ser de un familiar o de la fractura.
   if (!sexo && (r = primera(t, /\b(?:la|el|al|del) paciente\b|\b(?:sentad|tumbad|acostad|quiet|cansad|preocupad)[oa]s?\b/i)))
     out.push(punto('genero', 'medio', 'El sexo no consta y el informe marca el género; redacta sin marcarlo.', r.cita));
+  // Con el sexo registrado, la fórmula neutra sobra (Marta: «la persona
+  // atendida», copiada del ejemplo para cuando no consta)
+  if (sexo && (r = primera(t, /\bpersona atendida\b/i)))
+    out.push(punto('genero', 'medio', 'Consta el sexo y el informe usa una fórmula neutra («la persona atendida»); concuerda el género con el sexo registrado.', r.cita));
 
   // Intensidades «N/10» que no aparecen en ningún dato
   const validas = new Set([...notasSobre10(fuente), ...notasHabladas(transcripcion), ...notasTrasPregunta(transcripcion)]);

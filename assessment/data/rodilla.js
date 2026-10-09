@@ -492,13 +492,21 @@ export const tree = {
       tag: 'Paso 1 — Antecedente Traumático Agudo',
       question: '¿Hubo un evento lesivo reciente con inflamación inmediata? Rodilla aguda traumática: ¿qué mecanismo cuenta?',
       options: [
-        { label: 'SÍ — Sensación de "pop", derrame articular rápido e inestabilidad (posible LCA)', value: 'lca', next: null, hypothesis: ['ro4'] },
-        { label: 'SÍ — Trauma rotacional con síntomas de bloqueo o chasquidos (posible Menisco)', value: 'menisco', next: null, hypothesis: ['ro2'] },
-        { label: 'SÍ — Valgo con el pie fijo → LCM (mirar LCA y menisco medial)', value: 'lcm', next: null, hypothesis: ['ro8'] },
-        { label: 'SÍ — Golpe en tibia anterior con rodilla flexionada (salpicadero) → LCP y EPL', value: 'lcp', next: null, hypothesis: ['ro9'] },
-        { label: 'SÍ — Golpe anteromedial o varo cerca de la extensión → LLE y EPL', value: 'lle', next: null, hypothesis: ['ro10'] },
-        { label: 'SÍ — La rótula «se salió», aprensión al trasladarla lateralmente → INESTABILIDAD ROTULIANA', value: 'rotula', next: null, hypothesis: ['ro12'] },
-        { label: 'SÍ — Golpe directo anterior, dolor con extensión resistida, escalón palpable → FRACTURA', value: 'fractura', next: null, hypothesis: ['ro11'] },
+        { label: 'SÍ — Sensación de "pop", derrame articular rápido e inestabilidad (posible LCA)', value: 'lca', next: null, hypothesis: ['ro4'],
+          // iaTexto: solo para el informe con IA, sin los síntomas ni signos del patrón (ronda 18: escribió que Marta tuvo bloqueo y chasquidos)
+          iaTexto: 'SÍ — Mecanismo traumático que orienta a lesión del LCA' },
+        { label: 'SÍ — Trauma rotacional con síntomas de bloqueo o chasquidos (posible Menisco)', value: 'menisco', next: null, hypothesis: ['ro2'],
+          iaTexto: 'SÍ — Trauma rotacional (orienta a: menisco)' },
+        { label: 'SÍ — Valgo con el pie fijo → LCM (mirar LCA y menisco medial)', value: 'lcm', next: null, hypothesis: ['ro8'],
+          iaTexto: 'SÍ — Valgo con el pie fijo (orienta a: LCM)' },
+        { label: 'SÍ — Golpe en tibia anterior con rodilla flexionada (salpicadero) → LCP y EPL', value: 'lcp', next: null, hypothesis: ['ro9'],
+          iaTexto: 'SÍ — Golpe en la tibia anterior con la rodilla flexionada (orienta a: LCP y esquina posterolateral)' },
+        { label: 'SÍ — Golpe anteromedial o varo cerca de la extensión → LLE y EPL', value: 'lle', next: null, hypothesis: ['ro10'],
+          iaTexto: 'SÍ — Golpe anteromedial o varo cerca de la extensión (orienta a: LLE y esquina posterolateral)' },
+        { label: 'SÍ — La rótula «se salió», aprensión al trasladarla lateralmente → INESTABILIDAD ROTULIANA', value: 'rotula', next: null, hypothesis: ['ro12'],
+          iaTexto: 'SÍ — Refiere que la rótula «se salió» (orienta a: inestabilidad rotuliana)' },
+        { label: 'SÍ — Golpe directo anterior, dolor con extensión resistida, escalón palpable → FRACTURA', value: 'fractura', next: null, hypothesis: ['ro11'],
+          iaTexto: 'SÍ — Golpe directo anterior (orienta a: fractura)' },
         { label: 'NO — Dolor de inicio insidioso o crónico', value: 'no', next: 'ro_step2', hypothesis: [] }
       ]
     },

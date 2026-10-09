@@ -157,6 +157,13 @@
 //     pedía el fisio («pediremos») e inventó un test «más específico».
 //     Whisper transcribe «no la he hecho» como «no la ha hecho»: la regla del
 //     dictado lo dice.
+//   · Decimoctava revisión (Marta otra vez, con el dictado completo y la
+//     pauta por ramas): la pauta y la atribución salieron bien; siguió
+//     copiando la etiqueta del paso 1 del árbol («trauma rotacional con
+//     síntomas de bloqueo o chasquidos»: `iaTexto` en `ro_step1`), separó otra
+//     vez «se le iba» del «niega… fallo» (aviso en la indicación de Dolor) y
+//     copió «la persona atendida», el ejemplo para cuando no consta el sexo
+//     (quitado: ya consta que no se marca el género).
 
 import { ladoTexto } from './region.js';
 
@@ -295,6 +302,11 @@ export const GRUPOS_FORMULARIO = [
 // frente a «no le duele») y una con Marta (falla: No frente a «se le iba»,
 // escritos en dos secciones). Sin ejemplo de contenido, para que no lo copie.
 export const RECORDATORIO_DISCREPANCIAS = 'Si en la consulta el paciente dice otra cosa sobre alguna de estas respuestas, escribe las dos versiones juntas, en una sola frase y en una sola sección; no recojas solo una ni las pongas en sitios distintos.';
+// En la indicación de «Dolor» del narrativo, con audio: el recordatorio bajo el
+// formulario tampoco bastó (Marta, segunda vez: «se le iba» en Presentación y
+// «niega… episodios de fallo» en Dolor). El fallo se comete siempre al escribir
+// la lista de lo que niega, así que el aviso va donde se escribe.
+export const AVISO_NIEGA = 'Antes de poner un síntoma en la lista de lo que niega, comprueba si en la consulta lo refiere; si lo refiere, sácalo de esa lista y escribe aquí las dos versiones juntas, en una sola frase';
 export function bloqueFormulario(items, { conAudio = false } = {}) {
   if (!items?.length) return '';
   const grupos = GRUPOS_FORMULARIO
@@ -523,7 +535,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 ## EVALUACIÓN DE FUNCIONES Y ESTRUCTURAS CORPORALES
 
 ### Dolor
-[Intensidad, irritabilidad, naturaleza y signo comparable. Las actividades que provocan el dolor van en Limitaciones en las Actividades]
+[Intensidad, irritabilidad, naturaleza y signo comparable. Las actividades que provocan el dolor van en Limitaciones en las Actividades${conAudio ? `. ${AVISO_NIEGA}` : ''}]
 
 ### Movilidad
 [Solo si hay hallazgos de movilidad distintos del signo comparable (que va en Dolor): movilidad activa y pasiva; si hay mediciones, TABLA markdown con columnas: Articulación | Movimiento | Rango (Izq/Dcha) | Asimetría. Si no las hay, describe los hallazgos sin mencionar que faltan mediciones]
@@ -574,7 +586,7 @@ const REGLAS_COMUNES = `- Los ejemplos («p. ej.») de estas instrucciones solo 
 - Hipótesis: no cites cocientes de probabilidad (LR), pesos, puntuaciones ni recuentos de criterios o hallazgos; describe qué tests apoyan o no cada hipótesis.
 - Lo que refiere el paciente antes de la consulta: resúmelo en prosa, con los negativos relevantes en una frase. No lo transcribas pregunta por pregunta y no escribas «contestó».
 - Respuestas «No sé» o «No sabría decir»: no las menciones de ninguna forma; ni como negación («no refiere…», «niega…») ni como desconocimiento («desconoce si…»).
-- Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato. Si consta el sexo, concuerda el género con él; si no consta, redacta sin marcar el género, ni en los sustantivos ni en los adjetivos (p. ej. «refiere dolor al permanecer en sedestación», «la persona atendida» o simplemente «refiere…»).
+- Datos personales: edad, sexo y lado afectado (derecho, izquierdo) solo si constan en los datos; nunca los deduzcas del nombre ni de otro dato. Si consta el sexo, concuerda el género con él; si no consta, redacta sin marcar el género, ni en los sustantivos ni en los adjetivos (p. ej. «refiere dolor al permanecer en sedestación» o simplemente «refiere…»).
 - Un cribado, una bandera roja o un test negativos «no muestran hallazgos que sugieran…»; no escribas que «descartan» nada.
 - Los tests y la exploración «apoyan» una hipótesis o «son compatibles» con ella; no escribas que la «confirman» ni que establecen el diagnóstico.
 - «Cuándo reconsiderar o derivar» es contexto para el fisioterapeuta: no lo conviertas en acciones del plan, criterios de vuelta a la actividad ni explicaciones al paciente («se informa a la paciente de…») que no consten, y no lo uses para interpretar los hallazgos o los tests (p. ej. «la lesión aislada es infrecuente» no va junto a los resultados de los tests). En Seguimiento, como mucho, el criterio de no mejoría que figure en él o en la pauta.
