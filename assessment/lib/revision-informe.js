@@ -137,6 +137,9 @@ export function frecuenciaInferida(texto, fuente) {
 // Palabras distintivas del nombre de una hipótesis (para ver si se nombra)
 const RE_PROPIEDADES_TEST = /\b(m[aá]s|muy|alta|elevada|gran) (espec[ií]fic|sensib)\w*/i;
 const VACIAS = new Set(['sindrome', 'lesion', 'dolor', 'tendinopatia', 'rotura', 'del', 'de', 'la', 'las', 'los', 'con', 'por', 'y', 'o', 'en', 'test']);
+// Palabras de las filas del formulario demasiado genéricas para buscarlas en el
+// informe (formulario-contradicho)
+const GENERICAS_FILA = new Set(['movimiento', 'movimientos', 'esperarlo', 'cuando', 'alguna', 'despues']);
 const clavesHipotesis = nombre => sinAcentos(limpiarEtiqueta(nombre)).replace(/[()]/g, ' ')
   .split(/[^a-z0-9ñ]+/).filter(w => w.length >= 4 && !VACIAS.has(w));
 
@@ -201,6 +204,10 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // atendida», copiada del ejemplo para cuando no consta)
   if (sexo && (r = primera(t, /\bpersona atendida\b/i)))
     out.push(punto('genero', 'medio', 'Consta el sexo y el informe usa una fórmula neutra («la persona atendida»); concuerda el género con el sexo registrado.', r.cita));
+  // Con el sexo registrado, «paciente» con el artículo del otro género (Rosa,
+  // mujer: «siempre que al día siguiente el paciente esté igual o mejor»)
+  else if ((sexo === 'Mujer' && (r = primera(t, /\b(?:el|al|del) paciente\b/i))) || (sexo === 'Hombre' && (r = primera(t, /\bla paciente\b/i))))
+    out.push(punto('genero', 'medio', `El sexo registrado es ${sexo.toLowerCase()} y el informe usa «paciente» con el artículo del otro género; concuerda el género con el sexo registrado.`, r.cita));
 
   // Intensidades «N/10» que no aparecen en ningún dato
   const validas = new Set([...notasSobre10(fuente), ...notasHabladas(transcripcion), ...notasTrasPregunta(transcripcion)]);
@@ -247,12 +254,16 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     for (const par of String(a).split(' · ')) {
       const fila = /^(.*):\s*Sí$/.exec(par.trim());
       if (!fila) continue;
-      const clave = sinAcentos(fila[1]).split(/[^a-z0-9ñ]+/).filter(w => w.length >= 6 && !VACIAS.has(w)).sort((x, y) => y.length - x.length)[0];
+      // Palabra completa y no genérica: con «Hacer un movimiento rápido o
+      // brusco…: Sí», «movimiento» casaba con «niega que el dolor cambie con
+      // los movimientos cervicales» (Rosa)
+      const clave = sinAcentos(fila[1]).split(/[^a-z0-9ñ]+/).filter(w => w.length >= 6 && !VACIAS.has(w) && !GENERICAS_FILA.has(w)).sort((x, y) => y.length - x.length)[0];
       if (!clave) continue;
       const dolor = /\bduele|dolor/.test(sinAcentos(fila[1]));
+      const reClave = new RegExp(`(?<![a-z0-9ñ])${clave}(?![a-z0-9ñ])`);
       for (const f of frases(t)) {
         const fn = sinAcentos(f);
-        const i = fn.indexOf(clave);
+        const i = fn.search(reClave);
         if (i < 0) continue;
         const ini = fn.lastIndexOf(',', i) + 1;
         const fin = fn.slice(i).search(/[,;]/);
