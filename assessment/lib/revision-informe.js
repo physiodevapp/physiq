@@ -70,7 +70,9 @@ const notasTrasPregunta = t => {
 // (regla «discrepancia-separada»): grupos de sinónimos, sobre texto sin acentos.
 const SINTOMAS = [
   ['Hormigueo', /hormigue|parestesi|adormec|acorchad|entumec|piel dormida|se (?:le|me) duerme|mano dormida/],
-  ['Dolor nocturno', /noche|nocturn|despiert|despertar/],
+  // «noche/nocturno» solo junto a dolor o molestia (Elena: «un relajante muscular
+  // nocturno, que le permite dormir mejor» contaba como dolor nocturno descrito)
+  ['Dolor nocturno', /despiert|despertar|(?:dolor|molesti|duele)[^.,;]{0,40}(?:noche|nocturn)|(?:noche|nocturn)[^.,;]{0,40}(?:dolor|molesti|duele)/],
   ['Sedestación', /sedestaci|\bsentad[oa]s?\b/],
   // Marta: «se le iba» al pivotar en Presentación y «niega que le falle o ceda» en Dolor
   // (no «inestabilidad», «fallo» ni «cede» sueltos: test de inestabilidad, mareo o
@@ -216,6 +218,35 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
       out.push(punto('nrs', 'alto', `El informe da una intensidad (${m[0].trim()}) que no figura en la valoración${datos.nr != null ? ` (NRS ${datos.nr}/10)` : ''}.`, fraseEn(t, m.index)));
       break;
     }
+  }
+
+  // El NRS de la valoración no aparece mientras salen otras cifras de dolor: el
+  // informe se quedó con la de la consulta (Rosa 4, Tomás 6, Elena 7)
+  if (datos.nr != null) {
+    const delInforme = notasSobre10(t);
+    if (delInforme.length && !delInforme.includes(String(datos.nr)))
+      out.push(punto('nrs-omitido', 'medio', `El NRS registrado en la valoración (${datos.nr}/10) no aparece; si en la consulta dio otra cifra, van las dos, cada una con su momento.`));
+  }
+
+  // Una regla pronóstica (Flynn) usada como apoyo de una hipótesis (Elena: «la
+  // hipomovilidad segmentaria y el cumplimiento de 4 criterios de Flynn apoyan
+  // la primera»): predice la respuesta a un tratamiento, no el diagnóstico
+  for (const f of frases(t)) {
+    const fn = sinAcentos(f).toLowerCase();
+    if (!/flynn|regla (?:de prediccion|pronostica)/.test(fn)) continue;
+    const m = /\b(apoy\w*|refuerz\w*|reforz\w*|respald\w*|sustent\w*|confirm\w*|compatibles? con)/.exec(fn);
+    if (m && !/\bno (?:la |lo |las |los )?$/.test(fn.slice(0, m.index))) {
+      out.push(punto('pronostica', 'alto', 'Usa una regla pronóstica (p. ej. Flynn) como apoyo de una hipótesis: predice la respuesta a un tratamiento, no el diagnóstico.', f.length > 220 ? f.slice(0, 217) + '…' : f));
+      break;
+    }
+  }
+
+  // Ficha breve: solo tres secciones; un párrafo que empieza con el título de una
+  // subsección del narrativo y dos puntos es una subsección inventada (Elena:
+  // «Condición de Salud: Las hipótesis…», «Factores Personales: …»)
+  if (plantilla === 'breve') {
+    const m = /^(?:Condici[oó]n de Salud|Factores (?:Personales|Ambientales)|Presentaci[oó]n Inicial|Tratamientos Previos|Cribado de Seguridad|Intervenci[oó]n Quir[uú]rgica|Dolor|Movilidad|Fuerza Muscular|Pruebas Cl[ií]nicas|Limitaciones en las Actividades|Restricciones en la Participaci[oó]n|Coherencia con hip[oó]tesis(?: de valoraci[oó]n)?)\b[^:\n]{0,40}:/m.exec(t);
+    if (m) out.push(punto('estructura', 'medio', 'La ficha breve solo tiene tres secciones: no añadas subapartados del informe narrativo.', fraseEn(t, m.index)));
   }
 
   // «No sé» del formulario convertido en negación: en el `fp` del payload la

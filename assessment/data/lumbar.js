@@ -862,7 +862,7 @@ export const hypotheses = {
     },
     tests: [
       { name: 'Dolor en extensión, inclinación o rotación hacia el lado del dolor', sn: null, sp: null, lr_pos: '1.29', lr_neg: null, criterio: 'Criterios clínicos tipo Revel. Ningún test clínico ha resultado informativo para el origen facetario: el único test informativo agrupado es la captación facetaria en SPECT (LR+ 2,80, LR− 0,44), una prueba de imagen, no de consulta.', fuente: 'Laslett 2006 (no replica a Revel; referencia: doble bloqueo); Han 2023 (eClinicalMedicine, revisión sistemática: Revel inconsistente, no agrupable)' },
-      { name: 'PA unilateral dolorosa o con menos movilidad', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'PA sobre la faceta o la transversa; espasmo ipsilateral.', fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), tabla 5 (consenso Delphi), p. 319' },
+      { name: 'PA (posteroanterior) unilateral dolorosa o con menos movilidad', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'PA sobre la faceta o la transversa; espasmo ipsilateral.', fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), tabla 5 (consenso Delphi), p. 319' },
       { name: 'Sin signos radiculares y sin alivio con repetidos', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Ausencia de signos radiculares; espalda en flexión, sin shift; los repetidos no suelen aliviar.', fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), tablas 5 y 6, pp. 319 y 323' }
     ]
   },
