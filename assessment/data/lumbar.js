@@ -330,7 +330,7 @@ export const screening = {
         { id: 'l5', text: '¿Tiene rigidez matutina prolongada (más de 30 minutos) que mejora con el movimiento?', alerta: true, s1: true,
           razonamiento: {
             porque: 'En las espondiloartropatías (espondilitis anquilosante, artritis psoriásica, reactiva o de la enfermedad inflamatoria intestinal) la inflamación de la sacroilíaca y la columna empeora con la inactividad: tras la noche aparece una rigidez larga que mejora al moverse. El dolor mecánico suele ir al revés: empeora con el movimiento.',
-            peso: 'Solo cuenta dentro del criterio de dolor lumbar inflamatorio (menores de 45 años con dolor de más de 3 meses): 2 de 4 preguntas positivas dan sensibilidad del 70 % y especificidad del 81 %; con 3 de 4, la especificidad roza el 100 % y la sensibilidad baja al 33 %. Aislado, no diagnostica nada.',
+            peso: 'Solo cuenta dentro del criterio de dolor lumbar inflamatorio (menores de 45 años con dolor de más de 3 meses): 2 de 4 preguntas positivas dan sensibilidad del 70 % y especificidad del 81 % (LR+ 3,7); con 3 o 4, especificidad del 97 % y sensibilidad del 34 % (LR+ 12,4). Son cifras de un estudio exploratorio, sin validar, en personas con la espondilitis ya diagnosticada (Rudwaleit 2006). Aislado, no diagnostica nada.',
             detalle: 'Mecanismo: la espondiloartropatía se caracteriza por dolor en la segunda parte de la noche y rigidez prolongada que mejora con la actividad, con limitación de la movilidad en todas las direcciones y dolor a la presión en la columna y las sacroilíacas. Suele acompañarse de otros signos sistémicos (fiebre, lesiones cutáneas, pérdida de apetito o de peso), y hay predisposición genética.\n\nQué buscar con un SÍ: dolor en otras articulaciones, psoriasis o erupciones, ojo rojo y doloroso (conjuntivitis), diarrea o enfermedad inflamatoria intestinal, síntomas urinarios o infección de transmisión sexual reciente (artritis reactiva), y antecedentes familiares.\n\nEl criterio (Goodman, cap. 14): a cualquier persona menor de 45 años con dolor lumbar, de cadera, de nalga o sacro de más de 3 meses, preguntarle por rigidez matutina de más de 30 minutos, dolor que la despierta en la segunda mitad de la noche, dolor que alterna de una nalga a otra y dolor que no se alivia con el reposo. La app lo evalúa sola con la edad de la fase 1 y la cronología, y lo muestra bajo las preguntas de este sistema.\n\nContraste (StatPearls, Lassiter 2024): el dolor lumbar inflamatorio es frecuente (en torno al 5–6 % de los adultos de EE. UU.) y bastante más que las espondiloartropatías (0,9–1,4 %), así que no es diagnóstico por sí mismo: sirve como criterio para derivar a reumatología. Lo caracterizan el inicio insidioso antes de los 40 años, más de 3 meses de evolución, la rigidez matutina que mejora con el ejercicio, el dolor que no mejora con el reposo, el dolor nocturno que mejora al levantarse y moverse, y el dolor de nalga que alterna de lado. El dolor mecánico, en cambio, suele empeorar con el movimiento y el ejercicio, y suele tener un inicio más agudo ligado a una lesión.',
             fisiologia: {
               pasos: [
@@ -342,8 +342,9 @@ export const screening = {
               nota: 'Por qué el movimiento alivia la rigidez no lo explica la fuente leída: es la seña clínica que distingue este dolor del mecánico, no un mecanismo demostrado aquí.',
               metafora: 'Como un fuego lento en las bisagras de la columna: el cuerpo intenta repararlas poniendo hueso nuevo, y con los años las bisagras pueden soldarse.'
             },
-            fuentes: ['Goodman 2018', 'Lassiter 2024'],
+            fuentes: ['Goodman 2018', 'Lassiter 2024', 'Rudwaleit 2006'],
             citas: [
+              'Rudwaleit 2006 — Rudwaleit, Metter, Listing, Sieper y Braun, «Inflammatory back pain in ankylosing spondylitis: a reassessment of the clinical history for application as classification and diagnostic criteria», Arthritis Rheum 54(2):569–578, tabla 5.',
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 14, pp. 534–535; cap. 15, pp. 581–583.',
               { texto: 'Lassiter 2024 — Lassiter, Bhutta y Allam, «Inflammatory Back Pain and Spondyloarthropathies», StatPearls [Internet], NCBI Bookshelf, última actualización 26 de febrero de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK539753/' }
             ]
@@ -351,7 +352,7 @@ export const screening = {
         { id: 'l5c', text: '¿El dolor cambia de un glúteo a otro, unas veces en un lado y otras en el otro?', alerta: false,
           razonamiento: {
             porque: 'Las espondiloartropatías inflaman las sacroilíacas (la sacroileítis está presente en toda espondilitis anquilosante), y un dolor que pasa de una nalga a otra es una de las cuatro preguntas del criterio de dolor lumbar inflamatorio.',
-            peso: 'Solo cuenta dentro del criterio de dolor lumbar inflamatorio (menores de 45 años con dolor de más de 3 meses): 2 de 4 preguntas positivas dan sensibilidad del 70 % y especificidad del 81 %; con 3 de 4, la especificidad roza el 100 % y la sensibilidad baja al 33 %. Aislado, no diagnostica nada.',
+            peso: 'Solo cuenta dentro del criterio de dolor lumbar inflamatorio (menores de 45 años con dolor de más de 3 meses): 2 de 4 preguntas positivas dan sensibilidad del 70 % y especificidad del 81 % (LR+ 3,7); con 3 o 4, especificidad del 97 % y sensibilidad del 34 % (LR+ 12,4). Son cifras de un estudio exploratorio, sin validar, en personas con la espondilitis ya diagnosticada (Rudwaleit 2006). Aislado, no diagnostica nada.',
             detalle: 'Mecanismo: la sacroileítis está presente en todas las personas con espondilitis anquilosante, y las enfermedades reumáticas erosivas no infecciosas (espondilitis anquilosante, artritis reactiva, psoriásica y la asociada a enfermedad inflamatoria intestinal) son la causa sistémica más frecuente de dolor sacro.\n\nEl criterio (Goodman, cap. 14): a cualquier persona menor de 45 años con dolor lumbar, de cadera, de nalga o sacro de más de 3 meses, preguntarle por rigidez matutina de más de 30 minutos, dolor que la despierta en la segunda mitad de la noche, dolor que alterna de una nalga a otra y dolor que no se alivia con el reposo. La app lo evalúa sola con la edad de la fase 1 y la cronología, y lo muestra bajo las preguntas de este sistema.\n\nContraste (StatPearls, Lassiter 2024): el dolor lumbar inflamatorio es frecuente (en torno al 5–6 % de los adultos de EE. UU.) y bastante más que las espondiloartropatías (0,9–1,4 %), así que no es diagnóstico por sí mismo: sirve como criterio para derivar a reumatología. Lo caracterizan el inicio insidioso antes de los 40 años, más de 3 meses de evolución, la rigidez matutina que mejora con el ejercicio, el dolor que no mejora con el reposo, el dolor nocturno que mejora al levantarse y moverse, y el dolor de nalga que alterna de lado. El dolor mecánico, en cambio, suele empeorar con el movimiento y el ejercicio, y suele tener un inicio más agudo ligado a una lesión.',
             fisiologia: {
               pasos: [
@@ -363,8 +364,9 @@ export const screening = {
               nota: 'La fuente leída recoge la alternancia como rasgo clínico, pero no explica por qué cambia de lado.',
               metafora: 'Como un fuego lento en las bisagras de la columna: el cuerpo intenta repararlas poniendo hueso nuevo, y con los años las bisagras pueden soldarse.'
             },
-            fuentes: ['Goodman 2018', 'Lassiter 2024'],
+            fuentes: ['Goodman 2018', 'Lassiter 2024', 'Rudwaleit 2006'],
             citas: [
+              'Rudwaleit 2006 — Rudwaleit, Metter, Listing, Sieper y Braun, «Inflammatory back pain in ankylosing spondylitis: a reassessment of the clinical history for application as classification and diagnostic criteria», Arthritis Rheum 54(2):569–578, tabla 5.',
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 14, pp. 534–535; cap. 15, pp. 581–583.',
               { texto: 'Lassiter 2024 — Lassiter, Bhutta y Allam, «Inflammatory Back Pain and Spondyloarthropathies», StatPearls [Internet], NCBI Bookshelf, última actualización 26 de febrero de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK539753/' }
             ]
@@ -372,7 +374,7 @@ export const screening = {
         { id: 'l5d', text: '¿El dolor sigue igual o empeora cuando descansa, en lugar de aliviarse?', alerta: false,
           razonamiento: {
             porque: 'El dolor inflamatorio no mejora con el reposo, e incluso empeora con la inactividad; el dolor mecánico suele aliviarse al descansar. Que el reposo no alivie es una de las cuatro preguntas del criterio de dolor lumbar inflamatorio.',
-            peso: 'Solo cuenta dentro del criterio de dolor lumbar inflamatorio (menores de 45 años con dolor de más de 3 meses): 2 de 4 preguntas positivas dan sensibilidad del 70 % y especificidad del 81 %; con 3 de 4, la especificidad roza el 100 % y la sensibilidad baja al 33 %. Aislado, no diagnostica nada. Fuera del criterio, el dolor que no cede con el reposo también aparece en la infección discal y en los tumores.',
+            peso: 'Solo cuenta dentro del criterio de dolor lumbar inflamatorio (menores de 45 años con dolor de más de 3 meses): 2 de 4 preguntas positivas dan sensibilidad del 70 % y especificidad del 81 % (LR+ 3,7); con 3 o 4, especificidad del 97 % y sensibilidad del 34 % (LR+ 12,4). Son cifras de un estudio exploratorio, sin validar, en personas con la espondilitis ya diagnosticada (Rudwaleit 2006). Aislado, no diagnostica nada. Fuera del criterio, el dolor que no cede con el reposo también aparece en la infección discal y en los tumores.',
             detalle: 'Mecanismo: en las espondiloartropatías la rigidez y el dolor empeoran tras la inmovilidad y mejoran con la actividad. Goodman formula la pregunta al revés («¿el reposo le alivia el dolor?»): para el criterio cuenta la respuesta NO, que en esta app es el SÍ de «sigue igual o empeora cuando descansa».\n\nCon qué se confunde: la infección del espacio discal da un dolor que empeora con la actividad y, a diferencia de la mayoría de las lumbalgias, no se alivia con el reposo; el dolor tumoral tampoco depende de la carga ni de la postura.\n\nEl criterio (Goodman, cap. 14): a cualquier persona menor de 45 años con dolor lumbar, de cadera, de nalga o sacro de más de 3 meses, preguntarle por rigidez matutina de más de 30 minutos, dolor que la despierta en la segunda mitad de la noche, dolor que alterna de una nalga a otra y dolor que no se alivia con el reposo. La app lo evalúa sola con la edad de la fase 1 y la cronología, y lo muestra bajo las preguntas de este sistema.\n\nContraste (StatPearls, Lassiter 2024): el dolor lumbar inflamatorio es frecuente (en torno al 5–6 % de los adultos de EE. UU.) y bastante más que las espondiloartropatías (0,9–1,4 %), así que no es diagnóstico por sí mismo: sirve como criterio para derivar a reumatología. Lo caracterizan el inicio insidioso antes de los 40 años, más de 3 meses de evolución, la rigidez matutina que mejora con el ejercicio, el dolor que no mejora con el reposo, el dolor nocturno que mejora al levantarse y moverse, y el dolor de nalga que alterna de lado. El dolor mecánico, en cambio, suele empeorar con el movimiento y el ejercicio, y suele tener un inicio más agudo ligado a una lesión.',
             fisiologia: {
               pasos: [
@@ -384,8 +386,9 @@ export const screening = {
               nota: 'Por qué el reposo no alivia y el movimiento sí no lo explica la fuente leída: es la seña clínica que distingue este dolor del mecánico.',
               metafora: 'Como un fuego lento en las bisagras de la columna: el cuerpo intenta repararlas poniendo hueso nuevo, y con los años las bisagras pueden soldarse.'
             },
-            fuentes: ['Goodman 2018', 'Lassiter 2024'],
+            fuentes: ['Goodman 2018', 'Lassiter 2024', 'Rudwaleit 2006'],
             citas: [
+              'Rudwaleit 2006 — Rudwaleit, Metter, Listing, Sieper y Braun, «Inflammatory back pain in ankylosing spondylitis: a reassessment of the clinical history for application as classification and diagnostic criteria», Arthritis Rheum 54(2):569–578, tabla 5.',
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 14, pp. 534–535, 542 y 563.',
               { texto: 'Lassiter 2024 — Lassiter, Bhutta y Allam, «Inflammatory Back Pain and Spondyloarthropathies», StatPearls [Internet], NCBI Bookshelf, última actualización 26 de febrero de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK539753/' }
             ]
@@ -393,7 +396,7 @@ export const screening = {
         { id: 'l_e2', text: '¿El dolor sacroilíaco lo despierta en la segunda mitad de la noche (entre las 2 y las 5 am)?', alerta: true, s1: true,
           razonamiento: {
             porque: 'El dolor de las espondiloartropatías se concentra en la segunda mitad de la noche: tras horas de inmovilidad, la inflamación de la sacroilíaca despierta al paciente de madrugada y mejora al levantarse y moverse.',
-            peso: 'Solo cuenta dentro del criterio de dolor lumbar inflamatorio (menores de 45 años con dolor de más de 3 meses): 2 de 4 preguntas positivas dan sensibilidad del 70 % y especificidad del 81 %; con 3 de 4, la especificidad roza el 100 % y la sensibilidad baja al 33 %. Aislado, no diagnostica nada. Otras causas de dolor nocturno (tumor, infección, úlcera) no siguen esta franja horaria ni mejoran al moverse.',
+            peso: 'Solo cuenta dentro del criterio de dolor lumbar inflamatorio (menores de 45 años con dolor de más de 3 meses): 2 de 4 preguntas positivas dan sensibilidad del 70 % y especificidad del 81 % (LR+ 3,7); con 3 o 4, especificidad del 97 % y sensibilidad del 34 % (LR+ 12,4). Son cifras de un estudio exploratorio, sin validar, en personas con la espondilitis ya diagnosticada (Rudwaleit 2006). Aislado, no diagnostica nada. Otras causas de dolor nocturno (tumor, infección, úlcera) no siguen esta franja horaria ni mejoran al moverse.',
             detalle: 'Mecanismo: Goodman describe la espondiloartropatía por el dolor en la última parte de la noche, con rigidez prolongada que mejora con la actividad.\n\nCon qué se confunde: el dolor tumoral también es nocturno, pero no deja volver a dormir y no mejora con el movimiento; la úlcera duodenal despierta entre la medianoche y las 3 y se alivia al comer.\n\nEl criterio (Goodman, cap. 14): a cualquier persona menor de 45 años con dolor lumbar, de cadera, de nalga o sacro de más de 3 meses, preguntarle por rigidez matutina de más de 30 minutos, dolor que la despierta en la segunda mitad de la noche, dolor que alterna de una nalga a otra y dolor que no se alivia con el reposo. La app lo evalúa sola con la edad de la fase 1 y la cronología, y lo muestra bajo las preguntas de este sistema.\n\nContraste (StatPearls, Lassiter 2024): el dolor lumbar inflamatorio es frecuente (en torno al 5–6 % de los adultos de EE. UU.) y bastante más que las espondiloartropatías (0,9–1,4 %), así que no es diagnóstico por sí mismo: sirve como criterio para derivar a reumatología. Lo caracterizan el inicio insidioso antes de los 40 años, más de 3 meses de evolución, la rigidez matutina que mejora con el ejercicio, el dolor que no mejora con el reposo, el dolor nocturno que mejora al levantarse y moverse, y el dolor de nalga que alterna de lado. El dolor mecánico, en cambio, suele empeorar con el movimiento y el ejercicio, y suele tener un inicio más agudo ligado a una lesión.',
             fisiologia: {
               pasos: [
@@ -405,8 +408,9 @@ export const screening = {
               nota: 'Por qué el dolor aparece de madrugada y cede al moverse no lo explica la fuente leída: es un rasgo clínico, no un mecanismo demostrado aquí.',
               metafora: 'Como un fuego lento en las bisagras de la columna: el cuerpo intenta repararlas poniendo hueso nuevo, y con los años las bisagras pueden soldarse.'
             },
-            fuentes: ['Goodman 2018', 'Lassiter 2024'],
+            fuentes: ['Goodman 2018', 'Lassiter 2024', 'Rudwaleit 2006'],
             citas: [
+              'Rudwaleit 2006 — Rudwaleit, Metter, Listing, Sieper y Braun, «Inflammatory back pain in ankylosing spondylitis: a reassessment of the clinical history for application as classification and diagnostic criteria», Arthritis Rheum 54(2):569–578, tabla 5.',
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 3, p. 119; cap. 8, p. 307; cap. 14, pp. 534–535.',
               { texto: 'Lassiter 2024 — Lassiter, Bhutta y Allam, «Inflammatory Back Pain and Spondyloarthropathies», StatPearls [Internet], NCBI Bookshelf, última actualización 26 de febrero de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK539753/' }
             ]
@@ -522,9 +526,10 @@ export const screening = {
             ]
           } }
       ],
-      // Criterio de dolor lumbar inflamatorio de Goodman (cap. 14): válido solo en <45 años
+      // Criterio de dolor lumbar inflamatorio de Goodman (cap. 14, p. 535; estudio de
+      // origen: Rudwaleit 2006, tabla 5): válido solo en <45 años (corte de Goodman; Rudwaleit, <50)
       // y >3 meses de evolución (proxy: state.cronologia === 'Crónico (>3 meses)'); con 2 de
-      // las 4 preguntas positivas, Sn 70%/Sp 81%; con 3, Sp ≈100%. l5 y l_e2 ya alertan por sí
+      // las 4 preguntas positivas, Sn 70,3%/Sp 81,2%; con 3 o 4, Sp 97,3%. l5 y l_e2 ya alertan por sí
       // solas (banderas rojas independientes); l5c/l5d no tienen significado aislado en
       // Goodman — solo cuentan dentro de este criterio compuesto. Evaluado en app.js
       // (evaluarCriterioCompuesto), no cambia el `alerta` individual de cada pregunta.
@@ -533,7 +538,7 @@ export const screening = {
         minPositivas: 2,
         filtro: { edadMax: 45, evolucion: 'Crónico (>3 meses)' },
         etiqueta: 'Patrón compatible con dolor lumbar inflamatorio: derivación preferente a reumatología.',
-        nota: 'Criterio de Goodman (cap. 14): 2 de 4 → sensibilidad 70%, especificidad 81%; 3 de 4 → especificidad cercana al 100%. No es un diagnóstico.'
+        nota: 'Criterio de Goodman (cap. 14, p. 535), con las cifras del estudio de origen, Rudwaleit 2006 (tabla 5): 2 de 4 → sensibilidad 70,3 %, especificidad 81,2 % (LR+ 3,7); 3 o 4 → sensibilidad 33,6 %, especificidad 97,3 % (LR+ 12,4). Estudio exploratorio, sin validar: 213 menores de 50 años con dolor lumbar crónico, con la espondilitis ya establecida frente a lumbalgia mecánica, en una muestra de conveniencia; el corte de 45 años es de Goodman. No es un diagnóstico.'
       },
       zonasDolor: [
         { zona: 'Sacroilíacas (bilateral/alterno)', desc: 'Espondilitis anquilosante, síndrome de Reiter, Crohn' },
