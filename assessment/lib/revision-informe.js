@@ -103,7 +103,7 @@ const GENERICAS_DESCARTAR = new Set(['patologia', 'patologias', 'causas', 'orige
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 // Regla «fuentes»: nombrar de dónde sale un dato
-const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|dictado|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta,? (?:refiere|menciona|comenta|describe|indica|afirma)|antes de la consulta|(?:durante|en) la presente consulta|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
+const RE_FUENTES = /\b(transcripci[oó]n|grabaci[oó]n|dictado|formulario|recorrido de la exploraci[oó]n|conversaci[oó]n cl[ií]nica|en la conversaci[oó]n|no se (?:menciona|confirma|recoge|refiere) en (?:la )?(?:consulta|conversaci[oó]n)|en (?:la )?consulta,? (?:refiere|menciona|comenta|describe|indica|afirma)|antes de la consulta|(?:durante|en) la presente consulta|durante la consulta|inicialmente referid[oa]|PhysiQ|datos estructurados|datos recibidos|[aá]rbol de decisi[oó]n|notas del plan|variable de control|ventana de recuperaci[oó]n|anclaje de h[aá]bito)\b/gi;
 // Regla «atribucion»: hallazgos atribuidos a la evolución de la cirugía o la lesión
 const RE_ATRIBUCION = /evoluci[oó]n (?:esperable|natural|habitual|previsible)|esperable (?:en|tras|para) (?:el|la|un|una)\b|propi[oa]s? del (?:per[ií]odo|postoperatorio|proceso)|(?:compatible|coherente)s? con el (?:contexto|per[ií]odo|escenario|momento) (?:posquir|postquir|postoperat)/i;
 // Regla «frecuencia»: actividades (raíz sobre texto sin acentos) y las
@@ -569,7 +569,7 @@ export function comprobacionesManuales({ ampliado = null, formularioYAudio = fal
     'Cada indicación del plan se atribuye a quien la dio (fisioterapeuta, cirujano, médico), y un consejo no aparece como algo que el paciente ya hace.',
     ...(conO.length ? [`Los tests con alternativas en el nombre se describen con esas mismas palabras, sin afirmar las dos: ${conO.map(n => `«${n}»`).join(', ')}.`] : []),
     'No hay plan, seguimiento ni prevención para otra zona o el otro lado que nadie indicó.',
-    ...(formularioYAudio ? ['Si lo que el paciente dijo en consulta difiere del formulario previo (un síntoma, una cifra de dolor), el informe da las dos versiones.'] : []),
+    ...(formularioYAudio ? ['Si lo que el paciente dijo en consulta difiere del formulario previo (un síntoma, una cifra de dolor), el informe da las dos versiones, sin cambiar ninguna para que encajen (p. ej. «primer episodio» convertido en «primera consulta de fisioterapia»).'] : []),
   ];
 }
 

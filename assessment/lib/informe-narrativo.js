@@ -244,7 +244,7 @@ export function regionTexto(data, nombreRegion = r => r) {
 // Ronda 23: el EVN registrado en la fase 3 desaparecía cuando el dictado daba
 // otra cifra para «ahora» (Rosa 4, Tomás 6, Elena 7): el informe se quedaba con
 // la de la consulta. Las dos son ciertas, cada una en su momento.
-export const NOTA_NRS = '(cifra registrada por el fisioterapeuta en la valoración: debe constar en el informe; si en la consulta se da otra para otro momento, recoge las dos, cada una con su momento)';
+export const NOTA_NRS = '(esta cifra debe constar en el informe; si se da otra para otro momento, recoge las dos, cada una con su momento, sin decir de dónde sale cada una)';
 // Ronda 23: en la frase de contraste de la ficha, «la hipomovilidad y el
 // cumplimiento de 4 criterios de Flynn apoyan la primera» (Elena), aunque la
 // regla común ya lo prohibía: el aviso va donde se escribe el contraste.
@@ -408,10 +408,16 @@ export function bloquesAmpliados(a, { urgente = false } = {}) {
     // «supra o infrainguinal») es positivo con una sola: la regla del prompt
     // no bastó (Andrea: «dolor y restricción»; Daniel: «tanto supra como infrainguinal»)
     const conAlternativas = t => t.resultado === 'positivo' && / o /i.test(limpiarEtiqueta(t.test));
-    const item = t => `    · ${limpiarEtiqueta(t.test)}: ${t.resultado}${conAlternativas(t) ? ' (positivo si se cumple al menos una de las alternativas: descríbelo con las mismas palabras, sin afirmar las dos)' : ''}${t.cluster ? ` (parte del cluster «${t.cluster}»)` : ''}${t.pronostico ? ' (regla pronóstica, no diagnóstica)' : ''}`;
-    b.push(`Tests de confirmación realizados (solo estos; no hay otros):\n${a.tests.map(h => `  ${limpiarEtiqueta(h.hipotesis)}${h.derivar
+    const item = t => `    · ${limpiarEtiqueta(t.test)}: ${t.resultado}${conAlternativas(t) ? ' (positivo si se cumple al menos una de las alternativas: descríbelo con las mismas palabras, sin afirmar las dos)' : ''}${t.cluster ? ` (parte del cluster «${t.cluster}»)` : ''}`;
+    // Las reglas pronósticas van en un bloque propio: dentro de la lista de
+    // tests de una hipótesis, el informe las citaba como apoyo de esa hipótesis
+    // aunque llevaran «(regla pronóstica, no diagnóstica)» (ronda 24, Elena‑2)
+    const diag = a.tests.map(h => ({ ...h, items: h.items.filter(t => !t.pronostico) })).filter(h => h.items.length);
+    const pron = a.tests.flatMap(h => h.items.filter(t => t.pronostico));
+    if (diag.length) b.push(`Tests de confirmación realizados (solo estos; no hay otros):\n${diag.map(h => `  ${limpiarEtiqueta(h.hipotesis)}${h.derivar
       ? ' — comprobaciones de una hipótesis que se deriva: no son tests diagnósticos ni pruebas de imagen, y un resultado negativo no la descarta'
       : ''}:\n${h.items.map(item).join('\n')}`).join('\n')}`);
+    if (pron.length) b.push(`Reglas pronósticas (predicen la respuesta a un tratamiento; no son pruebas de ninguna hipótesis ni apoyan el diagnóstico):\n${pron.map(t => `  · ${limpiarEtiqueta(t.test)}: ${t.resultado} (regla pronóstica, no diagnóstica)`).join('\n')}`);
   }
   if (a.pautas?.length && urgente) {
     const proms = a.pautas.filter(p => p.prom).map(p => `  · ${limpiarEtiqueta(p.hipotesis)}: ${p.prom}`);
