@@ -244,7 +244,7 @@ export function regionTexto(data, nombreRegion = r => r) {
 // Ronda 23: el EVN registrado en la fase 3 desaparecía cuando el dictado daba
 // otra cifra para «ahora» (Rosa 4, Tomás 6, Elena 7): el informe se quedaba con
 // la de la consulta. Las dos son ciertas, cada una en su momento.
-export const NOTA_NRS = '(esta cifra debe constar en el informe; si se da otra para otro momento, recoge las dos, cada una con su momento, sin decir de dónde sale cada una)';
+export const NOTA_NRS = '(esta cifra debe constar en el informe; si se da otra para otro momento, recoge las dos, cada una con su momento, sin decir de dónde sale cada una; esta no lleva momento: escríbela sin él y no le pongas el de otra cifra)';
 // Ronda 23: en la frase de contraste de la ficha, «la hipomovilidad y el
 // cumplimiento de 4 criterios de Flynn apoyan la primera» (Elena), aunque la
 // regla común ya lo prohibía: el aviso va donde se escribe el contraste.
