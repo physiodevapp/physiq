@@ -40,6 +40,15 @@ const primera = (texto, re) => {
 // mismo rango, no cada uno de sus extremos como intensidad suelta.
 const RE_SOBRE10 = /(\d{1,2})\s*(?:[-–]\s*(\d{1,2})\s*)?(?:\/|sobre)\s*10\b/g;
 const notaDe = m => (m[2] ? `${Number(m[1])}-${Number(m[2])}` : String(Number(m[1])));
+// Momentos que el informe puede ponerle al NRS de la valoración (que no lleva
+// ninguno): `clave` busca ese momento en la misma línea del dato que da la cifra
+const MOMENTOS_NRS = [
+  { re: /\ben reposo\b/, clave: /reposo/, texto: 'en reposo' },
+  { re: /\b(?:ultima|esta|la) semana\b/, clave: /semana/, texto: 'la última semana' },
+  { re: /\b(?:peor momento|como maximo|maximo|maxima)\b/, clave: /peor|maxim/, texto: 'el peor momento' },
+  { re: /\bal levantar/, clave: /levant/, texto: 'al levantarse' },
+  { re: /\bpor la noche\b|\bnocturn/, clave: /noche|nocturn/, texto: 'por la noche' }
+];
 const notasSobre10 = t => [...String(t || '').matchAll(RE_SOBRE10)].map(notaDe);
 // En la transcripción se dice «un ocho de diez» (Whisper: «un 8 de 10»): también
 // valen «de 10» y los números en letra.
@@ -228,6 +237,37 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
       out.push(punto('nrs-omitido', 'medio', `El NRS registrado en la valoración (${datos.nr}/10) no aparece; si en la consulta dio otra cifra, van las dos, cada una con su momento.`));
   }
 
+  // El NRS de la valoración no lleva momento, y el informe le pone uno que
+  // ningún dato da para esa cifra (Elena‑4: «en la última semana ha llegado a
+  // 7/10», cuando el peor de la semana fue 8; Andrés: «en reposo es de 3/10»,
+  // con el dolor en reposo ausente). La nota del NRS no lo evitó (ronda 25)
+  if (datos.nr != null) {
+    const n = Number(datos.nr);
+    const reCifra = new RegExp(`(?<![≤≥<>\\d.,–-])${n}\\s*(?:/|sobre|de)\\s*10\\b`);
+    const respaldada = clave => frases(fuenteN).some(l => reCifra.test(l) && clave.test(l));
+    const hecho = new Set();
+    for (const f of frases(tn)) {
+      for (const trozo of f.split(/[,;]|\s(?:y|aunque|pero|mientras que)\s/)) {
+        if (!reCifra.test(trozo)) continue;
+        for (const { re, clave, texto } of MOMENTOS_NRS) {
+          if (hecho.has(texto) || !re.test(trozo) || respaldada(clave)) continue;
+          hecho.add(texto);
+          out.push(punto('nrs-momento', 'medio', `El NRS registrado (${n}/10) no lleva momento en los datos y el informe le pone uno («${texto}») que ningún dato da para esa cifra.`, fraseEn(t, tn.indexOf(f))));
+        }
+      }
+    }
+  }
+
+  // Un plazo de «Cuándo reconsiderar o derivar» copiado al informe (Andrés: «si tras
+  // 3 a 6 meses… incluida la cirugía», junto al criterio del fisio de 6 semanas)
+  const plazos = s => [...sinAcentos(String(s || '')).matchAll(/(\d+)\s*(?:[–-]|a)\s*(\d+)\s*(semanas?|meses|dias)/gi)].map(m => ({ clave: `${m[1]}-${m[2]} ${m[3].toLowerCase().replace(/s$/, '')}`, i: m.index }));
+  const deReconsiderar = new Set((ampliado?.pautas || []).flatMap(p => plazos(p.pronostico?.derivacion).map(x => x.clave)));
+  if (deReconsiderar.size) {
+    const delAudio = new Set(plazos(transcripcion).map(x => x.clave));
+    const m = plazos(tn).find(x => deReconsiderar.has(x.clave) && !delAudio.has(x.clave));
+    if (m) out.push(punto('reconsiderar-copiado', 'medio', '«Cuándo reconsiderar o derivar» es contexto para el fisioterapeuta: su plazo aparece en el informe como plan o seguimiento.', fraseEn(t, m.i)));
+  }
+
   // Una regla pronóstica (Flynn) usada como apoyo de una hipótesis (Elena: «la
   // hipomovilidad segmentaria y el cumplimiento de 4 criterios de Flynn apoyan
   // la primera»): predice la respuesta a un tratamiento, no el diagnóstico
@@ -387,7 +427,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   if (plantilla === 'narrativo' && iSeg > 0) {
     // «en caso de ausencia de mejoría», «si no mejora» (no «la ausencia de mejoría con
     // movimientos repetidos», un hallazgo: Andrea) (Daniel, dictado: «En caso de ausencia de mejoría… se solicitará valoración ecográfica»)
-    const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a|(?:en caso de|ante(?: la)?|si hay)\s+(?:una\s+)?(?:ausencia|falta) de mejor[ií]a|\b(?:si|en caso de)\s+no\s+(?:mejora|mejorar|mejorase)\b|\ben caso de no (?:observarse|objetivarse|producirse|apreciarse|haber) (?:una )?mejor[ií]a/i.exec(t.slice(0, iSeg));
+    const m = /reconsider|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|alcanza)?\s*(?:una )?mejor[ií]a|(?:en caso de|ante(?: la)?|si hay)\s+(?:una\s+)?(?:ausencia|falta) de mejor[ií]a|\b(?:si|en caso de)\s+no\s+(?:mejora|mejorar|mejorase)\b|\ben caso de no (?:observarse|objetivarse|producirse|apreciarse|haber) (?:una )?mejor[ií]a|(?:si|cuando)\b[^.]{0,60}\bno (?:se )?(?:observa|objetiva|produce|hay|aprecia|gana)?\s*(?:una |ningun[ao] )?(?:ganancia|progres\w*|avance)/i.exec(t.slice(0, iSeg));
     if (m) out.push(punto('seguimiento-fuera', 'medio', 'El criterio de reconsiderar o derivar si no mejora aparece fuera de Seguimiento.', fraseEn(t, m.index)));
   }
   // Lo que no le empeora no va en Limitaciones (Andrea: «Niega dolor al toser…»;
