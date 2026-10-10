@@ -444,11 +444,15 @@ export function construirAmpliado() {
       const op = st.options.find(o => o.value === state.treeAnswers[st.id]);
       // Si lo que la respuesta «orienta a» ya está diagnosticado y tratado, que
       // el prompt lo sepa (si no, lo lee como una sospecha abierta)
-      const tratada = (op?.hypothesis || []).some(h => esTratada(h));
+      // Lo mismo con una derivación del árbol marcada «Ya diagnosticada y
+      // tratada» (opción `resoluble`, p. ej. codo co_step1): sin esto el prompt
+      // recibía «Sospecha de fractura o luxación: derivación médica» y la pedía
+      const resuelta = !!(op?.resoluble && state.derivacionResuelta?.[st.id]);
+      const tratada = resuelta || (op?.hypothesis || []).some(h => esTratada(h));
       // `iaPregunta` y textoOpcionIA() (lib/informe-narrativo.js): al prompt va
       // la conclusión de la opción, no su detalle (pistas, criterios, umbrales);
       // el NINGUNO de un paso de zona no va
-      const respuesta = op ? textoOpcionIA(op) : state.treeAnswers[st.id];
+      const respuesta = resuelta ? op.label.split(' — ')[0] : op ? textoOpcionIA(op) : state.treeAnswers[st.id];
       if (respuesta == null) return null;
       return { pregunta: st.iaPregunta || st.question, respuesta, ...(tratada ? { tratada: true } : {}) };
     })
