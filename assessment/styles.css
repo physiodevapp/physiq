@@ -878,11 +878,13 @@
   .stat-badge.highlight { background: rgba(79,156,249,0.1); border-color: rgba(79,156,249,0.2); color: var(--accent); }
   .stat-badge.no-data { color: var(--text3); font-style: italic; }
   .stat-badge.lr-weak { color: var(--text3); border-style: dashed; }
+  .test-peso { font-size: 0.76rem; color: var(--text2); line-height: 1.4; margin: -2px 0 8px; }
   .test-source { font-size: 0.68rem; color: var(--text3); font-family: 'DM Mono', monospace; margin: -6px 0 10px; }
   .cluster-box { border: 1px dashed var(--border2); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 12px; background: var(--surface2); }
   .cluster-title { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
   .cluster-rule { font-size: 0.75rem; color: var(--text2); line-height: 1.5; }
   .cluster-box .test-source { margin: 4px 0 0; }
+  .test-source .razon-ampliar { font-family: 'Outfit', sans-serif; white-space: nowrap; }
   .test-criterion {
     font-size: 0.78rem;
     color: var(--text3);

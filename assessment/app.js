@@ -149,8 +149,8 @@ function goToPhase(n) {
   const navIds = ['nav1','nav2','nav3','nav4','nav4b','nav5'];
   const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
 
-  // El panel del razonamiento solo tiene sentido en la fase 2
-  if (n !== 2) cerrarRazonamiento({ sinHistorial: true });
+  // El panel del razonamiento es de la fase en la que se abrió (2 o 4b)
+  if (String(n) !== String(state.currentPhase)) cerrarRazonamiento({ sinHistorial: true });
 
   // Save current state before leaving
   if (state.currentPhase === 1) collectPhase1();
@@ -1354,20 +1354,30 @@ function abrirRazonamiento(btn, sisId, qId) {
   const hit = _buscarPregunta(sisId, qId);
   const r = hit?.q.razonamiento;
   if (!r || !r.detalle) return;
-  const panel = document.getElementById('razonPanel');
-  const yaAbierto = panel.classList.contains('open');
-  document.getElementById('razonPregunta').textContent = hit.q.text;
   const parrafos = r.detalle.split('\n\n').map(p => `<p>${p}</p>`).join('');
-  document.getElementById('razonContenido').innerHTML = `
+  abrirPanelRazon({
+    btn, kicker: '¿Por qué esta pregunta?', titulo: hit.q.text,
+    html: `
     <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}</p></div>
     <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${r.peso}</p></div>
     ${razonFisiologiaHTML(r.fisiologia)}
     <div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>
     <div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
-      <ul>${(r.citas || r.fuentes).map(razonCitaHTML).join('')}</ul></div>`;
+      <ul>${(r.citas || r.fuentes).map(razonCitaHTML).join('')}</ul></div>`,
+  });
+}
+
+// Panel del razonamiento, común a la fase 2 (preguntas de cribado) y a la
+// 4b (tests, phase4b.js): lateral sin velo en escritorio, bottom sheet con
+// velo en móvil. Si ya está abierto, solo cambia el contenido.
+function abrirPanelRazon({ btn, kicker, titulo, html }) {
+  const panel = document.getElementById('razonPanel');
+  const yaAbierto = panel.classList.contains('open');
+  panel.querySelector('.razon-kicker').textContent = kicker;
+  document.getElementById('razonPregunta').textContent = titulo;
+  document.getElementById('razonContenido').innerHTML = html;
   document.getElementById('razonContenido').scrollTop = 0;
   _razonOrigen = btn || null;
-  // Otra pregunta con el panel ya abierto: solo cambia el contenido.
   if (!yaAbierto) {
     const movil = _esMovil();
     panel.classList.add('open');
@@ -3489,7 +3499,7 @@ _iniciarGrabadora();
 export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, resumenFormularioIA, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
   buildContextSummaryText, getPendientesBreve, buildSistemaHTML,
   precargarFormularioPrevio, nombreRegion, showToast,
-  injectQuickInputBar, lockBodyScroll, unlockBodyScroll, partirPrimeraFrase };
+  injectQuickInputBar, lockBodyScroll, unlockBodyScroll, partirPrimeraFrase, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento };
 
 // Exposed on window for inline onclick/oninput attributes across index.html
 // and dynamically-generated HTML — those resolve only against the global

@@ -119,7 +119,13 @@ export const CIF_TREES = Object.fromEntries(
 //                                  // sn/sp numéricos o el test es hallazgo clínico
 //                                  // (reglas en CLAUDE.md, "Phase 4b scoring")
 //         lr_neg: string | null,  // LR− — igual que lr_pos
-//         criterio: string,       // criterio de positividad (texto libre)
+//         criterio: string,       // técnica y criterio de positividad, corto: es
+//                                  // lo que se ve siempre (docs/razonamiento-tests.md)
+//         razonamiento?: { porque?, detalle?, fuentes?, citas? },
+//                                  // panel «Ampliar →» de la fase 4b: `detalle` = la
+//                                  // evidencia que sobraba del criterio, movida sin
+//                                  // reescribir; «cuánto pesa» no va aquí: lo genera
+//                                  // pesoTest() a partir de las LR
 //         fuente?: string,        // cita corta del estudio de las cifras
 //         tipo?: 'pronostico',    // regla pronóstica: nunca puntúa
 //         cluster?: string,       // id en hyp.clusters: puntúa solo la regla

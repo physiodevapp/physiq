@@ -4,7 +4,7 @@
 // ============================================================
 import { HYPOTHESES, DOSIS_DERIVAR, HIP_POSQUIRURGICA } from './data.js';
 import { state } from './state.js';
-import { saveSession, showConfirmBanner } from './app.js';
+import { saveSession, showConfirmBanner, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento } from './app.js';
 import {
   ETIQUETA_TRATADA, ETIQUETA_HIP_POSQ, ID_HIP_POSQ, esPosquirurgico, hipotesisConPosq,
   nombreHipPosq, cirugiaPayload, pautaHipPosq,
@@ -116,6 +116,7 @@ function tarjetaPosqHTML(hyp) {
 export function buildHypothesisCards() {
   const container = document.getElementById('hypothesisCards');
   container.innerHTML = '';
+  cerrarRazonamiento({ sinHistorial: true });
 
   const activas = hipotesisActivas();
   if (activas.length === 0) {
@@ -241,6 +242,42 @@ export function buildClusterBox(hyp, cid) {
   </div>`;
 }
 
+// «Cuánto pesa» de un test (docs/razonamiento-tests.md): frase generada con
+// las mismas reglas que calcLRScore, así que no puede contradecir la
+// puntuación. Siempre visible bajo los badges; el detalle de la evidencia
+// está en el panel «Ampliar».
+export const PESO_TEST = {
+  ambos: 'Sirve para confirmar y para descartar.',
+  pos: 'Sirve para confirmar; un negativo es solo un hallazgo.',
+  neg: 'Sirve para descartar; un positivo es solo un hallazgo.',
+  sinLR: 'Sin LR aplicable: es un hallazgo clínico y no cambia la puntuación.',
+  debil: 'Su LR no llega al umbral (LR+ ≥ 2 o LR− ≤ 0,5): es un hallazgo clínico y no cambia la puntuación.',
+  pronostico: 'Regla pronóstica: no cuenta para la puntuación diagnóstica.',
+  cluster: 'Puntúa dentro del cluster, no por separado.',
+  clusterSinLR: 'El cluster no tiene LR aplicable: es un hallazgo clínico.',
+};
+
+export function pesoTest(hyp, test, idx) {
+  if (test.tipo === 'pronostico') return PESO_TEST.pronostico;
+  if (test.cluster) return testPuntua(hyp, test) ? PESO_TEST.cluster : PESO_TEST.clusterSinLR;
+  const lr = lrEfectiva(test);
+  let txt = lr.posUtil && lr.negUtil ? PESO_TEST.ambos
+    : lr.posUtil ? PESO_TEST.pos
+    : lr.negUtil ? PESO_TEST.neg
+    : lr.pos == null && lr.neg == null ? PESO_TEST.sinLR : PESO_TEST.debil;
+  // `absorbe`: si puntúa el test compuesto que lo incluye, este no suma aparte
+  if (lr.posUtil || lr.negUtil) {
+    const comp = hyp.tests.find((t, k) => k !== idx && t.absorbe?.includes(idx) && testPuntua(hyp, t));
+    if (comp) txt += ` No suma aparte si puntúa «${comp.name.split(':')[0]}».`;
+  }
+  return txt;
+}
+
+// «Hegedus 2012 (Br J Sports Med…) · Zhao 2024 (…)» → «Hegedus 2012 · Zhao 2024»
+export function fuenteCorta(fuente) {
+  return fuente.split(' · ').map(c => c.split(' (')[0].trim()).join(' · ');
+}
+
 export function buildTestItem(hId, test, idx) {
   const hyp = HYPOTHESES[hId];
   const lr = lrEfectiva(test);
@@ -252,23 +289,89 @@ export function buildTestItem(hId, test, idx) {
     test.tipo === 'pronostico' ? `<span class="stat-badge lr-weak">Pronóstico · no puntúa</span>` : '',
     test.cluster && hyp?.clusters?.[test.cluster] ? `<span class="stat-badge">🧩 ${hyp.clusters[test.cluster].nombre}</span>` : '',
   ].filter(Boolean);
-  if (!test.cluster && test.tipo !== 'pronostico' && lr.pos == null && lr.neg == null) {
-    badges.push(`<span class="stat-badge no-data">Sin LR publicada · cuenta como hallazgo clínico</span>`);
-  }
-  const statsHtml = `<div class="test-stats">${badges.join('')}</div>`;
+  const statsHtml = badges.length ? `<div class="test-stats">${badges.join('')}</div>` : '';
+  const r = test.razonamiento;
+  const ampliar = r && (r.porque || r.detalle)
+    ? `<button type="button" class="razon-ampliar" onclick="abrirRazonamientoTest(this,'${hId}',${idx})">Ampliar →</button>` : '';
+  const porque = r?.porque ? `<details class="razon">
+      <summary>ⓘ ¿Por qué?</summary>
+      <div class="razon-cuerpo"><p><span class="razon-etq">Por qué</span> ${r.porque}</p>
+        ${r.fuentes?.length ? `<div class="razon-pie">— ${r.fuentes.join(' · ')}</div>` : ''}</div>
+    </details>` : '';
+  // Con «Ampliar», la tarjeta lleva solo autor y año; la cita completa está en el panel
+  const fuenteTxt = ampliar && test.fuente ? fuenteCorta(test.fuente) : test.fuente || '';
+  const fuente = fuenteTxt || ampliar
+    ? `<div class="test-source">${fuenteTxt}${ampliar}</div>` : '';
 
   const savedResult = (state.testResults[hId] && state.testResults[hId][idx]) || 'nd';
   return `<div class="test-item">
     <div class="test-name">${test.name}</div>
     ${statsHtml}
+    <div class="test-peso">${hyp ? pesoTest(hyp, test, idx) : ''}</div>
     <div class="test-criterion">${test.criterio}</div>
-    ${test.fuente ? `<div class="test-source">${test.fuente}</div>` : ''}
+    ${porque}
+    ${fuente}
     <div class="test-result-btns">
       <button class="test-result-btn pos ${savedResult==='pos'?'selected':''}" onclick="setTestResult('${hId}',${idx},'pos',this)">✓ Positivo</button>
       <button class="test-result-btn neg ${savedResult==='neg'?'selected':''}" onclick="setTestResult('${hId}',${idx},'neg',this)">✗ Negativo</button>
       <button class="test-result-btn nd ${savedResult==='nd'?'selected':''}" onclick="setTestResult('${hId}',${idx},'nd',this)">Sin datos</button>
     </div>
   </div>`;
+}
+
+// Panel «Ampliar» de un test: el mismo de la fase 2 (abrirPanelRazon, app.js).
+// Fuentes: la `fuente` del test partida por « · » y, después, las `citas` del
+// «por qué» que no estén ya. Cada cita se enlaza («Abrir ↗») con la url del
+// registro (data/referencias.js) o, sin ella, con su DOI: el registro se
+// carga con import() la primera vez que se abre el panel, y si falla el
+// panel se abre igual, sin enlaces.
+let _registro = null;
+async function registroReferencias() {
+  if (!_registro) _registro = import('./data/referencias.js').then(m => m.REFERENCIAS).catch(() => ({}));
+  return _registro;
+}
+
+// Clave del registro con la que empieza una cita («Hegedus 2012 (Br J…)» →
+// 'Hegedus 2012'; «Lluch 2020, cap. 3.1 (Struyf)» → 'Lluch 2020'): la más
+// larga, para no confundir 'Malik 2023' con 'Malik y Herron 2023'.
+export function claveRegistro(cita, REF) {
+  let mejor = null;
+  for (const k of Object.keys(REF)) {
+    if (cita.startsWith(k) && !/^[\p{L}\d]/u.test(cita.slice(k.length)) && (!mejor || k.length > mejor.length)) mejor = k;
+  }
+  return mejor;
+}
+
+export function citasTest(test) {
+  const propias = test.fuente ? test.fuente.split(' · ') : [];
+  const textos = new Set(propias);
+  return [...propias, ...(test.razonamiento?.citas || []).filter(c => !textos.has(typeof c === 'string' ? c : c.texto))];
+}
+
+export function enlaceCita(cita, REF) {
+  if (typeof cita !== 'string') return cita;
+  const r = REF[claveRegistro(cita, REF)];
+  const url = r?.url || (r?.doi ? `https://doi.org/${r.doi}` : null);
+  return url ? { texto: cita, url } : cita;
+}
+
+export async function abrirRazonamientoTest(btn, hId, idx) {
+  const hyp = HYPOTHESES[hId];
+  const test = hyp?.tests[idx];
+  const r = test?.razonamiento;
+  if (!r) return;
+  const REF = await registroReferencias();
+  const parrafos = (r.detalle || '').split('\n\n').filter(Boolean).map(p => `<p>${p}</p>`).join('');
+  const citas = citasTest(test).map(c => enlaceCita(c, REF));
+  abrirPanelRazon({
+    btn, kicker: 'Test · por qué y evidencia', titulo: test.name,
+    html: `
+    ${r.porque ? `<div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}</p></div>` : ''}
+    <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${pesoTest(hyp, test, idx)}</p></div>
+    ${parrafos ? `<div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>` : ''}
+    ${citas.length ? `<div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
+      <ul>${citas.map(razonCitaHTML).join('')}</ul></div>` : ''}`,
+  });
 }
 
 let _hypObserver = null;
@@ -558,4 +661,5 @@ export function recalcHypScore(hId) {
 window.toggleHypCard = toggleHypCard;
 window.clearAllTests = clearAllTests;
 window.setTestResult = setTestResult;
+window.abrirRazonamientoTest = abrirRazonamientoTest;
 window.scrollToActiveHypHeader = scrollToActiveHypHeader;
