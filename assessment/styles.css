@@ -2466,10 +2466,6 @@
 .in-hub #informeIA { display: none; }
 #informeIA { margin-top: 1.5rem; }
 .ia-titulo { display: flex; align-items: center; gap: 8px; }
-.ia-etiqueta {
-  font-size: 0.62rem; letter-spacing: 1px; padding: 2px 6px; border-radius: 6px;
-  border: 1px solid var(--border2); color: var(--accent);
-}
 .ia-intro { font-size: 0.85rem; color: var(--text2); line-height: 1.5; margin-bottom: 1rem; }
 .ia-estado { font-size: 0.85rem; color: var(--text2); display: flex; align-items: center; gap: 10px; margin-bottom: 0.8rem; }
 .ia-acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 0.8rem; }

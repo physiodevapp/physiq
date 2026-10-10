@@ -82,7 +82,7 @@ export function montarInformeIA(root) {
 function esqueleto() {
   return `
   <div class="card ia-card">
-    <div class="card-title ia-titulo">🎙 Informe narrativo <span class="ia-etiqueta">IA</span></div>
+    <div class="card-title ia-titulo">🎙 Informe con IA</div>
     <p class="ia-intro">Informe clínico narrativo (modelo CIF), como el de PhysiQ-Report, redactado a partir de los datos de esta valoración y, si lo añades, del audio de la sesión.</p>
     <div id="iaLicencia"></div>
     <div id="iaResultado"></div>
@@ -535,7 +535,7 @@ function textoInforme() {
 // barra inferior de la fase 5 (compartirInformeIA).
 function iaCompartir() {
   registrarValoracionCompleta();
-  compartirTexto(textoInforme(), { titulo: 'Informe de fisioterapia — PhysiQ-Assessment', copiado: '✓ Informe narrativo copiado al portapapeles' });
+  compartirTexto(textoInforme(), { titulo: 'Informe de fisioterapia — PhysiQ-Assessment', copiado: '✓ Informe con IA copiado al portapapeles' });
 }
 export function compartirInformeIA() { if (state.informeIA?.texto) iaCompartir(); }
 
@@ -742,8 +742,14 @@ function pintarProgreso() {
   });
 }
 
+// Con el tipo delante: mientras se genera el selector no está a la vista y
+// el título de la tarjeta es el mismo para los dos tipos
 function textoProgreso() {
   if (!_gen) return '';
+  return `${esc((PLANTILLAS[_gen.plantilla] || PLANTILLAS.narrativo).nombre)} · ${faseProgreso()}`;
+}
+
+function faseProgreso() {
   if (_gen.fase === 'transcribiendo') return 'Transcribiendo el audio…';
   const n = contarPalabras(_gen.texto);
   if (!n) return 'Redactando el informe…';
@@ -824,7 +830,7 @@ async function iaGenerar() {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 300000);
   _error = null;
-  _gen = { texto: '', transcripcion: '', fase: conAudio ? 'transcribiendo' : 'redactando', ctrl, oculto: false, conAudio };
+  _gen = { texto: '', transcripcion: '', fase: conAudio ? 'transcribiendo' : 'redactando', ctrl, oculto: false, conAudio, plantilla };
   _vivoAbierto = false;
   pedirWakeLockGen();
   pintar();
@@ -867,7 +873,7 @@ async function iaGenerar() {
     if (det) det.open = false;
     _resultadoAbierto = false;
     _revAbierta = null;   // informe nuevo: la caja de puntos vuelve a su apertura por defecto
-    showToast('✓ Informe narrativo generado', 'success');
+    showToast('✓ Informe con IA generado', 'success');
   } catch (err) {
     if (err instanceof SinVoz) {
       // Se conserva el audio: se puede escuchar, quitar o reintentar.
