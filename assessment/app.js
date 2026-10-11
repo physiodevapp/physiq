@@ -2674,7 +2674,7 @@ function _mostrarAvisoVersion() {
   aviso.id = 'versionAviso';
   aviso.className = 'version-aviso';
   aviso.setAttribute('role', 'status');
-  aviso.innerHTML = `<span class="version-aviso-texto">${_versionPendiente() ? 'La versión nueva aún se está publicando: prueba en unos minutos' : 'Hay una versión nueva'}</span>
+  aviso.innerHTML = `<span class="version-aviso-texto">${_versionPendiente() ? 'La versión nueva aún se está publicando: prueba en unos minutos' : '<span class="version-aviso-largo">Hay una versión nueva</span><span class="version-aviso-corto">Versión nueva</span>'}</span>
     <button type="button" class="version-aviso-btn" id="versionAvisoRecargar">Actualizar</button>
     <button type="button" class="version-aviso-cerrar" id="versionAvisoCerrar" aria-label="Cerrar aviso" title="Ahora no">×</button>`;
   document.body.appendChild(aviso);
@@ -2686,6 +2686,20 @@ function _mostrarAvisoVersion() {
   };
 }
 window.addEventListener('resize', () => { if (document.getElementById('versionAviso')) _colocarAvisoVersion(); });
+
+// Mientras se recarga, el aviso es solo un estado («⟳ Actualizando…», una
+// línea en cualquier ancho): el botón y la «×» ya no sirven, porque la app se
+// va a recargar igualmente.
+function _avisoActualizando() {
+  const aviso = document.getElementById('versionAviso');
+  if (aviso) {
+    aviso.classList.add('version-aviso-actualizando');
+    aviso.setAttribute('aria-busy', 'true');
+    aviso.innerHTML = '<span class="version-aviso-giro" aria-hidden="true"></span><span class="version-aviso-texto">Actualizando…</span>';
+  }
+  const b = document.getElementById('sessionVersionRecargar');
+  if (b) { b.disabled = true; b.textContent = 'Actualizando…'; }
+}
 
 // Antes de recargar se vuelven a pedir al servidor (cache: 'reload') los
 // archivos propios que ha cargado esta página, para que la caché HTTP del
@@ -2714,8 +2728,7 @@ function recargarVersionNueva() {
   const recargar = async () => {
     saveSession();
     _anotarRecarga(_versionNueva?.sha || '');
-    const btn = document.getElementById('versionAvisoRecargar');
-    if (btn) { btn.disabled = true; btn.textContent = 'Actualizando…'; }
+    _avisoActualizando();
     await _refrescarArchivosApp();
     location.reload();
   };
