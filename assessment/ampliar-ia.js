@@ -146,12 +146,28 @@ function _ocultarBarra() {
   _objetivo = null;
 }
 
+const _sinSeleccion = () => {
+  const sel = window.getSelection?.();
+  return !sel || sel.isCollapsed || !sel.rangeCount;
+};
+
+// Sin selección, la barra se oculta un poco después: al tocarla en un móvil la
+// selección se pierde antes del click. Mientras se toca o con el menú abierto
+// no se oculta, pero se vuelve a mirar después (antes se quedaba flotando si el
+// menú se cerraba sin elegir).
+function _ocultarSiSinSeleccion() {
+  clearTimeout(_tOcultar);
+  _tOcultar = setTimeout(() => {
+    if (!_barra || _barra.hidden || !_sinSeleccion()) return;
+    if (_tocandoBarra || (_menu && !_menu.hidden)) { _ocultarSiSinSeleccion(); return; }
+    _ocultarBarra();
+  }, 400);
+}
+
 function _evaluarSeleccion() {
   const sel = window.getSelection?.();
-  if (!sel || sel.isCollapsed || !sel.rangeCount) {
-    // Al tocar la barra en un móvil la selección se pierde antes del click:
-    // se oculta un poco después, y nunca mientras se está tocando.
-    if (_barra && !_barra.hidden && !_tocandoBarra) { clearTimeout(_tOcultar); _tOcultar = setTimeout(_ocultarBarra, 400); }
+  if (_sinSeleccion()) {
+    if (_barra && !_barra.hidden) _ocultarSiSinSeleccion();
     return;
   }
   const rango = sel.getRangeAt(0);
@@ -180,7 +196,7 @@ function _abrirMenu(boton, objetivo) {
   _menu.querySelector('.ia-menu-op.actual')?.focus({ preventScroll: true });
 }
 function _cerrarMenu() {
-  if (_menu && !_menu.hidden) { _menu.hidden = true; _menuObjetivo = null; }
+  if (_menu && !_menu.hidden) { _menu.hidden = true; _menuObjetivo = null; _ocultarSiSinSeleccion(); }
 }
 
 const _HTML_MENU = () => `
