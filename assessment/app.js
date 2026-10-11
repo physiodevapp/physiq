@@ -1407,7 +1407,8 @@ function abrirPanelRazon({ btn, kicker, titulo, html, ia }) {
       _razonHistorial = true;
     }
   }
-  document.getElementById('razonCerrar').focus({ preventScroll: true });
+  // En móvil la ✕ está oculta (no admite foco): el foco va al propio panel.
+  (_esMovil() ? panel : document.getElementById('razonCerrar')).focus({ preventScroll: true });
 }
 
 // `desdeHistorial`: lo llama el popstate del botón atrás (la entrada ya salió
