@@ -4,7 +4,8 @@
 // búsqueda gratuita y sin cuenta (Perplexity o Google en modo IA) para que le
 // explique ese fragmento con más detalle. Dos entradas:
 //   · seleccionar texto → botón flotante «✨ Ampliar en … ↗» bajo la selección
-//     (debajo, para no tapar el menú del sistema, que sale encima);
+//     (debajo, para no tapar el menú del sistema, que sale encima; en táctil,
+//     32 px más abajo, para dejar libres los marcadores de selección);
 //   · sin seleccionar → «✨ IA ↗» al final de cada párrafo (el párrafo entero).
 // La ▾ de los dos abre el menú para elegir destino, con la ventaja de cada
 // uno; la elección se recuerda en localStorage (preferencia de pantalla por
@@ -123,12 +124,18 @@ function _pintarBarra() {
   if (_objetivo) ir.href = urlIA(d, promptIA(_objetivo));
 }
 
-function _colocar(el, rect, { debajo = true } = {}) {
+// Separación de la barra respecto a la selección: en pantalla táctil, hueco
+// para los marcadores nativos de selección (las «gotas» que se arrastran para
+// alargarla), que la barra tapaba; con ratón no hay marcadores.
+export const SEPARACION_BARRA = { tactil: 32, raton: 8 };
+const _tactil = () => !!window.matchMedia?.('(pointer: coarse)').matches;
+
+function _colocar(el, rect, { sep = 8 } = {}) {
   el.style.left = '0px'; el.style.top = '0px';
   const w = el.offsetWidth, h = el.offsetHeight, m = 8;
-  let top = debajo ? rect.bottom + m : rect.top - h - m;
-  if (top + h > innerHeight - m) top = rect.top - h - m;
-  if (top < m) top = Math.min(rect.bottom + m, innerHeight - h - m);
+  let top = rect.bottom + sep;
+  if (top + h > innerHeight - m) top = rect.top - h - sep;
+  if (top < m) top = Math.min(rect.bottom + sep, innerHeight - h - m);
   const left = Math.max(m, Math.min(rect.left + rect.width / 2 - w / 2, innerWidth - w - m));
   el.style.left = `${Math.round(left)}px`; el.style.top = `${Math.round(Math.max(m, top))}px`;
 }
@@ -155,7 +162,7 @@ function _evaluarSeleccion() {
   _objetivo = { contexto: cont.dataset.iaCtx, texto };
   _pintarBarra();
   _barra.hidden = false;
-  _colocar(_barra, rango.getBoundingClientRect());
+  _colocar(_barra, rango.getBoundingClientRect(), { sep: _tactil() ? SEPARACION_BARRA.tactil : SEPARACION_BARRA.raton });
 }
 
 function _abrirMenu(boton, objetivo) {
