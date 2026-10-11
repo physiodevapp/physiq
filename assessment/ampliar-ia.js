@@ -1,8 +1,8 @@
 // ─── AMPLIAR CON IA (fases 2, 4 y 4b) ───────────────────────────
 // Desde el texto de un «¿Por qué?» (fase 2: preguntas de cribado; 4: pasos del árbol CIF; 4b: tests)
 // o del panel «Ampliar →», el clínico abre una conversación en una IA de
-// búsqueda gratuita y sin cuenta (Perplexity o Google en modo IA) para que le
-// explique ese fragmento con más detalle. Dos entradas:
+// búsqueda (Perplexity o Google en modo IA, gratis y sin cuenta; o Claude, con
+// cuenta gratuita) para que le explique ese fragmento con más detalle. Dos entradas:
 //   · seleccionar texto → botón flotante «✨ Ampliar en … ↗» bajo la selección
 //     (debajo, para no tapar el menú del sistema, que sale encima; en táctil,
 //     32 px más abajo, para dejar libres los marcadores de selección);
@@ -31,6 +31,15 @@ export const DESTINOS_IA = {
     nombre: 'Google (modo IA)',
     url: q => `https://www.google.com/search?udm=50&q=${encodeURIComponent(q)}`,
     ventaja: 'Respuesta rápida y conversación ágil para encadenar dudas; mezcla más webs divulgativas y las fuentes se ven menos.',
+  },
+  // Pide sesión iniciada (cuenta gratuita): no es la opción por defecto. El
+  // parámetro ?q= de claude.ai no está documentado oficialmente (2026-10):
+  // si deja de funcionar, se abre Claude con la caja vacía.
+  claude: {
+    nombre: 'Claude',
+    url: q => `https://claude.ai/new?q=${encodeURIComponent(q)}`,
+    ventaja: 'Razona y explica mejor el porqué y sostiene bien una conversación larga. Pide iniciar sesión con una cuenta de Claude (gratuita) y, para citar fuentes, tener activada la búsqueda web.',
+    cuenta: true,
   },
 };
 export const DESTINO_IA_DEFECTO = 'perplexity';
@@ -83,6 +92,16 @@ export function recortarTextoIA(texto) {
 export function promptIA({ contexto, texto }) {
   const sobre = contexto ? ` sobre ${contexto}` : '';
   return `Soy fisioterapeuta. Explícame con más detalle, desde la fisiología y la fisiopatología, este fragmento${sobre}: «${recortarTextoIA(texto)}». ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
+}
+
+// «✨ Preguntar a la IA» (botón de la cabecera, app.js): una pregunta libre del
+// clínico, no un fragmento. Mismos añadidos que el razonamiento (quién pregunta
+// y la frase de fuentes), sin forzar el enfoque fisiológico, porque la duda
+// puede ser de dosis, de técnica o de diagnóstico diferencial. `contexto` es
+// solo la región ya en minúscula («hombro», «tobillo y pie»): nada del paciente.
+export function promptPregunta({ contexto, pregunta }) {
+  const ctx = contexto ? ` Contexto: valoración de ${_sinEtiquetas(contexto)}.` : '';
+  return `Soy fisioterapeuta.${ctx} Mi pregunta: «${recortarTextoIA(pregunta)}». ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
 }
 
 export function urlIA(destino, prompt) {
@@ -204,6 +223,13 @@ function _cerrarMenu() {
   if (_menu && !_menu.hidden) { _menu.hidden = true; _menuObjetivo = null; _ocultarSiSinSeleccion(); }
 }
 
+// Qué IA pide cuenta, para el menú y el diálogo de pregunta libre
+export const NOTA_CUENTAS = (() => {
+  const libres = Object.values(DESTINOS_IA).filter(d => !d.cuenta).map(d => d.nombre.replace(/ \(.*\)$/, ''));
+  const conCuenta = Object.values(DESTINOS_IA).filter(d => d.cuenta).map(d => d.nombre);
+  return `${libres.join(' y ')} son gratis y sin cuenta; ${conCuenta.join(' y ')} pide cuenta (gratuita). Todas permiten seguir preguntando.`;
+})();
+
 const _HTML_MENU = () => `
   <div class="ia-menu-tit">Ampliar con IA en…</div>
   ${Object.entries(DESTINOS_IA).map(([k, d]) => `
@@ -211,7 +237,7 @@ const _HTML_MENU = () => `
     <span class="ia-menu-nombre">${d.nombre}<span class="ia-menu-check" aria-hidden="true">✓</span></span>
     <span class="ia-menu-desc">${d.ventaja}</span>
   </a>`).join('')}
-  <div class="ia-menu-nota">Las dos son gratis y sin cuenta, y permiten seguir preguntando. Solo se envía el texto del «¿Por qué?», nunca datos del paciente. Consulta externa: PhysiQ no revisa la respuesta.</div>`;
+  <div class="ia-menu-nota">${NOTA_CUENTAS} Solo se envía el texto del «¿Por qué?», nunca datos del paciente. Consulta externa: PhysiQ no revisa la respuesta.</div>`;
 
 export function initAmpliarIA() {
   if (window.self !== window.top || _barra || !document.body) return;
