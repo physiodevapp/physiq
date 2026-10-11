@@ -89,7 +89,9 @@ const SINTOMAS = [
   ['Fallo articular', /\bfall(?:a|e|aba|ado)\b|\bfallo (?:articular|de la)\b|\bepisodios? de fallo\b|\b(?:rodilla|cadera|tobillo) (?:cede|ceda|cedia)\b|se (?:le|me) (?:va|iba|fue)\b|como si (?:se )?(?:cediera|doblara)/],
   // Sergio: «nota el tendón algo hinchado» en Presentación y «niega… hinchazón visible» en Dolor.
   // Después de «fallo articular»: la hinchazón puede ser de otra zona (Marta: posterior)
-  ['Hinchazón', /hinchad|hinchaz|tumefacc|\bedema/],
+  // Con una localización es otra cosa (Pablo: «niega… hinchazón posterior» frente a
+  // la hinchazón general)
+  ['Hinchazón', /(?:hinchad|hinchaz|tumefacc|\bedema)\w*\b(?! (?:posterior|por detras|poplite))/],
 ];
 const NEGACION = /\b(niega|no refiere|no presenta|no describe|no nota|no manifiesta|no aparece|no le|no hay|sin)\b/;
 const frases = t => t.split(/(?<=[.!?])\s+|\n+/).map(f => f.replace(/^[#\s]+/, '').trim()).filter(Boolean);
@@ -244,7 +246,8 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   if (datos.nr != null) {
     const n = Number(datos.nr);
     const reCifra = new RegExp(`(?<![≤≥<>\\d.,–-])${n}\\s*(?:/|sobre|de)\\s*10\\b`);
-    const respaldada = clave => frases(fuenteN).some(l => reCifra.test(l) && clave.test(l));
+    // la línea del NRS no cuenta: su nota nombra los momentos que no debe llevar (ronda 27)
+    const respaldada = clave => frases(fuenteN).some(l => !/^nrs:/.test(l) && reCifra.test(l) && clave.test(l));
     const hecho = new Set();
     for (const f of frases(tn)) {
       for (const trozo of f.split(/[,;]|\s(?:y|aunque|pero|mientras que)\s/)) {
@@ -252,7 +255,7 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
         for (const { re, clave, texto } of MOMENTOS_NRS) {
           if (hecho.has(texto) || !re.test(trozo) || respaldada(clave)) continue;
           hecho.add(texto);
-          out.push(punto('nrs-momento', 'medio', `El NRS registrado (${n}/10) no lleva momento en los datos y el informe le pone uno («${texto}») que ningún dato da para esa cifra.`, fraseEn(t, tn.indexOf(f))));
+          out.push(punto('nrs-momento', 'medio', `El NRS registrado en la valoración (${n}/10) aparece con otro momento («${texto}») que ningún dato da para esa cifra.`, fraseEn(t, tn.indexOf(f))));
         }
       }
     }
