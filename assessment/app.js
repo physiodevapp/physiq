@@ -15,6 +15,7 @@ import {
 import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { ladoTexto } from './lib/region.js';
 import { ramaPauta } from './lib/pauta.js';
+import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA } from './ampliar-ia.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
 // Reference-counted: several overlays (confirm-banner, session panel,
@@ -1317,8 +1318,8 @@ function razonamientoInlineHTML(sis, q) {
     : '';
   return `<details class="razon">
       <summary>ⓘ ¿Por qué?</summary>
-      <div class="razon-cuerpo">
-        <p><span class="razon-etq">Por qué</span> ${r.porque}</p>
+      <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxCribado(state.region, q.text))}">
+        <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
         <p><span class="razon-etq">Cuánto pesa</span> ${r.peso}</p>
         <div class="razon-pie">— ${r.fuentes.join(' · ')}${ampliar}</div>
       </div>
@@ -1333,6 +1334,7 @@ function razonFisiologiaHTML(f) {
   return `<div class="razon-seccion razon-fisio"><div class="razon-etq">Fisiología, paso a paso</div>
       <ol class="razon-pasos">${f.pasos.map(p => `<li>${p}</li>`).join('')}</ol>
       ${f.nota ? `<p class="razon-fisio-nota">${f.nota}</p>` : ''}
+      <div class="razon-ia-pie">${iaParrafoHTML()}</div>
       ${f.metafora ? `<p class="razon-metafora"><span aria-hidden="true">💡</span> ${f.metafora}</p>` : ''}
     </div>`;
 }
@@ -1355,11 +1357,12 @@ function abrirRazonamiento(btn, sisId, qId) {
   const hit = _buscarPregunta(sisId, qId);
   const r = hit?.q.razonamiento;
   if (!r || !r.detalle) return;
-  const parrafos = r.detalle.split('\n\n').map(p => `<p>${p}</p>`).join('');
+  const parrafos = r.detalle.split('\n\n').map(p => `<p>${p}${iaParrafoHTML()}</p>`).join('');
   abrirPanelRazon({
     btn, kicker: '¿Por qué esta pregunta?', titulo: hit.q.text,
+    ia: ctxCribado(state.region, hit.q.text),
     html: `
-    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}</p></div>
+    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}${iaParrafoHTML()}</p></div>
     <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${r.peso}</p></div>
     ${razonFisiologiaHTML(r.fisiologia)}
     <div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>
@@ -1371,12 +1374,15 @@ function abrirRazonamiento(btn, sisId, qId) {
 // Panel del razonamiento, común a la fase 2 (preguntas de cribado) y a la
 // 4b (tests, phase4b.js): lateral sin velo en escritorio, bottom sheet con
 // velo en móvil. Si ya está abierto, solo cambia el contenido.
-function abrirPanelRazon({ btn, kicker, titulo, html }) {
+// `ia`: contexto para «Ampliar con IA» (ampliar-ia.js); sin él, no se ofrece.
+function abrirPanelRazon({ btn, kicker, titulo, html, ia }) {
   const panel = document.getElementById('razonPanel');
   const yaAbierto = panel.classList.contains('open');
   panel.querySelector('.razon-kicker').textContent = kicker;
   document.getElementById('razonPregunta').textContent = titulo;
-  document.getElementById('razonContenido').innerHTML = html;
+  const contenido = document.getElementById('razonContenido');
+  contenido.innerHTML = html;
+  if (ia) contenido.dataset.iaCtx = ia; else delete contenido.dataset.iaCtx;
   document.getElementById('razonContenido').scrollTop = 0;
   _razonOrigen = btn || null;
   if (!yaAbierto) {
@@ -3494,6 +3500,7 @@ function _initHubIntegration() {
 }
 _initHubIntegration();
 _iniciarGrabadora();
+initAmpliarIA();
 
 // ─── PUBLIC API ──────────────────────────────────────────────
 // Named exports for phase4.js / phase4b.js (which import these directly) and

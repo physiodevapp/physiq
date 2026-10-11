@@ -9,6 +9,7 @@ import {
   ETIQUETA_TRATADA, ETIQUETA_HIP_POSQ, ID_HIP_POSQ, esPosquirurgico, hipotesisConPosq,
   nombreHipPosq, cirugiaPayload, pautaHipPosq,
 } from './lib/posquirurgico.js';
+import { iaParrafoHTML, ctxTest, attrIA } from './ampliar-ia.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -295,7 +296,7 @@ export function buildTestItem(hId, test, idx) {
     ? `<button type="button" class="razon-ampliar" onclick="abrirRazonamientoTest(this,'${hId}',${idx})">Ampliar →</button>` : '';
   const porque = r?.porque ? `<details class="razon">
       <summary>ⓘ ¿Por qué?</summary>
-      <div class="razon-cuerpo"><p><span class="razon-etq">Por qué</span> ${r.porque}</p>
+      <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxTest(hyp?.region, test.name, hyp?.name))}"><p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
         ${r.fuentes?.length ? `<div class="razon-pie">— ${r.fuentes.join(' · ')}</div>` : ''}</div>
     </details>` : '';
   // Con «Ampliar», la tarjeta lleva solo autor y año; la cita completa está en el panel
@@ -361,12 +362,13 @@ export async function abrirRazonamientoTest(btn, hId, idx) {
   const r = test?.razonamiento;
   if (!r) return;
   const REF = await registroReferencias();
-  const parrafos = (r.detalle || '').split('\n\n').filter(Boolean).map(p => `<p>${p}</p>`).join('');
+  const parrafos = (r.detalle || '').split('\n\n').filter(Boolean).map(p => `<p>${p}${iaParrafoHTML()}</p>`).join('');
   const citas = citasTest(test).map(c => enlaceCita(c, REF));
   abrirPanelRazon({
     btn, kicker: 'Test · por qué y evidencia', titulo: test.name,
+    ia: ctxTest(hyp.region, test.name, hyp.name),
     html: `
-    ${r.porque ? `<div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}</p></div>` : ''}
+    ${r.porque ? `<div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}${iaParrafoHTML()}</p></div>` : ''}
     <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${pesoTest(hyp, test, idx)}</p></div>
     ${parrafos ? `<div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>` : ''}
     ${citas.length ? `<div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
