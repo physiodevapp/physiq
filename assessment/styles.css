@@ -1682,6 +1682,9 @@
     -webkit-backdrop-filter: var(--scrim-blur);
     animation: fadeUp 0.2s ease;
   }
+  /* Relevo de otro velo (_veloRelevo, app.js): el velo ya está, solo entra el recuadro */
+  .confirm-banner.relevo { animation: none; }
+  .confirm-banner.relevo .confirm-box { animation: fadeUp 0.2s ease; }
   .confirm-box {
     background: var(--surface);
     border: 1px solid var(--border2);
@@ -2135,6 +2138,12 @@
   .session-btn.active{color:var(--accent);}
   .session-panel-overlay{display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:var(--scrim);backdrop-filter:var(--scrim-blur);-webkit-backdrop-filter:var(--scrim-blur);}
   .session-panel-overlay.open{display:flex;animation:fadeUp 0.2s ease;}
+  /* Relevo del diálogo de confirmación (al cancelar): el velo no se funde, solo entra el panel.
+     En móvil el panel ya entra deslizándose y el velo no se anima. */
+  @media (min-width: 769px) {
+    .session-panel-overlay.open.relevo{animation:none;}
+    .session-panel-overlay.open.relevo .session-panel{animation:fadeUp 0.2s ease;}
+  }
   .session-panel{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.8rem;max-width:420px;width:90%;}
   .session-panel-title{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;touch-action:none;}
   .session-panel.has-session .session-panel-title{color:var(--accent);}

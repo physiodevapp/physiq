@@ -2389,13 +2389,23 @@ function buildPhaseSheetList() {
 // acciones que no borran ni descartan nada (actualizar, cambiar de modo); opts.onCancel se llama al cancelar (botón, velo o Escape). Devuelve una función que cierra el diálogo sin confirmar, para
 // quien necesite cerrarlo desde fuera (p. ej. si lo que se iba a confirmar ya
 // no tiene sentido); no hace nada si ya está cerrado.
+// Relevo de velos: cuando un velo se cierra y otro se abre en el mismo turno
+// (panel de sesión → diálogo de confirmación, y al cancelar, de vuelta), el
+// nuevo no se funde desde transparente: aparece ya opaco y solo se anima su
+// recuadro. Si no, durante el fundido se veía la página sin velo (parpadeo).
+let _veloRelevo = false;
+function _marcarRelevoVelo() {
+  _veloRelevo = true;
+  queueMicrotask(() => { _veloRelevo = false; });
+}
+
 function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
   // Un diálogo nuevo sustituye al que hubiera: su bloqueo de scroll se libera
   // aquí, porque ya no se cerrará por su dismiss()
   const existing = document.getElementById('confirmBanner');
   if (existing) { existing.remove(); unlockBodyScroll(); }
   const overlay = document.createElement('div');
-  overlay.className = 'confirm-banner';
+  overlay.className = 'confirm-banner' + (_veloRelevo || existing ? ' relevo' : '');
   overlay.id = 'confirmBanner';
   overlay.innerHTML = `
     <div class="confirm-box">
@@ -2421,6 +2431,7 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
     document.removeEventListener('keydown', alTeclado);
     if (!overlay.isConnected) return;
     overlay.remove(); unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
+    _marcarRelevoVelo();
   };
   // Cancelar a mano (botón, velo o Escape) llama a opts.onCancel; el dismiss()
   // devuelto, para cerrarlo desde el código, no.
@@ -2460,7 +2471,7 @@ function closeSessionPanel() {
   const overlay = document.getElementById('sessionPanelOverlay');
   const wasOpen = overlay?.classList.contains('open');
   overlay?.classList.remove('open');
-  if (wasOpen) { unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); }
+  if (wasOpen) { unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); _marcarRelevoVelo(); }
   if (panel) { panel.style.transition = ''; panel.style.transform = ''; }
 }
 
@@ -2748,6 +2759,7 @@ function toggleSessionPanel() {
   if (!overlay) return;
   if (overlay.classList.contains('open')) { closeSessionPanel(); return; }
   _showSessionState('edit');
+  overlay.classList.toggle('relevo', _veloRelevo);
   overlay.classList.add('open');
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
