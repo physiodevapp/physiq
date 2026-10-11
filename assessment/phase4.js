@@ -4,7 +4,9 @@
 // ============================================================
 import { CIF_TREES, HYPOTHESES } from './data.js';
 import { state } from './state.js';
-import { saveSession, showConfirmBanner, paintNav } from './app.js';
+import { saveSession, showConfirmBanner, paintNav, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento } from './app.js';
+import { registroReferencias, enlaceCita } from './phase4b.js';
+import { iaParrafoHTML, ctxArbol, attrIA } from './ampliar-ia.js';
 
 // Derivaciones médicas que piden las respuestas del árbol (`derivacion` en una
 // opción de CIF_TREES): mensajes de las opciones elegidas, en el orden de los
@@ -132,6 +134,7 @@ export function resetCIFTree() {
     'Se perderán las respuestas del árbol y los tests de hipótesis. Los datos de triage, cribado y SINSS se mantienen.',
     'Reiniciar',
     () => {
+      cerrarRazonamiento({ sinHistorial: true });
       state.activeHypotheses = [];
       CIF_TREES[state.region]?.steps.forEach(st => olvidarResueltaPaso(st.id));
       state.treeAnswers = {};
@@ -159,6 +162,7 @@ export function renderStep(step) {
   div.innerHTML = `
     <div class="tree-step-badge">${step.tag}</div>
     <div class="tree-question-text">${step.question}</div>
+    ${razonamientoPasoHTML(step, state.region)}
     ${window.fpPistasPasoHTML?.(step.id) || ''}
     <div class="option-group" id="opts_${step.id}">
       ${step.options.map((opt, i) => `
@@ -175,6 +179,47 @@ export function renderStep(step) {
     const top = div.getBoundingClientRect().top + window.scrollY - navbarH - 8;
     window.scrollTo({ top, behavior: 'smooth' });
   }, 50);
+}
+
+// «¿Por qué esta pregunta?» de un paso del árbol (docs/razonamiento-arbol.md):
+// el mismo <details> de las fases 2 y 4b, debajo de la pregunta y antes de las
+// opciones; «Ampliar →» solo con `detalle`. Sin `razonamiento`, nada. El
+// contexto de «✨ IA» usa `iaPregunta` si existe (la pregunta sin la
+// instrucción para el fisioterapeuta).
+export function razonamientoPasoHTML(step, region) {
+  const r = step.razonamiento;
+  if (!r) return '';
+  const ampliar = r.detalle
+    ? ` <button type="button" class="razon-ampliar" onclick="abrirRazonamientoPaso(this,'${step.id}')">Ampliar →</button>`
+    : '';
+  return `<details class="razon">
+      <summary>ⓘ ¿Por qué esta pregunta?</summary>
+      <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxArbol(region, step.iaPregunta || step.question))}">
+        <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
+        <div class="razon-pie">— ${r.fuentes.join(' · ')}${ampliar}</div>
+      </div>
+    </details>`;
+}
+
+// Panel «Ampliar» de un paso: el compartido (abrirPanelRazon, app.js), con
+// Por qué, En detalle y Fuentes (las `citas`, o las claves de `fuentes`),
+// cada una enlazada a la url o el DOI del registro (enlaceCita, phase4b.js).
+export async function abrirRazonamientoPaso(btn, stepId) {
+  const step = CIF_TREES[state.region]?.steps.find(s => s.id === stepId);
+  const r = step?.razonamiento;
+  if (!r?.detalle) return;
+  const REF = await registroReferencias();
+  const parrafos = r.detalle.split('\n\n').filter(Boolean).map(p => `<p>${p}${iaParrafoHTML()}</p>`).join('');
+  const citas = (r.citas || r.fuentes).map(c => enlaceCita(c, REF));
+  abrirPanelRazon({
+    btn, kicker: '¿Por qué esta pregunta?', titulo: step.question,
+    ia: ctxArbol(state.region, step.iaPregunta || step.question),
+    html: `
+    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}${iaParrafoHTML()}</p></div>
+    <div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>
+    <div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
+      <ul>${citas.map(razonCitaHTML).join('')}</ul></div>`,
+  });
 }
 
 // Resuelve a qué step(s) apunta una opción: el step explícito (`next`) si lo
@@ -321,4 +366,5 @@ export function showTreeComplete({ sinScroll = false } = {}) {
 // global scope, never a module's private scope.
 window.resetCIFTree = resetCIFTree;
 window.selectTreeOption = selectTreeOption;
+window.abrirRazonamientoPaso = abrirRazonamientoPaso;
 window.toggleDerivacionArbolResuelta = toggleDerivacionArbolResuelta;

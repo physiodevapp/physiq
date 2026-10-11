@@ -327,7 +327,7 @@ export function buildTestItem(hId, test, idx) {
 // carga con import() la primera vez que se abre el panel, y si falla el
 // panel se abre igual, sin enlaces.
 let _registro = null;
-async function registroReferencias() {
+export async function registroReferencias() {
   if (!_registro) _registro = import('./data/referencias.js').then(m => m.REFERENCIAS).catch(() => ({}));
   return _registro;
 }

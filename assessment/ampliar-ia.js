@@ -1,5 +1,5 @@
-// ─── AMPLIAR CON IA (fases 2 y 4b) ───────────────────────────
-// Desde el texto de un «¿Por qué?» (fase 2: preguntas de cribado; 4b: tests)
+// ─── AMPLIAR CON IA (fases 2, 4 y 4b) ───────────────────────────
+// Desde el texto de un «¿Por qué?» (fase 2: preguntas de cribado; 4: pasos del árbol CIF; 4b: tests)
 // o del panel «Ampliar →», el clínico abre una conversación en una IA de
 // búsqueda gratuita y sin cuenta (Perplexity o Google en modo IA) para que le
 // explique ese fragmento con más detalle. Dos entradas:
@@ -63,6 +63,11 @@ export function ctxTest(region, test, hipotesis) {
   const reg = _region(region);
   const hip = hipotesis ? ` para la hipótesis «${_sinEtiquetas(hipotesis)}»` : '';
   return `el test clínico «${_sinEtiquetas(test)}»${hip}${reg ? ` (${reg})` : ''}`;
+}
+
+export function ctxArbol(region, pregunta) {
+  const reg = _region(region);
+  return `el paso del árbol de decisión clínica (modelo CIF) «${_sinEtiquetas(pregunta)}»${reg ? ` (${reg})` : ''}`;
 }
 
 export const attrIA = t => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

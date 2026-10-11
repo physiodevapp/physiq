@@ -2365,6 +2365,10 @@
   text-transform: uppercase; color: var(--text3); margin-right: 4px;
 }
 .razon-pie { font-size: 0.7rem; color: var(--text3); }
+/* Fase 4: el «¿Por qué esta pregunta?» va pegado a la pregunta del paso y
+   se lleva el margen que la pregunta dejaba antes de las opciones. */
+.tree-question-text:has(+ .razon) { margin-bottom: 0; }
+.tree-question > .razon { margin: 4px 0 1rem; }
 .razon-ampliar {
   background: none; border: none; padding: 0 0 0 6px; cursor: pointer;
   font: inherit; font-size: 0.72rem; color: var(--accent);
