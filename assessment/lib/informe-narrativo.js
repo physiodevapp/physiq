@@ -939,3 +939,12 @@ export function errorLegible(mensaje) {
     : servicio === 'whisper' ? 'No se ha podido transcribir el audio (OpenAI).' : 'No se ha podido redactar el informe (Anthropic).';
   return { texto, original, servicio, sinAudio: servicio === 'whisper' };
 }
+
+// Título de una sección del informe («## HALLAZGOS Y CODIFICACIÓN CIF») para
+// la línea de progreso: en minúscula salvo la inicial y las siglas.
+const SIGLAS_SECCION = /\b(cif|prom|nrs|avd|rom)\b/g;
+export function seccionLegible(titulo) {
+  const t = String(titulo || '').replace(/^#+\s*/, '').trim();
+  if (!t) return '';
+  return (t.charAt(0) + t.slice(1).toLowerCase()).replace(SIGLAS_SECCION, m => m.toUpperCase());
+}

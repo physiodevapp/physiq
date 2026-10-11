@@ -28,7 +28,7 @@ import {
   ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto, MODOS_AUDIO,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
   informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio, errorLegible, errorConexion,
-  transcripcionSinVoz, TEXTO_SIN_VOZ, textoOpcionIA,
+  transcripcionSinVoz, TEXTO_SIN_VOZ, textoOpcionIA, seccionLegible,
 } from './lib/informe-narrativo.js';
 import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
 import {
@@ -83,7 +83,7 @@ function esqueleto() {
   return `
   <div class="card ia-card">
     <div class="card-title ia-titulo">🎙 Informe con IA</div>
-    <p class="ia-intro">Informe clínico narrativo (modelo CIF), como el de PhysiQ-Report, redactado a partir de los datos de esta valoración y, si lo añades, del audio de la sesión.</p>
+    <p class="ia-intro">Informe clínico (modelo CIF), como los de PhysiQ-Report, redactado a partir de los datos de esta valoración y, si lo añades, del audio de la sesión.</p>
     <div id="iaLicencia"></div>
     <div id="iaResultado"></div>
     <details id="iaGenerador" class="ia-generador" open>
@@ -755,7 +755,7 @@ function faseProgreso() {
   if (!n) return 'Redactando el informe…';
   const secciones = _gen.texto.match(/^##\s+(.+)$/gm);
   const actual = secciones ? secciones[secciones.length - 1].replace(/^##\s+/, '').trim() : '';
-  const bonito = actual ? actual.charAt(0) + actual.slice(1).toLowerCase() : '';
+  const bonito = seccionLegible(actual);
   return `Redactando… · ${n} palabras${bonito ? ` · ${esc(bonito)}` : ''}`;
 }
 
