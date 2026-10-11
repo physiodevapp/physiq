@@ -175,6 +175,7 @@ function goToPhase(n) {
   paintNav(idx);
 
   document.getElementById(phases[idx]).classList.add('active');
+  if (document.getElementById('versionAviso')) _colocarAvisoVersion();
   state.currentPhase = n;
   if (n === 3) _pintarEstadioCronologia();
   updateMobilePhaseBar(n);
@@ -2635,6 +2636,7 @@ async function comprobarVersion({ manual = false } = {}) {
     _versionNueva = null;
     _anotarRecarga('');
     document.getElementById('versionAviso')?.remove();
+    _puntoVersionSesion(false);
     if (manual) showToast(`✓ Estás en la última versión (${textoVersion()})`, 'success');
     return;
   }
@@ -2645,9 +2647,29 @@ async function comprobarVersion({ manual = false } = {}) {
   _mostrarAvisoVersion();
 }
 
+// En móvil (≤768 px) el aviso es un snackbar abajo, justo encima de los
+// botones de navegación fijos: al alcance del pulgar y sin tapar el título de
+// la fase. Su altura cambia con el ancho y la fase, así que se mide.
+function _colocarAvisoVersion() {
+  const nav = document.querySelector('.phase-container.active .nav-buttons');
+  const fija = nav && getComputedStyle(nav).position === 'fixed' && nav.offsetHeight > 0;
+  document.documentElement.style.setProperty('--nav-alto', fija ? `${nav.offsetHeight}px` : '0px');
+}
+
+// Punto azul en el icono de sesión mientras haya una versión nueva y el aviso
+// esté cerrado: el panel tiene su botón «Actualizar», así que no se pierde.
+function _puntoVersionSesion(on) {
+  const b = document.getElementById('sessionBtn');
+  if (!b) return;
+  b.classList.toggle('version-nueva', on);
+  b.title = b.ariaLabel = on ? 'Sesión · hay una versión nueva' : 'Sesión';
+}
+
 function _mostrarAvisoVersion() {
   if (!_versionNueva || _versionAvisoCerrado === _versionNueva.sha) return;
   if (document.getElementById('versionAviso')) return;
+  _puntoVersionSesion(false);
+  _colocarAvisoVersion();
   const aviso = document.createElement('div');
   aviso.id = 'versionAviso';
   aviso.className = 'version-aviso';
@@ -2660,8 +2682,10 @@ function _mostrarAvisoVersion() {
   aviso.querySelector('#versionAvisoCerrar').onclick = () => {
     _versionAvisoCerrado = _versionNueva?.sha || '';
     aviso.remove();
+    _puntoVersionSesion(true);
   };
 }
+window.addEventListener('resize', () => { if (document.getElementById('versionAviso')) _colocarAvisoVersion(); });
 
 // Antes de recargar se vuelven a pedir al servidor (cache: 'reload') los
 // archivos propios que ha cargado esta página, para que la caché HTTP del
