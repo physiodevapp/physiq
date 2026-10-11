@@ -840,7 +840,8 @@ function selectModo(modo) {
       'Pasar a consulta completa',
       `Las notas y el informe dejarán de indicar que la valoración fue breve. Complete antes estos pendientes: ${pendientes.map(p => p.texto).join(' · ')}.`,
       'Pasar a completa',
-      () => _aplicarModo('completo')
+      () => _aplicarModo('completo'),
+      { borra: false }
     );
     return;
   }
@@ -2383,7 +2384,8 @@ function buildPhaseSheetList() {
 
 // ─── CONFIRM BANNER (reemplaza confirm() nativo) ─────────────
 // opts.cancelLabel cambia el texto del botón de cerrar («Cancelar» por
-// defecto); opts.onCancel se llama al cancelar (botón, velo o Escape). Devuelve una función que cierra el diálogo sin confirmar, para
+// defecto); opts.borra: false quita la papelera del botón de acción, para las
+// acciones que no borran ni descartan nada (actualizar, cambiar de modo); opts.onCancel se llama al cancelar (botón, velo o Escape). Devuelve una función que cierra el diálogo sin confirmar, para
 // quien necesite cerrarlo desde fuera (p. ej. si lo que se iba a confirmar ya
 // no tiene sentido); no hace nada si ya está cerrado.
 function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
@@ -2398,7 +2400,7 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
       <div class="confirm-box-text">${text}</div>
       <div class="confirm-box-btns">
         <button class="confirm-btn-cancel" id="confirmCancel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> ${opts.cancelLabel || 'Cancelar'}</button>
-        <button class="confirm-btn-ok" id="confirmAction"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg> ${actionLabel}</button>
+        <button class="confirm-btn-ok" id="confirmAction">${opts.borra === false ? '' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg> '}${actionLabel}</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -2692,8 +2694,8 @@ function recargarVersionNueva() {
   if (!(state.patient || '').trim() && _hasAssessmentData()) {
     closeSessionPanel();
     showConfirmBanner('Actualizar la app',
-      'La valoración en curso no tiene nombre de paciente, así que no está guardada y se perderá al actualizar. Para conservarla, escribe un nombre en el panel de sesión antes de actualizar.',
-      'Actualizar igualmente', recargar);
+      'La valoración en curso no tiene nombre de paciente, así que no está guardada y se perderá al actualizar. Para conservarla, escribe un nombre en el panel de sesión antes de actualizar, o actualiza igualmente si no la necesitas.',
+      'Actualizar', recargar, { borra: false });
     return;
   }
   recargar();
