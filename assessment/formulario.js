@@ -15,7 +15,7 @@ import COMUN from './formularios/comun.js';
 // Regiones con archivo formularios/<region>.js. Al añadir uno, añadirlo aquí
 // (tests/unit.js comprueba que cada entrada carga): así no se pide por red
 // un archivo que no existe (404 en consola) para las demás regiones.
-export const REGIONES_CON_FORMULARIO = ['lumbar', 'cadera', 'cervical', 'rodilla', 'hombro', 'tobillo_pie'];
+export const REGIONES_CON_FORMULARIO = ['lumbar', 'cadera', 'cervical', 'rodilla', 'hombro', 'tobillo_pie', 'codo'];
 const NS_TEXTO = 'No sabría decir';
 const _regiones = {};          // region → esquema | null (sin formulario)
 
