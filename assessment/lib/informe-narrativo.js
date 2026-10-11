@@ -15,7 +15,7 @@
 // Ningún test puede vigilar los dos repos a la vez: si cambia la estructura del
 // informe narrativo en report, revisar este archivo a mano.
 //
-// Diferencias deliberadas con report (ver CLAUDE.md → «Informe narrativo»):
+// Diferencias deliberadas con report (ver docs/informe-ia.md, «Prompt»):
 //   · Aquí no hay cabecera de documento: la identificación la añade
 //     textoParaCompartir() en local, así que la regla «no repitas los datos
 //     identificativos» se mantiene, pero ya no dice que estén «en la cabecera».

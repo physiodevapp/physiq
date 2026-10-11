@@ -97,6 +97,10 @@ let _detalle = '';
 export const detalleLicencia = () => _detalle;
 
 const espera = ms => new Promise(r => setTimeout(r, ms));
+// Pausa antes del reintento automático. Objeto (no constante) para que
+// tests/dom-shim.mjs la ponga a 0: los tests y las herramientas no tienen red,
+// y cada proceso esperaba 1,5 s por nada.
+export const REINTENTO = { ms: 1500 };
 
 // Primera llamada: consulta. Las siguientes reutilizan la respuesta, salvo
 // `forzar` (botón «Reintentar»). Un fallo de red se reintenta una vez solo
@@ -110,7 +114,7 @@ export function comprobarLicencia(forzar = false) {
     try {
       return await consultarModo(clave);
     } catch {
-      await espera(1500);
+      await espera(REINTENTO.ms);
       try {
         return await consultarModo(clave);
       } catch (e) {
