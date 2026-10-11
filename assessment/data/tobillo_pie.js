@@ -513,6 +513,8 @@ export const tree = {
       id: 'tp_step2',
       tag: 'Paso 2 — Ottawa, Thompson, Lisfranc y Calcáneo',
       question: '¿Algún criterio de Ottawa de tobillo o de pie, Thompson positivo, o mecanismo de Lisfranc o de caída sobre el talón? → DERIVAR para radiografía (Ottawa) o derivación preferente (Aquiles, Lisfranc, calcáneo) antes de seguir explorando.',
+      // Solo para el informe con IA: sin la instrucción para el fisioterapeuta, que el informe leía como algo hecho
+      iaPregunta: '¿Algún criterio de Ottawa de tobillo o de pie, Thompson positivo, o mecanismo de Lisfranc o de caída sobre el talón?',
       options: [
         { label: 'OTTAWA DE TOBILLO POSITIVO — Zona maleolar: posible fractura de tobillo; derivar para radiografía antes de seguir explorando', value: 'ottawa_tobillo', next: null, hypothesis: ['tp37'] },
         { label: 'OTTAWA DE PIE POSITIVO — Mediopié (base del 5.º MT, navicular): derivar para radiografía antes de seguir explorando', value: 'ottawa', next: null, hypothesis: ['tp5'] },
@@ -559,6 +561,8 @@ export const tree = {
       id: 'tp_step5',
       tag: 'Paso 5 — ¿La Exploración Local Reproduce el Dolor?',
       question: '¿La exploración local no reproduce el dolor conocido? → COLUMNA LUMBAR u origen proximal: slump con flexión plantar e inversión. Si persiste la duda, replantear (malignidad).',
+      // Solo para el informe con IA: sin la instrucción para el fisioterapeuta, que el informe leía como algo hecho
+      iaPregunta: '¿La exploración local no reproduce el dolor conocido?',
       options: [
         { label: 'COLUMNA LUMBAR u origen proximal — El slump con flexión plantar e inversión reproduce: valorar en la región Lumbar', value: 'lumbar', next: null, hypothesis: [] },
         { label: 'NO REPRODUCE NADA — Persiste la duda: replantear (malignidad)', value: 'replantear', next: null, hypothesis: [] },

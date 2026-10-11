@@ -721,6 +721,8 @@ export const tree = {
       id: 'ce_step4b',
       tag: 'Paso 4b — Mareo',
       question: '¿Hay mareo o inestabilidad como queja principal o acompañante? Descartar antes lo vascular (5 D y 3 N, disección).',
+      // Solo para el informe con IA: sin la instrucción para el fisioterapeuta, que el informe leía como algo hecho
+      iaPregunta: '¿Hay mareo o inestabilidad como queja principal o acompañante?',
       options: [
         { label: 'MAREO CERVICOGÉNICO — Aturdimiento o inestabilidad ligados al cuello + error de reposición >4–5°', value: 'cervicogenico', next: null, hypothesis: ['ce13'] },
         { label: 'VESTIBULAR — Vértigo rotatorio; tras golpe en cabeza o cuello, pensar también en conmoción', value: 'vestibular', next: null, hypothesis: [] },

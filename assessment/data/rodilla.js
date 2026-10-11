@@ -538,6 +538,8 @@ export const tree = {
       id: 'ro_step2b',
       tag: 'Paso 2b — Menor sin Mecanismo: Cadera Primero',
       question: '¿Niño o adolescente con dolor de rodilla sin mecanismo conocido? → EXPLORAR PRIMERO LA CADERA (epifisiólisis, Perthes). Solo si el cribado es normal, seguir en la rodilla.',
+      // Solo para el informe con IA: sin la instrucción para el fisioterapeuta, que el informe leía como algo hecho
+      iaPregunta: '¿Niño o adolescente con dolor de rodilla sin mecanismo conocido?',
       options: [
         { label: 'SÍ — Cribado de cadera alterado: derivar (epifisiólisis, Perthes)', value: 'cadera_alterada', next: null, hypothesis: [] },
         { label: 'SÍ — Cribado de cadera normal: seguir en la rodilla', value: 'cadera_normal', next: null, hypothesis: [],
@@ -612,6 +614,8 @@ export const tree = {
       id: 'ro_step7',
       tag: 'Paso 7 — Dolor Posterior Persistente',
       question: 'Dolor persistente o sin traumatismo, POSTERIOR: ¿qué lo explica? Descartada siempre la TVP.',
+      // Solo para el informe con IA: sin la instrucción para el fisioterapeuta, que el informe leía como algo hecho
+      iaPregunta: 'Dolor persistente o sin traumatismo, posterior: ¿qué lo explica?',
       options: [
         { label: 'QUISTE POPLÍTEO — Signo de Foucher', value: 'quiste', next: null, hypothesis: ['ro20'] },
         { label: 'LCP CRÓNICO', value: 'lcp', next: null, hypothesis: ['ro9'] },

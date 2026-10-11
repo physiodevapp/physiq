@@ -701,6 +701,8 @@ export const tree = {
       // tienen S alta y E baja; sirven para descartar, no para confirmar.
       tag: 'Paso 3 — Intraarticular (Joven/Activo)',
       question: '¿Sospecha de origen intraarticular: dolor inguinal ligado al movimiento con FADDIR o flexión-RI positivos? Estos tests descartan; positivos no confirman.',
+      // Solo para el informe con IA: sin la instrucción para el fisioterapeuta, que el informe leía como algo hecho
+      iaPregunta: '¿Sospecha de origen intraarticular: dolor inguinal ligado al movimiento con FADDIR o flexión-RI positivos?',
       options: [
         { label: 'SÍ — Compatible con pinzamiento femoroacetabular (SIFA), sin confirmar: seguir con Thomas', value: 'sifa', next: null, hypothesis: ['ca2'],
           // iaTexto: solo para el informe con IA (revisión de los árboles, 2026-10): la conclusión, sin los criterios del patrón
@@ -762,6 +764,8 @@ export const tree = {
       id: 'ca_step6',
       tag: 'Paso 6 — Ingle (Entidades de Doha)',
       question: '¿Qué reproduce su dolor conocido en la INGLE? Palpar primero y con precisión: las estructuras se solapan.',
+      // Solo para el informe con IA: sin la instrucción para el fisioterapeuta, que el informe leía como algo hecho
+      iaPregunta: '¿Qué reproduce su dolor conocido en la ingle?',
       options: [
         { label: 'ADUCTOR — Palpación dolorosa de aductores + squeeze doloroso', value: 'aductor', next: null, hypothesis: ['ca16'] },
         { label: 'PSOAS ILÍACO — Palpación dolorosa supra o infrainguinal', value: 'psoas', next: null, hypothesis: ['ca17'] },

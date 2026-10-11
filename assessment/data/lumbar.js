@@ -734,6 +734,8 @@ export const tree = {
       id: 'lu_step4',
       tag: 'Paso 4 — Dolor Inespecífico: Patrón Predominante',
       question: '¿Qué patrón encaja mejor? (Revisar siempre cadera y factores contribuyentes.)',
+      // Solo para el informe con IA: sin la instrucción para el fisioterapeuta, que el informe leía como algo hecho
+      iaPregunta: '¿Qué patrón encaja mejor?',
       options: [
         { label: 'DISCOGÉNICO — Dolor en línea media + preferencia direccional o centralización con movimientos repetidos; puede cambiar de lado', value: 'disco', next: null, hypothesis: ['lu6'] },
         { label: 'FACETARIO — Paramedial unilateral, dolor en extensión o extensión + rotación, sin pasar de la rodilla; los repetidos no alivian', value: 'faceta', next: null, hypothesis: ['lu7'] },
