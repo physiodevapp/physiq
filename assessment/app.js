@@ -2388,8 +2388,10 @@ function buildPhaseSheetList() {
 // quien necesite cerrarlo desde fuera (p. ej. si lo que se iba a confirmar ya
 // no tiene sentido); no hace nada si ya está cerrado.
 function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
+  // Un diálogo nuevo sustituye al que hubiera: su bloqueo de scroll se libera
+  // aquí, porque ya no se cerrará por su dismiss()
   const existing = document.getElementById('confirmBanner');
-  if (existing) existing.remove();
+  if (existing) { existing.remove(); unlockBodyScroll(); }
   const overlay = document.createElement('div');
   overlay.className = 'confirm-banner';
   overlay.id = 'confirmBanner';
