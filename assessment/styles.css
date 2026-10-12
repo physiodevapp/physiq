@@ -2899,6 +2899,8 @@ body.posquirurgico .solo-posq { display: block; }
 .tej-moderada { background: var(--tej-moderada); }
 .tej-grave { background: var(--tej-grave); }
 .tej-grupo { margin-top: 8px; font-family: 'DM Mono', monospace; font-size: 0.66rem; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 3px; }
+/* El eje de tiempo queda fijo arriba al hacer scroll dentro del panel (.tejidos-cuerpo) */
+.tej-eje { position: sticky; top: 0; z-index: 3; background: var(--surface); padding-bottom: 4px; border-bottom: 1px solid var(--border); }
 .tej-eje .tej-pista { background: none; border-left: none; min-height: 26px; padding-top: 12px; }
 .tej-col { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text3); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; align-self: end; }
 .tej-fases .tej-pista { min-height: 22px; }

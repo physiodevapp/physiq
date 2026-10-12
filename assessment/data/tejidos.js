@@ -65,9 +65,13 @@ export const TIEMPOS_TEJIDO = {
           nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga. En la fuente comparte fila con la rotura.',
         },
         {
-          id: 'tendon_rotura', nombre: 'Rotura / reparación de tendón', desde: 4, hasta: 6, gravedad: 'grave',
-          fuentes: [], pendiente: true,
-          nota: 'Separada de la tendinopatía; el rango no sale de la fuente de la tabla.',
+          // Wu 2017, «Tendon healing»: «The remodelling stage … begins after six to eight
+          // weeks after injury and takes around one to two years, depending on the age and
+          // condition of the patient»; «The healed tendon does not usually regain the
+          // mechanical properties of the uninjured tissue».
+          id: 'tendon_rotura', nombre: 'Rotura / reparación de tendón', desde: 3, hasta: 7, gravedad: 'grave',
+          fuentes: ['Wu 2017'],
+          nota: 'Biología de la curación: la remodelación empieza a las 6–8 semanas y dura 1–2 años; el tendón no suele recuperar del todo su resistencia. La vuelta a la actividad la marca el protocolo.',
         },
       ],
     },
@@ -118,5 +122,5 @@ export const TIEMPOS_TEJIDO = {
   ],
 
   fuente: 'Filas: adaptado de Snyder-Mackler et al., «Developing Treatment Pathways», 2012 (tabla de physiq-wiki).',
-  fasesFuente: 'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023).',
+  fasesFuente: 'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023). Rotura de tendón: Wu, Nerlich y Docheva, «Tendon injuries: basic science and new repair proposals», EFORT Open Rev 2017.',
 };
