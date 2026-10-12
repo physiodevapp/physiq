@@ -828,6 +828,16 @@ const TISSUE_TIMES = {
             nota: 'Vuelta a la actividad o al deporte a los 6–12 meses de media; el injerto puede tardar 18 meses o más en incorporarse (Evans 2023). La guía JOSPT no fija plazos: decide por criterios (Logerstedt 2017).' },
         ] },
     ] },
+    { tejido: 'Menisco', filas: [
+      { nombre: 'Rotura traumática, sin cirugía', corto: 'Traumática', desde: 4, hasta: 4, g: 'moderada',
+        nota: 'No es un plazo de cicatrización: 12 semanas de ejercicio neuromuscular supervisado, con resultados parecidos a la cirugía en rodilla estable (Prill 2025, grado B). Las roturas de la raíz o radiales agudas pueden beneficiarse de cirugía precoz.' },
+      { nombre: 'Lesión degenerativa, sin cirugía', corto: 'Degenerativa', desde: 5, hasta: 5, g: 'moderada',
+        nota: 'La fisioterapia es el primer tratamiento (Prill 2025, grado A): 3–6 meses antes de plantear la cirugía si persisten los síntomas.' },
+      { nombre: 'Meniscectomía parcial', corto: 'Meniscectomía', desde: 2, hasta: 4, g: 'moderada',
+        nota: 'Vuelta al deporte a las 4–12 semanas (Prill 2025, grado C): antes de 2 meses en menores de 30 años o deportistas de élite, hacia los 3 meses en mayores de 30 (Logerstedt 2018). Los déficits de fuerza y función pueden tardar hasta 2 años en resolverse.' },
+      { nombre: 'Sutura (reparación)', corto: 'Sutura', desde: 6, hasta: 6, g: 'grave',
+        nota: 'Vuelta al deporte a los 6–9 meses (Prill 2025, grado C; en los estudios, de 3,3 a 10 meses). Carga y vuelta a la actividad progresivas y precoces (Logerstedt 2018, grado C). Manda el protocolo del cirujano.' },
+    ] },
     { tejido: 'Hueso', filas: [
       { nombre: 'Fractura', corto: 'Fractura', desde: 2, hasta: 5, g: 'moderada' },
     ] },
@@ -852,5 +862,6 @@ const TISSUE_TIMES = {
     'Rotura de tendón: Wu, Nerlich y Docheva, «Tendon injuries: basic science and new repair proposals», EFORT Open Rev 2017;2(7):332.',
     'Esguince lateral de tobillo: Bergman, Li y Shuman, «Acute Ankle Sprain», StatPearls (act. 2025); Vuurberg et al., Br J Sports Med 2018;52:956 (guía); Martin et al., J Orthop Sports Phys Ther 2021;51(4):CPG1–CPG80 (guía JOSPT).',
     'Ligamentos de rodilla: Naqvi y Sherman, «Medial Collateral Ligament Knee Injury», StatPearls (act. 2023); Evans, Mabrouk y Nielson, «Anterior Cruciate Ligament Knee Injury», StatPearls (act. 2023); Logerstedt et al., J Orthop Sports Phys Ther 2017;47(11):A1–A47 (guía JOSPT).',
+    'Menisco: Prill et al., «The formal EU-US Meniscus Rehabilitation 2024 Consensus… Part II», Knee Surg Sports Traumatol Arthrosc 2025;33(8):3014–3024; Logerstedt et al., J Orthop Sports Phys Ther 2018;48(2):A1–A50 (guía JOSPT de menisco y cartílago).',
   ],
 };
