@@ -129,6 +129,7 @@ let _barra = null, _menu = null;
 let _objetivo = null;          // { contexto, texto } de la barra
 let _menuObjetivo = null;      // { contexto, texto } del menú abierto
 let _tocandoBarra = false, _tSel = null, _tOcultar = null;
+let _fueraDeVista = false;      // hay selección, pero el scroll la ha sacado de la franja visible
 
 const _el = n => (n?.nodeType === 1 ? n : n?.parentElement) || null;
 const _contenedor = n => _el(n)?.closest('[data-ia-ctx]') || null;
@@ -154,20 +155,38 @@ function _pintarBarra() {
 export const SEPARACION_BARRA = { tactil: 32, raton: 8 };
 const _tactil = () => !!window.matchMedia?.('(pointer: coarse)').matches;
 
-function _colocar(el, rect, { sep = 8 } = {}) {
+// Franja visible de la página: entre lo fijo de arriba (cabecera, barra de
+// fases, barras de contexto de las fases 2 y 4b) y los botones fijos de abajo
+// (móvil). La barra y el menú no se pintan encima de eso.
+const _FIJOS_ARRIBA = '.app-header, .phase-nav, .mobile-phase-bar, .sis-context-banner, .hyp-context-banner';
+function _franjaVisible() {
+  let arriba = 0, abajo = innerHeight;
+  const fijo = el => getComputedStyle(el).position === 'fixed';
+  document.querySelectorAll(_FIJOS_ARRIBA).forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.height > 0 && fijo(el) && r.top < innerHeight / 2) arriba = Math.max(arriba, r.bottom);
+  });
+  const nav = document.querySelector('.phase.active .nav-buttons');
+  if (nav && fijo(nav)) { const r = nav.getBoundingClientRect(); if (r.height > 0) abajo = Math.min(abajo, r.top); }
+  return { arriba, abajo };
+}
+
+function _colocar(el, rect, { sep = 8, franja = _franjaVisible() } = {}) {
   el.style.left = '0px'; el.style.top = '0px';
   const w = el.offsetWidth, h = el.offsetHeight, m = 8;
+  const min = franja.arriba + m, max = franja.abajo - h - m;
   let top = rect.bottom + sep;
-  if (top + h > innerHeight - m) top = rect.top - h - sep;
-  if (top < m) top = Math.min(rect.bottom + sep, innerHeight - h - m);
+  if (top > max) top = rect.top - h - sep;
+  if (top < min) top = Math.min(rect.bottom + sep, max);
   const left = Math.max(m, Math.min(rect.left + rect.width / 2 - w / 2, innerWidth - w - m));
-  el.style.left = `${Math.round(left)}px`; el.style.top = `${Math.round(Math.max(m, top))}px`;
+  el.style.left = `${Math.round(left)}px`; el.style.top = `${Math.round(Math.max(min, top))}px`;
 }
 
 function _ocultarBarra() {
   clearTimeout(_tOcultar);
   if (_barra) _barra.hidden = true;
   _objetivo = null;
+  _fueraDeVista = false;
 }
 
 const _sinSeleccion = () => {
@@ -191,6 +210,7 @@ function _ocultarSiSinSeleccion() {
 function _evaluarSeleccion() {
   const sel = window.getSelection?.();
   if (_sinSeleccion()) {
+    _fueraDeVista = false;
     if (_barra && !_barra.hidden) _ocultarSiSinSeleccion();
     return;
   }
@@ -200,9 +220,18 @@ function _evaluarSeleccion() {
   if (!cont || texto.length < 3) { _ocultarBarra(); return; }
   clearTimeout(_tOcultar);
   _objetivo = { contexto: cont.dataset.iaCtx, texto };
+  // Selección fuera de la franja visible (scroll): la barra se esconde sin
+  // perder la selección y vuelve al volver a verla. Antes se quedaba clavada
+  // arriba, encima de la cabecera, lejos del texto.
+  const rect = rango.getBoundingClientRect(), franja = _franjaVisible();
+  if (rect.bottom <= franja.arriba || rect.top >= franja.abajo) {
+    _barra.hidden = true; _fueraDeVista = true;
+    return;
+  }
+  _fueraDeVista = false;
   _pintarBarra();
   _barra.hidden = false;
-  _colocar(_barra, rango.getBoundingClientRect(), { sep: _tactil() ? SEPARACION_BARRA.tactil : SEPARACION_BARRA.raton });
+  _colocar(_barra, rect, { sep: _tactil() ? SEPARACION_BARRA.tactil : SEPARACION_BARRA.raton, franja });
 }
 
 function _abrirMenu(boton, objetivo) {
@@ -261,7 +290,12 @@ export function initAmpliarIA() {
   document.addEventListener('selectionchange', () => { clearTimeout(_tSel); _tSel = setTimeout(_evaluarSeleccion, 150); });
   const recolocar = () => { if (!_barra.hidden) _evaluarSeleccion(); _cerrarMenu(); };
   window.addEventListener('resize', recolocar);
-  document.addEventListener('scroll', () => { if (!_barra.hidden) _evaluarSeleccion(); }, { capture: true, passive: true });
+  // El menú va anclado al botón que lo abrió: con scroll se cierra (como al
+  // redimensionar), en vez de quedarse flotando donde estaba.
+  document.addEventListener('scroll', () => {
+    _cerrarMenu();
+    if (!_barra.hidden || _fueraDeVista) _evaluarSeleccion();
+  }, { capture: true, passive: true });
 
   document.addEventListener('click', e => {
     const t = e.target instanceof Element ? e.target : null;
