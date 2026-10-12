@@ -805,6 +805,8 @@ const TISSUE_TIMES = {
         subtipos: [
           { nombre: 'Tobillo, ligamento lateral', corto: 'Tobillo', desde: 1, hasta: 1,
             nota: '1–2 semanas con movilización precoz y rehabilitación funcional (Bergman 2025).' },
+          { nombre: 'Rodilla, ligamento colateral medial', corto: 'Rodilla LCM', desde: 1, hasta: 1,
+            nota: 'Vuelta al deporte en 10–14 días con tratamiento conservador (Naqvi y Sherman 2023). Los grados II y III no tienen plazo en la fuente: se decide por criterios.' },
         ] },
       { nombre: 'Esguince G. II', corto: 'Esguince G. II', desde: 2, hasta: 4, g: 'moderada',
         subtipos: [
@@ -817,8 +819,14 @@ const TISSUE_TIMES = {
             nota: '6–12 semanas o más; a veces cirugía por inestabilidad persistente (Bergman 2025). Un 5–33 % sigue con dolor al año (Martin 2021).' },
           { nombre: 'Tobillo, reparación quirúrgica', corto: 'Tobillo, cirugía', desde: 4, hasta: 5,
             nota: 'Vuelta al trabajo físico y al deporte a las 12–16 semanas (Vuurberg 2018); unos 3–4 meses según Bergman 2025. Manda el protocolo del cirujano.' },
+          { nombre: 'Rodilla, LCA sin cirugía', corto: 'LCA sin cirugía', desde: 2, hasta: 4,
+            nota: 'No es un plazo de cicatrización: tras la fase aguda, 12 semanas de fisioterapia supervisada (Evans 2023). Baja demanda, sin giros ni saltos, roturas parciales.' },
         ] },
-      { nombre: 'Injerto (reconstrucción)', corto: 'Injerto', desde: 4, hasta: 6, g: 'grave' },
+      { nombre: 'Injerto (reconstrucción)', corto: 'Injerto', desde: 4, hasta: 6, g: 'grave',
+        subtipos: [
+          { nombre: 'Rodilla, LCA reconstruido', corto: 'LCA reconstruido', desde: 6, hasta: 7,
+            nota: 'Vuelta a la actividad o al deporte a los 6–12 meses de media; el injerto puede tardar 18 meses o más en incorporarse (Evans 2023). La guía JOSPT no fija plazos: decide por criterios (Logerstedt 2017).' },
+        ] },
     ] },
     { tejido: 'Hueso', filas: [
       { nombre: 'Fractura', corto: 'Fractura', desde: 2, hasta: 5, g: 'moderada' },
@@ -843,5 +851,6 @@ const TISSUE_TIMES = {
     'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023).',
     'Rotura de tendón: Wu, Nerlich y Docheva, «Tendon injuries: basic science and new repair proposals», EFORT Open Rev 2017;2(7):332.',
     'Esguince lateral de tobillo: Bergman, Li y Shuman, «Acute Ankle Sprain», StatPearls (act. 2025); Vuurberg et al., Br J Sports Med 2018;52:956 (guía); Martin et al., J Orthop Sports Phys Ther 2021;51(4):CPG1–CPG80 (guía JOSPT).',
+    'Ligamentos de rodilla: Naqvi y Sherman, «Medial Collateral Ligament Knee Injury», StatPearls (act. 2023); Evans, Mabrouk y Nielson, «Anterior Cruciate Ligament Knee Injury», StatPearls (act. 2023); Logerstedt et al., J Orthop Sports Phys Ther 2017;47(11):A1–A47 (guía JOSPT).',
   ],
 };
