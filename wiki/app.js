@@ -428,11 +428,14 @@ function renderTissue() {
   for (const g of T.grupos) {
     desk += `<tr class="ts-section"><td colspan="${n + 1}">${g.tejido}</td></tr>`;
     mob += `<tr class="ts-section"><td colspan="${n}">${g.tejido}</td></tr>`;
-    for (const f of g.filas) {
-      const celdas = Array.from({ length: n }, (_, i) => `<td${i >= f.desde && i <= f.hasta ? ` class="tg-${f.g}"` : ''}></td>`).join('');
-      desk += `<tr><td class="ts-label">${f.nombre}${pend(f)}${f.nota ? `<span class="ts-nota">${f.nota}</span>` : ''}</td>${celdas}</tr>`;
-      const ancho = f.hasta - f.desde + 1;
-      mob += `<tr>${vacias(f.desde)}<td class="tg-${f.g} tc-label"${ancho > 1 ? ` colspan="${ancho}"` : ''}>${f.corto}${f.pendiente ? '*' : ''}</td>${vacias(n - 1 - f.hasta)}</tr>`;
+    // Cada fila y, debajo, sus subtipos (con sangría y la gravedad de la madre)
+    for (const madre of g.filas) {
+      for (const f of [madre, ...(madre.subtipos || []).map(st => ({ ...st, g: st.g || madre.g, sub: true }))]) {
+        const celdas = Array.from({ length: n }, (_, i) => `<td${i >= f.desde && i <= f.hasta ? ` class="tg-${f.g}"` : ''}></td>`).join('');
+        desk += `<tr${f.sub ? ' class="ts-sub"' : ''}><td class="ts-label">${f.nombre}${pend(f)}${f.nota ? `<span class="ts-nota">${f.nota}</span>` : ''}</td>${celdas}</tr>`;
+        const ancho = f.hasta - f.desde + 1;
+        mob += `<tr${f.sub ? ' class="ts-sub"' : ''}>${vacias(f.desde)}<td class="tg-${f.g} tc-label"${ancho > 1 ? ` colspan="${ancho}"` : ''}>${f.corto}${f.pendiente ? '*' : ''}</td>${vacias(n - 1 - f.hasta)}</tr>`;
+      }
     }
   }
   document.getElementById('tissue-desktop').innerHTML = desk + '</tbody>';

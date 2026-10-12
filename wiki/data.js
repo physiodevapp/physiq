@@ -782,7 +782,8 @@ const SEARCH_QUERY_OVERRIDES = {
 // Copia de physiq-assessment/data/tejidos.js (panel ⏱ «Tiempos de recuperación»): si cambias una
 // fila aquí, cámbiala también allí (y al revés). `desde`/`hasta` son índices de columna
 // (inclusive) de `cols`; `g` = gravedad (color, .tg-<g>); `corto` = nombre dentro de la barra en
-// móvil; `pendiente` = el rango no sale de ninguna fuente leída.
+// móvil; `pendiente` = el rango no sale de ninguna fuente leída; `subtipos` = filas
+// hijas (misma forma, sin `g`: la de la fila madre), pintadas debajo con sangría.
 const TISSUE_TIMES = {
   cols: ['1–3<br>días', '4–14<br>días', '3–4<br>sem.', '5–8<br>sem.', '2–3<br>meses', '3–6<br>meses', '6m–<br>1 año', '2<br>años'],
   gravedades: { minima: 'Mínima', leve: 'Leve', moderada: 'Moderada', grave: 'Grave / reconstrucción' },
@@ -800,9 +801,23 @@ const TISSUE_TIMES = {
       { nombre: 'Rotura G. III', corto: 'Rotura G. III', desde: 2, hasta: 4, g: 'grave' },
     ] },
     { tejido: 'Ligamento', filas: [
-      { nombre: 'Esguince G. I', corto: 'Esguince G. I', desde: 1, hasta: 2, g: 'leve' },
-      { nombre: 'Esguince G. II', corto: 'Esguince G. II', desde: 2, hasta: 4, g: 'moderada' },
-      { nombre: 'Esguince G. III', corto: 'Esguince G. III', desde: 3, hasta: 5, g: 'grave' },
+      { nombre: 'Esguince G. I', corto: 'Esguince G. I', desde: 1, hasta: 2, g: 'leve',
+        subtipos: [
+          { nombre: 'Tobillo, ligamento lateral', corto: 'Tobillo', desde: 1, hasta: 1,
+            nota: '1–2 semanas con movilización precoz y rehabilitación funcional (Bergman 2025).' },
+        ] },
+      { nombre: 'Esguince G. II', corto: 'Esguince G. II', desde: 2, hasta: 4, g: 'moderada',
+        subtipos: [
+          { nombre: 'Tobillo, ligamento lateral', corto: 'Tobillo', desde: 2, hasta: 3,
+            nota: '3–6 semanas (Bergman 2025). Vuurberg 2018 junta la rotura parcial y la total: vuelta completa al trabajo y al deporte a las 6–8 semanas, según la tarea.' },
+        ] },
+      { nombre: 'Esguince G. III', corto: 'Esguince G. III', desde: 3, hasta: 5, g: 'grave',
+        subtipos: [
+          { nombre: 'Tobillo, ligamento lateral', corto: 'Tobillo', desde: 3, hasta: 4,
+            nota: '6–12 semanas o más; a veces cirugía por inestabilidad persistente (Bergman 2025). Un 5–33 % sigue con dolor al año (Martin 2021).' },
+          { nombre: 'Tobillo, reparación quirúrgica', corto: 'Tobillo, cirugía', desde: 4, hasta: 5,
+            nota: 'Vuelta al trabajo físico y al deporte a las 12–16 semanas (Vuurberg 2018); unos 3–4 meses según Bergman 2025. Manda el protocolo del cirujano.' },
+        ] },
       { nombre: 'Injerto (reconstrucción)', corto: 'Injerto', desde: 4, hasta: 6, g: 'grave' },
     ] },
     { tejido: 'Hueso', filas: [
@@ -827,5 +842,6 @@ const TISSUE_TIMES = {
     'Filas: adaptado de Snyder-Mackler et al., «Developing Treatment Pathways», 2012 (probablemente cap. 3 de Andrews, Harrelson y Wilk, Physical Rehabilitation of the Injured Athlete, 4.ª ed., Elsevier, 2012; sin verificar).',
     'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023).',
     'Rotura de tendón: Wu, Nerlich y Docheva, «Tendon injuries: basic science and new repair proposals», EFORT Open Rev 2017;2(7):332.',
+    'Esguince lateral de tobillo: Bergman, Li y Shuman, «Acute Ankle Sprain», StatPearls (act. 2025); Vuurberg et al., Br J Sports Med 2018;52:956 (guía); Martin et al., J Orthop Sports Phys Ther 2021;51(4):CPG1–CPG80 (guía JOSPT).',
   ],
 };
