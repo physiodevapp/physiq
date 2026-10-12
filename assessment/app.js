@@ -3,7 +3,7 @@
 // Lógica principal de la aplicación
 // ============================================================
 import { state } from './state.js';
-import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
+import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, TIEMPOS_TEJIDO, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
 import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML } from './phase4b.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
@@ -16,6 +16,7 @@ import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { nombreRegion, regionConLado } from './lib/region.js';
 import { TEXTO_VALORACION_BREVE, textoNotas, textoInformePaciente } from './lib/resumenes.js';
 import { ramaPauta } from './lib/pauta.js';
+import { tiemposTejidoHTML } from './lib/tejidos.js';
 import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, urlIA } from './ampliar-ia.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
@@ -81,6 +82,7 @@ window.addEventListener('popstate', e => {
   if (_razonHistorial) { cerrarRazonamiento({ desdeHistorial: true }); return; }
   if (_compartirHistorial) { cerrarMenuCompartir({ desdeHistorial: true }); return; }
   if (_preguntaHistorial) { cerrarPreguntaIA({ desdeHistorial: true }); return; }
+  if (_tejidosHistorial) { cerrarTiemposTejido({ desdeHistorial: true }); return; }
   if (_pendingBackNav) {
     // history.go() de limpieza de stack aterrizó; reemplazar y actualizar profundidad
     const { phase: p, idx: i } = _pendingBackNav;
@@ -2772,6 +2774,7 @@ function _closeAllOverlays() {
   cerrarRazonamiento({ sinHistorial: true });
   cerrarMenuCompartir({ sinHistorial: true });
   cerrarPreguntaIA({ sinHistorial: true });
+  cerrarTiemposTejido({ sinHistorial: true });
   closePhaseSheet();
   closeSessionPanel();
   const banner = document.getElementById('confirmBanner');
@@ -3141,6 +3144,54 @@ document.getElementById('preguntaIr')?.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('preguntaOverlay')?.classList.contains('open')) cerrarPreguntaIA();
+});
+
+// ─── TIEMPOS DE RECUPERACIÓN DE TEJIDOS (cabecera, ⏱) ───────────
+// Consulta en cualquier fase, también en el hub: el diagrama de
+// data/tejidos.js (lib/tejidos.js). Con mecanismo Post-quirúrgico y semanas
+// desde la cirugía, una línea «Hoy». Solo lee el estado para pintar; nada va
+// al payload ni a los resúmenes. Mismo patrón que «✨ Preguntar a la IA»:
+// hoja inferior con atrás en móvil, diálogo centrado en ancho.
+let _tejidosHistorial = false;
+
+function abrirTiemposTejido() {
+  const overlay = document.getElementById('tejidosOverlay');
+  if (!overlay || overlay.classList.contains('open')) return;
+  const posquirurgico = esPosquirurgico(state.mecanismo);
+  document.getElementById('tejidosCuerpo').innerHTML = tiemposTejidoHTML(TIEMPOS_TEJIDO, {
+    posquirurgico, semanas: posquirurgico ? semanasCirugia(state.cirugia) : null,
+  });
+  overlay.classList.add('open');
+  document.getElementById('tejidosBtn')?.setAttribute('aria-expanded', 'true');
+  lockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  if (_esMovil()) {
+    history.pushState({ phase: state.currentPhase, tejidos: true }, '');
+    _tejidosHistorial = true;
+  }
+  const panel = document.getElementById('tejidosPanel');
+  panel.scrollTop = 0;
+  panel.focus({ preventScroll: true });
+}
+
+function cerrarTiemposTejido({ desdeHistorial = false, sinHistorial = false } = {}) {
+  const overlay = document.getElementById('tejidosOverlay');
+  if (!overlay?.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  const panel = document.getElementById('tejidosPanel');
+  panel.style.transform = ''; panel.style.transition = '';
+  unlockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
+  if (_tejidosHistorial) {
+    _tejidosHistorial = false;
+    if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
+  }
+  const btn = document.getElementById('tejidosBtn');
+  btn?.setAttribute('aria-expanded', 'false');
+  if (!sinHistorial) btn?.focus({ preventScroll: true });
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('tejidosOverlay')?.classList.contains('open')) cerrarTiemposTejido();
 });
 
 function showToast(message, tone) {
@@ -3575,7 +3626,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, resumenFo
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirPreguntaIA, cerrarPreguntaIA, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
@@ -3649,5 +3700,7 @@ Object.assign(window, {
   if (compartir) initSwipe(compartir, () => cerrarMenuCompartir(), _esMovil);
   const pregunta = document.getElementById('preguntaPanel');
   if (pregunta) initSwipe(pregunta, () => cerrarPreguntaIA(), _esMovil);
+  const tejidos = document.getElementById('tejidosPanel');
+  if (tejidos) initSwipe(tejidos, () => cerrarTiemposTejido(), _esMovil);
 }());
 

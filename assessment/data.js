@@ -141,6 +141,8 @@ export const CIF_TREES = Object.fromEntries(
 // de otra (aquí una clave repetida se sobrescribiría sin aviso).
 // Texto fijo de las hipótesis de derivación (fracturas, roturas, gota…): la fase 5 lo reconoce.
 export { DOSIS_DERIVAR, HIP_POSQUIRURGICA } from './data/comun.js';
+// Tiempos de recuperación de tejidos (panel ⏱ de la cabecera; no regional)
+export { TIEMPOS_TEJIDO } from './data/tejidos.js';
 
 export const HYPOTHESES = Object.assign({}, ...Object.values(REGIONES).map(m => m.hypotheses));
 
