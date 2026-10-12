@@ -50,8 +50,8 @@
       <!-- Con ratón (sin pulsación larga): descartar la grabación en curso -->
       <button id="grabDescBtn" class="btn-record grab-desc" onclick="grabDescartar()" type="button" aria-label="Descartar grabación" title="Descartar grabación"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
     </div>
-    <!-- «Tiempos de recuperación» de tejidos (consulta, cualquier fase, también en el hub) -->
-    <button id="tejidosBtn" class="session-btn tejidos-btn" onclick="abrirTiemposTejido()" type="button" aria-haspopup="dialog" aria-controls="tejidosOverlay" aria-label="Tiempos de recuperación de tejidos" title="Tiempos de recuperación de tejidos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9.5 2.5h5"/></svg></button>
+    <!-- «Tiempos de recuperación» de tejidos (consulta, cualquier fase, también en el hub): icono de cronograma, no de reloj, para no confundirlo con el chip «Breve» -->
+    <button id="tejidosBtn" class="session-btn tejidos-btn" onclick="abrirTiemposTejido()" type="button" aria-haspopup="dialog" aria-controls="tejidosOverlay" aria-label="Tiempos de recuperación de tejidos" title="Tiempos de recuperación de tejidos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4v16h18"/><path d="M7 8h5"/><path d="M10 12h7"/><path d="M13 16h6"/></svg></button>
     <!-- «Preguntar a la IA» (pregunta libre, solo standalone): fijo, sin borde, como sesión y tema -->
     <button id="preguntaIABtn" class="session-btn pregunta-ia-btn" onclick="abrirPreguntaIA()" type="button" aria-haspopup="dialog" aria-controls="preguntaOverlay" aria-label="Preguntar a la IA" title="Preguntar a la IA"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg></button>
     <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
@@ -111,12 +111,14 @@
   <span class="hyp-banner-name" id="hypBannerName"></span>
   <button class="context-banner-back" onclick="scrollToActiveHypHeader()">↑ volver</button>
 </div>
-<div class="mobile-phase-bar" id="mobilePhaseBar">
+<!-- Barra de fase (móvil): toda ella es el botón que abre la hoja de fases. El chip
+     «Breve» va aquí en móvil (en escritorio sigue en la cabecera); no es pulsable aparte. -->
+<button type="button" class="mobile-phase-bar" id="mobilePhaseBar" onclick="togglePhaseSheet()" aria-haspopup="dialog" aria-controls="phaseSheet" aria-expanded="false">
+  <span class="modo-badge modo-badge-fase" title="Consulta breve (10 min): cribado y confirmación no exhaustivos">⏱<span class="modo-badge-text"> Breve</span></span>
   <span class="mobile-phase-label" id="mobilePhaseLabel">Fase 1 de 6 · Triage y Cabecera</span>
-  <button class="mobile-phase-menu-btn" onclick="togglePhaseSheet()" aria-label="Ver fases">
-    <span>≡</span> Fases
-  </button>
-</div>
+  <span class="mobile-phase-menu-btn" aria-hidden="true">≡</span>
+  <span class="sr-only">, cambiar de fase</span>
+</button>
 
 <!-- BOTTOM SHEET — mobile phase navigation -->
 <div class="phase-sheet-overlay" id="phaseSheetOverlay" onclick="closePhaseSheet()"></div>
@@ -174,7 +176,7 @@
 <div class="session-panel-overlay" id="tejidosOverlay" onclick="cerrarTiemposTejido()">
   <div class="session-panel tejidos-panel" id="tejidosPanel" role="dialog" aria-modal="true" aria-labelledby="tejidosTitulo" tabindex="-1" onclick="event.stopPropagation()">
     <div class="session-panel-handle"></div>
-    <div class="session-panel-title" id="tejidosTitulo">⏱ Tiempos de recuperación de tejidos</div>
+    <div class="session-panel-title" id="tejidosTitulo">Tiempos de recuperación de tejidos</div>
     <div class="tejidos-cuerpo" id="tejidosCuerpo"></div>
   </div>
 </div>

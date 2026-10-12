@@ -2319,6 +2319,7 @@ function togglePhaseSheet() {
   const isOpen = sheet.classList.contains('open');
   sheet.classList.toggle('open');
   overlay.classList.toggle('open');
+  document.getElementById('mobilePhaseBar')?.setAttribute('aria-expanded', String(!isOpen));
   if (isOpen) unlockBodyScroll(); else lockBodyScroll();
 }
 
@@ -2328,6 +2329,7 @@ function closePhaseSheet() {
   if (!sheet.classList.contains('open')) return;
   sheet.classList.remove('open');
   overlay.classList.remove('open');
+  document.getElementById('mobilePhaseBar')?.setAttribute('aria-expanded', 'false');
   unlockBodyScroll();
 }
 

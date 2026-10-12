@@ -64,7 +64,14 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
 
   const eje = `<div class="tej-fila tej-eje" aria-hidden="true"><div class="tej-nombre"></div>`
     + `<div class="tej-pista" style="--tej-n:${n}">${columnas.map(c => `<span class="tej-col" title="${esc(c.etiqueta)}">${esc(c.corta)}</span>`).join('')}`
-    + `${hoy ? `<span class="tej-hoy-etq" style="left:${pct(hoy.pos)}">Hoy</span>` : ''}</div></div>`;
+    + `${hoy ? `<span class="tej-hoy-etq" style="left:${pct(hoy.pos)}">Hoy</span>` : ''}`
+    // Tira con los colores de las fases de reparación bajo las etiquetas: el eje es
+    // sticky, así que al hacer scroll se sigue viendo qué fase cae en cada columna.
+    + fases.map(f => {
+      const a = posicionDia(f.desdeDia, columnas), b = posicionDia(f.hastaDia, columnas);
+      return `<span class="tej-eje-fase tej-fase-${esc(f.id)}" style="left:${pct(a)};width:${pct(b - a)}"></span>`;
+    }).join('')
+    + '</div></div>';
 
   const fasesPendientes = fases.some(f => !f.fuentes.length);
   const franja = `<div class="tej-fila tej-fases"><div class="tej-nombre">Fases de reparación${fasesPendientes ? ` ${pendienteChip}` : ''}</div>`
