@@ -3229,21 +3229,21 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('tejidosOverlay')?.classList.contains('open')) cerrarTiemposTejido();
 });
 
+// Aviso inferior. Estilos en styles.css (.app-toast): en móvil, banda a todo
+// el ancho justo encima de los botones de navegación fijos (--nav-alto) y, si
+// está el aviso de versión nueva, encima de este (--toast-sobre).
 function showToast(message, tone) {
   const existing = document.getElementById('appToast');
   if (existing) existing.remove();
-  const color = tone === 'warning' ? 'var(--orange)' : 'var(--accent2)';
+  _colocarAvisoVersion();
+  const aviso = document.getElementById('versionAviso');
+  const altoAviso = aviso && aviso.offsetHeight > 0 && getComputedStyle(aviso).position === 'fixed'
+    && aviso.getBoundingClientRect().top > window.innerHeight / 2 ? aviso.offsetHeight + 8 : 0;
+  document.documentElement.style.setProperty('--toast-sobre', `${altoAviso}px`);
   const toast = document.createElement('div');
   toast.id = 'appToast';
-  toast.style.cssText = `
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    background:var(--surface3); border:1px solid ${color};
-    color:${color}; font-size:0.8rem; font-family:'Outfit',sans-serif;
-    padding:10px 20px; border-radius:8px; z-index:9999;
-    max-width:calc(100vw - 32px); text-align:center;
-    box-shadow:0 4px 16px rgba(0,0,0,0.4);
-    animation:toastUp 0.25s ease;
-  `;
+  toast.className = tone === 'warning' ? 'app-toast app-toast-warning' : 'app-toast';
+  toast.setAttribute('role', 'status');
   toast.textContent = message;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), tone === 'warning' ? 3500 : 2500);
