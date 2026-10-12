@@ -443,7 +443,9 @@ function renderTissue() {
   document.getElementById('tissue-extra').innerHTML =
     `<div class="ts-leyenda">${leyenda}</div>`
     + (hayPend ? '<p class="ts-texto ts-pend-movil">* Pendiente de fuente: el rango no sale de ninguna fuente leída.</p>' : '')
-    + `<p class="ts-texto">${T.fases}</p>`
+    + '<div class="ts-fases-titulo">Fases de reparación</div><ul class="ts-fases">'
+    + T.fases.map(f => `<li class="ts-fase ts-fase-${f.id}${f.parcial ? ' ts-fase-parcial' : ''}"><span class="ts-fase-muestra"></span><span>${f.nombre}</span><span class="ts-fase-rango">${f.rango}</span></li>`).join('')
+    + `</ul><p class="ts-texto">${T.fasesNota}</p>`
     + `<ul class="ts-notas">${T.notas.map(t => `<li>${t}</li>`).join('')}</ul>`
     + T.fuentes.map(t => `<p class="tissue-source">${t}</p>`).join('');
 }

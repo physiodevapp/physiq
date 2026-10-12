@@ -809,7 +809,15 @@ const TISSUE_TIMES = {
       { nombre: 'Fractura', corto: 'Fractura', desde: 2, hasta: 5, g: 'moderada' },
     ] },
   ],
-  fases: 'Fases de reparación (orientativas, se solapan): inflamatoria, días 0–5 · proliferativa, de día 5 a semana 3 · remodelación, de semana 3 a 1 año · remodelación (tendón), de 1 año a 2 años (Wu 2017). Modelo general de la cicatrización de heridas cutáneas: en tendón, ligamento y hueso los tiempos varían. En una incisión, la resistencia máxima llega hacia las 11–14 semanas y la cicatriz se queda en torno al 80 % de la resistencia original.',
+  // Leyenda de fases (misma que el panel ⏱ de physiq-assessment): nombre y rango
+  // corto; `parcial` = solo vale para un tejido (se pinta más clara).
+  fases: [
+    { id: 'inflamatoria', nombre: 'Inflamatoria', rango: 'días 0–5' },
+    { id: 'proliferativa', nombre: 'Proliferativa', rango: 'día 5–sem. 3' },
+    { id: 'remodelacion', nombre: 'Remodelación', rango: 'sem. 3–1 año' },
+    { id: 'remodelacion', nombre: 'Remodelación (tendón)', rango: '1–2 años', parcial: true },
+  ],
+  fasesNota: 'Las fases de reparación son orientativas y se solapan. Modelo general de la cicatrización de heridas cutáneas: en tendón, ligamento y hueso los tiempos varían. En una incisión, la resistencia máxima llega hacia las 11–14 semanas y la cicatriz se queda en torno al 80 % de la resistencia original.',
   notas: [
     'Rangos orientativos: dependen de la edad, de las enfermedades y fármacos del paciente (diabetes, tabaco, corticoides…) y de la carga que se aplique.',
     'El dolor y la función no siguen por fuerza el calendario del tejido: el paciente puede estar listo antes o seguir con síntomas después.',
