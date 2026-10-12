@@ -790,7 +790,8 @@ const TISSUE_TIMES = {
     { tejido: 'Tendón', filas: [
       { nombre: 'Tendinopatía', corto: 'Tendinopatía', desde: 2, hasta: 5, g: 'moderada',
         nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga.' },
-      { nombre: 'Rotura / reparación de tendón', corto: 'Rotura tendón', desde: 4, hasta: 6, g: 'grave', pendiente: true },
+      { nombre: 'Rotura / reparación de tendón', corto: 'Rotura tendón', desde: 3, hasta: 7, g: 'grave',
+        nota: 'Biología de la curación: la remodelación empieza a las 6–8 semanas y dura 1–2 años; el tendón no suele recuperar del todo su resistencia. La vuelta a la actividad la marca el protocolo.' },
     ] },
     { tejido: 'Músculo', filas: [
       { nombre: 'Dolor muscular tardío (DOMS)', corto: 'DOMS', desde: 0, hasta: 0, g: 'minima' },
@@ -817,5 +818,6 @@ const TISSUE_TIMES = {
   fuentes: [
     'Filas: adaptado de Snyder-Mackler et al., «Developing Treatment Pathways», 2012 (probablemente cap. 3 de Andrews, Harrelson y Wilk, Physical Rehabilitation of the Injured Athlete, 4.ª ed., Elsevier, 2012; sin verificar).',
     'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023).',
+    'Rotura de tendón: Wu, Nerlich y Docheva, «Tendon injuries: basic science and new repair proposals», EFORT Open Rev 2017;2(7):332.',
   ],
 };

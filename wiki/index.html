@@ -549,9 +549,10 @@
     line-height: 1.5;
     font-style: italic;
   }
+  /* overflow: clip (no auto) para que la fila de tiempos pueda quedarse fija (sticky) al
+     hacer scroll de la página; las dos tablas caben sin scroll horizontal */
   .tissue-scroll {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: clip;
     border: 1px solid var(--border);
     border-radius: var(--radius);
   }
@@ -573,6 +574,7 @@
     line-height: 1.3;
   }
   .tissue-th-label { width: 200px; min-width: 200px; }
+  .tissue-table thead th { position: sticky; top: var(--tissue-top, var(--header-h)); z-index: 2; }
   .tissue-table tbody td {
     border: 1px solid var(--border);
     height: 28px;
@@ -969,8 +971,8 @@
   </div>
 </div>
 
-<script src="data.js?v=daf1ebb9dea87b400c4cb7f3bbae4b3b7570a379"></script>
-<script src="app.js?v=daf1ebb9dea87b400c4cb7f3bbae4b3b7570a379"></script>
+<script src="data.js?v=bbf99d6befaa41f3e2b34fa0ab6871ed32efba73"></script>
+<script src="app.js?v=bbf99d6befaa41f3e2b34fa0ab6871ed32efba73"></script>
 
 </body>
 </html>

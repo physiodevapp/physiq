@@ -184,6 +184,7 @@ function showTissue() {
   document.getElementById('view-tissue').style.display = '';
   document.getElementById('view-ejercicio').style.display = 'none';
   document.getElementById('view-recursos').style.display = 'none';
+  colocarCabeceraTissue();
   history.pushState({ view: 'tissue' }, '');
 }
 
@@ -447,3 +448,13 @@ function renderTissue() {
     + T.fuentes.map(t => `<p class="tissue-source">${t}</p>`).join('');
 }
 renderTissue();
+
+// La fila de tiempos se queda fija justo debajo de la cabecera de la app y de la barra
+// «← Wiki» (que es sticky también y cambia de alto según el ancho).
+function colocarCabeceraTissue() {
+  const barra = document.querySelector('#view-tissue .region-sticky-header');
+  if (!barra || !barra.offsetHeight) return;
+  const header = document.querySelector('.app-header');
+  document.documentElement.style.setProperty('--tissue-top', `${(header ? header.offsetHeight : 0) + barra.offsetHeight}px`);
+}
+window.addEventListener('resize', colocarCabeceraTissue);
