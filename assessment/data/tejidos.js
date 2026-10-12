@@ -92,6 +92,22 @@ export const TIEMPOS_TEJIDO = {
           id: 'tendon_rotura', mide: 'biologia', nombre: 'Rotura / reparación de tendón', desde: 3, hasta: 7, gravedad: 'grave',
           fuentes: ['Wu 2017'],
           nota: 'Biología de la curación: la remodelación empieza a las 6–8 semanas y dura 1–2 años; el tendón no suele recuperar del todo su resistencia. La vuelta a la actividad la marca el protocolo.',
+          // Fase J, 6 (Aquiles): Shamrock 2023 (StatPearls «Achilles Tendon Rupture», PDF del
+          // usuario, leído entero, 2026-10). Sin cirugía, programa funcional de Glazebrook y
+          // Rubinger: 0–2 semanas sin carga, bota con alzas y carga progresiva, «8 to 12 weeks:
+          // wean off the boot». Tras la reparación: «Exercise focus is typically low impact for
+          // the first 6 months, with high-impact exercises incorporated after 6 months,
+          // emphasizing a return to sport as appropriate»; deportistas profesionales, más del
+          // 30 % no vuelve y los que vuelven rinden menos al año, igual que antes a los 2 años.
+          // Rerrotura: 10–40 % sin cirugía frente a 1–2 % con ella en estudios antiguos; la
+          // evidencia de nivel 1 más reciente no encuentra diferencia.
+          // Semanas → columnas: 8–12 s = «5–8 s» a «2–3 m» (3–4); desde 6 meses = «6m–1a» (6).
+          subtipos: [
+            { id: 'aquiles_conservador', mide: 'proteccion', nombre: 'Aquiles, sin cirugía', desde: 3, hasta: 4, fuentes: ['Shamrock 2023'],
+              nota: 'Bota con alzas y carga progresiva; se retira la bota entre las 8 y las 12 semanas (programa funcional de Glazebrook y Rubinger). Rerrotura del 10–40 % en estudios antiguos; la evidencia más reciente no encuentra diferencia con la cirugía.' },
+            { id: 'aquiles_cirugia', mide: 'deporte', nombre: 'Aquiles, reparado', desde: 6, hasta: 6, fuentes: ['Shamrock 2023'],
+              nota: 'Ejercicio de bajo impacto los primeros 6 meses y de alto impacto después, hacia la vuelta al deporte. En deportistas profesionales, más del 30 % no vuelve a jugar. Manda el protocolo del cirujano.' },
+          ],
         },
       ],
     },
