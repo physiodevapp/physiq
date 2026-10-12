@@ -2908,7 +2908,21 @@ body.posquirurgico .solo-posq { display: block; }
 .tej-leve { background: var(--tej-leve); }
 .tej-moderada { background: var(--tej-moderada); }
 .tej-grave { background: var(--tej-grave); }
-.tej-grupo { margin-top: 8px; font-family: 'DM Mono', monospace; font-size: 0.66rem; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 3px; }
+.tej-grupo { display: block; width: 100%; margin-top: 8px; padding: 0 0 3px; background: none; border: none; border-bottom: 1px solid var(--border); text-align: left; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 0.66rem; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
+.tej-bloque { display: flex; flex-direction: column; gap: 6px; }
+/* Filtro por tejido (encima del diagrama) */
+.tej-filtro { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tej-filtro-btn { min-height: 32px; padding: 4px 12px; border-radius: 16px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text2); font-family: inherit; font-size: 0.78rem; cursor: pointer; }
+.tej-filtro-btn.activo { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+@media (hover: hover) { .tej-filtro-btn:hover { border-color: var(--accent); } }
+@media (max-width: 480px) { .tej-filtro-btn { padding: 4px 10px; font-size: 0.74rem; white-space: nowrap; } }
+/* Subtipos de una fila, plegados bajo ella (estructura lista; se llenan en la Fase J) */
+.tej-subtipos > summary { cursor: pointer; font-size: 0.72rem; color: var(--text3); padding: 2px 0; }
+.tej-subtipos[open] > summary { margin-bottom: 4px; }
+.tej-subfila .tej-nombre { padding-left: 12px; color: var(--text2); }
+/* Fase que solo vale para un tejido (remodelación del tendón más allá del año): más clara */
+.tej-fase-parcial { opacity: 0.55; }
+.tej-fases .tej-fase.tej-fase-parcial { border-style: dotted; }
 /* El eje de tiempo queda fijo arriba al hacer scroll dentro del panel (.tejidos-cuerpo) */
 .tej-eje { position: sticky; top: 0; z-index: 3; background: var(--surface); padding-bottom: 4px; border-bottom: 1px solid var(--border); }
 .tej-eje .tej-pista { background: none; border-left: none; min-height: 26px; padding-top: 12px; }
@@ -2918,10 +2932,12 @@ body.posquirurgico .solo-posq { display: block; }
 /* El borde de cada fase toma su color, como la tira del eje (.tej-eje-fase) */
 .tej-fases .tej-fase { border-color: color-mix(in srgb, currentColor 55%, transparent); }
 .tej-eje-fase { position: absolute; bottom: 0; height: 3px; border-radius: 2px; background: currentColor; opacity: 0.85; }
+.tej-eje-fase.tej-fase-parcial { opacity: 0.4; }
 .tej-eje .tej-pista { padding-bottom: 6px; }
 .tej-fase-inflamatoria { color: var(--alert-warning-text); }
 .tej-fase-proliferativa { color: var(--accent2); }
 .tej-fase-remodelacion { color: var(--accent); }
+.tej-fase-remodelacion_tendon { color: var(--accent); }
 .tej-pendiente { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 6px; font-size: 0.62rem; line-height: 1.5; color: var(--alert-warning-text); border: 1px solid var(--alert-warning-text); white-space: nowrap; vertical-align: 1px; }
 .tej-hoy { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 2px solid var(--tej-hoy); transform: translateX(-1px); pointer-events: none; z-index: 1; }
 .tej-hoy-etq { position: absolute; top: 0; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 0.6rem; line-height: 12px; color: var(--tej-hoy); font-weight: 600; }

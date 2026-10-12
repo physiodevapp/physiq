@@ -28,12 +28,18 @@
 //               la primera empieza en el día 0 y cada una en el `hasta` de la
 //               anterior). Sirve para colocar la franja de fases y la línea «hoy».
 //   gravedades  { <id>: etiqueta }  — color de la barra (--tej-<id>, styles.css)
-//   grupos[]    { tejido, filas[] }
-//     fila      { id, nombre, desde, hasta, gravedad, fuentes[], nota?, pendiente? }
+//   grupos[]    { id, tejido, filas[] } — `id` lo usa el filtro del panel
+//     fila      { id, nombre, desde, hasta, gravedad, fuentes[], nota?, pendiente?, subtipos? }
 //               `desde`/`hasta` = índices de columna (inclusive)
-//   fases[]     { id, nombre, desdeDia, hastaDia, fuentes[] } — franja general
-//               de reparación, en días sobre el mismo eje; `fasesNota` y
-//               `fasesFuente`, su aviso y su cita bajo la leyenda
+//     subtipos  opcional: [{ id, nombre, desde, hasta, gravedad?, fuentes[], nota?, pendiente? }]
+//               (misma forma que una fila; sin `gravedad`, la de la fila). Se
+//               pintan plegados bajo su fila. Solo con fuente leída para cada
+//               subtipo: la lista de candidatos y su estado, en MIGRATION_PLAN.md,
+//               Fase J, y docs/tiempos-tejido.md
+//   fases[]     { id, nombre, desdeDia, hastaDia, fuentes[], tejido? } — franja
+//               general de reparación, en días sobre el mismo eje; contiguas.
+//               `tejido`: la fase solo vale para ese tejido (se pinta más clara);
+//               `fasesNota` y `fasesFuente`, su aviso y su cita bajo la leyenda
 //   fuentes     claves de data/referencias.js (las cuenta tests/referencias.mjs)
 
 export const TIEMPOS_TEJIDO = {
@@ -57,7 +63,7 @@ export const TIEMPOS_TEJIDO = {
 
   grupos: [
     {
-      tejido: 'Tendón',
+      id: 'tendon', tejido: 'Tendón',
       filas: [
         {
           id: 'tendinopatia', nombre: 'Tendinopatía', desde: 2, hasta: 5, gravedad: 'moderada',
@@ -76,7 +82,7 @@ export const TIEMPOS_TEJIDO = {
       ],
     },
     {
-      tejido: 'Músculo',
+      id: 'musculo', tejido: 'Músculo',
       filas: [
         { id: 'doms', nombre: 'Dolor muscular tardío (DOMS)', desde: 0, hasta: 0, gravedad: 'minima', fuentes: ['Snyder-Mackler 2012'] },
         { id: 'musculo_g1', nombre: 'Rotura grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'] },
@@ -85,7 +91,7 @@ export const TIEMPOS_TEJIDO = {
       ],
     },
     {
-      tejido: 'Ligamento',
+      id: 'ligamento', tejido: 'Ligamento',
       filas: [
         { id: 'ligamento_g1', nombre: 'Esguince grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'] },
         { id: 'ligamento_g2', nombre: 'Esguince grado II', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
@@ -94,7 +100,7 @@ export const TIEMPOS_TEJIDO = {
       ],
     },
     {
-      tejido: 'Hueso',
+      id: 'hueso', tejido: 'Hueso',
       filas: [
         { id: 'fractura', nombre: 'Fractura', desde: 2, hasta: 5, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
       ],
@@ -112,6 +118,10 @@ export const TIEMPOS_TEJIDO = {
     { id: 'inflamatoria', nombre: 'Inflamatoria', desdeDia: 0, hastaDia: 5, fuentes: ['Wallace 2023'] },
     { id: 'proliferativa', nombre: 'Proliferativa', desdeDia: 5, hastaDia: 21, fuentes: ['Wallace 2023'] },
     { id: 'remodelacion', nombre: 'Remodelación', desdeDia: 21, hastaDia: 365, fuentes: ['Wallace 2023'] },
+    // Más allá del año, solo el tendón: Wu 2017, la remodelación «takes around one
+    // to two years». Sin ella la tira del eje se cortaba al año, donde la barra
+    // de la rotura de tendón sigue (petición del usuario, 2026-10).
+    { id: 'remodelacion_tendon', nombre: 'Remodelación (tendón)', desdeDia: 365, hastaDia: 730, fuentes: ['Wu 2017'], tejido: 'tendón' },
   ],
   fasesNota: 'Modelo general de la cicatrización de heridas cutáneas: en tendón, ligamento y hueso los tiempos varían (ver las barras). En una incisión, la resistencia máxima llega hacia las 11–14 semanas y la cicatriz se queda en torno al 80 % de la resistencia original.',
 
