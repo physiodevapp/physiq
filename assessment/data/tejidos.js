@@ -231,6 +231,44 @@ export const TIEMPOS_TEJIDO = {
             { id: 'fx_meseta_cirugia', nombre: 'Meseta tibial, operada', desde: 4, hasta: 4, gravedad: 'grave', fuentes: ['Malik y Herron 2023'],
               nota: '6 semanas sin carga y 6 de carga parcial; después, carga según tolerancia. La vuelta al deporte puede tardar meses. Manda el protocolo del cirujano.' },
           ] },
+        // Fase J, 5 (fractura de estrés): PDF del usuario leídos enteros (2026-10).
+        // Hoenig 2023 (revisión sistemática y metaanálisis, 76 estudios): tiempo medio de
+        // vuelta al deporte por localización (tablas 1A y 1B del suplemento): tibia
+        // posteromedial 44 días (IC 27–61), peroné 56 (13–100), pubis 77 (41–112),
+        // metatarsianos 1.º–4.º 78 (56–100), 5.º metatarsiano 82 (68–96), diáfisis femoral 86
+        // (54–117), maléolo medial 106 (79–132), cuello femoral 107 (79–135), navicular 127
+        // (103–151); vuelta al deporte del 55 % en el cuello femoral y del 75,5 % en la tibia
+        // anterior (sin tiempo agrupado). Robertson y Wood 2017: tibia anterior incompleta,
+        // «7 mo for conservative management and 7 mo for surgical management»; alto riesgo:
+        // tibia anterior, base del 5.º metatarsiano, maléolo medial, cuello femoral lateral,
+        // navicular y sesamoideos. May y Marappa-Ganeshan 2023: «relative rest/non-weight
+        // bearing for a period of 2 to 6 weeks, and then gradual reintroduction of activity».
+        // Días → columnas: 44 y 56 = «5–8 s» (3); 77–86 = «2–3 m» (4); 106–127 = «3–6 m» (5);
+        // 7 meses = «6m–1a» (6).
+        { id: 'fractura_estres', nombre: 'Fractura de estrés', desde: 3, hasta: 6, gravedad: 'moderada', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017', 'May y Marappa-Ganeshan 2023'],
+          nota: 'Vuelta al deporte de media: de 6 semanas a 4 meses según la localización, y unos 7 meses en la tibia anterior. En las de bajo riesgo, 2–6 semanas de reposo relativo o descarga y vuelta gradual; las de alto riesgo, a traumatología.',
+          subtipos: [
+            { id: 'estres_tibia_posteromedial', nombre: 'Tibia posteromedial (bajo riesgo)', desde: 3, hasta: 3, fuentes: ['Hoenig 2023'],
+              nota: 'Vuelta al deporte a los 44 días de media; la más rápida y con menos complicaciones (2 %).' },
+            { id: 'estres_perone', nombre: 'Peroné (bajo riesgo)', desde: 3, hasta: 3, fuentes: ['Hoenig 2023'],
+              nota: 'Vuelta al deporte a los 56 días de media (con mucha variación entre estudios).' },
+            { id: 'estres_pubis', nombre: 'Pubis (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
+              nota: 'Vuelta al deporte a los 77 días de media.' },
+            { id: 'estres_metatarsianos', nombre: 'Metatarsianos 1.º–4.º (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
+              nota: 'Vuelta al deporte a los 78 días de media; el 96 % vuelve.' },
+            { id: 'estres_femur_diafisis', nombre: 'Diáfisis femoral (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
+              nota: 'Vuelta al deporte a los 86 días de media.' },
+            { id: 'estres_quinto', nombre: '5.º metatarsiano (alto riesgo)', desde: 4, hasta: 4, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
+              nota: 'Vuelta al deporte a los 82 días de media; complicaciones en el 16,5 %. Alto riesgo por retraso de consolidación y seudoartrosis.' },
+            { id: 'estres_maleolo_medial', nombre: 'Maléolo medial (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
+              nota: 'Vuelta al deporte a los 106 días de media.' },
+            { id: 'estres_cuello_femoral', nombre: 'Cuello femoral (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
+              nota: 'Vuelta al deporte a los 107 días de media, pero solo vuelve el 55 %; complicaciones en el 43 %. Desplazada, riesgo de necrosis de la cabeza femoral: a traumatología sin demora.' },
+            { id: 'estres_navicular', nombre: 'Navicular (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
+              nota: 'Vuelta al deporte a los 127 días de media, la más lenta; vuelve el 83 %. (Inmovilización, 6–8 semanas: ver «Fractura».)' },
+            { id: 'estres_tibia_anterior', nombre: 'Tibia anterior (alto riesgo)', desde: 6, hasta: 6, gravedad: 'grave', fuentes: ['Robertson y Wood 2017', 'Hoenig 2023'],
+              nota: 'Vuelta al deporte a los 7 meses, con o sin cirugía (Robertson y Wood 2017); vuelve el 75,5 % y hay complicaciones en el 41 % (Hoenig 2023).' },
+          ] },
       ],
     },
   ],
