@@ -107,6 +107,21 @@ export const TIEMPOS_TEJIDO = {
               nota: 'Bota con alzas y carga progresiva; se retira la bota entre las 8 y las 12 semanas (programa funcional de Glazebrook y Rubinger). Rerrotura del 10–40 % en estudios antiguos; la evidencia más reciente no encuentra diferencia con la cirugía.' },
             { id: 'aquiles_cirugia', mide: 'deporte', nombre: 'Aquiles, reparado', desde: 6, hasta: 6, fuentes: ['Shamrock 2023'],
               nota: 'Ejercicio de bajo impacto los primeros 6 meses y de alto impacto después, hacia la vuelta al deporte. En deportistas profesionales, más del 30 % no vuelve a jugar. Manda el protocolo del cirujano.' },
+            // Manguito rotador (Fase J, 6): Thigpen 2016, consenso ASSET tras reparación
+            // artroscópica (PDF del usuario, leído entero, 2026-10; nivel V, opinión de expertos):
+            // «a 2-week period of strict immobilization and a staged introduction of protected,
+            // passive range of motion during weeks 2-6 postoperatively, followed by restoration of
+            // active range of motion, and then progressive strengthening beginning at postoperative
+            // week 12»; fase 3, 12–20 semanas; fase 4, 20–26 semanas, solo para trabajo pesado o
+            // deporte por encima de la cabeza; «Around 4-5 months postoperatively, work- and
+            // sport-specific rehabilitation activities can commence»; el tendón reparado «does not
+            // approach normal levels of elasticity or strength until at least 6 months»; la PROM
+            // protegida en las 6 primeras semanas en roturas pequeñas o medianas, grado A (SORT).
+            // Semanas → columnas: 0–6 s = hasta «5–8 s» (3); 20–26 s = «3–6 m» (5).
+            { id: 'manguito_proteccion', mide: 'proteccion', nombre: 'Manguito rotador reparado, protección', desde: 3, hasta: 3, fuentes: ['Thigpen 2016'],
+              nota: '2 semanas de inmovilización estricta y movilidad pasiva protegida hasta la 6.ª (grado A en roturas pequeñas o medianas); 6 semanas de inmovilización si preocupa la cicatrización. A las 6 semanas la reparación tiene solo un 19–30 % de la resistencia normal. Manda el protocolo del cirujano.' },
+            { id: 'manguito_programa', mide: 'programa', nombre: 'Manguito rotador reparado, rehabilitación', desde: 5, hasta: 5, fuentes: ['Thigpen 2016'],
+              nota: 'Movilidad activa desde la 6.ª semana, fuerza progresiva desde la 12.ª y fortalecimiento avanzado de la 20.ª a la 26.ª, solo para trabajo pesado o deporte por encima de la cabeza. El trabajo específico de deporte o trabajo puede empezar hacia los 4–5 meses; el tendón no se acerca a su resistencia normal hasta los 6 meses como pronto. Consenso de expertos (nivel V).' },
           ],
         },
       ],
