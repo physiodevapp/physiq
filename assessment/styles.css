@@ -2911,26 +2911,37 @@ body.posquirurgico .solo-posq { display: block; }
 .tej-grupo { display: block; width: 100%; margin-top: 8px; padding: 0 0 3px; background: none; border: none; border-bottom: 1px solid var(--border); text-align: left; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 0.66rem; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
 .tej-bloque { display: flex; flex-direction: column; gap: 6px; }
 /* Filtro por tejido (encima del diagrama) */
-.tej-filtro { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tej-filtro { display: flex; flex-wrap: nowrap; gap: 6px; margin: 0 0 12px; overflow-x: auto; scrollbar-width: none; touch-action: pan-x pan-y; overscroll-behavior-x: contain; }
+.tej-filtro::-webkit-scrollbar { display: none; }
+.tej-filtro-btn { flex: 0 0 auto; }
+/* Degradado en el borde por el que quedan pastillas fuera (clases que pone app.js) */
+.tej-filtro.mas-dcha { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+.tej-filtro.mas-izda { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); }
+.tej-filtro.mas-izda.mas-dcha { -webkit-mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); }
 .tej-filtro-btn { min-height: 32px; padding: 4px 12px; border-radius: 16px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text2); font-family: inherit; font-size: 0.78rem; cursor: pointer; }
 .tej-filtro-btn.activo { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 @media (hover: hover) { .tej-filtro-btn:hover { border-color: var(--accent); } }
-@media (max-width: 480px) { .tej-filtro-btn { padding: 4px 10px; font-size: 0.74rem; white-space: nowrap; } }
+@media (max-width: 480px) { .tej-filtro-btn { padding: 4px 10px; font-size: 0.74rem; } }
+.tej-filtro-btn { white-space: nowrap; }
 /* Subtipos de una fila, plegados bajo ella (estructura lista; se llenan en la Fase J) */
 .tej-subtipos > summary { cursor: pointer; font-size: 0.72rem; color: var(--text3); padding: 2px 0; }
 .tej-subtipos[open] > summary { margin-bottom: 4px; }
 .tej-subfila .tej-nombre { padding-left: 12px; color: var(--text2); }
-/* Fase que solo vale para un tejido (remodelación del tendón más allá del año): más clara */
-.tej-fase-parcial { opacity: 0.55; }
-.tej-fases .tej-fase.tej-fase-parcial { border-style: dotted; }
 /* El eje de tiempo queda fijo arriba al hacer scroll dentro del panel (.tejidos-cuerpo) */
 .tej-eje { position: sticky; top: 0; z-index: 3; background: var(--surface); padding-bottom: 4px; border-bottom: 1px solid var(--border); }
 .tej-eje .tej-pista { background: none; border-left: none; min-height: 26px; padding-top: 12px; }
 .tej-col { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text3); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; align-self: end; }
-.tej-fases .tej-pista { min-height: 22px; }
-.tej-fase { position: absolute; top: 2px; bottom: 2px; border-radius: 4px; font-size: 0.62rem; line-height: 18px; color: var(--text2); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; border: 1px dashed var(--border2); background: var(--surface2); }
+/* Leyenda de fases: muestra de color + nombre entero + rango; se ajusta en líneas */
+.tej-fases { margin: 2px 0 2px; }
+.tej-fases-titulo { font-size: 0.8rem; color: var(--text); margin-bottom: 6px; }
+.tej-fases-leyenda { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.tej-fase-ley { display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; white-space: nowrap; }
+.tej-fase-muestra { width: 16px; height: 4px; border-radius: 2px; background: currentColor; }
+.tej-fase-nombre { color: currentColor; }
+.tej-fase-rango { color: var(--text3); font-family: 'DM Mono', monospace; font-size: 0.68rem; }
+/* Fase que solo vale para un tejido (remodelación del tendón más allá del año): más clara */
+.tej-fase-ley.tej-fase-parcial .tej-fase-muestra { opacity: 0.45; }
 /* El borde de cada fase toma su color, como la tira del eje (.tej-eje-fase) */
-.tej-fases .tej-fase { border-color: color-mix(in srgb, currentColor 55%, transparent); }
 .tej-eje-fase { position: absolute; bottom: 0; height: 3px; border-radius: 2px; background: currentColor; opacity: 0.85; }
 .tej-eje-fase.tej-fase-parcial { opacity: 0.4; }
 .tej-eje .tej-pista { padding-bottom: 6px; }

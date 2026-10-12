@@ -39,10 +39,11 @@ export function marcaHoy(semanas, columnas) {
   return { pos: posicionDia(dias, columnas), texto };
 }
 
-// «días 0–5» · «semana 3 a 1 año»
-function diasTexto(a, b) {
-  const t = d => (d >= 365 ? `${Math.round(d / 365)} año${d >= 730 ? 's' : ''}` : d >= 21 ? `semana ${Math.round(d / 7)}` : `día ${d}`);
-  return a < 21 && b < 21 ? `días ${a}–${b}` : `de ${t(a)} a ${t(b)}`;
+// Rango corto para la leyenda de fases: «días 0–5» · «día 5–sem. 3» · «sem. 3–1 año» · «1–2 años»
+export function rangoFase(a, b) {
+  const t = d => (d >= 365 ? `${Math.round(d / 365)}` : d >= 21 ? `sem. ${Math.round(d / 7)}` : `día ${d}`);
+  const fin = d => (d >= 365 ? `${Math.round(d / 365)} año${d >= 730 ? 's' : ''}` : t(d));
+  return a < 21 && b < 21 ? `días ${a}–${b}` : `${t(a)}–${fin(b)}`;
 }
 
 const pct = x => `${(x * 100).toFixed(3)}%`;
@@ -73,8 +74,9 @@ export function gruposVisibles(grupos, filtro) {
 
 // HTML del cuerpo del panel. `semanas`: semanas desde la cirugía (o null);
 // `posquirurgico`: si el mecanismo es Post-quirúrgico (para el texto de ayuda);
-// `filtro`: id de un grupo de tejido, o 'todos'. Los botones del filtro y los
-// títulos de grupo llevan `data-filtro-tejido`; abrirTiemposTejido() (app.js)
+// `filtro`: id de un grupo de tejido, o 'todos'. Las pastillas del filtro y los
+// títulos de grupo llevan `data-filtro-tejido` (el filtro que ponen al tocarlos:
+// el suyo, o 'todos' si ya era el activo); abrirTiemposTejido() (app.js)
 // vuelve a pintar con el filtro elegido.
 export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false, filtro = 'todos' } = {}) {
   const { columnas, gravedades, grupos, fases, fasesNota, notas, fuente, fasesFuente } = datos;
@@ -84,9 +86,12 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
   const activo = grupos.some(g => g.id === filtro) ? filtro : 'todos';
   const claseFase = f => `tej-fase-${esc(f.id)}${f.tejido ? ' tej-fase-parcial' : ''}`;
 
+  // Sin pastilla «Todos»: volver a tocar la activa la desmarca y se ven todos
+  // (la misma regla que el resto de grupos de opciones de la app). Una sola fila
+  // que se desliza en horizontal si no caben (decisión del usuario, 2026-10).
   const filtroHTML = `<div class="tej-filtro" role="group" aria-label="Filtrar por tejido">`
-    + [{ id: 'todos', tejido: 'Todos' }, ...grupos].map(g =>
-      `<button type="button" class="tej-filtro-btn${g.id === activo ? ' activo' : ''}" data-filtro-tejido="${esc(g.id)}" aria-pressed="${g.id === activo}">${esc(g.tejido)}</button>`).join('')
+    + grupos.map(g =>
+      `<button type="button" class="tej-filtro-btn${g.id === activo ? ' activo' : ''}" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(g.id === activo ? 'todos' : g.id)}" aria-pressed="${g.id === activo}"${g.id === activo ? ` title="Ver todos los tejidos"` : ''}>${esc(g.tejido)}</button>`).join('')
     + '</div>';
 
   const eje = `<div class="tej-fila tej-eje" aria-hidden="true"><div class="tej-nombre"></div>`
@@ -100,19 +105,20 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
     }).join('')
     + '</div></div>';
 
+  // Leyenda de las fases (antes una franja con el nombre dentro de cada tramo, que
+  // en móvil se cortaba: «Inflama…»). La posición la da la tira del eje fijo; aquí
+  // va qué es cada color, con su nombre entero y su rango, en líneas que se ajustan.
   const fasesPendientes = fases.some(f => !f.fuentes.length);
-  const franja = `<div class="tej-fila tej-fases"><div class="tej-nombre">Fases de reparación${fasesPendientes ? ` ${pendienteChip}` : ''}</div>`
-    + `<div class="tej-pista" style="--tej-n:${n}">`
-    + fases.map(f => {
-      const a = posicionDia(f.desdeDia, columnas), b = posicionDia(f.hastaDia, columnas);
-      return `<span class="tej-fase ${claseFase(f)}" style="left:${pct(a)};width:${pct(b - a)}" title="${esc(f.nombre)}: ${diasTexto(f.desdeDia, f.hastaDia)}">${esc(f.nombre)}</span>`;
-    }).join('')
-    + `${lineaHoy(hoy)}</div></div>`;
+  const franja = `<div class="tej-fases"><div class="tej-fases-titulo">Fases de reparación${fasesPendientes ? ` ${pendienteChip}` : ''}</div>`
+    + '<ul class="tej-fases-leyenda">'
+    + fases.map(f => `<li class="tej-fase-ley ${claseFase(f)}"><span class="tej-fase-muestra" aria-hidden="true"></span>`
+      + `<span class="tej-fase-nombre">${esc(f.nombre)}</span><span class="tej-fase-rango">${rangoFase(f.desdeDia, f.hastaDia)}</span></li>`).join('')
+    + '</ul></div>';
 
   const ctx = { columnas, hoy, pendienteChip };
   const cuerpo = gruposVisibles(grupos, activo).map(g => `<div class="tej-bloque" data-grupo="${esc(g.id)}">`
     // El título del grupo también filtra (o vuelve a «Todos» si ya es el filtrado)
-    + `<button type="button" class="tej-grupo" data-filtro-tejido="${esc(activo === g.id ? 'todos' : g.id)}" title="${esc(activo === g.id ? 'Ver todos los tejidos' : `Ver solo ${g.tejido.toLowerCase()}`)}">${esc(g.tejido)}</button>`
+    + `<button type="button" class="tej-grupo" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(activo === g.id ? 'todos' : g.id)}" title="${esc(activo === g.id ? 'Ver todos los tejidos' : `Ver solo ${g.tejido.toLowerCase()}`)}">${esc(g.tejido)}</button>`
     + g.filas.map(f => filaHTML(f, ctx)
       + (f.subtipos?.length
         ? `<details class="tej-subtipos"><summary>${f.subtipos.length} ${f.subtipos.length === 1 ? 'subtipo' : 'subtipos'} de ${esc(f.nombre.toLowerCase())}</summary>`
@@ -123,9 +129,7 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
 
   const leyenda = `<div class="tej-leyenda">`
     + Object.entries(gravedades).map(([k, v]) => `<span class="tej-ley"><span class="tej-ley-muestra tej-${esc(k)}"></span>${esc(v)}</span>`).join('')
-    + `</div><p class="tej-fases-texto">Fases de reparación (orientativas, se solapan): `
-    + fases.map(f => `${esc(f.nombre.toLowerCase())}, ${diasTexto(f.desdeDia, f.hastaDia)}`).join(' · ') + '.'
-    + `${fasesNota ? ` ${esc(fasesNota)}` : ''}</p>`;
+    + `</div><p class="tej-fases-texto">Las fases de reparación son orientativas y se solapan.${fasesNota ? ` ${esc(fasesNota)}` : ''}</p>`;
 
   const ayudaHoy = hoy
     ? `<p class="tej-hoy-texto"><span class="tej-hoy-muestra"></span>${esc(hoy.texto)}. Semanas de la tarjeta «Cirugía» (fase 1).</p>`
