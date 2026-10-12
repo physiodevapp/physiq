@@ -148,6 +148,36 @@ export const TIEMPOS_TEJIDO = {
       ],
     },
     {
+      // Fase J, 3 (menisco, grupo propio; decisión del usuario, 2026-10): PDF del
+      // usuario leídos (2026-10). Sin fila del wiki: cada fila es un tratamiento.
+      // Prill 2025 (consenso EU-US, parte II): rotura TRAUMÁTICA, «A 12‐week supervised
+      // neuromuscular exercise programme … similar outcomes to those that underwent
+      // surgery» (grado B); DEGENERATIVA, «non‐operative treatment including physical
+      // therapy should be the first approach» (grado A) y «3–6 months of non‐operative
+      // treatment prior to surgical decision making»; vuelta al deporte «4–12 weeks for
+      // partial meniscectomies, and 6–9 months for meniscal repair (GRADE C)»; tras la
+      // sutura aislada, vuelta al juego en el 71,2–100 % «within a time frame of 3.3–10
+      // months». Logerstedt 2018 (guía JOSPT), pronóstico: tras la meniscectomía, los
+      // menores de 30 años y los de élite vuelven «less than 2 months», los mayores de
+      // 30 «by 3 months» (Kim: 54 y 89 días; menisco medial 79 días, lateral 61); los
+      // déficits de los primeros 6 meses «may resolve within 2 years»; tras la sutura,
+      // «early progressive weight bearing» y «early progressive return to activity»
+      // (grado C).
+      // Semanas → columnas: 12 sem = «2–3 m» (4); 3–6 meses = «3–6 m» (5);
+      // 4–12 sem = «3–4 s» a «2–3 m» (2–4); 6–9 meses = «6m–1a» (6).
+      id: 'menisco', tejido: 'Menisco',
+      filas: [
+        { id: 'menisco_traumatica_conservador', nombre: 'Rotura traumática, sin cirugía', desde: 4, hasta: 4, gravedad: 'moderada', fuentes: ['Prill 2025'],
+          nota: 'No es un plazo de cicatrización: 12 semanas de ejercicio neuromuscular supervisado, con resultados parecidos a la cirugía en rodilla estable (grado B). Las roturas de la raíz o radiales agudas pueden beneficiarse de cirugía precoz.' },
+        { id: 'menisco_degenerativa_conservador', nombre: 'Lesión degenerativa, sin cirugía', desde: 5, hasta: 5, gravedad: 'moderada', fuentes: ['Prill 2025'],
+          nota: 'La fisioterapia es el primer tratamiento (grado A): 3–6 meses antes de plantear la cirugía si persisten los síntomas.' },
+        { id: 'menisco_meniscectomia', nombre: 'Meniscectomía parcial', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Prill 2025', 'Logerstedt 2018'],
+          nota: 'Vuelta al deporte a las 4–12 semanas (Prill 2025, grado C): antes de 2 meses en menores de 30 años o deportistas de élite, hacia los 3 meses en mayores de 30 (Logerstedt 2018). Los déficits de fuerza y función pueden tardar hasta 2 años en resolverse.' },
+        { id: 'menisco_sutura', nombre: 'Sutura (reparación)', desde: 6, hasta: 6, gravedad: 'grave', fuentes: ['Prill 2025', 'Logerstedt 2018'],
+          nota: 'Vuelta al deporte a los 6–9 meses (Prill 2025, grado C; en los estudios, de 3,3 a 10 meses). Carga y vuelta a la actividad progresivas y precoces (Logerstedt 2018, grado C). Manda el protocolo del cirujano.' },
+      ],
+    },
+    {
       id: 'hueso', tejido: 'Hueso',
       filas: [
         { id: 'fractura', nombre: 'Fractura', desde: 2, hasta: 5, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
