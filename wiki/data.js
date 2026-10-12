@@ -807,6 +807,10 @@ const TISSUE_TIMES = {
             nota: 'Bota con alzas y carga progresiva; se retira la bota entre las 8 y las 12 semanas (programa funcional de Glazebrook y Rubinger). Rerrotura del 10–40 % en estudios antiguos; la evidencia más reciente no encuentra diferencia con la cirugía (Shamrock 2023).' },
           { mide: 'deporte', nombre: 'Aquiles, reparado', corto: 'Aquiles, cirugía', desde: 6, hasta: 6,
             nota: 'Ejercicio de bajo impacto los primeros 6 meses y de alto impacto después, hacia la vuelta al deporte. En deportistas profesionales, más del 30 % no vuelve a jugar. Manda el protocolo del cirujano (Shamrock 2023).' },
+          { mide: 'proteccion', nombre: 'Manguito rotador reparado, protección', corto: 'Manguito, protección', desde: 3, hasta: 3,
+            nota: '2 semanas de inmovilización estricta y movilidad pasiva protegida hasta la 6.ª (grado A en roturas pequeñas o medianas); 6 semanas de inmovilización si preocupa la cicatrización. A las 6 semanas la reparación tiene solo un 19–30 % de la resistencia normal. Manda el protocolo del cirujano (Thigpen 2016).' },
+          { mide: 'programa', nombre: 'Manguito rotador reparado, rehabilitación', corto: 'Manguito, rehab.', desde: 5, hasta: 5,
+            nota: 'Movilidad activa desde la 6.ª semana, fuerza progresiva desde la 12.ª y fortalecimiento avanzado de la 20.ª a la 26.ª, solo para trabajo pesado o deporte por encima de la cabeza. Trabajo específico de deporte o trabajo hacia los 4–5 meses; el tendón no se acerca a su resistencia normal hasta los 6 meses como pronto. Consenso de expertos, nivel V (Thigpen 2016).' },
         ] },
     ] },
     { tejido: 'Músculo', filas: [
@@ -930,6 +934,7 @@ const TISSUE_TIMES = {
     'Menisco: Prill et al., «The formal EU-US Meniscus Rehabilitation 2024 Consensus… Part II», Knee Surg Sports Traumatol Arthrosc 2025;33(8):3014–3024; Logerstedt et al., J Orthop Sports Phys Ther 2018;48(2):A1–A50 (guía JOSPT de menisco y cartílago).',
     'Fracturas por localización (StatPearls): Hermena y Slane, «Ankle Fracture» (act. 2025); Smidt y Massey, «5th Metatarsal Fracture» (2023); Agrawal y Tiwari, «Metatarsal Fractures» (2023); Seaman y Bergman, «Calcaneus Fractures» (2026); Gheewala et al., «Tarsal Navicular Fractures» (2023); Mabrouk y Pilson, «Patellar Fractures» (2026); Malik et al., «Tibial Plateau Fractures» (2023). Plazos de inmovilización, descarga o vuelta a la función, no de consolidación completa.',
     'Rotura del Aquiles: Shamrock, Dreyer y Varacallo, «Achilles Tendon Rupture», StatPearls (act. 2023).',
+    'Manguito rotador reparado: Thigpen et al., J Shoulder Elbow Surg 2016;25(4):521–535 (consenso de la ASSET).',
     'Fractura de estrés: Hoenig et al., Br J Sports Med 2023;57:427–432 (revisión sistemática y metaanálisis); Robertson y Wood, World J Orthop 2017;8(3):242–255; May y Marappa-Ganeshan, «Stress Fractures», StatPearls (act. 2023). Vuelta al deporte media, no consolidación.',
   ],
 };
