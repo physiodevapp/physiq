@@ -468,7 +468,10 @@
     justify-content: space-between;
     gap: 10px;
   }
-  .label-with-mic .mic-btn {
+  .mic-btn:disabled { opacity: 0.4; cursor: default; }
+  .mic-btn:disabled:hover { border-color: var(--border2); }
+  .label-with-mic .mic-btn,
+  .pregunta-cabecera .mic-btn {
     width: 28px;
     height: 28px;
     min-width: 28px;
@@ -2759,6 +2762,8 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: flex; }
    velo que el panel de sesión. Solo standalone. */
 .in-hub .pregunta-ia-btn { display: none; }
 .pregunta-panel:focus { outline: none; }
+.pregunta-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; touch-action: none; }
+.pregunta-cabecera .session-panel-title { margin-bottom: 0; min-width: 0; }
 .pregunta-texto { width: 100%; resize: vertical; min-height: 84px; line-height: 1.45; touch-action: pan-y; }
 .pregunta-aviso { margin-top: 8px; font-size: 0.76rem; line-height: 1.4; color: var(--alert-warning-text); }
 .pregunta-destinos { margin-top: 14px; flex-wrap: nowrap; }

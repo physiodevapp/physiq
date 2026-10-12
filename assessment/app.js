@@ -561,7 +561,7 @@ function appendQuickPhrase(btn) {
 
 function toggleDictation(btn) {
   const field = document.getElementById(btn.dataset.field);
-  if (!field) return;
+  if (!field || btn.disabled) return;
   const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognitionCtor) return;
 
@@ -611,7 +611,9 @@ function toggleDictation(btn) {
     current = text;
 
     const combined = committed ? (current ? committed + ' ' + current : committed) : current;
-    field.value = baseValue + baseSep + combined;
+    const valor = baseValue + baseSep + combined;
+    // `maxlength` solo frena lo que se teclea, no lo que se escribe por código
+    field.value = field.maxLength > 0 ? valor.slice(0, field.maxLength) : valor;
     field.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
@@ -3083,6 +3085,7 @@ function abrirPreguntaIA() {
   if (!overlay || overlay.classList.contains('open') || _enHub()) return;
   _preguntaDestino = destinoIA();
   _pintarPreguntaIA();
+  _pintarMicPregunta();
   overlay.classList.add('open');
   document.getElementById('preguntaIABtn')?.setAttribute('aria-expanded', 'true');
   lockBodyScroll();
@@ -3091,12 +3094,46 @@ function abrirPreguntaIA() {
     _preguntaHistorial = true;
   }
   _ajustarPreguntaTeclado();
-  document.getElementById('preguntaTexto').focus({ preventScroll: true });
+  // En táctil (móvil, tablet) el foco va al diálogo, no al texto: si no, se
+  // despliega el teclado nada más abrir y tapa los destinos y el 🎤.
+  const tactil = window.matchMedia?.('(pointer: coarse)').matches;
+  document.getElementById(tactil ? 'preguntaPanel' : 'preguntaTexto').focus({ preventScroll: true });
+}
+
+// 🎤 junto al título (el mismo dictado que los demás campos, toggleDictation).
+// Desactivado mientras se graba la sesión (grabadora.js): el dictado y la
+// grabación se disputarían el micrófono y en Android falla uno de los dos.
+function _pintarMicPregunta() {
+  const cab = document.getElementById('preguntaCabecera');
+  if (!cab) return;
+  let btn = cab.querySelector('.mic-btn');
+  if (!btn) {
+    const html = _renderMicButton('preguntaTexto');
+    if (!html) return;
+    cab.insertAdjacentHTML('beforeend', html);
+    btn = cab.querySelector('.mic-btn');
+  }
+  const grabando = document.body.classList.contains('grab-activa');
+  btn.disabled = grabando;
+  btn.title = grabando ? 'Dictado no disponible mientras se graba la sesión' : 'Dictar por voz';
+}
+
+// Al cerrar o enviar: abort() (no stop()) y sin onresult, para que un último
+// resultado no escriba en la caja ya oculta o recién vaciada.
+function _pararDictadoPregunta() {
+  const btn = document.querySelector('#preguntaCabecera .mic-btn');
+  const rec = btn?._recognition;
+  if (!rec) return;
+  rec.onresult = null;
+  try { rec.abort(); } catch { /* ya parado */ }
+  btn._recognition = null;
+  btn.classList.remove('listening');
 }
 
 function cerrarPreguntaIA({ desdeHistorial = false, sinHistorial = false } = {}) {
   const overlay = document.getElementById('preguntaOverlay');
   if (!overlay?.classList.contains('open')) return;
+  _pararDictadoPregunta();
   overlay.classList.remove('open');
   overlay.style.paddingBottom = '';
   const panel = document.getElementById('preguntaPanel');
@@ -3141,6 +3178,7 @@ document.getElementById('preguntaIr')?.addEventListener('click', e => {
   const texto = document.getElementById('preguntaTexto');
   _actualizarPreguntaIr();
   if (texto.value.trim().length < 3) { e.preventDefault(); texto.focus(); return; }
+  _pararDictadoPregunta();
   guardarDestinoIA(_preguntaDestino);
   setTimeout(() => { texto.value = ''; cerrarPreguntaIA(); }, 0);
 });
