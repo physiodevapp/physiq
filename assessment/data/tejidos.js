@@ -108,6 +108,12 @@ export const TIEMPOS_TEJIDO = {
           subtipos: [
             { id: 'tobillo_lateral_g1', nombre: 'Tobillo, ligamento lateral', desde: 1, hasta: 1, fuentes: ['Bergman 2025'],
               nota: '1–2 semanas con movilización precoz y rehabilitación funcional.' },
+            // Fase J, 2 (rodilla): Naqvi y Sherman 2023, «Treatment / Management»: «Patients
+            // with grade I injuries typically can return to play within ten to 14 days»; el
+            // grado II «more variable timelines» (por criterios) y el grado III sin plazo:
+            // no se pintan. 10–14 días = «4–14 d» (1).
+            { id: 'rodilla_lcm_g1', nombre: 'Rodilla, ligamento colateral medial', desde: 1, hasta: 1, fuentes: ['Naqvi y Sherman 2023'],
+              nota: 'Vuelta al deporte en 10–14 días con tratamiento conservador. Los grados II y III no tienen plazo en la fuente: se decide por criterios (fuerza igual en las dos piernas y sin dolor al valgo).' },
           ] },
         { id: 'ligamento_g2', nombre: 'Esguince grado II', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
           subtipos: [
@@ -120,8 +126,25 @@ export const TIEMPOS_TEJIDO = {
               nota: '6–12 semanas o más; a veces cirugía por inestabilidad persistente. Un 5–33 % sigue con dolor al año (Martin 2021).' },
             { id: 'tobillo_lateral_cirugia', nombre: 'Tobillo, reparación quirúrgica', desde: 4, hasta: 5, fuentes: ['Vuurberg 2018', 'Bergman 2025'],
               nota: 'Vuelta al trabajo físico y al deporte a las 12–16 semanas (Vuurberg 2018); unos 3–4 meses según Bergman 2025. Manda el protocolo del cirujano.' },
+            // Evans 2023, «Non-operative management»: «an acute symptomatic treatment followed
+            // by 12 weeks of supervised physiotherapy» (baja demanda, sin pivotes, roturas
+            // parciales). Es la duración del programa, no un plazo de cicatrización: el
+            // ligamento roto no cicatriza. Fase aguda + 12 semanas ≈ «3–4 s» a «2–3 m» (2–4).
+            { id: 'rodilla_lca_conservador', nombre: 'Rodilla, LCA sin cirugía', desde: 2, hasta: 4, fuentes: ['Evans 2023'],
+              nota: 'No es un plazo de cicatrización: tras la fase aguda, 12 semanas de fisioterapia supervisada. Indicado en baja demanda, deportes sin giros ni saltos y roturas parciales.' },
           ] },
-        { id: 'injerto', nombre: 'Injerto (reconstrucción)', desde: 4, hasta: 6, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'] },
+        { id: 'injerto', nombre: 'Injerto (reconstrucción)', desde: 4, hasta: 6, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'],
+          subtipos: [
+            // Evans 2023, «Pearls and Other Issues»: «The average return to full activity
+            // and/or sports participation is estimated to be between 6 to 12 months after
+            // surgical reconstruction»; «the graft takes up to 18 months or more to become
+            // fully functional and incorporated». Logerstedt 2017 (guía JOSPT) no da plazos:
+            // al año, «no knee effusion, no knee instability, and … over 93% on the IKDC
+            // 2000» → «more than 14 times more likely to return to sports» (PLR = 14.54).
+            // 6–12 meses = «6m–1a» (6); hasta 18 meses o más = «2a» (7).
+            { id: 'rodilla_lca_reconstruido', nombre: 'Rodilla, LCA reconstruido', desde: 6, hasta: 7, fuentes: ['Evans 2023', 'Logerstedt 2017'],
+              nota: 'Vuelta a la actividad o al deporte a los 6–12 meses de media; el injerto puede tardar 18 meses o más en incorporarse del todo (Evans 2023). La guía JOSPT no fija plazos: al año, sin derrame, sin inestabilidad y con IKDC > 93 %, la vuelta al deporte es mucho más probable (Logerstedt 2017).' },
+          ] },
       ],
     },
     {
