@@ -572,7 +572,7 @@
     white-space: nowrap;
     line-height: 1.3;
   }
-  .tissue-th-label { width: 130px; min-width: 130px; }
+  .tissue-th-label { width: 200px; min-width: 200px; }
   .tissue-table tbody td {
     border: 1px solid var(--border);
     height: 28px;
@@ -595,12 +595,23 @@
     padding: 0 10px;
     white-space: nowrap;
   }
-  .tc-0 { background: rgba(251,146,60,0.2); }
-  .tc-1 { background: rgba(251,146,60,0.5); }
-  .tc-2 { background: rgba(225,80,45,0.55); }
-  .tc-3 { background: rgba(180,30,30,0.65); }
+  /* Gravedad: los mismos colores que el panel ⏱ de physiq-assessment */
+  .tg-minima   { background: rgba(251,146,60,0.30); }
+  .tg-leve     { background: rgba(251,146,60,0.60); }
+  .tg-moderada { background: rgba(232,89,52,0.75); }
+  .tg-grave    { background: rgba(196,38,38,0.90); }
+  .ts-nota { display: block; font-size: 10px; color: var(--text3); white-space: normal; line-height: 1.35; padding: 2px 0 4px; max-width: 240px; }
+  .ts-pendiente { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 9px; line-height: 1.5; color: #ffc048; border: 1px solid #ffc048; vertical-align: 1px; white-space: nowrap; }
+  .ts-leyenda { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-size: 12px; color: var(--text2); }
+  .ts-ley { display: inline-flex; align-items: center; gap: 6px; }
+  .ts-ley-muestra { width: 18px; height: 10px; border-radius: 3px; }
+  .ts-texto { margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--text2); }
+  .ts-pend-movil { display: none; }
+  .ts-notas { margin: 10px 0 0 1.1em; padding: 0; font-size: 12px; line-height: 1.5; color: var(--text2); }
+  .ts-notas li + li { margin-top: 3px; }
 
   .tissue-desktop { display: table; }
+  .tissue-desktop .ts-label { white-space: normal; }
   .tissue-mobile  { display: none; min-width: 0 !important; width: 100%; }
   .tissue-mobile th { width: 12.5%; }
   .tissue-mobile tbody td { height: 24px; border: 1px solid rgba(0,0,0,0.12); }
@@ -621,6 +632,7 @@
   @media (max-width: 767px) {
     .tissue-desktop { display: none; }
     .tissue-mobile  { display: table; }
+    .ts-pend-movil  { display: block; }
   }
 
   /* RECURSOS VIEW */
@@ -781,167 +793,12 @@
   <div class="tissue-wrap">
     <div class="tissue-scroll">
 
-      <!-- DESKTOP -->
-      <table class="tissue-table tissue-desktop">
-        <thead>
-          <tr>
-            <th class="tissue-th-label"></th>
-            <th>1&ndash;3<br>d&iacute;as</th>
-            <th>4&ndash;14<br>d&iacute;as</th>
-            <th>3&ndash;4<br>sem.</th>
-            <th>5&ndash;8<br>sem.</th>
-            <th>2&ndash;3<br>meses</th>
-            <th>3&ndash;6<br>meses</th>
-            <th>6m&ndash;<br>1 a&ntilde;o</th>
-            <th>2<br>a&ntilde;os</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="ts-section"><td colspan="9">Tend&oacute;n</td></tr>
-          <tr>
-            <td class="ts-label">Tendinopat&iacute;a / Ruptura</td>
-            <td></td><td></td>
-            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td>
-            <td></td><td></td>
-          </tr>
-
-          <tr class="ts-section"><td colspan="9">M&uacute;sculo</td></tr>
-          <tr>
-            <td class="ts-label">Dolor inducido por ejercicio</td>
-            <td class="tc-0"></td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td class="ts-label">Rotura G. I</td>
-            <td></td>
-            <td class="tc-1"></td><td class="tc-1"></td>
-            <td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td class="ts-label">Rotura G. II</td>
-            <td></td><td></td>
-            <td class="tc-2"></td><td class="tc-2"></td>
-            <td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td class="ts-label">Rotura G. III</td>
-            <td></td><td></td>
-            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-3"></td>
-            <td></td><td></td><td></td>
-          </tr>
-
-          <tr class="ts-section"><td colspan="9">Ligamento</td></tr>
-          <tr>
-            <td class="ts-label">Esguince G. I</td>
-            <td></td>
-            <td class="tc-1"></td><td class="tc-1"></td>
-            <td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td class="ts-label">Esguince G. II</td>
-            <td></td><td></td>
-            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td>
-            <td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td class="ts-label">Esguince G. III</td>
-            <td></td><td></td><td></td>
-            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-3"></td>
-            <td></td><td></td>
-          </tr>
-          <tr>
-            <td class="ts-label">Injerto</td>
-            <td></td><td></td><td></td><td></td>
-            <td class="tc-3"></td><td class="tc-3"></td><td class="tc-3"></td>
-            <td></td>
-          </tr>
-
-          <tr class="ts-section"><td colspan="9">Hueso</td></tr>
-          <tr>
-            <td class="ts-label">Fractura</td>
-            <td></td><td></td>
-            <td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td><td class="tc-2"></td>
-            <td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- MOBILE -->
-      <table class="tissue-table tissue-mobile">
-        <thead>
-          <tr>
-            <th>1&ndash;3<br>d&iacute;as</th>
-            <th>4&ndash;14<br>d&iacute;as</th>
-            <th>3&ndash;4<br>sem.</th>
-            <th>5&ndash;8<br>sem.</th>
-            <th>2&ndash;3<br>meses</th>
-            <th>3&ndash;6<br>meses</th>
-            <th>6m&ndash;<br>1 a&ntilde;o</th>
-            <th>2<br>a&ntilde;os</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="ts-section"><td colspan="8">Tend&oacute;n</td></tr>
-          <tr>
-            <td class="tc-e" colspan="2"></td>
-            <td class="tc-2 tc-label" colspan="4">Tendinopat&iacute;a / Ruptura</td>
-            <td class="tc-e" colspan="2"></td>
-          </tr>
-
-          <tr class="ts-section"><td colspan="8">M&uacute;sculo</td></tr>
-          <tr>
-            <td class="tc-0 tc-label">DOMS</td>
-            <td class="tc-e" colspan="7"></td>
-          </tr>
-          <tr>
-            <td class="tc-e"></td>
-            <td class="tc-1 tc-label" colspan="2">Rotura G. I</td>
-            <td class="tc-e" colspan="5"></td>
-          </tr>
-          <tr>
-            <td class="tc-e" colspan="2"></td>
-            <td class="tc-2 tc-label" colspan="2">Rotura G. II</td>
-            <td class="tc-e" colspan="4"></td>
-          </tr>
-          <tr>
-            <td class="tc-e" colspan="2"></td>
-            <td class="tc-3 tc-label" colspan="3">Rotura G. III</td>
-            <td class="tc-e" colspan="3"></td>
-          </tr>
-
-          <tr class="ts-section"><td colspan="8">Ligamento</td></tr>
-          <tr>
-            <td class="tc-e"></td>
-            <td class="tc-1 tc-label" colspan="2">Esguince G. I</td>
-            <td class="tc-e" colspan="5"></td>
-          </tr>
-          <tr>
-            <td class="tc-e" colspan="2"></td>
-            <td class="tc-2 tc-label" colspan="3">Esguince G. II</td>
-            <td class="tc-e" colspan="3"></td>
-          </tr>
-          <tr>
-            <td class="tc-e" colspan="3"></td>
-            <td class="tc-3 tc-label" colspan="3">Esguince G. III</td>
-            <td class="tc-e" colspan="2"></td>
-          </tr>
-          <tr>
-            <td class="tc-e" colspan="4"></td>
-            <td class="tc-3 tc-label" colspan="3">Injerto</td>
-            <td class="tc-e"></td>
-          </tr>
-
-          <tr class="ts-section"><td colspan="8">Hueso</td></tr>
-          <tr>
-            <td class="tc-e" colspan="2"></td>
-            <td class="tc-2 tc-label" colspan="4">Fractura</td>
-            <td class="tc-e" colspan="2"></td>
-          </tr>
-        </tbody>
-      </table>
-
+      <!-- Tablas de escritorio y móvil: las genera renderTissue() (app.js)
+           desde TISSUE_TIMES (data.js), para que no vuelvan a divergir -->
+      <table class="tissue-table tissue-desktop" id="tissue-desktop"></table>
+      <table class="tissue-table tissue-mobile" id="tissue-mobile"></table>
     </div>
-    <p class="tissue-source">Adaptado de Snyder-Mackler et al., &laquo;Developing Treatment Pathways&raquo;, 2012.</p>
+    <div id="tissue-extra"></div>
   </div>
 </div>
 
@@ -1112,8 +969,8 @@
   </div>
 </div>
 
-<script src="data.js?v=fb3acbfa55164ce25634e6582c9b47db45e91c5c"></script>
-<script src="app.js?v=fb3acbfa55164ce25634e6582c9b47db45e91c5c"></script>
+<script src="data.js?v=daf1ebb9dea87b400c4cb7f3bbae4b3b7570a379"></script>
+<script src="app.js?v=daf1ebb9dea87b400c4cb7f3bbae4b3b7570a379"></script>
 
 </body>
 </html>

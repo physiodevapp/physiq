@@ -411,3 +411,39 @@ try {
 } catch (_) {
   document.body.classList.add('in-hub');
 }
+
+// ─── TIEMPOS DE TEJIDO ────────────────────────────────────────────────────────────────────────
+// Las dos tablas (escritorio: nombre en columna; móvil: nombre dentro de la barra) salen de
+// TISSUE_TIMES (data.js). Antes estaban escritas a mano por separado y ya no coincidían.
+function renderTissue() {
+  const T = TISSUE_TIMES;
+  const n = T.cols.length;
+  const head = cols => `<thead><tr>${cols}${T.cols.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
+  const pend = f => (f.pendiente ? ' <span class="ts-pendiente">pendiente de fuente</span>' : '');
+  const vacias = k => (k > 0 ? `<td class="tc-e"${k > 1 ? ` colspan="${k}"` : ''}></td>` : '');
+
+  let desk = head('<th class="tissue-th-label"></th>') + '<tbody>';
+  let mob = head('') + '<tbody>';
+  for (const g of T.grupos) {
+    desk += `<tr class="ts-section"><td colspan="${n + 1}">${g.tejido}</td></tr>`;
+    mob += `<tr class="ts-section"><td colspan="${n}">${g.tejido}</td></tr>`;
+    for (const f of g.filas) {
+      const celdas = Array.from({ length: n }, (_, i) => `<td${i >= f.desde && i <= f.hasta ? ` class="tg-${f.g}"` : ''}></td>`).join('');
+      desk += `<tr><td class="ts-label">${f.nombre}${pend(f)}${f.nota ? `<span class="ts-nota">${f.nota}</span>` : ''}</td>${celdas}</tr>`;
+      const ancho = f.hasta - f.desde + 1;
+      mob += `<tr>${vacias(f.desde)}<td class="tg-${f.g} tc-label"${ancho > 1 ? ` colspan="${ancho}"` : ''}>${f.corto}${f.pendiente ? '*' : ''}</td>${vacias(n - 1 - f.hasta)}</tr>`;
+    }
+  }
+  document.getElementById('tissue-desktop').innerHTML = desk + '</tbody>';
+  document.getElementById('tissue-mobile').innerHTML = mob + '</tbody>';
+
+  const leyenda = Object.entries(T.gravedades).map(([k, v]) => `<span class="ts-ley"><span class="ts-ley-muestra tg-${k}"></span>${v}</span>`).join('');
+  const hayPend = T.grupos.some(g => g.filas.some(f => f.pendiente));
+  document.getElementById('tissue-extra').innerHTML =
+    `<div class="ts-leyenda">${leyenda}</div>`
+    + (hayPend ? '<p class="ts-texto ts-pend-movil">* Pendiente de fuente: el rango no sale de ninguna fuente leída.</p>' : '')
+    + `<p class="ts-texto">${T.fases}</p>`
+    + `<ul class="ts-notas">${T.notas.map(t => `<li>${t}</li>`).join('')}</ul>`
+    + T.fuentes.map(t => `<p class="tissue-source">${t}</p>`).join('');
+}
+renderTissue();

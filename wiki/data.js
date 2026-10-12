@@ -777,3 +777,45 @@ const SEARCH_QUERY_OVERRIDES = {
   'lu-047': 'leg length discrepancy measurement supine',
   'lu-048': 'trendelenburg test hip abductor weakness',
 };
+
+// ─── TIEMPOS DE TEJIDO ────────────────────────────────────────────────────────────────────────
+// Copia de physiq-assessment/data/tejidos.js (panel ⏱ «Tiempos de recuperación»): si cambias una
+// fila aquí, cámbiala también allí (y al revés). `desde`/`hasta` son índices de columna
+// (inclusive) de `cols`; `g` = gravedad (color, .tg-<g>); `corto` = nombre dentro de la barra en
+// móvil; `pendiente` = el rango no sale de ninguna fuente leída.
+const TISSUE_TIMES = {
+  cols: ['1–3<br>días', '4–14<br>días', '3–4<br>sem.', '5–8<br>sem.', '2–3<br>meses', '3–6<br>meses', '6m–<br>1 año', '2<br>años'],
+  gravedades: { minima: 'Mínima', leve: 'Leve', moderada: 'Moderada', grave: 'Grave / reconstrucción' },
+  grupos: [
+    { tejido: 'Tendón', filas: [
+      { nombre: 'Tendinopatía', corto: 'Tendinopatía', desde: 2, hasta: 5, g: 'moderada',
+        nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga.' },
+      { nombre: 'Rotura / reparación de tendón', corto: 'Rotura tendón', desde: 4, hasta: 6, g: 'grave', pendiente: true },
+    ] },
+    { tejido: 'Músculo', filas: [
+      { nombre: 'Dolor muscular tardío (DOMS)', corto: 'DOMS', desde: 0, hasta: 0, g: 'minima' },
+      { nombre: 'Rotura G. I', corto: 'Rotura G. I', desde: 1, hasta: 2, g: 'leve' },
+      { nombre: 'Rotura G. II', corto: 'Rotura G. II', desde: 2, hasta: 3, g: 'moderada' },
+      { nombre: 'Rotura G. III', corto: 'Rotura G. III', desde: 2, hasta: 4, g: 'grave' },
+    ] },
+    { tejido: 'Ligamento', filas: [
+      { nombre: 'Esguince G. I', corto: 'Esguince G. I', desde: 1, hasta: 2, g: 'leve' },
+      { nombre: 'Esguince G. II', corto: 'Esguince G. II', desde: 2, hasta: 4, g: 'moderada' },
+      { nombre: 'Esguince G. III', corto: 'Esguince G. III', desde: 3, hasta: 5, g: 'grave' },
+      { nombre: 'Injerto (reconstrucción)', corto: 'Injerto', desde: 4, hasta: 6, g: 'grave' },
+    ] },
+    { tejido: 'Hueso', filas: [
+      { nombre: 'Fractura', corto: 'Fractura', desde: 2, hasta: 5, g: 'moderada' },
+    ] },
+  ],
+  fases: 'Fases de reparación (orientativas, se solapan): inflamatoria, días 0–5 · proliferativa, de día 5 a semana 3 · remodelación, de semana 3 a 1 año. Modelo general de la cicatrización de heridas cutáneas: en tendón, ligamento y hueso los tiempos varían. En una incisión, la resistencia máxima llega hacia las 11–14 semanas y la cicatriz se queda en torno al 80 % de la resistencia original.',
+  notas: [
+    'Rangos orientativos: dependen de la edad, de las enfermedades y fármacos del paciente (diabetes, tabaco, corticoides…) y de la carga que se aplique.',
+    'El dolor y la función no siguen por fuerza el calendario del tejido: el paciente puede estar listo antes o seguir con síntomas después.',
+    'Paciente posquirúrgico: manda el protocolo del cirujano.',
+  ],
+  fuentes: [
+    'Filas: adaptado de Snyder-Mackler et al., «Developing Treatment Pathways», 2012 (probablemente cap. 3 de Andrews, Harrelson y Wilk, Physical Rehabilitation of the Injured Athlete, 4.ª ed., Elsevier, 2012; sin verificar).',
+    'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023).',
+  ],
+};
