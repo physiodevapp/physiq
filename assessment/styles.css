@@ -880,6 +880,23 @@
   .cluster-rule { font-size: 0.75rem; color: var(--text2); line-height: 1.5; }
   .cluster-box .test-source { margin: 4px 0 0; }
   .test-source .razon-ampliar { font-family: 'Outfit', sans-serif; white-space: nowrap; }
+  /* «Anatomía» del test (docs/anatomia-kenhub.md): enlaces a Kenhub bajo la fuente */
+  .test-anat { font-size: 0.72rem; color: var(--text3); line-height: 1.6; margin: -4px 0 10px; }
+  .test-anat-etq {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 1px;
+    text-transform: uppercase; margin-right: 2px;
+  }
+  .anat-enlace { color: var(--accent); white-space: nowrap; text-decoration: none; }
+  .anat-enlace:hover { text-decoration: underline; }
+  .anat-idioma {
+    font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.5px;
+    border: 1px solid currentColor; border-radius: 3px; padding: 0 3px; vertical-align: 1px; opacity: 0.8;
+  }
+  .razon-anatomia ul { list-style: none; padding: 0; margin: 0; }
+  .razon-anatomia li { padding: 2px 0; }
+  .in-hub .test-anat, .in-hub .razon-anatomia { display: none; }
+  @media (pointer: coarse) { .test-anat .anat-enlace { display: inline-block; padding: 6px 0; } }
+  @media print { .test-anat { display: none; } }
   .test-criterion {
     font-size: 0.78rem;
     color: var(--text3);
