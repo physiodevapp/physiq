@@ -431,10 +431,15 @@ function renderTissue() {
     // Cada fila y, debajo, sus subtipos (con sangría y la gravedad de la madre)
     for (const madre of g.filas) {
       for (const f of [madre, ...(madre.subtipos || []).map(st => ({ ...st, g: st.g || madre.g, sub: true }))]) {
-        const celdas = Array.from({ length: n }, (_, i) => `<td${i >= f.desde && i <= f.hasta ? ` class="tg-${f.g}"` : ''}></td>`).join('');
-        desk += `<tr${f.sub ? ' class="ts-sub"' : ''}><td class="ts-label">${f.nombre}${pend(f)}${f.nota ? `<span class="ts-nota">${f.nota}</span>` : ''}</td>${celdas}</tr>`;
+        // Qué mide la barra: relleno (tm-liso / tm-rayado / tm-contorno) y, si la medida lleva
+        // `marca`, una etiqueta tras el nombre (ver «Qué mide la barra» en la leyenda)
+        const m = T.medidas[f.mide] || {};
+        const rel = m.relleno ? ` tm-${m.relleno}` : '';
+        const marca = m.marca ? ` <span class="ts-marca">${m.marca}</span>` : '';
+        const celdas = Array.from({ length: n }, (_, i) => `<td${i >= f.desde && i <= f.hasta ? ` class="tg-${f.g}${rel}${i === f.desde ? ' tm-ini' : ''}${i === f.hasta ? ' tm-fin' : ''}"` : ''}></td>`).join('');
+        desk += `<tr${f.sub ? ' class="ts-sub"' : ''}><td class="ts-label">${f.nombre}${marca}${pend(f)}${f.nota ? `<span class="ts-nota">${f.nota}</span>` : ''}</td>${celdas}</tr>`;
         const ancho = f.hasta - f.desde + 1;
-        mob += `<tr${f.sub ? ' class="ts-sub"' : ''}>${vacias(f.desde)}<td class="tg-${f.g} tc-label"${ancho > 1 ? ` colspan="${ancho}"` : ''}>${f.corto}${f.pendiente ? '*' : ''}</td>${vacias(n - 1 - f.hasta)}</tr>`;
+        mob += `<tr${f.sub ? ' class="ts-sub"' : ''}>${vacias(f.desde)}<td class="tg-${f.g}${rel} tm-ini tm-fin tc-label"${ancho > 1 ? ` colspan="${ancho}"` : ''}>${f.corto}${f.pendiente ? '*' : ''}</td>${vacias(n - 1 - f.hasta)}</tr>`;
       }
     }
   }
@@ -445,6 +450,10 @@ function renderTissue() {
   const hayPend = T.grupos.some(g => g.filas.some(f => f.pendiente));
   document.getElementById('tissue-extra').innerHTML =
     `<div class="ts-leyenda">${leyenda}</div>`
+    + '<div class="ts-leyenda ts-leyenda-mide"><span class="ts-ley-titulo">Qué mide la barra:</span>'
+    + Object.values(T.medidas).filter(m => !m.marca).map(m => `<span class="ts-ley"><span class="ts-ley-muestra ts-ley-mide tm-${m.relleno} tm-ini tm-fin"></span>${m.etiqueta}</span>`).join('')
+    + Object.values(T.medidas).filter(m => m.marca).map(m => `<span class="ts-ley"><span class="ts-marca">${m.marca}</span>${m.etiqueta}</span>`).join('')
+    + '</div>'
     + (hayPend ? '<p class="ts-texto ts-pend-movil">* Pendiente de fuente: el rango no sale de ninguna fuente leída.</p>' : '')
     + '<div class="ts-fases-titulo">Fases de reparación</div><ul class="ts-fases">'
     + T.fases.map(f => `<li class="ts-fase ts-fase-${f.id}${f.parcial ? ' ts-fase-parcial' : ''}"><span class="ts-fase-muestra"></span><span>${f.nombre}</span><span class="ts-fase-rango">${f.rango}</span></li>`).join('')
