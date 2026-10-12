@@ -180,7 +180,57 @@ export const TIEMPOS_TEJIDO = {
     {
       id: 'hueso', tejido: 'Hueso',
       filas: [
-        { id: 'fractura', nombre: 'Fractura', desde: 2, hasta: 5, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
+        // Fase J, 4 (fracturas por localización): capítulos de StatPearls, PDF del usuario
+        // releídos enteros (2026-10). Dan sobre todo plazos de inmovilización, descarga o
+        // vuelta a la función, no de consolidación completa: lo dice cada nota.
+        //   Hermena y Slane 2025, «Prognosis»: estables sin cirugía, «return to their
+        //   baseline level of function within approximately 6 to 8 weeks»; con ORIF, «full
+        //   weight-bearing around 6 to 8 weeks postsurgery… full recovery may take longer».
+        //   Smidt y Massey 2023: zona 1, carga según tolerancia «over 3 to 6 weeks»; Jones,
+        //   «6 to 8 weeks of non-weight bearing»; «most acute, nondisplaced fractures… heal…
+        //   by 6 to 8 weeks»; zona 3, «up to 20 weeks».
+        //   Agrawal y Tiwari 2023: no desplazadas, «short leg walking cast for 4 to 6 weeks».
+        //   Seaman y Bergman 2026: extraarticulares, «10 to 12 weeks of immobilization»;
+        //   intraarticulares desplazadas, «recovery extending 12 to 18 months» (descarga de
+        //   8–12 semanas tras la cirugía, 6–8 sin ella).
+        //   Gheewala 2023: estrés, «immobilization, and protected weight bearing for a period
+        //   of six to eight weeks»; la traumática, sin plazo.
+        //   Mabrouk y Pilson 2026: sin cirugía, inmovilización «approximately 6 to 8 weeks»;
+        //   resistencia «until approximately 6 weeks… when early fracture healing is
+        //   expected»; tras la cirugía, sin plazo (no se pinta).
+        //   Malik y Herron 2023: sin cirugía, «radiographic healing… may take up to 12
+        //   weeks», «may not regain full function until 16 to 20 weeks or longer»; tras la
+        //   cirugía, 6 semanas sin carga y 6 de carga parcial.
+        //   Pencle y Varacallo 2023 (húmero proximal): sin plazo de consolidación; no se pinta.
+        // Semanas → columnas: 3–6 s = 2–3; 4–6 s = 2–3; 6–8 s = 3; 10–12 s = 4;
+        // 12 s → 16–20 s = 4–5; hasta 20 s = 4–5; 12–18 meses = 7.
+        { id: 'fractura', nombre: 'Fractura', desde: 2, hasta: 5, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
+          subtipos: [
+            { id: 'fx_tobillo_estable', nombre: 'Tobillo, estable sin cirugía', desde: 3, hasta: 3, fuentes: ['Hermena y Slane 2025'],
+              nota: 'Vuelta a la función previa hacia las 6–8 semanas, con carga progresiva según tolerancia.' },
+            { id: 'fx_tobillo_cirugia', nombre: 'Tobillo, operada (osteosíntesis)', desde: 3, hasta: 3, fuentes: ['Hermena y Slane 2025'],
+              nota: 'Carga completa hacia las 6–8 semanas de la cirugía; la recuperación completa tarda más (sin plazo en la fuente). Manda el protocolo del cirujano.' },
+            { id: 'fx_quinto_avulsion', nombre: '5.º metatarsiano, avulsión de la base (zona 1)', desde: 2, hasta: 3, fuentes: ['Smidt y Massey 2023'],
+              nota: 'Carga protegida (zapato rígido, bota o yeso de marcha), y carga según tolerancia a medida que cede el dolor, en 3–6 semanas.' },
+            { id: 'fx_quinto_jones', nombre: '5.º metatarsiano, Jones (zona 2) sin cirugía', desde: 3, hasta: 3, fuentes: ['Smidt y Massey 2023'],
+              nota: '6–8 semanas sin carga con yeso corto; la carga avanza según la consolidación en la radiografía. Mala vascularización: riesgo de retraso de consolidación.' },
+            { id: 'fx_quinto_estres', nombre: '5.º metatarsiano, diáfisis por estrés (zona 3)', desde: 4, hasta: 5, fuentes: ['Smidt y Massey 2023'],
+              nota: 'Consolidación lenta: hasta 20 semanas de inmovilización antes de verla en la radiografía, y aun así la seudoartrosis no es rara.' },
+            { id: 'fx_metatarsianos', nombre: 'Otros metatarsianos, no desplazadas', desde: 2, hasta: 3, fuentes: ['Agrawal y Tiwari 2023'],
+              nota: '4–6 semanas de bota o yeso de marcha (o 3 sin carga y 3 con yeso de marcha). Las de base y las centrales consolidan bien.' },
+            { id: 'fx_calcaneo_extra', nombre: 'Calcáneo, extraarticular', desde: 4, hasta: 4, fuentes: ['Seaman y Bergman 2026'],
+              nota: '10–12 semanas de inmovilización con yeso o férula; buen pronóstico.' },
+            { id: 'fx_calcaneo_intra', nombre: 'Calcáneo, intraarticular desplazada', desde: 7, hasta: 7, gravedad: 'grave', fuentes: ['Seaman y Bergman 2026'],
+              nota: 'Recuperación de 12–18 meses, con o sin cirugía; la mejoría se estanca hacia los 18 meses y a los 2 años la mayoría tiene secuelas. Descarga de 8–12 semanas tras la cirugía.' },
+            { id: 'fx_navicular_estres', nombre: 'Navicular, por estrés', desde: 3, hasta: 3, fuentes: ['Gheewala 2023'],
+              nota: '6–8 semanas de inmovilización y carga protegida. Riesgo de seudoartrosis y necrosis por su vascularización. La fractura traumática no tiene plazo en la fuente.' },
+            { id: 'fx_rotula_conservador', nombre: 'Rótula, sin cirugía', desde: 3, hasta: 3, fuentes: ['Mabrouk y Pilson 2026'],
+              nota: '6–8 semanas inmovilizada en extensión, con carga según tolerancia; movilidad activa desde la 1.ª–2.ª semana y fuerza contra resistencia hacia la 6.ª, cuando se espera la consolidación inicial. Tras la cirugía, sin plazo en la fuente.' },
+            { id: 'fx_meseta_conservador', nombre: 'Meseta tibial, sin cirugía', desde: 4, hasta: 5, fuentes: ['Malik y Herron 2023'],
+              nota: '6–8 semanas sin carga y 6 más de carga parcial; consolidación radiográfica hasta las 12 semanas y función completa a las 16–20 semanas o más.' },
+            { id: 'fx_meseta_cirugia', nombre: 'Meseta tibial, operada', desde: 4, hasta: 4, gravedad: 'grave', fuentes: ['Malik y Herron 2023'],
+              nota: '6 semanas sin carga y 6 de carga parcial; después, carga según tolerancia. La vuelta al deporte puede tardar meses. Manda el protocolo del cirujano.' },
+          ] },
       ],
     },
   ],
