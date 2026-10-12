@@ -801,7 +801,13 @@ const TISSUE_TIMES = {
       { mide: 'sinEspecificar', nombre: 'Tendinopatía', corto: 'Tendinopatía', desde: 2, hasta: 5, g: 'moderada',
         nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga.' },
       { mide: 'biologia', nombre: 'Rotura / reparación de tendón', corto: 'Rotura tendón', desde: 3, hasta: 7, g: 'grave',
-        nota: 'Biología de la curación: la remodelación empieza a las 6–8 semanas y dura 1–2 años; el tendón no suele recuperar del todo su resistencia. La vuelta a la actividad la marca el protocolo.' },
+        nota: 'Biología de la curación: la remodelación empieza a las 6–8 semanas y dura 1–2 años; el tendón no suele recuperar del todo su resistencia. La vuelta a la actividad la marca el protocolo.',
+        subtipos: [
+          { mide: 'proteccion', nombre: 'Aquiles, sin cirugía', corto: 'Aquiles', desde: 3, hasta: 4,
+            nota: 'Bota con alzas y carga progresiva; se retira la bota entre las 8 y las 12 semanas (programa funcional de Glazebrook y Rubinger). Rerrotura del 10–40 % en estudios antiguos; la evidencia más reciente no encuentra diferencia con la cirugía (Shamrock 2023).' },
+          { mide: 'deporte', nombre: 'Aquiles, reparado', corto: 'Aquiles, cirugía', desde: 6, hasta: 6,
+            nota: 'Ejercicio de bajo impacto los primeros 6 meses y de alto impacto después, hacia la vuelta al deporte. En deportistas profesionales, más del 30 % no vuelve a jugar. Manda el protocolo del cirujano (Shamrock 2023).' },
+        ] },
     ] },
     { tejido: 'Músculo', filas: [
       { mide: 'sinEspecificar', nombre: 'Dolor muscular tardío (DOMS)', corto: 'DOMS', desde: 0, hasta: 0, g: 'minima' },
@@ -923,6 +929,7 @@ const TISSUE_TIMES = {
     'Ligamentos de rodilla: Naqvi y Sherman, «Medial Collateral Ligament Knee Injury», StatPearls (act. 2023); Evans, Mabrouk y Nielson, «Anterior Cruciate Ligament Knee Injury», StatPearls (act. 2023); Logerstedt et al., J Orthop Sports Phys Ther 2017;47(11):A1–A47 (guía JOSPT).',
     'Menisco: Prill et al., «The formal EU-US Meniscus Rehabilitation 2024 Consensus… Part II», Knee Surg Sports Traumatol Arthrosc 2025;33(8):3014–3024; Logerstedt et al., J Orthop Sports Phys Ther 2018;48(2):A1–A50 (guía JOSPT de menisco y cartílago).',
     'Fracturas por localización (StatPearls): Hermena y Slane, «Ankle Fracture» (act. 2025); Smidt y Massey, «5th Metatarsal Fracture» (2023); Agrawal y Tiwari, «Metatarsal Fractures» (2023); Seaman y Bergman, «Calcaneus Fractures» (2026); Gheewala et al., «Tarsal Navicular Fractures» (2023); Mabrouk y Pilson, «Patellar Fractures» (2026); Malik et al., «Tibial Plateau Fractures» (2023). Plazos de inmovilización, descarga o vuelta a la función, no de consolidación completa.',
+    'Rotura del Aquiles: Shamrock, Dreyer y Varacallo, «Achilles Tendon Rupture», StatPearls (act. 2023).',
     'Fractura de estrés: Hoenig et al., Br J Sports Med 2023;57:427–432 (revisión sistemática y metaanálisis); Robertson y Wood, World J Orthop 2017;8(3):242–255; May y Marappa-Ganeshan, «Stress Fractures», StatPearls (act. 2023). Vuelta al deporte media, no consolidación.',
   ],
 };
