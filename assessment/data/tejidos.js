@@ -29,7 +29,8 @@
 //               anterior). Sirve para colocar la franja de fases y la línea «hoy».
 //   gravedades  { <id>: etiqueta }  — color de la barra (--tej-<id>, styles.css)
 //   grupos[]    { id, tejido, filas[] } — `id` lo usa el filtro del panel
-//     fila      { id, nombre, desde, hasta, gravedad, fuentes[], nota?, pendiente?, subtipos? }
+//     fila      { id, mide, nombre, desde, hasta, gravedad, fuentes[], nota?, pendiente?, subtipos? }
+//               `mide`: clave de `medidas`, qué mide la barra (obligatorio, también en subtipos)
 //               `desde`/`hasta` = índices de columna (inclusive)
 //     subtipos  opcional: [{ id, nombre, desde, hasta, gravedad?, fuentes[], nota?, pendiente? }]
 //               (misma forma que una fila; sin `gravedad`, la de la fila). Se
@@ -54,6 +55,19 @@ export const TIEMPOS_TEJIDO = {
     { etiqueta: '2 años', corta: '2a', hasta: 730 },
   ],
 
+  // Qué mide cada barra (campo `mide` de filas y subtipos; decisión del usuario, 2026-10):
+  // las fuentes dan plazos de cosas distintas y sin esto se comparaban barras que no son
+  // comparables. El color sigue siendo la gravedad; esto va en el relleno (`relleno`:
+  // liso, rayado o contorno) y, si no tiene relleno propio (`marca`), en una etiqueta tras
+  // el nombre.
+  medidas: {
+    deporte: { etiqueta: 'Vuelta al deporte o a la función', relleno: 'liso' },
+    proteccion: { etiqueta: 'Protección (inmovilización o descarga)', relleno: 'rayado' },
+    programa: { etiqueta: 'Duración del programa de tratamiento', relleno: 'contorno' },
+    biologia: { etiqueta: 'Biología de la reparación', relleno: 'liso', marca: 'biología' },
+    sinEspecificar: { etiqueta: 'Sin especificar en la fuente', relleno: 'liso', marca: 'sin especificar' },
+  },
+
   gravedades: {
     minima: 'Mínima',
     leve: 'Leve',
@@ -66,7 +80,7 @@ export const TIEMPOS_TEJIDO = {
       id: 'tendon', tejido: 'Tendón',
       filas: [
         {
-          id: 'tendinopatia', nombre: 'Tendinopatía', desde: 2, hasta: 5, gravedad: 'moderada',
+          id: 'tendinopatia', mide: 'sinEspecificar', nombre: 'Tendinopatía', desde: 2, hasta: 5, gravedad: 'moderada',
           fuentes: ['Snyder-Mackler 2012'],
           nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga. En la fuente comparte fila con la rotura.',
         },
@@ -75,7 +89,7 @@ export const TIEMPOS_TEJIDO = {
           // weeks after injury and takes around one to two years, depending on the age and
           // condition of the patient»; «The healed tendon does not usually regain the
           // mechanical properties of the uninjured tissue».
-          id: 'tendon_rotura', nombre: 'Rotura / reparación de tendón', desde: 3, hasta: 7, gravedad: 'grave',
+          id: 'tendon_rotura', mide: 'biologia', nombre: 'Rotura / reparación de tendón', desde: 3, hasta: 7, gravedad: 'grave',
           fuentes: ['Wu 2017'],
           nota: 'Biología de la curación: la remodelación empieza a las 6–8 semanas y dura 1–2 años; el tendón no suele recuperar del todo su resistencia. La vuelta a la actividad la marca el protocolo.',
         },
@@ -84,10 +98,10 @@ export const TIEMPOS_TEJIDO = {
     {
       id: 'musculo', tejido: 'Músculo',
       filas: [
-        { id: 'doms', nombre: 'Dolor muscular tardío (DOMS)', desde: 0, hasta: 0, gravedad: 'minima', fuentes: ['Snyder-Mackler 2012'] },
-        { id: 'musculo_g1', nombre: 'Rotura grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'] },
-        { id: 'musculo_g2', nombre: 'Rotura grado II', desde: 2, hasta: 3, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
-        { id: 'musculo_g3', nombre: 'Rotura grado III', desde: 2, hasta: 4, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'] },
+        { id: 'doms', mide: 'sinEspecificar', nombre: 'Dolor muscular tardío (DOMS)', desde: 0, hasta: 0, gravedad: 'minima', fuentes: ['Snyder-Mackler 2012'] },
+        { id: 'musculo_g1', mide: 'sinEspecificar', nombre: 'Rotura grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'] },
+        { id: 'musculo_g2', mide: 'sinEspecificar', nombre: 'Rotura grado II', desde: 2, hasta: 3, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
+        { id: 'musculo_g3', mide: 'sinEspecificar', nombre: 'Rotura grado III', desde: 2, hasta: 4, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'] },
       ],
     },
     {
@@ -104,36 +118,36 @@ export const TIEMPOS_TEJIDO = {
         // continue to experience pain 1 year or more after the LAS».
         // Semanas → columnas: 1–2 s = «4–14 d» (1); 3–6 s = «3–4 s» y «5–8 s» (2–3);
         // 6–12 s = «5–8 s» y «2–3 m» (3–4); 12–16 s = «2–3 m» y «3–6 m» (4–5).
-        { id: 'ligamento_g1', nombre: 'Esguince grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'ligamento_g1', mide: 'sinEspecificar', nombre: 'Esguince grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'],
           subtipos: [
-            { id: 'tobillo_lateral_g1', nombre: 'Tobillo, ligamento lateral', desde: 1, hasta: 1, fuentes: ['Bergman 2025'],
+            { id: 'tobillo_lateral_g1', mide: 'deporte', nombre: 'Tobillo, ligamento lateral', desde: 1, hasta: 1, fuentes: ['Bergman 2025'],
               nota: '1–2 semanas con movilización precoz y rehabilitación funcional.' },
             // Fase J, 2 (rodilla): Naqvi y Sherman 2023, «Treatment / Management»: «Patients
             // with grade I injuries typically can return to play within ten to 14 days»; el
             // grado II «more variable timelines» (por criterios) y el grado III sin plazo:
             // no se pintan. 10–14 días = «4–14 d» (1).
-            { id: 'rodilla_lcm_g1', nombre: 'Rodilla, ligamento colateral medial', desde: 1, hasta: 1, fuentes: ['Naqvi y Sherman 2023'],
+            { id: 'rodilla_lcm_g1', mide: 'deporte', nombre: 'Rodilla, ligamento colateral medial', desde: 1, hasta: 1, fuentes: ['Naqvi y Sherman 2023'],
               nota: 'Vuelta al deporte en 10–14 días con tratamiento conservador. Los grados II y III no tienen plazo en la fuente: se decide por criterios (fuerza igual en las dos piernas y sin dolor al valgo).' },
           ] },
-        { id: 'ligamento_g2', nombre: 'Esguince grado II', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'ligamento_g2', mide: 'sinEspecificar', nombre: 'Esguince grado II', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
           subtipos: [
-            { id: 'tobillo_lateral_g2', nombre: 'Tobillo, ligamento lateral', desde: 2, hasta: 3, fuentes: ['Bergman 2025', 'Vuurberg 2018'],
+            { id: 'tobillo_lateral_g2', mide: 'deporte', nombre: 'Tobillo, ligamento lateral', desde: 2, hasta: 3, fuentes: ['Bergman 2025', 'Vuurberg 2018'],
               nota: '3–6 semanas (Bergman 2025). La guía de Vuurberg 2018 junta la rotura parcial y la total: vuelta completa al trabajo y al deporte a las 6–8 semanas, según la tarea.' },
           ] },
-        { id: 'ligamento_g3', nombre: 'Esguince grado III', desde: 3, hasta: 5, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'ligamento_g3', mide: 'sinEspecificar', nombre: 'Esguince grado III', desde: 3, hasta: 5, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'],
           subtipos: [
-            { id: 'tobillo_lateral_g3', nombre: 'Tobillo, ligamento lateral', desde: 3, hasta: 4, fuentes: ['Bergman 2025', 'Martin 2021'],
+            { id: 'tobillo_lateral_g3', mide: 'deporte', nombre: 'Tobillo, ligamento lateral', desde: 3, hasta: 4, fuentes: ['Bergman 2025', 'Martin 2021'],
               nota: '6–12 semanas o más; a veces cirugía por inestabilidad persistente. Un 5–33 % sigue con dolor al año (Martin 2021).' },
-            { id: 'tobillo_lateral_cirugia', nombre: 'Tobillo, reparación quirúrgica', desde: 4, hasta: 5, fuentes: ['Vuurberg 2018', 'Bergman 2025'],
+            { id: 'tobillo_lateral_cirugia', mide: 'deporte', nombre: 'Tobillo, reparación quirúrgica', desde: 4, hasta: 5, fuentes: ['Vuurberg 2018', 'Bergman 2025'],
               nota: 'Vuelta al trabajo físico y al deporte a las 12–16 semanas (Vuurberg 2018); unos 3–4 meses según Bergman 2025. Manda el protocolo del cirujano.' },
             // Evans 2023, «Non-operative management»: «an acute symptomatic treatment followed
             // by 12 weeks of supervised physiotherapy» (baja demanda, sin pivotes, roturas
             // parciales). Es la duración del programa, no un plazo de cicatrización: el
             // ligamento roto no cicatriza. Fase aguda + 12 semanas ≈ «3–4 s» a «2–3 m» (2–4).
-            { id: 'rodilla_lca_conservador', nombre: 'Rodilla, LCA sin cirugía', desde: 2, hasta: 4, fuentes: ['Evans 2023'],
+            { id: 'rodilla_lca_conservador', mide: 'programa', nombre: 'Rodilla, LCA sin cirugía', desde: 2, hasta: 4, fuentes: ['Evans 2023'],
               nota: 'No es un plazo de cicatrización: tras la fase aguda, 12 semanas de fisioterapia supervisada. Indicado en baja demanda, deportes sin giros ni saltos y roturas parciales.' },
           ] },
-        { id: 'injerto', nombre: 'Injerto (reconstrucción)', desde: 4, hasta: 6, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'injerto', mide: 'sinEspecificar', nombre: 'Injerto (reconstrucción)', desde: 4, hasta: 6, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'],
           subtipos: [
             // Evans 2023, «Pearls and Other Issues»: «The average return to full activity
             // and/or sports participation is estimated to be between 6 to 12 months after
@@ -142,7 +156,7 @@ export const TIEMPOS_TEJIDO = {
             // al año, «no knee effusion, no knee instability, and … over 93% on the IKDC
             // 2000» → «more than 14 times more likely to return to sports» (PLR = 14.54).
             // 6–12 meses = «6m–1a» (6); hasta 18 meses o más = «2a» (7).
-            { id: 'rodilla_lca_reconstruido', nombre: 'Rodilla, LCA reconstruido', desde: 6, hasta: 7, fuentes: ['Evans 2023', 'Logerstedt 2017'],
+            { id: 'rodilla_lca_reconstruido', mide: 'deporte', nombre: 'Rodilla, LCA reconstruido', desde: 6, hasta: 7, fuentes: ['Evans 2023', 'Logerstedt 2017'],
               nota: 'Vuelta a la actividad o al deporte a los 6–12 meses de media; el injerto puede tardar 18 meses o más en incorporarse del todo (Evans 2023). La guía JOSPT no fija plazos: al año, sin derrame, sin inestabilidad y con IKDC > 93 %, la vuelta al deporte es mucho más probable (Logerstedt 2017).' },
           ] },
       ],
@@ -167,13 +181,13 @@ export const TIEMPOS_TEJIDO = {
       // 4–12 sem = «3–4 s» a «2–3 m» (2–4); 6–9 meses = «6m–1a» (6).
       id: 'menisco', tejido: 'Menisco',
       filas: [
-        { id: 'menisco_traumatica_conservador', nombre: 'Rotura traumática, sin cirugía', desde: 4, hasta: 4, gravedad: 'moderada', fuentes: ['Prill 2025'],
+        { id: 'menisco_traumatica_conservador', mide: 'programa', nombre: 'Rotura traumática, sin cirugía', desde: 4, hasta: 4, gravedad: 'moderada', fuentes: ['Prill 2025'],
           nota: 'No es un plazo de cicatrización: 12 semanas de ejercicio neuromuscular supervisado, con resultados parecidos a la cirugía en rodilla estable (grado B). Las roturas de la raíz o radiales agudas pueden beneficiarse de cirugía precoz.' },
-        { id: 'menisco_degenerativa_conservador', nombre: 'Lesión degenerativa, sin cirugía', desde: 5, hasta: 5, gravedad: 'moderada', fuentes: ['Prill 2025'],
+        { id: 'menisco_degenerativa_conservador', mide: 'programa', nombre: 'Lesión degenerativa, sin cirugía', desde: 5, hasta: 5, gravedad: 'moderada', fuentes: ['Prill 2025'],
           nota: 'La fisioterapia es el primer tratamiento (grado A): 3–6 meses antes de plantear la cirugía si persisten los síntomas.' },
-        { id: 'menisco_meniscectomia', nombre: 'Meniscectomía parcial', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Prill 2025', 'Logerstedt 2018'],
+        { id: 'menisco_meniscectomia', mide: 'deporte', nombre: 'Meniscectomía parcial', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Prill 2025', 'Logerstedt 2018'],
           nota: 'Vuelta al deporte a las 4–12 semanas (Prill 2025, grado C): antes de 2 meses en menores de 30 años o deportistas de élite, hacia los 3 meses en mayores de 30 (Logerstedt 2018). Los déficits de fuerza y función pueden tardar hasta 2 años en resolverse.' },
-        { id: 'menisco_sutura', nombre: 'Sutura (reparación)', desde: 6, hasta: 6, gravedad: 'grave', fuentes: ['Prill 2025', 'Logerstedt 2018'],
+        { id: 'menisco_sutura', mide: 'deporte', nombre: 'Sutura (reparación)', desde: 6, hasta: 6, gravedad: 'grave', fuentes: ['Prill 2025', 'Logerstedt 2018'],
           nota: 'Vuelta al deporte a los 6–9 meses (Prill 2025, grado C; en los estudios, de 3,3 a 10 meses). Carga y vuelta a la actividad progresivas y precoces (Logerstedt 2018, grado C). Manda el protocolo del cirujano.' },
       ],
     },
@@ -204,31 +218,31 @@ export const TIEMPOS_TEJIDO = {
         //   Pencle y Varacallo 2023 (húmero proximal): sin plazo de consolidación; no se pinta.
         // Semanas → columnas: 3–6 s = 2–3; 4–6 s = 2–3; 6–8 s = 3; 10–12 s = 4;
         // 12 s → 16–20 s = 4–5; hasta 20 s = 4–5; 12–18 meses = 7.
-        { id: 'fractura', nombre: 'Fractura', desde: 2, hasta: 5, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'fractura', mide: 'sinEspecificar', nombre: 'Fractura', desde: 2, hasta: 5, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
           subtipos: [
-            { id: 'fx_tobillo_estable', nombre: 'Tobillo, estable sin cirugía', desde: 3, hasta: 3, fuentes: ['Hermena y Slane 2025'],
+            { id: 'fx_tobillo_estable', mide: 'deporte', nombre: 'Tobillo, estable sin cirugía', desde: 3, hasta: 3, fuentes: ['Hermena y Slane 2025'],
               nota: 'Vuelta a la función previa hacia las 6–8 semanas, con carga progresiva según tolerancia.' },
-            { id: 'fx_tobillo_cirugia', nombre: 'Tobillo, operada (osteosíntesis)', desde: 3, hasta: 3, fuentes: ['Hermena y Slane 2025'],
+            { id: 'fx_tobillo_cirugia', mide: 'proteccion', nombre: 'Tobillo, operada (osteosíntesis)', desde: 3, hasta: 3, fuentes: ['Hermena y Slane 2025'],
               nota: 'Carga completa hacia las 6–8 semanas de la cirugía; la recuperación completa tarda más (sin plazo en la fuente). Manda el protocolo del cirujano.' },
-            { id: 'fx_quinto_avulsion', nombre: '5.º metatarsiano, avulsión de la base (zona 1)', desde: 2, hasta: 3, fuentes: ['Smidt y Massey 2023'],
+            { id: 'fx_quinto_avulsion', mide: 'proteccion', nombre: '5.º metatarsiano, avulsión de la base (zona 1)', desde: 2, hasta: 3, fuentes: ['Smidt y Massey 2023'],
               nota: 'Carga protegida (zapato rígido, bota o yeso de marcha), y carga según tolerancia a medida que cede el dolor, en 3–6 semanas.' },
-            { id: 'fx_quinto_jones', nombre: '5.º metatarsiano, Jones (zona 2) sin cirugía', desde: 3, hasta: 3, fuentes: ['Smidt y Massey 2023'],
+            { id: 'fx_quinto_jones', mide: 'proteccion', nombre: '5.º metatarsiano, Jones (zona 2) sin cirugía', desde: 3, hasta: 3, fuentes: ['Smidt y Massey 2023'],
               nota: '6–8 semanas sin carga con yeso corto; la carga avanza según la consolidación en la radiografía. Mala vascularización: riesgo de retraso de consolidación.' },
-            { id: 'fx_quinto_estres', nombre: '5.º metatarsiano, diáfisis por estrés (zona 3)', desde: 4, hasta: 5, fuentes: ['Smidt y Massey 2023'],
+            { id: 'fx_quinto_estres', mide: 'proteccion', nombre: '5.º metatarsiano, diáfisis por estrés (zona 3)', desde: 4, hasta: 5, fuentes: ['Smidt y Massey 2023'],
               nota: 'Consolidación lenta: hasta 20 semanas de inmovilización antes de verla en la radiografía, y aun así la seudoartrosis no es rara.' },
-            { id: 'fx_metatarsianos', nombre: 'Otros metatarsianos, no desplazadas', desde: 2, hasta: 3, fuentes: ['Agrawal y Tiwari 2023'],
+            { id: 'fx_metatarsianos', mide: 'proteccion', nombre: 'Otros metatarsianos, no desplazadas', desde: 2, hasta: 3, fuentes: ['Agrawal y Tiwari 2023'],
               nota: '4–6 semanas de bota o yeso de marcha (o 3 sin carga y 3 con yeso de marcha). Las de base y las centrales consolidan bien.' },
-            { id: 'fx_calcaneo_extra', nombre: 'Calcáneo, extraarticular', desde: 4, hasta: 4, fuentes: ['Seaman y Bergman 2026'],
+            { id: 'fx_calcaneo_extra', mide: 'proteccion', nombre: 'Calcáneo, extraarticular', desde: 4, hasta: 4, fuentes: ['Seaman y Bergman 2026'],
               nota: '10–12 semanas de inmovilización con yeso o férula; buen pronóstico.' },
-            { id: 'fx_calcaneo_intra', nombre: 'Calcáneo, intraarticular desplazada', desde: 7, hasta: 7, gravedad: 'grave', fuentes: ['Seaman y Bergman 2026'],
+            { id: 'fx_calcaneo_intra', mide: 'deporte', nombre: 'Calcáneo, intraarticular desplazada', desde: 7, hasta: 7, gravedad: 'grave', fuentes: ['Seaman y Bergman 2026'],
               nota: 'Recuperación de 12–18 meses, con o sin cirugía; la mejoría se estanca hacia los 18 meses y a los 2 años la mayoría tiene secuelas. Descarga de 8–12 semanas tras la cirugía.' },
-            { id: 'fx_navicular_estres', nombre: 'Navicular, por estrés', desde: 3, hasta: 3, fuentes: ['Gheewala 2023'],
+            { id: 'fx_navicular_estres', mide: 'proteccion', nombre: 'Navicular, por estrés', desde: 3, hasta: 3, fuentes: ['Gheewala 2023'],
               nota: '6–8 semanas de inmovilización y carga protegida. Riesgo de seudoartrosis y necrosis por su vascularización. La fractura traumática no tiene plazo en la fuente.' },
-            { id: 'fx_rotula_conservador', nombre: 'Rótula, sin cirugía', desde: 3, hasta: 3, fuentes: ['Mabrouk y Pilson 2026'],
+            { id: 'fx_rotula_conservador', mide: 'proteccion', nombre: 'Rótula, sin cirugía', desde: 3, hasta: 3, fuentes: ['Mabrouk y Pilson 2026'],
               nota: '6–8 semanas inmovilizada en extensión, con carga según tolerancia; movilidad activa desde la 1.ª–2.ª semana y fuerza contra resistencia hacia la 6.ª, cuando se espera la consolidación inicial. Tras la cirugía, sin plazo en la fuente.' },
-            { id: 'fx_meseta_conservador', nombre: 'Meseta tibial, sin cirugía', desde: 4, hasta: 5, fuentes: ['Malik y Herron 2023'],
+            { id: 'fx_meseta_conservador', mide: 'deporte', nombre: 'Meseta tibial, sin cirugía', desde: 4, hasta: 5, fuentes: ['Malik y Herron 2023'],
               nota: '6–8 semanas sin carga y 6 más de carga parcial; consolidación radiográfica hasta las 12 semanas y función completa a las 16–20 semanas o más.' },
-            { id: 'fx_meseta_cirugia', nombre: 'Meseta tibial, operada', desde: 4, hasta: 4, gravedad: 'grave', fuentes: ['Malik y Herron 2023'],
+            { id: 'fx_meseta_cirugia', mide: 'proteccion', nombre: 'Meseta tibial, operada', desde: 4, hasta: 4, gravedad: 'grave', fuentes: ['Malik y Herron 2023'],
               nota: '6 semanas sin carga y 6 de carga parcial; después, carga según tolerancia. La vuelta al deporte puede tardar meses. Manda el protocolo del cirujano.' },
           ] },
         // Fase J, 5 (fractura de estrés): PDF del usuario leídos enteros (2026-10).
@@ -245,28 +259,28 @@ export const TIEMPOS_TEJIDO = {
         // bearing for a period of 2 to 6 weeks, and then gradual reintroduction of activity».
         // Días → columnas: 44 y 56 = «5–8 s» (3); 77–86 = «2–3 m» (4); 106–127 = «3–6 m» (5);
         // 7 meses = «6m–1a» (6).
-        { id: 'fractura_estres', nombre: 'Fractura de estrés', desde: 3, hasta: 6, gravedad: 'moderada', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017', 'May y Marappa-Ganeshan 2023'],
+        { id: 'fractura_estres', mide: 'deporte', nombre: 'Fractura de estrés', desde: 3, hasta: 6, gravedad: 'moderada', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017', 'May y Marappa-Ganeshan 2023'],
           nota: 'Vuelta al deporte de media: de 6 semanas a 4 meses según la localización, y unos 7 meses en la tibia anterior. En las de bajo riesgo, 2–6 semanas de reposo relativo o descarga y vuelta gradual; las de alto riesgo, a traumatología.',
           subtipos: [
-            { id: 'estres_tibia_posteromedial', nombre: 'Tibia posteromedial (bajo riesgo)', desde: 3, hasta: 3, fuentes: ['Hoenig 2023'],
+            { id: 'estres_tibia_posteromedial', mide: 'deporte', nombre: 'Tibia posteromedial (bajo riesgo)', desde: 3, hasta: 3, fuentes: ['Hoenig 2023'],
               nota: 'Vuelta al deporte a los 44 días de media; la más rápida y con menos complicaciones (2 %).' },
-            { id: 'estres_perone', nombre: 'Peroné (bajo riesgo)', desde: 3, hasta: 3, fuentes: ['Hoenig 2023'],
+            { id: 'estres_perone', mide: 'deporte', nombre: 'Peroné (bajo riesgo)', desde: 3, hasta: 3, fuentes: ['Hoenig 2023'],
               nota: 'Vuelta al deporte a los 56 días de media (con mucha variación entre estudios).' },
-            { id: 'estres_pubis', nombre: 'Pubis (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
+            { id: 'estres_pubis', mide: 'deporte', nombre: 'Pubis (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
               nota: 'Vuelta al deporte a los 77 días de media.' },
-            { id: 'estres_metatarsianos', nombre: 'Metatarsianos 1.º–4.º (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
+            { id: 'estres_metatarsianos', mide: 'deporte', nombre: 'Metatarsianos 1.º–4.º (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
               nota: 'Vuelta al deporte a los 78 días de media; el 96 % vuelve.' },
-            { id: 'estres_femur_diafisis', nombre: 'Diáfisis femoral (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
+            { id: 'estres_femur_diafisis', mide: 'deporte', nombre: 'Diáfisis femoral (bajo riesgo)', desde: 4, hasta: 4, fuentes: ['Hoenig 2023'],
               nota: 'Vuelta al deporte a los 86 días de media.' },
-            { id: 'estres_quinto', nombre: '5.º metatarsiano (alto riesgo)', desde: 4, hasta: 4, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
+            { id: 'estres_quinto', mide: 'deporte', nombre: '5.º metatarsiano (alto riesgo)', desde: 4, hasta: 4, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
               nota: 'Vuelta al deporte a los 82 días de media; complicaciones en el 16,5 %. Alto riesgo por retraso de consolidación y seudoartrosis.' },
-            { id: 'estres_maleolo_medial', nombre: 'Maléolo medial (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
+            { id: 'estres_maleolo_medial', mide: 'deporte', nombre: 'Maléolo medial (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
               nota: 'Vuelta al deporte a los 106 días de media.' },
-            { id: 'estres_cuello_femoral', nombre: 'Cuello femoral (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
+            { id: 'estres_cuello_femoral', mide: 'deporte', nombre: 'Cuello femoral (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
               nota: 'Vuelta al deporte a los 107 días de media, pero solo vuelve el 55 %; complicaciones en el 43 %. Desplazada, riesgo de necrosis de la cabeza femoral: a traumatología sin demora.' },
-            { id: 'estres_navicular', nombre: 'Navicular (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
+            { id: 'estres_navicular', mide: 'deporte', nombre: 'Navicular (alto riesgo)', desde: 5, hasta: 5, gravedad: 'grave', fuentes: ['Hoenig 2023', 'Robertson y Wood 2017'],
               nota: 'Vuelta al deporte a los 127 días de media, la más lenta; vuelve el 83 %. (Inmovilización, 6–8 semanas: ver «Fractura».)' },
-            { id: 'estres_tibia_anterior', nombre: 'Tibia anterior (alto riesgo)', desde: 6, hasta: 6, gravedad: 'grave', fuentes: ['Robertson y Wood 2017', 'Hoenig 2023'],
+            { id: 'estres_tibia_anterior', mide: 'deporte', nombre: 'Tibia anterior (alto riesgo)', desde: 6, hasta: 6, gravedad: 'grave', fuentes: ['Robertson y Wood 2017', 'Hoenig 2023'],
               nota: 'Vuelta al deporte a los 7 meses, con o sin cirugía (Robertson y Wood 2017); vuelve el 75,5 % y hay complicaciones en el 41 % (Hoenig 2023).' },
           ] },
       ],

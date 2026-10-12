@@ -57,13 +57,18 @@ const lineaHoy = hoy => (hoy ? `<span class="tej-hoy" style="left:${pct(hoy.pos)
 
 // Una fila (o un subtipo) del diagrama: nombre, nota, «pendiente de fuente» y la
 // barra en su columna. `gravedad` por defecto: la de la fila madre.
-function filaHTML(f, { columnas, hoy, pendienteChip, gravedad = f.gravedad, clase = '' }) {
+// Qué mide la barra (`mide`, clave de `medidas`): el relleno (liso, rayado, contorno) y,
+// si la medida lleva `marca`, una etiqueta tras el nombre.
+function filaHTML(f, { columnas, hoy, pendienteChip, medidas = {}, gravedad = f.gravedad, clase = '' }) {
   const n = columnas.length;
   const rango = rangoTexto(f, columnas);
-  return `<div class="tej-fila${clase}" data-tejido="${esc(f.id)}"><div class="tej-nombre">${esc(f.nombre)}${f.pendiente ? ` ${pendienteChip}` : ''}`
+  const m = medidas[f.mide] || {};
+  const marca = m.marca ? ` <span class="tej-marca" data-mide="${esc(f.mide)}">${esc(m.marca)}</span>` : '';
+  const que = m.etiqueta ? ` (${m.etiqueta.toLowerCase()})` : '';
+  return `<div class="tej-fila${clase}" data-tejido="${esc(f.id)}"><div class="tej-nombre">${esc(f.nombre)}${marca}${f.pendiente ? ` ${pendienteChip}` : ''}`
     + `${f.nota ? `<span class="tej-nota">${esc(f.nota)}</span>` : ''}</div>`
     + `<div class="tej-pista" style="--tej-n:${n}">`
-    + `<span class="tej-barra tej-${esc(gravedad)}" style="grid-column:${f.desde + 1} / ${f.hasta + 2}" role="img" aria-label="${esc(`${f.nombre}: ${rango}`)}" title="${esc(rango)}"></span>`
+    + `<span class="tej-barra tej-${esc(gravedad)}${m.relleno ? ` tej-relleno-${esc(m.relleno)}` : ''}" data-mide="${esc(f.mide || '')}" style="grid-column:${f.desde + 1} / ${f.hasta + 2}" role="img" aria-label="${esc(`${f.nombre}: ${rango}${que}`)}" title="${esc(rango + que)}"></span>`
     + `${lineaHoy(hoy)}</div></div>`;
 }
 
@@ -79,7 +84,7 @@ export function gruposVisibles(grupos, filtro) {
 // el suyo, o 'todos' si ya era el activo); abrirTiemposTejido() (app.js)
 // vuelve a pintar con el filtro elegido.
 export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false, filtro = 'todos' } = {}) {
-  const { columnas, gravedades, grupos, fases, fasesNota, notas, fuente, fasesFuente } = datos;
+  const { columnas, gravedades, medidas = {}, grupos, fases, fasesNota, notas, fuente, fasesFuente } = datos;
   const n = columnas.length;
   const hoy = posquirurgico ? marcaHoy(semanas, columnas) : null;
   const pendienteChip = '<span class="tej-pendiente">pendiente de fuente</span>';
@@ -115,7 +120,7 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
       + `<span class="tej-fase-nombre">${esc(f.nombre)}</span><span class="tej-fase-rango">${rangoFase(f.desdeDia, f.hastaDia)}</span></li>`).join('')
     + '</ul></div>';
 
-  const ctx = { columnas, hoy, pendienteChip };
+  const ctx = { columnas, hoy, pendienteChip, medidas };
   const cuerpo = gruposVisibles(grupos, activo).map(g => `<div class="tej-bloque" data-grupo="${esc(g.id)}">`
     // El título del grupo también filtra (o vuelve a «Todos» si ya es el filtrado)
     + `<button type="button" class="tej-grupo" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(activo === g.id ? 'todos' : g.id)}" title="${esc(activo === g.id ? 'Ver todos los tejidos' : `Ver solo ${g.tejido.toLowerCase()}`)}">${esc(g.tejido)}</button>`
@@ -129,7 +134,16 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
 
   const leyenda = `<div class="tej-leyenda">`
     + Object.entries(gravedades).map(([k, v]) => `<span class="tej-ley"><span class="tej-ley-muestra tej-${esc(k)}"></span>${esc(v)}</span>`).join('')
-    + `</div><p class="tej-fases-texto">Las fases de reparación son orientativas y se solapan.${fasesNota ? ` ${esc(fasesNota)}` : ''}</p>`;
+    + `</div>`
+    // Qué mide la barra: una muestra por relleno, en color neutro (el color es la gravedad);
+    // las medidas sin relleno propio se nombran por su etiqueta tras el nombre de la fila.
+    + (Object.keys(medidas).length
+      ? `<div class="tej-leyenda tej-leyenda-mide"><span class="tej-ley-titulo">Qué mide la barra:</span>`
+        + Object.entries(medidas).filter(([, m]) => !m.marca).map(([k, m]) => `<span class="tej-ley"><span class="tej-ley-muestra tej-ley-mide tej-relleno-${esc(m.relleno)}" data-mide="${esc(k)}"></span>${esc(m.etiqueta)}</span>`).join('')
+        + Object.entries(medidas).filter(([, m]) => m.marca).map(([k, m]) => `<span class="tej-ley"><span class="tej-marca" data-mide="${esc(k)}">${esc(m.marca)}</span>${esc(m.etiqueta)}</span>`).join('')
+        + '</div>'
+      : '')
+    + `<p class="tej-fases-texto">Las fases de reparación son orientativas y se solapan.${fasesNota ? ` ${esc(fasesNota)}` : ''}</p>`;
 
   const ayudaHoy = hoy
     ? `<p class="tej-hoy-texto"><span class="tej-hoy-muestra"></span>${esc(hoy.texto)}. Semanas de la tarjeta «Cirugía» (fase 1).</p>`

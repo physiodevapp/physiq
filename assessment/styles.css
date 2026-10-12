@@ -2939,10 +2939,19 @@ body.posquirurgico .solo-posq { display: block; }
   border-left: 1px solid var(--border);
 }
 .tej-barra { grid-row: 1; height: 14px; align-self: center; border-radius: 4px; margin: 0 1px; }
-.tej-minima { background: var(--tej-minima); }
-.tej-leve { background: var(--tej-leve); }
-.tej-moderada { background: var(--tej-moderada); }
-.tej-grave { background: var(--tej-grave); }
+.tej-minima { background: var(--tej-minima); color: var(--tej-minima); }
+.tej-leve { background: var(--tej-leve); color: var(--tej-leve); }
+.tej-moderada { background: var(--tej-moderada); color: var(--tej-moderada); }
+.tej-grave { background: var(--tej-grave); color: var(--tej-grave); }
+/* Qué mide la barra (`mide`, data/tejidos.js): rayado = protección, contorno = programa.
+   El color sigue siendo la gravedad (`color` = el de la gravedad, para el contorno). */
+.tej-relleno-rayado { background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--surface) 4px 6px); }
+.tej-relleno-contorno { background: none; box-shadow: inset 0 0 0 2px currentColor; }
+.tej-ley-mide { background-color: var(--text3); color: var(--text3); }
+.tej-ley-mide.tej-relleno-contorno { background: none; }
+.tej-leyenda-mide { margin-top: 8px; }
+.tej-ley-titulo { color: var(--text3); }
+.tej-marca { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 6px; font-size: 0.62rem; line-height: 1.5; color: var(--text3); border: 1px dashed var(--text3); white-space: nowrap; vertical-align: 1px; }
 .tej-grupo { display: block; width: 100%; margin-top: 8px; padding: 0 0 3px; background: none; border: none; border-bottom: 1px solid var(--border); text-align: left; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 0.66rem; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
 .tej-bloque { display: flex; flex-direction: column; gap: 6px; }
 /* Filtro por tejido (encima del diagrama) */
