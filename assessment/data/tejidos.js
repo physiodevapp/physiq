@@ -33,7 +33,7 @@
 //               `desde`/`hasta` = índices de columna (inclusive)
 //     subtipos  opcional: [{ id, nombre, desde, hasta, gravedad?, fuentes[], nota?, pendiente? }]
 //               (misma forma que una fila; sin `gravedad`, la de la fila). Se
-//               pintan plegados bajo su fila. Solo con fuente leída para cada
+//               pintan plegados bajo su fila («Ver N subtipos»). Solo con fuente leída para cada
 //               subtipo: la lista de candidatos y su estado, en MIGRATION_PLAN.md,
 //               Fase J, y docs/tiempos-tejido.md
 //   fases[]     { id, nombre, desdeDia, hastaDia, fuentes[], tejido? } — franja
@@ -93,9 +93,34 @@ export const TIEMPOS_TEJIDO = {
     {
       id: 'ligamento', tejido: 'Ligamento',
       filas: [
-        { id: 'ligamento_g1', nombre: 'Esguince grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'] },
-        { id: 'ligamento_g2', nombre: 'Esguince grado II', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
-        { id: 'ligamento_g3', nombre: 'Esguince grado III', desde: 3, hasta: 5, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'] },
+        // Subtipos de tobillo (Fase J, 1): esguince lateral, PDF del usuario leídos
+        // enteros (2026-10). Bergman 2025, «Short-Term Prognosis» y «Return-to-Sport
+        // Timeline»: grado I «1–2 weeks», grado II «3–6 weeks», grado III «6–12 weeks
+        // or longer (with possible surgical consideration)»; tras la reparación, «return
+        // to play within approximately 3 to 4 months». Vuurberg 2018, tabla 7 (la
+        // misma que la figura 2 de Martin 2021): vuelta completa al trabajo y al deporte
+        // a las 3–4 semanas en la «distorsión», a las 6–8 en la «rotura parcial o total»
+        // y a las 12–16 tras la cirugía. Martin 2021, pronóstico: «5% to 33% of patients
+        // continue to experience pain 1 year or more after the LAS».
+        // Semanas → columnas: 1–2 s = «4–14 d» (1); 3–6 s = «3–4 s» y «5–8 s» (2–3);
+        // 6–12 s = «5–8 s» y «2–3 m» (3–4); 12–16 s = «2–3 m» y «3–6 m» (4–5).
+        { id: 'ligamento_g1', nombre: 'Esguince grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'],
+          subtipos: [
+            { id: 'tobillo_lateral_g1', nombre: 'Tobillo, ligamento lateral', desde: 1, hasta: 1, fuentes: ['Bergman 2025'],
+              nota: '1–2 semanas con movilización precoz y rehabilitación funcional.' },
+          ] },
+        { id: 'ligamento_g2', nombre: 'Esguince grado II', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
+          subtipos: [
+            { id: 'tobillo_lateral_g2', nombre: 'Tobillo, ligamento lateral', desde: 2, hasta: 3, fuentes: ['Bergman 2025', 'Vuurberg 2018'],
+              nota: '3–6 semanas (Bergman 2025). La guía de Vuurberg 2018 junta la rotura parcial y la total: vuelta completa al trabajo y al deporte a las 6–8 semanas, según la tarea.' },
+          ] },
+        { id: 'ligamento_g3', nombre: 'Esguince grado III', desde: 3, hasta: 5, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'],
+          subtipos: [
+            { id: 'tobillo_lateral_g3', nombre: 'Tobillo, ligamento lateral', desde: 3, hasta: 4, fuentes: ['Bergman 2025', 'Martin 2021'],
+              nota: '6–12 semanas o más; a veces cirugía por inestabilidad persistente. Un 5–33 % sigue con dolor al año (Martin 2021).' },
+            { id: 'tobillo_lateral_cirugia', nombre: 'Tobillo, reparación quirúrgica', desde: 4, hasta: 5, fuentes: ['Vuurberg 2018', 'Bergman 2025'],
+              nota: 'Vuelta al trabajo físico y al deporte a las 12–16 semanas (Vuurberg 2018); unos 3–4 meses según Bergman 2025. Manda el protocolo del cirujano.' },
+          ] },
         { id: 'injerto', nombre: 'Injerto (reconstrucción)', desde: 4, hasta: 6, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'] },
       ],
     },

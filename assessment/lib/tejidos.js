@@ -121,7 +121,7 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
     + `<button type="button" class="tej-grupo" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(activo === g.id ? 'todos' : g.id)}" title="${esc(activo === g.id ? 'Ver todos los tejidos' : `Ver solo ${g.tejido.toLowerCase()}`)}">${esc(g.tejido)}</button>`
     + g.filas.map(f => filaHTML(f, ctx)
       + (f.subtipos?.length
-        ? `<details class="tej-subtipos"><summary>${f.subtipos.length} ${f.subtipos.length === 1 ? 'subtipo' : 'subtipos'} de ${esc(f.nombre.toLowerCase())}</summary>`
+        ? `<details class="tej-subtipos"><summary>Ver ${f.subtipos.length} ${f.subtipos.length === 1 ? 'subtipo' : 'subtipos'}</summary>`
           + f.subtipos.map(st => filaHTML(st, { ...ctx, gravedad: st.gravedad || f.gravedad, clase: ' tej-subfila' })).join('')
           + '</details>'
         : '')).join('')
