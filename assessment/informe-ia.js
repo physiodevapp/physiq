@@ -448,7 +448,13 @@ export function construirAmpliado() {
       // tratada» (opción `resoluble`, p. ej. codo co_step1): sin esto el prompt
       // recibía «Sospecha de fractura o luxación: derivación médica» y la pedía
       const resuelta = !!(op?.resoluble && state.derivacionResuelta?.[st.id]);
-      const tratada = resuelta || (op?.hypothesis || []).some(h => esTratada(h));
+      // Si todo lo que orienta la respuesta ya está tratado, el paso no va: la
+      // hipótesis ya consta como antecedente, y el texto del paso se leía como
+      // hallazgo (Rosario: «la valoración del perfil degenerativo confirma que
+      // la artrosis…» y «rigidez matutina» sacada de la pregunta)
+      const hyps = op?.hypothesis || [];
+      if (!resuelta && hyps.length && hyps.every(h => esTratada(h))) return null;
+      const tratada = resuelta || hyps.some(h => esTratada(h));
       // `iaPregunta` y textoOpcionIA() (lib/informe-narrativo.js): al prompt va
       // la conclusión de la opción, no su detalle (pistas, criterios, umbrales);
       // el NINGUNO de un paso de zona no va

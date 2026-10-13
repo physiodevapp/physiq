@@ -260,7 +260,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
     ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
     : '  Negativas';
   const sqText = data.sq?.length > 0
-    ? '\nAlertas sistémicas positivas:\n' + data.sq.map(s => `  · ${s}`).join('\n')
+    ? `\nAlertas sistémicas positivas (${AVISO_SQ}):\n` + data.sq.map(s => `  · ${s}`).join('\n')
     : '';
 
   const extra = [];
@@ -384,6 +384,9 @@ export function textoOpcionIA(op) {
   return cab;
 }
 
+// Ronda 30 (Rosario): una pregunta del cribado en SÍ se leía entera como
+// hallazgo («sudoración», «no cede en reposo», que nadie dijo)
+export const AVISO_SQ = 'preguntas del cribado contestadas SÍ: el SÍ quiere decir que el paciente refirió al menos una parte de la pregunta, no todas; no describas cada parte como un hallazgo; lo que refirió en concreto, si consta, está en la consulta';
 export const AVISO_HALLAZGOS = 'Cada línea es la conclusión del fisioterapeuta: los signos, síntomas o criterios que nombran la pregunta o la opción describen un patrón, no hallazgos de este paciente; no los afirmes si no constan en otro dato o en la consulta.';
 export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (!a) return [];

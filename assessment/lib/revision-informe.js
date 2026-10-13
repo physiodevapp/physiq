@@ -303,7 +303,18 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     for (const etiqueta of partes) {
       const clave = sinAcentos(etiqueta).split(/[^a-z0-9ñ]+/).filter(w => w.length >= 6 && !VACIAS.has(w)).sort((x, y) => y.length - x.length)[0];
       if (!clave) continue;
-      const i = tn.indexOf(clave);
+      // Las restricciones del cirujano son negaciones legítimas: si el informe
+      // las cita, no es el «No sé» convertido en «no» (Rosario: «no cruzar las
+      // piernas» del protocolo frente a «Cruzar las piernas: No sé»)
+      const palabras = x => x.split(/[^a-z0-9ñ]+/).filter(Boolean);
+      const restr = ` ${palabras(sinAcentos(datos.cq?.re)).join(' ')} `;
+      let i = -1;
+      for (let j = tn.indexOf(clave); j >= 0; j = tn.indexOf(clave, j + 1)) {
+        // las tres palabras de antes y la clave, tal cual en las restricciones
+        const cita = [...palabras(tn.slice(Math.max(0, j - 60), j)).slice(-3), clave].join(' ');
+        if (restr.trim() && restr.includes(` ${cita} `)) continue;
+        i = j; break;
+      }
       if (i < 0) continue;
       // Otra fila con esa misma palabra contestada «No» justifica la negación
       // (Marta: chasquido al lesionarse «No sabría decir», y «crujidos,
