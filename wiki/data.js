@@ -799,7 +799,23 @@ const TISSUE_TIMES = {
   grupos: [
     { tejido: 'Tendón', filas: [
       { mide: 'sinEspecificar', nombre: 'Tendinopatía', corto: 'Tendinopatía', desde: 2, hasta: 5, g: 'moderada',
-        nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga.' },
+        nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga.',
+        subtipos: [
+          { mide: 'programa', nombre: 'Rotuliana', corto: 'Rotuliana', desde: 4, hasta: 4,
+            nota: 'Ejercicio de resistencia progresivo de cuádriceps durante al menos 12 semanas (de preferencia, pesado y lento); si a las 12 semanas no hay cambio clínicamente relevante, valorar una cinta infrarrotuliana. Certeza GRADE muy baja. (Ophey 2025)' },
+          { mide: 'programa', nombre: 'Aquílea, porción media', corto: 'Aquílea media', desde: 3, hasta: 5,
+            nota: 'La duración del programa (de 6 semanas a 6 meses) no parece cambiar el resultado; mejoría esperable de 18–21 puntos en el VISA-A a las 12 semanas. (Chimenti 2024)' },
+          { mide: 'programa', nombre: 'Aquílea, insercional', corto: 'Aquílea insercional', desde: 4, hasta: 4,
+            nota: 'Excéntrico sin dorsiflexión, 12 semanas (Jonsson 2008). Limitar la dorsiflexión mejoró más el VISA-A a las 12 y a las 24 semanas (Pringels 2025).' },
+          { mide: 'programa', nombre: 'Isquiotibiales, proximal', corto: 'Isquios proximal', desde: 4, hasta: 4,
+            nota: 'Programa de fuerza progresivo por fases, 6 sesiones en 12 semanas en el ensayo; reintroducir poco a poco la compresión (flexión profunda de cadera, estar sentado). (Rich 2025)' },
+          { mide: 'programa', nombre: 'Glútea', corto: 'Glútea', desde: 3, hasta: 3,
+            nota: 'Educación sobre la carga más ejercicio, 14 sesiones en 8 semanas; éxito en el 77 % a las 8 semanas y en el 79 % al año (ensayo LEAP). (Mellor 2018)' },
+          { mide: 'programa', nombre: 'Epicondilalgia lateral', corto: 'Epicondilalgia lat.', desde: 3, hasta: 4,
+            nota: 'Ejercicio resistido de los extensores de la muñeca, 3 × 15 durante 6–12 semanas (evidencia moderada y opinión de expertos). (Lucado 2022)' },
+          { mide: 'programa', nombre: 'Epicondilalgia medial', corto: 'Epicondilalgia med.', desde: 4, hasta: 4,
+            nota: 'Los estudios usaron excéntrico de flexores y pronadores durante 12 semanas; la revisión no recomienda una pauta concreta. Certeza baja o muy baja. (See 2026)' },
+        ] },
       { mide: 'biologia', nombre: 'Rotura / reparación de tendón', corto: 'Rotura tendón', desde: 3, hasta: 7, g: 'grave',
         nota: 'Biología de la curación: la remodelación empieza a las 6–8 semanas y dura 1–2 años; el tendón no suele recuperar del todo su resistencia. La vuelta a la actividad la marca el protocolo.',
         subtipos: [
@@ -934,6 +950,7 @@ const TISSUE_TIMES = {
     'Menisco: Prill et al., «The formal EU-US Meniscus Rehabilitation 2024 Consensus… Part II», Knee Surg Sports Traumatol Arthrosc 2025;33(8):3014–3024; Logerstedt et al., J Orthop Sports Phys Ther 2018;48(2):A1–A50 (guía JOSPT de menisco y cartílago).',
     'Fracturas por localización (StatPearls): Hermena y Slane, «Ankle Fracture» (act. 2025); Smidt y Massey, «5th Metatarsal Fracture» (2023); Agrawal y Tiwari, «Metatarsal Fractures» (2023); Seaman y Bergman, «Calcaneus Fractures» (2026); Gheewala et al., «Tarsal Navicular Fractures» (2023); Mabrouk y Pilson, «Patellar Fractures» (2026); Malik et al., «Tibial Plateau Fractures» (2023). Plazos de inmovilización, descarga o vuelta a la función, no de consolidación completa.',
     'Rotura del Aquiles: Shamrock, Dreyer y Varacallo, «Achilles Tendon Rupture», StatPearls (act. 2023).',
+    'Tendinopatías (duración de los programas de carga): Ophey et al., Knee Surg Sports Traumatol Arthrosc 2025 (rotuliana); Chimenti et al., J Orthop Sports Phys Ther 2024 (Aquiles, porción media); Jonsson et al., Br J Sports Med 2008 y Pringels et al., Br J Sports Med 2025 (Aquiles insercional); Rich et al., Am J Sports Med 2025 (isquiotibiales); Mellor et al., BMJ 2018 (glútea); Lucado et al., J Orthop Sports Phys Ther 2022 (epicondilalgia lateral); See et al., Complement Ther Med 2026 (epicondilalgia medial).',
     'Manguito rotador reparado: Thigpen et al., J Shoulder Elbow Surg 2016;25(4):521–535 (consenso de la ASSET).',
     'Fractura de estrés: Hoenig et al., Br J Sports Med 2023;57:427–432 (revisión sistemática y metaanálisis); Robertson y Wood, World J Orthop 2017;8(3):242–255; May y Marappa-Ganeshan, «Stress Fractures», StatPearls (act. 2023). Vuelta al deporte media, no consolidación.',
   ],
