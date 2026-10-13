@@ -428,6 +428,11 @@ function renderTissue() {
   for (const g of T.grupos) {
     desk += `<tr class="ts-section"><td colspan="${n + 1}">${g.tejido}</td></tr>`;
     mob += `<tr class="ts-section"><td colspan="${n}">${g.tejido}</td></tr>`;
+    // Lo que no cabe en una barra (la axonotmesis, que depende de la distancia)
+    if (g.nota) {
+      desk += `<tr class="ts-grupo-nota"><td colspan="${n + 1}">${g.nota}</td></tr>`;
+      mob += `<tr class="ts-grupo-nota"><td colspan="${n}">${g.nota}</td></tr>`;
+    }
     // Cada fila y, debajo, sus subtipos (con sangría y la gravedad de la madre)
     for (const madre of g.filas) {
       for (const f of [madre, ...(madre.subtipos || []).map(st => ({ ...st, g: st.g || madre.g, sub: true }))]) {

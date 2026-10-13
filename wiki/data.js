@@ -940,6 +940,12 @@ const TISSUE_TIMES = {
             nota: 'Vuelta al deporte a los 7 meses, con o sin cirugía (Robertson y Wood 2017); vuelve el 75,5 % y hay complicaciones en el 41 % (Hoenig 2023).' },
         ] },
     ] },
+    { tejido: 'Nervio periférico',
+      nota: 'Axonotmesis (Sunderland II–IV), sin barra: el plazo depende de la distancia que tiene que crecer el nervio. El axón cruza la lesión en 1–2 semanas y luego avanza unos 1 mm al día (unos 3 cm al mes; de 0,5 a 3 mm según la fuente, más rápido en segmentos proximales, en jóvenes y tras un aplastamiento). Días hasta la reinervación ≈ milímetros desde la lesión hasta el primer músculo. El músculo admite reinervación durante 1–2 años y la recuperación motora se estanca a los 18–24 meses. Sin signos de recuperación (Tinel que no avanza, fuerza que no mejora) a los 3 meses: derivar para valorar cirugía. Neurotmesis (Sunderland V): no se recupera sin cirugía. (Robinson 2022; Nadi 2026; Hall 2026; Menorca 2013)',
+      filas: [
+      { mide: 'deporte', nombre: 'Neuropraxia (Sunderland I)', corto: 'Neuropraxia', desde: 0, hasta: 4, g: 'leve',
+        nota: 'Recuperación espontánea al remielinizarse: de días a semanas (la mitad de las de deporte, menos de 1 semana fuera) y casi siempre antes de los 3 meses. Si a los 3 meses no se ha recuperado, reevaluar y derivar. (Sharma y Munakomi 2026; Nadi 2026; Robinson 2022)' },
+    ] },
   ],
   // Leyenda de fases (misma que el panel ⏱ de physiq-assessment): nombre y rango
   // corto; `parcial` = solo vale para un tejido (se pinta más clara).
@@ -967,6 +973,7 @@ const TISSUE_TIMES = {
     'Tendinopatías (duración de los programas de carga): Ophey et al., Knee Surg Sports Traumatol Arthrosc 2025 (rotuliana); Chimenti et al., J Orthop Sports Phys Ther 2024 (Aquiles, porción media); Jonsson et al., Br J Sports Med 2008 y Pringels et al., Br J Sports Med 2025 (Aquiles insercional); Rich et al., Am J Sports Med 2025 (isquiotibiales); Mellor et al., BMJ 2018 (glútea); Lucado et al., J Orthop Sports Phys Ther 2022 (epicondilalgia lateral); See et al., Complement Ther Med 2026 (epicondilalgia medial).',
     'Manguito rotador reparado: Thigpen et al., J Shoulder Elbow Surg 2016;25(4):521–535 (consenso de la ASSET).',
     'Isquiotibiales (BAMIC): Pollock et al., Br J Sports Med 2014;48(18):1347–1351 (la clasificación); Pollock et al., Br J Sports Med 2016;50(5):305–310; Hollabaugh et al., Sports Health 2024;16(5):783–796 (revisión sistemática, con los datos de Pollock 2022); Macdonald et al., Br J Sports Med 2019;53(23):1464–1473. Vuelta al entrenamiento completo en atletismo de élite.',
+    'Nervio periférico: Sharma y Munakomi, «Neurapraxia», StatPearls (act. 2026); Hall, Munakomi y Nadi, «Axonotmesis», StatPearls (act. 2026); Nadi, Dabbas y Das, «Peripheral Nerve Injury», StatPearls (act. 2026); Robinson, Muscle Nerve 2022;66(6):661–670; Menorca, Fussell y Elfar, Hand Clin 2013;29(3):317–330.',
     'Fractura de estrés: Hoenig et al., Br J Sports Med 2023;57:427–432 (revisión sistemática y metaanálisis); Robertson y Wood, World J Orthop 2017;8(3):242–255; May y Marappa-Ganeshan, «Stress Fractures», StatPearls (act. 2023). Vuelta al deporte media, no consolidación.',
   ],
 };
