@@ -834,6 +834,20 @@ const TISSUE_TIMES = {
       { mide: 'sinEspecificar', nombre: 'Rotura G. I', corto: 'Rotura G. I', desde: 1, hasta: 2, g: 'leve' },
       { mide: 'sinEspecificar', nombre: 'Rotura G. II', corto: 'Rotura G. II', desde: 2, hasta: 3, g: 'moderada' },
       { mide: 'sinEspecificar', nombre: 'Rotura G. III', corto: 'Rotura G. III', desde: 2, hasta: 4, g: 'grave' },
+      { mide: 'deporte', nombre: 'Isquiotibiales (clasificación BAMIC)', corto: 'Isquios BAMIC', desde: 1, hasta: 4, g: 'moderada',
+        nota: 'Días hasta volver al entrenamiento completo según el grado de la RM (0–4) y la localización: «a» miofascial, «b» unión miotendinosa, «c» dentro del tendón. Medias de atletas de élite con RM en la primera semana: en otros deportes y niveles los plazos pueden ser distintos.',
+        subtipos: [
+          { mide: 'deporte', nombre: 'Grado 0 (RM normal)', corto: 'Grado 0', desde: 1, hasta: 1, g: 'leve',
+            nota: 'Entrenamiento completo a los 9–10 días de media, con muy pocas recaídas. (Pollock 2016; Hollabaugh 2023)' },
+          { mide: 'deporte', nombre: 'Grado 1a/1b (pequeña)', corto: 'Grado 1', desde: 1, hasta: 2, g: 'leve',
+            nota: 'Entrenamiento completo a los 12–18 días de media (de 5 a 10 días en el programa de British Athletics para una 1a). (Pollock 2016; Hollabaugh 2023; Macdonald 2019)' },
+          { mide: 'deporte', nombre: 'Grado 2a/2b (moderada, sin tendón)', corto: 'Grado 2a/2b', desde: 2, hasta: 2,
+            nota: 'Entrenamiento completo a los 19–25 días de media (de 14 a 28 días en el programa para una 2b). (Pollock 2016; Hollabaugh 2023; Macdonald 2019)' },
+          { mide: 'deporte', nombre: 'Grado 2c (moderada, dentro del tendón)', corto: 'Grado 2c', desde: 2, hasta: 3,
+            nota: 'Entrenamiento completo a los 27–35 días de media. Recayó el 63 % en la serie de 2016. (Pollock 2016; Hollabaugh 2023)' },
+          { mide: 'deporte', nombre: 'Grado 3c (extensa, dentro del tendón)', corto: 'Grado 3c', desde: 3, hasta: 4, g: 'grave',
+            nota: 'Entrenamiento completo a los 52–84 días de media (6–9 semanas en el programa, que retrasa unas 3 semanas la carga excéntrica). Recayó el 57 % en la serie de 2016. (Pollock 2016; Hollabaugh 2023; Macdonald 2019)' },
+        ] },
     ] },
     { tejido: 'Ligamento', filas: [
       { mide: 'sinEspecificar', nombre: 'Esguince G. I', corto: 'Esguince G. I', desde: 1, hasta: 2, g: 'leve',
@@ -952,6 +966,7 @@ const TISSUE_TIMES = {
     'Rotura del Aquiles: Shamrock, Dreyer y Varacallo, «Achilles Tendon Rupture», StatPearls (act. 2023).',
     'Tendinopatías (duración de los programas de carga): Ophey et al., Knee Surg Sports Traumatol Arthrosc 2025 (rotuliana); Chimenti et al., J Orthop Sports Phys Ther 2024 (Aquiles, porción media); Jonsson et al., Br J Sports Med 2008 y Pringels et al., Br J Sports Med 2025 (Aquiles insercional); Rich et al., Am J Sports Med 2025 (isquiotibiales); Mellor et al., BMJ 2018 (glútea); Lucado et al., J Orthop Sports Phys Ther 2022 (epicondilalgia lateral); See et al., Complement Ther Med 2026 (epicondilalgia medial).',
     'Manguito rotador reparado: Thigpen et al., J Shoulder Elbow Surg 2016;25(4):521–535 (consenso de la ASSET).',
+    'Isquiotibiales (BAMIC): Pollock et al., Br J Sports Med 2014;48(18):1347–1351 (la clasificación); Pollock et al., Br J Sports Med 2016;50(5):305–310; Hollabaugh et al., Sports Health 2024;16(5):783–796 (revisión sistemática, con los datos de Pollock 2022); Macdonald et al., Br J Sports Med 2019;53(23):1464–1473. Vuelta al entrenamiento completo en atletismo de élite.',
     'Fractura de estrés: Hoenig et al., Br J Sports Med 2023;57:427–432 (revisión sistemática y metaanálisis); Robertson y Wood, World J Orthop 2017;8(3):242–255; May y Marappa-Ganeshan, «Stress Fractures», StatPearls (act. 2023). Vuelta al deporte media, no consolidación.',
   ],
 };
