@@ -134,13 +134,14 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
         : '')).join('')
     + '</div>').join('');
 
-  const leyenda = `<div class="tej-leyenda">`
+  const leyenda = `<div class="tej-leyenda"><span class="tej-ley-titulo">Color = gravedad:</span>`
     + Object.entries(gravedades).map(([k, v]) => `<span class="tej-ley"><span class="tej-ley-muestra tej-${esc(k)}"></span>${esc(v)}</span>`).join('')
     + `</div>`
-    // Qué mide la barra: una muestra por relleno, en color neutro (el color es la gravedad);
-    // las medidas sin relleno propio se nombran por su etiqueta tras el nombre de la fila.
+    // Qué mide la barra: una muestra por relleno, en color neutro, y el título dice que en el
+    // diagrama va en el color de la gravedad (la muestra gris confundía, 2026-10). Cada medida
+    // tiene su relleno; `marca` (etiqueta tras el nombre) queda solo si una medida no lo tuviera.
     + (Object.keys(medidas).length
-      ? `<div class="tej-leyenda tej-leyenda-mide"><span class="tej-ley-titulo">Qué mide la barra:</span>`
+      ? `<div class="tej-leyenda tej-leyenda-mide"><span class="tej-ley-titulo">Relleno = qué mide la barra (en el color de su gravedad):</span>`
         + Object.entries(medidas).filter(([, m]) => !m.marca).map(([k, m]) => `<span class="tej-ley"><span class="tej-ley-muestra tej-ley-mide tej-relleno-${esc(m.relleno)}" data-mide="${esc(k)}"></span>${esc(m.etiqueta)}</span>`).join('')
         + Object.entries(medidas).filter(([, m]) => m.marca).map(([k, m]) => `<span class="tej-ley"><span class="tej-marca" data-mide="${esc(k)}">${esc(m.marca)}</span>${esc(m.etiqueta)}</span>`).join('')
         + '</div>'

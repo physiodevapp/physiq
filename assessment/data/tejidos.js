@@ -66,8 +66,8 @@ export const TIEMPOS_TEJIDO = {
     deporte: { etiqueta: 'Vuelta al deporte o a la función', relleno: 'liso' },
     proteccion: { etiqueta: 'Protección (inmovilización o descarga)', relleno: 'rayado' },
     programa: { etiqueta: 'Duración del programa de tratamiento', relleno: 'contorno' },
-    biologia: { etiqueta: 'Biología de la reparación', relleno: 'liso', marca: 'biología' },
-    sinEspecificar: { etiqueta: 'Sin especificar en la fuente', relleno: 'liso', marca: 'sin especificar' },
+    biologia: { etiqueta: 'Biología de la reparación', relleno: 'punteado' },
+    sinEspecificar: { etiqueta: 'Sin especificar en la fuente', relleno: 'tenue' },
   },
 
   gravedades: {
