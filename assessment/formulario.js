@@ -421,14 +421,29 @@ function _actualizarPistasFase1() {
   });
 }
 
+// Respuestas para el contador: cada fila contestada de una matriz cuenta
+// como una (si no, «1 respuesta» no cambiaba al contestar más filas).
+function _contarScope(scope) {
+  const esquema = esquemaDe(scope);
+  if (!esquema) return 0;
+  const resp = scope === 'comun' ? fp().comun : (fp().regiones[scope] || {});
+  let n = 0;
+  esquema.secciones.forEach(s => s.items.forEach(it => {
+    const v = resp[it.id];
+    if (vacio(v) || !visible(it, resp)) return;
+    n += it.tipo === 'matriz' ? it.filas.filter(f => v[f.id]).length : 1;
+  }));
+  return n;
+}
+
 function _actualizarContador() {
   _actualizarPistasFase1();
   const pinta = (id, n) => {
     const el = document.getElementById(id);
     if (el) el.textContent = n ? `${n} respuesta${n === 1 ? '' : 's'}` : 'Sin rellenar';
   };
-  pinta('fpCont_comun', resumenDe('comun').length);
-  pinta('fpCont_region', state.region ? resumenDe(state.region).length : 0);
+  pinta('fpCont_comun', _contarScope('comun'));
+  pinta('fpCont_region', state.region ? _contarScope(state.region) : 0);
   const nom = document.getElementById('fpNombreRegion');
   if (nom) nom.textContent = _nombreRegion(state.region);
   _actualizarBandas();   // la banda fija repite el contador: sin esto solo cambiaba al hacer scroll
