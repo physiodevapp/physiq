@@ -27,7 +27,7 @@ export const screening = {
         'Debilidad muscular proximal idiopática'
       ],
       preguntas: [
-        { id: 'h3', text: '¿Tiene antecedentes de cáncer de cualquier tipo, o ha recibido quimioterapia, radioterapia o terapia hormonal?', alerta: true, s1: true,
+        { id: 'h3', anatomia: ['humero', 'plexo_braquial'], text: '¿Tiene antecedentes de cáncer de cualquier tipo, o ha recibido quimioterapia, radioterapia o terapia hormonal?', alerta: true, s1: true,
           razonamiento: {
             porque: 'Un cáncer previo puede volver o extenderse al hueso, a los ganglios o al plexo braquial, y el hombro es un destino frecuente: el cáncer de mama y el de pulmón son los que más metastatizan en él. Los tratamientos cuentan también: la quimioterapia, la radioterapia y la terapia hormonal pueden favorecer tumores nuevos, y la radioterapia de la axila deja secuelas propias en el hombro.',
             peso: 'Es una bandera roja aunque el cáncer sea antiguo o el dolor tenga una causa aparente; en el hombro no hay cifras de precisión. Un SÍ no diagnostica: obliga a buscar el resto (dolor nocturno constante, pérdida de peso, ganglios duros y fijos, debilidad o atrofia sin el patrón de un nervio, calor local en la escápula). Una neoplasia puede presentarse igual que un hombro congelado, y con antecedente de cáncer unos ganglios sospechosos piden atención médica inmediata.',
@@ -121,7 +121,7 @@ export const screening = {
         'Uso de betabloqueantes o inhibidores de la ECA'
       ],
       preguntas: [
-        { id: 'h1', text: '¿El dolor de hombro aumenta con el esfuerzo físico general (subir escaleras, caminar) aunque no mueva los brazos?', alerta: true, s1: true,
+        { id: 'h1', anatomia: ['corazon'], text: '¿El dolor de hombro aumenta con el esfuerzo físico general (subir escaleras, caminar) aunque no mueva los brazos?', alerta: true, s1: true,
           razonamiento: {
             porque: 'El corazón comparte segmentos medulares con el hombro y el brazo, así que una isquemia cardiaca puede doler solo en el hombro. La clave es qué lo desencadena: si duele al subir escaleras o caminar sin mover los brazos, lo que lo provoca es la demanda de oxígeno del corazón, no la carga del hombro.',
             peso: 'Es una bandera roja cardiaca: Goodman la da como una de las pistas de origen visceral aunque el hombro también duela al moverlo. Pesa más si aparece a los 3–5 minutos de empezar el esfuerzo y cede en pocos minutos de reposo, si se acompaña de sudor, náuseas, falta de aire o presión en el pecho, y en mayores de 50 años, mujeres posmenopáusicas o personas con antecedentes cardiacos o factores de riesgo. Si está pasando ahora y no cede con reposo, es una urgencia.',
@@ -141,7 +141,7 @@ export const screening = {
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 3, pp. 92 y 120; cap. 6, pp. 226 y 233–236; cap. 18, pp. 685, 690 y 693–694.'
             ]
           } },
-        { id: 'h2', text: '¿El dolor se acompaña de sudores repentinos, náuseas o sensación opresiva en mandíbula/pecho?', alerta: true, s1: true,
+        { id: 'h2', anatomia: ['corazon'], text: '¿El dolor se acompaña de sudores repentinos, náuseas o sensación opresiva en mandíbula/pecho?', alerta: true, s1: true,
           razonamiento: {
             porque: 'El sudor repentino, las náuseas y la opresión en la mandíbula o el pecho acompañan con frecuencia al dolor cardiaco. Si aparecen a la vez que el dolor de hombro, apuntan a que el origen está en el corazón y no en la articulación.',
             peso: 'Es una bandera roja seria: Goodman pide tratar como visceral un dolor de hombro con sudor coincidente, aunque el hombro duela al moverlo. Si está pasando ahora, dura 30 minutos o más o no cede con reposo, es una urgencia médica. En las mujeres el cuadro puede ser atípico: cansancio intenso, falta de aire, debilidad o náuseas, a veces semanas antes.',
@@ -162,7 +162,7 @@ export const screening = {
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 226 y 233–236; cap. 18, pp. 692–693, 704 y 707–708.'
             ]
           } },
-        { id: 'h_c3', text: '¿El dolor cambia o empeora al acostarse, o siente falta de aire en reposo?', alerta: true,
+        { id: 'h_c3', anatomia: ['corazon', 'diafragma'], text: '¿El dolor cambia o empeora al acostarse, o siente falta de aire en reposo?', alerta: true,
           razonamiento: {
             porque: 'Al tumbarse vuelve más sangre de las piernas al tórax y el contenido del abdomen empuja el diafragma hacia arriba. Un corazón o un pulmón que no dan abasto no toleran ese cambio: aparece falta de aire (ortopnea) y el dolor referido al hombro puede empeorar. La falta de aire en reposo indica lo mismo, sin necesidad de esfuerzo.',
             peso: 'Goodman lo considera una bandera amarilla de origen cardiopulmonar, siempre que el brazo esté bien colocado (boca arriba el hombro queda algo en extensión y puede doler por sí mismo). Quien se ahoga al tumbarse o se despierta por la noche sin aire debe verlo el médico, y también quien, con una enfermedad cardiaca conocida, nota que la falta de aire va a más.',
@@ -211,7 +211,7 @@ export const screening = {
         'Antecedentes de cáncer que puede metastatizar a pulmón'
       ],
       preguntas: [
-        { id: 'h5', text: '¿El dolor de hombro o espalda empeora al toser, reír, estornudar o tomar una respiración profunda?', alerta: true, s1: true,
+        { id: 'h5', anatomia: ['pleura', 'diafragma', 'nervio_frenico'], text: '¿El dolor de hombro o espalda empeora al toser, reír, estornudar o tomar una respiración profunda?', alerta: true, s1: true,
           razonamiento: {
             porque: 'Si el dolor aumenta al toser, reír, estornudar o respirar hondo, algo que se mueve con la respiración está irritado. La pleura que cubre el diafragma está inervada por el nervio frénico (C3–C5), que comparte segmentos con el hombro: su irritación se nota en el trapecio superior y el hombro del mismo lado.',
             peso: 'Por sí solo es poco específico: un desgarro intercostal o una lesión costal también duelen al respirar. Pesa si se acompaña de tos persistente, falta de aire, fiebre o esputo con sangre, si se alivia tumbado sobre el lado que duele (autoferulización, lo contrario de un problema mecánico) o si hay antecedente de cáncer o una neumonía o gripe recientes. Goodman lo cuenta entre las pistas de origen visceral aunque el hombro duela al moverlo.',
@@ -232,7 +232,7 @@ export const screening = {
               { texto: 'Oliver y Ashurst 2023 — Oliver y Ashurst, «Anatomy, Thorax, Phrenic Nerves», StatPearls [Internet], NCBI Bookshelf, última actualización 24 de julio de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK513325/' }
             ]
           } },
-        { id: 'h_p2', text: '¿Siente falta de aire en reposo, al acostarse, o con mínimo esfuerzo?', alerta: true,
+        { id: 'h_p2', anatomia: ['pulmones', 'corazon'], text: '¿Siente falta de aire en reposo, al acostarse, o con mínimo esfuerzo?', alerta: true,
           razonamiento: {
             porque: 'La falta de aire indica que el corazón o los pulmones no cubren las necesidades de oxígeno. Si aparece en reposo, al tumbarse o con un esfuerzo mínimo, la reserva es muy pequeña. Junto a un dolor de hombro apunta a un origen cardiopulmonar: un pulmón o una pleura que refieren dolor al hombro, o un corazón que falla.',
             peso: 'Siempre merece valoración médica: Goodman indica que quien no puede subir un piso sin quedarse muy fatigado, se despierta ahogado o se ahoga al tumbarse debe verlo un médico. Cuidado con el NO: muchas personas reducen su actividad para no ahogarse y niegan la falta de aire; hay que preguntar qué han dejado de hacer.',
@@ -251,7 +251,7 @@ export const screening = {
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 226–227, 233 y 239; cap. 7, pp. 272–275 y 279; cap. 18, pp. 689, 693 y 704–705.'
             ]
           } },
-        { id: 'h_p3', text: '¿Ha notado sangre o mucosidad de color inusual (verde/oxidado) al toser, o tiene tos persistente de reciente aparición?', alerta: true,
+        { id: 'h_p3', anatomia: ['pulmones', 'pleura'], text: '¿Ha notado sangre o mucosidad de color inusual (verde/oxidado) al toser, o tiene tos persistente de reciente aparición?', alerta: true,
           razonamiento: {
             porque: 'La tos persistente, el esputo verde, amarillo u oxidado y la sangre al toser son signos del propio pulmón: infección, inflamación o tumor. Si coinciden con un dolor de hombro, el pulmón o la pleura pueden estar refiriendo el dolor por el nervio frénico o, desde el vértice, invadiendo el plexo braquial.',
             peso: 'La sangre al toser siempre indica una enfermedad (infección, inflamación, absceso, tumor o infarto pulmonar) y pide valoración médica. El esputo amarillo o verde orienta a infección, y el oxidado puede ser una neumonía. Pesa más con fiebre, falta de aire, tabaco, antecedente de cáncer o pérdida de peso. Una tos aislada sin esputo es poco específica.',
@@ -303,7 +303,7 @@ export const screening = {
         'Antecedentes de cálculos renales'
       ],
       preguntas: [
-        { id: 'h_r1', text: '¿Ha notado cambios en la orina (color rojo, marrón, turbio, olor fuerte) o tiene fiebre/escalofríos junto con el dolor?', alerta: true, s1: true,
+        { id: 'h_r1', anatomia: ['rinon', 'diafragma'], text: '¿Ha notado cambios en la orina (color rojo, marrón, turbio, olor fuerte) o tiene fiebre/escalofríos junto con el dolor?', alerta: true, s1: true,
           razonamiento: {
             porque: 'El riñón está detrás del abdomen y toca el diafragma: si se inflama (pielonefritis), se obstruye o sangra, su cápsula se distiende y puede referir dolor al hombro del mismo lado. Los cambios en la orina y la fiebre con escalofríos son las señales que delatan ese origen.',
             peso: 'Goodman indica comunicar al médico cualquier dolor de hombro con fiebre o con cambios de color, olor o cantidad de la orina. La sangre en la orina siempre requiere valoración médica: es el síntoma principal de los tumores de las vías urinarias. Cuando la sangre se ve a simple vista, se encuentra un cáncer urológico en el 10–20 % (cuando solo se ve al microscopio, en torno al 3 %). La pielonefritis da típicamente fiebre, dolor de flanco y náuseas o vómitos.',
@@ -373,7 +373,7 @@ export const screening = {
         'Antecedentes de enfermedad inflamatoria pélvica (EPI)'
       ],
       preguntas: [
-        { id: 'h_g1', text: '¿El dolor de hombro apareció de forma súbita y se acompaña de dolor pélvico, sangrado vaginal inusual o mareos intensos?', alerta: true, s1: true, urgencia: 'Sospecha de embarazo ectópico roto: derivación a urgencias hoy.',
+        { id: 'h_g1', anatomia: ['diafragma', 'nervio_frenico'], text: '¿El dolor de hombro apareció de forma súbita y se acompaña de dolor pélvico, sangrado vaginal inusual o mareos intensos?', alerta: true, s1: true, urgencia: 'Sospecha de embarazo ectópico roto: derivación a urgencias hoy.',
           razonamiento: {
             porque: 'En un embarazo ectópico roto, la sangre que se acumula en el abdomen irrita el diafragma y el dolor se refiere a la punta del hombro por el nervio frénico. Por eso un dolor de hombro de inicio súbito con dolor pélvico, sangrado vaginal o mareo, en una mujer en edad fértil, puede ser una hemorragia interna.',
             peso: 'Es una urgencia: el embarazo ectópico es potencialmente mortal y Goodman pide derivación médica inmediata. NICE recoge el dolor en la punta del hombro y el mareo o el desmayo entre los síntomas del ectópico, y advierte de que la presentación atípica es frecuente. El dolor de hombro puede ser el único síntoma. Pesa en una mujer sexualmente activa en edad fértil con un retraso de la regla o un sangrado inesperado, aunque use anticonceptivos.',
@@ -396,7 +396,7 @@ export const screening = {
               { texto: 'Oliver y Ashurst 2023 — Oliver y Ashurst, «Anatomy, Thorax, Phrenic Nerves», StatPearls [Internet], NCBI Bookshelf, última actualización 24 de julio de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK513325/' }
             ]
           } },
-        { id: 'h_g2', text: '¿El dolor de hombro tiene alguna relación con su ciclo menstrual o ha tenido alguna infección pélvica reciente?', alerta: true,
+        { id: 'h_g2', anatomia: ['diafragma', 'higado'], text: '¿El dolor de hombro tiene alguna relación con su ciclo menstrual o ha tenido alguna infección pélvica reciente?', alerta: true,
           razonamiento: {
             porque: 'La endometriosis puede implantar tejido parecido al del útero en el diafragma, y su dolor sigue el ciclo menstrual; al irritar el diafragma, se refiere al hombro. Una infección pélvica puede subir hasta la cápsula del hígado (síndrome de Fitz-Hugh-Curtis) y doler en el hipocondrio derecho y el hombro derecho.',
             peso: 'Es poco frecuente, pero un dolor de hombro que sigue el ciclo menstrual no tiene explicación mecánica y pide valoración médica. La endometriosis y la enfermedad inflamatoria pélvica, además, aumentan el riesgo de embarazo ectópico: si hay retraso de la regla o un sangrado inesperado, ver la pregunta anterior. No hay cifras de precisión.',
@@ -445,7 +445,7 @@ export const screening = {
         'Uso de estatinas, AINEs crónicos o alcohol'
       ],
       preguntas: [
-        { id: 'h_gi1', text: '¿El dolor de hombro aumenta o aparece 1-2 horas después de comer, especialmente comidas grasas?', alerta: true, s1: true,
+        { id: 'h_gi1', anatomia: ['vesicula_biliar', 'nervio_frenico'], text: '¿El dolor de hombro aumenta o aparece 1-2 horas después de comer, especialmente comidas grasas?', alerta: true, s1: true,
           razonamiento: {
             porque: 'Un dolor de hombro que cambia con las comidas no tiene explicación mecánica. Tras una comida grasa, la vesícula se contrae para soltar la bilis; si un cálculo obstruye su salida, se distiende y se inflama, y su dolor se refiere al hombro derecho y entre las escápulas. Las úlceras también duelen en relación con las comidas.',
             peso: 'Goodman indica que el dolor de hombro de origen mecánico no mejora ni empeora al comer: si lo hace, hay que buscar un problema digestivo, aunque el paciente no relacione ambas cosas. No hay cifras de precisión. Pesa más con náuseas, vómitos, saciedad precoz, intolerancia a las grasas, fiebre o ictericia, o con antecedente de cálculos o úlcera.',
@@ -466,7 +466,7 @@ export const screening = {
               { texto: 'Jones 2025 — Jones, Santos y Patel, «Acute Cholecystitis», StatPearls [Internet], NCBI Bookshelf, última actualización 6 de julio de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK459171/' }
             ]
           } },
-        { id: 'h_gi2', text: '¿Ha notado cambios en el color de la orina (más oscura, como té o cola) o en las heces (muy claras, como arcilla)?', alerta: true,
+        { id: 'h_gi2', anatomia: ['higado', 'vesicula_biliar'], text: '¿Ha notado cambios en el color de la orina (más oscura, como té o cola) o en las heces (muy claras, como arcilla)?', alerta: true,
           razonamiento: {
             porque: 'La bilirrubina es lo que da color a las heces. Si el hígado no la excreta o la bilis no llega al intestino (por una obstrucción de la vía biliar o una enfermedad hepática), las heces se aclaran como la arcilla, y la bilirrubina conjugada pasa a la orina, que se oscurece como el té o la cola. El hígado y la vía biliar refieren dolor al hombro derecho.',
             peso: 'Es una señal de enfermedad del hígado o de la vía biliar y siempre pide valoración médica, aunque no explique el dolor de hombro. Puede adelantarse a la ictericia: en la hepatitis, la orina se oscurece y las heces se aclaran de 1 a 14 días antes de que la piel se ponga amarilla. Pesa más con ictericia, picor, fiebre, dolor en el hipocondrio derecho o factores de riesgo (alcohol, fármacos tóxicos para el hígado, hepatitis).',
@@ -488,7 +488,7 @@ export const screening = {
               { texto: 'Grant y John 2025 — Grant y John, «Cholestatic Jaundice», StatPearls [Internet], NCBI Bookshelf, última actualización 19 de enero de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK482279/' }
             ]
           } },
-        { id: 'h_gi3', text: 'Si toma antiinflamatorios (AINEs), ¿el dolor de hombro aumenta en las horas siguientes en vez de mejorar?', alerta: true,
+        { id: 'h_gi3', anatomia: ['estomago'], text: 'Si toma antiinflamatorios (AINEs), ¿el dolor de hombro aumenta en las horas siguientes en vez de mejorar?', alerta: true,
           razonamiento: {
             porque: 'Un AINE debería aliviar un dolor mecánico en su pico de efecto, a las 2–4 horas. Si el dolor de hombro aumenta en vez de bajar, puede ser una úlcera que sangra: los AINE dañan la mucosa del estómago, y el sangrado de las úlceras de su cara posterior se refiere a la espalda y al hombro derecho.',
             peso: 'Goodman lo considera una bandera amarilla de sangrado digestivo, y el uso crónico de AINE (más de 6 meses), la causa más frecuente de dolor de hombro provocado por un medicamento, sobre todo en mayores de 65 años. Quien toma AINE y tiene dolor de hombro o de espalda con síntomas de úlcera debe verlo el médico. Las heces negras y el vómito en posos de café siempre requieren valoración médica.',
@@ -540,7 +540,7 @@ export const screening = {
       ],
       banderasAmarillas: [],
       preguntas: [
-        { id: 'h_t1', notaPosquirurgica: true, urgencia: 'Sospecha de fractura o luxación sin reducir tras una caída: no forzar la movilidad, explorar el nervio axilar (sensibilidad de la cara externa del brazo y contracción del deltoides) y derivar hoy para radiografía.', text: '¿Tras una caída sobre el hombro o el codo, perdió de golpe movilidad del brazo o nota el hombro deformado? (Tener en cuenta la osteoporosis.)', alerta: true, s1: true,
+        { id: 'h_t1', anatomia: ['humero', 'clavicula', 'art_glenohumeral'], notaPosquirurgica: true, urgencia: 'Sospecha de fractura o luxación sin reducir tras una caída: no forzar la movilidad, explorar el nervio axilar (sensibilidad de la cara externa del brazo y contracción del deltoides) y derivar hoy para radiografía.', text: '¿Tras una caída sobre el hombro o el codo, perdió de golpe movilidad del brazo o nota el hombro deformado? (Tener en cuenta la osteoporosis.)', alerta: true, s1: true,
           razonamiento: {
             porque: 'Una caída sobre el hombro, el codo o el brazo extendido puede luxar la articulación o fracturar el húmero o la clavícula. La pérdida brusca de movilidad y la deformidad son sus señales, y con osteoporosis basta una caída de poca energía para romper el húmero.',
             peso: 'Es una bandera roja: ante la sospecha de una fractura o una luxación sin reducir, Lluch indica derivación inmediata y radiografía. En consulta ayudan el test de aprensión ósea y la percusión olécranon-manubrio, con buen valor para la luxación anterior y las fracturas de clavícula y húmero. Un dolor desproporcionado a la lesión, o que no se resuelve con el tratamiento tras un traumatismo, también pide atención médica inmediata (Goodman).',
@@ -602,7 +602,7 @@ export const screening = {
       ],
       banderasAmarillas: [],
       preguntas: [
-        { id: 'h_n1', text: '¿Ha perdido fuerza o sensibilidad de forma importante en el brazo o la mano, o nota algún músculo del hombro o del brazo más delgado que el del otro lado?', alerta: true, s1: true,
+        { id: 'h_n1', anatomia: ['plexo_braquial', 'columna_cervical'], text: '¿Ha perdido fuerza o sensibilidad de forma importante en el brazo o la mano, o nota algún músculo del hombro o del brazo más delgado que el del otro lado?', alerta: true, s1: true,
           razonamiento: {
             porque: 'Una pérdida importante de fuerza o de sensibilidad, o un músculo más delgado que el del otro lado, indica que un nervio o una raíz no funcionan: no es un problema del tendón ni de la articulación. Puede deberse a la columna cervical, a una inflamación del plexo braquial (amiotrofia neurálgica), a un tumor que lo invade o a una lesión traumática.',
             peso: 'Lluch indica derivar de inmediato si hay una lesión neurológica con déficit motor o sensitivo importante. Según Goodman, la debilidad indolora de comienzo insidioso es probablemente neurológica, y la dolorosa puede deberse a una radiculopatía cervical, un problema crónico del manguito, un tumor o una artrosis, y requiere un diagnóstico médico. En el hombro congelado la exploración neurológica es normal.',

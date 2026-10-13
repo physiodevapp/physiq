@@ -892,6 +892,7 @@
     font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.5px;
     border: 1px solid currentColor; border-radius: 3px; padding: 0 3px; vertical-align: 1px; opacity: 0.8;
   }
+  .razon-cuerpo .test-anat { margin: 0 0 6px; }
   .razon-anatomia ul { list-style: none; padding: 0; margin: 0; }
   .razon-anatomia li { padding: 2px 0; }
   .in-hub .test-anat, .in-hub .razon-anatomia { display: none; }

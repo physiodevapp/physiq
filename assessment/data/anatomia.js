@@ -19,6 +19,9 @@
 //   nota?  — cuando la estructura no tiene artículo propio y se enlaza
 //            el que la trata (se ve en el `title` del enlace).
 //
+// Las usan los tests de la fase 4b y las preguntas de cribado de la fase 2
+// (`anatomia` en la pregunta, junto a su `razonamiento`).
+//
 // Varias estructuras pueden compartir artículo (labrum → articulación
 // glenohumeral), pero no dentro del mismo test (test unitario).
 // ============================================================
@@ -47,4 +50,16 @@ export const ESTRUCTURAS = {
   costillas:            { nombre: 'Costillas (1.ª costilla)', kenhub: 'the-ribs', kenhubEs: 'costillas' },
   escalenos:            { nombre: 'Escalenos', kenhub: 'scalene-muscles', kenhubEs: 'musculos-escalenos-es' },
   columna_cervical:     { nombre: 'Columna cervical', kenhub: 'cervical-spine', kenhubEs: 'vertebras-cervicales' },
+  // Hombro, fase 2: vísceras y nervios que refieren dolor al hombro
+  plexo_braquial:       { nombre: 'Plexo braquial', kenhub: 'brachial-plexus', kenhubEs: 'plexo-braquial-es' },
+  nervio_frenico:       { nombre: 'Nervio frénico', kenhub: 'phrenic-nerve', kenhubEs: 'nervio-frenico' },
+  diafragma:            { nombre: 'Diafragma', kenhub: 'diaphragm', kenhubEs: 'diafragma-es' },
+  corazon:              { nombre: 'Corazón', kenhub: 'heart', kenhubEs: 'corazon' },
+  pulmones:             { nombre: 'Pulmones', kenhub: 'the-lung', kenhubEs: 'vision-general-de-la-anatomia-pulmonar' },
+  pleura:               { nombre: 'Pleura', kenhub: 'pleura', kenhubEs: 'pleura-es' },
+  rinon:                { nombre: 'Riñón', kenhub: 'kidneys', kenhubEs: 'anatomia-de-los-rinones' },
+  higado:               { nombre: 'Hígado', kenhub: 'liver', kenhubEs: 'higado' },
+  vesicula_biliar:      { nombre: 'Vesícula biliar', kenhub: 'gallbladder', kenhubEs: 'vesicula-biliar-es' },
+  estomago:             { nombre: 'Estómago', kenhub: 'the-stomach', kenhubEs: 'estomago-es' },
+  clavicula:            { nombre: 'Clavícula', kenhub: 'the-clavicle', kenhubEs: 'clavicula-anatomia' },
 };

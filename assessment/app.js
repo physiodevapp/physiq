@@ -5,7 +5,7 @@
 import { state } from './state.js';
 import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, TIEMPOS_TEJIDO, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
-import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML } from './phase4b.js';
+import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML, anatomiaLineaHTML, anatomiaPanelHTML } from './phase4b.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 import {
   COMPLICACIONES, cirugiaVacia, esPosquirurgico, semanasCirugia, semanasTexto, conProtocolo, cirugiaPayload,
@@ -1332,6 +1332,7 @@ function razonamientoInlineHTML(sis, q) {
       <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxCribado(state.region, q.text))}">
         <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
         <p><span class="razon-etq">Cuánto pesa</span> ${r.peso}</p>
+        ${anatomiaLineaHTML(q)}
         <div class="razon-pie">— ${r.fuentes.join(' · ')}${ampliar}</div>
       </div>
     </details>`;
@@ -1377,6 +1378,7 @@ function abrirRazonamiento(btn, sisId, qId) {
     <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${r.peso}</p></div>
     ${razonFisiologiaHTML(r.fisiologia)}
     <div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>
+    ${anatomiaPanelHTML(hit.q)}
     <div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
       <ul>${(r.citas || r.fuentes).map(razonCitaHTML).join('')}</ul></div>`,
   });
