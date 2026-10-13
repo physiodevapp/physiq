@@ -124,6 +124,8 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
   const cuerpo = gruposVisibles(grupos, activo).map(g => `<div class="tej-bloque" data-grupo="${esc(g.id)}">`
     // El título del grupo también filtra (o vuelve a «Todos» si ya es el filtrado)
     + `<button type="button" class="tej-grupo" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(activo === g.id ? 'todos' : g.id)}" title="${esc(activo === g.id ? 'Ver todos los tejidos' : `Ver solo ${g.tejido.toLowerCase()}`)}">${esc(g.tejido)}</button>`
+    // Lo que no cabe en una barra (p. ej. la axonotmesis, que depende de la distancia)
+    + (g.nota ? `<p class="tej-grupo-nota">${esc(g.nota)}</p>` : '')
     + g.filas.map(f => filaHTML(f, ctx)
       + (f.subtipos?.length
         ? `<details class="tej-subtipos"><summary>Ver ${f.subtipos.length} ${f.subtipos.length === 1 ? 'subtipo' : 'subtipos'}</summary>`

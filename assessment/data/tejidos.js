@@ -28,7 +28,9 @@
 //               la primera empieza en el día 0 y cada una en el `hasta` de la
 //               anterior). Sirve para colocar la franja de fases y la línea «hoy».
 //   gravedades  { <id>: etiqueta }  — color de la barra (--tej-<id>, styles.css)
-//   grupos[]    { id, tejido, filas[] } — `id` lo usa el filtro del panel
+//   grupos[]    { id, tejido, filas[], nota?, notaFuentes? } — `id` lo usa el filtro del panel;
+//               `nota`: texto bajo el título del grupo, para lo que no cabe en una barra
+//               (la axonotmesis), con sus fuentes en `notaFuentes`
 //     fila      { id, mide, nombre, desde, hasta, gravedad, fuentes[], nota?, pendiente?, subtipos? }
 //               `mide`: clave de `medidas`, qué mide la barra (obligatorio, también en subtipos)
 //               `desde`/`hasta` = índices de columna (inclusive)
@@ -368,6 +370,28 @@ export const TIEMPOS_TEJIDO = {
             { id: 'estres_tibia_anterior', mide: 'deporte', nombre: 'Tibia anterior (alto riesgo)', desde: 6, hasta: 6, gravedad: 'grave', fuentes: ['Robertson y Wood 2017', 'Hoenig 2023'],
               nota: 'Vuelta al deporte a los 7 meses, con o sin cirugía (Robertson y Wood 2017); vuelve el 75,5 % y hay complicaciones en el 41 % (Hoenig 2023).' },
           ] },
+      ],
+    },
+    // Nervio periférico (Fase J, 9), PDF del usuario leídos enteros (2026-10).
+    // Neuropraxia: Sharma y Munakomi 2026, «recovery within 2 to 3 months», «within
+    // approximately 3 months», en deportistas «approximately half … less than 1 week of
+    // lost participation time»; Nadi 2026, «complete spontaneous recovery within days to
+    // weeks»; Robinson 2022, «should resolve within 3 months of injury». Axonotmesis
+    // sin barra (decisión del usuario, 2026-10): depende de la distancia. Robinson 2022:
+    // cruza la lesión en 8–15 días y luego «about 1 mm/day» («roughly 1 inch/month»),
+    // más rápido en aplastamientos, jóvenes y segmentos proximales; el músculo admite
+    // reinervación 18–24 meses; la recuperación motora se estanca a los 18–24 meses.
+    // Nadi 2026: «1 mm (range 0.5–3 mm) per day»; sin reinervación a los 3–4 meses,
+    // sospechar neurotmesis y explorar. Hall 2026: 1–3 mm/día (y 1–2 en el pronóstico),
+    // placa motora viable hasta 1 año, «rule of 3s» (cerrada sin recuperación: cirugía a
+    // los 3 meses). Menorca 2013: 2–3 mm/día en segmentos proximales y 1–2 en distales.
+    {
+      id: 'nervio', tejido: 'Nervio periférico',
+      nota: 'Axonotmesis (Sunderland II–IV), sin barra: el plazo depende de la distancia que tiene que crecer el nervio. El axón cruza la lesión en 1–2 semanas y luego avanza unos 1 mm al día (unos 3 cm al mes; de 0,5 a 3 mm según la fuente, más rápido en segmentos proximales, en jóvenes y tras un aplastamiento). Días hasta la reinervación ≈ milímetros desde la lesión hasta el primer músculo. El músculo admite reinervación durante 1–2 años y la recuperación motora se estanca a los 18–24 meses. Sin signos de recuperación (Tinel que no avanza, fuerza que no mejora) a los 3 meses: derivar para valorar cirugía. Neurotmesis (Sunderland V): no se recupera sin cirugía.',
+      notaFuentes: ['Robinson 2022', 'Nadi 2026', 'Hall 2026', 'Menorca 2013'],
+      filas: [
+        { id: 'nervio_neurapraxia', mide: 'deporte', nombre: 'Neuropraxia (Sunderland I)', desde: 0, hasta: 4, gravedad: 'leve', fuentes: ['Sharma y Munakomi 2026', 'Nadi 2026', 'Robinson 2022'],
+          nota: 'Recuperación espontánea al remielinizarse: de días a semanas (la mitad de las de deporte, menos de 1 semana fuera) y casi siempre antes de los 3 meses. Si a los 3 meses no se ha recuperado, reevaluar y derivar.' },
       ],
     },
   ],
