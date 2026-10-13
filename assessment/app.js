@@ -1662,7 +1662,7 @@ function _formularioAbierto() {
   return document.querySelector('.phase-container.active .fp-details[open]');
 }
 
-function _actualizarBandas() {
+export function _actualizarBandas() {
   const sis = document.getElementById('sisContextBanner');
   const fp = document.getElementById('fpContextBanner');
   let verSis = false;

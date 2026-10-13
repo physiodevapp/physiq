@@ -9,7 +9,7 @@
 // de la app.
 // ============================================================
 import { state } from './state.js';
-import { saveSession, injectQuickInputBar } from './app.js';
+import { saveSession, injectQuickInputBar, _actualizarBandas } from './app.js';
 import COMUN from './formularios/comun.js';
 
 // Regiones con archivo formularios/<region>.js. Al añadir uno, añadirlo aquí
@@ -431,6 +431,7 @@ function _actualizarContador() {
   pinta('fpCont_region', state.region ? resumenDe(state.region).length : 0);
   const nom = document.getElementById('fpNombreRegion');
   if (nom) nom.textContent = _nombreRegion(state.region);
+  _actualizarBandas();   // la banda fija repite el contador: sin esto solo cambiaba al hacer scroll
 }
 
 export async function precargarFormulario() {
