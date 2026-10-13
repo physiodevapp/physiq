@@ -391,6 +391,10 @@ export function textoOpcionIA(op) {
 // Ronda 31 (Rosario‑3): con el aviso de la ronda 30 seguía copiando la pregunta
 // como lo que «refiere» el paciente («dolor nuevo… que no cede en reposo»)
 export const AVISO_SQ = 'preguntas del cribado contestadas SÍ: el SÍ quiere decir que el paciente refirió al menos una parte de la pregunta, no todas. No copies ni parafrasees el texto de la pregunta como lo que refiere el paciente: di solo de qué trata (p. ej. «el cribado de dolor regional complejo resultó positivo») y, si la consulta concreta qué refirió, escribe eso';
+// Ronda 32 (Rosario‑1, ‑2 y ‑4): el fisioterapeuta dice que el pie no cumple los
+// criterios de un síndrome de dolor regional complejo y lo deja para vigilar, y el
+// informe lo proponía en «Hipótesis adicionales», con una «fase inicial» inventada
+export const AVISO_NO_CUMPLE = 'Lo que el fisioterapeuta dice en la consulta que no cumple los criterios de un diagnóstico y deja para vigilar no es una hipótesis adicional: recógelo en el plan como hallazgo a vigilar, con lo que él indicó (vigilarlo, comentarlo con el médico o el cirujano), sin fases, tipos ni estadios que no consten.';
 export const AVISO_HALLAZGOS = 'Cada línea es la conclusión del fisioterapeuta: los signos, síntomas o criterios que nombran la pregunta o la opción describen un patrón, no hallazgos de este paciente; no los afirmes si no constan en otro dato o en la consulta.';
 export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (!a) return [];
@@ -560,7 +564,7 @@ INSTRUCCIONES CRÍTICAS — LEE Y CUMPLE TODAS:
 8. ${reglaDerivacion('CONCLUSIONES Y PLAN DE TRATAMIENTO', false)}
 ${REGLAS_COMUNES}${hasHypotheses ? `
 9. En la sección CONCLUSIONES Y PLAN DE TRATAMIENTO incluye la subsección "### Coherencia con hipótesis de valoración". En dos o tres frases, contrasta los hallazgos (tests realizados, hallazgos de la exploración y, si la hay, la transcripción) con las hipótesis recibidas e indica si los refuerzan, matizan o si existe alguna discrepancia relevante, sin nombrar los tests (ya están en Pruebas Clínicas). Si las comprobaciones de una hipótesis que se deriva salieron negativas, di que la exploración no la apoya pero no la descarta (por eso se deriva); no digas que los hallazgos la refuerzan. No propongas hipótesis nuevas en esta subsección. ${AVISO_PRONOSTICA}
-10. Si en la transcripción aparecen hallazgos clínicos explícitos (tests especiales, signos, síntomas objetivos) que sugieran condiciones no cubiertas por las hipótesis recibidas, inclúyelos en "### Hipótesis adicionales a valorar", citando el hallazgo exacto que justifica cada una. Limita el alcance a la región anatómica del contexto estructurado. Omite esta subsección si no hay evidencia explícita.` : ''}
+10. Si en la transcripción aparecen hallazgos clínicos explícitos (tests especiales, signos, síntomas objetivos) que sugieran condiciones no cubiertas por las hipótesis recibidas, inclúyelos en "### Hipótesis adicionales a valorar", citando el hallazgo exacto que justifica cada una. Limita el alcance a la región anatómica del contexto estructurado. Omite esta subsección si no hay evidencia explícita. ${AVISO_NO_CUMPLE}` : ''}
 
 ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin títulos previos. Cada subsección va dentro de su sección y en este orden (p. ej. Intervención Quirúrgica y Cribado de Seguridad van dentro de HISTORIA CLÍNICA Y EVOLUCIÓN); omitir una no cambia el sitio de las demás:
 
@@ -619,7 +623,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Dos o tres frases: si los hallazgos refuerzan, matizan o contradicen las hipótesis recibidas, sin nombrar los tests ni proponer diagnósticos nuevos; las reglas pronósticas no cuentan como apoyo]
 
 ### Hipótesis adicionales a valorar
-[Solo si la transcripción contiene hallazgos explícitos que lo justifiquen: lista cada hipótesis adicional citando el hallazgo exacto. Omite si no hay evidencia explícita]` : ''}
+[Solo si la transcripción contiene hallazgos explícitos que lo justifiquen: lista cada hipótesis adicional citando el hallazgo exacto. Omite si no hay evidencia explícita. Lo que el fisioterapeuta dice que no cumple los criterios de un diagnóstico no va aquí]` : ''}
 
 ## SEGUIMIENTO FUNCIONAL
 [Escala recomendada para medir la evolución y cuándo reevaluar o reconsiderar la derivación por falta de mejoría (aquí y solo aquí), sin repetir el plan. Si no hay datos para ello, escribir: "Pendiente de reevaluaciones programadas."]

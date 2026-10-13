@@ -482,6 +482,28 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // o la consulta dan una frecuencia para esa misma actividad (Lucía: «¿hace a
   // menudo…? → Correr»).
   if ((r = frecuenciaInferida(t, fuente))) out.push(punto('frecuencia', 'medio', `Dice que ${r.actividad} es algo que hace con regularidad o de forma habitual, y no consta con qué frecuencia; describe solo lo que refiere.`, r.cita));
+  // Un diagnóstico que la consulta dice que «no cumple los criterios» propuesto
+  // en «Hipótesis adicionales» (Rosario‑1, ‑2 y ‑4: «Posible síndrome de dolor
+  // regional complejo en fase inicial», cuando el fisioterapeuta lo dejaba
+  // para vigilar)
+  {
+    const iHip = tn.search(/hipotesis adicionales/);
+    const transN = sinAcentos(transcripcion);
+    const reNo = /no cumple[^.]{0,40}?criterios? (?:diagnosticos )?(?:de|para) (?:un |una |el |la )?([^.,;]+?)(?= pero|,|\.|;|$)/g;
+    if (iHip >= 0) {
+      const iFin = tn.slice(iHip).search(/seguimiento funcional/);
+      const sec = tn.slice(iHip, iFin < 0 ? undefined : iHip + iFin);
+      for (const m of transN.matchAll(reNo)) {
+        const claves = m[1].split(/[^a-z0-9ñ]+/).filter(w => w.length >= 6 && !VACIAS.has(w));
+        if (claves.length && claves.every(c => sec.includes(c))) {
+          const i = iHip + sec.indexOf(claves[0]);
+          const fin = m.index + m[0].length, nombre = String(transcripcion).slice(fin - m[1].length, fin).trim();
+          out.push(punto('hipotesis-no-cumple', 'medio', `Propone como hipótesis adicional «${nombre}», y en la consulta se dice que no cumple los criterios: va como hallazgo a vigilar en el plan.`, fraseEn(t, i)));
+          break;
+        }
+      }
+    }
+  }
   // Una discrepancia escrita en dos frases como si no chocaran (Pedro: «Niega…
   // parestesias» y «Describe episodios de parestesia»; Lucía: «No refiere dolor
   // en sedestación» y «la sedestación… aumentaría el dolor»). Las dos versiones
