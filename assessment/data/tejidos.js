@@ -192,6 +192,41 @@ export const TIEMPOS_TEJIDO = {
               nota: 'Entrenamiento completo a los 52–84 días de media (6–9 semanas en el programa, que retrasa unas 3 semanas la carga excéntrica). Recayó el 57 % en la serie de 2016.' },
           ],
         },
+        // Ampliación (2026-10), PDF del usuario leídos. Gemelo y sóleo: Prakash 2018 (100
+        // deportistas, gradación por la lesión del tejido conectivo en la RM, tabla 2): grado 0
+        // (edema sin rotura de fibras) 8 días de media, 1 (rotura de fibras sin lesión del tejido
+        // conectivo) 17, 2 (con lesión del tendón, aponeurosis o epimisio, sin retracción) 25,
+        // 3 (con retracción) 48. Pedret 2015 (sóleo, 61 deportistas de élite): 29 días de media;
+        // aponeurosis central 44, lateral 19. Green 2020 (149 lesiones, fútbol australiano): 19
+        // días sin lesión de la aponeurosis y 31 con lesión grave. Pedret 2026 (revisión): la
+        // vuelta se decide por criterios, no por plazos fijos. Recto femoral: Knapik 2023
+        // (revisión sistemática, 132 deportistas, rotura completa o avulsión proximal): 11,7
+        // semanas sin cirugía (5,5–15,2) y 22,1 con cirugía (14–37,6). Aductores: Forsythe 2025
+        // (1706 lesiones, liga de fútbol de EE. UU.): 14,4 días de media (2010–2015) y 19,7
+        // (2016–2021); la osteítis de pubis suma unos 37 días. Días → columnas: 8 = «4–14d» (1);
+        // 17–28 = «3–4s» (2); 31–56 = «5–8s» (3); 82 = «2–3m» (4); 155 = «3–6m» (5).
+        { id: 'gemelo_soleo', mide: 'deporte', nombre: 'Gemelo y sóleo (por la lesión del tejido conectivo)', desde: 1, hasta: 3, gravedad: 'moderada', fuentes: ['Prakash 2018', 'Pedret 2015', 'Green 2020', 'Pedret 2026'],
+          nota: 'Vuelta al deporte en deportistas, según lo que muestre la RM. En el sóleo, 29 días de media, más en la aponeurosis central (44) que en la lateral (19). La vuelta se decide por criterios clínicos y funcionales, no por el plazo.',
+          subtipos: [
+            { id: 'gemelo_g0', mide: 'deporte', nombre: 'Grado 0 (edema, sin rotura de fibras)', desde: 1, hasta: 1, fuentes: ['Prakash 2018'],
+              nota: 'Vuelta al deporte a los 8 días de media.' },
+            { id: 'gemelo_g1', mide: 'deporte', nombre: 'Grado 1 (rotura de fibras, tejido conectivo intacto)', desde: 2, hasta: 2, fuentes: ['Prakash 2018'],
+              nota: 'Vuelta al deporte a los 17 días de media.' },
+            { id: 'gemelo_g2', mide: 'deporte', nombre: 'Grado 2 (lesión del tendón o la aponeurosis, sin retracción)', desde: 2, hasta: 2, fuentes: ['Prakash 2018', 'Green 2020'],
+              nota: 'Vuelta al deporte a los 25 días de media.' },
+            { id: 'gemelo_g3', mide: 'deporte', nombre: 'Grado 3 (con retracción)', desde: 3, hasta: 3, fuentes: ['Prakash 2018', 'Green 2020'],
+              nota: 'Vuelta al deporte a los 48 días de media; con lesión grave de la aponeurosis, 31 días en otra serie.' },
+          ] },
+        { id: 'recto_femoral_proximal', mide: 'deporte', nombre: 'Recto femoral, rotura completa o avulsión proximal', desde: 4, hasta: 5, gravedad: 'grave', fuentes: ['Knapik 2023'],
+          nota: 'En deportistas, casi siempre por chutar o esprintar; se operó al 80 %. Vuelve el 93 % sin cirugía y el 100 % con cirugía.',
+          subtipos: [
+            { id: 'recto_femoral_conservador', mide: 'deporte', nombre: 'Sin cirugía', desde: 4, hasta: 4, fuentes: ['Knapik 2023'],
+              nota: 'Vuelta al deporte a las 11,7 semanas de media (de 5,5 a 15).' },
+            { id: 'recto_femoral_cirugia', mide: 'deporte', nombre: 'Operado', desde: 5, hasta: 5, fuentes: ['Knapik 2023'],
+              nota: 'Vuelta al deporte a las 22 semanas de media (de 14 a 38). Manda el protocolo del cirujano.' },
+          ] },
+        { id: 'aductores', mide: 'deporte', nombre: 'Aductores (lesión aguda, futbolistas)', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Forsythe 2025'],
+          nota: 'Vuelta al juego a los 14–20 días de media en futbolistas profesionales; la osteítis de pubis suma unas 5 semanas. Recaen 1 de cada 5.' },
       ],
     },
     {
@@ -249,6 +284,20 @@ export const TIEMPOS_TEJIDO = {
             { id: 'rodilla_lca_reconstruido', mide: 'deporte', nombre: 'Rodilla, LCA reconstruido', desde: 6, hasta: 7, fuentes: ['Evans 2023', 'Logerstedt 2017'],
               nota: 'Vuelta a la actividad o al deporte a los 6–12 meses de media; el injerto puede tardar 18 meses o más en incorporarse del todo (Evans 2023). La guía JOSPT no fija plazos: al año, sin derrame, sin inestabilidad y con IKDC > 93 %, la vuelta al deporte es mucho más probable (Logerstedt 2017).' },
           ] },
+        // Sindesmosis (bloque 6 de la ampliación, 2026-10), PDF del usuario leídos enteros.
+        // Salameh 2022 (metaanálisis, 18 estudios, 1133 esguinces en deportistas): vuelta al
+        // deporte del 99 %, a los 52 días de media; 39,3 días sin cirugía y 70,9 con cirugía
+        // (más grado en los operados). Li y Sun 2026 (metaanálisis, 14 estudios, 901
+        // deportistas de élite): vuelta del 96 %, ~58 días; igual con sutura dinámica que sin
+        // cirugía (98 %). 39 días = «5–8s» (3); 71 días = «2–3m» (4).
+        { id: 'sindesmosis', mide: 'deporte', nombre: 'Esguince de la sindesmosis (alto de tobillo)', desde: 3, hasta: 4, gravedad: 'moderada', fuentes: ['Salameh 2022', 'Li y Sun 2026'],
+          nota: 'Vuelta al deporte en casi todos (96–99 %), a los 52–58 días de media en deportistas; mucho más lento que el esguince lateral.',
+          subtipos: [
+            { id: 'sindesmosis_conservador', mide: 'deporte', nombre: 'Sin cirugía', desde: 3, hasta: 3, fuentes: ['Salameh 2022'],
+              nota: 'Vuelta al deporte a los 39 días de media.' },
+            { id: 'sindesmosis_cirugia', mide: 'deporte', nombre: 'Operada (tornillo o sutura dinámica)', desde: 4, hasta: 4, fuentes: ['Salameh 2022', 'Li y Sun 2026'],
+              nota: 'Vuelta al deporte a los 71 días de media, en lesiones de más grado; con sutura dinámica, la misma tasa de vuelta (98 %) que sin cirugía. Manda el protocolo del cirujano.' },
+          ] },
       ],
     },
     {
@@ -292,6 +341,17 @@ export const TIEMPOS_TEJIDO = {
     // (capsulitis): fase dolorosa 2–9 meses, rígida 4–12, luego descongelación (sin plazo);
     // «from a few months to 2 to 3 years»; ~80 % recupera una función casi normal, 10–20 %
     // con secuelas; más larga con diabetes o tiroidopatía.
+    // Prótesis (bloque 1 de la ampliación, 2026-10; los dos artículos de Pasqualini 2023 no
+    // estaban disponibles). Magan 2021 (metaanálisis, 9 estudios, 1307 pacientes, prótesis
+    // de rodilla): vuelta al deporte del 18,7 % a los 3 meses, 70 % a los 6, 84 % a los 12 y
+    // 87,9 % al final del seguimiento (media de 14 meses); casi todos a deportes de bajo
+    // impacto. Jette 2020 (guía APTA de la prótesis de rodilla): fisioterapia «within 24
+    // hours of surgery» y fuerza de alta intensidad «within 7 days after surgery»; no da
+    // plazos de recuperación. Telang 2024 (revisión sistemática, 28 estudios, prótesis de
+    // cadera): «most patients resumed sporting activities within the first 6 months», la
+    // mitad en los 3 primeros (51–67 %); de los cirujanos británicos, un 33 % permite el
+    // deporte a las 6–12 semanas y un 44 % a los 3 meses; más actividad no empeoró la
+    // supervivencia de la prótesis.
     {
       id: 'articulacion', tejido: 'Articulación',
       filas: [
@@ -299,6 +359,68 @@ export const TIEMPOS_TEJIDO = {
           nota: 'Cabestrillo de 1 a 6 semanas, sin pruebas de qué plazo o posición es mejor; lo mismo tras la estabilización quirúrgica. Recidiva muy alta en jóvenes (hasta el 92 % en menores de 25 con deporte de contacto). Tras una primera luxación, vuelve a su nivel el 79 % con reparación artroscópica y el 49 % sin cirugía; en plena temporada, la mayoría vuelve en unos 10 días, con más recidivas.' },
         { id: 'capsulitis_adhesiva', mide: 'evolucion', nombre: 'Capsulitis adhesiva (hombro congelado)', desde: 4, hasta: 7, gravedad: 'moderada', fuentes: ['Li 2025'],
           nota: 'De unos meses a 2–3 años: fase dolorosa (2–9 meses), rígida (4–12 meses) y de descongelación. Cerca del 80 % recupera una función normal o casi normal; un 10–20 % queda con rigidez o dolor. Más larga con diabetes o tiroidopatía.' },
+        // Waymack y An 2023 (StatPearls, luxación posterior de codo): tras la reducción, «held
+        // in 90 degrees of flexion for 5 to 10 days followed by an active range of motion»;
+        // las inestables, «up to 3 weeks of splinting»; mejor resultado con movilidad precoz.
+        { id: 'codo_luxacion_posterior', mide: 'proteccion', nombre: 'Luxación posterior de codo (simple)', desde: 1, hasta: 2, gravedad: 'moderada', fuentes: ['Waymack y An 2023'],
+          nota: 'Férula a 90° de 5 a 10 días y luego movilidad activa; las inestables, hasta 3 semanas. La movilidad precoz da mejor resultado. Con fractura de cabeza de radio y coronoides (tríada terrible), a traumatología.' },
+        { id: 'protesis_rodilla', mide: 'deporte', nombre: 'Prótesis total de rodilla', desde: 5, hasta: 6, gravedad: 'moderada', fuentes: ['Magan 2021', 'Jette 2020'],
+          nota: 'Fisioterapia desde las primeras 24 horas y fuerza de alta intensidad desde la 1.ª semana (guía APTA). Vuelve al deporte el 19 % a los 3 meses, el 70 % a los 6 y el 84 % al año, casi siempre a deportes de bajo impacto. Manda el protocolo del cirujano.' },
+        { id: 'protesis_cadera', mide: 'deporte', nombre: 'Prótesis total de cadera', desde: 4, hasta: 5, gravedad: 'moderada', fuentes: ['Telang 2024', 'Pan 2024'],
+          nota: 'La mayoría vuelve a su deporte en los primeros 6 meses y la mitad en los 3 primeros, sobre todo a deportes de bajo impacto. Los cirujanos lo permiten a las 6–12 semanas o a los 3 meses, y no hay pruebas de que más actividad acorte la vida de la prótesis. Vuelta al trabajo, con pocos datos (vía anterior): 30–60 % a los 3 meses y 87 % al año. Manda el protocolo del cirujano.' },
+      ],
+    },
+    // Columna (bloque 8 de la ampliación, 2026-10): no son plazos de cicatrización, sino lo que
+    // tarda en resolverse el cuadro, así que todas las filas son `evolucion`. PDF del usuario
+    // leídos enteros. Alexander 2024 (StatPearls, radiculopatía lumbosacra, archivado): de la
+    // lumbalgia, «Roughly half of cases resolve within 1 to 2 weeks, with 90% resolving within
+    // 6 to 12 weeks»; tras discectomía, 73 % sin dolor de pierna al año. Margetis y Singh 2025
+    // (StatPearls, lumbalgia): aguda < 6 semanas, crónica > 12; «Most acute cases resolve
+    // within several weeks». Davis 2024 (StatPearls, ciática): «Most cases of sciatica resolve
+    // in less than 4 to 6 weeks», más lenta con déficit neurológico. Konstantinou 2018
+    // (cohorte ATLAS, atención primaria, 609 pacientes): mejora de la discapacidad del 55 % al
+    // año. Margetis y Magnus 2025 (StatPearls, radiculopatía cervical): «Over 85% of acute
+    // cervical radiculopathy resolves without any specific treatments within 8 to 12 weeks».
+    // Wong 2014 (revisión sistemática): mejoría importante en los primeros 4–6 meses y
+    // recuperación completa a los 24–36 meses en ~83 %; recurrencias en el 22 % de una serie.
+    {
+      id: 'columna', tejido: 'Columna',
+      filas: [
+        { id: 'lumbalgia_aguda', mide: 'evolucion', nombre: 'Lumbalgia aguda inespecífica', desde: 0, hasta: 4, gravedad: 'leve', fuentes: ['Alexander 2024', 'Margetis y Singh 2025'],
+          nota: 'La mitad se resuelve en 1–2 semanas y el 90 % en 6–12. Pasa a crónica a partir de las 12 semanas; más probable con episodios previos, dolor intenso, depresión, miedo al movimiento o síntomas en la pierna.' },
+        { id: 'radiculopatia_lumbar', mide: 'evolucion', nombre: 'Radiculopatía lumbar (ciática)', desde: 2, hasta: 6, gravedad: 'moderada', fuentes: ['Davis 2024', 'Konstantinou 2018', 'Alexander 2024'],
+          nota: 'La mayoría se resuelve en 4–6 semanas, más despacio con déficit neurológico. En atención primaria, solo el 55 % ha mejorado su discapacidad al año. Tras discectomía, el 73 % no tiene dolor de pierna al año.' },
+        { id: 'radiculopatia_cervical', mide: 'evolucion', nombre: 'Radiculopatía cervical', desde: 3, hasta: 7, gravedad: 'moderada', fuentes: ['Margetis y Magnus 2025', 'Wong 2014'],
+          nota: 'Más del 85 % de las agudas se resuelve en 8–12 semanas. La mejoría importante llega en los primeros 4–6 meses y la recuperación completa, a los 2–3 años en el 83 %; puede recidivar con menos intensidad.' },
+        // Columna operada (bloque 2 de la ampliación, 2026-10), PDF del usuario leídos. Son
+        // vuelta al trabajo (`deporte` = vuelta a la función), no consolidación. Wang 2017
+        // (revisión sistemática, 36 estudios): TLIF mínimamente invasiva 7 semanas frente a 11
+        // abierta (Parker 2013); según la técnica y la serie, de 3,6 a 10,9 meses; mediana de
+        // 96 días tras ALIF abierta (Gornet). Cui 2026 (síntesis de la mejor evidencia):
+        // movilización el mismo día de la cirugía y fisioterapia «from the second postoperative
+        // day». Bogaert 2022 (metaanálisis, 18 ensayos): ejercicio, y mejor con terapia
+        // cognitivo-conductual, mejora la discapacidad hasta 6 meses (evidencia baja). Khan 2026
+        // (metaanálisis): la prótesis de disco lumbar vuelve antes al trabajo que la artrodesis
+        // solo en el análisis de sensibilidad (se cita en la fila de la prótesis).
+        // Health Quality Ontario 2019 (evaluación de tecnología, cervical, un nivel): mediana de
+        // vuelta al trabajo de 48 días con prótesis (Bryan) frente a 61 con artrodesis; con
+        // todas las prótesis, 13–20 días antes que la artrodesis. 48 días = «5–8s» (3);
+        // 61 = «2–3m» (4).
+        { id: 'artrodesis_lumbar', mide: 'deporte', nombre: 'Artrodesis lumbar', desde: 3, hasta: 6, gravedad: 'grave', fuentes: ['Wang 2017', 'Cui 2026', 'Bogaert 2022'],
+          nota: 'Movilización el mismo día y fisioterapia desde el 2.º. Vuelta al trabajo a las 7 semanas con cirugía mínimamente invasiva y a las 11 con abierta en un mismo estudio; según la técnica y la serie, de 3 a 11 meses. El ejercicio, mejor con terapia cognitivo-conductual, mejora la discapacidad hasta los 6 meses (evidencia baja). Manda el protocolo del cirujano.' },
+        // Prótesis de disco lumbar: Gornet 2011 (ensayo, 577 pacientes): mediana de vuelta al
+        // trabajo de 75 días frente a 96 con artrodesis anterior. Siepe 2007 (39 deportistas):
+        // vuelta al deporte el 38,5 % en 3 meses y el 30,7 % de 3 a 6, mejor rendimiento a los
+        // 5,2. Tumialán 2010 (militares): servicio sin restricciones a las 22,6 semanas (32,4 con
+        // artrodesis); cervical, 10,3 semanas con prótesis y 16,5 con artrodesis. Patel 2026
+        // (metaanálisis de 13 ensayos): resultados que convergen con la artrodesis a los 5 años.
+        // 75 días = «2–3m» (4); 22,6 semanas = «3–6m» (5).
+        { id: 'protesis_disco_lumbar', mide: 'deporte', nombre: 'Prótesis de disco lumbar', desde: 4, hasta: 5, gravedad: 'moderada', fuentes: ['Gornet 2011', 'Siepe 2007', 'Tumialán 2010', 'Patel 2026', 'Khan 2026'],
+          nota: 'Vuelta al trabajo a los 75 días de mediana, 3 semanas antes que con artrodesis anterior. Vuelve al deporte cerca del 70 % en los 6 primeros meses; a un trabajo físico exigente, hacia las 23 semanas. A los 5 años, resultados parecidos a la artrodesis. Manda el protocolo del cirujano.' },
+        { id: 'protesis_disco_cervical', mide: 'deporte', nombre: 'Prótesis de disco cervical', desde: 3, hasta: 4, gravedad: 'moderada', fuentes: ['Health Quality Ontario 2019', 'Tumialán 2010'],
+          nota: 'Vuelta al trabajo hacia las 7 semanas (mediana de 48 días con un modelo), 2–3 semanas antes que con la artrodesis cervical anterior. A un trabajo físico exigente (militares), a las 10 semanas. Manda el protocolo del cirujano.' },
+        { id: 'artrodesis_cervical', mide: 'deporte', nombre: 'Artrodesis cervical anterior', desde: 4, hasta: 5, gravedad: 'moderada', fuentes: ['Health Quality Ontario 2019', 'Tumialán 2010'],
+          nota: 'Vuelta al trabajo hacia los 2 meses (mediana de 61 días en el mismo ensayo). A un trabajo físico exigente (militares), a las 16,5 semanas. A los 2 años, la misma tasa de empleo que con prótesis. Manda el protocolo del cirujano.' },
       ],
     },
     {
@@ -378,6 +500,22 @@ export const TIEMPOS_TEJIDO = {
               nota: 'Yeso antebraquial 4–6 semanas (6 si hubo que reducirla). Un metaanálisis de 3 ensayos encontró mejor función con 3–4 semanas que con 5–6, sin más complicaciones. Dedos, codo y hombro se mueven desde el principio; la muñeca, al quitar el yeso, y el fortalecimiento hacia las 6–8 semanas.' },
             { id: 'fx_radio_distal_cirugia', mide: 'proteccion', nombre: 'Radio distal, operada', desde: 1, hasta: 3, fuentes: ['Mehta 2024'],
               nota: 'Férula de unos días a varias semanas, según la estabilidad y el cirujano. La guía APTA recomienda movilidad activa de mano, muñeca y hombro y actividad ligera en las 3 primeras semanas (A) y fortalecimiento submáximo desde la 2.ª (B); el enfoque clásico espera 4–6 semanas para la muñeca y 6 para la fuerza. Manda el protocolo del cirujano.' },
+            // Patiño y Saenz 2023 (StatPearls, cabeza de radio): sin cirugía (no desplazadas,
+            // escalón < 2 mm, < 30 % de superficie, angulación < 30°), yeso o cabestrillo «for
+            // two or three weeks», radiografía a la semana; 2–3 semanas = «4–14d» a «3–4s».
+            { id: 'fx_cabeza_radio', mide: 'proteccion', nombre: 'Cabeza de radio, sin cirugía', desde: 1, hasta: 2, fuentes: ['Patiño y Saenz 2023'],
+              nota: 'Yeso o cabestrillo 2–3 semanas, con flexoextensión activa precoz; solo las no desplazadas o poco desplazadas. Si bloquean el movimiento, a cirugía.' },
+            // Donnally 2025 (StatPearls, fracturas vertebrales por compresión): «Bracing for 4 to
+            // 12 weeks is typical, discontinued when pain resolves and radiographic healing
+            // occurs». Margetis y Patel 2025 (StatPearls, vertebroplastia y cifoplastia): con
+            // tratamiento conservador, «Symptoms typically resolve within 4 to 6 weeks»; la
+            // cementación es para el dolor que no cede; sin plazo de recuperación tras ella.
+            // Yuan 2016 (metaanálisis de 10 ensayos, texto completo en PMC): mejor dolor y función
+            // que el tratamiento conservador; cita a Gill 2007 (más de 5 puntos menos en la EVA en el
+            // postoperatorio inmediato) y a Liu 2013 (igual que la inyección simulada de 2 semanas
+            // a 6 meses). Sin plazo de recuperación: no se pinta una barra propia.
+            { id: 'fx_vertebral_compresion', mide: 'proteccion', nombre: 'Vertebral por compresión, sin cirugía', desde: 2, hasta: 4, fuentes: ['Donnally 2025', 'Margetis y Patel 2025', 'Yuan 2016'],
+              nota: 'Corsé de 4 a 12 semanas, hasta que cede el dolor y la radiografía muestra la consolidación; los síntomas suelen ceder en 4–6 semanas. Si el dolor no cede, vertebroplastia o cifoplastia: alivian el dolor en el postoperatorio inmediato y mejoran la función frente al tratamiento conservador, pero frente a una intervención simulada el dolor es igual (sin plazo de recuperación propio).' },
           ] },
         // Fase J, 5 (fractura de estrés): PDF del usuario leídos enteros (2026-10).
         // Hoenig 2023 (revisión sistemática y metaanálisis, 76 estudios): tiempo medio de
