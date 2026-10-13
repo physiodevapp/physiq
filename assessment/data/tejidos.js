@@ -83,6 +83,33 @@ export const TIEMPOS_TEJIDO = {
           id: 'tendinopatia', mide: 'sinEspecificar', nombre: 'Tendinopatía', desde: 2, hasta: 5, gravedad: 'moderada',
           fuentes: ['Snyder-Mackler 2012'],
           nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga. En la fuente comparte fila con la rotura.',
+          // Fase J, 8 (tendinopatías): no hay plazo de cicatrización, sino la duración de los
+          // programas de carga de las pautas de cada hipótesis, de fuentes ya leídas enteras
+          // para esas pautas (2026-10). Ophey 2025 (ro5): «ejercicio de resistencia progresivo
+          // de cuádriceps durante al menos 12 semanas». Chimenti 2024 (tp8): duración de 6
+          // semanas a 6 meses sin diferencias en el resultado; mejoría del VISA-A a las 12
+          // semanas. Jonsson 2008 y Pringels 2025 (tp9): 12 semanas (el ensayo mide a las 12 y
+          // a las 24). Rich 2025 (ca9): 6 sesiones en 12 semanas. Mellor 2018 (ca4, ensayo
+          // LEAP): 14 sesiones en 8 semanas; éxito del 77 % a las 8 semanas y del 79 % a las
+          // 52. Lucado 2022 (co1): 6–12 semanas. See 2026 (co2): los estudios, 12 semanas.
+          // Semanas → columnas: 8 s = «5–8 s» (3); 6–12 s = 3–4; 12 s = «2–3 m» (4);
+          // 6 s–6 meses = 3–5.
+          subtipos: [
+            { id: 'tendinopatia_rotuliana', mide: 'programa', nombre: 'Rotuliana', desde: 4, hasta: 4, fuentes: ['Ophey 2025'],
+              nota: 'Ejercicio de resistencia progresivo de cuádriceps durante al menos 12 semanas (de preferencia, pesado y lento); si a las 12 semanas no hay cambio clínicamente relevante, valorar una cinta infrarrotuliana. Certeza GRADE muy baja.' },
+            { id: 'tendinopatia_aquilea_media', mide: 'programa', nombre: 'Aquílea, porción media', desde: 3, hasta: 5, fuentes: ['Chimenti 2024'],
+              nota: 'La duración del programa (de 6 semanas a 6 meses) no parece cambiar el resultado; mejoría esperable de 18–21 puntos en el VISA-A a las 12 semanas.' },
+            { id: 'tendinopatia_aquilea_insercional', mide: 'programa', nombre: 'Aquílea, insercional', desde: 4, hasta: 4, fuentes: ['Jonsson 2008', 'Pringels 2025'],
+              nota: 'Excéntrico sin dorsiflexión, 12 semanas (Jonsson 2008). Limitar la dorsiflexión mejoró más el VISA-A a las 12 y a las 24 semanas (Pringels 2025).' },
+            { id: 'tendinopatia_isquios_proximal', mide: 'programa', nombre: 'Isquiotibiales, proximal', desde: 4, hasta: 4, fuentes: ['Rich 2025'],
+              nota: 'Programa de fuerza progresivo por fases, 6 sesiones en 12 semanas en el ensayo; reintroducir poco a poco la compresión (flexión profunda de cadera, estar sentado).' },
+            { id: 'tendinopatia_glutea', mide: 'programa', nombre: 'Glútea', desde: 3, hasta: 3, fuentes: ['Mellor 2018'],
+              nota: 'Educación sobre la carga más ejercicio, 14 sesiones en 8 semanas; éxito en el 77 % a las 8 semanas y en el 79 % al año (ensayo LEAP).' },
+            { id: 'epicondilalgia_lateral', mide: 'programa', nombre: 'Epicondilalgia lateral', desde: 3, hasta: 4, fuentes: ['Lucado 2022'],
+              nota: 'Ejercicio resistido de los extensores de la muñeca, 3 × 15 durante 6–12 semanas (evidencia moderada y opinión de expertos).' },
+            { id: 'epicondilalgia_medial', mide: 'programa', nombre: 'Epicondilalgia medial', desde: 4, hasta: 4, fuentes: ['See 2026'],
+              nota: 'Los estudios usaron excéntrico de flexores y pronadores durante 12 semanas; la revisión no recomienda una pauta concreta. Certeza baja o muy baja.' },
+          ],
         },
         {
           // Wu 2017, «Tendon healing»: «The remodelling stage … begins after six to eight
