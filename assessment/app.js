@@ -16,7 +16,7 @@ import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { nombreRegion, regionConLado } from './lib/region.js';
 import { TEXTO_VALORACION_BREVE, textoNotas, textoInformePaciente } from './lib/resumenes.js';
 import { ramaPauta } from './lib/pauta.js';
-import { tiemposTejidoHTML } from './lib/tejidos.js';
+import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
 import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, urlIA } from './ampliar-ia.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
@@ -3248,6 +3248,7 @@ function _filtroTejidos() {
   try { return localStorage.getItem(_CLAVE_FILTRO_TEJIDOS) || 'todos'; } catch { return 'todos'; }
 }
 function _pintarTiemposTejido() {
+  _cerrarInfoBarra({ sinFoco: true });
   const posquirurgico = esPosquirurgico(state.mecanismo);
   document.getElementById('tejidosCuerpo').innerHTML = tiemposTejidoHTML(TIEMPOS_TEJIDO, {
     posquirurgico, semanas: posquirurgico ? semanasCirugia(state.cirugia) : null, filtro: _filtroTejidos(),
@@ -3267,6 +3268,8 @@ function _bordesFiltroTejidos(fila) {
   fila.classList.toggle('mas-dcha', fila.scrollLeft < max - 2);
 }
 document.getElementById('tejidosCuerpo')?.addEventListener('click', e => {
+  const barra = e.target instanceof Element ? e.target.closest('.tej-barra[data-barra]') : null;
+  if (barra) { _alternarInfoBarra(barra); return; }
   const b = e.target instanceof Element ? e.target.closest('[data-filtro-tejido]') : null;
   if (!b) return;
   try { localStorage.setItem(_CLAVE_FILTRO_TEJIDOS, b.dataset.filtroTejido); } catch { /* sin preferencia guardada */ }
@@ -3276,6 +3279,71 @@ document.getElementById('tejidosCuerpo')?.addEventListener('click', e => {
   // El foco vuelve a la pastilla de ese tejido (también si se tocó su título de grupo)
   cuerpo.querySelector(`.tej-filtro-btn[data-grupo="${b.dataset.grupo}"]`)?.focus({ preventScroll: true });
 });
+
+// Tarjeta de una barra (infoBarraHTML, lib/tejidos.js): su gravedad, qué mide y
+// su plazo, junto a la barra tocada, para no bajar hasta la leyenda. Va en
+// <body> y con position: fixed (el panel se anima con transform, que la
+// recolocaría). Se cierra al tocar fuera o la misma barra, con Escape (antes
+// que el panel), al desplazar, al cambiar el filtro y al cerrar el panel.
+let _barraInfo = null, _scrollInfo = 0;
+function _alternarInfoBarra(barra) {
+  if (_barraInfo === barra) { _cerrarInfoBarra(); return; }
+  _cerrarInfoBarra({ sinFoco: true });
+  const html = infoBarraHTML(TIEMPOS_TEJIDO, barra.dataset.barra);
+  if (!html) return;
+  let info = document.getElementById('tejInfo');
+  if (!info) {
+    info = document.createElement('div');
+    info.id = 'tejInfo';
+    info.className = 'tej-info';
+    info.setAttribute('role', 'status');
+    info.addEventListener('click', e => e.stopPropagation());
+    document.body.appendChild(info);
+  }
+  info.innerHTML = html;
+  info.hidden = false;
+  _barraInfo = barra;
+  _scrollInfo = document.getElementById('tejidosCuerpo').scrollTop;
+  barra.setAttribute('aria-expanded', 'true');
+  _colocarInfoBarra();
+}
+function _colocarInfoBarra() {
+  const info = document.getElementById('tejInfo');
+  if (!info || !_barraInfo) return;
+  const b = _barraInfo.getBoundingClientRect();
+  const margen = 16, sep = 8;
+  const ancho = info.offsetWidth, alto = info.offsetHeight;
+  const left = Math.min(Math.max(margen, b.left + b.width / 2 - ancho / 2), innerWidth - margen - ancho);
+  // Debajo de la barra si cabe; si no, encima
+  const debajo = b.bottom + sep + alto <= innerHeight - margen;
+  info.style.left = `${Math.max(margen, left)}px`;
+  info.style.top = `${debajo ? b.bottom + sep : Math.max(margen, b.top - sep - alto)}px`;
+}
+function _cerrarInfoBarra({ sinFoco = false } = {}) {
+  const info = document.getElementById('tejInfo');
+  if (info) info.hidden = true;
+  const barra = _barraInfo;
+  _barraInfo = null;
+  if (!barra) return;
+  barra.setAttribute('aria-expanded', 'false');
+  if (!sinFoco && barra.isConnected) barra.focus({ preventScroll: true });
+}
+// Solo un desplazamiento de verdad la cierra: el último evento de una inercia
+// (o el scroll que precede al toque) llega tras abrirla y la cerraría al instante
+document.getElementById('tejidosCuerpo')?.addEventListener('scroll', e => {
+  if (!_barraInfo) return;
+  if (Math.abs(e.currentTarget.scrollTop - _scrollInfo) > 24) _cerrarInfoBarra({ sinFoco: true });
+  else _colocarInfoBarra();
+}, { passive: true });
+window.addEventListener('resize', () => _cerrarInfoBarra({ sinFoco: true }));
+// Fuera de la barra y de la tarjeta (el panel corta la propagación, así que en captura)
+document.addEventListener('click', e => {
+  if (_barraInfo && !(e.target instanceof Element && e.target.closest('.tej-barra[data-barra], #tejInfo'))) _cerrarInfoBarra({ sinFoco: true });
+}, true);
+// Escape cierra primero la tarjeta y deja el panel abierto
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && _barraInfo) { e.stopImmediatePropagation(); e.preventDefault(); _cerrarInfoBarra(); }
+}, true);
 
 function abrirTiemposTejido() {
   const overlay = document.getElementById('tejidosOverlay');
@@ -3298,6 +3366,7 @@ function cerrarTiemposTejido({ desdeHistorial = false, sinHistorial = false } = 
   const overlay = document.getElementById('tejidosOverlay');
   if (!overlay?.classList.contains('open')) return;
   overlay.classList.remove('open');
+  _cerrarInfoBarra({ sinFoco: true });
   const panel = document.getElementById('tejidosPanel');
   panel.style.transform = ''; panel.style.transition = '';
   unlockBodyScroll();

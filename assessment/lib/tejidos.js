@@ -65,11 +65,45 @@ function filaHTML(f, { columnas, hoy, pendienteChip, medidas = {}, gravedad = f.
   const m = medidas[f.mide] || {};
   const marca = m.marca ? ` <span class="tej-marca" data-mide="${esc(f.mide)}">${esc(m.marca)}</span>` : '';
   const que = m.etiqueta ? ` (${m.etiqueta.toLowerCase()})` : '';
+  // La barra es un botón: tocarla abre la tarjeta de infoBarraHTML() (qué gravedad, qué mide
+  // y qué plazo), para no tener que bajar hasta la leyenda (decisión del usuario, 2026-10).
   return `<div class="tej-fila${clase}" data-tejido="${esc(f.id)}"><div class="tej-nombre">${esc(f.nombre)}${marca}${f.pendiente ? ` ${pendienteChip}` : ''}`
     + `${f.nota ? `<span class="tej-nota">${esc(f.nota)}</span>` : ''}</div>`
     + `<div class="tej-pista" style="--tej-n:${n}">`
-    + `<span class="tej-barra tej-${esc(gravedad)}${m.relleno ? ` tej-relleno-${esc(m.relleno)}` : ''}" data-mide="${esc(f.mide || '')}" style="grid-column:${f.desde + 1} / ${f.hasta + 2}" role="img" aria-label="${esc(`${f.nombre}: ${rango}${que}`)}" title="${esc(rango + que)}"></span>`
+    + `<button type="button" class="tej-barra tej-${esc(gravedad)}${m.relleno ? ` tej-relleno-${esc(m.relleno)}` : ''}" data-mide="${esc(f.mide || '')}" data-barra="${esc(f.id)}" style="grid-column:${f.desde + 1} / ${f.hasta + 2}" aria-expanded="false" aria-controls="tejInfo" aria-label="${esc(`${f.nombre}: ${rango}${que}`)}"></button>`
     + `${lineaHoy(hoy)}</div></div>`;
+}
+
+// Fila o subtipo por id → { fila, madre, gravedad } (el subtipo sin `gravedad` toma la de
+// su fila madre), o null.
+export function buscarFila(datos, id) {
+  for (const g of datos.grupos) {
+    for (const f of g.filas) {
+      if (f.id === id) return { fila: f, madre: null, gravedad: f.gravedad };
+      const st = (f.subtipos || []).find(x => x.id === id);
+      if (st) return { fila: st, madre: f, gravedad: st.gravedad || f.gravedad };
+    }
+  }
+  return null;
+}
+
+// Tarjeta que se abre al tocar una barra: la leyenda de esa barra sola, sin tener que
+// bajar hasta el final ni descifrar color y relleno. La muestra de «Mide» va en el color
+// de la gravedad de la barra, como en el diagrama. '' si el id no existe.
+export function infoBarraHTML(datos, id) {
+  const r = buscarFila(datos, id);
+  if (!r) return '';
+  const { fila: f, madre, gravedad } = r;
+  const m = (datos.medidas || {})[f.mide] || {};
+  const rango = rangoTexto(f, datos.columnas);
+  const plazo = rango.charAt(0).toUpperCase() + rango.slice(1);
+  return (madre ? `<div class="tej-info-madre">${esc(madre.nombre)}</div>` : '')
+    + `<div class="tej-info-nombre">${esc(f.nombre)}</div>`
+    + '<dl class="tej-info-datos">'
+    + `<div><dt>Gravedad</dt><dd><span class="tej-ley-muestra tej-${esc(gravedad)}" aria-hidden="true"></span>${esc(datos.gravedades[gravedad] || gravedad)}</dd></div>`
+    + (m.etiqueta ? `<div><dt>Mide</dt><dd><span class="tej-ley-muestra tej-${esc(gravedad)}${m.relleno ? ` tej-relleno-${esc(m.relleno)}` : ''}" aria-hidden="true"></span>${esc(m.etiqueta)}</dd></div>` : '')
+    + `<div><dt>Plazo</dt><dd>${esc(plazo)}</dd></div>`
+    + '</dl>';
 }
 
 // Grupos que se ven con un filtro: 'todos' (o uno que no existe) = todos.
