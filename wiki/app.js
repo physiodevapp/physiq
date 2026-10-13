@@ -436,7 +436,7 @@ function renderTissue() {
     // Cada fila y, debajo, sus subtipos (con sangría y la gravedad de la madre)
     for (const madre of g.filas) {
       for (const f of [madre, ...(madre.subtipos || []).map(st => ({ ...st, g: st.g || madre.g, sub: true }))]) {
-        // Qué mide la barra: relleno (tm-liso / tm-rayado / tm-contorno) y, si la medida lleva
+        // Qué mide la barra: relleno (tm-liso / -rayado / -contorno / -punteado / -tenue) y, si la medida lleva
         // `marca`, una etiqueta tras el nombre (ver «Qué mide la barra» en la leyenda)
         const m = T.medidas[f.mide] || {};
         const rel = m.relleno ? ` tm-${m.relleno}` : '';
@@ -454,8 +454,8 @@ function renderTissue() {
   const leyenda = Object.entries(T.gravedades).map(([k, v]) => `<span class="ts-ley"><span class="ts-ley-muestra tg-${k}"></span>${v}</span>`).join('');
   const hayPend = T.grupos.some(g => g.filas.some(f => f.pendiente));
   document.getElementById('tissue-extra').innerHTML =
-    `<div class="ts-leyenda">${leyenda}</div>`
-    + '<div class="ts-leyenda ts-leyenda-mide"><span class="ts-ley-titulo">Qué mide la barra:</span>'
+    `<div class="ts-leyenda"><span class="ts-ley-titulo">Color = gravedad:</span>${leyenda}</div>`
+    + '<div class="ts-leyenda ts-leyenda-mide"><span class="ts-ley-titulo">Relleno = qué mide la barra (en el color de su gravedad):</span>'
     + Object.values(T.medidas).filter(m => !m.marca).map(m => `<span class="ts-ley"><span class="ts-ley-muestra ts-ley-mide tm-${m.relleno} tm-ini tm-fin"></span>${m.etiqueta}</span>`).join('')
     + Object.values(T.medidas).filter(m => m.marca).map(m => `<span class="ts-ley"><span class="ts-marca">${m.marca}</span>${m.etiqueta}</span>`).join('')
     + '</div>'

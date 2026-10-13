@@ -787,13 +787,13 @@ const SEARCH_QUERY_OVERRIDES = {
 const TISSUE_TIMES = {
   cols: ['1–3<br>días', '4–14<br>días', '3–4<br>sem.', '5–8<br>sem.', '2–3<br>meses', '3–6<br>meses', '6m–<br>1 año', '2<br>años'],
   // Qué mide cada barra (mismo campo `mide` que physiq-assessment): relleno liso, rayado o contorno;
-  // las que no tienen relleno propio llevan una etiqueta tras el nombre.
+  // cada medida tiene su relleno (liso, rayado, contorno, punteado, tenue).
   medidas: {
     deporte: { etiqueta: 'Vuelta al deporte o a la función', relleno: 'liso' },
     proteccion: { etiqueta: 'Protección (inmovilización o descarga)', relleno: 'rayado' },
     programa: { etiqueta: 'Duración del programa de tratamiento', relleno: 'contorno' },
-    biologia: { etiqueta: 'Biología de la reparación', relleno: 'liso', marca: 'biología' },
-    sinEspecificar: { etiqueta: 'Sin especificar en la fuente', relleno: 'liso', marca: 'sin especificar' },
+    biologia: { etiqueta: 'Biología de la reparación', relleno: 'punteado' },
+    sinEspecificar: { etiqueta: 'Sin especificar en la fuente', relleno: 'tenue' },
   },
   gravedades: { minima: 'Mínima', leve: 'Leve', moderada: 'Moderada', grave: 'Grave / reconstrucción' },
   grupos: [

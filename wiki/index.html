@@ -611,9 +611,14 @@
   td.tm-contorno.tm-ini { box-shadow: inset 0 2px var(--tm-c), inset 0 -2px var(--tm-c), inset 2px 0 var(--tm-c); }
   td.tm-contorno.tm-fin { box-shadow: inset 0 2px var(--tm-c), inset 0 -2px var(--tm-c), inset -2px 0 var(--tm-c); }
   td.tm-contorno.tm-ini.tm-fin { box-shadow: inset 0 0 0 2px var(--tm-c); }
+  /* punteado = biología de la reparación; tenue = sin especificar (solo bordes discontinuos) */
+  td.tm-punteado { background-image: radial-gradient(var(--bg, #0a0e14) 1.3px, transparent 1.6px); background-size: 6px 6px; }
+  td.tm-tenue { background: repeating-linear-gradient(90deg, var(--tm-c) 0 4px, transparent 4px 7px) top / 100% 2px no-repeat, repeating-linear-gradient(90deg, var(--tm-c) 0 4px, transparent 4px 7px) bottom / 100% 2px no-repeat; background-color: rgba(255,255,255,0.05); }
   .ts-ley-mide { background-color: rgba(255,255,255,0.45); --tm-c: rgba(255,255,255,0.6); }
   .ts-ley-mide.tm-rayado { background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--bg, #0a0e14) 4px 6px); }
   .ts-ley-mide.tm-contorno { background: none; box-shadow: inset 0 0 0 2px var(--tm-c); }
+  .ts-ley-mide.tm-punteado { background-image: radial-gradient(var(--bg, #0a0e14) 1.3px, transparent 1.6px); background-size: 6px 6px; }
+  .ts-ley-mide.tm-tenue { background: none; border: 1.5px dashed var(--tm-c); box-sizing: border-box; background-color: rgba(255,255,255,0.08); }
   .ts-leyenda-mide { margin-top: 8px; }
   .ts-ley-titulo { opacity: 0.7; }
   .ts-marca { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 6px; font-size: 0.62rem; line-height: 1.5; opacity: 0.75; border: 1px dashed currentColor; white-space: nowrap; vertical-align: 1px; }
@@ -1000,8 +1005,8 @@
   </div>
 </div>
 
-<script src="data.js?v=a9308d706a0e95e6cd6f82072ea8fb5db2e9cadf"></script>
-<script src="app.js?v=a9308d706a0e95e6cd6f82072ea8fb5db2e9cadf"></script>
+<script src="data.js?v=3825effc3572363aa393937b5f52ce8a17ea2805"></script>
+<script src="app.js?v=3825effc3572363aa393937b5f52ce8a17ea2805"></script>
 
 </body>
 </html>
