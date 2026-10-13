@@ -160,6 +160,33 @@ export const TIEMPOS_TEJIDO = {
         { id: 'musculo_g1', mide: 'sinEspecificar', nombre: 'Rotura grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'] },
         { id: 'musculo_g2', mide: 'sinEspecificar', nombre: 'Rotura grado II', desde: 2, hasta: 3, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
         { id: 'musculo_g3', mide: 'sinEspecificar', nombre: 'Rotura grado III', desde: 2, hasta: 4, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'] },
+        // Isquiotibiales por la clasificación BAMIC (Fase J, 7), PDF del usuario leídos
+        // enteros (2026-10). Pollock 2014: grados 0–4 por la RM, con sufijo «a»
+        // miofascial, «b» unión miotendinosa o «c» intratendinosa. Pollock 2016, tabla 3
+        // (atletismo de élite, 65 lesiones, días medios hasta el entrenamiento completo):
+        // 0 = 10; 1a = 18; 1b = 18; 2a = 25; 2b = 21; 2c = 27; 3b = 41 (1 lesión);
+        // 3c = 84 (40–128); recurrencia 63 % en 2c y 57 % en 3c. Hollabaugh 2023, tabla 1,
+        // recoge Pollock 2022 (70 lesiones, con el programa de rehabilitación de British
+        // Athletics): 0 = 9; 1a = 12; 1b = 17; 2a = 19; 2b = 19; 2c = 35; 3c = 51,5.
+        // Macdonald 2019, tabla 3 (plazos aproximados del programa): 1a días 5–10, 2b días
+        // 14–28, 3c semanas 6–9. Hollabaugh atribuye a Macdonald «hasta 3 semanas» en «a»,
+        // «4 a 8» en «b» y «2 a 4 meses» en «c», que no está en el artículo: no se usa.
+        // Sin barra: 3a y 3b (0 y 1 lesión en Pollock 2016) y grado 4 (ninguna).
+        { id: 'isquios_bamic', mide: 'deporte', nombre: 'Isquiotibiales (clasificación BAMIC)', desde: 1, hasta: 4, gravedad: 'moderada', fuentes: ['Pollock 2014', 'Pollock 2016', 'Hollabaugh 2023', 'Macdonald 2019'],
+          nota: 'Días hasta volver al entrenamiento completo según el grado de la RM (0–4) y la localización: «a» miofascial, «b» unión miotendinosa, «c» dentro del tendón. Medias de atletas de élite con RM en la primera semana: en otros deportes y niveles los plazos pueden ser distintos.',
+          subtipos: [
+            { id: 'isquios_g0', mide: 'deporte', nombre: 'Grado 0 (RM normal)', desde: 1, hasta: 1, gravedad: 'leve', fuentes: ['Pollock 2016', 'Hollabaugh 2023'],
+              nota: 'Entrenamiento completo a los 9–10 días de media, con muy pocas recaídas.' },
+            { id: 'isquios_g1', mide: 'deporte', nombre: 'Grado 1a/1b (pequeña)', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Pollock 2016', 'Hollabaugh 2023', 'Macdonald 2019'],
+              nota: 'Entrenamiento completo a los 12–18 días de media (de 5 a 10 días en el programa de British Athletics para una 1a).' },
+            { id: 'isquios_g2ab', mide: 'deporte', nombre: 'Grado 2a/2b (moderada, sin tendón)', desde: 2, hasta: 2, fuentes: ['Pollock 2016', 'Hollabaugh 2023', 'Macdonald 2019'],
+              nota: 'Entrenamiento completo a los 19–25 días de media (de 14 a 28 días en el programa para una 2b).' },
+            { id: 'isquios_g2c', mide: 'deporte', nombre: 'Grado 2c (moderada, dentro del tendón)', desde: 2, hasta: 3, fuentes: ['Pollock 2016', 'Hollabaugh 2023'],
+              nota: 'Entrenamiento completo a los 27–35 días de media. Recayó el 63 % en la serie de 2016.' },
+            { id: 'isquios_g3c', mide: 'deporte', nombre: 'Grado 3c (extensa, dentro del tendón)', desde: 3, hasta: 4, gravedad: 'grave', fuentes: ['Pollock 2016', 'Hollabaugh 2023', 'Macdonald 2019'],
+              nota: 'Entrenamiento completo a los 52–84 días de media (6–9 semanas en el programa, que retrasa unas 3 semanas la carga excéntrica). Recayó el 57 % en la serie de 2016.' },
+          ],
+        },
       ],
     },
     {
