@@ -241,10 +241,12 @@ export function regionTexto(data, nombreRegion = r => r) {
 // citando «LR× 2,0» y «0/4 hallazgos»), notas del plan solo si tienen texto
 // (un «—» acababa como «no se especificó…») y la derivación del árbol sin la
 // palabra «árbol». Lo añadido va al final y solo aparece cuando hay datos.
+// Ronda 31: «EVN» se desarrollaba como «escala visual numérica» (Rosario, 3 de 3);
+// es escala verbal numérica: la sigla va sin desarrollar.
 // Ronda 23: el EVN registrado en la fase 3 desaparecía cuando el dictado daba
 // otra cifra para «ahora» (Rosa 4, Tomás 6, Elena 7): el informe se quedaba con
 // la de la consulta. Las dos son ciertas, cada una en su momento.
-export const NOTA_NRS = '(intensidad registrada por el fisioterapeuta en la valoración: debe constar en el informe como «EVN de N/10» o «EVN de N/10 en la valoración», sin atribuirle otro momento —reposo, actividad, peor momento, última semana—; si se da otra cifra para otro momento, recoge las dos, cada una con el suyo)';
+export const NOTA_NRS = '(intensidad registrada por el fisioterapeuta en la valoración: debe constar en el informe como «EVN de N/10» o «EVN de N/10 en la valoración», con la sigla sin desarrollar, sin atribuirle otro momento —reposo, actividad, peor momento, última semana—; si se da otra cifra para otro momento, recoge las dos, cada una con el suyo)';
 // Ronda 23: en la frase de contraste de la ficha, «la hipomovilidad y el
 // cumplimiento de 4 criterios de Flynn apoyan la primera» (Elena), aunque la
 // regla común ya lo prohibía: el aviso va donde se escribe el contraste.
@@ -386,7 +388,9 @@ export function textoOpcionIA(op) {
 
 // Ronda 30 (Rosario): una pregunta del cribado en SÍ se leía entera como
 // hallazgo («sudoración», «no cede en reposo», que nadie dijo)
-export const AVISO_SQ = 'preguntas del cribado contestadas SÍ: el SÍ quiere decir que el paciente refirió al menos una parte de la pregunta, no todas; no describas cada parte como un hallazgo; lo que refirió en concreto, si consta, está en la consulta';
+// Ronda 31 (Rosario‑3): con el aviso de la ronda 30 seguía copiando la pregunta
+// como lo que «refiere» el paciente («dolor nuevo… que no cede en reposo»)
+export const AVISO_SQ = 'preguntas del cribado contestadas SÍ: el SÍ quiere decir que el paciente refirió al menos una parte de la pregunta, no todas. No copies ni parafrasees el texto de la pregunta como lo que refiere el paciente: di solo de qué trata (p. ej. «el cribado de dolor regional complejo resultó positivo») y, si la consulta concreta qué refirió, escribe eso';
 export const AVISO_HALLAZGOS = 'Cada línea es la conclusión del fisioterapeuta: los signos, síntomas o criterios que nombran la pregunta o la opción describen un patrón, no hallazgos de este paciente; no los afirmes si no constan en otro dato o en la consulta.';
 export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (!a) return [];

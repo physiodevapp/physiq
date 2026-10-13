@@ -733,7 +733,12 @@ export const tree = {
           iaTexto: 'SÍ — Compatible con pinzamiento femoroacetabular, sin confirmar' },
         { label: 'SÍ, con chasquido doloroso, bloqueo o fallo — Posible desgarro labral', value: 'labrum', next: null, hypothesis: ['ca2', 'ca3'],
           iaTexto: 'SÍ — Orienta a desgarro labral' },
-        { label: 'NO — FADDIR y flexión-RI negativos: origen intraarticular improbable', value: 'no', next: 'ca_step4', hypothesis: [] }
+        { label: 'NO — FADDIR y flexión-RI negativos: origen intraarticular improbable', value: 'no', next: 'ca_step4', hypothesis: [] },
+        // Ronda 30 (Rosario, prótesis con precauciones de luxación): sin esta opción
+        // había que contestar «negativos» a unas pruebas no hechas, y el informe con
+        // IA daba el origen intraarticular por improbable
+        { label: 'NO EXPLORADO — FADDIR y flexión-RI no realizados (contraindicados o no tolerados): origen intraarticular sin valorar', value: 'no_explorado', next: 'ca_step4', hypothesis: [],
+          iaTexto: 'No explorado — FADDIR y flexión con rotación interna no realizados; el origen intraarticular no se ha valorado' }
       ]
     },
     {

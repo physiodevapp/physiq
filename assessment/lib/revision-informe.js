@@ -495,6 +495,9 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
       if (!m) continue;
       const c = /\b(aunque|pero|si bien|sin embargo)\b/.exec(fn.slice(m.index));
       if (c && re.test(fn.slice(m.index + c.index))) continue;
+      // «sin aumento del edema» es un criterio de carga, no una negación
+      // (Rosario‑3: «…y sin aumento del edema del pie al día siguiente»)
+      if (/\b(?:sin|no)\s+(?:aumento|incremento|empeoramiento)\s+(?:de\s+(?:la|el|los|las)\s+|del\s+)?$/.test(fn.slice(0, m.index))) continue;
       if (NEGACION.test(fn.slice(0, m.index))) neg ??= f; else afi ??= f;
     }
     if (neg && afi) {
