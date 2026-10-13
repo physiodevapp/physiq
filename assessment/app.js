@@ -187,6 +187,7 @@ function goToPhase(n) {
   // Restore observers when entering phases with open accordions
   if (n === 2 && typeof restoreSisObserver === 'function') setTimeout(restoreSisObserver, 50);
   if (n === '4b' && typeof restoreHypObserver === 'function') setTimeout(restoreHypObserver, 50);
+  _programarBandas();
 
   // Update progress
   const pct = [0, 20, 40, 60, 80, 100];
@@ -1599,7 +1600,6 @@ function activeSistemaTab(sisId, sistemas) {
   });
 }
 
-let _sisObserver = null;
 let _activeSisId = null;
 
 function toggleAccordionRow(sisId, sisIdsStr) {
@@ -1639,27 +1639,72 @@ function setupSisObserver(sisId, row) {
 
   document.getElementById('sisBannerIcon').textContent = icon;
   document.getElementById('sisBannerName').textContent = name;
-
-  const sisNavH = window.innerWidth <= 768 ? 94 : 64;
-  _sisObserver = new IntersectionObserver(entries => {
-    const entry = entries[0];
-    const banner = document.getElementById('sisContextBanner');
-    if (!entry.isIntersecting && entry.boundingClientRect.top < sisNavH) {
-      banner.classList.add('visible');
-    } else {
-      banner.style.top = '';
-      banner.classList.remove('visible');
-    }
-  }, { threshold: 0, rootMargin: `-${sisNavH}px 0px 0px 0px` });
-
-  _sisObserver.observe(header);
+  _actualizarBandas();
 }
 
 function teardownSisObserver() {
-  if (_sisObserver) { _sisObserver.disconnect(); _sisObserver = null; }
   _activeSisId = null;
   const banner = document.getElementById('sisContextBanner');
   if (banner) banner.classList.remove('visible');
+}
+
+// ─── Bandas de contexto (sistema abierto en la fase 2, formulario previo en 1 y 2) ──
+// Una banda se ve mientras la cabecera de su bloque ha pasado por debajo de ella
+// y el bloque aún ocupa la pantalla bajo la banda: así desaparece al dejar atrás
+// el bloque, y el formulario regional y un sistema abierto nunca muestran dos a la vez.
+function _bandaDebeVerse(banda, cabecera, bloque) {
+  const top = parseFloat(getComputedStyle(banda).top) || 0;
+  const alto = banda.offsetHeight || 40;
+  return cabecera.getBoundingClientRect().bottom < top && bloque.getBoundingClientRect().bottom > top + alto;
+}
+
+function _formularioAbierto() {
+  return document.querySelector('.phase-container.active .fp-details[open]');
+}
+
+function _actualizarBandas() {
+  const sis = document.getElementById('sisContextBanner');
+  const fp = document.getElementById('fpContextBanner');
+  let verSis = false;
+  if (sis && _activeSisId && state.currentPhase === 2) {
+    const row = document.getElementById(`acc_${_activeSisId}`);
+    const header = row?.querySelector('.sistema-accordion-header');
+    verSis = !!(header && row.classList.contains('open') && _bandaDebeVerse(sis, header, row));
+  }
+  sis?.classList.toggle('visible', verSis);
+  if (!fp) return;
+  const det = verSis ? null : _formularioAbierto();
+  const verFp = !!(det && _bandaDebeVerse(fp, det.querySelector('summary'), det));
+  if (verFp) {
+    const nombre = det.querySelector('.fp-summary-titulo')?.textContent.replace(/^Formulario previo\s*·\s*/, '') || '';
+    const cont = det.querySelector('.fp-contador')?.textContent || '';
+    const elN = document.getElementById('fpBannerName');
+    const elC = document.getElementById('fpBannerCont');
+    if (elN.textContent !== `Formulario previo · ${nombre}`) elN.textContent = `Formulario previo · ${nombre}`;
+    if (elC.textContent !== cont) elC.textContent = cont;
+  }
+  fp.classList.toggle('visible', verFp);
+}
+
+// Flag como propiedad de la función (no `let`): goToPhase la llama y podría
+// ejecutarse antes de que el módulo llegue a esta línea.
+function _programarBandas() {
+  if (_programarBandas.pendiente) return;
+  _programarBandas.pendiente = true;
+  requestAnimationFrame(() => { _programarBandas.pendiente = false; _actualizarBandas(); });
+}
+window.addEventListener('scroll', _programarBandas, { passive: true });
+window.addEventListener('resize', _programarBandas);
+// `toggle` no burbujea: se escucha en captura para abrir o cerrar el formulario
+document.addEventListener('toggle', e => { if (e.target.classList?.contains('fp-details')) _programarBandas(); }, true);
+
+function scrollToFormularioPrevio() {
+  const det = _formularioAbierto();
+  const banda = document.getElementById('fpContextBanner');
+  if (!det || !banda) return;
+  const navbarH = parseFloat(getComputedStyle(banda).top) || 0;
+  const top = det.getBoundingClientRect().top + window.scrollY - navbarH - 8;
+  window.scrollTo({ top, behavior: 'smooth' });
 }
 
 function restoreSisObserver() {
@@ -3702,7 +3747,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, resumenFo
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
   abrirMenuCompartir, cerrarMenuCompartir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
-  navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, selectIrritab,
+  navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
   cycleThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,

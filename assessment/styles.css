@@ -751,6 +751,7 @@
     min-width: 0;
     color: var(--text2);
   }
+  .fp-banner-cont { flex-shrink: 0; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text3); white-space: nowrap; }
   /* Back button styles unified in .context-banner-back below */
 
   /* ── SEMÁFORO DOTS — Tests Exploratorios title ──────────── */
