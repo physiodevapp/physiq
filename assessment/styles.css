@@ -2969,6 +2969,8 @@ body.posquirurgico .solo-posq { display: block; }
 /* punteado = biología de la reparación; tenue = sin especificar en la fuente (borde discontinuo
    y relleno claro: el plazo existe pero no se sabe qué mide) */
 .tej-relleno-punteado { background-image: radial-gradient(var(--surface) 1.3px, transparent 1.6px); background-size: 6px 6px; background-position: 1px 1px; }
+/* degradado = evolución natural (se va apagando hacia la derecha) */
+.tej-relleno-degradado { background-image: linear-gradient(90deg, transparent 0%, transparent 35%, var(--surface) 100%); }
 .tej-relleno-tenue { background: color-mix(in srgb, currentColor 30%, transparent); border: 1.5px dashed currentColor; box-sizing: border-box; }
 .tej-ley-mide { background-color: var(--text2); color: var(--text2); }
 .tej-ley-mide.tej-relleno-tenue { background: color-mix(in srgb, var(--text2) 30%, transparent); }

@@ -68,6 +68,9 @@ export const TIEMPOS_TEJIDO = {
     programa: { etiqueta: 'Duración del programa de tratamiento', relleno: 'contorno' },
     biologia: { etiqueta: 'Biología de la reparación', relleno: 'punteado' },
     sinEspecificar: { etiqueta: 'Sin especificar en la fuente', relleno: 'tenue' },
+    // Lo que dura la enfermedad hasta resolverse, sin una lesión que cicatrice (capsulitis
+    // adhesiva; más adelante, lumbalgia): degradado hacia la derecha, se va apagando.
+    evolucion: { etiqueta: 'Evolución natural (hasta que se resuelve)', relleno: 'degradado' },
   },
 
   gravedades: {
@@ -278,6 +281,26 @@ export const TIEMPOS_TEJIDO = {
           nota: 'Vuelta al deporte a los 6–9 meses (Prill 2025, grado C; en los estudios, de 3,3 a 10 meses). Carga y vuelta a la actividad progresivas y precoces (Logerstedt 2018, grado C). Manda el protocolo del cirujano.' },
       ],
     },
+    // Articulación (ampliación, 2026-10): lo que afecta a la cápsula y a la articulación
+    // entera, no a un ligamento aislado. PDF del usuario leídos enteros. Pak y Kim 2023 (luxación
+    // anterior glenohumeral): «The described duration of immobilization also varies from one
+    // to six weeks», sin ventaja de la rotación externa; recidiva «up to 92%» en menores de 25
+    // con deporte de contacto; tras la cirugía, inmovilización también de 1 a 6 semanas.
+    // Abdel Khalik 2025 (metaanálisis, primera luxación): vuelta al nivel previo del 79,2 %
+    // con reparación artroscópica de Bankart frente al 48,5 % sin cirugía; cita a Buss 2004:
+    // en temporada, el 90 % vuelve a los 10 días de media, con recidiva del 37 %. Li 2025
+    // (capsulitis): fase dolorosa 2–9 meses, rígida 4–12, luego descongelación (sin plazo);
+    // «from a few months to 2 to 3 years»; ~80 % recupera una función casi normal, 10–20 %
+    // con secuelas; más larga con diabetes o tiroidopatía.
+    {
+      id: 'articulacion', tejido: 'Articulación',
+      filas: [
+        { id: 'hombro_luxacion_anterior', mide: 'proteccion', nombre: 'Luxación anterior de hombro', desde: 1, hasta: 3, gravedad: 'moderada', fuentes: ['Pak y Kim 2023', 'Abdel Khalik 2025'],
+          nota: 'Cabestrillo de 1 a 6 semanas, sin pruebas de qué plazo o posición es mejor; lo mismo tras la estabilización quirúrgica. Recidiva muy alta en jóvenes (hasta el 92 % en menores de 25 con deporte de contacto). Tras una primera luxación, vuelve a su nivel el 79 % con reparación artroscópica y el 49 % sin cirugía; en plena temporada, la mayoría vuelve en unos 10 días, con más recidivas.' },
+        { id: 'capsulitis_adhesiva', mide: 'evolucion', nombre: 'Capsulitis adhesiva (hombro congelado)', desde: 4, hasta: 7, gravedad: 'moderada', fuentes: ['Li 2025'],
+          nota: 'De unos meses a 2–3 años: fase dolorosa (2–9 meses), rígida (4–12 meses) y de descongelación. Cerca del 80 % recupera una función normal o casi normal; un 10–20 % queda con rigidez o dolor. Más larga con diabetes o tiroidopatía.' },
+      ],
+    },
     {
       id: 'hueso', tejido: 'Hueso',
       filas: [
@@ -331,6 +354,30 @@ export const TIEMPOS_TEJIDO = {
               nota: '6–8 semanas sin carga y 6 más de carga parcial; consolidación radiográfica hasta las 12 semanas y función completa a las 16–20 semanas o más.' },
             { id: 'fx_meseta_cirugia', mide: 'proteccion', nombre: 'Meseta tibial, operada', desde: 4, hasta: 4, gravedad: 'grave', fuentes: ['Malik y Herron 2023'],
               nota: '6 semanas sin carga y 6 de carga parcial; después, carga según tolerancia. La vuelta al deporte puede tardar meses. Manda el protocolo del cirujano.' },
+            // Miembro superior (2026-10), PDF del usuario leídos enteros. Malik 2024 (5.º
+            // metacarpiano): «clinical and radiographic healing… typically between 4 to 6
+            // weeks», «gentle resistance exercises about 4 weeks postinjury», «most… heal
+            // uneventfully within 8 weeks. However, a complete resolution may take many
+            // months». Small 2022 (diáfisis de radio y cúbito): en el adulto casi
+            // siempre se operan; movilidad a los 5–7 días y «bone union… around 2 to 3 months
+            // post-surgery. Once the bone union has been confirmed, the patient can resume
+            // most activities». Radio distal del adulto (el capítulo de StatPearls no da plazo):
+            // Mehta 2024 (guía APTA, leída entera): sin cirugía, «short arm cast for 4 to 6
+            // weeks»; tras reducción cerrada, «6 weeks of immobilization is typically
+            // sufficient to achieve bony union»; la movilidad de muñeca empieza al quitar el
+            // yeso y el fortalecimiento «around 6 to 8 weeks». Operada: protección «a few days
+            // to several weeks»; movilidad activa y actividad ligera en las 3 primeras semanas
+            // (A) y fortalecimiento submáximo desde la 2.ª (B). Sayudo 2024 (metaanálisis, 3
+            // ensayos, 252 pacientes, 61 años de media): 3–4 semanas de yeso frente a 5–6, mejor
+            // QuickDASH a las 12 semanas, 6 meses y 1 año, sin más complicaciones ni SDRC.
+            { id: 'fx_quinto_metacarpiano', mide: 'proteccion', nombre: '5.º metacarpiano (del boxeador), sin cirugía', desde: 2, hasta: 3, fuentes: ['Malik 2024'],
+              nota: 'Férula con movilidad precoz; consolidación clínica y radiográfica a las 4–6 semanas, con ejercicios suaves contra resistencia hacia la 4.ª. La mayoría consolida en 8 semanas, aunque la resolución completa puede tardar meses. Abiertas, rotadas o muy anguladas: a cirugía.' },
+            { id: 'fx_antebrazo_cirugia', mide: 'proteccion', nombre: 'Diáfisis de radio y cúbito, operada', desde: 4, hasta: 4, fuentes: ['Small 2022'],
+              nota: 'En el adulto casi siempre se operan. Movilidad de codo y antebrazo desde los 5–7 días; la mayoría de las actividades, cuando la radiografía confirma la consolidación, hacia los 2–3 meses. Manda el protocolo del cirujano.' },
+            { id: 'fx_radio_distal_yeso', mide: 'proteccion', nombre: 'Radio distal, sin cirugía (yeso)', desde: 2, hasta: 3, fuentes: ['Mehta 2024', 'Sayudo 2024'],
+              nota: 'Yeso antebraquial 4–6 semanas (6 si hubo que reducirla). Un metaanálisis de 3 ensayos encontró mejor función con 3–4 semanas que con 5–6, sin más complicaciones. Dedos, codo y hombro se mueven desde el principio; la muñeca, al quitar el yeso, y el fortalecimiento hacia las 6–8 semanas.' },
+            { id: 'fx_radio_distal_cirugia', mide: 'proteccion', nombre: 'Radio distal, operada', desde: 1, hasta: 3, fuentes: ['Mehta 2024'],
+              nota: 'Férula de unos días a varias semanas, según la estabilidad y el cirujano. La guía APTA recomienda movilidad activa de mano, muñeca y hombro y actividad ligera en las 3 primeras semanas (A) y fortalecimiento submáximo desde la 2.ª (B); el enfoque clásico espera 4–6 semanas para la muñeca y 6 para la fuerza. Manda el protocolo del cirujano.' },
           ] },
         // Fase J, 5 (fractura de estrés): PDF del usuario leídos enteros (2026-10).
         // Hoenig 2023 (revisión sistemática y metaanálisis, 76 estudios): tiempo medio de
