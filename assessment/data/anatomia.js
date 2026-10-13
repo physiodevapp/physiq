@@ -160,4 +160,17 @@ export const ESTRUCTURAS = {
   testiculos:           { nombre: 'Testículos', kenhub: 'the-testes', kenhubEs: 'testiculos-es' },
   organos_reproductores_femeninos: { nombre: 'Órganos reproductores femeninos', kenhub: 'female-reproductive-organs', kenhubEs: 'organos-del-aparato-reproductor-femenino' },
   intestino_grueso:     { nombre: 'Intestino grueso', kenhub: 'large-intestine', kenhubEs: 'intestino-grueso' },
+  // Lumbar
+  columna_lumbar:       { nombre: 'Columna lumbar', kenhub: 'lumbar-vertebrae', kenhubEs: 'columna-lumbar' },
+  discos_intervertebrales: { nombre: 'Discos intervertebrales', kenhub: 'the-intervertebral-discs', kenhubEs: 'discos-intervertebrales' },
+  canal_vertebral:      { nombre: 'Canal vertebral', kenhub: 'vertebral-canal' },
+  cola_caballo:         { nombre: 'Cono medular y cola de caballo', kenhub: 'conus-medullaris-medullary-cone-and-cauda-equina' },
+  plexo_lumbar:         { nombre: 'Plexo lumbar', kenhub: 'lumbar-plexus', kenhubEs: 'plexo-lumbar' },
+  plexo_sacro:          { nombre: 'Plexo sacro', kenhub: 'sacral-plexus', kenhubEs: 'plexo-sacro' },
+  multifido:            { nombre: 'Multífido', kenhub: 'multifidus-muscle' },
+  sacro:                { nombre: 'Sacro', kenhub: 'sacrum', kenhubEs: 'sacro-es' },
+  // Lumbar, fase 2: vejiga, duodeno y aorta
+  vejiga:               { nombre: 'Vejiga urinaria', kenhub: 'urinary-bladder', kenhubEs: 'vejiga-urinaria' },
+  duodeno:              { nombre: 'Duodeno', kenhub: 'the-duodenum', kenhubEs: 'duodeno-es' },
+  aorta:                { nombre: 'Aorta', kenhub: 'aorta', kenhubEs: 'aorta-es' },
 };
