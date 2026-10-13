@@ -416,6 +416,8 @@ try {
 // ─── TIEMPOS DE TEJIDO ────────────────────────────────────────────────────────────────────────
 // Las dos tablas (escritorio: nombre en columna; móvil: nombre dentro de la barra) salen de
 // TISSUE_TIMES (data.js). Antes estaban escritas a mano por separado y ya no coincidían.
+// Barras de la tabla, por índice (data-barra): las rellena renderTissue() para su tarjeta
+const TS_BARRAS = [];
 function renderTissue() {
   const T = TISSUE_TIMES;
   const n = T.cols.length;
@@ -423,6 +425,7 @@ function renderTissue() {
   const pend = f => (f.pendiente ? ' <span class="ts-pendiente">pendiente de fuente</span>' : '');
   const vacias = k => (k > 0 ? `<td class="tc-e"${k > 1 ? ` colspan="${k}"` : ''}></td>` : '');
 
+  TS_BARRAS.length = 0;
   let desk = head('<th class="tissue-th-label"></th>') + '<tbody>';
   let mob = head('') + '<tbody>';
   for (const g of T.grupos) {
@@ -436,15 +439,17 @@ function renderTissue() {
     // Cada fila y, debajo, sus subtipos (con sangría y la gravedad de la madre)
     for (const madre of g.filas) {
       for (const f of [madre, ...(madre.subtipos || []).map(st => ({ ...st, g: st.g || madre.g, sub: true }))]) {
+        // Índice de la barra para su tarjeta (abrirInfoBarra): las celdas de color lo llevan en data-barra
+        const ib = TS_BARRAS.push({ f, madre: f.sub ? madre : null }) - 1;
         // Qué mide la barra: relleno (tm-liso / -rayado / -contorno / -punteado / -tenue) y, si la medida lleva
         // `marca`, una etiqueta tras el nombre (ver «Qué mide la barra» en la leyenda)
         const m = T.medidas[f.mide] || {};
         const rel = m.relleno ? ` tm-${m.relleno}` : '';
         const marca = m.marca ? ` <span class="ts-marca">${m.marca}</span>` : '';
-        const celdas = Array.from({ length: n }, (_, i) => `<td${i >= f.desde && i <= f.hasta ? ` class="tg-${f.g}${rel}${i === f.desde ? ' tm-ini' : ''}${i === f.hasta ? ' tm-fin' : ''}"` : ''}></td>`).join('');
+        const celdas = Array.from({ length: n }, (_, i) => `<td${i >= f.desde && i <= f.hasta ? ` class="tg-${f.g}${rel}${i === f.desde ? ' tm-ini' : ''}${i === f.hasta ? ' tm-fin' : ''}" data-barra="${ib}"` : ''}></td>`).join('');
         desk += `<tr${f.sub ? ' class="ts-sub"' : ''}><td class="ts-label">${f.nombre}${marca}${pend(f)}${f.nota ? `<span class="ts-nota">${f.nota}</span>` : ''}</td>${celdas}</tr>`;
         const ancho = f.hasta - f.desde + 1;
-        mob += `<tr${f.sub ? ' class="ts-sub"' : ''}>${vacias(f.desde)}<td class="tg-${f.g}${rel} tm-ini tm-fin tc-label"${ancho > 1 ? ` colspan="${ancho}"` : ''}>${f.corto}${f.pendiente ? '*' : ''}</td>${vacias(n - 1 - f.hasta)}</tr>`;
+        mob += `<tr${f.sub ? ' class="ts-sub"' : ''}>${vacias(f.desde)}<td class="tg-${f.g}${rel} tm-ini tm-fin tc-label" data-barra="${ib}"${ancho > 1 ? ` colspan="${ancho}"` : ''}>${f.corto}${f.pendiente ? '*' : ''}</td>${vacias(n - 1 - f.hasta)}</tr>`;
       }
     }
   }
@@ -467,6 +472,83 @@ function renderTissue() {
     + T.fuentes.map(t => `<p class="tissue-source">${t}</p>`).join('');
 }
 renderTissue();
+
+// ─── Tarjeta de una barra ─────────────────────────────────────────────────────────────────────
+// Tocar una barra (cualquiera de sus celdas) abre a su lado una tarjeta con su gravedad, qué mide
+// y su plazo, para no tener que bajar hasta la leyenda (como el panel ⏱ de physiq-assessment).
+// Aquí lleva además el nombre entero y la nota: en móvil la tabla solo muestra el nombre corto.
+// Se cierra al tocar la misma barra o fuera, con Escape, al desplazar más de 24 px y al salir de la vista.
+let tsInfoActiva = null, tsInfoScroll = 0;
+const tsColTexto = c => c.replace('–<br>', '–').replace('<br>', ' ');
+function infoBarraHTML({ f, madre }) {
+  const T = TISSUE_TIMES;
+  const m = T.medidas[f.mide] || {};
+  const a = tsColTexto(T.cols[f.desde]), b = tsColTexto(T.cols[f.hasta]);
+  const plazo = f.desde === f.hasta ? a : `De ${a} a ${b}`;
+  return (madre ? `<div class="ts-info-madre">${madre.nombre}</div>` : '')
+    + `<div class="ts-info-nombre">${f.nombre}${f.pendiente ? ' <span class="ts-pendiente">pendiente de fuente</span>' : ''}</div>`
+    + '<dl class="ts-info-datos">'
+    + `<div><dt>Gravedad</dt><dd><span class="ts-ley-muestra ts-info-muestra tg-${f.g}"></span>${T.gravedades[f.g] || f.g}</dd></div>`
+    + (m.etiqueta ? `<div><dt>Mide</dt><dd><span class="ts-ley-muestra ts-info-muestra tg-${f.g}${m.relleno ? ` tm-${m.relleno}` : ''}"></span>${m.etiqueta}</dd></div>` : '')
+    + `<div><dt>Plazo</dt><dd>${plazo}</dd></div>`
+    + '</dl>'
+    + (f.nota ? `<p class="ts-info-nota">${f.nota}</p>` : '');
+}
+function abrirInfoBarra(td) {
+  const i = Number(td.dataset.barra);
+  const tabla = td.closest('table');
+  if (tsInfoActiva && tsInfoActiva.i === i && tsInfoActiva.tabla === tabla) { cerrarInfoBarra(); return; }
+  cerrarInfoBarra();
+  const barra = TS_BARRAS[i];
+  if (!barra) return;
+  let info = document.getElementById('tsInfo');
+  if (!info) {
+    info = document.createElement('div');
+    info.id = 'tsInfo';
+    info.className = 'ts-info';
+    info.setAttribute('role', 'status');
+    document.body.appendChild(info);
+  }
+  info.innerHTML = infoBarraHTML(barra);
+  info.hidden = false;
+  tsInfoActiva = { i, tabla };
+  tsInfoScroll = window.scrollY;
+  tabla.querySelectorAll(`[data-barra="${i}"]`).forEach(c => c.classList.add('ts-barra-activa'));
+  colocarInfoBarra();
+}
+function colocarInfoBarra() {
+  const info = document.getElementById('tsInfo');
+  if (!info || !tsInfoActiva) return;
+  // La barra entera: de su primera a su última celda
+  const celdas = [...tsInfoActiva.tabla.querySelectorAll(`[data-barra="${tsInfoActiva.i}"]`)].map(c => c.getBoundingClientRect());
+  const izq = Math.min(...celdas.map(r => r.left)), der = Math.max(...celdas.map(r => r.right));
+  const arriba = Math.min(...celdas.map(r => r.top)), abajo = Math.max(...celdas.map(r => r.bottom));
+  const margen = 16, sep = 8, ancho = info.offsetWidth, alto = info.offsetHeight;
+  const left = Math.min(Math.max(margen, (izq + der) / 2 - ancho / 2), innerWidth - margen - ancho);
+  const debajo = abajo + sep + alto <= innerHeight - margen;
+  info.style.left = `${Math.max(margen, left)}px`;
+  info.style.top = `${debajo ? abajo + sep : Math.max(margen, arriba - sep - alto)}px`;
+}
+function cerrarInfoBarra() {
+  const info = document.getElementById('tsInfo');
+  if (info) info.hidden = true;
+  document.querySelectorAll('.ts-barra-activa').forEach(c => c.classList.remove('ts-barra-activa'));
+  tsInfoActiva = null;
+}
+document.addEventListener('click', e => {
+  const td = e.target instanceof Element ? e.target.closest('#view-tissue td[data-barra]') : null;
+  if (td) { abrirInfoBarra(td); return; }
+  if (tsInfoActiva && !(e.target instanceof Element && e.target.closest('#tsInfo'))) cerrarInfoBarra();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && tsInfoActiva) cerrarInfoBarra(); });
+// Solo un desplazamiento de verdad la cierra; uno pequeño (el final de una inercia) la recoloca
+window.addEventListener('scroll', () => {
+  if (!tsInfoActiva) return;
+  if (Math.abs(window.scrollY - tsInfoScroll) > 24) cerrarInfoBarra();
+  else colocarInfoBarra();
+}, { passive: true });
+window.addEventListener('resize', cerrarInfoBarra);
+window.addEventListener('popstate', cerrarInfoBarra);
 
 // La fila de tiempos se queda fija justo debajo de la cabecera de la app y de la barra
 // «← Wiki» (que es sticky también y cambia de alto según el ancho).

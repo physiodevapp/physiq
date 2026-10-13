@@ -622,6 +622,24 @@
   .ts-ley-mide.tm-degradado { background-image: linear-gradient(90deg, transparent 0%, var(--bg, #0a0e14) 100%); }
   .ts-ley-mide.tm-tenue { background: none; border: 1.5px dashed var(--tm-c); box-sizing: border-box; background-color: rgba(255,255,255,0.08); }
   .ts-leyenda-mide { margin-top: 8px; }
+  /* Tarjeta de una barra (abrirInfoBarra, app.js): fija, junto a la barra tocada */
+  #view-tissue td[data-barra] { cursor: pointer; }
+  #view-tissue td.ts-barra-activa { outline: 2px solid var(--text); outline-offset: -2px; }
+  .ts-info { position: fixed; z-index: 1000; width: max-content; max-width: min(320px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border2); box-shadow: 0 8px 28px rgba(0,0,0,0.45); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; line-height: 1.35; }
+  .ts-info[hidden] { display: none; }
+  .ts-info-madre { font-size: 11px; color: var(--text3); margin-bottom: 1px; }
+  .ts-info-nombre { font-weight: 600; margin-bottom: 6px; }
+  .ts-info-datos { margin: 0; display: grid; gap: 4px; }
+  .ts-info-datos > div { display: grid; grid-template-columns: 64px 1fr; gap: 8px; align-items: center; }
+  .ts-info-datos dt { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); }
+  .ts-info-datos dd { margin: 0; display: flex; align-items: center; gap: 6px; }
+  .ts-info-muestra { flex: 0 0 auto; }
+  .ts-info-muestra.tm-rayado { background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--surface2) 4px 6px); }
+  .ts-info-muestra.tm-contorno { background: none; box-shadow: inset 0 0 0 2px var(--tm-c); }
+  .ts-info-muestra.tm-punteado { background-image: radial-gradient(var(--surface2) 1.3px, transparent 1.6px); background-size: 6px 6px; }
+  .ts-info-muestra.tm-degradado { background-image: linear-gradient(90deg, transparent 0%, var(--surface2) 100%); }
+  .ts-info-muestra.tm-tenue { background: none; border: 1.5px dashed var(--tm-c); box-sizing: border-box; }
+  .ts-info-nota { margin: 8px 0 0; font-size: 12px; line-height: 1.4; color: var(--text2); }
   .ts-ley-titulo { opacity: 0.7; }
   .ts-marca { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 6px; font-size: 0.62rem; line-height: 1.5; opacity: 0.75; border: 1px dashed currentColor; white-space: nowrap; vertical-align: 1px; }
   .ts-nota { display: block; font-size: 10px; color: var(--text3); white-space: normal; line-height: 1.35; padding: 2px 0 4px; max-width: 240px; }
@@ -1007,8 +1025,8 @@
   </div>
 </div>
 
-<script src="data.js?v=b8d144df43a29e03b6a8b44e0faf75538d9dcda7"></script>
-<script src="app.js?v=b8d144df43a29e03b6a8b44e0faf75538d9dcda7"></script>
+<script src="data.js?v=1746047685422ceec86ab364f87e572f49e40e71"></script>
+<script src="app.js?v=1746047685422ceec86ab364f87e572f49e40e71"></script>
 
 </body>
 </html>
