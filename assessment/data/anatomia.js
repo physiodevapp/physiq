@@ -117,4 +117,19 @@ export const ESTRUCTURAS = {
   // Codo, fase 2: vasos
   arteria_braquial:     { nombre: 'Arteria braquial', kenhub: 'brachial-artery', kenhubEs: 'arteria-braquial-humeral' },
   arteria_subclavia:    { nombre: 'Arteria subclavia', kenhub: 'the-subclavian-artery', kenhubEs: 'artieria-subclavia-anatomia' },
+  // Cervical
+  art_atlantoaxial:     { nombre: 'Articulación atlantoaxial (C1–C2)', kenhub: 'atlantoaxial-joint' },
+  art_facetarias:       { nombre: 'Articulaciones cigapofisarias', kenhub: 'zygapophyseal-joints', kenhubEs: 'articulaciones-cigapofisarias' },
+  largo_cuello:         { nombre: 'Largo del cuello', kenhub: 'longus-colli-muscle', kenhubEs: 'musculo-largo-del-cuello' },
+  semiespinoso_cabeza:  { nombre: 'Semiespinoso de la cabeza', kenhub: 'semispinalis-capitis-muscle' },
+  esplenio_cabeza:      { nombre: 'Esplenio de la cabeza', kenhub: 'splenius-capitis-muscle', kenhubEs: 'musculo-esplenio-de-la-cabeza' },
+  suboccipitales:       { nombre: 'Músculos suboccipitales', kenhub: 'suboccipital-muscles' },
+  esternocleidomastoideo: { nombre: 'Esternocleidomastoideo', kenhub: 'sternocleidomastoid-muscle', kenhubEs: 'musculo-esternocleidomastoideo-es' },
+  nervios_espinales:    { nombre: 'Nervios espinales (raíces)', kenhub: 'spinal-nerves', kenhubEs: 'nervios-espinales' },
+  medula_espinal:       { nombre: 'Médula espinal', kenhub: 'the-spinal-cord', kenhubEs: 'medula-espinal-es' },
+  vertebras_toracicas:  { nombre: 'Vértebras torácicas', kenhub: 'thoracic-vertebrae', kenhubEs: 'vertebras-toracicas-es' },
+  // Cervical, fase 2: arterias del cuello y esófago
+  arteria_vertebral:    { nombre: 'Arteria vertebral', kenhub: 'vertebral-artery', kenhubEs: 'arteria-vertebral' },
+  arteria_carotida:     { nombre: 'Arteria carótida común', kenhub: 'common-carotid-artery', kenhubEs: 'arteria-carotida-comun' },
+  esofago:              { nombre: 'Esófago', kenhub: 'esophagus', kenhubEs: 'esofago-es' },
 };
