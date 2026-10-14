@@ -8,8 +8,7 @@
 import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.lumbar — zonas del mapa corporal para P1–P4
-// (docs/sintomas-multiples.md). Borrador aceptado por el usuario (2026-10),
-// pendiente de probarlo en consulta;
+// (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
 // `id` estable: se guarda en la sesión.
 export const zonas = [
   { id: 'lumbar',     nombre: 'Zona lumbar' },

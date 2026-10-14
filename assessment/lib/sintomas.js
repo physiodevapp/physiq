@@ -104,9 +104,9 @@ export function lineasInformeSintomas(d) {
   const out = [];
   if (d.z1?.z) out.push(`Localización del dolor principal: ${minus(d.z1.z)}${d.z1.la ? ` (lado ${minus(d.z1.la)})` : ''}${d.z1.pa ? `, ${minus(d.z1.pa)}` : ''}`);
   for (const s of d.ss || []) {
-    if (s.or) { out.push(`Refiere también dolor en ${minus(s.z) || 'otra región'}${s.la ? ` (lado ${minus(s.la)})` : ''}, pendiente de valorar`); continue; }
+    if (s.or) { out.push(`Refiere también dolor: ${minus(s.z) || 'otra región'}${s.la ? ` (lado ${minus(s.la)})` : ''}, pendiente de valorar`); continue; }
     const rel = s.re && RELACIONES[s.re]?.paciente;
-    out.push(`Refiere además dolor en ${minus(s.z) || 'otra zona'}${s.la ? ` (lado ${minus(s.la)})` : ''}${s.nr != null ? `, de intensidad ${s.nr}/10` : ''}${rel ? `, ${rel}` : ''}`);
+    out.push(`Refiere además dolor: ${minus(s.z) || 'otra zona'}${s.la ? ` (lado ${minus(s.la)})` : ''}${s.nr != null ? `, de intensidad ${s.nr}/10` : ''}${rel ? `, ${rel}` : ''}`);
   }
   return out;
 }
