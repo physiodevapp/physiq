@@ -146,6 +146,13 @@ export { TIEMPOS_TEJIDO } from './data/tejidos.js';
 
 export const HYPOTHESES = Object.assign({}, ...Object.values(REGIONES).map(m => m.hypotheses));
 
+// Fase 3 — zonas del mapa corporal por región ([{ id, nombre }]), solo las
+// regiones que las tienen (piloto: lumbar). Sin zonas, la tarjeta «Síntomas»
+// no se pinta. Ver docs/sintomas-multiples.md.
+export const ZONAS_SINTOMA = Object.fromEntries(
+  Object.entries(REGIONES).filter(([, m]) => m.zonas).map(([r, m]) => [r, m.zonas])
+);
+
 
 export const NRS_LABELS = ['Sin dolor','Dolor muy leve','Dolor leve','Dolor leve-moderado','Dolor moderado','Dolor moderado','Dolor moderado-intenso','Dolor intenso','Dolor intenso','Dolor muy intenso','Dolor máximo'];
 export const NRS_CLASSES = ['nrs-0','nrs-1','nrs-2','nrs-3','nrs-4','nrs-5','nrs-6','nrs-7','nrs-8','nrs-9','nrs-10'];

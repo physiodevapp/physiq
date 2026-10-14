@@ -505,6 +505,29 @@
   @media (max-width: 420px) {
     .lado-group:has(.lado-central:not([hidden])) .option-btn { flex-basis: calc(50% - 4px); }
   }
+  /* Tarjeta «Síntomas» de la fase 3 (sintomas.js): P1 y hasta 3 secundarios */
+  #cardSintomas[hidden] { display: none; }
+  .sint-contador { color: var(--text3); font-weight: 400; margin-left: 6px; }
+  .sint-item { border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-top: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .sint-item.sint-p1 { border-color: var(--accent); }
+  .sint-cab { display: flex; align-items: center; gap: 8px; }
+  .sint-num { font-family: 'DM Mono', monospace; font-weight: 600; color: var(--accent); }
+  .sint-tipo { font-size: 0.8rem; color: var(--text2); flex: 1; }
+  .sint-accion { background: none; border: 1px solid var(--border2); color: var(--text2); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 0.78rem; cursor: pointer; min-height: 36px; }
+  .sint-quitar { width: 36px; padding: 0; }
+  .sint-campo { display: flex; flex-direction: column; gap: 6px; }
+  .sint-zonas .option-btn { padding: 7px 12px; font-size: 0.82rem; }
+  .sint-otra { border-style: dashed; }
+  .sint-libre { margin-top: 2px; }
+  .sint-hint { font-size: 0.78rem; color: var(--text3); }
+  .sint-tercios .option-btn, .sint-grupo:not(.lado-group):not(.sint-relacion) .option-btn { flex: 1 1 0; text-align: center; padding: 8px 6px; }
+  .sint-grupo .option-btn { white-space: nowrap; }
+  .sint-relacion .option-btn { flex: 1 1 calc(50% - 8px); text-align: center; padding: 8px 6px; }
+  .sint-nrs { display: flex; gap: 4px; }
+  .sint-nrs-btn { flex: 1 1 0; min-width: 0; min-height: 36px; padding: 0; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 0.8rem; cursor: pointer; }
+  .sint-nrs-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .sint-anadir { margin-top: 12px; width: 100%; }
+
   .option-btn {
     background: var(--surface2);
     border: 1px solid var(--border2);
@@ -1950,7 +1973,7 @@
       border-left: none; border-right: none; border-radius: 0;
     }
     .sistema-accordion-body .card { margin: 0; }
-    .sq2, .test-item, .hyp5-card, .exercise-box, .plan-escalon, .plan-bloque { padding: 0.75rem; }
+    .sq2, .test-item, .hyp5-card, .exercise-box, .plan-escalon, .plan-bloque, .sint-item { padding: 0.75rem; }
     .pauta-det-resto { padding: 0 0.75rem 0.75rem; }
     .hypothesis-body { padding: 0 0.9rem 0.9rem; }
     /* Nombre de la hipótesis en la 4b: hasta dos líneas en vez de cortarlo */

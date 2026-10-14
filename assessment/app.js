@@ -3,7 +3,7 @@
 // Lógica principal de la aplicación
 // ============================================================
 import { state } from './state.js';
-import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, TIEMPOS_TEJIDO, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
+import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, TIEMPOS_TEJIDO, ZONAS_SINTOMA, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
 import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML, anatomiaLineaHTML, anatomiaPanelHTML } from './phase4b.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
@@ -16,6 +16,8 @@ import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { nombreRegion, regionConLado } from './lib/region.js';
 import { TEXTO_VALORACION_BREVE, textoNotas, textoInformePaciente } from './lib/resumenes.js';
 import { ramaPauta } from './lib/pauta.js';
+import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
+import { pintarSintomas } from './sintomas.js';
 import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
 import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, urlIA } from './ampliar-ia.js';
 
@@ -183,7 +185,7 @@ function goToPhase(n) {
   document.getElementById(phases[idx]).classList.add('active');
   if (document.getElementById('versionAviso')) _colocarAvisoVersion();
   state.currentPhase = n;
-  if (n === 3) _pintarEstadioCronologia();
+  if (n === 3) { _pintarEstadioCronologia(); pintarSintomas(); }
   updateMobilePhaseBar(n);
   // Clean up observers when leaving phases
   if (typeof teardownHypObserver === 'function') teardownHypObserver();
@@ -1014,6 +1016,8 @@ function resetPhase3UI() {
   state.irritabilidad = { dolor: 'Baja (≤3/10)', reposo: 'Ausente', movimiento: 'Al final del rango con SP', discapacidad: 'Mínima', tolerancia: 'Alta' };
   state.irritabilidadNivel = null;
   state.irritabilidadDirecta = false;
+  state.sintomaPrincipal = sintomaVacio();
+  state.sintomasSecundarios = [];
 
   // Reset option-btn selections in phase 3
   document.querySelectorAll('#phase3 .option-btn').forEach(b => b.classList.remove('selected'));
@@ -1043,6 +1047,7 @@ function resetPhase3UI() {
 
   // Recalculate irritability display
   calcIrritabilidad();
+  pintarSintomas();
 }
 
 function applyRegionChange(regionId, card) {
@@ -2027,6 +2032,8 @@ function calcIrritabilidad() {
 }
 
 function renderIrritabResumen(nivel) {
+  // Sin nivel (p. ej., un secundario sin irritabilidad que pasa a ser P1): nada que resumir
+  if (!nivel) { document.getElementById('irritabilidadResumen').innerHTML = ''; return; }
   const { color, emoji } = { Baja: { color: 'var(--green)', emoji: '🟢' }, Moderada: { color: 'var(--orange)', emoji: '🟠' }, Alta: { color: 'var(--red)', emoji: '🔴' } }[nivel] || { color: 'var(--green)', emoji: '🟢' };
   const div = document.getElementById('irritabilidadResumen');
   div.innerHTML = `<div class="alert alert-info" style="border-color:${color}33; background:${color}11;">
@@ -2185,6 +2192,17 @@ function _pintarLado() {
   _restoreOptionBtnGroup('lado', state.lado);
 }
 
+// Fase 5: P1–P4 de la tarjeta «Síntomas» (solo lo que tiene datos)
+function _sintomasResultadosHTML() {
+  const { z1, ss } = payloadSintomas(state, ZONAS_SINTOMA[state.region] || []);
+  const fila = (et, v) => `<div class="summary-row"><span class="summary-label">${et}</span><span class="summary-value">${_escapeAttr(v)}</span></div>`;
+  return (z1 ? fila(ss.length ? 'Síntoma principal (P1)' : 'Zona del dolor', lineaP1(z1)) : '')
+    + ss.map(s => fila(`P${s.n}`, lineaSecundario(s))).join('');
+}
+function _hayVariosSintomas() {
+  return payloadSintomas(state, ZONAS_SINTOMA[state.region] || []).ss.length > 0;
+}
+
 function buildResults() {
   const container = document.getElementById('resultsContent');
   container.innerHTML = '';
@@ -2248,8 +2266,9 @@ function buildResults() {
   <div class="summary-section">
     <div class="summary-section-title">📊 SINSS — Caracterización del Cuadro</div>
     <div class="summary-row"><span class="summary-label">Región valorada</span><span class="summary-value">${regionConLado(state.region, state.lado)}</span></div>
-    <div class="summary-row"><span class="summary-label">Severidad (EVN)</span><span class="summary-value">${state.severidad != null ? `${state.severidad}/10` : 'No registrada'}</span></div>
-    <div class="summary-row"><span class="summary-label">Irritabilidad</span><span class="summary-value">${state.irritabilidadNivel || '—'}${state.irritabilidadDirecta && state.irritabilidadNivel ? ' (estimada, sin matriz)' : ''}</span></div>
+    ${_sintomasResultadosHTML()}
+    <div class="summary-row"><span class="summary-label">Severidad (EVN)${_hayVariosSintomas() ? ' de P1' : ''}</span><span class="summary-value">${state.severidad != null ? `${state.severidad}/10` : 'No registrada'}</span></div>
+    <div class="summary-row"><span class="summary-label">Irritabilidad${_hayVariosSintomas() ? ' de P1' : ''}</span><span class="summary-value">${state.irritabilidadNivel || '—'}${state.irritabilidadDirecta && state.irritabilidadNivel ? ' (estimada, sin matriz)' : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Naturaleza</span><span class="summary-value">${state.naturaleza || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Estabilidad</span><span class="summary-value">${state.estabilidad || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Signo comparable</span><span class="summary-value">${state.signoComparable || '—'}</span></div>
@@ -3039,6 +3058,7 @@ function buildPhysiQPayload() {
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
     ir: state.irritabilidadNivel && state.irritabilidadDirecta ? `${state.irritabilidadNivel} (estimada)` : state.irritabilidadNivel,
+    ...payloadSintomas(state, ZONAS_SINTOMA[state.region] || []),   // z1 (zona de P1), ss (P2–P4)
     na: state.naturaleza,
     si: state.sistemicoAlerta,
     br: Object.entries(state.banderasRojas).filter(([, v]) => v === 'SI').map(([k]) => BR_LABELS[k]),
@@ -3557,6 +3577,29 @@ function _restoreOptionBtnGroup(groupId, val) {
   });
 }
 
+// NRS e irritabilidad de P1 desde el estado (restaurar la sesión, o cuando
+// «Hacer principal» de la tarjeta Síntomas cambia P1)
+function repintarP1Fase3() {
+  document.querySelectorAll('.nrs-btn').forEach(btn => {
+    btn.classList.toggle('selected', state.severidad !== null && parseInt(btn.textContent.trim()) === state.severidad);
+  });
+  const nrsLabel = document.getElementById('nrsLabel');
+  if (nrsLabel) nrsLabel.textContent = state.severidad !== null ? `${state.severidad}/10 — ${NRS_LABELS[state.severidad]}` : '— Sin seleccionar —';
+  document.querySelectorAll('.irritab-table .irritab-btn').forEach(btn => {
+    const m = (btn.getAttribute('onclick') || '').match(/selectIrritab\('(\w+)',\s*this,\s*'([^']*)'\)/);
+    if (m) btn.classList.toggle('selected', state.irritabilidad[m[1]] === m[2]);
+  });
+  document.querySelectorAll('.irritab-card-btns .irritab-btn').forEach(btn => {
+    const m = (btn.getAttribute('onclick') || '').match(/selectIrritabSync\('(\w+)',\s*this,\s*'([^']*)'\)/);
+    if (m) btn.classList.toggle('selected', state.irritabilidad[m[1]] === m[2]);
+  });
+  document.querySelectorAll('#irritabDirecta .option-btn').forEach(btn => {
+    const m = (btn.getAttribute('onclick') || '').match(/'(\w+)'\)/);
+    btn.classList.toggle('selected', !!(state.irritabilidadDirecta && m && m[1] === state.irritabilidadNivel));
+  });
+  calcIrritabilidad();
+}
+
 function _restoreSessionDOM() {
   _pintarModoUI();
   const patientEl = document.getElementById('patientName');
@@ -3584,6 +3627,7 @@ function _restoreSessionDOM() {
   // Sesiones anteriores al posquirúrgico: sin cirugia / derivacionResuelta
   state.cirugia = { ...cirugiaVacia(), ...(state.cirugia || {}) };
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
+  normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
   _pintarCirugiaUI();
   _pintarLado();
 
@@ -3621,26 +3665,8 @@ function _restoreSessionDOM() {
 
   if (state.maxVisitedIdx < 2) return;
 
-  if (state.severidad !== null) {
-    document.querySelectorAll('.nrs-btn').forEach(btn => {
-      btn.classList.toggle('selected', parseInt(btn.textContent.trim()) === state.severidad);
-    });
-    const nrsLabel = document.getElementById('nrsLabel');
-    if (nrsLabel) nrsLabel.textContent = `${state.severidad}/10 — ${NRS_LABELS[state.severidad]}`;
-  }
-  document.querySelectorAll('.irritab-table .irritab-btn').forEach(btn => {
-    const m = (btn.getAttribute('onclick') || '').match(/selectIrritab\('(\w+)',\s*this,\s*'([^']*)'\)/);
-    if (m) btn.classList.toggle('selected', state.irritabilidad[m[1]] === m[2]);
-  });
-  document.querySelectorAll('.irritab-card-btns .irritab-btn').forEach(btn => {
-    const m = (btn.getAttribute('onclick') || '').match(/selectIrritabSync\('(\w+)',\s*this,\s*'([^']*)'\)/);
-    if (m) btn.classList.toggle('selected', state.irritabilidad[m[1]] === m[2]);
-  });
-  document.querySelectorAll('#irritabDirecta .option-btn').forEach(btn => {
-    const m = (btn.getAttribute('onclick') || '').match(/'(\w+)'\)/);
-    btn.classList.toggle('selected', !!(state.irritabilidadDirecta && m && m[1] === state.irritabilidadNivel));
-  });
-  calcIrritabilidad();
+  repintarP1Fase3();
+  pintarSintomas();
   ['naturaleza', 'estabilidad'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) signoEl.value = state.signoComparable || '';
@@ -3888,7 +3914,7 @@ initAmpliarIA();
 export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenciasActivas, getCirugiaPayload, cerrarMenuCompartir, resumenFormularioIA, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
   buildContextSummaryText, getPendientesBreve, buildSistemaHTML, sistemasActivos, textoBandera, razonBanderaHTML,
   precargarFormularioPrevio, nombreRegion, showToast,
-  injectQuickInputBar, lockBodyScroll, unlockBodyScroll, partirPrimeraFrase, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento };
+  injectQuickInputBar, repintarP1Fase3, lockBodyScroll, unlockBodyScroll, partirPrimeraFrase, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento };
 
 // Exposed on window for inline onclick/oninput attributes across index.html
 // and dynamically-generated HTML — those resolve only against the global

@@ -7,6 +7,20 @@
 // ============================================================
 import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
 
+// ── Fase 3 · ZONAS_SINTOMA.lumbar — zonas del mapa corporal para P1–P4
+// (docs/sintomas-multiples.md). Borrador aceptado por el usuario (2026-10),
+// pendiente de probarlo en consulta;
+// `id` estable: se guarda en la sesión.
+export const zonas = [
+  { id: 'lumbar',     nombre: 'Zona lumbar' },
+  { id: 'gluteo',     nombre: 'Glúteo' },
+  { id: 'ingle',      nombre: 'Ingle' },
+  { id: 'muslo_ant',  nombre: 'Muslo anterior' },
+  { id: 'muslo_post', nombre: 'Muslo posterior o lateral' },
+  { id: 'pierna',     nombre: 'Pierna por debajo de la rodilla' },
+  { id: 'pie',        nombre: 'Pie' },
+];
+
 // ── Fase 2 · SYSTEMIC_SCREENING.lumbar
 export const screening = {
   label: 'Sacro, Sacroilíaca, Pelvis y Lumbar',

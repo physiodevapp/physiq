@@ -180,14 +180,19 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // ── Datos personales que contradicen la valoración o no constan ──
   const la = datos.la || '';
   const lados = { Derecho: 'izquierd', Izquierdo: 'derech' };
+  const ladosSintomas = [datos.z1?.la, ...(datos.ss || []).map(x => x.la)].filter(Boolean);   // tarjeta «Síntomas»
   if (lados[la] && (r = primera(t, new RegExp(lados[la] === 'izquierd' ? 'izquierd[oa]s?' : 'derech[oa]s?', 'i')))) {
     // Si el paciente habló del otro lado en la consulta, mencionarlo puede ser
     // correcto: se avisa igual, pero como algo a comprobar, no como contradicción.
-    if (new RegExp(lados[la]).test(sinAcentos(transcripcion)))
+    // Un síntoma de la tarjeta «Síntomas» en el otro lado (o bilateral):
+    // nombrarlo es correcto, solo hay que comprobar a qué síntoma se refiere
+    if (ladosSintomas.some(l => l === 'Bilateral' || (l !== la && lados[l])))
+      out.push(punto('lado-sintoma', 'medio', 'Uno de los síntomas registrados está en el otro lado: comprueba que el informe atribuya cada lado a su síntoma.', r.cita));
+    else if (new RegExp(lados[la]).test(sinAcentos(transcripcion)))
       out.push(punto('lado-otro', 'medio', 'En la consulta se habla del otro lado: comprueba que el informe no cambie el lado afectado ni le añada plan.', r.cita));
     else out.push(punto('lado', 'alto', `El lado registrado es ${la.toLowerCase()} y el informe habla del otro lado.`, r.cita));
   }
-  else if (!la && (r = primera(t, /\b(derech|izquierd)[oa]s?\b/i)) && !/derech|izquierd/.test(sinAcentos(transcripcion)))
+  else if (!la && !ladosSintomas.length && (r = primera(t, /\b(derech|izquierd)[oa]s?\b/i)) && !/derech|izquierd/.test(sinAcentos(transcripcion)))
     out.push(punto('lado-no-consta', 'medio', 'El informe indica un lado que no consta en la valoración.', r.cita));
 
   const edad = ampliado?.edad;

@@ -177,6 +177,7 @@
 //     revisión de los 7 árboles: textoOpcionIA() en lugar de parches por paso.
 
 import { ladoTexto } from './region.js';
+import { bloqueSintomasIA } from './sintomas.js';
 
 // Reglas del prompt compartidas con physiq-report: fichero idéntico en los dos
 // repos, con su huella fijada en un test de cada uno (ver su cabecera).
@@ -302,7 +303,7 @@ Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
 NRS: ${data.nr != null ? `${data.nr}/10 ${NOTA_NRS}` : 'no registrado'}
 Irritabilidad: ${data.ir || '—'} · Naturaleza: ${data.na || '—'}
-Riesgo psicosocial: ${data.rp || '—'}
+${bloqueSintomasIA(data) ? `${bloqueSintomasIA(data)}\n` : ''}Riesgo psicosocial: ${data.rp || '—'}
 Banderas rojas:
 ${brText}
 Cribado sistémico: ${data.si ? '⚠️ Positivo' : embudo ? 'sin hallazgos en el embudo (cribado abreviado)' : 'Negativo'}${sqText}
