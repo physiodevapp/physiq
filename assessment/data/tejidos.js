@@ -14,6 +14,11 @@
 //     y la de móvil pintaban distinto las filas de grado III;
 //   - «Tendinopatía / Ruptura» separada en dos filas;
 //   - la franja de fases de reparación, nueva (Wallace 2023).
+// Las cifras genéricas de esa tabla (tendinopatía, DOMS, roturas musculares y
+// esguinces de grado I–III, injerto, fractura) ya no se pintan (decisión del
+// usuario, 2026-10): la fuente no se pudo leer y no hay un plazo general fiable.
+// Las madres quedan sin barra y sus subtipos llevan cada uno su fuente; el DOMS
+// sale de Wilke y Behringer 2021.
 // La franja de fases sale de Wallace 2023 (StatPearls, PDF del usuario). Lo
 // que no sale de ninguna fuente leída lleva `pendiente: true` (o `fuentes: []`
 // en una fase) y la app lo marca «pendiente de fuente» hasta que se revise
@@ -34,6 +39,9 @@
 //     fila      { id, mide, nombre, desde, hasta, gravedad, fuentes[], nota?, pendiente?, subtipos? }
 //               `mide`: clave de `medidas`, qué mide la barra (obligatorio, también en subtipos)
 //               `desde`/`hasta` = índices de columna (inclusive)
+//               Sin `desde`, `hasta` ni `mide`: fila sin barra, solo madre de sus subtipos;
+//               `fuentes: []`, `gravedad` (la heredan los subtipos) y una `nota` que empieza
+//               por «Sin barra general: » y dice por qué
 //     subtipos  opcional: [{ id, nombre, desde, hasta, gravedad?, fuentes[], nota?, pendiente? }]
 //               (misma forma que una fila; sin `gravedad`, la de la fila). Se
 //               pintan plegados bajo su fila («Ver N subtipos»). Solo con fuente leída para cada
@@ -67,7 +75,6 @@ export const TIEMPOS_TEJIDO = {
     proteccion: { etiqueta: 'Protección (inmovilización o descarga)', relleno: 'rayado' },
     programa: { etiqueta: 'Duración del programa de tratamiento', relleno: 'contorno' },
     biologia: { etiqueta: 'Biología de la reparación', relleno: 'punteado' },
-    sinEspecificar: { etiqueta: 'Sin especificar en la fuente', relleno: 'tenue' },
     // Lo que dura la enfermedad hasta resolverse, sin una lesión que cicatrice (capsulitis
     // adhesiva; más adelante, lumbalgia): degradado hacia la derecha, se va apagando.
     evolucion: { etiqueta: 'Evolución natural (hasta que se resuelve)', relleno: 'degradado' },
@@ -85,9 +92,10 @@ export const TIEMPOS_TEJIDO = {
       id: 'tendon', tejido: 'Tendón',
       filas: [
         {
-          id: 'tendinopatia', mide: 'sinEspecificar', nombre: 'Tendinopatía', desde: 2, hasta: 5, gravedad: 'moderada',
-          fuentes: ['Snyder-Mackler 2012'],
-          nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga. En la fuente comparte fila con la rotura.',
+          // Sin barra (decisión del usuario, 2026-10): el plazo genérico venía de la tabla del wiki
+          // (Snyder-Mackler 2012), que nunca se pudo leer. Los subtipos llevan cada uno su fuente.
+          id: 'tendinopatia', nombre: 'Tendinopatía', gravedad: 'moderada', fuentes: [],
+          nota: 'Sin barra general: no hay un plazo de cicatrización, sino la duración del programa de carga, que depende del tendón. Ver los subtipos.',
           // Fase J, 8 (tendinopatías): no hay plazo de cicatrización, sino la duración de los
           // programas de carga de las pautas de cada hipótesis, de fuentes ya leídas enteras
           // para esas pautas (2026-10). Ophey 2025 (ro5): «ejercicio de resistencia progresivo
@@ -160,11 +168,17 @@ export const TIEMPOS_TEJIDO = {
     },
     {
       id: 'musculo', tejido: 'Músculo',
+      nota: 'Sin barra general por grados I–III: el plazo depende del músculo, de la zona de la lesión y del deporte. Ver las filas de cada músculo.',
       filas: [
-        { id: 'doms', mide: 'sinEspecificar', nombre: 'Dolor muscular tardío (DOMS)', desde: 0, hasta: 0, gravedad: 'minima', fuentes: ['Snyder-Mackler 2012'] },
-        { id: 'musculo_g1', mide: 'sinEspecificar', nombre: 'Rotura grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'] },
-        { id: 'musculo_g2', mide: 'sinEspecificar', nombre: 'Rotura grado II', desde: 2, hasta: 3, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'] },
-        { id: 'musculo_g3', mide: 'sinEspecificar', nombre: 'Rotura grado III', desde: 2, hasta: 4, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'] },
+        // DOMS: Wilke y Behringer 2021 (PMC8431437, leído entero, 2026-10), introducción: los
+        // síntomas aparecen «hours following activity, reaching maximal levels after one to
+        // three days»; apartado 3.3: «DOMS complaints can persist for several days». Máximo en
+        // «1–3 d» (0) y se apaga en «4–14 d» (1): evolución natural, sin lesión que cicatrice.
+        { id: 'doms', mide: 'evolucion', nombre: 'Dolor muscular tardío (DOMS)', desde: 0, hasta: 1, gravedad: 'minima', fuentes: ['Wilke y Behringer 2021'],
+          nota: 'Aparece horas después de un ejercicio intenso o no habitual (sobre todo excéntrico), es máximo a los 1–3 días y puede durar varios días más.' },
+        // Las roturas genéricas de grado I–III (tabla del wiki, Snyder-Mackler 2012, nunca leída)
+        // se quitan (decisión del usuario, 2026-10): sin fuente leída y sin subtipos que colgar.
+        // Lo que dice el grupo sobre ellas va en su `nota`.
         // Isquiotibiales por la clasificación BAMIC (Fase J, 7), PDF del usuario leídos
         // enteros (2026-10). Pollock 2014: grados 0–4 por la RM, con sufijo «a»
         // miofascial, «b» unión miotendinosa o «c» intratendinosa. Pollock 2016, tabla 3
@@ -243,7 +257,8 @@ export const TIEMPOS_TEJIDO = {
         // continue to experience pain 1 year or more after the LAS».
         // Semanas → columnas: 1–2 s = «4–14 d» (1); 3–6 s = «3–4 s» y «5–8 s» (2–3);
         // 6–12 s = «5–8 s» y «2–3 m» (3–4); 12–16 s = «2–3 m» y «3–6 m» (4–5).
-        { id: 'ligamento_g1', mide: 'sinEspecificar', nombre: 'Esguince grado I', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'ligamento_g1', nombre: 'Esguince grado I', gravedad: 'leve', fuentes: [],
+          nota: 'Sin barra general: el plazo depende de la articulación. Ver los subtipos.',
           subtipos: [
             { id: 'tobillo_lateral_g1', mide: 'deporte', nombre: 'Tobillo, ligamento lateral', desde: 1, hasta: 1, fuentes: ['Bergman 2025'],
               nota: '1–2 semanas con movilización precoz y rehabilitación funcional.' },
@@ -254,12 +269,14 @@ export const TIEMPOS_TEJIDO = {
             { id: 'rodilla_lcm_g1', mide: 'deporte', nombre: 'Rodilla, ligamento colateral medial', desde: 1, hasta: 1, fuentes: ['Naqvi y Sherman 2023'],
               nota: 'Vuelta al deporte en 10–14 días con tratamiento conservador. Los grados II y III no tienen plazo en la fuente: se decide por criterios (fuerza igual en las dos piernas y sin dolor al valgo).' },
           ] },
-        { id: 'ligamento_g2', mide: 'sinEspecificar', nombre: 'Esguince grado II', desde: 2, hasta: 4, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'ligamento_g2', nombre: 'Esguince grado II', gravedad: 'moderada', fuentes: [],
+          nota: 'Sin barra general: el plazo depende de la articulación. Ver los subtipos.',
           subtipos: [
             { id: 'tobillo_lateral_g2', mide: 'deporte', nombre: 'Tobillo, ligamento lateral', desde: 2, hasta: 3, fuentes: ['Bergman 2025', 'Vuurberg 2018'],
               nota: '3–6 semanas (Bergman 2025). La guía de Vuurberg 2018 junta la rotura parcial y la total: vuelta completa al trabajo y al deporte a las 6–8 semanas, según la tarea.' },
           ] },
-        { id: 'ligamento_g3', mide: 'sinEspecificar', nombre: 'Esguince grado III', desde: 3, hasta: 5, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'ligamento_g3', nombre: 'Esguince grado III', gravedad: 'grave', fuentes: [],
+          nota: 'Sin barra general: el plazo depende de la articulación. Ver los subtipos.',
           subtipos: [
             { id: 'tobillo_lateral_g3', mide: 'deporte', nombre: 'Tobillo, ligamento lateral', desde: 3, hasta: 4, fuentes: ['Bergman 2025', 'Martin 2021'],
               nota: '6–12 semanas o más; a veces cirugía por inestabilidad persistente. Un 5–33 % sigue con dolor al año (Martin 2021).' },
@@ -272,7 +289,8 @@ export const TIEMPOS_TEJIDO = {
             { id: 'rodilla_lca_conservador', mide: 'programa', nombre: 'Rodilla, LCA sin cirugía', desde: 2, hasta: 4, fuentes: ['Evans 2023'],
               nota: 'No es un plazo de cicatrización: tras la fase aguda, 12 semanas de fisioterapia supervisada. Indicado en baja demanda, deportes sin giros ni saltos y roturas parciales.' },
           ] },
-        { id: 'injerto', mide: 'sinEspecificar', nombre: 'Injerto (reconstrucción)', desde: 4, hasta: 6, gravedad: 'grave', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'injerto', nombre: 'Injerto (reconstrucción)', gravedad: 'grave', fuentes: [],
+          nota: 'Sin barra general: el plazo depende del ligamento reconstruido y del protocolo del cirujano. Ver los subtipos.',
           subtipos: [
             // Evans 2023, «Pearls and Other Issues»: «The average return to full activity
             // and/or sports participation is estimated to be between 6 to 12 months after
@@ -450,7 +468,8 @@ export const TIEMPOS_TEJIDO = {
         //   Pencle y Varacallo 2023 (húmero proximal): sin plazo de consolidación; no se pinta.
         // Semanas → columnas: 3–6 s = 2–3; 4–6 s = 2–3; 6–8 s = 3; 10–12 s = 4;
         // 12 s → 16–20 s = 4–5; hasta 20 s = 4–5; 12–18 meses = 7.
-        { id: 'fractura', mide: 'sinEspecificar', nombre: 'Fractura', desde: 2, hasta: 5, gravedad: 'moderada', fuentes: ['Snyder-Mackler 2012'],
+        { id: 'fractura', nombre: 'Fractura', gravedad: 'moderada', fuentes: [],
+          nota: 'Sin barra general: el plazo depende del hueso, del tipo de fractura y del tratamiento. Ver los subtipos.',
           subtipos: [
             { id: 'fx_tobillo_estable', mide: 'deporte', nombre: 'Tobillo, estable sin cirugía', desde: 3, hasta: 3, fuentes: ['Hermena y Slane 2025'],
               nota: 'Vuelta a la función previa hacia las 6–8 semanas, con carga progresiva según tolerancia.' },
@@ -605,6 +624,5 @@ export const TIEMPOS_TEJIDO = {
     'Paciente posquirúrgico: manda el protocolo del cirujano.',
   ],
 
-  fuente: 'Filas: adaptado de Snyder-Mackler et al., «Developing Treatment Pathways», 2012 (tabla de physiq-wiki).',
   fasesFuente: 'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023). Rotura de tendón: Wu, Nerlich y Docheva, «Tendon injuries: basic science and new repair proposals», EFORT Open Rev 2017.',
 };

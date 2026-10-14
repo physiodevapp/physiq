@@ -61,6 +61,13 @@ const lineaHoy = hoy => (hoy ? `<span class="tej-hoy" style="left:${pct(hoy.pos)
 // si la medida lleva `marca`, una etiqueta tras el nombre.
 function filaHTML(f, { columnas, hoy, pendienteChip, medidas = {}, gravedad = f.gravedad, clase = '' }) {
   const n = columnas.length;
+  // Fila sin barra (sin `desde`): solo el nombre y su nota, con la pista vacía para que
+  // las rayas de las columnas sigan alineadas; sus subtipos llevan las barras.
+  if (!tieneBarra(f)) {
+    return `<div class="tej-fila tej-sin-barra${clase}" data-tejido="${esc(f.id)}"><div class="tej-nombre">${esc(f.nombre)}`
+      + `${f.nota ? `<span class="tej-nota">${esc(f.nota)}</span>` : ''}</div>`
+      + `<div class="tej-pista" style="--tej-n:${n}"></div></div>`;
+  }
   const rango = rangoTexto(f, columnas);
   const m = medidas[f.mide] || {};
   const marca = m.marca ? ` <span class="tej-marca" data-mide="${esc(f.mide)}">${esc(m.marca)}</span>` : '';
@@ -73,6 +80,10 @@ function filaHTML(f, { columnas, hoy, pendienteChip, medidas = {}, gravedad = f.
     + `<button type="button" class="tej-barra tej-${esc(gravedad)}${m.relleno ? ` tej-relleno-${esc(m.relleno)}` : ''}" data-mide="${esc(f.mide || '')}" data-barra="${esc(f.id)}" style="grid-column:${f.desde + 1} / ${f.hasta + 2}" aria-expanded="false" aria-controls="tejInfo" aria-label="${esc(`${f.nombre}: ${rango}${que}`)}"></button>`
     + `${lineaHoy(hoy)}</div></div>`;
 }
+
+// Una fila puede no llevar barra (sin `desde`/`hasta`): las filas madre cuyo plazo general
+// no tiene fuente (decisión del usuario, 2026-10); la barra la llevan sus subtipos.
+export const tieneBarra = f => Number.isInteger(f.desde) && Number.isInteger(f.hasta);
 
 // Fila o subtipo por id → { fila, madre, gravedad } (el subtipo sin `gravedad` toma la de
 // su fila madre), o null.
@@ -92,7 +103,7 @@ export function buscarFila(datos, id) {
 // de la gravedad de la barra, como en el diagrama. '' si el id no existe.
 export function infoBarraHTML(datos, id) {
   const r = buscarFila(datos, id);
-  if (!r) return '';
+  if (!r || !tieneBarra(r.fila)) return '';
   const { fila: f, madre, gravedad } = r;
   const m = (datos.medidas || {})[f.mide] || {};
   const rango = rangoTexto(f, datos.columnas);
