@@ -2411,9 +2411,13 @@
 .razon-ampliar:hover { text-decoration: underline; }
 
 .razon-scrim { display: none; }
+/* Ancho en escritorio: 380 px como mínimo y, en pantallas anchas, todo el hueco
+   que deja la columna de las fases (780 px + márgenes), hasta 560 px — más
+   ancho alarga las líneas (~75 caracteres) y se lee peor. */
+:root { --razon-ancho: clamp(380px, calc(100vw - 780px - 4rem), 560px); }
 .razon-panel {
   position: fixed; z-index: 250;
-  top: 64px; right: 0; bottom: 0; width: 380px; max-width: 100vw;
+  top: 64px; right: 0; bottom: 0; width: var(--razon-ancho); max-width: 100vw;
   background: var(--surface); border-left: 1px solid var(--border2);
   box-shadow: var(--modal-shadow);
   display: flex; flex-direction: column;
@@ -2455,7 +2459,7 @@
 
 /* Escritorio: el contenido se aparta para que la pregunta no quede debajo. */
 @media (min-width: 769px) {
-  body.razon-abierto .main { padding-right: calc(380px + 1rem); }
+  body.razon-abierto .main { padding-right: calc(var(--razon-ancho) + 1rem); }
 }
 
 /* Móvil: bottom sheet (~85 % de alto) con velo. */
