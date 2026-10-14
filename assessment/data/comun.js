@@ -22,10 +22,10 @@ export const SIS_ENDOCRINO = {
     'Nódulos palpables supraclaviculares o fiebre inexplicable en pacientes con corticosteroides'
   ],
   banderasAmarillas: [
-    'Debilidad muscular proximal, mialgias y fatiga sistémica inexplicada',
+    { texto: 'Debilidad muscular proximal, mialgias y fatiga sistémica inexplicada', pregunta: 'end_1' },
     'Periartritis o tendinitis calcificante bilateral de hombro',
     'Cambios inexplicables en cabello, uñas, piel o tolerancia a la temperatura',
-    'Polidipsia y poliuria (sed y orina excesivas)'
+    { texto: 'Polidipsia y poliuria (sed y orina excesivas)', pregunta: 'end_2' }
   ],
   preguntas: [
     { id: 'end_1', text: '¿Siente fatiga inusual o debilidad muscular, especialmente al subir escaleras o levantarse de una silla?', alerta: true, s1: false,
@@ -155,16 +155,16 @@ export const SIS_ENDOCRINO = {
 export const SIS_HEMATOLOGICO = {
   id: 'transversal_hematologico', icon: '🩸', nombre: 'Hematológico',
   banderasRojas: [
-    'Sangrado espontáneo, petequias o equimosis sin traumatismo (trombocitopenia)',
-    'Heces negras/alquitranadas indicativas de trombocitopenia o sangrado GI',
+    { texto: 'Sangrado espontáneo, petequias o equimosis sin traumatismo (trombocitopenia)', pregunta: 'hem_1' },
+    { texto: 'Heces negras/alquitranadas indicativas de trombocitopenia o sangrado GI', pregunta: 'hem_4' },
     'Episodios nuevos de dolor muscular o articular en pacientes con hemofilia',
-    'Hemoptisis (toser sangre) en pacientes con hemofilia',
+    { texto: 'Hemoptisis (toser sangre) en pacientes con hemofilia', pregunta: 'hem_4' },
     'Fiebre alta, escalofríos y sudores por infecciones en pacientes con leucopenia'
   ],
   banderasAmarillas: [
     'Palidez en pliegues palmares, mucosas o lechos ungueales',
     'Uñas cóncavas o quebradizas (coiloniquia — alerta de anemia ferropénica)',
-    'Disnea rápida, dolor de pecho, debilidad y fatiga con palpitaciones',
+    { texto: 'Disnea rápida, dolor de pecho, debilidad y fatiga con palpitaciones', pregunta: 'hem_2' },
     'Uso crónico de AINEs (predispone a sangrado GI y anemia)'
   ],
   preguntas: [
@@ -314,16 +314,17 @@ const PQ_URGENCIA_TVP = 'Posible TVP: derivar hoy (NICE NG158: con Wells ≥2, e
 export const SIS_POSQUIRURGICO = {
   id: 'transversal_posquirurgico', icon: '🏥', nombre: 'Posquirúrgico', soloPosquirurgico: true,
   banderasRojas: [
-    'Herida más roja, caliente, hinchada o dolorosa, que supura o se abre, o fiebre y malestar tras la operación (infección)',
+    { texto: 'Herida más roja, caliente, hinchada o dolorosa, que supura o se abre, o fiebre y malestar tras la operación (infección)', pregunta: 'pq_herida' },
     'En las 48–72 horas siguientes, dolor desproporcionado con piel oscura, ampollas, crepitación o signos de sepsis (infección necrotizante: urgencia quirúrgica)',
-    'Pierna hinchada, caliente o dolorosa (TVP)',
-    'Falta de aire brusca, dolor en el pecho al respirar, tos con sangre o síncope (embolia pulmonar)',
-    'Dolor desproporcionado que va a más, sobre todo al estirar los dedos, con el compartimento tenso, en las horas siguientes a la lesión, la operación o un yeso o vendaje (síndrome compartimental)',
-    'Dolor quemante, hormigueo, adormecimiento o debilidad nuevos en el territorio de un nervio (posible lesión nerviosa)'
+    { texto: 'Pierna hinchada, caliente o dolorosa (TVP)', pregunta: ['pq_tvp', 'pq_tvp_ms'] },
+    { texto: 'Falta de aire brusca, dolor en el pecho al respirar, tos con sangre o síncope (embolia pulmonar)', pregunta: 'pq_tep' },
+    { texto: 'Dolor desproporcionado que va a más, sobre todo al estirar los dedos, con el compartimento tenso, en las horas siguientes a la lesión, la operación o un yeso o vendaje (síndrome compartimental)', regiones: ['codo', 'rodilla', 'tobillo_pie'], pregunta: 'pq_compart' },
+    { texto: 'Dolor quemante, hormigueo, adormecimiento o debilidad nuevos en el territorio de un nervio (posible lesión nerviosa)', regiones: PQ_MIEMBROS, pregunta: 'pq_nervio' },
+    { texto: 'Tras una cirugía de columna, déficit neurológico nuevo o que va a más en brazos o piernas, torpeza al caminar o cambios en la vejiga o el intestino (hematoma epidural, lesión de raíz o médula)', regiones: ['lumbar', 'cervical'], pregunta: 'pq_nervio_col' }
   ],
   banderasAmarillas: [
-    'Dolor continuo y desproporcionado con cambios de color, temperatura, sudoración o hinchazón, o dolor al roce (SDRC)',
-    'Yeso o vendaje que aprieta, o dolor desproporcionado mientras se lleva o al retirarlo (aviso precoz de SDRC)'
+    { texto: 'Dolor continuo y desproporcionado con cambios de color, temperatura, sudoración o hinchazón, o dolor al roce (SDRC)', regiones: PQ_MIEMBROS, pregunta: 'pq_sdrc' },
+    { texto: 'Yeso o vendaje que aprieta, o dolor desproporcionado mientras se lleva o al retirarlo (aviso precoz de SDRC)', regiones: PQ_MIEMBROS }
   ],
   preguntas: [
     { id: 'pq_herida', urgencia: 'Posible infección de la herida quirúrgica: que la valore hoy el cirujano o urgencias.', text: '¿Desde la operación, la herida está más roja, caliente, hinchada o dolorosa, supura o se ha abierto, o ha tenido fiebre, escalofríos o malestar general?', alerta: true,
@@ -404,6 +405,20 @@ export const SIS_POSQUIRURGICO = {
         detalle: 'Qué dice la guía (Goebel, práctica quirúrgica, p. 13): en el contexto quirúrgico, las causas de dolor persistente del miembro que hay que descartar antes de pensar en un SDRC son la infección, la fijación defectuosa, la inestabilidad, la artrosis y el dolor neuropático por atrapamiento o lesión de un nervio; un dolor «escaldante» en el territorio de un nervio periférico debe revisarlo el cirujano con urgencia. Cuando un SDRC se acompaña de la lesión de un nervio mayor (tipo 2), la causa de esa lesión, si no está clara, debe estudiarla un neurólogo; en ocasiones se puede operar (compresión por cicatriz, neuroma o lesión durante la cirugía, por ejemplo por un punto) (Goebel, pp. 6 y 16).\n\nLa hoja para el paciente tras una fractura o una operación (Goebel, apéndice 7) pide volver a urgencias de inmediato con hinchazón que aumenta, hormigueo o adormecimiento, incapacidad para mover los dedos, color azulado o morado o dolor que aumenta, y revisar el yeso si aprieta, duele más o se mueve.',
         fuentes: ['Goebel 2018', 'Guthmiller 2025'],
         citas: [PQ_CITA.goebel, PQ_CITA.guthmiller]
+      } },
+    // Variante de pq_nervio para la columna (decisión del usuario, 2026-10, Fase M):
+    // tras cirugía de columna, el déficit nuevo es radicular o medular, no de un nervio periférico.
+    { id: 'pq_nervio_col', regiones: ['lumbar', 'cervical'], urgencia: 'Posible hematoma epidural o lesión neurológica tras la cirugía de columna: urgencias o el cirujano, hoy.', text: '¿Desde la operación de columna nota en los brazos o las piernas un dolor, hormigueo, adormecimiento o pérdida de fuerza nuevos o que van a más, torpeza al caminar, o cambios al orinar o al hacer de vientre?', alerta: true,
+      razonamiento: {
+        porque: 'Tras una operación de columna, un sangrado dentro del canal vertebral (hematoma epidural), una fuga de líquido cefalorraquídeo, una lesión de los vasos que irrigan la médula o la manipulación de las raíces durante la cirugía pueden dañar las raíces o la médula (Finucane, con la información del NHS sobre la descompresión lumbar). El resultado es un déficit nuevo: alteración de la sensibilidad, debilidad de las piernas, parálisis o alteración del intestino (Wang).',
+        peso: 'Es una urgencia. El hematoma epidural sintomático es raro (0,1–0,4 % de las cirugías de columna según Wang; unas 9 de cada 10 000 cirugías cervicales en la serie de Schroeder), pero si se reconoce pronto y se evacua muchos pacientes se recuperan por completo, y el retraso puede dejar una lesión irreversible (Schroeder). No hace falta seguir ingresado para que aparezca: aunque suele dar la cara en las primeras 24 horas, casi un tercio de los hematomas tras cirugía lumbar posterior aparecieron después del tercer día y hasta las dos semanas (Wang), y en la serie cervical los síntomas aparecieron de media a los 4,7 días (Schroeder).',
+        detalle: 'Qué hacer con un SÍ: explorar dermatomas, miotomas y reflejos, y preguntar por la vejiga, el intestino y la sensibilidad en silla de montar, como ante una sospecha de cola de caballo (Finucane); comparar con la exploración de antes de la operación si se conoce, y derivar el mismo día. Un déficit que ya existía antes de operarse y no ha cambiado no es esto.\n\nCifras: Finucane estima la cola de caballo tras la cirugía en un 0,08–0,2 % y recoge que el 23 % de las reclamaciones por cirugía de columna en Inglaterra tienen que ver con ella. En la serie cervical de Schroeder (16 582 cirugías), todos los pacientes con hematoma empezaron con un déficit neurológico; 9 de 15 se recuperaron por completo tras la evacuación.\n\nFactores de riesgo del hematoma (Wang): más de 60 años, índice de masa corporal alto, cirugía previa de columna, alteraciones de la coagulación, antiinflamatorios, sangrado durante la operación de más de 1 litro y cirugía de varios niveles; en el tardío, la tensión arterial alta tras la operación y una cirugía previa en el mismo nivel.',
+        fuentes: ['Finucane 2020', 'Wang 2020', 'Schroeder 2017'],
+        citas: [
+          { texto: 'Finucane 2020 — Finucane, Downie, Mercer, Greenhalgh, Boissonnault, Pool-Goudzwaard, Beneciuk, Leech y Selfe, «International Framework for Red Flags for Potential Serious Spinal Pathologies», IFOMPT, marzo de 2020 (documento completo del marco publicado en J Orthop Sports Phys Ther 2020;50(7):350–372), sección 2 (cola de caballo), pp. 9 y 13.', url: 'https://doi.org/10.2519/jospt.2020.9971' },
+          { texto: 'Wang 2020 — Wang, Wang, Zeng, Zhong, Chen y Li, «Delayed Onset Postoperative Spinal Epidural Hematoma after Lumbar Spinal Surgery: Incidence, Risk Factors, and Clinical Outcomes», Biomed Res Int 2020;2020:8827962 (texto completo en PMC).', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7775149/' },
+          { texto: 'Schroeder 2017 — Schroeder, Hilibrand, Arnold et al., «Epidural Hematoma Following Cervical Spine Surgery», Global Spine J 2017;7(1 Suppl):120S–126S (texto completo en PMC).', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC5400190/' }
+        ]
       } }
   ]
 };

@@ -1091,10 +1091,12 @@ function applyRegionChange(regionId, card) {
 function sistemasActivos(regionId = state.region) {
   const data = SYSTEMIC_SCREENING[regionId];
   if (!data) return [];
+  const enRegion = x => typeof x === 'string' || !x.regiones || x.regiones.includes(regionId);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
-    .map(sis => sis.preguntas.some(q => q.regiones)
-      ? { ...sis, preguntas: sis.preguntas.filter(q => !q.regiones || q.regiones.includes(regionId)) }
+    .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
+      ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
+          banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
       : sis);
 }
 
@@ -1238,13 +1240,13 @@ function buildSistemaHTML(sis) {
     if (hasRed) {
       html += `<div class="flags-box red-box">
         <div class="flags-col-title red">🚩 Banderas Rojas</div>
-        ${sis.banderasRojas.map(f => `<div class="flag-item"><span class="flag-dot-red">●</span>${f}</div>`).join('')}
+        ${sis.banderasRojas.map((f, i) => banderaHTML(sis, f, 'rojas', i)).join('')}
       </div>`;
     }
     if (hasYellow) {
       html += `<div class="flags-box yellow-box">
         <div class="flags-col-title yellow">🟡 Banderas Amarillas</div>
-        ${sis.banderasAmarillas.map(f => `<div class="flag-item"><span class="flag-dot-yellow">●</span>${f}</div>`).join('')}
+        ${sis.banderasAmarillas.map((f, i) => banderaHTML(sis, f, 'amarillas', i)).join('')}
       </div>`;
     }
     html += `</div>`;
@@ -1383,22 +1385,74 @@ function _buscarPregunta(sisId, qId) {
   return q ? { sis, q } : null;
 }
 
+// Secciones del panel para un `razonamiento` del cribado (de una pregunta o de
+// una bandera); `x` lleva el `anatomia` (pregunta) o nada (bandera).
+function razonCribadoPanelHTML(r, x = {}) {
+  const parrafos = r.detalle ? r.detalle.split('\n\n').map(p => `<p>${p}${iaParrafoHTML()}</p>`).join('') : '';
+  return `
+    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}${iaParrafoHTML()}</p></div>
+    <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${r.peso}</p></div>
+    ${razonFisiologiaHTML(r.fisiologia)}
+    ${parrafos ? `<div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>` : ''}
+    ${anatomiaPanelHTML(x)}
+    <div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
+      <ul>${(r.citas || r.fuentes).map(razonCitaHTML).join('')}</ul></div>`;
+}
+
 function abrirRazonamiento(btn, sisId, qId) {
   const hit = _buscarPregunta(sisId, qId);
   const r = hit?.q.razonamiento;
   if (!r || !r.detalle) return;
-  const parrafos = r.detalle.split('\n\n').map(p => `<p>${p}${iaParrafoHTML()}</p>`).join('');
   abrirPanelRazon({
     btn, kicker: '¿Por qué esta pregunta?', titulo: hit.q.text,
     ia: ctxCribado(state.region, hit.q.text),
-    html: `
-    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}${iaParrafoHTML()}</p></div>
-    <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${r.peso}</p></div>
-    ${razonFisiologiaHTML(r.fisiologia)}
-    <div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>
-    ${anatomiaPanelHTML(hit.q)}
-    <div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
-      <ul>${(r.citas || r.fuentes).map(razonCitaHTML).join('')}</ul></div>`,
+    html: razonCribadoPanelHTML(r, hit.q),
+  });
+}
+
+// ─── RAZONAMIENTO DE LAS BANDERAS (fase 2) ───────────────────
+// Una bandera es un texto o { texto, regiones?, pregunta?, fase1?, razonamiento? }
+// (docs/razonamiento-banderas.md). Con `pregunta` (id o lista de ids del mismo
+// sistema), su «¿Por qué?» es el de esa pregunta: no se escribe dos veces. Con
+// `razonamiento` propio (misma forma que el de una pregunta), el suyo. `fase1`
+// (br1–br4) solo pinta una etiqueta: se pregunta en las banderas de la fase 1.
+// Solo se enlaza una pregunta visible en la región (`sis` ya filtrado).
+function textoBandera(f) { return typeof f === 'string' ? f : f.texto; }
+
+function preguntasDeBandera(sis, f) {
+  if (typeof f === 'string' || !f.pregunta) return [];
+  const ids = [].concat(f.pregunta);
+  return sis.preguntas.filter(q => ids.includes(q.id) && q.razonamiento);
+}
+
+function banderaHTML(sis, f, tipo, i) {
+  const dot = tipo === 'rojas' ? 'flag-dot-red' : 'flag-dot-yellow';
+  const conPorque = typeof f !== 'string' && (f.razonamiento || preguntasDeBandera(sis, f).length);
+  const fase1 = typeof f !== 'string' && f.fase1
+    ? ` <span class="flag-fase1" title="También se pregunta en las banderas rojas de la fase 1">· fase 1</span>` : '';
+  const porque = conPorque
+    ? ` <button type="button" class="flag-porque" aria-label="¿Por qué esta bandera?" onclick="abrirRazonBandera(this,'${sis.id}','${tipo}',${i})">ⓘ</button>` : '';
+  return `<div class="flag-item"><span class="${dot}">●</span><span class="flag-texto">${textoBandera(f)}${fase1}${porque}</span></div>`;
+}
+
+// Contenido del panel de una bandera, o null si no tiene «¿Por qué?».
+function razonBanderaHTML(sis, f) {
+  if (typeof f === 'string') return null;
+  if (f.razonamiento) return razonCribadoPanelHTML(f.razonamiento, f);
+  const qs = preguntasDeBandera(sis, f);
+  if (!qs.length) return null;
+  return qs.map(q => `<div class="razon-seccion razon-bandera-pregunta"><div class="razon-etq">Se pregunta así</div><p>${q.text}</p></div>
+    ${razonCribadoPanelHTML(q.razonamiento, q)}`).join('');
+}
+
+function abrirRazonBandera(btn, sisId, tipo, i) {
+  const sis = sistemasActivos().find(s => s.id === sisId);
+  const f = sis?.[tipo === 'rojas' ? 'banderasRojas' : 'banderasAmarillas'][i];
+  const html = f && razonBanderaHTML(sis, f);
+  if (!html) return;
+  abrirPanelRazon({
+    btn, kicker: tipo === 'rojas' ? '¿Por qué esta bandera roja?' : '¿Por qué esta bandera amarilla?',
+    titulo: textoBandera(f), ia: ctxCribado(state.region, textoBandera(f)), html,
   });
 }
 
@@ -3832,7 +3886,7 @@ initAmpliarIA();
 // Named exports for phase4.js / phase4b.js (which import these directly) and
 // for tests/unit.js.
 export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenciasActivas, getCirugiaPayload, cerrarMenuCompartir, resumenFormularioIA, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
-  buildContextSummaryText, getPendientesBreve, buildSistemaHTML,
+  buildContextSummaryText, getPendientesBreve, buildSistemaHTML, sistemasActivos, textoBandera, razonBanderaHTML,
   precargarFormularioPrevio, nombreRegion, showToast,
   injectQuickInputBar, lockBodyScroll, unlockBodyScroll, partirPrimeraFrase, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento };
 
@@ -3840,7 +3894,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // and dynamically-generated HTML — those resolve only against the global
 // scope, never a module's private scope.
 Object.assign(window, {
-  abrirFormularioPrevio, abrirRazonamiento, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
+  abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
   abrirMenuCompartir, cerrarMenuCompartir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,

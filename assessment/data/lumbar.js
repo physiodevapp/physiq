@@ -24,12 +24,43 @@ export const screening = {
     {
       id: 'l_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [
-        'Antecedentes de cáncer de próstata, colon, o cualquier tipo',
-        'Dolor nocturno intenso que despierta al paciente sin alivio postural',
-        'Pérdida de peso inexplicada (>5 % del peso en 6 meses)',
-        'Fractura patológica ante trauma menor o fragilidad ósea'
+        { texto: 'Antecedentes de cáncer de próstata, colon, o cualquier tipo', pregunta: 'l2' },
+        { texto: 'Dolor nocturno intenso que despierta al paciente sin alivio postural', pregunta: 'l_on2' },
+        { texto: 'Pérdida de peso inexplicada (>5 % del peso en 6 meses)', fase1: 'br1',
+          razonamiento: {
+            porque: 'Un cáncer avanzado, una infección crónica de la columna o una enfermedad sistémica consumen al organismo, y adelgazar sin proponérselo puede ser su primer signo. Finucane la incluye entre los síntomas de malignidad y de infección vertebral, y la considera significativa por encima de un 5 % del peso en 6 meses.',
+            peso: 'Sola pesa poco: Downie encuentra que, en el dolor lumbar, la pérdida de peso inexplicada deja la probabilidad de cáncer por debajo del 3 %. Pesa cuando no tiene otra explicación (dieta, ejercicio, fármacos, diabetes o hipertiroidismo), cuando sigue y cuando se suma a otras banderas, sobre todo a antecedentes de cáncer. NICE pide un TAC urgente para descartar un cáncer de páncreas a partir de los 60 años si hay pérdida de peso con dolor de espalda.',
+            detalle: 'Qué preguntar con un SÍ (Finucane): si el peso está estable, cuánto ha perdido en los últimos 3–6 meses y si sabe por qué; si ha cambiado la dieta o el ejercicio; qué medicación toma. Finucane da a esta bandera un nivel de evidencia alto en la malignidad y bajo en la infección, y en la malignidad sitúa la sospecha alta en una pérdida del 5–10 % en 3–6 meses.\n\nNICE recoge la pérdida de peso en varios cánceres: con dolor de espalda, a partir de los 60 años, TAC urgente por posible cáncer de páncreas; a partir de los 55, con dolor en la parte alta del abdomen, reflujo o dispepsia, derivación por posible cáncer de estómago.\n\nTambién se pregunta en las banderas rojas de la fase 1 (sudor nocturno o pérdida de peso inexplicada).',
+            fuentes: ['Finucane 2020', 'Downie 2013', 'NICE NG12'],
+            citas: [
+              { texto: 'Finucane 2020 — Finucane, Downie, Mercer, Greenhalgh, Boissonnault, Pool-Goudzwaard, Beneciuk, Leech y Selfe, «International Framework for Red Flags for Potential Serious Spinal Pathologies», IFOMPT, marzo de 2020 (documento completo del marco publicado en J Orthop Sports Phys Ther 2020;50(7):350–372), sección 4 (malignidad), tabla 4.2, p. 39, y sección 5 (infección), tabla 5.2, p. 48.', url: 'https://doi.org/10.2519/jospt.2020.9971' },
+              { texto: 'Downie 2013 — Downie, Williams, Henschke et al., «Red flags to screen for malignancy and fracture in patients with low back pain: systematic review», BMJ 2013;347:f7095 (texto completo en PMC).', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3898572/' },
+              { texto: 'NICE NG12 — NICE, «Suspected cancer: recognition and referral» (2015, actualizada el 15 de abril de 2026), recomendaciones 1.2.5 y 1.2.7.', url: 'https://www.nice.org.uk/guidance/ng12' }
+            ]
+          } },
+        { texto: 'Fractura patológica ante trauma menor o fragilidad ósea',
+          razonamiento: {
+            porque: 'Una fractura con un golpe que no debería romper el hueso indica que el hueso estaba debilitado. Lo más frecuente es la osteoporosis, pero Finucane recuerda que las metástasis y el mieloma sustituyen hueso sano por tumor y producen fracturas que en la radiografía se parecen mucho a las osteoporóticas.',
+            peso: 'Obliga a buscar la causa del hueso débil. Finucane pide una radiografía ante la sospecha de fractura y, si la historia no aclara la causa, más pruebas de imagen. NICE pide un análisis de sangre para descartar un mieloma a partir de los 60 años con dolor óseo persistente, sobre todo de espalda, o una fractura sin explicación.',
+            detalle: 'Con qué se confunde: las metástasis se instalan sobre todo en la mitad anterior del cuerpo vertebral, que se debilita y se aplasta en cuña; el mieloma puede dar fracturas parecidas a las osteoporóticas y suele presentarse algo antes que la osteoporosis y las metástasis. La radiografía no basta para distinguirlas: hay que mirar los factores de riesgo de cada una en la historia (antecedentes de cáncer, corticoides, osteoporosis, edad).\n\nQué hacer con un SÍ: preguntar por antecedentes de cáncer, pérdida de peso, dolor nocturno o en reposo, y derivar al médico para estudiar la fractura. La fractura osteoporótica por un golpe menor se pregunta en el sistema de espondiloartropatías (osteoporosis o fractura ante un golpe menor).',
+            fuentes: ['Finucane 2020', 'NICE NG12'],
+            citas: [
+              { texto: 'Finucane 2020 — Finucane, Downie, Mercer, Greenhalgh, Boissonnault, Pool-Goudzwaard, Beneciuk, Leech y Selfe, «International Framework for Red Flags for Potential Serious Spinal Pathologies», IFOMPT, marzo de 2020 (documento completo del marco publicado en J Orthop Sports Phys Ther 2020;50(7):350–372), sección 3 (fractura), p. 25.', url: 'https://doi.org/10.2519/jospt.2020.9971' },
+              { texto: 'NICE NG12 — NICE, «Suspected cancer: recognition and referral» (2015, actualizada el 15 de abril de 2026), recomendaciones 1.10.4 y 1.10.5.', url: 'https://www.nice.org.uk/guidance/ng12' }
+            ]
+          } }
       ],
-      banderasAmarillas: ['Dolor lumbar persistente sin mejoría tras 1 mes de tratamiento conservador'],
+      banderasAmarillas: [
+        { texto: 'Dolor lumbar persistente sin mejoría tras 1 mes de tratamiento conservador',
+          razonamiento: {
+            porque: 'Casi todos los dolores lumbares inespecíficos mejoran en semanas. Que no mejore tras un mes de tratamiento hace pensar que la causa puede no ser mecánica.',
+            peso: 'Sola pesa muy poco: Downie encuentra que, en el dolor lumbar, no mejorar tras un mes deja la probabilidad de cáncer por debajo del 3 %. Sirve para revisar el caso y buscar otras banderas, no para derivar por sí sola.',
+            fuentes: ['Downie 2013'],
+            citas: [
+              { texto: 'Downie 2013 — Downie, Williams, Henschke et al., «Red flags to screen for malignancy and fracture in patients with low back pain: systematic review», BMJ 2013;347:f7095 (texto completo en PMC).', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3898572/' }
+            ]
+          } }
+      ],
       preguntas: [
         { id: 'l2', anatomia: ['columna_lumbar'], text: '¿Tiene antecedentes de cáncer de cualquier tipo?', alerta: true, s1: true,
           razonamiento: {
@@ -93,15 +124,35 @@ export const screening = {
     {
       id: 'l_urogenital', icon: '🫘', nombre: 'Urogenital / Renal',
       banderasRojas: [
-        'Hematuria (sangre en orina)',
-        'Prueba de percusión positiva en ángulo costovertebral',
-        'Incontinencia intestinal/vesical o anestesia en silla de montar (síndrome de cauda equina)',
-        'Masa testicular indolora'
+        { texto: 'Hematuria (sangre en orina)', pregunta: 'l4' },
+        { texto: 'Prueba de percusión positiva en ángulo costovertebral',
+          razonamiento: {
+            porque: 'Los riñones están detrás del peritoneo, a los lados de la columna entre T11 y L3, y su dolor llega a la médula por T10–L1: se siente en la región subcostal posterior y en el ángulo costovertebral, a veces como si doliera la piel de la espalda. Percutir con suavidad el ángulo (puñopercusión de Murphy) busca ese dolor profundo, visceral, propio de una infección o inflamación del riñón, como la pielonefritis o un absceso perirrenal; apretar con el pulgar, en cambio, puede despertar el dolor local de un nervio (Goodman).',
+            peso: 'Sola no es concluyente: Goodman advierte de que el valor diagnóstico de la prueba nunca se ha validado. Pesa con lo que la acompaña: fiebre, escalofríos, náuseas o vómitos (la tríada de la pielonefritis aguda, que no siempre está completa; StatPearls), cambios en la orina o una infección urinaria reciente. Goodman pide derivar con una puñopercusión positiva, sobre todo si hubo hace poco una infección renal o urológica. El dolor renal verdadero rara vez cambia con los movimientos de la columna o con la postura.',
+            detalle: 'Con qué se confunde (Goodman): con el dolor pseudorrenal de las articulaciones costovertebrales o costotransversas, sobre todo de T10 a T12. Suele empezar tras levantar peso, un golpe o una caída sobre las nalgas, cambia con la postura y con los movimientos de la columna, aumenta al estar sentado mucho rato o tumbado sobre ese lado, la puñopercusión es negativa y no hay cambios en la orina.\n\nLa pielonefritis aguda (StatPearls): fiebre a menudo por encima de 39,4 °C, dolor en el flanco, náuseas o vómitos (o falta de apetito), a veces escozor o sangre en la orina; el dolor a la percusión suele ser de un lado, el del riñón afectado, aunque puede ser de los dos. Una tensión sistólica por debajo de 90 mmHg sugiere sepsis, y en personas mayores puede presentarse como confusión de aparición brusca. Necesitan ingreso, entre otros, quienes tienen signos de sepsis, fiebre alta, dolor difícil de controlar, vómitos persistentes, inmunosupresión, diabetes mal controlada, embarazo o sospecha de obstrucción.\n\nQué hacer con un SÍ: preguntar por fiebre, escalofríos, náuseas, cambios en la orina e infecciones urinarias recientes, y tomar temperatura y tensión. Con fiebre o cambios urinarios, derivación médica el mismo día; con tensión baja, confusión o mal estado general, a urgencias.',
+            fuentes: ['Goodman 2018', 'Belyayeva 2024'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 10, pp. 360–363 y 377.',
+              { texto: 'Belyayeva 2024 — Belyayeva, Leslie, Rout y Jeong, «Acute Pyelonephritis», StatPearls [Internet], NCBI Bookshelf, última actualización 28 de febrero de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK519537/' }
+            ]
+          } },
+        { texto: 'Incontinencia intestinal/vesical o anestesia en silla de montar (síndrome de cauda equina)', pregunta: 'l6' },
+        { texto: 'Masa testicular indolora',
+          razonamiento: {
+            porque: 'Los testículos se forman a la altura de los riñones y descienden siguiendo el camino de los uréteres: por eso un cáncer de testículo puede referir dolor a la espalda a la altura de los riñones. Además, sus metástasis van sobre todo a los ganglios linfáticos de la parte posterior del abdomen, y el dolor lumbar es un síntoma frecuente del cáncer de testículo avanzado; también puede doler por presión sobre los nervios espinales (Goodman).',
+            peso: 'El signo más frecuente es un bulto duro e indoloro en el testículo, y es sobre todo un cáncer de varones jóvenes, de 15 a 35 años, aunque puede aparecer a cualquier edad (Goodman). Pide derivación médica por la vía de sospecha de cáncer (NICE): un aumento de tamaño indoloro, o un cambio de forma o de consistencia del testículo; con síntomas testiculares persistentes o sin explicación, NICE propone una ecografía urgente. Goodman insiste en buscar banderas rojas aunque haya una lesión, sobre todo en adultos jóvenes y deportistas.',
+            detalle: 'Otros signos (Goodman): aumento, hinchazón o dureza de un testículo, pérdida de tamaño de uno de ellos, pesadez en el escroto o en la parte baja del abdomen, dolor sordo en la ingle, acumulación brusca de líquido en el escroto, aumento o dolor de las mamas, cansancio sin explicación y dolor lumbar por metástasis en los ganglios retroperitoneales. Puede no dar síntomas.\n\nFactores de riesgo (Goodman): testículo no descendido, antecedentes familiares, VIH, carcinoma in situ y un cáncer previo en el otro testículo. Con diagnóstico y tratamiento precoces se cura.\n\nQué hacer con un SÍ: preguntar por bulto, pesadez o dolor en el escroto o la ingle y su evolución, y derivar al médico.',
+            fuentes: ['Goodman 2018', 'NICE NG12'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 10, pp. 367, 375–376 y 380.',
+              { texto: 'NICE NG12 — NICE, «Suspected cancer: recognition and referral» (2015, actualizada el 15 de abril de 2026), recomendaciones 1.6.7 y 1.6.8.', url: 'https://www.nice.org.uk/guidance/ng12' }
+            ]
+          } }
       ],
       banderasAmarillas: [
-        'Dolor lumbar constante que no varía con la postura corporal',
-        'Fiebre y escalofríos acompañando el dolor lumbar',
-        'Cambios en la orina (color, olor, cantidad)'
+        { texto: 'Dolor lumbar constante que no varía con la postura corporal', fase1: 'br4' },
+        { texto: 'Fiebre y escalofríos acompañando el dolor lumbar', pregunta: 'l4' },
+        { texto: 'Cambios en la orina (color, olor, cantidad)', pregunta: 'l4' }
       ],
       preguntas: [
         { id: 'l4', anatomia: ['rinon', 'ureteres'], text: '¿Ha notado cambios en la orina (color rojo, marrón, turbio) o fiebre/escalofríos junto con el dolor de espalda?', alerta: true, s1: true,
@@ -224,10 +275,20 @@ export const screening = {
     {
       id: 'l_gi', icon: '🫃', nombre: 'Gastrointestinal',
       banderasRojas: [
-        'Dolor sacro/lumbar que se alivia al pasar gases o defecar',
-        'Heces negras alquitranadas, sangre en heces',
-        'Dolor nocturno intenso entre medianoche y 3 am',
-        'Pérdida de peso inexplicada o saciedad precoz'
+        { texto: 'Dolor sacro/lumbar que se alivia al pasar gases o defecar', pregunta: 'l1' },
+        { texto: 'Heces negras alquitranadas, sangre en heces', pregunta: 'l_gi2' },
+        { texto: 'Dolor nocturno intenso entre medianoche y 3 am', pregunta: 'l_gi2' },
+        { texto: 'Pérdida de peso inexplicada o saciedad precoz', fase1: 'br1',
+          razonamiento: {
+            porque: 'Adelgazar sin proponérselo, o llenarse enseguida al comer, puede indicar un cáncer digestivo o de ovario. El páncreas y el estómago están en la parte posterior del abdomen y pueden doler en la espalda; NICE recoge el dolor de espalda entre los síntomas que, junto con la pérdida de peso, hacen sospechar un cáncer de páncreas.',
+            peso: 'Pesa por la edad y por lo que la acompaña (NICE): a partir de los 60 años, pérdida de peso con dolor de espalda, dolor abdominal, diarrea, náuseas, vómitos, estreñimiento o diabetes de nueva aparición → TAC urgente por posible cáncer de páncreas; a partir de los 55, pérdida de peso con dolor en la parte alta del abdomen, reflujo o dispepsia → derivación por posible cáncer de estómago. La saciedad precoz persistente, en una mujer, sobre todo a partir de los 50, es uno de los síntomas por los que NICE pide estudiar un cáncer de ovario.',
+            detalle: 'Qué preguntar con un SÍ: cuánto peso ha perdido y en cuánto tiempo, si sabe por qué, si le cuesta tragar, si tiene ardor, reflujo o digestiones pesadas, y si los síntomas son persistentes o frecuentes. Finucane considera significativa una pérdida de más del 5 % del peso en 6 meses.\n\nLa pérdida de peso también se pregunta en las banderas rojas de la fase 1.',
+            fuentes: ['NICE NG12', 'Finucane 2020'],
+            citas: [
+              { texto: 'NICE NG12 — NICE, «Suspected cancer: recognition and referral» (2015, actualizada el 15 de abril de 2026), recomendaciones 1.2.5, 1.2.7 y 1.5.2.', url: 'https://www.nice.org.uk/guidance/ng12' },
+              { texto: 'Finucane 2020 — Finucane, Downie, Mercer, Greenhalgh, Boissonnault, Pool-Goudzwaard, Beneciuk, Leech y Selfe, «International Framework for Red Flags for Potential Serious Spinal Pathologies», IFOMPT, marzo de 2020 (documento completo del marco publicado en J Orthop Sports Phys Ther 2020;50(7):350–372), sección 4 (malignidad), tabla 4.2, p. 39.', url: 'https://doi.org/10.2519/jospt.2020.9971' }
+            ]
+          } }
       ],
       banderasAmarillas: [
         'Dolor de espalda y abdominal al mismo nivel (simultáneo o alterno)',
@@ -311,20 +372,37 @@ export const screening = {
     {
       id: 'l_espondilo', icon: '🦴', nombre: 'Espondiloartropatías / Espondilogénicas / Ginecológico',
       banderasRojas: [
-        'Rigidez matutina prolongada >30 min que mejora con actividad (espondiloartritis)',
-        'Despertar por dolor en segunda mitad de la noche — patrón inflamatorio',
-        'Síntomas oculares (uveítis) o cutáneos (psoriasis) asociados',
-        'Fractura por insuficiencia: dolor lumbar súbito en paciente con osteoporosis o Paget',
-        'Embarazo ectópico: dolor pélvico unilateral severo con sangrado (urgencia)',
-        'Fractura sacra por estrés: mujer deportista con actividad vigorosa y repetitiva, dolor en nalga que reproduce la carrera, dieta pobre, alteraciones menstruales o fracturas de estrés previas. Signo de la nalga; la radiografía inicial suele ser normal: la confirman la gammagrafía o la RM (Goodman 2018, cap. 15)',
-        'Espondilolistesis aguda: joven con lesiones repetidas en hiperextensión, ciática bilateral súbita durante el deporte, dolor en extensión'
+        { texto: 'Rigidez matutina prolongada >30 min que mejora con actividad (espondiloartritis)', pregunta: 'l5' },
+        { texto: 'Despertar por dolor en segunda mitad de la noche — patrón inflamatorio', pregunta: 'l_e2' },
+        { texto: 'Síntomas oculares (uveítis) o cutáneos (psoriasis) asociados',
+          razonamiento: {
+            porque: 'La espondiloartritis axial es una enfermedad inflamatoria que no se limita a la columna: NICE recoge la uveítis y la psoriasis (también la de las uñas) entre sus manifestaciones fuera de las articulaciones. Un dolor lumbar con cualquiera de ellas hace más probable que el dolor sea inflamatorio.',
+            peso: 'La psoriasis, actual o pasada, es uno de los criterios con los que NICE decide derivar a reumatología un dolor lumbar que empezó antes de los 45 años y dura más de 3 meses (con 4 criterios o más; con 3, prueba de HLA-B27). La uveítis no cuenta en esa regla, pero NICE pide reevaluar si aparecen criterios nuevos en quien la tiene. Una uveítis anterior aguda (ojo rojo y doloroso, molestia con la luz, visión borrosa) requiere valoración oftalmológica el mismo día.',
+            detalle: 'Los otros criterios de NICE: dolor que empezó antes de los 35 años, despertar en la segunda mitad de la noche, dolor de nalgas, mejoría con el movimiento, mejoría en 48 horas con antiinflamatorios, un familiar de primer grado con espondiloartritis, artritis o entesitis actual o pasada. NICE advierte de que ningún signo aislado descarta la enfermedad, de que afecta a tantas mujeres como hombres y de que puede pasar desapercibida aunque la uveítis, la psoriasis o una enfermedad inflamatoria intestinal ya estén diagnosticadas.',
+            fuentes: ['NICE NG65'],
+            citas: [
+              { texto: 'NICE NG65 — NICE, «Spondyloarthritis in over 16s: diagnosis and management» (2017), recomendaciones 1.1.1–1.1.6 y 1.1.12.', url: 'https://www.nice.org.uk/guidance/ng65' }
+            ]
+          } },
+        { texto: 'Fractura por insuficiencia: dolor lumbar súbito en paciente con osteoporosis o Paget', pregunta: 'l_e4' },
+        { texto: 'Embarazo ectópico: dolor pélvico unilateral severo con sangrado (urgencia)', pregunta: 'l_e8' },
+        { texto: 'Fractura sacra por estrés: mujer deportista con actividad vigorosa y repetitiva, dolor en nalga que reproduce la carrera, dieta pobre, alteraciones menstruales o fracturas de estrés previas. Signo de la nalga; la radiografía inicial suele ser normal: la confirman la gammagrafía o la RM (Goodman 2018, cap. 15)', pregunta: 'l_e6' },
+        { texto: 'Espondilolistesis aguda: joven con lesiones repetidas en hiperextensión, ciática bilateral súbita durante el deporte, dolor en extensión', pregunta: 'l_e7' }
       ],
       banderasAmarillas: [
-        'Dolor sacroilíaco bilateral alterno',
-        'Dolor relacionado con ciclo menstrual (endometriosis)',
-        'Historia familiar de espondilitis anquilosante',
+        { texto: 'Dolor sacroilíaco bilateral alterno', pregunta: 'l5c' },
+        { texto: 'Dolor relacionado con ciclo menstrual (endometriosis)', pregunta: 'l_e3' },
+        { texto: 'Historia familiar de espondilitis anquilosante',
+          razonamiento: {
+            porque: 'La espondiloartritis tiene un componente hereditario: NICE recoge la historia familiar de espondiloartritis o de psoriasis como factor de riesgo.',
+            peso: 'Un familiar de primer grado con espondiloartritis es uno de los criterios con los que NICE decide derivar a reumatología un dolor lumbar que empezó antes de los 45 años y dura más de 3 meses (con 4 criterios o más; con 3, prueba de HLA-B27). Sola no basta.',
+            fuentes: ['NICE NG65'],
+            citas: [
+              { texto: 'NICE NG65 — NICE, «Spondyloarthritis in over 16s: diagnosis and management» (2017), recomendaciones 1.1.2 y 1.1.5.', url: 'https://www.nice.org.uk/guidance/ng65' }
+            ]
+          } },
         'Antecedente de osteoporosis o uso prolongado de corticosteroides (riesgo de fractura por insuficiencia)',
-        'Engrosamiento óseo palpable o deformidad (Paget)'
+        { texto: 'Engrosamiento óseo palpable o deformidad (Paget)', pregunta: 'l_e5' }
       ],
       preguntas: [
         { id: 'l5', anatomia: ['art_sacroiliaca', 'columna_lumbar'], text: '¿Tiene rigidez matutina prolongada (más de 30 minutos) que mejora con el movimiento?', alerta: true, s1: true,
@@ -434,6 +512,20 @@ export const screening = {
             citas: [
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 14, pp. 557–561; cap. 15, «The pelvis», pp. 585 y ss.',
               { texto: 'Consoli y Carlson 2026 — Consoli y Carlson, «Endometriosis», StatPearls [Internet], NCBI Bookshelf, última actualización 17 de junio de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK567777/' }
+            ]
+          } },
+        // Separada de la pregunta del ciclo menstrual: un dolor ligado a la regla suele ser
+        // benigno y no justifica urgencias; esta reúne solo lo que sugiere un ectópico
+        // (decisión del usuario, 2026-10, tras el inventario de banderas: la bandera roja
+        // decía «urgencia» y ninguna pregunta la llevaba; en hombro, h_g1).
+        { id: 'l_e8', anatomia: ['organos_reproductores_femeninos'], text: '(Mujeres en edad fértil) ¿Tiene un dolor de pelvis, abdomen bajo o espalda, nuevo o intenso, junto con un retraso de la regla, un sangrado vaginal inesperado, o mareo o desmayo?', alerta: true, urgencia: 'Sospecha de embarazo ectópico: derivación médica hoy; a urgencias si hay mareo, desmayo, dolor intenso o sangrado abundante.',
+          razonamiento: {
+            porque: 'Un embarazo que se implanta fuera del útero, casi siempre en la trompa, no tiene espacio para crecer y puede romperse y sangrar dentro del abdomen. NICE recoge como síntomas habituales el dolor abdominal o pélvico, la falta o el retraso de la regla y el sangrado vaginal, y como otros posibles la presión en el recto o el dolor al defecar, los síntomas urinarios, el dolor en la punta del hombro y el mareo o el desmayo: varios pueden pasar por un problema de pelvis, abdomen bajo o espalda.',
+            peso: 'Es una urgencia. NICE pide enviar directamente a urgencias a la mujer con inestabilidad (mareo, desmayo, tensión baja, pulso rápido) o con un dolor o un sangrado que preocupan, y advierte de que la presentación atípica es frecuente y de que un tercio de las mujeres con un ectópico no tiene ningún factor de riesgo conocido: que no los tenga no lo descarta.',
+            detalle: 'Qué hacer con un SÍ: preguntar por la fecha de la última regla y la posibilidad de embarazo, y tomar tensión y pulso. NICE incluye entre los signos el pulso por encima de 100 por minuto, la tensión por debajo de 100/60 mmHg, la hipotensión al ponerse de pie, la palidez y el colapso. Con alguno de ellos, o con dolor o sangrado intensos, a urgencias; si no, derivación médica el mismo día para una prueba de embarazo y valoración.\n\nCon qué se confunde: NICE advierte de que los síntomas y signos del ectópico se parecen a los de otros problemas frecuentes, como los digestivos o una infección de orina, y pide pensar en un posible embarazo en toda mujer en edad fértil aunque los síntomas sean inespecíficos.\n\nEl dolor ligado a la regla sin estos datos se pregunta aparte, sin urgencia.',
+            fuentes: ['NICE NG126'],
+            citas: [
+              { texto: 'NICE NG126 — NICE, «Ectopic pregnancy and miscarriage: diagnosis and initial management» (2019, actualizada el 17 de junio de 2026), recomendaciones 1.4.1–1.4.8.', url: 'https://www.nice.org.uk/guidance/ng126' }
             ]
           } },
         { id: 'l_e4', anatomia: ['columna_lumbar', 'sacro'], text: '¿Tiene diagnóstico de osteoporosis, o ha tenido una fractura reciente ante un golpe menor o sin trauma aparente?', alerta: true,
@@ -563,9 +655,20 @@ export const screening = {
       // PARARSE, no al sentarse ni al flexionar (a diferencia de la estenosis).
       id: 'l_vascular', icon: '🫀', nombre: 'Vascular',
       banderasRojas: [
-        'Aneurisma aórtico: dolor en reposo o nocturno, masa abdominal pulsátil, antecedentes familiares cardiovasculares',
-        'Claudicación vascular: dolor al caminar que cede al pararse (sin necesidad de sentarse), pie más frío, pulsos distales disminuidos',
-        'Síndrome de Leriche (aortoilíaco): imita lumbalgia, con dolor en nalgas, caderas y muslos; disfunción eréctil'
+        { texto: 'Aneurisma aórtico: dolor en reposo o nocturno, masa abdominal pulsátil, antecedentes familiares cardiovasculares', pregunta: 'l_v2' },
+        { texto: 'Claudicación vascular: dolor al caminar que cede al pararse (sin necesidad de sentarse), pie más frío, pulsos distales disminuidos', pregunta: ['l_v1', 'l_v3'] },
+        { texto: 'Síndrome de Leriche (aortoilíaco): imita lumbalgia, con dolor en nalgas, caderas y muslos; disfunción eréctil',
+          razonamiento: {
+            porque: 'La aterosclerosis puede estrechar la aorta por debajo de las arterias renales y las ilíacas. Al caminar, los músculos piden más sangre de la que llega y duelen (claudicación); cuanto más alta es la obstrucción, más arriba duele: en la oclusión aortoilíaca, en las nalgas y los muslos (Kimyaghalam; Goodman la describe en los glúteos y los cuádriceps), un dolor que puede confundirse con uno lumbar o de cadera. El síndrome de Leriche es la tríada de claudicación de las nalgas, disfunción eréctil y pulsos femorales ausentes, e indica una oclusión aortoilíaca grave (Kimyaghalam).',
+            peso: 'Pesa si el dolor es una claudicación vascular: aparece al caminar, con un esfuerzo parecido cada vez, y cede pronto al parar, con piel fría, pálida o con cambios tróficos y pulsos débiles (Goodman). Con varios factores de riesgo, claudicación y pulsos femorales ausentes, el diagnóstico suele ser claro; los pulsos del pie pueden notarse en reposo gracias a la circulación colateral, así que no lo descartan (Kimyaghalam). Goodman pide comunicar al médico de inmediato un empeoramiento brusco de la claudicación o un dolor isquémico en reposo de comienzo brusco, porque puede ser una tromboembolia. Lo distingue de la seudoclaudicación de la estenosis de canal, que suele ser bilateral y mejora con el reposo o flexionando la columna lumbar.',
+            detalle: 'Factores de riesgo: diabetes, hipertensión, colesterol alto, tabaco y edad (Kimyaghalam, Goodman); la enfermedad arterial periférica afecta sobre todo a varones de más de 50 años, aunque también a mujeres fumadoras (Goodman).\n\nQué explorar: pulsos (femoral, poplíteo y del pie), temperatura y color de la piel, vello y uñas. Si la piel parece normal en reposo, caminar hasta que aparezca el dolor suele hacer palidecer el tercio distal de la pierna. La claudicación vascular depende de la velocidad, la pendiente y el terreno, y con el tiempo aparece con menos esfuerzo; si un día no puede andar y al siguiente camina sin límite, no es una claudicación intermitente (Goodman). Que la distancia sin dolor se acorte indica que la enfermedad avanza (Zemaitis).\n\nCuándo es más grave (Zemaitis, Kimyaghalam): el dolor en reposo en el antepié o los dedos al tumbarse o elevar la pierna, que se alivia dejándola colgar, y las heridas que no curan en los dedos o el pie indican isquemia crónica que amenaza la extremidad; una trombosis o una embolia (a menudo de origen cardiaco, por ejemplo con fibrilación auricular) pueden dar una isquemia aguda. El médico lo confirma con el índice tobillo-brazo: 0,90 o menos define la enfermedad arterial periférica.\n\nCon qué se confunde (Kimyaghalam): el dolor musculoesquelético y la claudicación neurógena, entre otros.',
+            fuentes: ['Kimyaghalam 2024', 'Goodman 2018', 'Zemaitis 2026'],
+            citas: [
+              { texto: 'Kimyaghalam 2024 — Kimyaghalam, Fitzpatrick y Khan, «Aortoiliac Occlusive Disease», StatPearls [Internet], NCBI Bookshelf, última actualización 29 de octubre de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK559086/' },
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 228, 254–255 y 261.',
+              { texto: 'Zemaitis 2026 — Zemaitis, Boll, Kato y Golla, «Peripheral Arterial Disease», StatPearls [Internet], NCBI Bookshelf, última actualización 31 de enero de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK430745/' }
+            ]
+          } }
       ],
       banderasAmarillas: [
         'Mayor con factores de riesgo cardiovascular (HTA, diabetes, colesterol, tabaco)'
@@ -638,8 +741,17 @@ export const screening = {
     {
       id: 'l_infeccion', icon: '🦠', nombre: 'Infección vertebral',
       banderasRojas: [
-        'Infección (Lluch 2020, cap. 5.1, tabla 1): fiebre, infección bacteriana reciente, cirugía lumbar reciente, dolor nocturno, dolor que empeora con el tiempo, sin respuesta al tratamiento conservador, inmunosupresión o VIH',
-        'Signos neurológicos (déficit sensitivo o motor, alteraciones de vejiga o recto) junto a fiebre o malestar general'
+        { texto: 'Infección (Lluch 2020, cap. 5.1, tabla 1): fiebre, infección bacteriana reciente, cirugía lumbar reciente, dolor nocturno, dolor que empeora con el tiempo, sin respuesta al tratamiento conservador, inmunosupresión o VIH', pregunta: 'l_inf1' },
+        { texto: 'Signos neurológicos (déficit sensitivo o motor, alteraciones de vejiga o recto) junto a fiebre o malestar general',
+          razonamiento: {
+            porque: 'La infección de la columna (discitis, absceso, tuberculosis) avanza de forma lineal, a diferencia del cáncer, que va y viene: empieza con dolor de espalda y puede acabar dando síntomas neurológicos. Finucane describe la tríada clásica de dolor de espalda, fiebre y déficit neurológico.',
+            peso: 'Con fiebre o malestar, un déficit neurológico nuevo pide derivación médica urgente: sin tratamiento a tiempo, la infección puede causar parálisis, inestabilidad de la columna o la muerte. No esperar a la tríada completa: Finucane advierte de que solo la mitad de los pacientes refiere fiebre, así que su ausencia no tranquiliza.',
+            detalle: 'Qué explorar (Finucane): dermatomas, miotomas y reflejos de las piernas, y signos de motoneurona superior. La sospecha es alta con síntomas en ambas piernas, alteración de la marcha o la coordinación, cambios en la vejiga o el intestino, o un déficit que avanza; si la debilidad es marcada (menos de 3/5) o empeora, la urgencia es mayor.\n\nFactores de riesgo que lo hacen más probable: inmunosupresión (diabetes, VIH, corticoides prolongados, alcohol), cirugía de columna (sobre todo lumbar y con revisiones), drogas por vía intravenosa, una infección reciente y el contacto con tuberculosis.',
+            fuentes: ['Finucane 2020'],
+            citas: [
+              { texto: 'Finucane 2020 — Finucane, Downie, Mercer, Greenhalgh, Boissonnault, Pool-Goudzwaard, Beneciuk, Leech y Selfe, «International Framework for Red Flags for Potential Serious Spinal Pathologies», IFOMPT, marzo de 2020 (documento completo del marco publicado en J Orthop Sports Phys Ther 2020;50(7):350–372), sección 5 (infección), pp. 44–49.', url: 'https://doi.org/10.2519/jospt.2020.9971' }
+            ]
+          } }
       ],
       banderasAmarillas: [
         'Diabetes, corticoides prolongados u otros inmunosupresores, insuficiencia renal crónica o consumo de drogas'

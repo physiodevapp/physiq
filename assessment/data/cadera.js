@@ -346,6 +346,20 @@ export const screening = {
               { texto: 'Consoli y Carlson 2026 — Consoli y Carlson, «Endometriosis», StatPearls [Internet], NCBI Bookshelf, última actualización 17 de junio de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK567777/' },
               { texto: 'Jenkins y Vadakekut 2025 — Jenkins y Vadakekut, «Pelvic Inflammatory Disease», StatPearls [Internet], NCBI Bookshelf, última actualización 2 de junio de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK499959/' }
             ]
+          } },
+        // Separada de la pregunta del ciclo menstrual: un dolor ligado a la regla suele ser
+        // benigno y no justifica urgencias; esta reúne solo lo que sugiere un ectópico
+        // (decisión del usuario, 2026-10, tras el inventario de banderas: la bandera roja
+        // decía «urgencia» y ninguna pregunta la llevaba; en hombro, h_g1).
+        { id: 'ca_u5', anatomia: ['organos_reproductores_femeninos'], text: '(Mujeres en edad fértil) ¿Tiene un dolor de ingle, pelvis o abdomen bajo, nuevo o intenso, junto con un retraso de la regla, un sangrado vaginal inesperado, o mareo o desmayo?', alerta: true, urgencia: 'Sospecha de embarazo ectópico: derivación médica hoy; a urgencias si hay mareo, desmayo, dolor intenso o sangrado abundante.',
+          razonamiento: {
+            porque: 'Un embarazo que se implanta fuera del útero, casi siempre en la trompa, no tiene espacio para crecer y puede romperse y sangrar dentro del abdomen. NICE recoge como síntomas habituales el dolor abdominal o pélvico, la falta o el retraso de la regla y el sangrado vaginal, y como otros posibles la presión en el recto o el dolor al defecar, los síntomas urinarios, el dolor en la punta del hombro y el mareo o el desmayo: varios pueden pasar por un problema de ingle, pelvis o abdomen bajo.',
+            peso: 'Es una urgencia. NICE pide enviar directamente a urgencias a la mujer con inestabilidad (mareo, desmayo, tensión baja, pulso rápido) o con un dolor o un sangrado que preocupan, y advierte de que la presentación atípica es frecuente y de que un tercio de las mujeres con un ectópico no tiene ningún factor de riesgo conocido: que no los tenga no lo descarta.',
+            detalle: 'Qué hacer con un SÍ: preguntar por la fecha de la última regla y la posibilidad de embarazo, y tomar tensión y pulso. NICE incluye entre los signos el pulso por encima de 100 por minuto, la tensión por debajo de 100/60 mmHg, la hipotensión al ponerse de pie, la palidez y el colapso. Con alguno de ellos, o con dolor o sangrado intensos, a urgencias; si no, derivación médica el mismo día para una prueba de embarazo y valoración.\n\nCon qué se confunde: NICE advierte de que los síntomas y signos del ectópico se parecen a los de otros problemas frecuentes, como los digestivos o una infección de orina, y pide pensar en un posible embarazo en toda mujer en edad fértil aunque los síntomas sean inespecíficos.\n\nEl dolor ligado a la regla sin estos datos se pregunta aparte, sin urgencia.',
+            fuentes: ['NICE NG126'],
+            citas: [
+              { texto: 'NICE NG126 — NICE, «Ectopic pregnancy and miscarriage: diagnosis and initial management» (2019, actualizada el 17 de junio de 2026), recomendaciones 1.4.1–1.4.8.', url: 'https://www.nice.org.uk/guidance/ng126' }
+            ]
           } }
       ],
       zonasDolor: [
