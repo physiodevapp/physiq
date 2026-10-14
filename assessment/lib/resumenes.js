@@ -8,6 +8,7 @@
 
 import { regionConLado } from './region.js';
 import { cqConProtocolo, fechaSemanasTexto, TEXTO_SIN_PROTOCOLO } from './posquirurgico.js';
+import { lineaCuestionario } from './cuestionarios.js';
 import { lineaNotasSintomas, lineasInformeSintomas } from './sintomas.js';
 
 // Línea fija de transparencia del modo breve: fase 5, 📋 Notas y 📄 Informe.
@@ -32,7 +33,7 @@ export function textoNotas(d) {
 Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA (árbol CIF): ${d.dv.join(' · ')}` : ''}
 Hipótesis:
-${hyps}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
+${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
 Variable control: ${d.pn?.variableControl || '—'}
 Ventana recuperación: ${d.pn?.ventanaRecuperacion || '—'}
 Anclaje hábito: ${d.pn?.anclajeHabito || '—'}`;

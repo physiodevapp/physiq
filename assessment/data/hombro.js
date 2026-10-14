@@ -773,7 +773,7 @@ export const hypotheses = {
   h2: {
     id: 'h2', region: 'hombro', num: '②',
     name: 'Síndrome de Pinzamiento Subacromial (Impingement)',
-    prom: 'QuickDASH (MCID: 8.0–15.9 puntos)',
+    prom: 'DASH (MCID: 10.8 pts)',
     dosis: 'Educación individualizada y centrada en el paciente sobre su problema, las opciones para manejar el dolor, la modificación de la actividad y el automanejo (C). Tratamiento inicial: programa de ejercicio activo, de control motor o de fuerza con cargas variadas (A); la carga alta no ha demostrado ser mejor que la baja, y el ejercicio supervisado no supera al de casa. Puede añadirse terapia manual vertebral o del miembro superior (partes blandas, movilización o manipulación) para aliviar el dolor a corto plazo (B) y vendaje como complemento del ejercicio (D). No usar ultrasonido terapéutico (B; C en la tendinopatía calcificada, donde pueden usarse ondas de choque o láser, C). Adaptaciones ergonómicas si el dolor es laboral (C). La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico.',
     dosisFuente: 'Desmeules 2025, J Orthop Sports Phys Ther 55(4):235–274 (guía de práctica clínica; incluye el síndrome de dolor subacromial dentro de la tendinopatía del manguito; letra = grado de la recomendación, tal como la da la guía)',
     pronostico: {
@@ -819,7 +819,7 @@ export const hypotheses = {
   h4: {
     id: 'h4', region: 'hombro', num: '④',
     name: 'Inestabilidad Glenohumeral (Anterior o Posterior)',
-    prom: 'DASH (MCID: 10.8 pts) o QuickDASH (MCID: 8.0–15.9 pts)',
+    prom: 'DASH (MCID: 10.8 pts)',
     dosis: 'Inestabilidad anterior traumática (el consenso no trata la posterior ni la multidireccional, que quedan a criterio del clínico). Primer episodio: cabestrillo para el dolor, preferiblemente en rotación interna; movilizar pronto, dentro de la primera semana, puede dar resultados parecidos a 3 semanas de cabestrillo (C). En mayores, inmovilizar para el dolor hasta descartar lesiones asociadas (C). Rehabilitación siempre, se opere o no (D): tras la inmovilización, movilidad pasiva controlada por el dolor que progresa a activo-asistida y, cuando el dolor lo permita, fuerza periescapular y del manguito, habiendo descartado antes lesiones asociadas. Recidiva: en general se recomienda cirugía, y en deportes de contacto o colisión la rehabilitación difícilmente basta; como preparación, ejercicios pasivos y activo-asistidos en cuanto se toleren y después propiocepción y fuerza del manguito, el deltoides y los periescapulares (C); cabestrillo solo 1–2 semanas para el dolor (C). Vuelta al deporte sin cirugía cuando haya rango completo sin dolor, hombro estable con aprensión negativa y fuerza y resistencia suficientes, por lo general a las 6–16 semanas (C). El consenso no fija series ni repeticiones.',
     dosisFuente: 'Alentorn-Geli 2026, Knee Surg Sports Traumatol Arthrosc 34:3040–3051 (consenso formal de la ESSKA-ESA, parte 2: tratamiento y vuelta al deporte; letra = grado de la recomendación, tal como la da el consenso; ninguna llega a A)',
     pronostico: {
@@ -842,7 +842,7 @@ export const hypotheses = {
   h5: {
     id: 'h5', region: 'hombro', num: '⑤',
     name: 'Lesión Labral Superior (SLAP)',
-    prom: 'DASH (MCID: 10.8 pts) o QuickDASH (MCID: 8.0–15.9 pts)',
+    prom: 'DASH (MCID: 10.8 pts)',
     dosis: '',
     pronostico: {
       horizonte: 'La artro-RM es más precisa que la RM sin contraste.',
@@ -860,7 +860,7 @@ export const hypotheses = {
   h6: {
     id: 'h6', region: 'hombro', num: '⑥',
     name: 'Disfunción Cervical con Dolor Referido a Hombro',
-    prom: 'QuickDASH (MCID: 8.0–15.9 pts)',
+    prom: 'DASH (MCID: 10.8 pts)',
     dosis: 'Se trata como dolor de cuello con déficit de movilidad (la categoría de la guía que incluye el dolor referido a la cintura escapular o al miembro superior), según la fase. Aguda: manipulación torácica, ejercicios de movilidad cervical y fortalecimiento escapulotorácico y de miembro superior, que además favorecen la adherencia (B); puede añadirse manipulación o movilización cervical (C). Subaguda: ejercicios de resistencia de cuello y cintura escapular (B); manipulación torácica y manipulación o movilización cervical (C). Crónica: abordaje multimodal con manipulación torácica y manipulación o movilización cervical, ejercicio mixto cervical y escapulotorácico (neuromuscular, estiramientos, fuerza, resistencia, aeróbico y componente cognitivo-afectivo) y punción seca, láser o tracción mecánica o manual intermitente (B); ejercicio de resistencia de cuello, cintura escapular y tronco, y educación que promueva una vida activa y aborde los factores cognitivos y afectivos (C). La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
     dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     tests: [
@@ -871,7 +871,7 @@ export const hypotheses = {
   h7: {
     id: 'h7', region: 'hombro', num: '⑦',
     name: 'Artropatía Acromioclavicular',
-    prom: 'SPADI o QuickDASH (MCID: 14.9–25.4 / 8.0–15.9 pts)',
+    prom: 'SPADI (MCID: 14.9–25.4 pts)',
     dosis: '',
     pronostico: {
       horizonte: 'Rx y RM muestran patología AC, pero muchos cambios aparecen en personas sin síntomas.',
@@ -894,7 +894,7 @@ export const hypotheses = {
   h8: {
     id: 'h8', region: 'hombro', num: '⑧',
     name: 'Discinesia Escapular',
-    prom: 'QuickDASH (MCID: 8.0–15.9 pts)',
+    prom: 'DASH (MCID: 10.8 pts)',
     dosis: '',
     tests: [
       { name: 'Observación visual de asimetría escapular (winging, tilting)', anatomia: ['escapula', 'serrato_anterior', 'trapecio'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Asimetría visual en la elevación del brazo: ángulo inferior, borde medial o espina escapular prominentes.', razonamiento: { detalle: 'Las medidas de la movilidad escapular son poco fiables y de validez limitada, y no deben usarse para medir objetivamente la movilidad escapular dinámica (Desmeules 2025, recomendación 6, A). La discinesia se asocia al SAPS, pero no se ha demostrado que cause el dolor (Lluch 2020). Sin S ni E.' }, fuente: 'Desmeules 2025 (J Orthop Sports Phys Ther 55(4):235–274, recomendación 6) · Lluch 2020, cap. 3.1 (Struyf), pp. 53–54', noData: true },
@@ -904,7 +904,7 @@ export const hypotheses = {
   h9: {
     id: 'h9', region: 'hombro', num: '⑨',
     name: 'Disfunción de Primera Costilla (Zona Cervicotorácica)',
-    prom: 'QuickDASH (MCID: 8.0–15.9 pts)',
+    prom: 'DASH (MCID: 10.8 pts)',
     dosis: '',
     tests: [
       { name: 'Palpación posteroanterior de 1ª costilla', anatomia: ['costillas', 'escalenos'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Restricción de movilidad de primera costilla a la palpación posteroanterior.', razonamiento: { detalle: 'En un Delphi de 12 expertos en terapia manual hubo consenso en que el movimiento accesorio posteroanterior doloroso y restringido de la 1.ª costilla, y su palpación dolorosa, ayudan a identificar su disfunción; es opinión de expertos y los autores piden estudiar su fiabilidad y validez. Sin S ni E.' }, fuente: 'Mastromarchi 2021 (J Man Manip Ther 29(3):181–188, Delphi, tabla 2)', noData: true },
@@ -925,7 +925,7 @@ export const hypotheses = {
   h11: {
     id: 'h11', region: 'hombro', num: '⑪',
     name: 'Luxación Bloqueada o Fractura (→ Rx)',
-    prom: 'QuickDASH (MCID: 8.0–15.9 pts)',
+    prom: 'DASH (MCID: 10.8 pts)',
     dosis: DOSIS_DERIVAR,
     pronostico: {
       horizonte: 'Luxación bloqueada: traumatismo previo, cualquier edad, rigidez activa y pasiva similar al congelado; imagen: Rx simple. Fractura: traumatismo previo, osteoporosis; imagen: Rx, y RM si es una fractura no desplazada del troquíter.',

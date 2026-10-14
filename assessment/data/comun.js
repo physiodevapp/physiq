@@ -434,12 +434,12 @@ export const HIP_POSQUIRURGICA = {
   posquirurgica: true,
   tests: [],
   promPorRegion: {
-    hombro: 'QuickDASH (MCID: 8.0–15.9 pts)',
-    cadera: 'HOOS (MCID: 10–13 puntos)',
+    hombro: 'DASH (MCID: 10.8 pts)',
+    cadera: 'iHOT-12 o LEFS',
     cervical: 'NDI (MCID: 7.5–18 puntos)',
     lumbar: 'ODI (MCID: 8.5 pts) / NPRS (MCID: 1.5–3.2 pts)',
-    rodilla: 'KOOS-12',
-    codo: 'QuickDASH',
+    rodilla: 'KOOS',
+    codo: 'DASH',
     tobillo_pie: 'FAAM o LEFS',
   },
 };

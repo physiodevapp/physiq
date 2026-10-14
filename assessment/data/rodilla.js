@@ -750,7 +750,7 @@ export const hypotheses = {
   ro3: {
     id: 'ro3', region: 'rodilla', num: '③',
     name: 'Dolor Patelofemoral (Síndrome)',
-    prom: 'KOOS-PF / Kujala / VISA-P',
+    prom: 'Kujala / VISA-P',
     dosis: 'Ejercicio centrado en el cuádriceps y/o la cadera durante al menos 6 a 12 semanas, mejor con supervisión de fisioterapia al menos en parte, en un programa estructurado cuyo volumen e intensidad se ajustan al dolor (certeza baja); prioridad a la educación. Reevaluar dolor (EVA) y función (Kujala) a las 6 y a las 12 semanas. Vendaje, rodillera u ortesis plantar solo como añadido al ejercicio si a las 6–12 semanas no hay un cambio clínicamente relevante (certeza muy baja), informando al paciente de la falta de pruebas. Sin infiltraciones y con prudencia con los analgésicos. Si a las 12 semanas no mejora, reconsiderar el diagnóstico. La guía JOSPT de 2019 coincide en lo esencial: ejercicio combinado de cadera (musculatura posterolateral) y rodilla, en carga o sin carga, empezando si acaso por la cadera (A), y combinar intervenciones con el ejercicio como eje (A). Añade que no se usen punción seca ni terapia manual aislada (A), ni agentes físicos como ultrasonido, crioterapia, electroestimulación o láser (B), ni biofeedback (B); la reeducación de la carrera es opcional (C) y la educación sobre la carga, recomendable (F). Discrepan en los añadidos: la JOSPT admite vendaje rotuliano con el ejercicio a corto plazo (4 semanas, B) y ortesis plantares prefabricadas hasta 6 semanas si hay más pronación de lo normal (A), y desaconseja rodilleras y cintas (B); la holandesa, más reciente, los deja para cuando el ejercicio no basta tras 6–12 semanas, y es la que se sigue. Ninguna fija series ni repeticiones (la JOSPT dice que la dosis óptima no se conoce): el volumen queda a criterio del clínico.',
     dosisFuente: 'Ophey 2025, Knee Surg Sports Traumatol Arthrosc 33:457–469 (guía multidisciplinar holandesa, módulos 1–3; certeza GRADE como la da la guía) · Willy 2019, J Orthop Sports Phys Ther 49(9):CPG1–CPG95 (guía de práctica clínica APTA, resumen de recomendaciones, pp. CPG2–CPG3; letra = grado de la recomendación)',
     pronostico: {
@@ -769,7 +769,7 @@ export const hypotheses = {
   ro4: {
     id: 'ro4', region: 'rodilla', num: '④',
     name: 'Lesión del Ligamento Cruzado Anterior (LCA)',
-    prom: 'KOOS / IKDC (MCID: 12.2 pts)',
+    prom: 'KOOS',
     dosis: 'En la lesión ligamentosa de rodilla, reeducación neuromuscular junto con el fortalecimiento (A); con insuficiencia del LCA puede usarse una ortesis funcional (C). Las demás recomendaciones son tras la reconstrucción: movilización inmediata, dentro de la primera semana (B); carga precoz según tolerancia (C); crioterapia en el posoperatorio inmediato (B); ejercicio supervisado en consulta más un programa en casa (B); ejercicios concéntricos y excéntricos, en carga y sin carga, desde las 4–6 semanas, 2 o 3 veces por semana durante 6 a 10 meses (A), y electroestimulación neuromuscular 6 a 8 semanas junto al fortalecimiento (A). Fuera del posoperatorio, la guía no fija volumen: queda a criterio del clínico.',
     dosisFuente: 'Logerstedt 2017, J Orthop Sports Phys Ther 47(11):A1–A47 (guía de práctica clínica APTA, esguince de ligamentos de rodilla; letra = grado de la recomendación, tal como la da la guía: A evidencia fuerte, C débil, F opinión de expertos)',
     pronostico: {
@@ -844,7 +844,7 @@ export const hypotheses = {
   ro8: {
     id: 'ro8', region: 'rodilla', num: '⑧',
     name: 'Lesión del Ligamento Colateral Medial (LCM)',
-    prom: 'IKDC subjetivo',
+    prom: 'KOOS',
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión grave del LCM puede usarse una ortesis adecuada (F). La guía no fija volumen: queda a criterio del clínico.',
     dosisFuente: 'Logerstedt 2017, J Orthop Sports Phys Ther 47(11):A1–A47 (guía de práctica clínica APTA, esguince de ligamentos de rodilla; letra = grado de la recomendación, tal como la da la guía: A evidencia fuerte, C débil, F opinión de expertos)',
     pronostico: {
@@ -860,7 +860,7 @@ export const hypotheses = {
   ro9: {
     id: 'ro9', region: 'rodilla', num: '⑨',
     name: 'Lesión del Ligamento Cruzado Posterior (LCP)',
-    prom: 'IKDC subjetivo',
+    prom: 'KOOS',
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión aguda del LCP puede usarse una ortesis adecuada (F). La guía no fija volumen: queda a criterio del clínico.',
     dosisFuente: 'Logerstedt 2017, J Orthop Sports Phys Ther 47(11):A1–A47 (guía de práctica clínica APTA, esguince de ligamentos de rodilla; letra = grado de la recomendación, tal como la da la guía: A evidencia fuerte, C débil, F opinión de expertos)',
     pronostico: {
@@ -878,7 +878,7 @@ export const hypotheses = {
   ro10: {
     id: 'ro10', region: 'rodilla', num: '⑩',
     name: 'Lesión del Ligamento Lateral Externo y Esquina Posterolateral (LLE y EPL)',
-    prom: 'IKDC subjetivo',
+    prom: 'KOOS',
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión de la esquina posterolateral puede usarse una ortesis adecuada (F). La guía no trata cuándo operar las lesiones de grado III o combinadas, ni fija volumen: el volumen queda a criterio del clínico.',
     dosisFuente: 'Logerstedt 2017, J Orthop Sports Phys Ther 47(11):A1–A47 (guía de práctica clínica APTA, esguince de ligamentos de rodilla; letra = grado de la recomendación, tal como la da la guía: A evidencia fuerte, C débil, F opinión de expertos)',
     pronostico: {
@@ -899,7 +899,7 @@ export const hypotheses = {
   ro11: {
     id: 'ro11', region: 'rodilla', num: '⑪',
     name: 'Fracturas (Rótula o Meseta Tibial)',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: DOSIS_DERIVAR,
     pronostico: {
       horizonte: 'Rótula: radiografía AP y lateral; TC en conminutas. Meseta: radiografía primero, TC para clasificar, RM si se sospecha lesión meniscal o ligamentosa.',
@@ -916,7 +916,7 @@ export const hypotheses = {
   ro12: {
     id: 'ro12', region: 'rodilla', num: '⑫',
     name: 'Inestabilidad Rotuliana',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: 'Primera luxación: tratamiento conservador solo si el riesgo de recidiva es bajo y no hay lesión condral u osteocondral (C); con el esqueleto inmaduro, hablar siempre de la cirugía con el paciente y la familia (C). Ninguna ortesis ha demostrado ser mejor que no llevarla; como mucho, una sin limitar el rango y muy poco tiempo en la fase aguda (B). Ejercicio guiado por fisioterapia como complemento necesario, con o sin cirugía (C): fuerza de cuádriceps y glúteos, movilidad, reeducación de la marcha, control neuromuscular funcional y entrenamiento específico del deporte. Tras el tratamiento conservador, al menos un 25 % vuelve a luxarse (hasta un 70 % en niños y adolescentes) (B). El consenso no fija volumen: queda a criterio del clínico.',
     dosisFuente: 'Balcarek 2025, Knee Surg Sports Traumatol Arthrosc 33(12):4197–4206 (consenso formal de la ESSKA, publicado en 2025, sobre la primera luxación de rótula, parte 2; letra = grado: B presunción científica, C bajo nivel científico)',
     pronostico: {
@@ -934,7 +934,7 @@ export const hypotheses = {
   ro13: {
     id: 'ro13', region: 'rodilla', num: '⑬',
     name: 'Síndrome de la Grasa de Hoffa',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: '',
     pronostico: {
       horizonte: 'RM: edema, sangrado y fibrosis en el cuerpo graso en fases iniciales; en casos avanzados, metaplasia osteocondral en radiografía o TC.',
@@ -949,7 +949,7 @@ export const hypotheses = {
   ro14: {
     id: 'ro14', region: 'rodilla', num: '⑭',
     name: 'Bursitis Pre e Infrarrotuliana',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: '',
     pronostico: {
       horizonte: 'El diagnóstico clínico suele bastar. Para diferenciar séptica de aséptica o descartar otras condiciones: la analítica y la aspiración del líquido muestran leucocitos, PCR y VSG elevados en la séptica; la ecografía permite ver la bursa y los tejidos blandos de alrededor.',
@@ -964,7 +964,7 @@ export const hypotheses = {
   ro15: {
     id: 'ro15', region: 'rodilla', num: '⑮',
     name: 'Apofisitis del Adolescente (Osgood-Schlatter, Sinding-Larsen-Johansson)',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: 'Solo Osgood-Schlatter: el estudio excluyó el Sinding-Larsen-Johansson. Semanas 0–4: dejar el deporte y las actividades que reproducen el dolor; isométrico de cuádriceps contra la pared 10 × 30 s al día con cada pierna, y puente con los dos pies 3 × 10 cada 2 días. Desde la semana 5, cada 2 días: (1) sentadilla apoyado en la pared, 5 repeticiones manteniendo hasta 20 s, y una repetición más por sesión hasta 10; (2) sentadilla de 3 s bajando, 10 s mantenida y 3 s subiendo, añadiendo series hasta 4 × 10; (3) añadir zancadas. En paralelo, escalera de 11 escalones de actividad (caminar o bici suave → caminar rápido o bici media → carrera lenta → escaleras → carrera media → skipping → saltos → carrera rápida, giros y saltos → calentamiento + media sesión → calentamiento + sesión → partido): subir un escalón solo con dolor ≤2/10 durante la actividad y a la mañana siguiente, y bajar uno si empeora; la sentadilla (nivel 2) sin pasar de 2/10 antes del escalón 3; vuelta completa tras 2 semanas de entrenamiento completo sin dolor. 4 visitas en 12 semanas, con los padres. Resultados: 80 % con éxito a las 12 semanas y 90 % al año; vuelta al deporte del 16 % a las 12 semanas y del 69 % al año.',
     dosisFuente: 'Rathleff 2020, Orthop J Sports Med 8(4):2325967120911106 (serie de casos, n = 51, 10–14 años, sin grupo control: nivel de evidencia 4; pauta de su apéndice 1)',
     pronostico: {
@@ -982,7 +982,7 @@ export const hypotheses = {
   ro16: {
     id: 'ro16', region: 'rodilla', num: '⑯',
     name: 'Lesión Osteocondral',
-    prom: 'IKDC subjetivo',
+    prom: 'KOOS',
     dosis: '',
     tests: [
       { name: 'Palpación de la zona afectada', anatomia: ['femur', 'art_rodilla'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Depende de la estabilidad. Dolor a la palpación de la articulación en la zona afectada.', fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), p. 199' },
@@ -994,7 +994,7 @@ export const hypotheses = {
   ro17: {
     id: 'ro17', region: 'rodilla', num: '⑰',
     name: 'Plica Sinovial Medial',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: '',
     tests: [
       { name: 'Test de provocación de la plica rotuliana medial', anatomia: ['art_rodilla'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Técnica (test MPP): supino, rodilla extendida; presión con el pulgar sobre la porción inferomedial de la femororrotuliana y, manteniéndola, flexionar a 90°. Positivo: dolor en extensión que desaparece o disminuye mucho a 90°; comparar con el otro lado.', razonamiento: { detalle: 'El test de provocación es la mejor forma de diagnosticarlo en consulta. Kim 2007 da S 89,5 % · E 88,7 % frente a artroscopia (la tarjeta redondea a S 0,90 · E 0,89 · LR+ 8,18 · LR− 0,11), pero no puntúa: toda la especificidad sale de los controles con dolor en la interlínea lateral. En el grupo con dolor anteromedial, las 13 rodillas sin plica patológica (7 pinzamientos de franjas sinoviales de la grasa de Hoffa, 5 sinovitis localizadas, 1 lesión de cartílago) dieron el test positivo: E 0 de 13 en el diagnóstico diferencial real. Además, nivel III, no consecutivos y test hecho por su autor sin cegamiento.' }, fuente: 'Kim 2007 (Arthroscopy; 172 rodillas, referencia: artroscopia); técnica: Kim 2004' },
@@ -1004,7 +1004,7 @@ export const hypotheses = {
   ro18: {
     id: 'ro18', region: 'rodilla', num: '⑱',
     name: 'Disfunción de la Articulación Tibioperonea Proximal',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: '',
     pronostico: {
       horizonte: 'Radiografía de rodilla en AP y lateral para valorar la patología articular. TC si la radiografía no aclara el diagnóstico.',
@@ -1021,7 +1021,7 @@ export const hypotheses = {
   ro19: {
     id: 'ro19', region: 'rodilla', num: '⑲',
     name: 'Neuropatía del Nervio Peroneo Común',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: '',
     pronostico: {
       horizonte: 'Conducción nerviosa y EMG confirman el diagnóstico y ayudan a establecer el pronóstico. Ecografía útil por lo superficial del nervio.',
@@ -1040,7 +1040,7 @@ export const hypotheses = {
   ro20: {
     id: 'ro20', region: 'rodilla', num: '⑳',
     name: 'Quiste Poplíteo (Baker)',
-    prom: 'KOOS-12',
+    prom: 'KOOS',
     dosis: '',
     pronostico: {
       horizonte: 'RM de referencia; ecografía como primera opción, sobre todo para diferenciarlo de una TVP. Se encuentra en el 38 % de las RM de rodillas sintomáticas.',

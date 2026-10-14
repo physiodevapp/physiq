@@ -76,6 +76,9 @@ const state = {
   planTratamiento: null,
   // Formulario previo (formulario.js): { comun: {id: valor}, regiones: { lumbar: {...} } }
   formularioPrevio: { comun: {}, regiones: {} },
+  // Calculadora de cuestionarios (lib/cuestionarios.js): { [id]: { r: { [ítem]: valor } } }.
+  // Va al payload (`cu`), a 📋 Notas y al informe con IA, no al 📄 Informe.
+  cuestionarios: {},
   // Informe narrativo con IA (informe-ia.js, solo standalone):
   // { texto, transcripcion, fecha, conAudio, huella, datos: { p, d, r } } | null.
   // Nunca entra en buildPhysiQPayload() ni en 📋 Notas / 📄 Informe.

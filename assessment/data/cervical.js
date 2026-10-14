@@ -925,7 +925,7 @@ export const hypotheses = {
   ce7: {
     id: 'ce7', region: 'cervical', num: '⑦',
     name: 'Dolor Mecánico Cervical Inespecífico Crónico',
-    prom: 'NDI (MCID: 7.5–18 pts) / PSFS',
+    prom: 'NDI (MCID: 7.5–18 pts)',
     dosis: 'Fase crónica (dolor de cuello con déficit de movilidad): abordaje multimodal con manipulación torácica y manipulación o movilización cervical, ejercicio mixto cervical y escapulotorácico (neuromuscular, estiramientos, fuerza, resistencia, aeróbico y componente cognitivo-afectivo) y punción seca, láser o tracción mecánica intermitente (B); ejercicios de resistencia de cuello, cintura escapular y tronco, y educación que promueva una vida activa y atienda lo cognitivo y emocional (C). Los programas supervisados de fuerza y estiramiento de cuello y tren superior mejoraron más que un programa individual en casa. Integrar estrategias de adherencia al ejercicio en casa. La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
     dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     tests: [
@@ -936,7 +936,7 @@ export const hypotheses = {
   ce8: {
     id: 'ce8', region: 'cervical', num: '⑧',
     name: 'Mielopatía Espondilótica Cervical',
-    prom: 'NDI (MCID: 10.5–17.5 pts según severidad) / mJOA',
+    prom: 'NDI (MCID: 10.5–17.5 pts según severidad)',
     dosis: DOSIS_DERIVAR,
     tests: [
       { name: 'Signo de Hoffmann', anatomia: ['medula_espinal'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Mano relajada; se percute hacia abajo la falange distal del dedo medio. Positivo: flexión involuntaria del pulgar o del índice, que sugiere afectación de la vía corticoespinal. Un estudio citado encontró que 3 de 5 hallazgos (Hoffmann, reflejo supinador invertido, Babinski, alteración de la marcha y más de 45 años) elevan la probabilidad postest de mielopatía por encima del 90 %. La guía advierte que las pruebas clínicas de mielopatía tienen sensibilidad baja: no sirven para descartarla; la resonancia ayuda al diagnóstico.', razonamiento: { detalle: 'Sin S ni E.' }, fuente: 'Margetis y Donnally 2025 (StatPearls, «Cervical Myelopathy», exploración) · Blanpied 2017 (J Orthop Sports Phys Ther 47(7), p. A15)' },
@@ -1017,7 +1017,7 @@ export const hypotheses = {
   ce14: {
     id: 'ce14', region: 'cervical', num: '⑭',
     name: 'Dolor Cervical Idiopático',
-    prom: 'NDI (MCID: 7.5–18 puntos) / PSFS',
+    prom: 'NDI (MCID: 7.5–18 puntos)',
     dosis: 'Se trata como dolor de cuello con déficit de movilidad (categoría de la guía), según la fase. Aguda: manipulación torácica, ejercicios de movilidad cervical y fortalecimiento escapulotorácico y de miembro superior, que además favorecen la adherencia (B); puede añadirse manipulación o movilización cervical (C). Subaguda: ejercicios de resistencia de cuello y cintura escapular (B); manipulación torácica y manipulación o movilización cervical (C). Crónica: abordaje multimodal con manipulación torácica y manipulación o movilización cervical, ejercicio mixto cervical y escapulotorácico (neuromuscular, estiramientos, fuerza, resistencia, aeróbico y componente cognitivo-afectivo) y punción seca, láser o tracción mecánica intermitente (B); educación que promueva una vida activa (C). En la subaguda y la crónica la terapia manual pierde peso y la manipulación no supera a la movilización. La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico, ajustado a la irritabilidad.',
     dosisFuente: 'Blanpied 2017, J Orthop Sports Phys Ther 47(7):A1–A83 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía)',
     pronostico: {

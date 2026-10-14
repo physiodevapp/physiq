@@ -870,7 +870,7 @@ export const hypotheses = {
   ca1: {
     id: 'ca1', region: 'cadera', num: '①',
     name: 'Artrosis de Cadera',
-    prom: 'HOOS (MCID: 10–13 puntos en subescalas)',
+    prom: 'WOMAC',
     dosis: 'Educación junto con ejercicio o terapia manual: modificar la actividad, hacer ejercicio, apoyar la pérdida de peso si hay sobrepeso, enseñar formas de descargar la articulación y entrenamiento del afrontamiento del dolor por internet (B). Ejercicio individualizado, que puede incluir ejercicio acuático, para mejorar movilidad, fuerza, función y dolor: de 1 a 5 sesiones por semana de 30–120 min durante 5–16 semanas (A); NICE: ofrecer a todos ejercicio terapéutico adaptado (fuerza local y forma aeróbica general) y considerar sesiones supervisadas. Avisar de que al empezar el dolor puede aumentar y de que la constancia es lo que trae el beneficio. Entrenamiento funcional, de marcha y de equilibrio, con bastón u otra ayuda si hace falta (C). Con sobrepeso, colaborar con medicina o nutrición (B): cualquier pérdida ayuda, y un 10 % es mejor que un 5 %. Terapia manual con movilización articular o de tejidos blandos, incluidas la distracción longitudinal de cadera con fuerza alta o baja y la movilización con movimiento, en la artrosis leve o moderada con déficit de movilidad, flexibilidad o dolor (A), adaptando la técnica y la fuerza a la morfología de la cadera y a la irritabilidad (F); 1–3 veces por semana durante 6–12 semanas y siempre junto al ejercicio: NICE solo pide considerarla junto al ejercicio y nunca sola. Ortesis, no como primera opción (F). Punción seca: la guía APTA de 2025 la recomienda en los puntos gatillo de psoas ilíaco, recto femoral, tensor de la fascia lata y glúteos medio y menor en la artrosis de grados II–III, con mejoría a corto plazo (una sesión semanal durante 3 semanas) (A); NICE no la ofrece, igual que la acupuntura. No ofrecer electroterapia (TENS, ultrasonidos, interferenciales, láser, onda corta, electroestimulación), según NICE; la guía APTA deja el ultrasonido solo como opción en decisión compartida, avisando de que la evidencia es contradictoria (D).',
     dosisFuente: 'Koc 2025, J Orthop Sports Phys Ther 55(11):CPG1–CPG31 (guía de práctica clínica APTA, revisión de 2025; letra = grado de la recomendación, tal como la da la guía) · NICE NG226 (rec. 1.3.1–1.3.11; donde chocan, se dan las dos posturas)',
     pronostico: {
@@ -912,7 +912,7 @@ export const hypotheses = {
   ca3: {
     id: 'ca3', region: 'cadera', num: '③',
     name: 'Desgarro del Labrum Acetabular',
-    prom: 'iHOT-12 (MCID: 9–26 pts) / HOOS (MCID: 10–13 pts)',
+    prom: 'iHOT-12 (MCID: 9–26 pts)',
     dosis: 'El mismo abordaje multimodal que en el SIFA, que la guía recomienda en particular para el SIFA y las lesiones del labrum (B): modificar la actividad y fortalecer cadera (psoas ilíaco, glúteos, rotadores), tronco y miembro inferior, junto con terapia manual, corrección postural y del movimiento, estiramientos y equilibrio, evitando los ejercicios y rangos que provoquen síntomas. Educación sobre los factores agravantes y el dolor (C) y entrenamiento del patrón de movimiento (C). Al menos 3 meses (consenso de Zúrich). En adolescentes con rotura labral en la RM, el 73 % de los tratados solo con fisioterapia y modificación de la actividad alcanzó la mejoría mínima importante a los 3 años, igual que con infiltración o artroscopia (serie de casos). Ninguna fuente fija series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Enseki 2023, J Orthop Sports Phys Ther 53(7):CPG1–CPG70 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía; serie de Murtha citada en ella) · consenso de Zúrich del IHiPRN (Kemp, Risberg, Mosler et al., Br J Sports Med 54:504–511) · Kemp 2020, Br J Sports Med 54:1382–1394 (revisión sistemática)',
     pronostico: {
@@ -934,7 +934,7 @@ export const hypotheses = {
   ca4: {
     id: 'ca4', region: 'cadera', num: '④',
     name: 'Síndrome de Dolor Trocantérico Mayor (Tendinopatía Glútea)',
-    prom: 'HOOS (MCID: 10–13 puntos)',
+    prom: 'iHOT-12 o LEFS',
     dosis: 'Educación sobre la carga del tendón más ejercicio, 14 sesiones individuales en 8 semanas (la primera de 60 min, las demás de 30). Educación: evitar posturas y movimientos que comprimen los tendones contra el trocánter (aducción mantenida; no estirar piriforme ni cintilla iliotibial, que la fuerzan) y progresar la carga poco a poco. En casa, 4–6 ejercicios diarios de 15–20 min. Semana 1: isométricos de abducción en supino y de pie (5–15 s), puente y sentadilla bilaterales (10 rep) y pasos laterales (10 por lado). Semana 2: se añaden puente y sentadilla cargando más una pierna (5 rep). Semanas 3–8: ejercicios a una pierna de algo duro a duro (5–10 rep, 2 series) y deslizamientos laterales con goma; en consulta, 2 veces por semana, abducción contra resistencia, lenta y pesada. Dolor: en el ejercicio funcional, que no aumente en el trocánter; en la fuerza lenta y pesada, hasta 5/10 si cede después y no empeora esa noche ni a la mañana siguiente. Éxito (mejoría moderada o mayor): 77 % a las 8 semanas, frente al 58 % con infiltración y el 29 % esperando; a las 52 semanas, 79 % frente a 58 % y 52 %.',
     dosisFuente: 'Mellor 2018, BMJ 361:k1662 (ensayo aleatorizado LEAP, n = 204, frente a infiltración de corticoide y a esperar) · Mellor 2016, BMC Musculoskelet Disord 17:196 (protocolo del ensayo, tabla 3: ejercicios y progresión)',
     pronostico: {
@@ -953,7 +953,7 @@ export const hypotheses = {
   ca5: {
     id: 'ca5', region: 'cadera', num: '⑤',
     name: 'Debilidad de Abductores de Cadera',
-    prom: 'HOOS (MCID: 10–13 puntos)',
+    prom: 'iHOT-12 o LEFS',
     dosis: '',
     tests: [
       { name: 'Test de Trendelenburg', anatomia: ['gluteo_medio'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'De pie sobre una pierna: la pelvis cae hacia el lado de la pierna levantada.', razonamiento: { porque: 'Para mantener la pelvis nivelada sobre una pierna, los abductores tienen que contrarrestar el par de aducción: los glúteos medio y menor aportan cerca del 70 % de la fuerza y los tensores de la cintilla iliotibial el 30 %. La versión que exige mantener la pelvis por encima de la horizontal valora directamente la función de los abductores (Grimaldi y Fearon 2015).', detalle: 'La disfunción del glúteo medio da una inclinación pélvica contralateral al apoyo (Trendelenburg) o una inclinación del tronco hacia el lado de apoyo (Duchenne); observar el apoyo monopodal revela estos déficits de control en el plano frontal. Sin cifras de exactitud para la debilidad de abductores.', fuentes: ['Grimaldi y Fearon 2015'], citas: ['Grimaldi y Fearon 2015 (J Orthop Sports Phys Ther 45(11):910–922; manuscrito aceptado, pp. 9–10 y 14)'] }, fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 157–158. Grimaldi 2026 (Musculoskelet Sci Pract 84:103592, revisión narrativa, apartado 2.2.1)' },
@@ -964,7 +964,7 @@ export const hypotheses = {
   ca6: {
     id: 'ca6', region: 'cadera', num: '⑥',
     name: 'Disfunción de Control Neuromuscular de Cadera',
-    prom: 'HOOS (MCID: 10–13 pts) / iHOT-12 (MCID: 14–26 pts)',
+    prom: 'iHOT-12 (MCID: 14–26 pts)',
     dosis: '',
     tests: [
       { name: 'Test de Sentadilla Monopodal (Single-Leg Squat)', anatomia: ['gluteo_medio'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Calidad del movimiento: buscar inclinación lateral, rotación o inclinación del tronco, y flexión o valgo de rodilla.', razonamiento: { detalle: 'Una revisión sistemática respalda su validez y fiabilidad en deportistas con dolor de cadera e ingle; fiabilidad entre examinadores moderada a excelente (0,603–0,939) en el dolor de cadera no artrósico. Sin S ni E.' }, fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 174. Enseki 2023 (J Orthop Sports Phys Ther 53(7), guía de práctica clínica APTA, p. CPG20)' },
@@ -975,7 +975,7 @@ export const hypotheses = {
   ca7: {
     id: 'ca7', region: 'cadera', num: '⑦',
     name: 'Síndrome Glúteo Profundo (Síndrome Piriforme)',
-    prom: 'HOOS (MCID: 10–13 puntos)',
+    prom: 'iHOT-12 o LEFS',
     dosis: '',
     tests: [
       { name: 'Test de estiramiento del piriforme en sedestación', anatomia: ['piriforme', 'nervio_ciatico'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Sentado: el examinador extiende la rodilla y lleva la cadera flexionada a aducción y rotación interna mientras palpa 1 cm lateral al isquion y, más arriba, la escotadura ciática. Positivo: reproduce su dolor posterior.', razonamiento: { detalle: 'Junto con el test activo del piriforme es, según la revisión, el más sensible y específico para el atrapamiento del ciático, sobre todo combinados; no da cifras.' }, fuente: 'Carro 2016 (Muscles Ligaments Tendons J 6(3):384–396, revisión narrativa)', noData: true },
@@ -985,7 +985,7 @@ export const hypotheses = {
   ca8: {
     id: 'ca8', region: 'cadera', num: '⑧',
     name: 'Pinzamiento Isquiofemoral',
-    prom: 'HOOS (MCID: 10–13 puntos)',
+    prom: 'iHOT-12 o LEFS',
     dosis: '',
     tests: [
       { name: 'Test de marcha con zancada larga (Long-Stride Walking Test)', anatomia: ['cuadrado_femoral', 'tuberosidad_isquiatica'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Caminar con pasos exagerados reproduce su dolor lateral al isquion; al repetirlo con pasos cortos debería ceder.', razonamiento: { detalle: 'Cifras publicadas: S 94 % (IC 95 % 69–99), E 85 % (IC 54–97), LR+ 6,12 (IC 1,70–22,01), LR− 0,07 (IC 0,01–0,48), de un solo estudio retrospectivo, sin cegar, de casos y controles y con 30 pacientes (referencia: alivio con infiltración o cirugía), citado por la revisión.' }, fuente: 'Grimaldi 2026 (Musculoskelet Sci Pract 84:103592, revisión narrativa, fig. 3)', noData: true }
@@ -994,7 +994,7 @@ export const hypotheses = {
   ca9: {
     id: 'ca9', region: 'cadera', num: '⑨',
     name: 'Tendinopatía Proximal de Isquiotibiales',
-    prom: 'HOOS (MCID: 10–13 puntos)',
+    prom: 'iHOT-12 o LEFS',
     dosis: 'Programa de fuerza individualizado, progresivo y por fases, que reintroduce poco a poco la compresión del tendón (flexión profunda de cadera, estar sentado). Educación: diagnóstico, plazos de recuperación, control del dolor, papel de la compresión (incluido estar sentado) y actividades de carga alta y baja. Seguir con la actividad, incluida la carrera, guiándose por el dolor: hasta 4/10 durante la actividad y sin aumento de más de 2/10 a las 12–24 h. En el ensayo, 6 sesiones en 12 semanas (semanas 0, 1, 2, 3, 6 y 12); la fisioterapia no superó a las ondas de choque y los dos grupos mejoraron. El artículo no detalla series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Rich 2025, Am J Sports Med 53:3396–3407 (ensayo aleatorizado, n = 100, fisioterapia frente a ondas de choque, los dos con la misma educación)',
     tests: [
@@ -1005,7 +1005,7 @@ export const hypotheses = {
   ca10: {
     id: 'ca10', region: 'cadera', num: '⑩',
     name: 'Dolor Articular Sacroilíaco',
-    prom: 'HOOS (MCID: 10–13 puntos)',
+    prom: 'ODI (MCID: 8.5 pts)',
     dosis: '',
     tests: [
       { name: 'Test de Compresión Pélvica', anatomia: ['art_sacroiliaca'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Decúbito lateral; presión hacia la camilla sobre la cresta ilíaca de arriba. Positivo: reproduce su dolor conocido. Cuenta dentro del cluster de Laslett.', razonamiento: { porque: 'Es un test de provocación: carga la sacroilíaca para reproducir el dolor conocido. Como ningún test la carga sola, un positivo aislado puede venir de una estructura vecina; que varios tests distintos reproduzcan el dolor da más confianza, y por eso cuenta dentro del cluster (Laslett 2005).', detalle: 'En el estudio de los creadores del cluster daba LR+ 2,20 (IC 95 % 1,18–4,09) y LR− 0,46 (IC 0,20–0,87) con 48 pacientes no consecutivos (16 con bloqueo positivo), pero agrupado en 2 estudios (83 pacientes) queda en LR+ 1,79 (IC 1,03–3,11) y LR− 0,74 (IC 0,52–1,05).', fuentes: ['Laslett 2005'], citas: ['Laslett 2005 (Man Ther 10(3):207–218; introducción, p. 208)'] }, fuente: 'Laslett 2005 (Man Ther 10:207–218, tabla 2; referencia: bloqueo anestésico intraarticular). Agrupado: Han 2023 (eClinicalMedicine 59:101960, revisión sistemática, tabla 1)' },
@@ -1024,7 +1024,7 @@ export const hypotheses = {
   ca11: {
     id: 'ca11', region: 'cadera', num: '⑪',
     name: 'Lesión Aguda de Ingle',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: 'Lesión aguda de aductores en deportistas: rehabilitación activa por criterios. Nueve ejercicios de ingle 3 veces por semana en días alternos (balanceos de pierna en abducción-aducción y en flexión-extensión, círculos de cadera de pie; aducción y flexión de cadera, rotación de tronco y arco de tensión con goma; coordinación a una pierna y aducción de Copenhague) y, en paralelo, carrera, sprint y cambios de dirección progresivos. Pasa al entrenamiento controlado en el campo cuando no duelen la palpación, la aducción isométrica máxima con la cadera abducida, el estiramiento pasivo máximo, la aducción con goma a 10 RM ni 10 repeticiones de Copenhague, y el sprint y las pruebas de agilidad al 100 %. Plazos (mediana): RM grado 0–2, sin dolor a los 13 días y entrenamiento completo a los 18; grado 3, a los 55 y 78 días. Recaídas al año: 5 % si se alcanzó el criterio sin dolor, frente al 21 %. Series y cargas, en un apéndice no consultado. Cohorte sin grupo control, solo varones y solo aductor: para los flexores no hay pauta.',
     dosisFuente: 'Serner 2020, Orthop J Sports Med 8(1):2325967119897247 (cohorte prospectiva, n = 81 varones de 18 a 40 años, sin grupo control)',
     pronostico: {
@@ -1041,7 +1041,7 @@ export const hypotheses = {
   ca12: {
     id: 'ca12', region: 'cadera', num: '⑫',
     name: 'Ligamento Redondo e Inestabilidad',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: 'Precaución principal: evitar los ejercicios y actividades que provoquen síntomas o que carguen en exceso las estructuras capsuloligamentosas (al revés que en el SIFA, donde lo que se evita son los rangos de pinzamiento). No hay evidencia de tratamiento conservador específico: en la displasia, la guía pide basar el tratamiento en la exploración y los déficits funcionales. Por extrapolación del abordaje multimodal que la guía recomienda para el SIFA y el labrum (B): modificar la actividad, fortalecer cadera, tronco y miembro inferior, reeducación neuromuscular progresiva (F), entrenamiento del patrón de movimiento (C) y educación. Ninguna fuente fija series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Enseki 2023, J Orthop Sports Phys Ther 53(7):CPG1–CPG70 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía; la precaución está en su descripción de la intervención multimodal)',
     pronostico: {
@@ -1058,7 +1058,7 @@ export const hypotheses = {
   ca13: {
     id: 'ca13', region: 'cadera', num: '⑬',
     name: 'Condropatía de Cadera',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: '',
     pronostico: {
       horizonte: 'Difícil de ver: cartílago fino y profundo. La artro-TC lo muestra mejor. Delaminación asociada a FAIS.',
@@ -1075,7 +1075,7 @@ export const hypotheses = {
   ca14: {
     id: 'ca14', region: 'cadera', num: '⑭',
     name: 'Neuropatías de Cadera e Ingle',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: '',
     pronostico: {
       horizonte: 'EMG y conducción nerviosa: baja S y E en esta región. Alivio con bloqueo diagnóstico.',
@@ -1093,7 +1093,7 @@ export const hypotheses = {
   ca15: {
     id: 'ca15', region: 'cadera', num: '⑮',
     name: 'Sensibilización Central',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: '',
     tests: [
       { name: 'Dolor multifocal, referido y extenso', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Sin criterios clínicos validados. Coexiste con la patología intraarticular y hace los síntomas vagos y cambiantes: NO excluye patología estructural.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 135 y 138' },
@@ -1106,7 +1106,7 @@ export const hypotheses = {
   ca16: {
     id: 'ca16', region: 'cadera', num: '⑯',
     name: 'Dolor Inguinal Relacionado con el Aductor',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: 'Deportistas con dolor inguinal de larga evolución relacionado con el aductor. Entrenamiento activo 3 veces por semana (unos 90 min, en grupos de 2–4) durante 8–12 semanas, sin deporte mientras dure (bici si no duele; trote en llano pasadas las 6 primeras semanas si no provoca dolor); se termina cuando ni el tratamiento ni el trote duelen. Los días intermedios, el módulo I en casa. Módulo I (semanas 1–2): aducción isométrica en supino contra un balón entre los pies y entre las rodillas, 10 × 30 s cada una; abdominales rectos y oblicuos 5 × 10; abdominal con flexión de cadera y balón entre las rodillas («navaja») 5 × 10; plato de equilibrio 5 min; tabla de deslizamiento a una pierna, pies paralelos y a 90°, 5 × 1 min por pierna y posición. Módulo II (desde la 3.ª semana, dos vueltas por sesión): abducción y aducción en decúbito lateral 5 × 10; extensión lumbar en prono 5 × 10; abducción y aducción de pie a una pierna con peso o polea 5 × 10; abdominales 5 × 10; «esquí de fondo» a una pierna 5 × 10; desplazamiento lateral en tabla basculante 5 min; plato de equilibrio 5 min; patinaje en tabla de deslizamiento 5 × 1 min. Sin estirar los aductores. Resultado: 23 de 34 volvieron al deporte sin dolor frente a 4 con tratamiento pasivo (OR 12,7; IC 95 % 3,4–47,2).',
     dosisFuente: 'Hölmich 1999, Lancet 353:439–443 (ensayo aleatorizado, n = 68 varones de 18 a 50 años, frente a fisioterapia pasiva)',
     pronostico: {
@@ -1122,7 +1122,7 @@ export const hypotheses = {
   ca17: {
     id: 'ca17', region: 'cadera', num: '⑰',
     name: 'Dolor Inguinal Relacionado con el Psoas Ilíaco',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: 'Sin cirugía previa (deportistas y casos idiopáticos): fisioterapia con estiramiento del psoas ilíaco, fortalecimiento de rotadores de cadera y musculatura pélvica, control motor y modificación de la actividad, con éxito del 77–100 % en series pequeñas. Tras una prótesis de cadera funciona bastante menos (16–50 %) y el resultado depende sobre todo de la posición del implante. Sin ensayos aleatorizados ni volumen definido: queda a criterio del clínico.',
     dosisFuente: 'Vandeputte 2026, J Clin Med 15(15):5912 (revisión sistemática; tratamiento conservador solo en series de casos y cohortes, calidad baja a moderada)',
     pronostico: {
@@ -1139,7 +1139,7 @@ export const hypotheses = {
   ca18: {
     id: 'ca18', region: 'cadera', num: '⑱',
     name: 'Dolor Inguinal Relacionado con el Canal Inguinal',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: '',
     pronostico: {
       horizonte: 'Ecografía. Explorar de pie y con tos: una hernia palpable excluye este diagnóstico.',
@@ -1156,7 +1156,7 @@ export const hypotheses = {
   ca19: {
     id: 'ca19', region: 'cadera', num: '⑲',
     name: 'Dolor Inguinal Relacionado con el Pubis',
-    prom: 'HAGOS (o HOS, iHOT)',
+    prom: 'HOS o iHOT-12',
     dosis: '',
     pronostico: {
       horizonte: 'Ecografía o RM (planos axiales oblicuos para la inserción): edema óseo en la sínfisis, signo de la hendidura secundaria.',

@@ -247,6 +247,10 @@ export function regionTexto(data, nombreRegion = r => r) {
 // Ronda 23: el EVN registrado en la fase 3 desaparecía cuando el dictado daba
 // otra cifra para «ahora» (Rosa 4, Tomás 6, Elena 7): el informe se quedaba con
 // la de la consulta. Las dos son ciertas, cada una en su momento.
+// «PHQ-9: 12/27 — depresión moderada», sin emoji, para el prompt
+function lineaCuestionarioIA(c) {
+  return `${c.n}: ${c.v}${c.i ? ` — ${c.i}` : ''}${c.a?.length ? ` · Aviso: ${c.a.join(' · ')}` : ''}`;
+}
 export const NOTA_NRS = '(intensidad registrada por el fisioterapeuta en la valoración: debe constar en el informe como «EVN de N/10» o «EVN de N/10 en la valoración», con la sigla sin desarrollar, sin atribuirle otro momento —reposo, actividad, peor momento, última semana—; si se da otra cifra para otro momento, recoge las dos, cada una con el suyo)';
 // Ronda 23: en la frase de contraste de la ficha, «la hipomovilidad y el
 // cumplimiento de 4 criterios de Flynn apoyan la primera» (Elena), aunque la
@@ -270,6 +274,11 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
   if (data.cq) extra.push(bloqueCirugia(data.cq));
   if (data.ur?.length) extra.push(`DERIVACIÓN URGENTE indicada en el cribado (debe constar en el informe):\n${data.ur.map(s => `  · ${s}`).join('\n')}`);
   if (data.dv?.length) extra.push(`Derivación médica indicada en la exploración (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);
+  // Cuestionarios puntuados en la calculadora (lib/cuestionarios.js): solo los
+  // completos, con la puntuación y la interpretación que da la app, y las
+  // alertas de seguridad aunque el cuestionario esté a medias
+  const cu = (data.cu || []).filter(c => !c.inc || c.a?.length);
+  if (cu.length) extra.push(`Cuestionarios que ha rellenado el paciente (puntuación e interpretación calculadas por la app; cítalos con su nombre, su puntuación y su interpretación tal cual, sin recalcularlos ni darles otro significado, junto a los factores personales o psicosociales si son de ánimo, miedo, autoeficacia o riesgo de cronicidad, y junto al dolor si son de dolor neuropático; si avisan de algo, el aviso también debe constar):\n${cu.map(c => `  · ${c.inc ? `${c.n}: sin completar · ⚠️ ${c.a.join(' · ')}` : lineaCuestionarioIA(c)}`).join('\n')}`);
   const sv = signosVitalesTexto(data.sv, data.an);
   if (sv) extra.push(`Signos vitales y antropometría: ${sv}`);
   // Con datos ampliados, el formulario va agrupado por sección y sin «No sé»

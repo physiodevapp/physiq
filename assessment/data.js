@@ -144,6 +144,9 @@ export { DOSIS_DERIVAR, HIP_POSQUIRURGICA } from './data/comun.js';
 // Tiempos de recuperación de tejidos (panel ⏱ de la cabecera; no regional)
 export { TIEMPOS_TEJIDO } from './data/tejidos.js';
 
+// Calculadora de cuestionarios (📋 de la cabecera; no regional)
+export { CUESTIONARIOS, GRUPOS_CUESTIONARIO } from './data/cuestionarios.js';
+
 export const HYPOTHESES = Object.assign({}, ...Object.values(REGIONES).map(m => m.hypotheses));
 
 // Fase 3 — zonas del mapa corporal por región ([{ id, nombre }]), solo las

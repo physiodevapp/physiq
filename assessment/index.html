@@ -52,6 +52,8 @@
     </div>
     <!-- «Tiempos de recuperación» de tejidos (consulta, cualquier fase, también en el hub): icono de cronograma, no de reloj, para no confundirlo con el chip «Breve» -->
     <button id="tejidosBtn" class="session-btn tejidos-btn" onclick="abrirTiemposTejido()" type="button" aria-haspopup="dialog" aria-controls="tejidosOverlay" aria-label="Tiempos de recuperación de tejidos" title="Tiempos de recuperación de tejidos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4v16h18"/><path d="M7 8h5"/><path d="M10 12h7"/><path d="M13 16h6"/></svg></button>
+    <!-- Calculadora de cuestionarios (cualquier fase, también en el hub; lib/cuestionarios.js): puntuar la hoja que ha rellenado el paciente -->
+    <button id="cuestBtn" class="session-btn cuest-btn" onclick="abrirCuestionarios()" type="button" aria-haspopup="dialog" aria-controls="cuestOverlay" aria-label="Calculadora de cuestionarios" title="Calculadora de cuestionarios"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M9 12.5l2 2 4-4"/></svg></button>
     <!-- «Preguntar a la IA» (pregunta libre, solo standalone): fijo, sin borde, como sesión y tema -->
     <button id="preguntaIABtn" class="session-btn pregunta-ia-btn" onclick="abrirPreguntaIA()" type="button" aria-haspopup="dialog" aria-controls="preguntaOverlay" aria-label="Preguntar a la IA" title="Preguntar a la IA"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg></button>
     <button id="sessionBtn" class="session-btn" onclick="toggleSessionPanel()" aria-label="Sesión" title="Sesión"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
@@ -189,6 +191,17 @@
     <div class="session-panel-handle"></div>
     <div class="session-panel-title" id="tejidosTitulo">Tiempos de recuperación de tejidos</div>
     <div class="tejidos-cuerpo" id="tejidosCuerpo"></div>
+  </div>
+</div>
+
+<!-- CALCULADORA DE CUESTIONARIOS (cabecera): hoja inferior en móvil, diálogo
+     centrado en escritorio, como «Tiempos de recuperación». Lo rellena
+     abrirCuestionarios() (app.js) con lib/cuestionarios.js y data/cuestionarios.js -->
+<div class="session-panel-overlay" id="cuestOverlay" onclick="cerrarCuestionarios()">
+  <div class="session-panel cuest-panel" id="cuestPanel" role="dialog" aria-modal="true" aria-labelledby="cuestTitulo" tabindex="-1" onclick="event.stopPropagation()">
+    <div class="session-panel-handle"></div>
+    <div class="session-panel-title" id="cuestTitulo">Cuestionarios</div>
+    <div class="cuest-cuerpo" id="cuestCuerpo"></div>
   </div>
 </div>
 
@@ -415,7 +428,7 @@
 
   <div class="card">
     <div class="card-title">Riesgo Psicosocial</div>
-    <p class="form-label" style="margin-bottom:12px;">Estratifique según su valoración clínica inicial (STarT Back / Örebro)</p>
+    <p class="form-label" style="margin-bottom:12px;">Estratifique según su valoración clínica inicial (Örebro)</p>
 
     <div class="option-group option-group-full" id="riesgoPsico">
       <button class="option-btn" onclick="selectPsico(this, 'Bajo')">🟢 Bajo</button>

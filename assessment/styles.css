@@ -3090,6 +3090,87 @@ body.posquirurgico .solo-posq { display: block; }
 .tej-info-datos .tej-ley-muestra { flex: 0 0 auto; }
 @media print { .tejidos-btn { display: none !important; } .tej-info { display: none !important; } }
 
+/* ─── Calculadora de cuestionarios (cabecera, lib/cuestionarios.js) ───
+   Caja y velo del panel de sesión, como «Tiempos de recuperación». Dentro,
+   lista de cuestionarios o el formulario de uno, con el resultado fijo arriba
+   mientras se toca cada ítem. */
+.cuest-panel { max-width: 560px; width: 94%; max-height: 88vh; display: flex; flex-direction: column; }
+.cuest-panel:focus { outline: none; }
+.cuest-panel > * { flex-shrink: 0; }
+.cuest-panel > .cuest-cuerpo { flex: 1 1 auto; overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; min-height: 0; }
+@media (max-width: 768px) {
+  .cuest-panel { max-width: 100%; width: 100%; max-height: 90vh; padding-bottom: 20px; }
+}
+.cuest-grupo + .cuest-grupo { margin-top: 14px; }
+.cuest-grupo-titulo { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); font-weight: 500; margin: 0 0 6px; }
+.cuest-tarjeta {
+  display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 2px; align-items: baseline;
+  width: 100%; text-align: left; margin-bottom: 6px; padding: 10px 12px; min-height: 48px;
+  background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px;
+  color: var(--text); font-family: inherit; cursor: pointer;
+}
+@media (hover: hover) { .cuest-tarjeta:hover { border-color: var(--accent); } }
+.cuest-tarjeta-nombre { font-weight: 600; font-size: 0.9rem; }
+.cuest-tarjeta-titulo { font-size: 0.78rem; color: var(--text2); min-width: 0; }
+.cuest-tarjeta-estado { grid-column: 1 / -1; font-size: 0.75rem; color: var(--text3); }
+.cuest-nivel-ok { color: var(--green); }
+.cuest-nivel-medio { color: var(--orange); }
+.cuest-nivel-alto { color: var(--red); }
+.cuest-pie { margin: 12px 0 0; font-size: 0.72rem; color: var(--text3); line-height: 1.45; }
+.cuest-volver { background: none; border: none; padding: 0; min-height: 40px; color: var(--accent); font-family: inherit; font-size: 0.85rem; cursor: pointer; }
+.cuest-cab-nombre { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+.cuest-cab-titulo { font-size: 0.8rem; color: var(--text2); }
+.cuest-instr, .cuest-leyenda { margin: 6px 0 0; font-size: 0.78rem; color: var(--text2); line-height: 1.45; }
+.cuest-leyenda { color: var(--text3); }
+.cuest-resultado {
+  position: sticky; top: 0; z-index: 1; margin: 10px 0 6px; padding: 10px 12px;
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 8px;
+  box-shadow: 0 6px 10px -8px var(--scrim);
+}
+.cuest-res-linea { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; row-gap: 2px; }
+.cuest-res-total { font-family: 'DM Mono', monospace; font-size: 1.05rem; font-weight: 500; color: var(--text); }
+.cuest-res-interp { font-size: 0.85rem; font-weight: 600; color: var(--text2); }
+.cuest-res-falta { font-size: 0.78rem; color: var(--text3); }
+.cuest-res-subs { margin: 4px 0 0; padding-left: 1.1rem; font-size: 0.78rem; color: var(--text2); }
+.cuest-alerta { margin-top: 6px; font-size: 0.8rem; font-weight: 600; color: var(--alert-danger-text); line-height: 1.4; }
+.cuest-seccion { margin: 14px 0 4px; font-size: 0.78rem; font-weight: 600; color: var(--text2); }
+.cuest-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.cuest-item-txt { font-size: 0.85rem; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
+.cuest-item-n { display: inline-block; min-width: 1.6em; font-family: 'DM Mono', monospace; color: var(--text3); }
+.cuest-item-nota { font-size: 0.72rem; color: var(--text3); }
+.cuest-ops { display: grid; gap: 6px; }
+/* Escala: una fila si cabe; 0–10 en dos filas en móvil (botones de 40 px como mínimo) */
+.cuest-ops-escala { grid-template-columns: repeat(var(--cuest-n), minmax(0, 1fr)); }
+@media (max-width: 520px) { .cuest-ops-escala.cuest-ops-largo { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.cuest-ops-numero { display: flex; align-items: center; gap: 10px; }
+.cuest-num { width: 6.5em; min-height: 44px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-family: 'DM Mono', monospace; font-size: 1rem; }
+.cuest-num:focus { outline: none; border-color: var(--accent); }
+.cuest-num-rango { font-size: 0.75rem; color: var(--text3); }
+.cuest-ops-numero .cuest-op { min-width: 64px; }
+.cuest-ops-sino { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cuest-ops-texto { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+.cuest-op {
+  min-height: 44px; padding: 6px 8px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--surface2); color: var(--text2);
+  font-family: inherit; font-size: 0.85rem; line-height: 1.25; cursor: pointer; overflow-wrap: anywhere;
+}
+.cuest-ops-escala .cuest-op { font-family: 'DM Mono', monospace; font-size: 0.95rem; padding: 6px 0; }
+@media (hover: hover) { .cuest-op:hover { border-color: var(--accent); color: var(--text); } }
+.cuest-op.selected { background: color-mix(in srgb, var(--accent) 14%, transparent); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.cuest-anclas { display: flex; justify-content: space-between; gap: 12px; margin-top: 4px; font-size: 0.7rem; color: var(--text3); }
+.cuest-anclas span:last-child { text-align: right; }
+.cuest-fuente { margin-top: 12px; font-size: 0.74rem; color: var(--text3); line-height: 1.45; }
+.cuest-fuente p { margin: 0 0 6px; }
+.cuest-fuente-et { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; }
+.cuest-borrar { margin-top: 6px; background: none; border: none; padding: 0; min-height: 40px; color: var(--text3); font-family: inherit; font-size: 0.8rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.cuest-borrar:disabled { opacity: 0.4; cursor: default; }
+/* Fase 5 */
+.summary-section[hidden] { display: none; }
+.cuest-f5 { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--text2); line-height: 1.5; }
+.cuest-f5 strong { color: var(--text); }
+.cuest-f5-abrir { margin-top: 8px; background: none; border: none; padding: 0; min-height: 40px; color: var(--accent); font-family: inherit; font-size: 0.8rem; cursor: pointer; }
+@media print { .cuest-btn, .cuest-f5-abrir { display: none !important; } }
+
   /* ─── Fase 6 «Plan de tratamiento» (opcional; plan.js) ─────────── */
   .phase-step-opcional .phase-step-num { border-style: dashed; }
   .plan-entrada { display: flex; justify-content: center; margin: 1rem 0 0; }

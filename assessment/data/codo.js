@@ -501,7 +501,7 @@ export const hypotheses = {
   co2: {
     id: 'co2', region: 'codo', num: '②',
     name: 'Tendinopatía Medial (Epicondilalgia Medial / Codo de Golfista)',
-    prom: 'PRTEE o QuickDASH',
+    prom: 'PRTEE o DASH',
     dosis: 'Ejercicio excéntrico de los flexores y pronadores de la muñeca, mejor dentro de un tratamiento conservador multimodal (estiramientos y otras medidas). Certeza de la evidencia baja o muy baja (GRADE): 5 estudios con 143 pacientes, y solo un ensayo mostró superioridad frente al grupo control. Los estudios usaron de 3 series de 5 repeticiones una vez al día durante 12 semanas a 3 series de 10 dos veces al día, con al menos un minuto de descanso entre series; la revisión no recomienda ninguna pauta concreta.',
     dosisFuente: 'See 2026, Complement Ther Med 98:103364 (revisión sistemática; certeza GRADE baja a muy baja)',
     tests: [
@@ -514,7 +514,7 @@ export const hypotheses = {
   co3: {
     id: 'co3', region: 'codo', num: '③',
     name: 'Rigidez del Codo (Contractura Postraumática o Capsular)',
-    prom: 'Oxford Elbow Score o QuickDASH',
+    prom: 'DASH',
     dosis: 'Rigidez postraumática por contractura de las partes blandas: tratamiento conservador de entrada (fisioterapia y férulas), con mejores resultados si empieza en los primeros 6 meses. Rigidez precoz: estiramientos de contracción-relajación (hold-relax), con mejoras clínicamente importantes de la flexión y la extensión y sin efectos adversos en tres ensayos pequeños; rigidez persistente: férula estática progresiva o dinámica, con evidencia más débil y más efectos adversos (Wistow). La intensidad óptima no se conoce: los ensayos de hold-relax usaron de 2 a 7 sesiones por semana durante 3 a 6 semanas. Para las férulas, Siemensma (por la literatura y su experiencia, sin ensayos) usa la estática progresiva 3 veces al día durante 30 minutos para el déficit de flexión y por la noche para el de extensión, durante al menos 6 meses, y la retira si aparecen síntomas del nervio cubital.',
     dosisFuente: 'Wistow 2025, JSES Int 9(6):2146–2155 (revisión sistemática, 9 estudios y 312 participantes, sin metaanálisis) · Siemensma 2023, EFORT Open Rev 8(5):351–360 (revisión narrativa)',
     // Criterios de cirugía: fuera de la pauta (el informe con IA los copiaba al plan), como ro2, h2 y ce3
@@ -531,7 +531,7 @@ export const hypotheses = {
   co4: {
     id: 'co4', region: 'codo', num: '④',
     name: 'Insuficiencia del Ligamento Colateral Cubital (LCC)',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: 'Tratamiento conservador de entrada: un periodo de rehabilitación de al menos 3 meses ayuda a distinguir a quién hay que operar, y si la inestabilidad persiste se indica la cirugía; no se han demostrado diferencias entre el tratamiento conservador y el quirúrgico (Biz). En deportistas de brazo por encima de la cabeza con rotura parcial, los programas incluían un periodo de reposo, estiramientos, fortalecimiento de la cadena cinética y un programa de lanzamiento por intervalos adaptado al deporte, y duraban de 6 a 12–14 semanas, con una vuelta al juego del 42 al 100 % (Cascia); en 5 de las 7 series se añadía una infiltración de plasma rico en plaquetas, así que la vuelta al juego no se puede atribuir solo a la rehabilitación. Ninguna fuente fija series ni repeticiones.',
     dosisFuente: 'Biz 2019, Orthop Surg 11(6):974–984 (revisión sistemática de 15 estudios, casi todos de nivel IV) · Cascia 2019, Sports Health 11(4):367–374 (revisión sistemática de 7 series retrospectivas, nivel 4)',
     tests: [
@@ -546,7 +546,7 @@ export const hypotheses = {
   co5: {
     id: 'co5', region: 'codo', num: '⑤',
     name: 'Lesión del Complejo Colateral Lateral / Inestabilidad Rotatoria Posterolateral (IRPL)',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: 'Sin ensayos que guíen el tratamiento conservador: una revisión sistemática solo encontró dos ensayos sobre la inestabilidad del codo, uno que comparaba la cirugía con 3 semanas de yeso (sin diferencias al año) y otro de movilización precoz tras la cirugía, los dos con alto riesgo de sesgo (Rinkel). Una revisión narrativa (opinión, no evidencia de eficacia) propone una prueba de tratamiento conservador de 4–6 semanas cuando la inestabilidad es leve o dudosa, cuando los síntomas mejoran tras una lesión reciente o cuando el paciente prefiere evitar la cirugía: evitar la carga axial en extensión y supinación; fortalecer la musculatura extensora y supinadora, la cocontracción de bíceps y tríceps y el control escapular, con reeducación propioceptiva; y una ortesis articulada con el antebrazo en pronación como complemento. Si persisten la aprensión o los fallos, o la inestabilidad es crónica, valoración quirúrgica (Quzli).',
     dosisFuente: 'Rinkel 2013, Clin J Pain 29(12):1087–1096 (revisión sistemática) · Quzli 2025, Cureus 17(11):e96151 (revisión narrativa, sin protocolo: opinión de los autores)',
     tests: [
@@ -560,7 +560,7 @@ export const hypotheses = {
   co6: {
     id: 'co6', region: 'codo', num: '⑥',
     name: 'Dolor Radiohumeral / Pinzamiento Posterolateral por Plica Radiocapitelar',
-    prom: 'DASH (MCID: 10,2 puntos en trastornos del miembro superior; Lucado 2022) o Mayo Elbow Performance Score',
+    prom: 'DASH (MCID: 10,2 puntos en trastornos del miembro superior; Lucado 2022)',
     dosis: 'Hay consenso en empezar por el tratamiento conservador, pero no hay datos sobre cuál aplicar ni sobre su eficacia. Los autores aconsejan reducir la actividad, recuperar el rango de movimiento con fisioterapia guiada y antiinflamatorios no esteroideos; en algunos casos, una infiltración, que además sirve de prueba diagnóstica. Si fracasa (los estudios esperaron de 3 a 6 meses), resección, artroscópica en 280 de los 288 pacientes de 19 estudios de calidad variable, con buen resultado en el 81 %, aunque los criterios de eficacia eran poco claros.',
     dosisFuente: 'Lubiatowski 2020, EFORT Open Rev 5(9):549–557 (revisión narrativa)',
     tests: [
@@ -575,7 +575,7 @@ export const hypotheses = {
   co7: {
     id: 'co7', region: 'codo', num: '⑦',
     name: 'Rotura Distal del Bíceps',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: DOSIS_DERIVAR,
     tests: [
       { name: 'Test del Gancho (Hook Test)', anatomia: ['biceps_braquial'], sn: '71.4%', sp: '95.5%', lr_pos: '15.71', lr_neg: '0.30', absorbe: [2], criterio: 'Con el codo en 90° de flexión y el antebrazo supinado, se intenta "enganchar" el tendón del bíceps con el dedo índice desde el lado lateral. Positivo (rotura completa) si no hay una estructura en cordón que enganchar; si engancha pero duele, orienta a rotura parcial. En las roturas de menos de un mes, S 86 %; en las crónicas, 57 %: la cicatriz de una rotura crónica puede tomarse por un tendón íntegro. Enganchar siempre desde el lado lateral, porque por el medial una aponeurosis bicipital íntegra puede tomarse por el tendón.', razonamiento: { porque: 'El tendón distal del bíceps íntegro cruza la fosa antecubital como un cordón por delante del braquial, y el dedo puede pasar por detrás de él desde el lado lateral. Si se ha desinsertado del todo, ya no hay cordón: el tendón del braquial, que a esa altura va dentro del músculo, no deja espacio para meter el dedo, aunque al palparlo se confunda fácilmente con el del bíceps. Por eso el test busca enganchar, no palpar, y se hace desde el lado lateral: por el medial, una aponeurosis bicipital (lacertus fibrosus) íntegra puede tomarse por el tendón.', detalle: 'Cifras de Zwerus 2022 (tabla 2): 86 pacientes consecutivos con molestias anteriores del codo o sospecha de lesión del bíceps distal, 42 con rotura completa, confirmada con cirugía en el 79 % y con RM o ecografía en el resto; S 71,4 %, E 95,5 %, LR+ 15,71, LR− 0,30 (publicadas). Si se hacen el Hook test y la pronación pasiva, solo cuenta el Hook test (absorbe): son los mismos pacientes y no se cuentan dos veces. Contraste: Devereaux y ElMaraghy 2013 (48 pacientes, solo 6 sin rotura completa, y el método de confirmación dependía del resultado de los propios tests) dio S 81 %, E 100 %, LR− 0,19; O\'Driscoll 2007, revisión retrospectiva del registro quirúrgico del creador del test (33 roturas completas frente a 12 parciales operadas; el brazo sano, control aparte), S y E del 100 %; Baylor 2023 (prospectivo, 28 operados; solo el resumen), S 96 %, E 67 %.\n\nTécnica original (O\'Driscoll 2007): el paciente, sentado o de pie, flexiona activamente el codo a 90° y supina el antebrazo hasta el final; el explorador mete el índice desde el lado lateral de la fosa antecubital por debajo del borde lateral del tendón, alrededor de 1 cm o más, y tira de él hacia delante. Supinar al máximo contrae el bíceps con el braquial algo relajado y aleja de la fosa la unión musculotendinosa. El paciente no debe flexionar contra resistencia: endurece el braquial y cierra el espacio bajo el tendón (si hace falta resistencia, que sea a la supinación). Si engancha, se tira con fuerza del tendón: el dolor con el tendón íntegro sugiere una rotura parcial (9 de 12 en la serie). Se compara con el codo sano.\n\nEl error más probable, según O\'Driscoll, es palpar un tendón en la fosa en lugar de enganchar el dedo detrás de él, sobre todo en hombres muy musculados, en los que el tendón del braquial es grueso. La grasa abundante o la cicatriz en la fosa podrían dificultar el enganche. En Zwerus 2022, el tejido cicatricial de la rotura crónica puede tomarse por un tendón íntegro.\n\nLa aponeurosis bicipital se explora aparte por el lado medial: su borde es fino, cortante y laminar, y el del tendón, grueso y en cordón. Seguía íntegra en 5 de las 33 roturas completas de O\'Driscoll; si está íntegra, el tendón se retrae menos.', fuentes: ["O'Driscoll 2007", 'Zwerus 2022'], citas: ["O'Driscoll 2007 (Am J Sports Med 35(11):1865–1869), pp. 1865–1869", 'Zwerus 2022 (Am J Sports Med 50(14):3956–3962), introducción y tabla 1'] }, fuente: 'Zwerus 2022 (Am J Sports Med 50(14):3956–3962; cohorte prospectiva, tabla 2) · Devereaux y ElMaraghy 2013 (Am J Sports Med 41:1998–2004; tabla 3), recogido en Zwerus 2018 (Br J Sports Med 52:1253–1260; revisión sistemática, tabla 4) · O\'Driscoll 2007 (Am J Sports Med 35:1865–1869; tabla 1) · Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 84–85 y 102' },
@@ -586,7 +586,7 @@ export const hypotheses = {
   co8: {
     id: 'co8', region: 'codo', num: '⑧',
     name: 'Neuropatía Cubital (Síndrome del Túnel Cubital)',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: 'Neuropatía leve o moderada: informar sobre la neuropatía y sobre los movimientos y posturas que hay que evitar. Las tres revisiones se apoyan en el mismo y único ensayo (51 pacientes analizados de 70): con información sola, información más férula nocturna 3 meses o información más deslizamiento neural, los tres grupos mejoraron a los 6 meses sin diferencias entre ellos, y no hubo grupo sin información (Caliandro, Rinkel). Rinkel le dio bajo riesgo de sesgo; Bateman, con RoB 2, alto (pocos pacientes y muchas pérdidas), y concluye que la evidencia sobre la férula nocturna es insuficiente (certeza muy baja). Ninguna fuente fija una pauta de ejercicio.',
     dosisFuente: 'Caliandro 2025, Cochrane Database Syst Rev (4):CD006839 (revisión Cochrane, 15 ensayos) · Rinkel 2013, Clin J Pain 29(12):1087–1096 (revisión sistemática) · Bateman 2025, Hand Ther 30(3):105–112 (revisión sistemática con RoB 2 y GRADE)',
     tests: [
@@ -601,7 +601,7 @@ export const hypotheses = {
   co9: {
     id: 'co9', region: 'codo', num: '⑨',
     name: 'Neuropatía Radial en el Codo (Síndrome del Túnel Radial / del Nervio Interóseo Posterior)',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: '',
     tests: [
       { name: 'Dolor en antebrazo proximal (NO en epicóndilo lateral)', anatomia: ['nervio_radial', 'supinador'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Localización más distal que la epicondilalgia lateral. Puede coexistir con ella.', fuente: 'Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 90–91 y 100' },
@@ -614,7 +614,7 @@ export const hypotheses = {
   co10: {
     id: 'co10', region: 'codo', num: '⑩',
     name: 'Tendinopatía o Rotura del Tríceps',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: '',
     tests: [
       { name: 'Dolor con la extensión activa o resistida del codo', anatomia: ['triceps'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Reproduce el dolor posterior.', razonamiento: { detalle: 'Más frecuente en varones, lanzadores, culturistas y ciclistas de montaña; los síntomas suelen seguir a un aumento brusco de la actividad. Sin datos de precisión.' }, fuente: 'Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 84 y 103' },
@@ -626,7 +626,7 @@ export const hypotheses = {
   co11: {
     id: 'co11', region: 'codo', num: '⑪',
     name: 'Pinzamiento Posterior o Posteromedial (Sobrecarga en Extensión-Valgo)',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: '',
     tests: [
       { name: 'Dolor en la extensión terminal del codo', anatomia: ['radio_cubito', 'art_codo'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor provocado por la extensión del codo, en el deportista joven (en lanzadores, sobre todo en la fase de seguimiento o desaceleración) o en el mayor.', razonamiento: { detalle: 'Puede asociar laxitud del ligamento colateral medial en el estrés en valgo. Sin datos de precisión.' }, fuente: 'Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 85–86, 88 y 103' },
@@ -638,7 +638,7 @@ export const hypotheses = {
   co12: {
     id: 'co12', region: 'codo', num: '⑫',
     name: 'Fractura de Estrés del Olécranon',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: DOSIS_DERIVAR,
     tests: [
       { name: 'Dolor con la extensión del codo, sin traumatismo', anatomia: ['radio_cubito'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor en la extensión terminal del codo en lanzadores, típicamente sin antecedente de traumatismo.', razonamiento: { detalle: 'Sin datos de precisión.' }, fuente: 'Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 81 y 103' },
@@ -649,7 +649,7 @@ export const hypotheses = {
   co13: {
     id: 'co13', region: 'codo', num: '⑬',
     name: 'Neuropatía del Mediano en el Codo (Síndrome del Pronador / del Nervio Interóseo Anterior)',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: '',
     tests: [
       { name: 'Dolor a la palpación del pronador redondo', anatomia: ['pronador_redondo', 'nervio_mediano'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor en la cara anterior del codo y el antebrazo, con parestesias sobre todo del 1.º al 3.º dedo.', razonamiento: { detalle: 'Sin datos de precisión.' }, fuente: 'Lluch 2020, cap. 3.2 (Coombes y Bisset), p. 102' },
@@ -662,7 +662,7 @@ export const hypotheses = {
   co14: {
     id: 'co14', region: 'codo', num: '⑭',
     name: 'Pronación Dolorosa (Subluxación de la Cabeza del Radio en el Niño)',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: DOSIS_DERIVAR,
     tests: [
       { name: 'Tirón del brazo extendido en un menor de 5 años, sin caída', anatomia: ['cabeza_radio', 'art_radiocubital_proximal'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor brusco, pérdida de movimiento y angustia al intentar moverlo, sin antecedente de caída; a menudo sin hinchazón, deformidad ni hematoma. Hay que descartar una fractura o una infección.', razonamiento: { porque: 'En el menor de 5 años, un tirón brusco del brazo extendido hace pasar la cabeza del radio a través del ligamento anular y la subluxa. Por eso aparece sin caída y a menudo sin hinchazón, deformidad ni hematoma.', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 94 y 100'] }, fuente: 'Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 94 y 100' },
@@ -672,7 +672,7 @@ export const hypotheses = {
   co15: {
     id: 'co15', region: 'codo', num: '⑮',
     name: 'Codo de la Liga Infantil (Apofisitis o Avulsión del Epicóndilo Medial en el Lanzador Joven)',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: 'Identificar y tratar pronto la lesión del cartílago de crecimiento: si no, aumenta el riesgo de dolor crónico e inestabilidad, que a menudo acaban con la carrera deportiva. Ajustar con cuidado las cargas de entrenamiento para asegurar periodos adecuados de descanso y recuperación. La fuente no da una pauta de ejercicio.',
     dosisFuente: 'Lluch 2020, cap. 3.2 (Coombes y Bisset), p. 94 (capítulo de libro: opinión de los autores, sin ensayos)',
     tests: [
@@ -683,7 +683,7 @@ export const hypotheses = {
   co16: {
     id: 'co16', region: 'codo', num: '⑯',
     name: 'Enfermedad de Panner / Osteocondritis Disecante del Capítulo',
-    prom: 'QuickDASH',
+    prom: 'DASH',
     dosis: '',
     tests: [
       { name: 'Dolor lateral sordo e hinchazón de inicio insidioso entre los 7 y los 12 años', anatomia: ['humero', 'art_codo'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Empeora con la actividad y cede con el reposo (Panner). La osteocondritis disecante se presenta como un dolor lateral insidioso con antecedente de traumatismos repetidos.', razonamiento: { porque: 'Antes de los 5 años el capítulo tiene un riego abundante; después, su núcleo de osificación depende sobre todo de vasos posteriores que funcionan como arterias terminales. Según la hipótesis más aceptada, si el valgo repetido (lanzar) o la carga axial sobre la radiocapitelar (gimnasia) los dañan, aparece isquemia y se altera la osificación del capítulo: la enfermedad de Panner. Por eso afecta a niños, casi siempre varones, de unos 6 a 15 años, con dolor que empeora con la actividad y cede con el reposo.', detalle: 'Sin datos de precisión.\n\nClaessen 2015 (revisión de 23 casos clínicos, 30 pacientes): dolor en el 66 %, hinchazón en el 55 % y pérdida de extensión en el 62 % (unos 21° de media); el 43 % recordaba una contusión previa. Es una enfermedad que se cura sola, y la mayoría lo hace sin secuelas con tratamiento conservador. La osteocondritis disecante es otra entidad, del adolescente, con cuerpos libres y distinto pronóstico, y a menudo se confunde con Panner.', fuentes: ['Claessen 2015', 'Lluch 2020'], citas: ['Claessen 2015 (J Child Orthop 9(1):9–17), pp. 9–10 y 14–16', 'Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 94–95'] }, fuente: 'Lluch 2020, cap. 3.2 (Coombes y Bisset), pp. 94–95' },
