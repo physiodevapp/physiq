@@ -3169,7 +3169,19 @@ body.posquirurgico .solo-posq { display: block; }
 .cuest-f5 { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--text2); line-height: 1.5; }
 .cuest-f5 strong { color: var(--text); }
 .cuest-f5-abrir { margin-top: 8px; background: none; border: none; padding: 0; min-height: 40px; color: var(--accent); font-family: inherit; font-size: 0.8rem; cursor: pointer; }
-@media print { .cuest-btn, .cuest-f5-abrir { display: none !important; } }
+/* Enlaces «Calcular <cuestionario>» junto a la recomendación de la fase 1 y
+   al badge del PROM (4b y 5): abren la calculadora en ese cuestionario */
+.cuest-calc { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.cuest-calc-btn {
+  min-height: 40px; padding: 6px 12px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--surface2); color: var(--accent);
+  font-family: inherit; font-size: 0.8rem; font-weight: 500; line-height: 1.25; cursor: pointer; text-align: left;
+}
+.cuest-calc-btn.cuest-calc-hecho { color: var(--green); }
+@media (hover: hover) { .cuest-calc-btn:hover { border-color: var(--accent); } }
+.psico-herr + .psico-herr { margin-top: 8px; }
+.psico-herr:first-of-type { margin-top: 6px; }
+@media print { .cuest-btn, .cuest-f5-abrir, .cuest-calc { display: none !important; } }
 
   /* ─── Fase 6 «Plan de tratamiento» (opcional; plan.js) ─────────── */
   .phase-step-opcional .phase-step-num { border-style: dashed; }

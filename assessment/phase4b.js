@@ -4,7 +4,7 @@
 // ============================================================
 import { HYPOTHESES, DOSIS_DERIVAR, HIP_POSQUIRURGICA } from './data.js';
 import { state } from './state.js';
-import { saveSession, showConfirmBanner, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento } from './app.js';
+import { saveSession, showConfirmBanner, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento, enlacesCalcular } from './app.js';
 import {
   ETIQUETA_TRATADA, ETIQUETA_HIP_POSQ, ID_HIP_POSQ, esPosquirurgico, hipotesisConPosq,
   nombreHipPosq, cirugiaPayload, pautaHipPosq,
@@ -110,7 +110,7 @@ function tarjetaPosqHTML(hyp) {
         <div class="exercise-box">${esc(pautaHipPosq(cirugiaPayload(state.mecanismo, state.cirugia)))}</div>
         <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border);">
           <div style="font-size:0.72rem; color:var(--accent); font-family:'DM Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">PROM Recomendado</div>
-          <span class="prom-badge">${hyp.prom}</span>
+          <span class="prom-badge">${hyp.prom}</span>${enlacesCalcular(hyp.prom)}
         </div>
       </div>`;
 }
@@ -184,7 +184,7 @@ export function buildHypothesisCards() {
         ${testsHtml}`}
         <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border);">
           <div style="font-size:0.72rem; color:var(--accent); font-family:'DM Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">PROM Recomendado</div>
-          <span class="prom-badge">${hyp.prom}</span>
+          <span class="prom-badge">${hyp.prom}</span>${enlacesCalcular(hyp.prom)}
         </div>
       </div>`;
     container.appendChild(card);

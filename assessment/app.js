@@ -19,7 +19,7 @@ import { ramaPauta } from './lib/pauta.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
 import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
-import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios } from './lib/cuestionarios.js';
+import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
 import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, urlIA } from './ampliar-ia.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
@@ -733,7 +733,7 @@ function selectPsico(btn, value) {
 
   // Will update after region is known — show generic for now
   suggest.style.display = 'block';
-  suggest.innerHTML = TEXTO_HERRAMIENTA_PSICO;
+  suggest.innerHTML = _herramientaPsicoHTML();
 
   altoQ.style.display = value === 'Alto' ? 'block' : 'none';
   saveSession();
@@ -744,7 +744,8 @@ function selectPsico(btn, value) {
 // recomendación lumbar: su versión de España (Gusi 2011) es solo una
 // traducción. El Örebro de 21 ítems sí (Cuesta-Vargas 2014); su forma corta
 // de 10 ítems no tiene versión española. Ver docs/cuestionarios.md.
-const TEXTO_HERRAMIENTA_PSICO = 'Herramienta recomendada: <strong>Örebro (OMPSQ, 21 ítems)</strong> — validada en castellano de España para dolor musculoesquelético de cualquier región (Cuesta-Vargas 2014). Puede puntuarla en la calculadora de cuestionarios de la cabecera.';
+const TEXTO_HERRAMIENTA_PSICO = 'Herramienta recomendada: <strong>Örebro (OMPSQ, 21 ítems)</strong> — validada en castellano de España para dolor musculoesquelético de cualquier región (Cuesta-Vargas 2014).';
+const _herramientaPsicoHTML = () => TEXTO_HERRAMIENTA_PSICO + enlacesCalcular(TEXTO_HERRAMIENTA_PSICO);
 
 function updatePsicoRecomendacion() {
   const rec = document.getElementById('psicoRecomendacion');
@@ -756,7 +757,7 @@ function updatePsicoRecomendacion() {
 
   if (tools.length > 0) {
     rec.style.display = 'block';
-    rec.innerHTML = `<strong>Cuestionarios unidimensionales sugeridos:</strong><br>${tools.join('<br>')}`;
+    rec.innerHTML = `<strong>Cuestionarios unidimensionales sugeridos:</strong>${tools.map(t => `<div class="psico-herr">${t}${enlacesCalcular(t)}</div>`).join('')}`;
   } else {
     rec.style.display = 'none';
   }
@@ -1227,7 +1228,7 @@ function buildSistemicoQuestions(regionId) {
   if (state.riesgoPsico) {
     const suggest = document.getElementById('psicoToolSuggest');
     if (suggest) {
-      suggest.innerHTML = TEXTO_HERRAMIENTA_PSICO;
+      suggest.innerHTML = _herramientaPsicoHTML();
     }
   }
 
@@ -2156,7 +2157,7 @@ function _hipPosqResultadosHTML(hyp, cq) {
         ${_cabeceraHipHTML(color, '', `🏥 ${_escHTML(hyp.name)}`, ETIQUETA_HIP_POSQ.replace(/^🏥\s*/, ''), 'var(--text)')}
         <div style="margin-bottom:1rem;">
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">PROM Recomendado</div>
-          <span class="prom-badge">${hyp.prom}</span>
+          <span class="prom-badge">${hyp.prom}</span>${enlacesCalcular(hyp.prom)}
         </div>
         <div>
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent2); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🏥 Protocolo del cirujano</div>
@@ -2340,7 +2341,7 @@ function buildResults() {
         </div>
         <div style="margin-bottom:1rem;">
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">PROM Recomendado</div>
-          <span class="prom-badge">${hyp.prom}</span>
+          <span class="prom-badge">${hyp.prom}</span>${enlacesCalcular(hyp.prom)}
         </div>
         <div>
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent2); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">${tratada ? ETIQUETA_TRATADA : hyp.dosis === DOSIS_DERIVAR ? '🚑 Derivación' : hyp.dosisFuente ? '💊 Pauta de Tratamiento' : '💊 Dosis Día 1 (Baja Fricción)'}</div>
@@ -3639,9 +3640,17 @@ function cerrarCuestionarios({ desdeHistorial = false, sinHistorial = false, sin
   }
   const btn = document.getElementById('cuestBtn');
   btn?.setAttribute('aria-expanded', 'false');
-  if (!sinHistorial && !sinFoco) btn?.focus({ preventScroll: true });
-  // Si la fase 5 ya está pintada, su bloque de cuestionarios se pone al día
+  // Si se abrió desde un enlace «Calcular», el foco vuelve a ese enlace
+  const origen = _cuestOrigen;
+  _cuestOrigen = null;
+  // Si la fase 5 ya está pintada, su bloque de cuestionarios se pone al día,
+  // y los enlaces «Calcular» muestran lo que lleva hecho cada cuestionario
   _pintarCuestionariosFase5();
+  _refrescarEnlacesCalcular();
+  if (!sinHistorial && !sinFoco) {
+    const vuelta = origen && [...document.querySelectorAll(`[data-cuest-abrir="${origen}"]`)].find(b => b.offsetParent);
+    (vuelta || btn)?.focus({ preventScroll: true });
+  }
 }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape' || !document.getElementById('cuestOverlay')?.classList.contains('open')) return;
@@ -3650,6 +3659,25 @@ document.addEventListener('keydown', e => {
 });
 
 // Fase 5: los cuestionarios puntuados, con un enlace para abrir la calculadora
+// Enlaces «Calcular <cuestionario>» junto a los textos que los recomiendan
+// (fase 1, badge del PROM en 4b y 5): abren la calculadora en ese
+// cuestionario y, al cerrarla, se repintan con lo que lleva hecho.
+export function enlacesCalcular(texto) {
+  return enlacesCalcularHTML(cuestionariosEnTexto(texto, CUESTIONARIOS), CUESTIONARIOS, state.cuestionarios);
+}
+let _cuestOrigen = null;
+function _refrescarEnlacesCalcular() {
+  document.querySelectorAll('.cuest-calc[data-cuest-ids]').forEach(el => {
+    el.outerHTML = enlacesCalcularHTML(el.dataset.cuestIds.split(' '), CUESTIONARIOS, state.cuestionarios);
+  });
+}
+document.addEventListener('click', e => {
+  const btn = e.target.closest?.('[data-cuest-abrir]');
+  if (!btn) return;
+  _cuestOrigen = btn.dataset.cuestAbrir;
+  abrirCuestionarios(btn.dataset.cuestAbrir);
+});
+
 function _pintarCuestionariosFase5() {
   const caja = document.getElementById('cuestFase5');
   if (!caja) return;

@@ -216,6 +216,38 @@ export function lineaCuestionario(c) {
   return `${c.n}: ${c.v}${c.i ? ` — ${c.i}` : ''}${c.a?.length ? ` · ⚠️ ${c.a.join(' · ')}` : ''}`;
 }
 
+// ── Enlaces «Calcular» ────────────────────────────────────────────────────
+// Los cuestionarios de la calculadora que nombra un texto de la app (la
+// recomendación psicosocial de la fase 1, el badge del PROM de las fases 4b y
+// 5), en el orden en que aparecen. Por siglas, como palabra entera: «KOOS» no
+// casa con «KOOS-12», ni «PHQ-2» con «PHQ-29».
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export function cuestionariosEnTexto(texto, defs) {
+  const t = String(texto || '');
+  const hallados = [];
+  for (const d of defs) {
+    for (const s of d.siglas || [d.nombre]) {
+      const m = new RegExp(`(?<![\\p{L}\\p{N}-])${escRe(s)}(?![\\p{L}\\p{N}-])`, 'u').exec(t);
+      if (m) { hallados.push({ id: d.id, pos: m.index }); break; }
+    }
+  }
+  return hallados.sort((a, b) => a.pos - b.pos).map(h => h.id);
+}
+
+// Un botón por cuestionario: «Calcular PHQ-9», o lo que lleva hecho
+// («PHQ-9 · 3 de 9», «PHQ-9 · 12/27 ✓»). Abre la calculadora en ese
+// cuestionario (data-cuest-abrir). '' si el texto no nombra ninguno.
+export function enlacesCalcularHTML(ids, defs, estado = {}) {
+  const botones = ids.map(id => defs.find(d => d.id === id)).filter(Boolean).map(def => {
+    const p = puntuar(def, estado[def.id]?.r || {});
+    const txt = !p.contestados ? `Calcular ${def.nombre}`
+      : !p.completo ? `${def.nombre} · ${p.contestados} de ${def.items.length}`
+        : `${def.nombre} · ${totalTexto(def, p) || 'completo'} ✓`;
+    return `<button type="button" class="cuest-calc-btn${p.completo ? ' cuest-calc-hecho' : ''}" data-cuest-abrir="${esc(def.id)}">${esc(txt)}</button>`;
+  });
+  return botones.length ? `<span class="cuest-calc" data-cuest-ids="${esc(ids.join(' '))}">${botones.join('')}</span>` : '';
+}
+
 // ── HTML ──────────────────────────────────────────────────────────────────
 
 function estadoTexto(def, respuestas) {

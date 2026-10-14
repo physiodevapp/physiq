@@ -18,7 +18,8 @@
 //
 // Esquema de un cuestionario:
 //   { id, nombre, titulo, grupo (id de GRUPOS_CUESTIONARIO), validacionEs, instrucciones?,
-//     leyenda?, escala?: { min, max } (por defecto de los ítems `escala`),
+//     siglas? (cómo lo nombran los textos de la app, para el enlace «Calcular»;
+//       por defecto, `nombre`), leyenda?, escala?: { min, max } (por defecto de los ítems `escala`),
 //     items: [{ n, t, tipo?, min?, max?, invertir?, peso?, opciones?, porMarca?,
 //               anclas?: [izq, dcha], seccion?, etiquetaN? }],
 //     total?: 'suma' | 'media' | null, rango?: [min, max],
@@ -198,6 +199,7 @@ export const CUESTIONARIOS = [
     id: 'orebro',
     validacionEs: 'Cuesta-Vargas 2014 (Health Qual Life Outcomes 12:157)',
     nombre: 'Örebro (OMPSQ)',
+    siglas: ['Örebro', 'OMPSQ'],
     titulo: 'Riesgo de dolor persistente y discapacidad laboral (21 ítems puntuables)',
     grupo: 'riesgo',
     instrucciones: 'Puntúan los ítems 5 a 25 de la hoja (los 1–4 son datos personales). Los marcados «puntúa al revés» suman 10 − el valor marcado.',
@@ -468,6 +470,7 @@ export const CUESTIONARIOS = [
   {
     id: 'odi',
     nombre: 'Oswestry (ODI)',
+    siglas: ['ODI', 'Oswestry'],
     titulo: 'Discapacidad por dolor lumbar (versión 1.0)',
     grupo: 'columna',
     validacionEs: 'Flórez 1995 y Alcántara-Bumbiedro 2006 (Rehabilitación (Madr) 40(3):150–158)',
@@ -491,6 +494,7 @@ export const CUESTIONARIOS = [
   {
     id: 'rmdq',
     nombre: 'Roland-Morris',
+    siglas: ['RMDQ', 'Roland-Morris'],
     titulo: 'Incapacidad por dolor lumbar (24 frases)',
     grupo: 'columna',
     validacionEs: 'Kovacs 2002 (Spine 27(5):538–542)',
