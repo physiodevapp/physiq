@@ -7,6 +7,19 @@
 // ============================================================
 import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
+// ── Fase 3 · ZONAS_SINTOMA.cervical — zonas del mapa corporal para P1–P4
+// (docs/sintomas-multiples.md). Tabla aceptada por el usuario (2026-10),
+// pendiente de probarla en consulta; `id` estable: se guarda en la sesión.
+export const zonas = [
+  { id: 'cuello',         nombre: 'Cuello' },
+  { id: 'cabeza',         nombre: 'Cabeza' },
+  { id: 'trapecio',       nombre: 'Trapecio o escápula' },
+  { id: 'hombro',         nombre: 'Hombro' },
+  { id: 'brazo',          nombre: 'Brazo' },
+  { id: 'antebrazo_mano', nombre: 'Antebrazo y mano' },
+  { id: 'dorsal',         nombre: 'Zona dorsal' },
+];
+
 // ── Fase 2 · SYSTEMIC_SCREENING.cervical
 export const screening = {
   label: 'Cabeza, Cuello y Espalda',
