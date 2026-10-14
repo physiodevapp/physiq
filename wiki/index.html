@@ -611,17 +611,20 @@
   td.tm-contorno.tm-ini { box-shadow: inset 0 2px var(--tm-c), inset 0 -2px var(--tm-c), inset 2px 0 var(--tm-c); }
   td.tm-contorno.tm-fin { box-shadow: inset 0 2px var(--tm-c), inset 0 -2px var(--tm-c), inset -2px 0 var(--tm-c); }
   td.tm-contorno.tm-ini.tm-fin { box-shadow: inset 0 0 0 2px var(--tm-c); }
-  /* punteado = biología de la reparación; tenue = sin especificar (solo bordes discontinuos) */
+  /* punteado = biología de la reparación */
   td.tm-punteado { background-image: radial-gradient(var(--bg, #0a0e14) 1.3px, transparent 1.6px); background-size: 6px 6px; }
   td.tm-degradado { background-image: linear-gradient(90deg, transparent 0%, rgba(10,14,20,0.6) 100%); }
-  td.tm-tenue { background: repeating-linear-gradient(90deg, var(--tm-c) 0 4px, transparent 4px 7px) top / 100% 2px no-repeat, repeating-linear-gradient(90deg, var(--tm-c) 0 4px, transparent 4px 7px) bottom / 100% 2px no-repeat; background-color: rgba(255,255,255,0.05); }
   .ts-ley-mide { background-color: rgba(255,255,255,0.45); --tm-c: rgba(255,255,255,0.6); }
   .ts-ley-mide.tm-rayado { background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--bg, #0a0e14) 4px 6px); }
   .ts-ley-mide.tm-contorno { background: none; box-shadow: inset 0 0 0 2px var(--tm-c); }
   .ts-ley-mide.tm-punteado { background-image: radial-gradient(var(--bg, #0a0e14) 1.3px, transparent 1.6px); background-size: 6px 6px; }
   .ts-ley-mide.tm-degradado { background-image: linear-gradient(90deg, transparent 0%, var(--bg, #0a0e14) 100%); }
-  .ts-ley-mide.tm-tenue { background: none; border: 1.5px dashed var(--tm-c); box-sizing: border-box; background-color: rgba(255,255,255,0.08); }
   .ts-leyenda-mide { margin-top: 8px; }
+  /* Fila sin barra (madre de subtipos sin plazo general) */
+  .tissue-mobile .ts-sin-barra-movil { font-family: 'Outfit', sans-serif; font-size: 11px; color: var(--text2); text-align: left; white-space: normal; padding: 4px 8px; height: auto; }
+  .ts-nota-movil { color: var(--text3); font-size: 10px; }
+  /* La tabla de móvil puede ser más ancha que la pantalla: el texto se ajusta a lo visible y se queda a la izquierda */
+  .ts-sin-barra-txt { position: sticky; left: 8px; max-width: calc(100vw - 56px); white-space: normal; }
   /* Tarjeta de una barra (abrirInfoBarra, app.js): fija, junto a la barra tocada */
   #view-tissue td[data-barra] { cursor: pointer; }
   #view-tissue td.ts-barra-activa { outline: 2px solid var(--text); outline-offset: -2px; }
@@ -638,7 +641,6 @@
   .ts-info-muestra.tm-contorno { background: none; box-shadow: inset 0 0 0 2px var(--tm-c); }
   .ts-info-muestra.tm-punteado { background-image: radial-gradient(var(--surface2) 1.3px, transparent 1.6px); background-size: 6px 6px; }
   .ts-info-muestra.tm-degradado { background-image: linear-gradient(90deg, transparent 0%, var(--surface2) 100%); }
-  .ts-info-muestra.tm-tenue { background: none; border: 1.5px dashed var(--tm-c); box-sizing: border-box; }
   .ts-info-nota { margin: 8px 0 0; font-size: 12px; line-height: 1.4; color: var(--text2); }
   .ts-ley-titulo { opacity: 0.7; }
   .ts-marca { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 6px; font-size: 0.62rem; line-height: 1.5; opacity: 0.75; border: 1px dashed currentColor; white-space: nowrap; vertical-align: 1px; }
@@ -1025,8 +1027,8 @@
   </div>
 </div>
 
-<script src="data.js?v=1746047685422ceec86ab364f87e572f49e40e71"></script>
-<script src="app.js?v=1746047685422ceec86ab364f87e572f49e40e71"></script>
+<script src="data.js?v=49b8d4a9d69ec58dd0cd095bf09089659b9e3a1a"></script>
+<script src="app.js?v=49b8d4a9d69ec58dd0cd095bf09089659b9e3a1a"></script>
 
 </body>
 </html>

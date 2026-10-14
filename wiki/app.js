@@ -441,11 +441,17 @@ function renderTissue() {
       for (const f of [madre, ...(madre.subtipos || []).map(st => ({ ...st, g: st.g || madre.g, sub: true }))]) {
         // Índice de la barra para su tarjeta (abrirInfoBarra): las celdas de color lo llevan en data-barra
         const ib = TS_BARRAS.push({ f, madre: f.sub ? madre : null }) - 1;
-        // Qué mide la barra: relleno (tm-liso / -rayado / -contorno / -punteado / -tenue) y, si la medida lleva
+        // Qué mide la barra: relleno (tm-liso / -rayado / -contorno / -punteado) y, si la medida lleva
         // `marca`, una etiqueta tras el nombre (ver «Qué mide la barra» en la leyenda)
         const m = T.medidas[f.mide] || {};
         const rel = m.relleno ? ` tm-${m.relleno}` : '';
         const marca = m.marca ? ` <span class="ts-marca">${m.marca}</span>` : '';
+        // Fila sin barra (sin `desde`): nombre y nota; en móvil, una fila con el nombre a todo el ancho
+        if (!Number.isInteger(f.desde)) {
+          desk += `<tr class="ts-sin-barra${f.sub ? ' ts-sub' : ''}"><td class="ts-label">${f.nombre}${f.nota ? `<span class="ts-nota">${f.nota}</span>` : ''}</td>${'<td></td>'.repeat(n)}</tr>`;
+          mob += `<tr class="ts-sin-barra"><td class="ts-sin-barra-movil" colspan="${n}"><div class="ts-sin-barra-txt">${f.nombre}${f.nota ? ` · <span class="ts-nota-movil">${f.nota}</span>` : ''}</div></td></tr>`;
+          continue;
+        }
         const celdas = Array.from({ length: n }, (_, i) => `<td${i >= f.desde && i <= f.hasta ? ` class="tg-${f.g}${rel}${i === f.desde ? ' tm-ini' : ''}${i === f.hasta ? ' tm-fin' : ''}" data-barra="${ib}"` : ''}></td>`).join('');
         desk += `<tr${f.sub ? ' class="ts-sub"' : ''}><td class="ts-label">${f.nombre}${marca}${pend(f)}${f.nota ? `<span class="ts-nota">${f.nota}</span>` : ''}</td>${celdas}</tr>`;
         const ancho = f.hasta - f.desde + 1;

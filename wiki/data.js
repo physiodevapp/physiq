@@ -784,23 +784,25 @@ const SEARCH_QUERY_OVERRIDES = {
 // (inclusive) de `cols`; `g` = gravedad (color, .tg-<g>); `corto` = nombre dentro de la barra en
 // móvil; `pendiente` = el rango no sale de ninguna fuente leída; `subtipos` = filas
 // hijas (misma forma, sin `g`: la de la fila madre), pintadas debajo con sangría.
+// Fila sin `desde`/`hasta`/`mide`: sin barra, solo madre de sus subtipos, con una nota «Sin barra
+// general: …». Las cifras genéricas de la tabla original (Snyder-Mackler 2012, que nunca se pudo
+// leer) ya no se pintan (2026-10).
 const TISSUE_TIMES = {
   cols: ['1–3<br>días', '4–14<br>días', '3–4<br>sem.', '5–8<br>sem.', '2–3<br>meses', '3–6<br>meses', '6m–<br>1 año', '2<br>años'],
   // Qué mide cada barra (mismo campo `mide` que physiq-assessment): relleno liso, rayado o contorno;
-  // cada medida tiene su relleno (liso, rayado, contorno, punteado, tenue).
+  // cada medida tiene su relleno (liso, rayado, contorno, punteado, degradado).
   medidas: {
     deporte: { etiqueta: 'Vuelta al deporte o a la función', relleno: 'liso' },
     proteccion: { etiqueta: 'Protección (inmovilización o descarga)', relleno: 'rayado' },
     programa: { etiqueta: 'Duración del programa de tratamiento', relleno: 'contorno' },
     biologia: { etiqueta: 'Biología de la reparación', relleno: 'punteado' },
-    sinEspecificar: { etiqueta: 'Sin especificar en la fuente', relleno: 'tenue' },
     evolucion: { etiqueta: 'Evolución natural (hasta que se resuelve)', relleno: 'degradado' },
   },
   gravedades: { minima: 'Mínima', leve: 'Leve', moderada: 'Moderada', grave: 'Grave / reconstrucción' },
   grupos: [
     { tejido: 'Tendón', filas: [
-      { mide: 'sinEspecificar', nombre: 'Tendinopatía', corto: 'Tendinopatía', desde: 2, hasta: 5, g: 'moderada',
-        nota: 'No es un plazo de cicatrización: orienta el tiempo de adaptación a la carga.',
+      { nombre: 'Tendinopatía', corto: 'Tendinopatía', g: 'moderada',
+        nota: 'Sin barra general: no hay un plazo de cicatrización, sino la duración del programa de carga, que depende del tendón. Ver los subtipos.',
         subtipos: [
           { mide: 'programa', nombre: 'Rotuliana', corto: 'Rotuliana', desde: 4, hasta: 4,
             nota: 'Ejercicio de resistencia progresivo de cuádriceps durante al menos 12 semanas (de preferencia, pesado y lento); si a las 12 semanas no hay cambio clínicamente relevante, valorar una cinta infrarrotuliana. Certeza GRADE muy baja. (Ophey 2025)' },
@@ -830,11 +832,11 @@ const TISSUE_TIMES = {
             nota: 'Movilidad activa desde la 6.ª semana, fuerza progresiva desde la 12.ª y fortalecimiento avanzado de la 20.ª a la 26.ª, solo para trabajo pesado o deporte por encima de la cabeza. Trabajo específico de deporte o trabajo hacia los 4–5 meses; el tendón no se acerca a su resistencia normal hasta los 6 meses como pronto. Consenso de expertos, nivel V (Thigpen 2016).' },
         ] },
     ] },
-    { tejido: 'Músculo', filas: [
-      { mide: 'sinEspecificar', nombre: 'Dolor muscular tardío (DOMS)', corto: 'DOMS', desde: 0, hasta: 0, g: 'minima' },
-      { mide: 'sinEspecificar', nombre: 'Rotura G. I', corto: 'Rotura G. I', desde: 1, hasta: 2, g: 'leve' },
-      { mide: 'sinEspecificar', nombre: 'Rotura G. II', corto: 'Rotura G. II', desde: 2, hasta: 3, g: 'moderada' },
-      { mide: 'sinEspecificar', nombre: 'Rotura G. III', corto: 'Rotura G. III', desde: 2, hasta: 4, g: 'grave' },
+    { tejido: 'Músculo',
+      nota: 'Sin barra general por grados I–III: el plazo depende del músculo, de la zona de la lesión y del deporte. Ver las filas de cada músculo.',
+      filas: [
+      { mide: 'evolucion', nombre: 'Dolor muscular tardío (DOMS)', corto: 'DOMS', desde: 0, hasta: 1, g: 'minima',
+        nota: 'Aparece horas después de un ejercicio intenso o no habitual (sobre todo excéntrico), es máximo a los 1–3 días y puede durar varios días más (Wilke y Behringer 2021).' },
       { mide: 'deporte', nombre: 'Isquiotibiales (clasificación BAMIC)', corto: 'Isquios BAMIC', desde: 1, hasta: 4, g: 'moderada',
         nota: 'Días hasta volver al entrenamiento completo según el grado de la RM (0–4) y la localización: «a» miofascial, «b» unión miotendinosa, «c» dentro del tendón. Medias de atletas de élite con RM en la primera semana: en otros deportes y niveles los plazos pueden ser distintos.',
         subtipos: [
@@ -873,19 +875,22 @@ const TISSUE_TIMES = {
         nota: 'Vuelta al juego a los 14–20 días de media en futbolistas profesionales; la osteítis de pubis suma unas 5 semanas. Recaen 1 de cada 5. (Forsythe 2025)' },
     ] },
     { tejido: 'Ligamento', filas: [
-      { mide: 'sinEspecificar', nombre: 'Esguince G. I', corto: 'Esguince G. I', desde: 1, hasta: 2, g: 'leve',
+      { nombre: 'Esguince G. I', corto: 'Esguince G. I', g: 'leve',
+        nota: 'Sin barra general: el plazo depende de la articulación. Ver los subtipos.',
         subtipos: [
           { mide: 'deporte', nombre: 'Tobillo, ligamento lateral', corto: 'Tobillo', desde: 1, hasta: 1,
             nota: '1–2 semanas con movilización precoz y rehabilitación funcional (Bergman 2025).' },
           { mide: 'deporte', nombre: 'Rodilla, ligamento colateral medial', corto: 'Rodilla LCM', desde: 1, hasta: 1,
             nota: 'Vuelta al deporte en 10–14 días con tratamiento conservador (Naqvi y Sherman 2023). Los grados II y III no tienen plazo en la fuente: se decide por criterios.' },
         ] },
-      { mide: 'sinEspecificar', nombre: 'Esguince G. II', corto: 'Esguince G. II', desde: 2, hasta: 4, g: 'moderada',
+      { nombre: 'Esguince G. II', corto: 'Esguince G. II', g: 'moderada',
+        nota: 'Sin barra general: el plazo depende de la articulación. Ver los subtipos.',
         subtipos: [
           { mide: 'deporte', nombre: 'Tobillo, ligamento lateral', corto: 'Tobillo', desde: 2, hasta: 3,
             nota: '3–6 semanas (Bergman 2025). Vuurberg 2018 junta la rotura parcial y la total: vuelta completa al trabajo y al deporte a las 6–8 semanas, según la tarea.' },
         ] },
-      { mide: 'sinEspecificar', nombre: 'Esguince G. III', corto: 'Esguince G. III', desde: 3, hasta: 5, g: 'grave',
+      { nombre: 'Esguince G. III', corto: 'Esguince G. III', g: 'grave',
+        nota: 'Sin barra general: el plazo depende de la articulación. Ver los subtipos.',
         subtipos: [
           { mide: 'deporte', nombre: 'Tobillo, ligamento lateral', corto: 'Tobillo', desde: 3, hasta: 4,
             nota: '6–12 semanas o más; a veces cirugía por inestabilidad persistente (Bergman 2025). Un 5–33 % sigue con dolor al año (Martin 2021).' },
@@ -894,7 +899,8 @@ const TISSUE_TIMES = {
           { mide: 'programa', nombre: 'Rodilla, LCA sin cirugía', corto: 'LCA sin cirugía', desde: 2, hasta: 4,
             nota: 'No es un plazo de cicatrización: tras la fase aguda, 12 semanas de fisioterapia supervisada (Evans 2023). Baja demanda, sin giros ni saltos, roturas parciales.' },
         ] },
-      { mide: 'sinEspecificar', nombre: 'Injerto (reconstrucción)', corto: 'Injerto', desde: 4, hasta: 6, g: 'grave',
+      { nombre: 'Injerto (reconstrucción)', corto: 'Injerto', g: 'grave',
+        nota: 'Sin barra general: el plazo depende del ligamento reconstruido y del protocolo del cirujano. Ver los subtipos.',
         subtipos: [
           { mide: 'deporte', nombre: 'Rodilla, LCA reconstruido', corto: 'LCA reconstruido', desde: 6, hasta: 7,
             nota: 'Vuelta a la actividad o al deporte a los 6–12 meses de media; el injerto puede tardar 18 meses o más en incorporarse (Evans 2023). La guía JOSPT no fija plazos: decide por criterios (Logerstedt 2017).' },
@@ -947,7 +953,8 @@ const TISSUE_TIMES = {
         nota: 'Vuelta al trabajo hacia los 2 meses (mediana de 61 días en el mismo ensayo). A un trabajo físico exigente (militares), a las 16,5 semanas. A los 2 años, la misma tasa de empleo que con prótesis. Manda el protocolo del cirujano. (Health Quality Ontario 2019 · Tumialán 2010)' },
     ] },
     { tejido: 'Hueso', filas: [
-      { mide: 'sinEspecificar', nombre: 'Fractura', corto: 'Fractura', desde: 2, hasta: 5, g: 'moderada',
+      { nombre: 'Fractura', corto: 'Fractura', g: 'moderada',
+        nota: 'Sin barra general: el plazo depende del hueso, del tipo de fractura y del tratamiento. Ver los subtipos.',
         subtipos: [
           { mide: 'deporte', nombre: 'Tobillo, estable sin cirugía', corto: 'Tobillo', desde: 3, hasta: 3,
             nota: 'Vuelta a la función previa hacia las 6–8 semanas, con carga progresiva según tolerancia. (Hermena y Slane 2025)' },
@@ -1033,7 +1040,7 @@ const TISSUE_TIMES = {
     'Paciente posquirúrgico: manda el protocolo del cirujano.',
   ],
   fuentes: [
-    'Filas: adaptado de Snyder-Mackler et al., «Developing Treatment Pathways», 2012 (probablemente cap. 3 de Andrews, Harrelson y Wilk, Physical Rehabilitation of the Injured Athlete, 4.ª ed., Elsevier, 2012; sin verificar).',
+    'Dolor muscular tardío: Wilke y Behringer, «Is “Delayed Onset Muscle Soreness” a False Friend?», Int J Mol Sci 2021;22(17):9482.',
     'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023).',
     'Rotura de tendón: Wu, Nerlich y Docheva, «Tendon injuries: basic science and new repair proposals», EFORT Open Rev 2017;2(7):332.',
     'Esguince lateral de tobillo: Bergman, Li y Shuman, «Acute Ankle Sprain», StatPearls (act. 2025); Vuurberg et al., Br J Sports Med 2018;52:956 (guía); Martin et al., J Orthop Sports Phys Ther 2021;51(4):CPG1–CPG80 (guía JOSPT).',
