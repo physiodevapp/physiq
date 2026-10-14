@@ -17,7 +17,7 @@ export const APP_ID = 'physiq-assessment';
 export const TIPO = 'valoracion';
 export const VERSION = 1;
 
-const FASES = [1, 2, 3, 4, '4b', 5];
+const FASES = [1, 2, 3, 4, '4b', 5, 6];
 
 // → objeto listo para JSON.stringify
 export function exportarValoracion(state, ahora = new Date()) {

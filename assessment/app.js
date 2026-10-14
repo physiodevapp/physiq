@@ -74,6 +74,15 @@ _sessionCh.onmessage = ({ data }) => {
   });
 };
 
+// Orden de las fases, de PHASE_DEFS (una sola fuente): 1 2 3 4 4b 5 6. La 6
+// («Plan de tratamiento») es opcional: la valoración termina en la 5.
+const _FASES = PHASE_DEFS.map(d => d.n);
+const _NAV_IDS = _FASES.map(n => PHASE_NAV_IDS[n]);
+const _idxFase = n => _FASES.findIndex(f => String(f) === String(n));
+// Lo que se anuncia a physiq-report como fase alcanzada: como mucho la 5, que
+// es donde termina la valoración (la 6 es un plan, no parte de ella).
+const _faseAnunciada = () => _FASES[Math.min(state.maxVisitedIdx, _idxFase(5))];
+
 window.addEventListener('popstate', e => {
   // Sheets del razonamiento (fase 2) y de compartir (fase 5), en móvil: el
   // atrás los cierra sin cambiar de fase, y nuestro propio history.back() al
@@ -93,9 +102,8 @@ window.addEventListener('popstate', e => {
   }
   if (!e.state || e.state.phase === undefined) return;
   // Swipe-back nativo: sincronizar _historyDepth con la posición real del stack
-  const _pm = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
-  const naturalIdx = _pm[e.state.phase];
-  if (naturalIdx !== undefined) _historyDepth = naturalIdx;
+  const naturalIdx = _idxFase(e.state.phase);
+  if (naturalIdx >= 0) _historyDepth = naturalIdx;
   _handlingPopState = true;
   goToPhase(e.state.phase);
   _handlingPopState = false;
@@ -104,10 +112,8 @@ window.addEventListener('popstate', e => {
 
 // ─── NAVIGATION ──────────────────────────────────────────────
 function navStepClick(n) {
-  const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
-  const navIds = ['nav1','nav2','nav3','nav4','nav4b','nav5'];
-  const idx = phaseMap[n];
-  const navEl = document.getElementById(navIds[idx]);
+  const idx = _idxFase(n);
+  const navEl = document.getElementById(_NAV_IDS[idx]);
   if (!navEl) return;
   // Bloqueado si no fue visitado
   if (!navEl.classList.contains('completed') && !navEl.classList.contains('active')) return;
@@ -150,9 +156,7 @@ function showNavTooltip(el, msg) {
 }
 
 function goToPhase(n) {
-  const phases = ['phase1','phase2','phase3','phase4','phase4b','phase5'];
-  const navIds = ['nav1','nav2','nav3','nav4','nav4b','nav5'];
-  const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
+  const phases = _FASES.map(f => `phase${f}`);
 
   // El panel del razonamiento es de la fase en la que se abrió (2 o 4b)
   if (String(n) !== String(state.currentPhase)) cerrarRazonamiento({ sinHistorial: true });
@@ -161,8 +165,8 @@ function goToPhase(n) {
   if (state.currentPhase === 1) collectPhase1();
   if (state.currentPhase === 3) collectPhase3();
 
-  const idx = phaseMap[n];
-  const prevIdx = phaseMap[state.currentPhase] ?? 0;
+  const idx = _idxFase(n);
+  const prevIdx = Math.max(0, _idxFase(state.currentPhase));
 
   // Actualizar índice máximo visitado
   if (idx > state.maxVisitedIdx) state.maxVisitedIdx = idx;
@@ -190,9 +194,9 @@ function goToPhase(n) {
   _programarBandas();
 
   // Update progress
-  const pct = [0, 20, 40, 60, 80, 100];
+  const pct = [0, 20, 40, 60, 80, 100, 100];
   document.getElementById('progressBar').style.width = pct[idx] + '%';
-  document.getElementById('phaseIndicator').textContent = `FASE ${n === '4b' ? '4b' : n} / 5`;
+  document.getElementById('phaseIndicator').textContent = n === 6 ? 'FASE 6 · OPCIONAL' : `FASE ${n === '4b' ? '4b' : n} / 5`;
 
   // Phase-specific init
   if (n === 1) renderBrevePendientes();
@@ -205,15 +209,15 @@ function goToPhase(n) {
     }
     // Observer is restored via restoreHypObserver called above
   }
+  if (n === 6) _montarPlan();
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (!_handlingPopState) {
-    const _phaseOrder = [1, 2, 3, 4, '4b', 5];
     if (idx > prevIdx) {
       // Push one entry per skipped phase so swipe-back steps through each one
       for (let i = prevIdx + 1; i <= idx; i++) {
-        history.pushState({ phase: _phaseOrder[i] }, '');
+        history.pushState({ phase: _FASES[i] }, '');
       }
       _historyDepth += (idx - prevIdx);
     } else if (idx < prevIdx) {
@@ -229,22 +233,20 @@ function goToPhase(n) {
       }
     }
   }
-  const _phaseLabels = [1, 2, 3, 4, '4b', 5];
-  _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
+  _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _faseAnunciada(), region: state.region || null });
   saveSession();
 }
 
 // Pinta el estado de cada paso del nav según maxVisitedIdx y flags de invalidación
 function paintNav(activeIdx) {
-  const navIds = ['nav1','nav2','nav3','nav4','nav4b','nav5'];
   // Índices que quedan invalidados según los flags activos
-  // regionChanged → invalida 4(idx3), 4b(idx4), 5(idx5)
-  // treeModified  → invalida 4b(idx4), 5(idx5)
+  // regionChanged → invalida 4(idx3), 4b(idx4), 5(idx5) y 6(idx6)
+  // treeModified  → invalida 4b(idx4), 5(idx5) y 6(idx6)
   const invalidated = new Set();
-  if (state.regionChanged) { invalidated.add(3); invalidated.add(4); invalidated.add(5); }
-  if (state.treeModified)  { invalidated.add(4); invalidated.add(5); }
+  if (state.regionChanged) { invalidated.add(3); invalidated.add(4); invalidated.add(5); invalidated.add(6); }
+  if (state.treeModified)  { invalidated.add(4); invalidated.add(5); invalidated.add(6); }
 
-  navIds.forEach((navId, i) => {
+  _NAV_IDS.forEach((navId, i) => {
     const el = document.getElementById(navId);
     el.classList.remove('active', 'completed', 'invalidated');
 
@@ -294,6 +296,7 @@ function _softResetApp() {
   state.derivacionResuelta = {};
   state.resultsBuilt = false;
   state.planNotes = { variableControl: '', ventanaRecuperacion: '', anclajeHabito: '' };
+  state.planTratamiento = null;
   state.formularioPrevio = { comun: {}, regiones: {} };
   precargarFormularioPrevio();   // refresca contadores y desplegables abiertos
   // Informe narrativo: cancela una generación en curso. El audio de la sesión
@@ -452,6 +455,20 @@ function _montarInformeIA() {
   _cargarInformeIA()
     .then(m => m.montarInformeIA(document.getElementById('informeIA')))
     .catch(() => {});
+}
+// Fase 6 «Plan de tratamiento» (plan.js): se carga al entrar en la fase. Si no
+// carga, la valoración (fases 1–5) sigue funcionando.
+let _planMod = null;
+function _cargarPlan() {
+  return import('./plan.js').then(m => { _planMod = m; return m; });
+}
+function _montarPlan() {
+  _cargarPlan()
+    .then(m => m.montarPlan(document.getElementById('planContenido')))
+    .catch(() => {
+      const c = document.getElementById('planContenido');
+      if (c) c.innerHTML = '<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>No se ha podido cargar el plan de tratamiento. Recarga la página.</div></div>';
+    });
 }
 function informeFormularioPrevio() {
   return _fpMod ? _fpMod.informeFormularioPrevio() : { historia: [], antecedentes: [] };
@@ -3045,6 +3062,12 @@ let _compartirHistorial = false;
 async function abrirMenuCompartir() {
   const overlay = document.getElementById('compartirOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
+  // Fase 6: el menú ofrece los documentos del plan (plan.js)
+  if (state.currentPhase === 6) {
+    if (!_planMod) return;
+    document.getElementById('compartirOpciones').innerHTML = _planMod.opcionesCompartir().map(o => _opcionCompartir(o.accion, o.nombre, o.sub)).join('');
+    return _abrirOverlayCompartir('btnCompartirPlan');
+  }
   const conIA = !_enHub() && !!state.informeIA?.texto;
   // Puntos automáticos + «Antes de compartir», y cuántos siguen sin marcar
   let rev = { total: 0, pendientes: 0, altosPendientes: 0 };
@@ -3057,8 +3080,15 @@ async function abrirMenuCompartir() {
     + (conIA ? _opcionCompartir('compartirInformeIA', 'Informe clínico (IA)', detalleIA) : '')
     + _opcionCompartir('compartirNotas', 'Notas clínicas', 'Resumen abreviado para ti, con puntuaciones')
     + (_enHub() ? _opcionCompartir('finalizarValoracion', 'Enviar al informe', 'Deja la valoración lista en physiq-report') : '');
+  _abrirOverlayCompartir('btnCompartir');
+}
+
+let _btnCompartirActivo = 'btnCompartir';
+function _abrirOverlayCompartir(btnId) {
+  const overlay = document.getElementById('compartirOverlay');
+  _btnCompartirActivo = btnId;
   overlay.classList.add('open');
-  document.getElementById('btnCompartir')?.setAttribute('aria-expanded', 'true');
+  document.getElementById(btnId)?.setAttribute('aria-expanded', 'true');
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
   if (_esMovil()) {
@@ -3082,7 +3112,7 @@ function cerrarMenuCompartir({ desdeHistorial = false, sinHistorial = false } = 
     _compartirHistorial = false;
     if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
   }
-  const btn = document.getElementById('btnCompartir');
+  const btn = document.getElementById(_btnCompartirActivo);
   btn?.setAttribute('aria-expanded', 'false');
   if (!sinHistorial) btn?.focus({ preventScroll: true });
 }
@@ -3451,11 +3481,11 @@ function saveSession() {
         if (_sessionGen !== gen) { clearSession(); return; }
         if (session) updateSessionChip(session);
         _sessionCh.postMessage({ type: 'SESSION_PATIENT', patient: state.patient });
-        if (state.currentPhase !== 5) {
+        // En la 5 y en la 6 la valoración ya está completa: no se anuncia como parcial
+        if (state.currentPhase !== 5 && state.currentPhase !== 6) {
           const _hasPhase1Data = state.motivoConsulta || state.edadPaciente !== null || _hasVitalsData() || state.mecanismo || state.cronologia || state.riesgoPsico;
           if (state.maxVisitedIdx > 0 || _hasPhase1Data) {
-            const _phaseLabels = [1, 2, 3, 4, '4b', 5];
-            _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _phaseLabels[state.maxVisitedIdx], region: state.region || null });
+            _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_PARTIAL', phase: _faseAnunciada(), region: state.region || null });
           }
         }
         _sessionCh.postMessage({ type: 'SESSION_ASSESSMENT_STATE', assessmentState: { ...state } });
@@ -3570,8 +3600,7 @@ function _applyRemoteAssessmentState(as) {
   // Preserve local device's navigation — each device navigates independently
   const localPhase = state.currentPhase;
   const localMaxIdx = state.maxVisitedIdx;
-  const phaseMap = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
-  const localIdx = phaseMap[localPhase] ?? 0;
+  const localIdx = Math.max(0, _idxFase(localPhase));
 
   Object.assign(state, as);
   state.currentPhase = localPhase;
@@ -3599,7 +3628,8 @@ function _applyRemoteAssessmentState(as) {
     }
     if (typeof restoreHypObserver === 'function') setTimeout(restoreHypObserver, 50);
   }
-  if (localPhase === 5) buildResults();
+  if (localPhase === 5 || localPhase === 6) buildResults();
+  if (localPhase === 6) _montarPlan();
 
   // Update nav breadcrumbs to reflect combined maxVisitedIdx
   paintNav(localIdx);
@@ -3668,16 +3698,14 @@ document.addEventListener('DOMContentLoaded', () => {
       Object.assign(state, session.assessmentState);
       _restoreSessionDOM();
       const targetPhase = state.currentPhase;
-      if (targetPhase === 5) buildResults();
+      if (targetPhase === 5 || targetPhase === 6) buildResults();
       _handlingPopState = true;
       goToPhase(targetPhase);
       _handlingPopState = false;
       // Rebuild history stack so swipe-back steps through each phase
-      const _phaseOrder = [1, 2, 3, 4, '4b', 5];
-      const _phaseIdx = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
-      const targetIdx = _phaseIdx[targetPhase] ?? 0;
+      const targetIdx = Math.max(0, _idxFase(targetPhase));
       history.replaceState({ phase: 1 }, '');
-      for (let i = 1; i <= targetIdx; i++) history.pushState({ phase: _phaseOrder[i] }, '');
+      for (let i = 1; i <= targetIdx; i++) history.pushState({ phase: _FASES[i] }, '');
       _historyDepth = targetIdx;
     } else {
       const patientEl = document.getElementById('patientName');
@@ -3790,11 +3818,9 @@ function _initHubIntegration() {
     }
     if (e.data?.type !== 'PHYSIQ_SAT_VISIBLE') return;
     if (_pendingBackNav) return;
-    const _phaseOrder = [1, 2, 3, 4, '4b', 5];
-    const _phaseIdx = { 1:0, 2:1, 3:2, 4:3, '4b':4, 5:5 };
-    const targetIdx = _phaseIdx[state.currentPhase] ?? 0;
+    const targetIdx = Math.max(0, _idxFase(state.currentPhase));
     history.replaceState({ phase: 1 }, '');
-    for (let i = 1; i <= targetIdx; i++) history.pushState({ phase: _phaseOrder[i] }, '');
+    for (let i = 1; i <= targetIdx; i++) history.pushState({ phase: _FASES[i] }, '');
     _historyDepth = targetIdx;
   });
 }
@@ -3805,7 +3831,7 @@ initAmpliarIA();
 // ─── PUBLIC API ──────────────────────────────────────────────
 // Named exports for phase4.js / phase4b.js (which import these directly) and
 // for tests/unit.js.
-export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, resumenFormularioIA, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
+export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenciasActivas, getCirugiaPayload, cerrarMenuCompartir, resumenFormularioIA, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
   buildContextSummaryText, getPendientesBreve, buildSistemaHTML,
   precargarFormularioPrevio, nombreRegion, showToast,
   injectQuickInputBar, lockBodyScroll, unlockBodyScroll, partirPrimeraFrase, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento };

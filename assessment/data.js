@@ -157,6 +157,7 @@ export const PHASE_DEFS = [
   { n: 4,    label: 'Algoritmo CIF',            short: 'Fase 4' },
   { n: '4b', label: 'Confirmación de Hipótesis',short: 'Fase 4b' },
   { n: 5,    label: 'Resultados',               short: 'Fase 5' },
+  { n: 6,    label: 'Plan de tratamiento',      short: 'Fase 6' },  // opcional (docs/plan-tratamiento.md)
 ];
 
 // Frases clínicas predefinidas para los chips de entrada rápida en campos de texto libre.
@@ -196,4 +197,4 @@ export const QUICK_PHRASES = {
     'Vincular a un desplazamiento habitual (coche, transporte)'
   ]
 };
-export const PHASE_NAV_IDS = { 1:'nav1', 2:'nav2', 3:'nav3', 4:'nav4', '4b':'nav4b', 5:'nav5' };
+export const PHASE_NAV_IDS = { 1:'nav1', 2:'nav2', 3:'nav3', 4:'nav4', '4b':'nav4b', 5:'nav5', 6:'nav6' };

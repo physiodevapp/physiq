@@ -96,6 +96,9 @@
   <div class="phase-step" id="nav5" onclick="navStepClick(5)">
     <span class="phase-step-num">5</span> Resultados
   </div>
+  <div class="phase-step phase-step-opcional" id="nav6" onclick="navStepClick(6)" title="Opcional: la valoración termina en la fase 5">
+    <span class="phase-step-num">6</span> Plan
+  </div>
 </nav>
 
 <!-- SISTEMA CONTEXT BANNER — Fase 2 acordeón -->
@@ -779,6 +782,23 @@
   <div class="nav-buttons">
     <button class="btn btn-secondary" onclick="goToPhase('4b')">← Anterior</button>
     <button class="btn btn-primary" id="btnCompartir" onclick="abrirMenuCompartir()" aria-haspopup="dialog" aria-controls="compartirOverlay" title="Compartir o copiar el informe para el paciente / médico, el informe clínico con IA o las notas clínicas">📤 Compartir</button>
+  </div>
+  <!-- Fase 6 (opcional): la valoración termina aquí -->
+  <div class="plan-entrada">
+    <button class="btn btn-secondary" id="btnIrPlan" onclick="goToPhase(6)"><span class="btn-text-full">Plan de tratamiento (opcional) →</span><span class="btn-text-short">Plan de tratamiento →</span></button>
+  </div>
+</div>
+
+<!-- FASE 6 — PLAN DE TRATAMIENTO (opcional; plan.js lo pinta en #planContenido) -->
+<div class="phase-container" id="phase6">
+  <div class="phase-header">
+    <h1 class="phase-title">Plan de Tratamiento</h1>
+    <p class="phase-subtitle">Propuesta de sesión de 50 minutos y de plan para un mes, a partir de la valoración. Opcional.</p>
+  </div>
+  <div id="planContenido"></div>
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="goToPhase(5)">← Anterior</button>
+    <button class="btn btn-primary" id="btnCompartirPlan" onclick="abrirMenuCompartir()" aria-haspopup="dialog" aria-controls="compartirOverlay" title="Compartir o copiar el plan de sesión, el plan del mes o el programa para casa">📤 Compartir</button>
   </div>
 </div>
 

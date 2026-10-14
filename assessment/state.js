@@ -61,6 +61,13 @@ const state = {
     ventanaRecuperacion: '',
     anclajeHabito: ''
   },
+  // Fase 6 «Plan de tratamiento» (plan.js, opcional): lo que elige o escribe el
+  // fisio; el esqueleto se recalcula del estado. Nunca entra en el payload.
+  // { hipotesis: [id, id?], nivel: 'A'|'B'|'C', frecuencia: 'A'|'B',
+  //   sesion: 'primera'|'siguiente', gravedad?: string, irritabilidad?: string,
+  //   notas: { sesion, mes, domiciliario, parar },
+  //   duraciones: { [bloqueId]: minutos } } | null
+  planTratamiento: null,
   // Formulario previo (formulario.js): { comun: {id: valor}, regiones: { lumbar: {...} } }
   formularioPrevio: { comun: {}, regiones: {} },
   // Informe narrativo con IA (informe-ia.js, solo standalone):
