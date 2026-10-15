@@ -10,13 +10,24 @@ import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } fro
 // ── Fase 3 · ZONAS_SINTOMA.codo — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
 // `id` estable: se guarda en la sesión.
+// `pasos` (Fase N, paso 3): pasos del árbol de abajo en los que el síntoma de
+// esa zona sale en el recuadro «📝 Refiere el paciente». Solo recuerda; nunca
+// contesta el paso. Revisados por el usuario (2026-10):
+//   co_step1  trauma, rotura muscular y menores → codo anterior (bíceps
+//             distal), medial (lanzador joven) y lateral (dolor insidioso
+//             de 7 a 12 años)
+//   co_step3  síntomas neurales → codo medial (cubital), antebrazo y mano
+//   co_step4  epicondilalgias: ¿dónde duele? → codo lateral, medial y posterior
+//   co_step5  inestabilidad o bloqueo → codo medial (valgo), lateral
+//             (posterolateral) y posterior (extensión terminal)
+// co_step2 (movilidad global) no lleva: no depende de dónde duele.
 export const zonas = [
-  { id: 'codo_lat',  nombre: 'Codo lateral' },
-  { id: 'codo_med',  nombre: 'Codo medial' },
-  { id: 'codo_post', nombre: 'Codo posterior' },
-  { id: 'codo_ant',  nombre: 'Codo anterior' },
-  { id: 'antebrazo', nombre: 'Antebrazo' },
-  { id: 'mano',      nombre: 'Mano' },
+  { id: 'codo_lat',  nombre: 'Codo lateral',   pasos: ['co_step1', 'co_step4', 'co_step5'] },
+  { id: 'codo_med',  nombre: 'Codo medial',    pasos: ['co_step1', 'co_step3', 'co_step4', 'co_step5'] },
+  { id: 'codo_post', nombre: 'Codo posterior', pasos: ['co_step4', 'co_step5'] },
+  { id: 'codo_ant',  nombre: 'Codo anterior',  pasos: ['co_step1'] },
+  { id: 'antebrazo', nombre: 'Antebrazo',      pasos: ['co_step3'] },
+  { id: 'mano',      nombre: 'Mano',           pasos: ['co_step3'] },
 ];
 
 // ── Fase 2 · SYSTEMIC_SCREENING.codo
