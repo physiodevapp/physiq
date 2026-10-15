@@ -215,9 +215,9 @@ export const CUESTIONARIOS = [
       { si: { min: 30 }, etiqueta: 'Catastrofización clínicamente relevante (≥ 30)', nivel: 'alto' },
       { etiqueta: 'Por debajo del corte de catastrofización clínicamente relevante (30)', nivel: 'ok' },
     ],
-    interpretacionTexto: 'Suma de 0 a 52. El manual de la PCS (Sullivan) toma 30 como nivel de catastrofización clínicamente relevante (percentil 75 en pacientes con dolor crónico), según lo citan varios estudios; no es un corte validado en la versión española, y una revisión sistemática desaconseja usar un corte único entre culturas (Hayashi 2022).',
-    fuente: 'Sullivan 1995 (Psychol Assess 7:524–532) · García Campayo 2008 (versión española) · Cook 2021 (Pain Rep 6(1):e909; subescalas) · manual de la PCS, citado por Hidaka 2023 (BMC Musculoskelet Disord 24:388) · Hayashi 2022 (Pain Ther 11(3):753–769)',
-    nota: 'No se ha podido leer el manual de la PCS: el corte de 30 sale de estudios que lo citan, y no está claro si es «≥ 30» o «> 30» (aquí, ≥ 30). La validación española es en fibromialgia; no hay otra en población musculoesquelética de España.',
+    interpretacionTexto: 'Suma de 0 a 52. El manual de la PCS (Sullivan) toma 30 como nivel de catastrofización clínicamente relevante (percentil 75 en pacientes con dolor crónico); no es un corte validado en la versión española, y una revisión sistemática desaconseja usar un corte único entre culturas (Hayashi 2022).',
+    fuente: 'Sullivan 1995 (Psychol Assess 7:524–532) · García Campayo 2008 (versión española) · Cook 2021 (Pain Rep 6(1):e909; subescalas) · Sullivan, PCS User Manual (2009), pp. 5–7 y apéndice A · Hayashi 2022 (Pain Ther 11(3):753–769)',
+    nota: 'Corte del manual de la PCS (p. 7): «una puntuación total de 30 representa un nivel de catastrofización clínicamente relevante», y en su tabla de percentiles el 30 cae justo en el percentil 75; por eso ≥ 30. Percentiles de trabajadores lesionados (75 % lumbar), a interpretar con cautela en dolor agudo, según el propio manual. Percentil 75 de las subescalas: rumiación 11, magnificación 5, desesperanza 13 (orientativo, sin interpretación propia en la app). La validación española es en fibromialgia; no hay otra en población musculoesquelética de España.',
   },
   {
     id: 'cadc',
