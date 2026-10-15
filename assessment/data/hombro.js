@@ -10,13 +10,24 @@ import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } fro
 // ── Fase 3 · ZONAS_SINTOMA.hombro — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
 // `id` estable: se guarda en la sesión.
+// `pasos` (Fase N, paso 3): pasos del árbol de abajo en los que el síntoma de
+// esa zona sale en el recuadro «📝 Refiere el paciente». Solo recuerda; nunca
+// contesta el paso. Revisados por el usuario (2026-10):
+//   h_step1  cribado cervical y 1ª costilla → cuello o trapecio, y lo que
+//            pasa del codo (el dolor subacromial no suele bajar del codo)
+//   h_step3  ¿dolor arriba (AC) o inestabilidad? → hombro anterior (AC,
+//            inestabilidad anterior) y posterior (inestabilidad posterior, labrum)
+//   h_step4  manguito rotador → hombro lateral (deltoides) y brazo hasta el
+//            codo, donde se refiere el dolor del manguito
+//   h_step5  control escapular → cuello o trapecio
+// h_step2 y h_step2b (movilidad pasiva) no llevan: no dependen de dónde duele.
 export const zonas = [
-  { id: 'hombro_ant',  nombre: 'Hombro anterior' },
-  { id: 'hombro_lat',  nombre: 'Hombro lateral (deltoides)' },
-  { id: 'hombro_post', nombre: 'Hombro posterior' },
-  { id: 'brazo',       nombre: 'Brazo hasta el codo' },
-  { id: 'bajo_codo',   nombre: 'Por debajo del codo' },
-  { id: 'cuello',      nombre: 'Cuello o trapecio' },
+  { id: 'hombro_ant',  nombre: 'Hombro anterior',            pasos: ['h_step3'] },
+  { id: 'hombro_lat',  nombre: 'Hombro lateral (deltoides)', pasos: ['h_step4'] },
+  { id: 'hombro_post', nombre: 'Hombro posterior',           pasos: ['h_step3'] },
+  { id: 'brazo',       nombre: 'Brazo hasta el codo',        pasos: ['h_step4'] },
+  { id: 'bajo_codo',   nombre: 'Por debajo del codo',        pasos: ['h_step1'] },
+  { id: 'cuello',      nombre: 'Cuello o trapecio',          pasos: ['h_step1', 'h_step5'] },
 ];
 
 // ── Fase 2 · SYSTEMIC_SCREENING.hombro
