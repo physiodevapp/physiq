@@ -89,7 +89,7 @@ export function pintarSintomas() {
   card.innerHTML = `<div class="card-title">Síntomas <span class="sint-contador">P1${n ? `–P${n + 1}` : ''}</span></div>
     <div class="plan-note-hint">Las zonas que marca el paciente en el mapa corporal. P1 es el principal; añada hasta ${MAX_SECUNDARIOS} secundarios.</div>
     ${[0, ...state.sintomasSecundarios.map((_, k) => k + 1)].map(i => itemHTML(i, zonas)).join('')}
-    ${n < MAX_SECUNDARIOS ? `<button type="button" class="btn-secondary sint-anadir" onclick="sintAnadir()">+ Añadir síntoma (P${n + 2})</button>` : ''}`;
+    ${n < MAX_SECUNDARIOS ? `<button type="button" class="btn btn-secondary sint-anadir" onclick="sintAnadir()">+ Añadir síntoma (P${n + 2})</button>` : ''}`;
   injectQuickInputBar('sintDesc_0', CHIPS_DESCRIPCION);
   for (let i = 1; i <= n; i++) injectQuickInputBar(`sintDesc_${i}`, []);
 }

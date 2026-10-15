@@ -2486,6 +2486,11 @@ function closePhaseSheet() {
 }
 
 
+// Flecha y ✓ del círculo de la hoja de fases dibujados en SVG: los glifos de
+// DM Mono se quedan por debajo del centro (la flecha va en el eje matemático)
+const _ICONO_FASE_ACTUAL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>';
+const _ICONO_FASE_HECHA = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
 function buildPhaseSheetList() {
   const list = document.getElementById('phaseSheetList');
   list.innerHTML = '';
@@ -2499,16 +2504,16 @@ function buildPhaseSheetList() {
 
     let stateClass = 'psi-blocked';
     let statusText = '🔒 No disponible';
-    let iconContent = String(i + 1);
+    let iconContent = String(def.n);   // el número de la fase («4b»), no la posición en la lista
 
     if (isActive) {
       stateClass = 'psi-active';
       statusText = '→ Fase actual';
-      iconContent = '→';
+      iconContent = _ICONO_FASE_ACTUAL;
     } else if (isCompleted && !isInvalidated) {
       stateClass = 'psi-completed';
       statusText = '✓ Completada';
-      iconContent = '✓';
+      iconContent = _ICONO_FASE_HECHA;
     } else if (isInvalidated) {
       stateClass = 'psi-blocked';
       statusText = '⚠ Requiere revisión';
