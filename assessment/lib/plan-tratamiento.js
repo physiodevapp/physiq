@@ -8,7 +8,7 @@ import {
   REEVALUACION_RETROSPECTIVA, FUENTE_RETROSPECTIVA,
   MINUTOS_SESION, HIP_EXPLORACION_NEURO, HIP_RADICULARES, TEXTOS_CASA, RED_SEGURIDAD, AVISOS_HIP,
   VOLUMEN_PAUTA, FRECUENCIA_PAUTA, ESCALONES_PERIFERICOS, REGIONES_COLUMNA_PLAN, FAMILIA_HIP,
-  PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, RED_HIP,
+  PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, RED_HIP, HIP_NERVIO_PERIFERICO,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 
@@ -135,6 +135,7 @@ export function hipotesisPorDefecto(hipotesis = []) {
 // Por id, nunca por el nombre (data/plan-tratamiento.js).
 export const pideExploracionNeuro = h => HIP_EXPLORACION_NEURO.includes(h?.id);
 export const esRadicular = h => HIP_RADICULARES.includes(h?.id);
+export const esNervioPeriferico = h => HIP_NERVIO_PERIFERICO.includes(h?.id);
 
 // Plan del mes por defecto (decisión 41): el que fija la pauta de la
 // hipótesis, si lo fija; si no, A.
@@ -220,6 +221,7 @@ export function construirPlan(e) {
   const primera = (e.sesion || 'primera') === 'primera';
   const neuro = elegidas.some(pideExploracionNeuro);
   const radicular = elegidas.some(esRadicular);
+  const nervio = elegidas.some(esNervioPeriferico);
   const red = redSeguridad(e.region, neuro, elegidas);
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
@@ -244,6 +246,7 @@ export function construirPlan(e) {
   const reevaluacion = [TEXTOS_SESION.reevaluacionBase + (e.signoComparable ? ` Signo comparable registrado: «${e.signoComparable}».` : '')];
   if (!primera) reevaluacion.push(TEXTOS_SESION.reevaluacionSiguiente);
   if (neuro) reevaluacion.push(TEXTOS_SESION.reevaluacionRadicular);
+  if (nervio) reevaluacion.push(TEXTOS_SESION.reevaluacionNervio);
   const educacion = [TEXTOS_SESION.educacionBase];
   if (primera) educacion.push(TEXTOS_SESION.educacionPrimera);
 
@@ -266,6 +269,7 @@ export function construirPlan(e) {
     escalones: { A: tabla[nv.A], B: tabla[nv.B], C: nv.C ? tabla[nv.C] : null },
     primera,
     neuro,
+    nervio,
     alarmasCasa: red.casa,
     hipotesis: elegidas,
     sesion: {

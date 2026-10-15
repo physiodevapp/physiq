@@ -11,7 +11,8 @@
 // en L3, región a región, con revisión clínica. Cervical (L3), con el mismo
 // libro de Maitland que lumbar. Hombro (L3), la primera periférica, con
 // Maitland's Peripheral Manipulation (Hengeveld y Banks 2005; decisiones 43–49).
-export const REGIONES_PLAN = ['lumbar', 'cervical', 'hombro'];
+// Codo (L3), la segunda periférica (decisiones 64–71).
+export const REGIONES_PLAN = ['lumbar', 'cervical', 'hombro', 'codo'];
 
 // Familia de cada región para los escalones, la cantidad por sesión, la
 // progresión y las reglas del mes (decisiones 43–46): columna = Maitland 2005
@@ -117,6 +118,14 @@ export const AVISOS = {
   inestabilidad: 'Inestabilidad: en el hombro, movimientos accesorios o fisiológicos de grado II para estimular la propiocepción antes del entrenamiento de la estabilidad funcional; la rigidez se moviliza en la columna y en las articulaciones claviculares (Hengeveld y Banks 2005, cap. 11, cuadro 11.12, p. 347). La rotación lateral con presión fuerte, con mucho cuidado, por la palanca y la torsión sobre el húmero y la cápsula (p. 314).',
   artrosis: 'Artrosis glenohumeral: mejor solo con movimientos accesorios; el posteroanterior, con la mayor amplitud posible (grado II o III); tras una reagudización, grado I al principio, con el objetivo de llegar a III− o III+ en todo el recorrido sin dolor; los fisiológicos de grado II también pueden servir (Hengeveld y Banks 2005, cap. 11, cuadro 11.11, p. 345). En una articulación con artrosis, grados II o III− también cuando lo que se trata es otra estructura (cap. 8, p. 224).',
   protesis: 'Si la cirugía fue una prótesis: sobre todo accesorios cerca de la línea articular, sin palancas largas que muevan el hueso alrededor del implante; si el ejercicio activo ya cumple el objetivo, la movilización pasiva sobra (Hengeveld y Banks 2005, cap. 10, p. 269).',
+  // Codo (L3, decisiones 66–69; cap. 12 de Peripheral)
+  epicondilalgiaLateral: 'Epicondilalgia lateral: la base de la pauta es el ejercicio, con su propia dosis; la terapia manual es un complemento para aliviar pronto el dolor, y los escalones solo se refieren a ella (Hengeveld y Banks 2005, cap. 12, cuadro 12.6, p. 392, que cita a Vicenzino 2003). Si el movimiento pasivo del codo es completo e indoloro, la movilización pasiva no tiene sitio; con signos articulares, se tratan primero ellos solos, hasta ver cómo progresa, y después, si hace falta, también el componente tendinoso (p. 390). Las técnicas preferidas son la extensión-aducción de grado IV a IV+ y los accesorios al límite, sobre todo el anteroposterior y el posteroanterior de la cabeza del radio en pronación (cuadro 12.6, p. 392). El codo se sobretrata con facilidad (p. 393). Si no evoluciona, mirar también la columna cervical y torácica y el hombro (pp. 361 y 369).',
+  epicondilalgiaMedial: 'Epicondilalgia medial: la pauta es de ejercicio excéntrico, con su propia dosis, y no incluye terapia manual; el cap. 12 de Peripheral no trae un perfil propio de la medial (solo la nombra entre los cuadros por sobrecarga; Hengeveld y Banks 2005, cap. 12, p. 390). Los escalones, solo si la exploración encuentra signos articulares en el codo.',
+  rigidezCodo: 'Codo rígido y doloroso: primero, técnicas para el dolor hasta tener clara la irritabilidad; después, estirar en cualquier dirección mientras la progresión no empeore el patrón del dolor. Para estirar: fisiológicos de grado IV o IV− si el dolor es mínimo; accesorios de grado IV o IV− con la articulación sostenida al límite del recorrido fisiológico; intercalar los dos; y un grado II+ o III− en la mayor amplitud posible para aliviar las molestias del tratamiento. Un estiramiento juicioso y controlado (grados III y IV) es poco probable que cause una miositis osificante (Hengeveld y Banks 2005, cap. 12, pp. 390 y 393).',
+  inestabilidadCodo: 'Inestabilidad del codo: la pauta es de fortalecimiento y control, y en la posterolateral evita la carga axial en extensión y supinación (Quzli 2025). El cap. 12 de Peripheral no trae un perfil de inestabilidad del codo; por la regla general de no usar técnicas firmes con ligamentos debilitados (Hengeveld y Banks 2005, cap. 8, pp. 224–225), sin técnicas firmes al final del recorrido que tensen el ligamento insuficiente: el valgo (extensión-abducción) en la medial; la extensión con supinación en la posterolateral.',
+  radiohumeral: 'Dolor radiohumeral intraarticular (plica): con patología intraarticular, de grado II− a III o III− (Hengeveld y Banks 2005, cap. 7, tabla 7.2, p. 176); si duele mucho, el movimiento longitudinal cefálico del radio cuando alivia el dolor (cap. 12, p. 389).',
+  nervioCodo: 'Atrapamiento de un nervio en el codo: los escalones se refieren a la articulación. Para el nervio, movilizar las interfases que lo rodean y recuperar su deslizamiento y su tensión (Butler 2000, citado en Hengeveld y Banks 2005, cap. 12, p. 371); el anteroposterior y el longitudinal caudal de la cabeza del radio sirven como movilización de la interfase de un nervio radial mecanosensible (pp. 387–388). Los signos neurológicos se exploran pronto y no se empeoran con pruebas vigorosas (cap. 6, p. 158).',
+  esqueletoInmaduro: 'Codo en crecimiento (apofisitis o avulsión del epicóndilo medial, enfermedad de Panner u osteocondritis del capítulo): ninguna fuente leída trata la movilización pasiva del codo con el esqueleto inmaduro (el cap. 12 de Peripheral solo nombra la osteocondritis disecante; Hengeveld y Banks 2005, cap. 12, p. 390), y la pauta del lanzador joven es de descanso y ajuste de las cargas (Lluch 2020, cap. 3.2, p. 94). Los escalones de terapia manual no se aplican.',
   dosFamilias: 'Las dos hipótesis se tratan en zonas distintas (columna y articulación periférica): los escalones y las reglas del mes son los de la principal; la cantidad por sesión y la progresión, las de cada una.',
   // Varios síntomas (Fase N, docs/sintomas-multiples.md; decisión 35)
   dosificaOtro: 'Dosificado según el síntoma más irritable de la fase 3, no según P1 (a igualdad de irritabilidad, manda P1). La gravedad es la de su NRS.',
@@ -131,6 +140,15 @@ export const AVISOS_HIP = {
   h1: ['capsulitisPrecoz', 'capsulitisEstadios'],           // capsulitis adhesiva (su pauta; cap. 11, cuadro 11.9)
   h4: ['inestabilidad'],                                     // inestabilidad glenohumeral (cap. 11, cuadro 11.12)
   h10: ['artrosis'],                                         // artrosis glenohumeral (cap. 11, cuadro 11.11)
+  // Codo (decisiones 66–69; cap. 12 de Peripheral)
+  co1: ['epicondilalgiaLateral'],                            // cuadro 12.6 y p. 390
+  co2: ['epicondilalgiaMedial'],                             // su pauta, sin terapia manual
+  co3: ['rigidezCodo'],                                      // pp. 390 y 393
+  co4: ['inestabilidadCodo'],                                // LCC (medial)
+  co5: ['inestabilidadCodo'],                                // IRPL (posterolateral)
+  co6: ['radiohumeral'],                                     // plica radiocapitelar
+  co8: ['nervioCodo'], co9: ['nervioCodo'], co13: ['nervioCodo'], // atrapamientos (p. 371)
+  co15: ['esqueletoInmaduro'], co16: ['esqueletoInmaduro'],  // esqueleto inmaduro
 };
 
 // Avisos con mecanismo Post-quirúrgico en una región periférica (decisión 47):
@@ -155,6 +173,8 @@ export const TEXTOS_SESION = {
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
   reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3; Hengeveld y Banks 2005, cap. 9, p. 246).',
   reevaluacionRadicular: 'Exploración neurológica al empezar; si empeora, comunicarlo al médico (Maitland 2005, cap. 6, p. 136).',
+  // Atrapamiento de un nervio periférico (HIP_NERVIO_PERIFERICO, decisión 65)
+  reevaluacionNervio: 'Sensibilidad y fuerza en el territorio del nervio al empezar, sin empeorarlas con pruebas vigorosas (Hengeveld y Banks 2005, cap. 6, p. 158; cap. 12, cuadro 12.6, p. 392); si empeoran, comunicarlo al médico (Maitland 2005, cap. 6, p. 136).',
   educacionBase: 'Explicar la hipótesis y el plan, y lo que puede notar.',
   educacionPrimera: 'Avisar de un posible aumento temporal de los síntomas tras esta primera sesión (Maitland 2005, cap. 9, p. 219; Hengeveld y Banks 2005, cap. 9, p. 243).',
   primeraSesion: 'Primera sesión: menos tratamiento que en las siguientes, porque el primer estiramiento provoca más reacción (Maitland 2005, cap. 9, p. 219).',
@@ -168,6 +188,7 @@ export const TEXTOS_SESION = {
   cierreNeuro: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (adormecimiento entre las piernas o alrededor del ano, cambios al orinar o al hacer de vientre) y comprobar que lo ha entendido (Finucane 2020, sección 2, pp. 9–17).',
   cierreMedula: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (torpeza nueva en las manos, inestabilidad o piernas «pesadas» al caminar, cambios al orinar o al hacer de vientre) y comprobar que lo ha entendido (Margetis y Donnally 2025, anamnesis y exploración).',
   cierreCardiaco: 'Red de seguridad: explicar qué síntomas exigen llamar al 112 (dolor u opresión en el pecho, el hombro, el brazo, el cuello, la mandíbula o la espalda que no se pasa al parar en unos 20 minutos, o que viene con sudor frío, náuseas, vómitos o falta de aire) y comprobar que lo ha entendido (Goodman 2018, cap. 6, pp. 236 y 260, como en el razonamiento de h_c4).',
+  cierreInfeccion: 'Red de seguridad: explicar qué síntomas exigen ir hoy mismo al médico o a urgencias (el codo se pone rojo, caliente e hinchado, aunque no haya fiebre) y comprobar que lo ha entendido (Momodu y Savaliya 2023; Pangia 2025, como en el razonamiento de co1).',
   cierreArterial: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (dolor de cabeza o de cuello de golpe y distinto a cualquier otro, visión doble, dificultad para hablar o tragar, inestabilidad al caminar o caídas súbitas) y comprobar que lo ha entendido; los de una disección pueden llegar días después (Rushton 2023, tablas 1–2 y 6, pp. 9–12).',
 };
 
@@ -205,6 +226,11 @@ export const FRECUENCIA_PAUTA = {
   ce12: {
     plan: 'B',
     nota: 'Dolor radicular cervical agudo: su pauta fija 2 sesiones por semana durante 6 semanas (12 sesiones), así que encaja con el plan B; con el plan A, el mes queda por debajo de esa pauta (Kuijper 2009).',
+  },
+  // Codo (decisión 67): los ensayos de su pauta usaron 2 o más sesiones por semana
+  co3: {
+    plan: 'B',
+    nota: 'Rigidez del codo: los ensayos de estiramientos de contracción-relajación de su pauta usaron de 2 a 7 sesiones por semana durante 3 a 6 semanas, y la intensidad óptima no se conoce (Wistow 2025); con el plan A, el mes queda por debajo de lo estudiado.',
   },
 };
 
@@ -252,6 +278,13 @@ export const HIP_EXPLORACION_NEURO = [
   'ce3', 'ce12',         // cervical: radiculopatía, dolor radicular
 ];
 export const HIP_RADICULARES = ['lu3', 'lu5', 'ce3', 'ce12'];
+//  · NERVIO_PERIFERICO: atrapamiento de un nervio periférico, no de la raíz ni
+//    de la médula (decisión 65): sensibilidad y fuerza en su territorio al
+//    empezar cada sesión, sin red de seguridad neurológica ni regla de días
+//    (la de 7–10 días es del dolor radicular severo; decisión 48).
+export const HIP_NERVIO_PERIFERICO = [
+  'co8', 'co9', 'co13',  // codo: cubital, radial / interóseo posterior, mediano / pronador
+];
 export const HIP_NEURO_DESCARTADAS = {
   ce2: 'Disfunción neuromuscular cervical: déficit de control motor (coordinación, propiocepción), no compromiso de la raíz ni de la médula.',
 };
@@ -272,6 +305,10 @@ export const RED_SEGURIDAD = {
   // Hombro (decisión 53): cardiaca siempre, del razonamiento de h_c4. El
   // ectópico (h_g1) y la rotura de bazo (h_gi4) no van al programa para casa.
   hombro: { siempre: { cierre: 'cierreCardiaco', casa: 'alarmaCardiaca' } },
+  // Codo (decisión 70): infección siempre, del razonamiento de co1. No van al
+  // programa para casa el traumatismo (co_t1, co_t2: los dispara una caída
+  // nueva, no el programa) ni las posquirúrgicas (pq_*: manda el cirujano).
+  codo: { siempre: { cierre: 'cierreInfeccion', casa: 'alarmaInfeccion' } },
 };
 
 // Hipótesis de otra región cuya pauta trae terapia manual de la columna
@@ -304,6 +341,9 @@ export const TEXTOS_CASA = {
   alarmaMedula: { texto: 'Si notas torpeza nueva en las manos (al abrocharte o al escribir), inestabilidad o las piernas pesadas al caminar, o cambios al orinar o al hacer de vientre, ve a urgencias hoy mismo.', fuente: 'Margetis y Donnally 2025 (StatPearls, «Cervical Myelopathy»: anamnesis y exploración), como en el razonamiento de cv3: con signos nuevos o que van a más, la derivación es urgente' },
   // Hombro (RED_SEGURIDAD): síntomas del razonamiento de h_c4 (data/hombro.js).
   alarmaCardiaca: { texto: 'Si notas dolor u opresión en el pecho, el hombro, el brazo, el cuello, la mandíbula o la espalda que no se pasa al parar en unos 20 minutos, o que te viene con sudor frío, náuseas, vómitos o falta de aire, llama al 112.', fuente: 'Goodman 2018, cap. 6, pp. 236 y 260, como en el razonamiento de h_c4: un infarto puede doler solo en el hombro o el brazo; intervención médica inmediata si el dolor no cede en 20 minutos o viene con náuseas, vómitos o sudor' },
+  // Codo (RED_SEGURIDAD): síntomas del razonamiento de co1 (data/codo.js), en
+  // lenguaje llano; «aunque no tengas fiebre» porque falta en el 40–60 %.
+  alarmaInfeccion: { texto: 'Si el codo se te pone rojo, caliente e hinchado, aunque no tengas fiebre, ve hoy mismo al médico o a urgencias.', fuente: 'Momodu y Savaliya 2023 (StatPearls, «Septic Arthritis») y Pangia 2025 (StatPearls, «Olecranon Bursitis»), como en el razonamiento de co1: la artritis séptica es una emergencia y la fiebre solo aparece en el 40–60 %; en la bursitis séptica del olécranon, enrojecimiento en el 83 %, calor en el 84 % y fiebre en el 38 %' },
   alarmaArterial: { texto: 'Si te empieza de golpe un dolor de cabeza o de cuello distinto a cualquiera que hayas tenido, o notas visión doble, dificultad para hablar o tragar, inestabilidad al caminar o caídas sin perder el conocimiento, ve a urgencias hoy mismo.', fuente: 'Rushton 2023 (marco IFOMPT cervical), tablas 1–2 y 6, pp. 9–12, como en el razonamiento de cv_ar1 y cv_ar2: disección arterial e insuficiencia vertebrobasilar; los síntomas neurológicos pueden llegar días después' },
 };
 
@@ -349,4 +389,4 @@ export const REEVALUACION_RETROSPECTIVA = [
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.
-export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025'];
+export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025'];

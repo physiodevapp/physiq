@@ -133,7 +133,7 @@ function pintar() {
   if (!c) return;
   if (!REGIONES_PLAN.includes(state.region)) {
     c.innerHTML = `<div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>
-      <strong>El plan de tratamiento está en fase piloto.</strong> De momento solo está disponible para ${esc(REGIONES_PLAN.map(r => nombreRegion(r).toLowerCase()).join(' y '))}; ${esc(state.region ? nombreRegion(state.region).toLowerCase() : 'esta región')} se añadirá después, con revisión clínica.</div></div>`;
+      <strong>El plan de tratamiento está en fase piloto.</strong> De momento solo está disponible para ${esc(new Intl.ListFormat('es', { type: 'conjunction' }).format(REGIONES_PLAN.map(r => nombreRegion(r).toLowerCase())))}; ${esc(state.region ? nombreRegion(state.region).toLowerCase() : 'esta región')} se añadirá después, con revisión clínica.</div></div>`;
     return;
   }
   const { hs, plan } = planActual();
