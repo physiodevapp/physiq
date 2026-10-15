@@ -11,8 +11,9 @@
 // en L3, región a región, con revisión clínica. Cervical (L3), con el mismo
 // libro de Maitland que lumbar. Hombro (L3), la primera periférica, con
 // Maitland's Peripheral Manipulation (Hengeveld y Banks 2005; decisiones 43–49).
-// Codo (L3), la segunda periférica (decisiones 64–71).
-export const REGIONES_PLAN = ['lumbar', 'cervical', 'hombro', 'codo'];
+// Codo (L3), la segunda periférica (decisiones 64–71). Rodilla (L3), la
+// tercera periférica (decisiones 72–80).
+export const REGIONES_PLAN = ['lumbar', 'cervical', 'hombro', 'codo', 'rodilla'];
 
 // Familia de cada región para los escalones, la cantidad por sesión, la
 // progresión y las reglas del mes (decisiones 43–46): columna = Maitland 2005
@@ -126,6 +127,18 @@ export const AVISOS = {
   radiohumeral: 'Dolor radiohumeral intraarticular (plica): con patología intraarticular, de grado II− a III o III− (Hengeveld y Banks 2005, cap. 7, tabla 7.2, p. 176); si duele mucho, el movimiento longitudinal cefálico del radio cuando alivia el dolor (cap. 12, p. 389).',
   nervioCodo: 'Atrapamiento de un nervio en el codo: los escalones se refieren a la articulación. Para el nervio, movilizar las interfases que lo rodean y recuperar su deslizamiento y su tensión (Butler 2000, citado en Hengeveld y Banks 2005, cap. 12, p. 371); el anteroposterior y el longitudinal caudal de la cabeza del radio sirven como movilización de la interfase de un nervio radial mecanosensible (pp. 387–388). Los signos neurológicos se exploran pronto y no se empeoran con pruebas vigorosas (cap. 6, p. 158).',
   esqueletoInmaduro: 'Codo en crecimiento (apofisitis o avulsión del epicóndilo medial, enfermedad de Panner u osteocondritis del capítulo): ninguna fuente leída trata la movilización pasiva del codo con el esqueleto inmaduro (el cap. 12 de Peripheral solo nombra la osteocondritis disecante; Hengeveld y Banks 2005, cap. 12, p. 390), y la pauta del lanzador joven es de descanso y ajuste de las cargas (Lluch 2020, cap. 3.2, p. 94). Los escalones de terapia manual no se aplican.',
+  // Rodilla (L3, decisiones 74–78; cap. 15 de Peripheral)
+  artrosisRodilla: 'Artrosis de rodilla: la terapia manual, solo junto al ejercicio (NICE NG226, rec. 1.3.6). Movimientos accesorios al final del recorrido y a lo largo de él, con amplitudes grandes, y progresar a la compresión si hace falta; si el problema es estable, también fisiológicos, sobre todo las combinaciones en extensión (Hengeveld y Banks 2005, cap. 15, cuadro 15.2, p. 517). En una reagudización, el anteroposterior y el posteroanterior de la tibia en grados I y II (pp. 507–508); la extensión en grado III, para el dolor y la rigidez a lo largo del recorrido (p. 500). En una articulación con artrosis, grados II o III− también cuando lo que se trata es otra estructura (cap. 8, p. 224).',
+  menisco: 'Menisco: un bloqueo verdadero es un tope súbito a la extensión completa (suele faltar unos 30°) con la flexión completa conservada, y al final de la extensión se nota un tope elástico con espasmo; puede deberse a una rotura de menisco o a un cuerpo libre (Hengeveld y Banks 2005, cap. 15, p. 490). Si se sospecha una rotura de menisco, puede hacer falta consultar al médico antes de seguir con el tratamiento (p. 491). La terapia manual solo está en la pauta de la lesión degenerativa (Prill 2025, B); en la rotura traumática y tras la meniscectomía la pauta es de ejercicio, y los escalones se refieren a la terapia manual. La rotación de la tibia forma parte de la rehabilitación tras una meniscectomía (p. 504).',
+  patelofemoral: 'Dolor patelofemoral: la base es el ejercicio de su pauta; la terapia manual, nunca aislada (Willy 2019, A), y los escalones solo se refieren a ella. Cuando el movimiento de la rótula duele, las primeras sesiones, extremadamente suaves: mejor quedarse corto y comprobarlo en la siguiente que descubrir que se hizo de más (Hengeveld y Banks 2005, cap. 15, p. 499). Con mucho dolor, accesorios suaves y amplios, antes del punto donde empieza; después, en otras posiciones de flexión y de flexión-abducción, y más adelante con compresión; puede hacer falta estirar el retináculo lateral (cuadro 15.3, p. 518). La primera vez que se usa la compresión de la rótula, no más de 20 s, y valorar al día siguiente (p. 510).',
+  ligamentoRodilla: 'Lesión de un ligamento de la rodilla: si se sospecha una rotura completa, puede hacer falta consultar al médico antes de seguir con el tratamiento (Hengeveld y Banks 2005, cap. 15, p. 491). La rotación medial de la tibia corresponde a la restricción del cruzado anterior, y la lateral, a la del colateral medial y el cruzado posterior (p. 504); el colateral medial se explora con la abducción y el lateral con la aducción, a 30° y 0° de flexión (p. 497), y con un colateral roto el recorrido es excesivo y el tope, «blando» (p. 505). Por la regla general de no usar técnicas firmes con ligamentos debilitados (cap. 8, pp. 224–225), sin técnicas firmes al final del recorrido en la dirección que tensa el ligamento lesionado. Los movimientos lateral y medial de la tibia ayudan a recuperarse de una lesión de un colateral (p. 509).',
+  esguinceReciente: 'Esguince de un colateral. Si es reciente: movimientos lentos y pequeños, en grupos de unos 5, solo hasta una molestia mínima, y reevaluar a las 24 h; si duele más, más suave; si hay más recorrido y menos dolor, más profundo; el estiramiento suave, para la resistencia del tejido, desde el 5.º–6.º día. Si ya es una rigidez periarticular crónica: estiramientos más firmes, hasta un «pinchazo» momentáneo, pocos (4–6) y sin sostenerlos, y repetirlos en casa (Hengeveld y Banks 2005, cap. 8, p. 220).',
+  cargaRodilla: 'Tendinopatía rotuliana o banda iliotibial: la base es la carga progresiva de su pauta, con su propia dosis, y los escalones solo se refieren a la terapia manual (en la banda iliotibial, la pauta la admite como complemento del fortalecimiento). Si a la vez hay signos articulares, el cap. 15 recomienda tratar primero esos, con las pruebas isométricas que provocan el dolor como parámetro de reevaluación (Hengeveld y Banks 2005, cap. 15, p. 494).',
+  rotulaInestable: 'Rótula inestable: la base es el ejercicio de su pauta (Balcarek 2025), y los escalones se refieren a la terapia manual. Procurar que los movimientos pasivos sean indoloros y estirar el retináculo lateral (Hengeveld y Banks 2005, cap. 15, cuadro 15.4, p. 519). En la subluxación recurrente, el movimiento lateral de la rótula puede provocar dolor y la sensación de que se va a salir, y el paciente frena cualquier intento más contrayendo el cuádriceps (aprensión; p. 498).',
+  apofisitis: 'Apofisitis del adolescente (Osgood-Schlatter, Sinding-Larsen-Johansson): la pauta es de carga progresiva y una escalera de actividad guiada por el dolor, sin terapia manual (Rathleff 2020). Ninguna fuente leída trata la movilización pasiva de la rodilla con el esqueleto inmaduro (el cap. 15 de Peripheral solo nombra la hinchazón dolorosa de la tuberosidad tibial en el Osgood-Schlatter; Hengeveld y Banks 2005, cap. 15, p. 496). Los escalones de terapia manual no se aplican.',
+  tibioperonea: 'Tibioperonea proximal: a menudo no es fácil saber si es la responsable; suele aclararse con técnicas más fuertes, con compresión, comparando con el otro lado, y si aparece un signo comparable, ese movimiento es el que se usa para tratar. Al principio, firme pero no vigoroso; los síntomas que se provoquen deben ir al ritmo del movimiento y ceder enseguida al parar. Cuando la responsable es ella, suele responder muy deprisa a movilizaciones de gran intensidad (Hengeveld y Banks 2005, cap. 15, p. 499).',
+  nervioPeroneo: 'Neuropatía del peroneo común: los escalones se refieren a la articulación. El anteroposterior y el posteroanterior de la cabeza del peroné ayudan a recuperarse de un atrapamiento del nervio peroneo en la cabeza del peroné; el posteroanterior también puede hacerse en supino con la pierna en algo de elevación de la pierna recta (Hengeveld y Banks 2005, cap. 15, pp. 515–516). Para explorar el nervio, la elevación de la pierna recta con inversión del pie (cuadro 15.1, p. 492), y a la palpación puede doler junto a la cabeza del peroné (p. 497). Los signos neurológicos se exploran pronto y no se empeoran con pruebas vigorosas (cap. 6, p. 158).',
+  posqRodilla: 'Tras una cirugía de rodilla: el libro empieza a movilizar con el anteroposterior y el posteroanterior de la tibia en grados I y II tras una prótesis u otra intervención (Hengeveld y Banks 2005, cap. 15, pp. 507–508), y la rotación de la tibia forma parte de la rehabilitación tras una meniscectomía o una fractura de meseta tibial (p. 504). Siempre dentro del protocolo del cirujano.',
   dosFamilias: 'Las dos hipótesis se tratan en zonas distintas (columna y articulación periférica): los escalones y las reglas del mes son los de la principal; la cantidad por sesión y la progresión, las de cada una.',
   // Varios síntomas (Fase N, docs/sintomas-multiples.md; decisión 35)
   dosificaOtro: 'Dosificado según el síntoma más irritable de la fase 3, no según P1 (a igualdad de irritabilidad, manda P1). La gravedad es la de su NRS.',
@@ -149,11 +162,28 @@ export const AVISOS_HIP = {
   co6: ['radiohumeral'],                                     // plica radiocapitelar
   co8: ['nervioCodo'], co9: ['nervioCodo'], co13: ['nervioCodo'], // atrapamientos (p. 371)
   co15: ['esqueletoInmaduro'], co16: ['esqueletoInmaduro'],  // esqueleto inmaduro
+  // Rodilla (decisiones 74–78; cap. 15 de Peripheral)
+  ro1: ['artrosisRodilla'],                                  // cuadro 15.2
+  ro2: ['menisco'],                                          // pp. 490–491 y 504; sus ramas
+  ro3: ['patelofemoral'],                                    // cuadro 15.3, pp. 499 y 510
+  ro4: ['ligamentoRodilla'], ro9: ['ligamentoRodilla'],      // cruzados (intraarticulares)
+  ro8: ['ligamentoRodilla', 'esguinceReciente'],             // colateral medial
+  ro10: ['ligamentoRodilla', 'esguinceReciente'],            // colateral lateral y esquina posterolateral
+  ro5: ['cargaRodilla'], ro6: ['cargaRodilla'],              // p. 494
+  ro12: ['rotulaInestable'],                                 // cuadro 15.4 y p. 498
+  ro15: ['apofisitis'],                                      // esqueleto inmaduro
+  ro18: ['tibioperonea'],                                    // p. 499
+  ro19: ['nervioPeroneo'],                                   // pp. 515–516
 };
 
 // Avisos con mecanismo Post-quirúrgico en una región periférica (decisión 47):
 // condicional, porque la app no sabe si la cirugía fue una prótesis.
 export const AVISOS_POSQ_PERIFERICA = ['protesis'];
+
+// Avisos con mecanismo Post-quirúrgico propios de una región, después de los
+// de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
+// empezar a movilizar tras la cirugía.
+export const AVISOS_POSQ_REGION = { rodilla: ['posqRodilla'] };
 
 // Bloques de la sesión de 50 minutos: organización orientativa y editable, no
 // evidencia (docs/plan-tratamiento.md, «Sesión de 50 minutos»). `duracion` en
@@ -189,6 +219,9 @@ export const TEXTOS_SESION = {
   cierreMedula: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (torpeza nueva en las manos, inestabilidad o piernas «pesadas» al caminar, cambios al orinar o al hacer de vientre) y comprobar que lo ha entendido (Margetis y Donnally 2025, anamnesis y exploración).',
   cierreCardiaco: 'Red de seguridad: explicar qué síntomas exigen llamar al 112 (dolor u opresión en el pecho, el hombro, el brazo, el cuello, la mandíbula o la espalda que no se pasa al parar en unos 20 minutos, o que viene con sudor frío, náuseas, vómitos o falta de aire) y comprobar que lo ha entendido (Goodman 2018, cap. 6, pp. 236 y 260, como en el razonamiento de h_c4).',
   cierreInfeccion: 'Red de seguridad: explicar qué síntomas exigen ir hoy mismo al médico o a urgencias (el codo se pone rojo, caliente e hinchado, aunque no haya fiebre) y comprobar que lo ha entendido (Momodu y Savaliya 2023; Pangia 2025, como en el razonamiento de co1).',
+  // Rodilla (decisión 79): infección y TVP, siempre
+  cierreInfeccionRodilla: 'Red de seguridad: explicar qué síntomas exigen ir hoy mismo al médico o a urgencias (la rodilla, o la zona de delante de la rótula, se pone roja, caliente e hinchada, aunque no haya fiebre) y comprobar que lo ha entendido (Momodu y Savaliya 2023; Truong 2023, como en el razonamiento de r1 y r_i3).',
+  cierreTVP: 'Red de seguridad: explicar qué síntomas exigen ir hoy mismo al médico o a urgencias (la pantorrilla hinchada, caliente, más roja o dolorida que la otra) y cuáles, llamar al 112 (falta de aire de repente o dolor en el pecho al respirar), y comprobar que lo ha entendido (Waheed 2023; NICE NG158; Vyas 2024, como en el razonamiento de r_v2 y pq_tep).',
   cierreArterial: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (dolor de cabeza o de cuello de golpe y distinto a cualquier otro, visión doble, dificultad para hablar o tragar, inestabilidad al caminar o caídas súbitas) y comprobar que lo ha entendido; los de una disección pueden llegar días después (Rushton 2023, tablas 1–2 y 6, pp. 9–12).',
 };
 
@@ -231,6 +264,11 @@ export const FRECUENCIA_PAUTA = {
   co3: {
     plan: 'B',
     nota: 'Rigidez del codo: los ensayos de estiramientos de contracción-relajación de su pauta usaron de 2 a 7 sesiones por semana durante 3 a 6 semanas, y la intensidad óptima no se conoce (Wistow 2025); con el plan A, el mes queda por debajo de lo estudiado.',
+  },
+  // Rodilla (decisión 76): la pauta usa menos visitas que el plan A
+  ro15: {
+    plan: 'A',
+    nota: 'Apofisitis del adolescente: su pauta usa 4 visitas en 12 semanas, con los padres, y el resto del trabajo es en casa (Rathleff 2020); el plan A ya queda por encima de esas visitas, y el programa para casa es el que lleva la carga.',
   },
 };
 
@@ -284,6 +322,7 @@ export const HIP_RADICULARES = ['lu3', 'lu5', 'ce3', 'ce12'];
 //    (la de 7–10 días es del dolor radicular severo; decisión 48).
 export const HIP_NERVIO_PERIFERICO = [
   'co8', 'co9', 'co13',  // codo: cubital, radial / interóseo posterior, mediano / pronador
+  'ro19',                // rodilla: peroneo común en la cabeza del peroné (decisión 73)
 ];
 export const HIP_NEURO_DESCARTADAS = {
   ce2: 'Disfunción neuromuscular cervical: déficit de control motor (coordinación, propiocepción), no compromiso de la raíz ni de la médula.',
@@ -309,6 +348,14 @@ export const RED_SEGURIDAD = {
   // programa para casa el traumatismo (co_t1, co_t2: los dispara una caída
   // nueva, no el programa) ni las posquirúrgicas (pq_*: manda el cirujano).
   codo: { siempre: { cierre: 'cierreInfeccion', casa: 'alarmaInfeccion' } },
+  // Rodilla (decisión 79): dos de siempre, infección (r1, r_i3) y TVP (r_v2,
+  // con la embolia de pq_tep). `siempre` admite una lista. No van al programa
+  // para casa la isquemia aguda (r_v4), el traumatismo (ro_t2–ro_t4) ni las
+  // demás posquirúrgicas (pq_*: manda el cirujano).
+  rodilla: { siempre: [
+    { cierre: 'cierreInfeccionRodilla', casa: 'alarmaInfeccionRodilla' },
+    { cierre: 'cierreTVP', casa: 'alarmaTVP' },
+  ] },
 };
 
 // Hipótesis de otra región cuya pauta trae terapia manual de la columna
@@ -344,6 +391,11 @@ export const TEXTOS_CASA = {
   // Codo (RED_SEGURIDAD): síntomas del razonamiento de co1 (data/codo.js), en
   // lenguaje llano; «aunque no tengas fiebre» porque falta en el 40–60 %.
   alarmaInfeccion: { texto: 'Si el codo se te pone rojo, caliente e hinchado, aunque no tengas fiebre, ve hoy mismo al médico o a urgencias.', fuente: 'Momodu y Savaliya 2023 (StatPearls, «Septic Arthritis») y Pangia 2025 (StatPearls, «Olecranon Bursitis»), como en el razonamiento de co1: la artritis séptica es una emergencia y la fiebre solo aparece en el 40–60 %; en la bursitis séptica del olécranon, enrojecimiento en el 83 %, calor en el 84 % y fiebre en el 38 %' },
+  // Rodilla (RED_SEGURIDAD): síntomas del razonamiento de r1 y r_i3 (infección;
+  // «aunque no tengas fiebre», que falta en el 40–60 %) y de r_v2 y pq_tep (TVP
+  // y embolia; data/rodilla.js y data/comun.js), en lenguaje llano.
+  alarmaInfeccionRodilla: { texto: 'Si la rodilla, o la zona de delante de la rótula, se te pone roja, caliente e hinchada, aunque no tengas fiebre, ve hoy mismo al médico o a urgencias.', fuente: 'Momodu y Savaliya 2023 (StatPearls, «Septic Arthritis») y Truong 2023 (StatPearls, «Septic Bursitis»), como en el razonamiento de r1 y r_i3: la rodilla es la articulación más afectada en el adulto, la artritis séptica es una urgencia y la fiebre solo aparece en el 40–60 %; en la bursitis séptica la fiebre puede faltar' },
+  alarmaTVP: { texto: 'Si se te hincha la pantorrilla, o la notas caliente, más roja o dolorida que la otra, ve hoy mismo al médico o a urgencias. Si además te falta el aire de repente o te duele el pecho al respirar, llama al 112.', fuente: 'Waheed 2023 (StatPearls, «Deep Venous Thrombosis») y NICE NG158, como en el razonamiento de r_v2: valoración médica en el día; Vyas 2024 (StatPearls, «Acute Pulmonary Embolism»), como en el de pq_tep: con falta de aire o dolor al respirar, 112; NICE NG89 pide explicar al paciente estos síntomas al alta tras una prótesis de rodilla' },
   alarmaArterial: { texto: 'Si te empieza de golpe un dolor de cabeza o de cuello distinto a cualquiera que hayas tenido, o notas visión doble, dificultad para hablar o tragar, inestabilidad al caminar o caídas sin perder el conocimiento, ve a urgencias hoy mismo.', fuente: 'Rushton 2023 (marco IFOMPT cervical), tablas 1–2 y 6, pp. 9–12, como en el razonamiento de cv_ar1 y cv_ar2: disección arterial e insuficiencia vertebrobasilar; los síntomas neurológicos pueden llegar días después' },
 };
 
@@ -389,4 +441,4 @@ export const REEVALUACION_RETROSPECTIVA = [
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.
-export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025'];
+export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89'];

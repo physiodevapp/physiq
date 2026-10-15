@@ -8,7 +8,7 @@ import {
   REEVALUACION_RETROSPECTIVA, FUENTE_RETROSPECTIVA,
   MINUTOS_SESION, HIP_EXPLORACION_NEURO, HIP_RADICULARES, TEXTOS_CASA, RED_SEGURIDAD, AVISOS_HIP,
   VOLUMEN_PAUTA, FRECUENCIA_PAUTA, ESCALONES_PERIFERICOS, REGIONES_COLUMNA_PLAN, FAMILIA_HIP,
-  PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, RED_HIP, HIP_NERVIO_PERIFERICO,
+  PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 
@@ -164,11 +164,11 @@ export function cantidadSesion(elegidas = [], region) {
 // Red de seguridad de la región (RED_SEGURIDAD): las líneas del cierre de la
 // sesión y las del final del programa para casa. Primero la neurológica (solo
 // con una hipótesis que pide exploración neurológica), después la de siempre
-// y, al final, la de una hipótesis que la trae de otra región (RED_HIP: h6,
-// la arterial de cervical; decisión 50). Sin repetir.
+// (una o una lista, decisión 79) y, al final, la de una hipótesis que la trae
+// de otra región (RED_HIP: h6, la arterial de cervical; decisión 50). Sin repetir.
 export function redSeguridad(region, neuro, elegidas = []) {
   const r = RED_SEGURIDAD[region] || {};
-  const partes = [neuro && r.neuro, r.siempre, ...elegidas.map(h => RED_HIP[h.id])].filter(Boolean)
+  const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id])].filter(Boolean)
     .filter((p, i, a) => a.findIndex(q => q.cierre === p.cierre) === i);
   return {
     cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
@@ -231,6 +231,7 @@ export function construirPlan(e) {
   if (e.modo === 'breve' && elegidas.some(h => !h.posq && h.sinTests)) avisosHip.push(AVISOS.breveSinTests);
   if (e.posq) avisosHip.push(textoPosq(e.posq.conProtocolo));
   if (e.posq && familiaRegion(e.region) === 'periferica') avisosHip.push(...AVISOS_POSQ_PERIFERICA.map(k => AVISOS[k]));
+  if (e.posq) avisosHip.push(...(AVISOS_POSQ_REGION[e.region] || []).map(k => AVISOS[k]));
   for (const k of new Set(elegidas.flatMap(h => AVISOS_HIP[h.id] || []))) avisosHip.push(AVISOS[k]);
   if (elegidas.length > 1) avisosHip.push(AVISOS.dosHipotesis);
   if (new Set(familias).size > 1) avisosHip.push(AVISOS.dosFamilias);
