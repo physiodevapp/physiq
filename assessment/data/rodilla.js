@@ -7,6 +7,19 @@
 // ============================================================
 import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
+// ── Fase 3 · ZONAS_SINTOMA.rodilla — zonas del mapa corporal para P1–P4
+// (docs/sintomas-multiples.md). Tabla aceptada por el usuario (2026-10), con
+// «Rodilla» delante de anterior, medial, lateral y posterior para que se lean
+// solas en los resúmenes; pendiente de revisión. `id` estable: se guarda en la sesión.
+export const zonas = [
+  { id: 'rodilla_ant',  nombre: 'Rodilla anterior (rótula)' },
+  { id: 'rodilla_med',  nombre: 'Rodilla medial' },
+  { id: 'rodilla_lat',  nombre: 'Rodilla lateral' },
+  { id: 'rodilla_post', nombre: 'Rodilla posterior (hueco poplíteo)' },
+  { id: 'muslo',        nombre: 'Muslo' },
+  { id: 'pierna',       nombre: 'Pierna' },
+];
+
 // ── Fase 2 · SYSTEMIC_SCREENING.rodilla
 export const screening = {
   label: 'Cuadrante Inferior — Rodilla',
