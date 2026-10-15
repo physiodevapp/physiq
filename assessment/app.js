@@ -5,7 +5,9 @@
 import { state } from './state.js';
 import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, TIEMPOS_TEJIDO, ZONAS_SINTOMA, CUESTIONARIOS, GRUPOS_CUESTIONARIO, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
-import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML, anatomiaLineaHTML, anatomiaPanelHTML, registroReferencias } from './phase4b.js';
+import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML, anatomiaLineaHTML, anatomiaPanelHTML } from './phase4b.js';
+import { registroReferencias, citasHTML } from './lib/citas.js';
+import { alternarFicha, actualizarFicha, cerrarFicha, fichaAbierta } from './ficha.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 import {
   COMPLICACIONES, cirugiaVacia, esPosquirurgico, semanasCirugia, semanasTexto, conProtocolo, cirugiaPayload,
@@ -167,6 +169,8 @@ function goToPhase(n) {
 
   // El panel del razonamiento es de la fase en la que se abrió (2 o 4b)
   if (String(n) !== String(state.currentPhase)) cerrarRazonamiento({ sinHistorial: true });
+  // Y la ficha de una cita (ficha.js), siempre
+  cerrarFicha({ sinFoco: true });
 
   // Save current state before leaving
   if (state.currentPhase === 1) collectPhase1();
@@ -1357,7 +1361,7 @@ function razonamientoInlineHTML(sis, q) {
         <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
         <p><span class="razon-etq">Cuánto pesa</span> ${r.peso}</p>
         ${anatomiaLineaHTML(q)}
-        <div class="razon-pie">— ${r.fuentes.join(' · ')}${ampliar}</div>
+        <div class="razon-pie">— ${citasHTML(r.fuentes)}${ampliar}</div>
       </div>
     </details>`;
 }
@@ -2086,7 +2090,7 @@ function partirPrimeraFrase(texto) {
 
 function _pautaPlegableHTML(dosis, fuente) {
   const { primera, resto } = partirPrimeraFrase(dosis);
-  const fuenteHTML = fuente ? `<div class="test-source" style="margin:4px 0 0;">${fuente}</div>` : '';
+  const fuenteHTML = fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
   if (!resto) return `<div class="exercise-box">${dosis}</div>${fuenteHTML}`;
   return `<details class="pauta-det">
     <summary class="exercise-box"><span class="pauta-det-primera">${primera}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
@@ -2333,14 +2337,14 @@ function buildResults() {
           ${!tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR
             ? _pautaConRamasHTML(hyp)
             : `<div class="exercise-box">${tratada ? _textoTratada(cq) : hyp.dosis || '<em style="color:var(--text3)">Sin dosis de referencia: a criterio del clínico.</em>'}</div>
-          ${!tratada && hyp.dosis && hyp.dosisFuente ? `<div class="test-source" style="margin:4px 0 0;">${hyp.dosisFuente}</div>` : ''}`}
+          ${!tratada && hyp.dosis && hyp.dosisFuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(hyp.dosisFuente)}</div>` : ''}`}
           ${cq && !tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR ? `<div class="nota-posq" style="margin-top:6px;">🏥 ${TEXTO_PAUTA_COMPATIBLE}</div>` : ''}
         </div>
         ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;">
           <summary style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase;">🧭 Pronóstico y derivación</summary>
           ${hyp.pronostico.horizonte ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${hyp.pronostico.horizonte}</div>` : ''}
           ${hyp.pronostico.derivacion ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${hyp.pronostico.derivacion}</div>` : ''}
-          ${hyp.pronostico.fuente ? `<div class="test-source" style="margin:4px 0 0;">${hyp.pronostico.fuente}</div>` : ''}
+          ${hyp.pronostico.fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(hyp.pronostico.fuente)}</div>` : ''}
         </details>` : ''}
       </div>`;
     });
@@ -2914,6 +2918,7 @@ function toggleSessionPanel() {
 // (e.g. navigating back to hub home) so a stale open dialog isn't still
 // showing when the user returns.
 function _closeAllOverlays() {
+  cerrarFicha({ sinFoco: true });
   cerrarRazonamiento({ sinHistorial: true });
   cerrarMenuCompartir({ sinHistorial: true });
   cerrarHerramientas({ sinHistorial: true });
@@ -3451,11 +3456,10 @@ document.getElementById('tejidosCuerpo')?.addEventListener('click', e => {
 });
 
 // Tarjeta de una barra (infoBarraHTML, lib/tejidos.js): su gravedad, qué mide,
-// su plazo y sus fuentes con enlace, junto a la barra tocada, para no bajar hasta la leyenda. Va en
-// <body> y con position: fixed (el panel se anima con transform, que la
-// recolocaría). Se cierra al tocar fuera o la misma barra, con Escape (antes
-// que el panel), al desplazar, al cambiar el filtro y al cerrar el panel.
-let _barraInfo = null, _scrollInfo = 0;
+// su plazo y sus fuentes con enlace, junto a la barra tocada, para no bajar hasta
+// la leyenda. Es la ficha flotante común (ficha.js, la misma de las citas): se
+// cierra al tocar fuera o la misma barra, con Escape (antes que el panel), al
+// desplazar, al cambiar el filtro y al cerrar el panel.
 // Registro de referencias para enlazar las fuentes (de la tarjeta y de las notas de
 // grupo): se carga con import() al abrir el panel, como el «Ampliar» de la fase 4b.
 // Si llega con algo ya pintado, pone los enlaces; si falla, las fuentes quedan sin enlace.
@@ -3466,68 +3470,17 @@ function _cargarRefTejidos() {
     _refTejidos = REF;
     document.querySelectorAll('#tejidosCuerpo .tej-grupo-fuentes ul[data-claves]')
       .forEach(ul => { ul.innerHTML = fuentesTejidoHTML(ul.dataset.claves.split('|'), REF); });
-    if (_barraInfo) { document.getElementById('tejInfo').innerHTML = _infoBarraHTML(_barraInfo); _colocarInfoBarra(); }
+    const barra = fichaAbierta();
+    if (barra?.matches('.tej-barra[data-barra]')) actualizarFicha(_infoBarraHTML(barra));
   });
 }
 const _infoBarraHTML = barra => infoBarraHTML(TIEMPOS_TEJIDO, barra.dataset.barra, _refTejidos);
 function _alternarInfoBarra(barra) {
-  if (_barraInfo === barra) { _cerrarInfoBarra(); return; }
-  _cerrarInfoBarra({ sinFoco: true });
-  const html = _infoBarraHTML(barra);
-  if (!html) return;
-  let info = document.getElementById('tejInfo');
-  if (!info) {
-    info = document.createElement('div');
-    info.id = 'tejInfo';
-    info.className = 'tej-info';
-    info.setAttribute('role', 'status');
-    info.addEventListener('click', e => e.stopPropagation());
-    document.body.appendChild(info);
-  }
-  info.innerHTML = html;
-  info.hidden = false;
-  _barraInfo = barra;
-  _scrollInfo = document.getElementById('tejidosCuerpo').scrollTop;
-  barra.setAttribute('aria-expanded', 'true');
-  _colocarInfoBarra();
-}
-function _colocarInfoBarra() {
-  const info = document.getElementById('tejInfo');
-  if (!info || !_barraInfo) return;
-  const b = _barraInfo.getBoundingClientRect();
-  const margen = 16, sep = 8;
-  const ancho = info.offsetWidth, alto = info.offsetHeight;
-  const left = Math.min(Math.max(margen, b.left + b.width / 2 - ancho / 2), innerWidth - margen - ancho);
-  // Debajo de la barra si cabe; si no, encima
-  const debajo = b.bottom + sep + alto <= innerHeight - margen;
-  info.style.left = `${Math.max(margen, left)}px`;
-  info.style.top = `${debajo ? b.bottom + sep : Math.max(margen, b.top - sep - alto)}px`;
+  alternarFicha(barra, _infoBarraHTML(barra), { id: 'tejInfo', clase: 'tej-info' });
 }
 function _cerrarInfoBarra({ sinFoco = false } = {}) {
-  const info = document.getElementById('tejInfo');
-  if (info) info.hidden = true;
-  const barra = _barraInfo;
-  _barraInfo = null;
-  if (!barra) return;
-  barra.setAttribute('aria-expanded', 'false');
-  if (!sinFoco && barra.isConnected) barra.focus({ preventScroll: true });
+  if (fichaAbierta()?.matches('.tej-barra[data-barra]')) cerrarFicha({ sinFoco });
 }
-// Solo un desplazamiento de verdad la cierra: el último evento de una inercia
-// (o el scroll que precede al toque) llega tras abrirla y la cerraría al instante
-document.getElementById('tejidosCuerpo')?.addEventListener('scroll', e => {
-  if (!_barraInfo) return;
-  if (Math.abs(e.currentTarget.scrollTop - _scrollInfo) > 24) _cerrarInfoBarra({ sinFoco: true });
-  else _colocarInfoBarra();
-}, { passive: true });
-window.addEventListener('resize', () => _cerrarInfoBarra({ sinFoco: true }));
-// Fuera de la barra y de la tarjeta (el panel corta la propagación, así que en captura)
-document.addEventListener('click', e => {
-  if (_barraInfo && !(e.target instanceof Element && e.target.closest('.tej-barra[data-barra], #tejInfo'))) _cerrarInfoBarra({ sinFoco: true });
-}, true);
-// Escape cierra primero la tarjeta y deja el panel abierto
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && _barraInfo) { e.stopImmediatePropagation(); e.preventDefault(); _cerrarInfoBarra(); }
-}, true);
 
 function abrirTiemposTejido() {
   const overlay = document.getElementById('tejidosOverlay');
@@ -3697,6 +3650,7 @@ function cerrarCuestionarios({ desdeHistorial = false, sinHistorial = false, sin
   const overlay = document.getElementById('cuestOverlay');
   if (!overlay?.classList.contains('open')) return;
   overlay.classList.remove('open');
+  cerrarFicha({ sinFoco: true });
   const panel = document.getElementById('cuestPanel');
   panel.style.transform = ''; panel.style.transition = '';
   unlockBodyScroll();

@@ -15,6 +15,7 @@ import { ramaPauta } from './lib/pauta.js';
 import { conProtocolo, semanasCirugia, pautaHipPosq, TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
 import { regionConLado } from './lib/region.js';
 import { payloadSintomas } from './lib/sintomas.js';
+import { citasHTML } from './lib/citas.js';
 import {
   saveSession, showConfirmBanner, getUrgenciasActivas, getCirugiaPayload, compartirTexto, cerrarMenuCompartir, partirPrimeraFrase,
 } from './app.js';
@@ -119,7 +120,7 @@ function opcion(grupo, valor, texto, seleccionado, { deshabilitado = false, titu
 
 function pautaHTML(texto, fuente) {
   const { primera, resto } = partirPrimeraFrase(texto);
-  const f = fuente ? `<div class="test-source" style="margin:4px 0 0;">${esc(fuente)}</div>` : '';
+  const f = fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
   if (!resto) return `<div class="exercise-box">${esc(texto)}</div>${f}`;
   return `<details class="pauta-det">
     <summary class="exercise-box"><span class="pauta-det-primera">${esc(primera)}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
@@ -204,7 +205,7 @@ function pintar() {
     <div class="plan-escalon">
       <div class="plan-escalon-tit">Nivel ${nivel} · ${esc(esc_.nombre)} <span class="plan-calc">(${esc(esc_.modo)})</span></div>
       <div>${esc(esc_.texto)}</div>
-      <div class="test-source" style="margin:6px 0 0;">${esc(esc_.citas.join(' · '))}</div>
+      <div class="test-source" style="margin:6px 0 0;">${citasHTML(esc_.citas)}</div>
       <div class="plan-ayuda" style="margin-top:6px;">${esc(AVISOS.soloTerapiaManual)}</div>
     </div>
     ${s.notaPrimera ? `<div class="plan-aviso">${esc(s.notaPrimera)}</div>` : ''}
@@ -236,7 +237,7 @@ function pintar() {
     <div class="summary-row"><span class="summary-label">Reevaluación final</span><span class="summary-value">${esc(mes.final)}${plan.mes.prom.length ? `, con ${esc(plan.mes.prom.join(' / '))}` : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Programa domiciliario</span><span class="summary-value">${esc(mes.domiciliario)}</span></div>
     <details class="plan-registro"><summary>Qué comparar en las reevaluaciones intermedia y final</summary>${lista(plan.mes.retrospectiva)}
-      <div class="test-source">${esc(plan.mes.fuenteRetrospectiva)}</div></details>
+      <div class="test-source">${citasHTML(plan.mes.fuenteRetrospectiva)}</div></details>
     ${lista([...mes.notas, ...plan.mes.notasPauta])}
     ${plan.mes.posq ? `<div class="nota-posq">🏥 ${plan.mes.posq.semanas != null ? `Semana ${plan.mes.posq.semanas} tras la cirugía. ` : ''}${esc(textoPosq(plan.mes.posq.conProtocolo))}</div>` : ''}
     <div class="plan-sub">Progresión</div>${lista(plan.mes.progresion)}
@@ -245,7 +246,7 @@ function pintar() {
       p.horizonte ? `${p.name}: ${p.horizonte}` : '', p.derivacion ? `Reconsiderar o derivar si: ${p.derivacion}` : '',
     ].filter(Boolean)))}` : ''}
     <details class="plan-registro"><summary>Hoja de registro de cada sesión</summary>${lista(plan.registro)}
-      <div class="test-source">${esc(plan.fuenteRegistro)}</div></details>
+      <div class="test-source">${citasHTML(plan.fuenteRegistro)}</div></details>
     <label class="plan-campo-et" for="planNotasMes">Tus notas para el mes</label>
     <textarea class="plan-note-input" id="planNotasMes" rows="3" oninput="planNota('mes', this.value)">${esc(pt.notas.mes)}</textarea>
   </div>

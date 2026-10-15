@@ -24,6 +24,8 @@
 // Cualquier ítem con `na: true` admite «no aplicable» (NA); con `factor`, su
 // puntuación se multiplica (PRTEE: función ÷ 2).
 
+import { citasHTML } from './citas.js';
+
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Coma decimal, sin decimales sobrantes
@@ -359,7 +361,7 @@ export function formularioCuestionarioHTML(def, respuestas = {}) {
     + `<div class="cuest-items">${secciones.join('')}</div>`
     + '<div class="cuest-fuente">'
     + (def.interpretacionTexto ? `<p>${esc(def.interpretacionTexto)}</p>` : '')
-    + `<p><span class="cuest-fuente-et">Fuente</span> ${esc(def.fuente)}</p>`
+    + `<p><span class="cuest-fuente-et">Fuente</span> ${citasHTML(def.fuente)}</p>`
     + (def.nota ? `<p class="cuest-nota">${esc(def.nota)}</p>` : '') + '</div>'
     + `<button type="button" class="cuest-borrar" data-cuest-borrar${algo ? '' : ' disabled'}>Borrar respuestas</button>`;
 }

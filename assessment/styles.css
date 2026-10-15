@@ -3092,9 +3092,7 @@ body.posquirurgico .solo-posq { display: block; }
   .tej-diagrama { gap: 8px; }
   .tej-col { font-size: 0.58rem; }
 }
-/* Tarjeta de una barra (app.js, _alternarInfoBarra): fija, sobre el panel */
-.tej-info { position: fixed; z-index: 1000; width: max-content; max-width: min(380px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border2); box-shadow: var(--modal-shadow); color: var(--text); font-size: 0.78rem; line-height: 1.35; }
-.tej-info[hidden] { display: none; }
+/* Tarjeta de una barra (app.js, _alternarInfoBarra): la ficha flotante común (.ficha-flotante) */
 .tej-info-madre { font-size: 0.7rem; color: var(--text3); margin-bottom: 1px; }
 .tej-info-nombre { font-weight: 600; margin-bottom: 6px; }
 .tej-info-datos { margin: 0; display: grid; gap: 4px; }
@@ -3315,3 +3313,33 @@ body.posquirurgico .solo-posq { display: block; }
    razonamiento, banner de traducción); con borde cuando quita algo del contenido
    y va junto a otros botones con borde («Quitar P2», junto a «Hacer principal») */
 .icono-x { display: block; flex-shrink: 0; }
+
+/* ─── Ficha flotante (ficha.js) y citas (lib/citas.js) ───
+   Una sola ficha para toda la app: la de las citas y la de las barras de Tiempos de
+   tejido. Fija, sobre paneles y diálogos, con 16 px de margen. */
+.ficha-flotante { position: fixed; z-index: 1000; width: max-content; max-width: min(380px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border2); box-shadow: var(--modal-shadow); color: var(--text); font-size: 0.78rem; line-height: 1.35; }
+.ficha-flotante[hidden] { display: none; }
+@media print { .ficha-flotante { display: none !important; } }
+
+/* Cita en el texto: solo autor y año, tocable; la cita entera va en la ficha */
+.cita { display: inline; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: inherit; cursor: pointer; text-decoration: underline dotted; text-decoration-color: var(--text3); text-underline-offset: 3px; border-radius: 3px; }
+.cita[aria-expanded="true"] { color: var(--accent); text-decoration-color: var(--accent); }
+.cita:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@media (hover: hover) { .cita:hover { color: var(--accent); text-decoration-color: var(--accent); } }
+/* En táctil, más aire entre líneas para que cada cita se toque sin rozar la de al lado */
+@media (pointer: coarse) {
+  .test-source:has(.cita), .razon-pie:has(.cita), p:has(> .cuest-fuente-et) { line-height: 2.1; }
+  .cita { padding: 4px 0; }
+}
+.cita-ficha .cita-ficha-texto { overflow-wrap: anywhere; }
+.cita-ficha .cita-ficha-titulo { margin-top: 6px; color: var(--text2); font-style: italic; overflow-wrap: anywhere; }
+.cita-ficha .cita-ficha-pub { margin-top: 2px; color: var(--text3); font-size: 0.72rem; overflow-wrap: anywhere; }
+.cita-ficha .cita-ficha-enlace { display: inline-flex; align-items: center; min-height: 32px; margin-top: 6px; color: var(--accent); font-weight: 600; text-decoration: none; }
+@media (pointer: coarse) { .cita-ficha .cita-ficha-enlace { min-height: 40px; } }
+.cita-ficha .cita-ficha-sin { margin-top: 6px; color: var(--text3); font-size: 0.72rem; }
+/* Al imprimir, la cita entera (data-cita), no la forma corta */
+@media print {
+  .cita { text-decoration: none; }
+  .cita-corta { display: none; }
+  .cita::before { content: attr(data-cita); }
+}

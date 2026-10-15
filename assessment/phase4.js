@@ -5,7 +5,7 @@
 import { CIF_TREES, HYPOTHESES, ZONAS_SINTOMA } from './data.js';
 import { state } from './state.js';
 import { saveSession, showConfirmBanner, paintNav, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento } from './app.js';
-import { registroReferencias, enlaceCita } from './phase4b.js';
+import { registroReferencias, enlaceCita, citasHTML } from './lib/citas.js';
 import { iaParrafoHTML, ctxArbol, attrIA } from './ampliar-ia.js';
 import { pistasHTML } from './lib/pistas.js';
 import { pistasSintomasPaso } from './lib/sintomas.js';
@@ -209,14 +209,14 @@ export function razonamientoPasoHTML(step, region) {
       <summary>ⓘ ¿Por qué esta pregunta?</summary>
       <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxArbol(region, step.iaPregunta || step.question))}">
         <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
-        <div class="razon-pie">— ${r.fuentes.join(' · ')}${ampliar}</div>
+        <div class="razon-pie">— ${citasHTML(r.fuentes)}${ampliar}</div>
       </div>
     </details>`;
 }
 
 // Panel «Ampliar» de un paso: el compartido (abrirPanelRazon, app.js), con
 // Por qué, En detalle y Fuentes (las `citas`, o las claves de `fuentes`),
-// cada una enlazada a la url o el DOI del registro (enlaceCita, phase4b.js).
+// cada una enlazada a la url o el DOI del registro (enlaceCita, lib/citas.js).
 export async function abrirRazonamientoPaso(btn, stepId) {
   const step = CIF_TREES[state.region]?.steps.find(s => s.id === stepId);
   const r = step?.razonamiento;

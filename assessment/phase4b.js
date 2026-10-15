@@ -11,6 +11,7 @@ import {
 } from './lib/posquirurgico.js';
 import { iaParrafoHTML, ctxTest, attrIA } from './ampliar-ia.js';
 import { ESTRUCTURAS, KENHUB_BASE, KENHUB_BASE_ES } from './data/anatomia.js';
+import { citasHTML, partirCitas, registroReferencias, enlaceCita } from './lib/citas.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -240,7 +241,7 @@ export function buildClusterBox(hyp, cid) {
     <div class="cluster-title">🧩 ${r.nombre}</div>
     <div class="cluster-rule">${[pos, neg].filter(Boolean).join(' · ')}</div>
     <div class="cluster-rule">Los tests del cluster no puntúan por separado.</div>
-    ${r.fuente ? `<div class="test-source">${r.fuente}</div>` : ''}
+    ${r.fuente ? `<div class="test-source">${citasHTML(r.fuente)}</div>` : ''}
   </div>`;
 }
 
@@ -273,11 +274,6 @@ export function pesoTest(hyp, test, idx) {
     if (comp) txt += ` No suma aparte si puntúa «${comp.name.split(':')[0]}».`;
   }
   return txt;
-}
-
-// «Hegedus 2012 (Br J Sports Med…) · Zhao 2024 (…)» → «Hegedus 2012 · Zhao 2024»
-export function fuenteCorta(fuente) {
-  return fuente.split(' · ').map(c => c.split(' (')[0].trim()).join(' · ');
 }
 
 // «Anatomía» de un test de la 4b o de una pregunta de cribado de la fase 2
@@ -334,12 +330,11 @@ export function buildTestItem(hId, test, idx) {
   const porque = r?.porque ? `<details class="razon">
       <summary>ⓘ ¿Por qué?</summary>
       <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxTest(hyp?.region, test.name, hyp?.name))}"><p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
-        ${r.fuentes?.length ? `<div class="razon-pie">— ${r.fuentes.join(' · ')}</div>` : ''}</div>
+        ${r.fuentes?.length ? `<div class="razon-pie">— ${citasHTML(r.fuentes)}</div>` : ''}</div>
     </details>` : '';
-  // Con «Ampliar», la tarjeta lleva solo autor y año; la cita completa está en el panel
-  const fuenteTxt = ampliar && test.fuente ? fuenteCorta(test.fuente) : test.fuente || '';
-  const fuente = fuenteTxt || ampliar
-    ? `<div class="test-source">${fuenteTxt}${ampliar}</div>` : '';
+  // Autor y año de cada cita; al tocarla, la cita entera y su enlace (lib/citas.js)
+  const fuente = test.fuente || ampliar
+    ? `<div class="test-source">${test.fuente ? citasHTML(test.fuente) : ''}${ampliar}</div>` : '';
 
   const savedResult = (state.testResults[hId] && state.testResults[hId][idx]) || 'nd';
   return `<div class="test-item">
@@ -359,39 +354,16 @@ export function buildTestItem(hId, test, idx) {
 }
 
 // Panel «Ampliar» de un test: el mismo de la fase 2 (abrirPanelRazon, app.js).
-// Fuentes: la `fuente` del test partida por « · » y, después, las `citas` del
+// Fuentes: la `fuente` del test partida en citas (partirCitas, las mismas que
+// la tarjeta) y, después, las `citas` del
 // «por qué» que no estén ya. Cada cita se enlaza («Abrir ↗») con la url del
 // registro (data/referencias.js) o, sin ella, con su DOI: el registro se
 // carga con import() la primera vez que se abre el panel, y si falla el
 // panel se abre igual, sin enlaces.
-let _registro = null;
-export async function registroReferencias() {
-  if (!_registro) _registro = import('./data/referencias.js').then(m => m.REFERENCIAS).catch(() => ({}));
-  return _registro;
-}
-
-// Clave del registro con la que empieza una cita («Hegedus 2012 (Br J…)» →
-// 'Hegedus 2012'; «Lluch 2020, cap. 3.1 (Struyf)» → 'Lluch 2020'): la más
-// larga, para no confundir 'Malik 2023' con 'Malik y Herron 2023'.
-export function claveRegistro(cita, REF) {
-  let mejor = null;
-  for (const k of Object.keys(REF)) {
-    if (cita.startsWith(k) && !/^[\p{L}\d]/u.test(cita.slice(k.length)) && (!mejor || k.length > mejor.length)) mejor = k;
-  }
-  return mejor;
-}
-
 export function citasTest(test) {
-  const propias = test.fuente ? test.fuente.split(' · ') : [];
+  const propias = partirCitas(test.fuente);
   const textos = new Set(propias);
   return [...propias, ...(test.razonamiento?.citas || []).filter(c => !textos.has(typeof c === 'string' ? c : c.texto))];
-}
-
-export function enlaceCita(cita, REF) {
-  if (typeof cita !== 'string') return cita;
-  const r = REF[claveRegistro(cita, REF)];
-  const url = r?.url || (r?.doi ? `https://doi.org/${r.doi}` : null);
-  return url ? { texto: cita, url } : cita;
 }
 
 export async function abrirRazonamientoTest(btn, hId, idx) {
