@@ -3093,7 +3093,7 @@ body.posquirurgico .solo-posq { display: block; }
   .tej-col { font-size: 0.58rem; }
 }
 /* Tarjeta de una barra (app.js, _alternarInfoBarra): fija, sobre el panel */
-.tej-info { position: fixed; z-index: 1000; width: max-content; max-width: min(320px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border2); box-shadow: var(--modal-shadow); color: var(--text); font-size: 0.78rem; line-height: 1.35; }
+.tej-info { position: fixed; z-index: 1000; width: max-content; max-width: min(380px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border2); box-shadow: var(--modal-shadow); color: var(--text); font-size: 0.78rem; line-height: 1.35; }
 .tej-info[hidden] { display: none; }
 .tej-info-madre { font-size: 0.7rem; color: var(--text3); margin-bottom: 1px; }
 .tej-info-nombre { font-weight: 600; margin-bottom: 6px; }
@@ -3105,19 +3105,27 @@ body.posquirurgico .solo-posq { display: block; }
 .tej-info-datos .tej-info-fuentes { align-items: start; }
 .tej-info-datos .tej-info-fuentes dt { padding-top: 3px; }
 .tej-info-datos .tej-info-fuentes dd { display: block; }
-.tej-fuentes-lista { list-style: none; margin: 0; padding: 0; }
-.tej-fuentes-lista li + li { margin-top: 2px; }
+/* Fuentes en línea, separadas por « · », que pasan a la línea siguiente si no caben
+   (como la línea «ANATOMÍA» de la fase 4b). Cada <li> lleva su « · » delante y la lista
+   se corre a la izquierda el ancho del separador dentro de un contenedor que recorta:
+   así el « · » del principio de cada línea queda fuera de la vista y nunca abre línea. */
+.tej-info-fuentes dd, .tej-grupo-fuentes { overflow: hidden; }
+.tej-fuentes-lista { --tej-sep: 18px; list-style: none; margin: 0 0 0 calc(-1 * var(--tej-sep)); padding: 0; display: flex; flex-wrap: wrap; align-items: center; }
+.tej-fuentes-lista li { display: inline-flex; align-items: center; white-space: nowrap; }
+.tej-fuentes-lista li::before { content: '·'; display: inline-block; width: var(--tej-sep); text-align: center; color: var(--text3); }
 .tej-fuente-enlace { color: var(--accent); text-decoration: none; }
 @media (hover: hover) { .tej-fuente-enlace:hover { text-decoration: underline; } }
-/* En táctil, cada fuente es una fila de 40 px para el dedo */
+.tej-fuente-enlace:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 3px; }
+/* En táctil, la zona de toque de cada enlace mide 40 px de alto (el texto, una línea
+   normal) y el separador es más ancho, para no tocar el enlace de al lado */
 @media (pointer: coarse) {
-  .tej-fuente-enlace { display: flex; align-items: center; min-height: 40px; }
-  .tej-fuentes-lista li + li { margin-top: 0; }
+  .tej-fuentes-lista { --tej-sep: 24px; }
+  .tej-fuente-enlace { display: inline-flex; align-items: center; min-height: 40px; }
   .tej-info-datos .tej-info-fuentes dt { padding-top: 14px; }
 }
 .tej-grupo-fuentes { margin: -4px 0 8px; font-size: 0.72rem; color: var(--text3); }
 .tej-grupo-fuentes summary { cursor: pointer; width: max-content; color: var(--accent); }
-.tej-grupo-fuentes .tej-fuentes-lista { margin: 4px 0 0 1em; }
+.tej-grupo-fuentes .tej-fuentes-lista { margin-top: 4px; }
 @media print { .tejidos-btn { display: none !important; } .tej-info { display: none !important; } }
 
 /* ─── Calculadora de cuestionarios (cabecera, lib/cuestionarios.js) ───
