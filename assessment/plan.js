@@ -6,7 +6,7 @@ import { state } from './state.js';
 import { DOSIS_DERIVAR, ZONAS_SINTOMA } from './data.js';
 import { REGIONES_PLAN, ESCALONES, AVISOS, MINUTOS_SESION } from './data/plan-tratamiento.js';
 import {
-  construirPlan, elegible, hipotesisPorDefecto, textoPlanSesion, textoPlanMes, textoDomiciliario, faltaEnCasa, textoPosq,
+  construirPlan, elegible, hipotesisPorDefecto, frecuenciaPorDefecto, textoPlanSesion, textoPlanMes, textoDomiciliario, faltaEnCasa, textoPosq,
   NIVELES_GRAVEDAD, NIVELES_IRRITABILIDAD, NOMBRE_GRAVEDAD, NOMBRE_IRRITABILIDAD,
 } from './lib/plan-tratamiento.js';
 import { hipotesis, hipotesisActivas, esTratada } from './phase4b.js';
@@ -27,7 +27,7 @@ let _contenedor = null;
 function planVacio(idDefecto) {
   return {
     hipotesis: idDefecto ? [idDefecto] : [],
-    nivel: 'B', frecuencia: 'A', sesion: 'primera',
+    nivel: 'B', frecuencia: frecuenciaPorDefecto(idDefecto), sesion: 'primera',
     gravedad: null, irritabilidad: null,
     notas: { sesion: '', mes: '', domiciliario: '', parar: '' },
     duraciones: {},
@@ -133,7 +133,7 @@ function pintar() {
   if (!c) return;
   if (!REGIONES_PLAN.includes(state.region)) {
     c.innerHTML = `<div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>
-      <strong>El plan de tratamiento está en fase piloto.</strong> De momento solo está disponible para la región lumbar; ${esc(state.region ? nombreRegion(state.region).toLowerCase() : 'esta región')} se añadirá después, con revisión clínica.</div></div>`;
+      <strong>El plan de tratamiento está en fase piloto.</strong> De momento solo está disponible para ${esc(REGIONES_PLAN.map(r => nombreRegion(r).toLowerCase()).join(' y '))}; ${esc(state.region ? nombreRegion(state.region).toLowerCase() : 'esta región')} se añadirá después, con revisión clínica.</div></div>`;
     return;
   }
   const { hs, plan } = planActual();
@@ -212,7 +212,7 @@ function pintar() {
         ${b.id === 'educacion' ? lista(s.educacion) : ''}
         ${b.id === 'intervencion' ? s.intervencion.map(h => `<div class="plan-int-hip">${esc(h.name)}</div>${h.sinPauta
           ? '<div class="exercise-box"><em>Pauta a criterio del fisioterapeuta: no hay una pauta con fuente para esta hipótesis.</em></div>'
-          : pautaHTML(h.pauta, h.pautaFuente)}`).join('') + lista([`Terapia manual: nivel ${nivel} (arriba).`, s.cantidad]) : ''}
+          : pautaHTML(h.pauta, h.pautaFuente)}`).join('') + lista([`Terapia manual: nivel ${nivel} (arriba).`, ...s.cantidad]) : ''}
         ${b.id === 'domiciliario' ? lista([s.domiciliario]) : ''}
         ${b.id === 'cierre' ? lista(s.cierre) : ''}
       </div>`).join('')}
@@ -231,7 +231,7 @@ function pintar() {
     <div class="summary-row"><span class="summary-label">Reevaluación intermedia</span><span class="summary-value">${esc(mes.intermedia)}</span></div>
     <div class="summary-row"><span class="summary-label">Reevaluación final</span><span class="summary-value">${esc(mes.final)}${plan.mes.prom.length ? `, con ${esc(plan.mes.prom.join(' / '))}` : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Programa domiciliario</span><span class="summary-value">${esc(mes.domiciliario)}</span></div>
-    ${lista(mes.notas)}
+    ${lista([...mes.notas, ...plan.mes.notasPauta])}
     ${plan.mes.posq ? `<div class="nota-posq">🏥 ${plan.mes.posq.semanas != null ? `Semana ${plan.mes.posq.semanas} tras la cirugía. ` : ''}${esc(textoPosq(plan.mes.posq.conProtocolo))}</div>` : ''}
     <div class="plan-sub">Progresión</div>${lista([plan.mes.progresion])}
     <div class="plan-sub">Seguir o cambiar</div>${lista(plan.mes.reglas)}
@@ -247,7 +247,7 @@ function pintar() {
   <div class="card" id="planCasa">
     <div class="card-title">Programa para casa</div>
     <p class="plan-ayuda">Lo que hará el paciente en casa, con tus palabras: va tal cual en «📤 Compartir → Programa para casa», en lenguaje llano y sin puntuaciones ni fuentes. Las notas del plan de la fase 5 (cuándo parar, a las 24 h, anclaje) se añaden si están rellenas.</p>
-    ${plan.neuro ? '<p class="plan-ayuda">Con una hipótesis neurológica, el programa termina con cuándo ir a urgencias (red de seguridad).</p>' : ''}
+    ${plan.alarmasCasa.length ? `<p class="plan-ayuda">El programa termina con cuándo ir a urgencias (red de seguridad${plan.alarmasCasa.length > 1 ? ', dos avisos' : ''}): explícalo en la sesión.</p>` : ''}
     <label class="plan-campo-et" for="planNotasCasa">Qué hacer</label>
     <textarea class="plan-note-input" id="planNotasCasa" rows="4" placeholder="Ej.: 10 repeticiones de … cada mañana" oninput="planNota('domiciliario', this.value)">${esc(pt.notas.domiciliario)}</textarea>
     <label class="plan-campo-et" for="planParar">Cuándo parar</label>

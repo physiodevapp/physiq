@@ -5,7 +5,8 @@
 import {
   ESCALONES, TEXTO_NIVELES, AVISOS, BLOQUES_SESION, TEXTOS_SESION, PLANES_MES,
   PROGRESION_GENERICA, REGLAS_MES, REGLA_RADICULAR_SEVERA, HOJA_REGISTRO,
-  MINUTOS_SESION, HIP_EXPLORACION_NEURO, HIP_RADICULARES, TEXTOS_CASA,
+  MINUTOS_SESION, HIP_EXPLORACION_NEURO, HIP_RADICULARES, TEXTOS_CASA, RED_SEGURIDAD, AVISOS_HIP,
+  VOLUMEN_PAUTA, FRECUENCIA_PAUTA,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 
@@ -133,6 +134,31 @@ export function hipotesisPorDefecto(hipotesis = []) {
 export const pideExploracionNeuro = h => HIP_EXPLORACION_NEURO.includes(h?.id);
 export const esRadicular = h => HIP_RADICULARES.includes(h?.id);
 
+// Plan del mes por defecto (decisión 41): el que fija la pauta de la
+// hipótesis, si lo fija; si no, A.
+export const frecuenciaPorDefecto = id => FRECUENCIA_PAUTA[id]?.plan || 'A';
+
+// Cantidad de terapia manual por sesión (decisión 40): la de la pauta de cada
+// hipótesis que la trae; la genérica de Maitland si alguna no la trae.
+export function cantidadSesion(elegidas = []) {
+  const propias = elegidas.map(h => VOLUMEN_PAUTA[h.id]).filter(Boolean);
+  const out = [...new Set(propias)].map(k => TEXTOS_SESION[k]);
+  if (!elegidas.length || propias.length < elegidas.length) out.push(TEXTOS_SESION.cantidad);
+  return out;
+}
+
+// Red de seguridad de la región (RED_SEGURIDAD): las líneas del cierre de la
+// sesión y las del final del programa para casa. Primero la neurológica (solo
+// con una hipótesis que pide exploración neurológica), después la de siempre.
+export function redSeguridad(region, neuro) {
+  const r = RED_SEGURIDAD[region] || {};
+  const partes = [neuro && r.neuro, r.siempre].filter(Boolean);
+  return {
+    cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
+    casa: partes.map(p => TEXTOS_CASA[p.casa].texto),
+  };
+}
+
 // Duraciones de los bloques (minutos, editables) → rangos «0–5», «5–12»…
 // Una duración vacía o no válida vuelve a la de por defecto.
 export function rangosBloques(duraciones = {}) {
@@ -178,11 +204,12 @@ export function construirPlan(e) {
   const primera = (e.sesion || 'primera') === 'primera';
   const neuro = elegidas.some(pideExploracionNeuro);
   const radicular = elegidas.some(esRadicular);
+  const red = redSeguridad(e.region, neuro);
 
   const avisosHip = [];
   if (e.modo === 'breve' && elegidas.some(h => !h.posq && h.sinTests)) avisosHip.push(AVISOS.breveSinTests);
   if (e.posq) avisosHip.push(textoPosq(e.posq.conProtocolo));
-  if (elegidas.some(h => h.id === 'ce13')) avisosHip.push(AVISOS.vertigo);
+  for (const k of new Set(elegidas.flatMap(h => AVISOS_HIP[h.id] || []))) avisosHip.push(AVISOS[k]);
   if (elegidas.length > 1) avisosHip.push(AVISOS.dosHipotesis);
   const independientes = sintomasIndependientes(e.secundarios);
   if (independientes.length) avisosHip.push(`${AVISOS.independiente} (${independientes.map(nombreSintoma).join('; ')})`);
@@ -216,18 +243,20 @@ export function construirPlan(e) {
     escalones: { A: ESCALONES[nv.A], B: ESCALONES[nv.B], C: nv.C ? ESCALONES[nv.C] : null },
     primera,
     neuro,
+    alarmasCasa: red.casa,
     hipotesis: elegidas,
     sesion: {
       ...rangosBloques(e.duraciones),
       reevaluacion, educacion, intervencion,
       notaPrimera: primera ? TEXTOS_SESION.primeraSesion : '',
-      cantidad: TEXTOS_SESION.cantidad,
+      cantidad: cantidadSesion(elegidas),
       domiciliario: TEXTOS_SESION.domiciliario,
-      cierre: neuro ? [TEXTOS_SESION.cierre, TEXTOS_SESION.cierreNeuro] : [TEXTOS_SESION.cierre],
+      cierre: [TEXTOS_SESION.cierre, ...red.cierre],
     },
     mes: {
       A: PLANES_MES.A, B: PLANES_MES.B,
       prom: [...new Set(elegidas.map(h => h.prom).filter(Boolean))],
+      notasPauta: elegidas.map(h => FRECUENCIA_PAUTA[h.id]?.nota).filter(Boolean),
       progresion: PROGRESION_GENERICA,
       reglas: reglasMes,
       pronostico: elegidas.filter(h => h.pronostico).map(h => ({ name: h.name, ...h.pronostico })),
@@ -261,7 +290,7 @@ export function textoPlanSesion(plan, e, nivel = 'B') {
     intervencion: [
       ...s.intervencion.map(h => `${h.name}: ${h.sinPauta ? 'pauta a criterio del fisioterapeuta.' : h.pauta}${h.pautaFuente ? ` (${h.pautaFuente})` : ''}`),
       `Terapia manual, nivel ${nivel}: ${esc.texto}`,
-      s.cantidad,
+      ...s.cantidad,
     ],
     domiciliario: [s.domiciliario],
     cierre: s.cierre,
@@ -283,7 +312,7 @@ export function textoPlanMes(plan, e, frecuencia = 'A') {
   out.push(linea(`Reevaluación intermedia: ${p.intermedia}`));
   out.push(linea(`Reevaluación final: ${p.final}${plan.mes.prom.length ? `, con ${plan.mes.prom.join(' / ')}` : ''}`));
   out.push(linea(`Peso del programa domiciliario: ${p.domiciliario}`));
-  out.push(...p.notas.map(linea));
+  out.push(...p.notas.map(linea), ...plan.mes.notasPauta.map(linea));
   if (plan.mes.posq) out.push(linea(`Posquirúrgico${plan.mes.posq.semanas != null ? `, semana ${plan.mes.posq.semanas} tras la cirugía` : ''}: ${textoPosq(plan.mes.posq.conProtocolo)}`));
   out.push('', 'PROGRESIÓN', linea(plan.mes.progresion), '', 'SEGUIR O CAMBIAR', ...plan.mes.reglas.map(linea));
   if (plan.mes.pronostico.length) {
@@ -326,6 +355,6 @@ export function textoDomiciliario(plan, e, { ejercicios = '', parar = '', planNo
   if (plan.primera) out.push(T.primeraSesion, '');
   if (plan.mes.posq) out.push(T.cirujano, '');
   out.push(T.empeora);
-  if (plan.neuro) out.push('', T.alarmaNeuro);
+  for (const a of plan.alarmasCasa || []) out.push('', a);
   return out.join('\n');
 }

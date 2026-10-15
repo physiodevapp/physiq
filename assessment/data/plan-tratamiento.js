@@ -8,8 +8,9 @@
 // hipótesis (decisión 7: sin pauta, «a criterio del fisio»).
 
 // Regiones con la fase 6 activa. Piloto: lumbar (decisión L2); el resto entra
-// en L3, región a región, con revisión clínica.
-export const REGIONES_PLAN = ['lumbar'];
+// en L3, región a región, con revisión clínica. Cervical (L3), con el mismo
+// libro de Maitland que lumbar.
+export const REGIONES_PLAN = ['lumbar', 'cervical'];
 
 // Escalones de vigor y extensión de la terapia manual (decisiones 11 y 20).
 // Petersen 2021 da la combinación gravedad × irritabilidad; Maitland 2005, las
@@ -66,9 +67,18 @@ export const AVISOS = {
   breveSinTests: 'Hipótesis de trabajo, pendiente de confirmar: no tiene ningún test hecho.',
   dosHipotesis: 'Dos hipótesis: la intervención principal se reparte entre ambas y el tiempo de cada una baja.',
   vertigo: 'No usar ninguna técnica cervical que produzca mareo; probar antes con movimientos exploratorios (Maitland 2005, cap. 9, p. 224).',
+  manipulacionCervical: 'Sin manipulación forzada con signos de dos raíces cervicales o signos medulares; la movilización suave sí puede ser adecuada, y los cambios neurológicos no impiden movilizar con suavidad desde el principio (Maitland 2005, cap. 9, pp. 222–223).',
+  sinTerapiaManualAguda: 'En la fase aguda (menos de 1 mes) la pauta de Kuijper 2009 es sin terapia manual: ahí los escalones no se aplican. La movilización o manipulación entra en la fase crónica (Blanpied 2017, B).',
   // Varios síntomas (Fase N, docs/sintomas-multiples.md; decisión 35)
   dosificaOtro: 'Dosificado según el síntoma más irritable de la fase 3, no según P1 (a igualdad de irritabilidad, manda P1). La gravedad es la de su NRS.',
   independiente: 'Un síntoma va independiente de P1: puede ser un segundo problema que este plan no trata. Valóralo aparte.',
+};
+
+// Avisos por hipótesis, por id (nunca por el nombre): claves de AVISOS.
+export const AVISOS_HIP = {
+  ce13: ['vertigo'],                                         // mareo cervicogénico
+  ce3: ['manipulacionCervical'],                             // radiculopatía cervical
+  ce12: ['manipulacionCervical', 'sinTerapiaManualAguda'],   // dolor radicular cervical (su pauta aguda, data/cervical.js)
 };
 
 // Bloques de la sesión de 50 minutos: organización orientativa y editable, no
@@ -93,9 +103,13 @@ export const TEXTOS_SESION = {
   educacionPrimera: 'Avisar de un posible aumento temporal de los síntomas tras esta primera sesión (Maitland 2005, cap. 9, p. 219).',
   primeraSesion: 'Primera sesión: menos tratamiento que en las siguientes, porque el primer estiramiento provoca más reacción (Maitland 2005, cap. 9, p. 219).',
   cantidad: 'Evaluar antes, durante y después de cada técnica; unas 3–4 movilizaciones de unos 30 s por articulación, la mitad si duele mucho (Maitland 2005, cap. 9, pp. 213, 216 y 219).',
+  // Pautas con volumen propio (VOLUMEN_PAUTA): mandan sobre la cantidad genérica.
+  cantidadReid: 'Mareo cervicogénico: el volumen es el de su pauta, que manda sobre la cantidad genérica: SNAG de Mulligan, 6 repeticiones (sin síntomas en la primera sesión); o movilización de Maitland de hasta 3 niveles cervicales altos, normalmente 3 aplicaciones de 30 s por nivel (Reid 2014).',
   domiciliario: 'Enseñar y comprobar lo que hará en casa.',
   cierre: 'Reevaluar el signo comparable y explicar qué vigilar hasta la próxima sesión (Maitland 2005, cap. 9, p. 213 y tabla 9.3, «Después»).',
   cierreNeuro: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (adormecimiento entre las piernas o alrededor del ano, cambios al orinar o al hacer de vientre) y comprobar que lo ha entendido (Finucane 2020, sección 2, pp. 9–17).',
+  cierreMedula: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (torpeza nueva en las manos, inestabilidad o piernas «pesadas» al caminar, cambios al orinar o al hacer de vientre) y comprobar que lo ha entendido (Margetis y Donnally 2025, anamnesis y exploración).',
+  cierreArterial: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (dolor de cabeza o de cuello de golpe y distinto a cualquier otro, visión doble, dificultad para hablar o tragar, inestabilidad al caminar o caídas súbitas) y comprobar que lo ha entendido; los de una disección pueden llegar días después (Rushton 2023, tablas 1–2 y 6, pp. 9–12).',
 };
 
 // Plan de un mes: A = 1 sesión/semana, B = 2 sesiones/semana.
@@ -119,6 +133,19 @@ export const PLANES_MES = {
     notas: [
       'Con movilización neural vigorosa, dejar al menos 2–3 días entre sesiones y reevaluar a las 24 h (Maitland 2005, cap. 6, p. 149).',
     ],
+  },
+};
+
+// Hipótesis cuya pauta trae su propio volumen de terapia manual, por id: clave
+// de TEXTOS_SESION que sustituye a la cantidad genérica (decisión 41).
+export const VOLUMEN_PAUTA = { ce13: 'cantidadReid' };
+
+// Hipótesis cuya pauta fija la frecuencia, por id (decisión 42): plan del mes
+// que se propone por defecto y nota que lo explica.
+export const FRECUENCIA_PAUTA = {
+  ce12: {
+    plan: 'B',
+    nota: 'Dolor radicular cervical agudo: su pauta fija 2 sesiones por semana durante 6 semanas (12 sesiones), así que encaja con el plan B; con el plan A, el mes queda por debajo de esa pauta (Kuijper 2009).',
   },
 };
 
@@ -146,9 +173,29 @@ export const REGLA_RADICULAR_SEVERA = 'Con dolor radicular severo, la mejoría p
 //  · RADICULARES: además, la regla de los 7–10 días, y solo con NRS registrado
 //    de 8 o más (Maitland 2005, cap. 9, p. 217, que habla de dolor radicular
 //    severo, no de la estenosis).
-export const HIP_EXPLORACION_NEURO = ['lu3', 'lu4', 'lu5'];   // dolor radicular, estenosis, radiculopatía
-export const HIP_RADICULARES = ['lu3', 'lu5'];
-export const HIP_NEURO_DESCARTADAS = {};
+export const HIP_EXPLORACION_NEURO = [
+  'lu3', 'lu4', 'lu5',   // lumbar: dolor radicular, estenosis, radiculopatía
+  'ce3', 'ce12',         // cervical: radiculopatía, dolor radicular
+];
+export const HIP_RADICULARES = ['lu3', 'lu5', 'ce3', 'ce12'];
+export const HIP_NEURO_DESCARTADAS = {
+  ce2: 'Disfunción neuromuscular cervical: déficit de control motor (coordinación, propiocepción), no compromiso de la raíz ni de la médula.',
+};
+
+// Red de seguridad de cada región (claves de TEXTOS_SESION para el cierre y de
+// TEXTOS_CASA para el programa para casa). `neuro`: solo con una hipótesis de
+// HIP_EXPLORACION_NEURO; `siempre`: con cualquier plan de la región. Cada
+// texto, con los síntomas del razonamiento de una pregunta de la fase 2 ya
+// revisada: lumbar, l6 (cola de caballo); cervical, cv3 (médula) y cv_ar1 y
+// cv_ar2 (arterias cervicales: el plan incluye terapia manual cervical).
+// Una región sin entrada no tiene red de seguridad propia en la fase 6.
+export const RED_SEGURIDAD = {
+  lumbar: { neuro: { cierre: 'cierreNeuro', casa: 'alarmaNeuro' } },
+  cervical: {
+    neuro: { cierre: 'cierreMedula', casa: 'alarmaMedula' },
+    siempre: { cierre: 'cierreArterial', casa: 'alarmaArterial' },
+  },
+};
 
 // Programa para casa: lo único que ve el paciente. Lenguaje llano, sin
 // puntuaciones ni fuentes en el texto; `fuente` solo para la revisión
@@ -166,6 +213,11 @@ export const TEXTOS_CASA = {
   // Solo con hipótesis de HIP_EXPLORACION_NEURO: síntomas de la lista del
   // razonamiento de l6 (data/lumbar.js), en lenguaje llano.
   alarmaNeuro: { texto: 'Si notas adormecimiento entre las piernas o alrededor del ano, o cambios al orinar o al hacer de vientre, ve a urgencias hoy mismo.', fuente: 'Finucane 2020, sección 2 (síndrome de cola de caballo), pp. 9–17: explicar al paciente qué vigilar y qué hacer (red de seguridad)' },
+  // Cervical (RED_SEGURIDAD): síntomas del razonamiento de cv3 y de cv_ar1 y
+  // cv_ar2 (data/cervical.js), en lenguaje llano. El mareo solo no está: aislado
+  // pesa poco (cv_ar2) y el paciente con ce13 ya lo tiene.
+  alarmaMedula: { texto: 'Si notas torpeza nueva en las manos (al abrocharte o al escribir), inestabilidad o las piernas pesadas al caminar, o cambios al orinar o al hacer de vientre, ve a urgencias hoy mismo.', fuente: 'Margetis y Donnally 2025 (StatPearls, «Cervical Myelopathy»: anamnesis y exploración), como en el razonamiento de cv3: con signos nuevos o que van a más, la derivación es urgente' },
+  alarmaArterial: { texto: 'Si te empieza de golpe un dolor de cabeza o de cuello distinto a cualquiera que hayas tenido, o notas visión doble, dificultad para hablar o tragar, inestabilidad al caminar o caídas sin perder el conocimiento, ve a urgencias hoy mismo.', fuente: 'Rushton 2023 (marco IFOMPT cervical), tablas 1–2 y 6, pp. 9–12, como en el razonamiento de cv_ar1 y cv_ar2: disección arterial e insuficiencia vertebrobasilar; los síntomas neurológicos pueden llegar días después' },
 };
 
 // Cómo cuenta cada texto que no cita fuente en el propio texto, para el
@@ -194,4 +246,4 @@ export const HOJA_REGISTRO = [
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.
-export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020'];
+export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014'];
