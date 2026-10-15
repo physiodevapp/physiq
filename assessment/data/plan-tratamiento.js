@@ -153,10 +153,10 @@ export const BLOQUES_SESION = [
 // Contenido fijo de cada bloque (decisiones 18 y 21).
 export const TEXTOS_SESION = {
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
-  reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3).',
+  reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3; Hengeveld y Banks 2005, cap. 9, p. 246).',
   reevaluacionRadicular: 'Exploración neurológica al empezar; si empeora, comunicarlo al médico (Maitland 2005, cap. 6, p. 136).',
   educacionBase: 'Explicar la hipótesis y el plan, y lo que puede notar.',
-  educacionPrimera: 'Avisar de un posible aumento temporal de los síntomas tras esta primera sesión (Maitland 2005, cap. 9, p. 219).',
+  educacionPrimera: 'Avisar de un posible aumento temporal de los síntomas tras esta primera sesión (Maitland 2005, cap. 9, p. 219; Hengeveld y Banks 2005, cap. 9, p. 243).',
   primeraSesion: 'Primera sesión: menos tratamiento que en las siguientes, porque el primer estiramiento provoca más reacción (Maitland 2005, cap. 9, p. 219).',
   cantidad: 'Evaluar antes, durante y después de cada técnica; unas 3–4 movilizaciones de unos 30 s por articulación, la mitad si duele mucho (Maitland 2005, cap. 9, pp. 213, 216 y 219).',
   // Regiones periféricas (decisión 44)
@@ -164,7 +164,7 @@ export const TEXTOS_SESION = {
   // Pautas con volumen propio (VOLUMEN_PAUTA): mandan sobre la cantidad genérica.
   cantidadReid: 'Mareo cervicogénico: el volumen es el de su pauta, que manda sobre la cantidad genérica: SNAG de Mulligan, 6 repeticiones (sin síntomas en la primera sesión); o movilización de Maitland de hasta 3 niveles cervicales altos, normalmente 3 aplicaciones de 30 s por nivel (Reid 2014).',
   domiciliario: 'Enseñar y comprobar lo que hará en casa.',
-  cierre: 'Reevaluar el signo comparable y explicar qué vigilar hasta la próxima sesión (Maitland 2005, cap. 9, p. 213 y tabla 9.3, «Después»).',
+  cierre: 'Reevaluar el signo comparable y explicar qué vigilar hasta la próxima sesión: al levantarse, en el trabajo o la actividad, por la noche y tras los ejercicios (Maitland 2005, cap. 9, p. 213 y tabla 9.3, «Después»; Hengeveld y Banks 2005, cap. 9, p. 243).',
   cierreNeuro: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (adormecimiento entre las piernas o alrededor del ano, cambios al orinar o al hacer de vientre) y comprobar que lo ha entendido (Finucane 2020, sección 2, pp. 9–17).',
   cierreMedula: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (torpeza nueva en las manos, inestabilidad o piernas «pesadas» al caminar, cambios al orinar o al hacer de vientre) y comprobar que lo ha entendido (Margetis y Donnally 2025, anamnesis y exploración).',
   cierreCardiaco: 'Red de seguridad: explicar qué síntomas exigen llamar al 112 (dolor u opresión en el pecho, el hombro, el brazo, el cuello, la mandíbula o la espalda que no se pasa al parar en unos 20 minutos, o que viene con sudor frío, náuseas, vómitos o falta de aire) y comprobar que lo ha entendido (Goodman 2018, cap. 6, pp. 236 y 260, como en el razonamiento de h_c4).',
@@ -180,7 +180,7 @@ export const PLANES_MES = {
     final: 'Sesión 4',
     domiciliario: 'Alto: es la mayor parte de la carga del mes.',
     notas: [
-      'Maitland evalúa la respuesta a las 24–48 h y pide sesiones lo bastante frecuentes para valorar el efecto; con una por semana la comparación es semanal (Maitland 2005, cap. 9, p. 219 y tabla 9.3). Pedir al paciente que anote cómo estuvo a las 24 h de cada sesión.',
+      'Maitland evalúa la respuesta a las 24–48 h y pide sesiones lo bastante frecuentes para valorar el efecto; con una por semana la comparación es semanal (Maitland 2005, cap. 9, p. 219 y tabla 9.3). Pedir al paciente que anote cómo estuvo a las 24 h de cada sesión y, si las molestias aumentan, qué estaba haciendo y qué le ayudó (Hengeveld y Banks 2005, cap. 9, p. 247).',
     ],
   },
   B: {
@@ -289,7 +289,10 @@ export const TEXTOS_CASA = {
   cuandoParar: { texto: 'Cuándo parar:', tipo: 'etiqueta' },
   alDiaSiguiente: { texto: 'Al día siguiente:', tipo: 'etiqueta' },
   alDiaSiguienteDefecto: { texto: 'Fíjate en cómo estás a las 24 horas y anótalo para la próxima sesión.', fuente: 'Maitland 2005, cap. 9, p. 219 y tabla 9.3 (respuesta a las 24–48 h)' },
-  primeraSesion: { texto: 'Después de esta primera sesión puedes notar un aumento temporal de las molestias.', fuente: 'Maitland 2005, cap. 9, p. 219' },
+  primeraSesion: { texto: 'Después de esta primera sesión puedes notar un aumento temporal de las molestias.', fuente: 'Maitland 2005, cap. 9, p. 219; Hengeveld y Banks 2005, cap. 9, p. 243' },
+  // Solo con el plan A (1 sesión por semana), decisión 62: el libro advierte que
+  // anotar puede hacer que algunos pacientes se fijen demasiado en sus síntomas.
+  anotarAumento: { texto: 'Si las molestias aumentan, apunta qué estabas haciendo y qué te ayudó.', fuente: 'Hengeveld y Banks 2005, cap. 9, p. 247 (registro escrito por el paciente)' },
   cirujano: { texto: 'Sigue siempre las indicaciones de tu cirujano.', fuente: 'decisión posquirúrgica: el protocolo del cirujano manda (docs/posquirurgico.md; principio 3 de docs/plan-tratamiento.md)' },
   empeora: { texto: 'Si empeoras claramente o notas algo nuevo, coméntalo con tu fisioterapeuta antes de la próxima sesión.', tipo: 'redaccion' },
   // Solo con hipótesis de HIP_EXPLORACION_NEURO: síntomas de la lista del
@@ -320,14 +323,29 @@ export const TIPO_TEXTO = {
   'TEXTOS_SESION.educacionBase': 'organizacion', 'TEXTOS_SESION.domiciliario': 'organizacion',
 };
 
-// Hoja de registro de cada sesión (decisión 24; Maitland 2005, cap. 9, tabla 9.3, p. 226).
+// Hoja de registro de cada sesión, común a todas las regiones (decisiones 24 y
+// 60): la tabla 9.3 del libro vertebral con el detalle del periférico.
+export const FUENTE_REGISTRO = 'Maitland 2005, cap. 9, tabla 9.3, p. 226; Hengeveld y Banks 2005, cap. 9, pp. 243 y 246';
 export const HOJA_REGISTRO = [
-  'Refiere el paciente: cambios desde la sesión anterior, en sus palabras y comparados con antes',
-  'Signos: cambios en los signos marcados',
+  'Refiere el paciente: lo primero, su opinión sobre la sesión anterior, en sus palabras y comparada con antes',
+  'Signos: cambios en los signos marcados, también comparados con antes',
   'Plan: técnica elegida y por qué',
-  'Tratamiento: técnica, grado, nivel, repeticiones y efecto mientras se aplica',
+  'Tratamiento: posición del paciente y de la articulación, técnica (con su inclinación), nivel en la columna, grado, ritmo, duración (repeticiones o tiempo) y respuesta mientras se aplica',
   'Después: lo que refiere el paciente y los signos',
+  'Indicaciones dadas: información, ejercicios y avisos',
   'Para la siguiente sesión: qué cambiar y por qué',
+];
+
+// Qué comparar en las reevaluaciones intermedia y final del mes (revisión
+// retrospectiva; decisión 63).
+export const FUENTE_RETROSPECTIVA = 'Hengeveld y Banks 2005, cap. 9, p. 246';
+export const REEVALUACION_RETROSPECTIVA = [
+  'Bienestar general, comparado con unas sesiones antes',
+  'Síntomas y nivel de actividad, comparados',
+  'Efecto de cada intervención hasta ahora (exploración y movimientos pasivos)',
+  'Efecto de las indicaciones, recomendaciones y ejercicios',
+  'Qué ha aprendido el paciente y qué le ha sido más útil',
+  'Objetivos de la siguiente fase del tratamiento, acordados con el paciente',
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.

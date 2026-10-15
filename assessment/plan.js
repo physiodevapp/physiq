@@ -231,6 +231,8 @@ function pintar() {
     <div class="summary-row"><span class="summary-label">Reevaluación intermedia</span><span class="summary-value">${esc(mes.intermedia)}</span></div>
     <div class="summary-row"><span class="summary-label">Reevaluación final</span><span class="summary-value">${esc(mes.final)}${plan.mes.prom.length ? `, con ${esc(plan.mes.prom.join(' / '))}` : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Programa domiciliario</span><span class="summary-value">${esc(mes.domiciliario)}</span></div>
+    <details class="plan-registro"><summary>Qué comparar en las reevaluaciones intermedia y final</summary>${lista(plan.mes.retrospectiva)}
+      <div class="test-source">${esc(plan.mes.fuenteRetrospectiva)}</div></details>
     ${lista([...mes.notas, ...plan.mes.notasPauta])}
     ${plan.mes.posq ? `<div class="nota-posq">🏥 ${plan.mes.posq.semanas != null ? `Semana ${plan.mes.posq.semanas} tras la cirugía. ` : ''}${esc(textoPosq(plan.mes.posq.conProtocolo))}</div>` : ''}
     <div class="plan-sub">Progresión</div>${lista(plan.mes.progresion)}
@@ -239,7 +241,7 @@ function pintar() {
       p.horizonte ? `${p.name}: ${p.horizonte}` : '', p.derivacion ? `Reconsiderar o derivar si: ${p.derivacion}` : '',
     ].filter(Boolean)))}` : ''}
     <details class="plan-registro"><summary>Hoja de registro de cada sesión</summary>${lista(plan.registro)}
-      <div class="test-source">Maitland 2005, cap. 9, tabla 9.3, p. 226</div></details>
+      <div class="test-source">${esc(plan.fuenteRegistro)}</div></details>
     <label class="plan-campo-et" for="planNotasMes">Tus notas para el mes</label>
     <textarea class="plan-note-input" id="planNotasMes" rows="3" oninput="planNota('mes', this.value)">${esc(pt.notas.mes)}</textarea>
   </div>
@@ -306,7 +308,7 @@ function _compartir(doc, titulo, copiado) {
   let texto;
   if (doc === 'sesion') texto = textoPlanSesion(plan, e, pt.nivel);
   else if (doc === 'mes') texto = textoPlanMes(plan, e, pt.frecuencia);
-  else texto = textoDomiciliario(plan, e, { ejercicios: pt.notas.domiciliario, parar: pt.notas.parar, planNotes: state.planNotes });
+  else texto = textoDomiciliario(plan, e, { ejercicios: pt.notas.domiciliario, parar: pt.notas.parar, planNotes: state.planNotes, frecuencia: pt.frecuencia });
   const extra = doc === 'sesion' ? pt.notas.sesion : doc === 'mes' ? pt.notas.mes : '';
   if (!plan.bloqueado && extra?.trim()) texto += `\n\nNOTAS DEL FISIOTERAPEUTA\n${extra.trim()}`;
   compartirTexto(texto, { titulo, copiado });

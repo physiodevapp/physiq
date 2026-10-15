@@ -4,7 +4,8 @@
 // clínico y fuentes: data/plan-tratamiento.js.
 import {
   ESCALONES, TEXTO_NIVELES, AVISOS, BLOQUES_SESION, TEXTOS_SESION, PLANES_MES,
-  PROGRESION_GENERICA, REGLAS_MES, REGLA_RADICULAR_SEVERA, HOJA_REGISTRO,
+  PROGRESION_GENERICA, REGLAS_MES, REGLA_RADICULAR_SEVERA, HOJA_REGISTRO, FUENTE_REGISTRO,
+  REEVALUACION_RETROSPECTIVA, FUENTE_RETROSPECTIVA,
   MINUTOS_SESION, HIP_EXPLORACION_NEURO, HIP_RADICULARES, TEXTOS_CASA, RED_SEGURIDAD, AVISOS_HIP,
   VOLUMEN_PAUTA, FRECUENCIA_PAUTA, ESCALONES_PERIFERICOS, REGIONES_COLUMNA_PLAN, FAMILIA_HIP,
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, RED_HIP,
@@ -283,8 +284,11 @@ export function construirPlan(e) {
       reglas: reglasMes,
       pronostico: elegidas.filter(h => h.pronostico).map(h => ({ name: h.name, ...h.pronostico })),
       posq: e.posq ? { ...e.posq } : null,
+      retrospectiva: REEVALUACION_RETROSPECTIVA,
+      fuenteRetrospectiva: FUENTE_RETROSPECTIVA,
     },
     registro: HOJA_REGISTRO,
+    fuenteRegistro: FUENTE_REGISTRO,
   };
 }
 
@@ -334,6 +338,7 @@ export function textoPlanMes(plan, e, frecuencia = 'A') {
   out.push(linea(`Reevaluación intermedia: ${p.intermedia}`));
   out.push(linea(`Reevaluación final: ${p.final}${plan.mes.prom.length ? `, con ${plan.mes.prom.join(' / ')}` : ''}`));
   out.push(linea(`Peso del programa domiciliario: ${p.domiciliario}`));
+  out.push(linea(`En las reevaluaciones intermedia y final, comparar (${plan.mes.fuenteRetrospectiva}): ${plan.mes.retrospectiva.map(t => t[0].toLowerCase() + t.slice(1)).join('; ')}.`));
   out.push(...p.notas.map(linea), ...plan.mes.notasPauta.map(linea));
   if (plan.mes.posq) out.push(linea(`Posquirúrgico${plan.mes.posq.semanas != null ? `, semana ${plan.mes.posq.semanas} tras la cirugía` : ''}: ${textoPosq(plan.mes.posq.conProtocolo)}`));
   out.push('', 'PROGRESIÓN', ...plan.mes.progresion.map(linea), '', 'SEGUIR O CAMBIAR', ...plan.mes.reglas.map(linea));
@@ -344,7 +349,7 @@ export function textoPlanMes(plan, e, frecuencia = 'A') {
       if (pr.derivacion) out.push(linea(`Reconsiderar o derivar si: ${pr.derivacion}`));
     });
   }
-  out.push('', 'HOJA DE REGISTRO DE CADA SESIÓN', ...plan.registro.map(linea));
+  out.push('', `HOJA DE REGISTRO DE CADA SESIÓN (${plan.fuenteRegistro})`, ...plan.registro.map(linea));
   return out.join('\n');
 }
 
@@ -365,7 +370,7 @@ export function faltaEnCasa(notas = {}, planNotes = {}) {
   return falta;
 }
 
-export function textoDomiciliario(plan, e, { ejercicios = '', parar = '', planNotes = {} } = {}) {
+export function textoDomiciliario(plan, e, { ejercicios = '', parar = '', planNotes = {}, frecuencia = '' } = {}) {
   if (plan.bloqueado) return '';
   const T = Object.fromEntries(Object.entries(TEXTOS_CASA).map(([k, v]) => [k, v.texto]));
   const out = [T.titulo, [e.paciente, e.fecha].filter(Boolean).join(' · '), ''];
@@ -374,6 +379,7 @@ export function textoDomiciliario(plan, e, { ejercicios = '', parar = '', planNo
   const p = cuandoParar({ parar }, planNotes);
   if (p) out.push(T.cuandoParar, p, '');
   out.push(T.alDiaSiguiente, planNotes.ventanaRecuperacion || T.alDiaSiguienteDefecto, '');
+  if (frecuencia === 'A') out.push(T.anotarAumento, '');
   if (plan.primera) out.push(T.primeraSesion, '');
   if (plan.mes.posq) out.push(T.cirujano, '');
   out.push(T.empeora);
