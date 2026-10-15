@@ -164,15 +164,15 @@ export const CUESTIONARIOS = [
     validacionEs: 'Kovacs 2006 (Spine 31(1):104–110)',
     instrucciones: 'Toca el número que rodeó el paciente en cada frase.',
     escala: { min: 0, max: 6 },
-    leyenda: '0 = totalmente en desacuerdo · 6 = totalmente de acuerdo',
+    leyenda: '0 = en total desacuerdo · 3 = ni de acuerdo ni en desacuerdo · 6 = completamente de acuerdo',
     items: [
       ...['El dolor lo causó la actividad física', 'La actividad física empeora el dolor', 'La actividad física podría dañarle la espalda',
-        'No debería hacer actividades que empeoran el dolor', 'No puede hacer actividades que empeoran el dolor']
+        'No debería hacer actividades que empeoran o podrían empeorar el dolor', 'No puede hacer actividades que empeoran o podrían empeorar el dolor']
         .map((t, i) => ({ n: i + 1, seccion: 'Actividad física', t })),
-      ...['El dolor lo causó el trabajo o un accidente laboral', 'El trabajo agravó el dolor', 'Reclama una indemnización por el dolor',
+      ...['El dolor lo causó el trabajo o un accidente laboral', 'El trabajo agravó el dolor', 'Recibe o tramita una compensación (baja, pensión, indemnización)',
         'Su trabajo es demasiado pesado', 'El trabajo empeora o empeoraría el dolor', 'El trabajo podría dañarle la espalda',
         'No debería hacer su trabajo habitual con este dolor', 'No puede hacer su trabajo habitual con este dolor',
-        'No puede trabajar hasta que le traten el dolor', 'No volverá a su trabajo en 3 meses', 'Nunca podrá volver a ese trabajo']
+        'No podrá trabajar hasta que le traten el dolor', 'No cree que vuelva a su trabajo en 3 meses', 'No cree que vuelva nunca a su trabajo']
         .map((t, i) => ({ n: i + 6, seccion: 'Trabajo', t })),
     ],
     rango: [0, 96],
@@ -187,7 +187,7 @@ export const CUESTIONARIOS = [
     ],
     interpretacionTexto: 'Total 0–96 (suma de las 16 frases, como en la versión española), actividad física 0–24 (frases 2–5) y trabajo 0–42 (6, 7, 9, 10, 11, 12 y 15); a más puntuación, más creencias de miedo y evitación. El total no tiene punto de corte publicado. El corte es de la subescala de trabajo, en lumbalgia aguda de origen laboral (Fritz y George 2002: > 34, cociente de probabilidad positivo 3,33 para seguir con restricciones laborales a las 4 semanas; < 30, negativo 0,08); solo tiene sentido si el paciente trabaja. La de actividad física no tiene corte validado: el «> 14» que circula es la mediana de Burton 1999 y no predijo la discapacidad a 6 meses (George 2008).',
     fuente: 'Waddell 1993 (Pain 52:157–168; ítems y subescalas, apéndice) · Kovacs 2006 (versión española; total de las 16 frases) · Fritz y George 2002 (Phys Ther 82(10):973–983) · George 2008 (JOSPT 38(2):50–58)',
-    nota: 'La versión española mantiene las 16 frases en el mismo orden que el original; solo se reformuló la 8 (indemnización), que no entra en las subescalas. Kovacs 2006 recomienda el total («al menos tan válido como sus subescalas y más sencillo de puntuar»). Su texto cita la subescala de trabajo sin el ítem 15, pero su máximo (42) solo cuadra con los 7 ítems de Waddell 1993. Las etiquetas son resúmenes del original: la hoja española está en un apéndice en línea que no se ha leído.',
+    nota: 'La versión española mantiene las 16 frases en el mismo orden que el original; solo se reformuló la 8 (indemnización), que no entra en las subescalas. Kovacs 2006 recomienda el total («al menos tan válido como sus subescalas y más sencillo de puntuar»). Su texto cita la subescala de trabajo sin el ítem 15, pero su máximo (42) solo cuadra con los 7 ítems de Waddell 1993. Etiquetas resumidas de la hoja española de la Fundación Kovacs (kovacs.org, «libre para su uso clínico», © Fundación Kovacs), aportada por el usuario; la hoja no trae cómo se puntúa.',
   },
   {
     id: 'pcs',
