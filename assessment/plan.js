@@ -4,7 +4,7 @@
 // Nunca toca buildPhysiQPayload(), 📋 Notas ni 📄 Informe (decisión 9).
 import { state } from './state.js';
 import { DOSIS_DERIVAR, ZONAS_SINTOMA } from './data.js';
-import { REGIONES_PLAN, ESCALONES, AVISOS, MINUTOS_SESION } from './data/plan-tratamiento.js';
+import { REGIONES_PLAN, AVISOS, MINUTOS_SESION } from './data/plan-tratamiento.js';
 import {
   construirPlan, elegible, hipotesisPorDefecto, frecuenciaPorDefecto, textoPlanSesion, textoPlanMes, textoDomiciliario, faltaEnCasa, textoPosq,
   NIVELES_GRAVEDAD, NIVELES_IRRITABILIDAD, NOMBRE_GRAVEDAD, NOMBRE_IRRITABILIDAD,
@@ -158,7 +158,7 @@ function pintar() {
 
   const nv = plan.niveles;
   const nivel = pt.nivel;
-  const esc_ = ESCALONES[nv[nivel] || nv.B];
+  const esc_ = plan.tablaEscalones[nv[nivel] || nv.B];
   const s = plan.sesion;
   const mes = plan.mes[pt.frecuencia];
 
@@ -191,7 +191,7 @@ function pintar() {
     <div class="option-group plan-niveles">
       ${['A', 'B', 'C'].map(k => {
         const n = nv[k];
-        const e = n ? ESCALONES[n] : null;
+        const e = n ? plan.tablaEscalones[n] : null;
         return opcion('nivel', k, `<strong>${k}</strong> · ${e ? esc(e.nombre) : '—'}`, nivel === k, { deshabilitado: !n, titulo: n ? '' : nv.sinC });
       }).join('')}
     </div>
@@ -233,7 +233,7 @@ function pintar() {
     <div class="summary-row"><span class="summary-label">Programa domiciliario</span><span class="summary-value">${esc(mes.domiciliario)}</span></div>
     ${lista([...mes.notas, ...plan.mes.notasPauta])}
     ${plan.mes.posq ? `<div class="nota-posq">🏥 ${plan.mes.posq.semanas != null ? `Semana ${plan.mes.posq.semanas} tras la cirugía. ` : ''}${esc(textoPosq(plan.mes.posq.conProtocolo))}</div>` : ''}
-    <div class="plan-sub">Progresión</div>${lista([plan.mes.progresion])}
+    <div class="plan-sub">Progresión</div>${lista(plan.mes.progresion)}
     <div class="plan-sub">Seguir o cambiar</div>${lista(plan.mes.reglas)}
     ${plan.mes.pronostico.length ? `<div class="plan-sub">Pronóstico y cuándo reconsiderar</div>${lista(plan.mes.pronostico.flatMap(p => [
       p.horizonte ? `${p.name}: ${p.horizonte}` : '', p.derivacion ? `Reconsiderar o derivar si: ${p.derivacion}` : '',
