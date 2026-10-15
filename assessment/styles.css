@@ -281,6 +281,10 @@
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  @keyframes faseFundido {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
   /* Aviso inferior (showToast): se centra con translateX(-50%), así que su
      animación debe conservarlo; con fadeUp lo pisaba y el aviso aparecía
@@ -1833,6 +1837,11 @@
 
   /* ── TABLET (≤768px) ─────────────────────────────────── */
   @media (max-width: 768px) {
+    /* Aquí .nav-buttons es position: fixed dentro de la fase: un transform en
+       la animación de entrada la colocaba respecto a la fase (al final de la
+       página, tapando «Plan de tratamiento →» en la 5) hasta que acababa y
+       saltaba al pie de la pantalla. Solo fundido, sin transform. */
+    .phase-container { animation-name: faseFundido; }
     .app-header { padding: 0 1rem; height: 52px; }
     .logo-main { font-size: 1.2rem; }
     .logo-sub { font-size: 1.2rem; letter-spacing: -0.5px; }
