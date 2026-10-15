@@ -2833,7 +2833,7 @@ function _mostrarAvisoVersion() {
   aviso.setAttribute('role', 'status');
   aviso.innerHTML = `<span class="version-aviso-texto">${_versionPendiente() ? 'La versión nueva aún se está publicando: prueba en unos minutos' : '<span class="version-aviso-largo">Hay una versión nueva</span><span class="version-aviso-corto">Versión nueva</span>'}</span>
     <button type="button" class="version-aviso-btn" id="versionAvisoRecargar">Actualizar</button>
-    <button type="button" class="version-aviso-cerrar" id="versionAvisoCerrar" aria-label="Cerrar aviso" title="Ahora no">×</button>`;
+    <button type="button" class="version-aviso-cerrar" id="versionAvisoCerrar" aria-label="Cerrar aviso" title="Ahora no"><svg class="icono-x" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`;
   document.body.appendChild(aviso);
   aviso.querySelector('#versionAvisoRecargar').onclick = recargarVersionNueva;
   aviso.querySelector('#versionAvisoCerrar').onclick = () => {

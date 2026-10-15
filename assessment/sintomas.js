@@ -45,7 +45,7 @@ function itemHTML(i, zonas) {
     ? `<div class="sint-cab"><span class="sint-num">P1</span><span class="sint-tipo">Principal</span></div>`
     : `<div class="sint-cab"><span class="sint-num">P${i + 1}</span><span class="sint-tipo">Secundario</span>
         ${s.otraRegion ? '' : `<button type="button" class="sint-accion" onclick="sintHacerPrincipal(${i})">Hacer principal</button>`}
-        <button type="button" class="sint-accion sint-quitar" onclick="sintQuitar(${i})" aria-label="Quitar P${i + 1}" title="Quitar P${i + 1}">✕</button></div>`;
+        <button type="button" class="sint-accion sint-quitar" onclick="sintQuitar(${i})" aria-label="Quitar P${i + 1}" title="Quitar P${i + 1}"><svg class="icono-x" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`;
 
   const ladoHint = p1 && !s.lado && state.lado ? `<div class="sint-hint">Sin marcar: el de la región (${esc(state.lado.toLowerCase())}).</div>` : '';
   const partes = [

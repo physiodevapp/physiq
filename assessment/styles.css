@@ -514,7 +514,7 @@
   .sint-num { font-family: 'DM Mono', monospace; font-weight: 600; color: var(--accent); }
   .sint-tipo { font-size: 0.8rem; color: var(--text2); flex: 1; }
   .sint-accion { background: none; border: 1px solid var(--border2); color: var(--text2); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 0.78rem; cursor: pointer; min-height: 36px; }
-  .sint-quitar { width: 36px; padding: 0; }
+  .sint-quitar { width: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
   .sint-campo { display: flex; flex-direction: column; gap: 6px; }
   .sint-zonas .option-btn { padding: 7px 12px; font-size: 0.82rem; }
   .sint-otra { border-style: dashed; }
@@ -2180,6 +2180,7 @@
   }
   .translate-banner.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
   .translate-banner-close {
+    display: inline-flex; align-items: center; justify-content: center;
     margin-left: auto;
     background: none;
     border: none;
@@ -2483,6 +2484,7 @@
 .razon-pregunta { font-size: 0.86rem; line-height: 1.45; color: var(--text); }
 /* Sin borde, como las demás «×» (aviso de versión, banner de traducción). */
 .razon-cerrar {
+  display: inline-flex; align-items: center; justify-content: center;
   position: absolute; top: 0.7rem; right: 0.8rem;
   width: 32px; height: 32px;
   background: none; border: none; color: var(--text3);
@@ -2925,6 +2927,7 @@ body.posquirurgico .solo-posq { display: block; }
   padding: 6px 12px; font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; flex-shrink: 0;
 }
 .version-aviso-cerrar {
+  display: inline-flex; align-items: center; justify-content: center;
   background: none; border: none; color: var(--text3); font-size: 1.1rem; line-height: 1;
   padding: 4px 6px; cursor: pointer; flex-shrink: 0;
 }
@@ -2938,6 +2941,7 @@ body.posquirurgico .solo-posq { display: block; }
   .version-aviso-texto { flex: 1; }
   .version-aviso-btn { min-height: 44px; padding: 0 16px; font-size: 0.9rem; border-radius: 9px; }
   .version-aviso-cerrar { min-width: 44px; min-height: 44px; font-size: 1.4rem; }
+  .version-aviso-cerrar .icono-x { width: 20px; height: 20px; }
   /* Con el teclado abierto la barra de abajo deja de estar donde se espera y el
      aviso taparía lo que se escribe: se oculta mientras se edita un campo. */
   body:has(:is(textarea, input:not([type=checkbox], [type=radio], [type=file])):focus) .version-aviso { display: none; }
@@ -3275,3 +3279,9 @@ body.posquirurgico .solo-posq { display: block; }
 }
 .in-hub .herr-op-ia { display: none; }
 @media print { .herramientas-btn { display: none !important; } }
+
+/* Una sola X en toda la app (decisión del usuario, 2026-10): el mismo icono SVG
+   (.icono-x). Sin borde cuando cierra algo flotante (aviso de versión, panel del
+   razonamiento, banner de traducción); con borde cuando quita algo del contenido
+   y va junto a otros botones con borde («Quitar P2», junto a «Hacer principal») */
+.icono-x { display: block; flex-shrink: 0; }
