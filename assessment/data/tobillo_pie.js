@@ -16,6 +16,19 @@
 // ============================================================
 import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
+// ── Fase 3 · ZONAS_SINTOMA.tobillo_pie — zonas del mapa corporal para P1–P4
+// (docs/sintomas-multiples.md). Tabla aceptada por el usuario (2026-10),
+// pendiente de revisión; `id` estable: se guarda en la sesión.
+export const zonas = [
+  { id: 'tobillo_lat', nombre: 'Tobillo lateral' },
+  { id: 'tobillo_med', nombre: 'Tobillo medial' },
+  { id: 'tobillo_ant', nombre: 'Tobillo anterior' },
+  { id: 'aquiles',     nombre: 'Tendón de Aquiles' },
+  { id: 'talon',       nombre: 'Talón o planta' },
+  { id: 'antepie',     nombre: 'Antepié o dedos' },
+  { id: 'pantorrilla', nombre: 'Pantorrilla' },
+];
+
 // ── Fase 2 · SYSTEMIC_SCREENING.tobillo_pie
 // Árbol, nodo 1 (cinco P, monoartritis con fiebre, debilidad simétrica con
 // arreflexia) → preguntas con `urgencia` (tp_t1, tp_i1, tp_n1).
