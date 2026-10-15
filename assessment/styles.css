@@ -3103,16 +3103,19 @@ body.posquirurgico .solo-posq { display: block; }
 }
 .cuest-grupo + .cuest-grupo { margin-top: 14px; }
 .cuest-grupo-titulo { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); font-weight: 500; margin: 0 0 6px; }
+/* Nombre y descripción en un solo párrafo: si la descripción no cabe, sigue
+   debajo del nombre en vez de en una columna aparte que dejaba un hueco a la
+   izquierda; el estado va siempre en su propia línea */
 .cuest-tarjeta {
-  display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 2px; align-items: baseline;
+  display: block;
   width: 100%; text-align: left; margin-bottom: 6px; padding: 10px 12px; min-height: 48px;
   background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px;
   color: var(--text); font-family: inherit; cursor: pointer;
 }
 @media (hover: hover) { .cuest-tarjeta:hover { border-color: var(--accent); } }
-.cuest-tarjeta-nombre { font-weight: 600; font-size: 0.9rem; }
-.cuest-tarjeta-titulo { font-size: 0.78rem; color: var(--text2); min-width: 0; }
-.cuest-tarjeta-estado { grid-column: 1 / -1; font-size: 0.75rem; color: var(--text3); }
+.cuest-tarjeta-nombre { font-weight: 600; font-size: 0.9rem; margin-right: 8px; }
+.cuest-tarjeta-titulo { font-size: 0.78rem; color: var(--text2); line-height: 1.4; }
+.cuest-tarjeta-estado { display: block; margin-top: 2px; font-size: 0.75rem; color: var(--text3); }
 .cuest-nivel-ok { color: var(--green); }
 .cuest-nivel-medio { color: var(--orange); }
 .cuest-nivel-alto { color: var(--red); }
@@ -3252,3 +3255,13 @@ body.posquirurgico .solo-posq { display: block; }
   .plan-registro summary { cursor: pointer; color: var(--accent); }
   #phase6 .summary-row .summary-value { text-align: right; }
 
+
+/* «Herramientas» (cabecera): en ≤768 px agrupa tiempos de tejido,
+   cuestionarios y «Preguntar a la IA» (decisión del usuario, 2026-10) */
+.herramientas-btn { display: none; }
+@media (max-width: 768px) {
+  .app-header .herramientas-btn { display: flex; }
+  .app-header .tejidos-btn, .app-header .cuest-btn, .app-header .pregunta-ia-btn { display: none; }
+}
+.in-hub .herr-op-ia { display: none; }
+@media print { .herramientas-btn { display: none !important; } }

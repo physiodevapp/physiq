@@ -93,6 +93,7 @@ window.addEventListener('popstate', e => {
   if (_popIgnorar) { _popIgnorar = false; return; }
   if (_razonHistorial) { cerrarRazonamiento({ desdeHistorial: true }); return; }
   if (_compartirHistorial) { cerrarMenuCompartir({ desdeHistorial: true }); return; }
+  if (_herrHistorial) { cerrarHerramientas({ desdeHistorial: true }); return; }
   if (_preguntaHistorial) { cerrarPreguntaIA({ desdeHistorial: true }); return; }
   if (_tejidosHistorial) { cerrarTiemposTejido({ desdeHistorial: true }); return; }
   if (_cuestHistorial) { cerrarCuestionarios({ desdeHistorial: true }); return; }
@@ -2926,6 +2927,7 @@ function toggleSessionPanel() {
 function _closeAllOverlays() {
   cerrarRazonamiento({ sinHistorial: true });
   cerrarMenuCompartir({ sinHistorial: true });
+  cerrarHerramientas({ sinHistorial: true });
   cerrarPreguntaIA({ sinHistorial: true });
   cerrarTiemposTejido({ sinHistorial: true });
   cerrarCuestionarios({ sinHistorial: true });
@@ -3214,6 +3216,67 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('compartirOverlay')?.classList.contains('open')) cerrarMenuCompartir();
 });
 
+// ─── HERRAMIENTAS (cabecera, solo ≤768 px) ──────────────────────
+// En móvil no caben como iconos sueltos los tiempos de tejido, los
+// cuestionarios y «Preguntar a la IA» (decisión del usuario, 2026-10): un solo
+// botón abre esta hoja y cada opción abre la suya. La hoja de la herramienta
+// reutiliza la entrada del historial de esta (replaceState), así que un atrás
+// cierra la herramienta y vuelve a la fase, sin pasar otra vez por el menú.
+let _herrHistorial = false;
+let _reusarEntrada = false;
+function _entradaOverlay(st) {
+  if (_reusarEntrada) { _reusarEntrada = false; history.replaceState(st, ''); }
+  else history.pushState(st, '');
+}
+// Botón de cabecera al que vuelve el foco: el de la herramienta si se ve
+// (escritorio), si no el de «Herramientas»
+const _botonCabecera = btn => (btn?.offsetParent ? btn : document.getElementById('herramientasBtn'));
+
+function abrirHerramientas() {
+  const overlay = document.getElementById('herramientasOverlay');
+  if (!overlay || overlay.classList.contains('open')) return;
+  overlay.classList.add('open');
+  document.getElementById('herramientasBtn')?.setAttribute('aria-expanded', 'true');
+  lockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  if (_esMovil()) {
+    history.pushState({ phase: state.currentPhase, herramientas: true }, '');
+    _herrHistorial = true;
+  }
+  document.getElementById('herramientasPanel').focus({ preventScroll: true });
+}
+
+// `traspaso`: se cierra para abrir una herramienta, que se queda con la
+// entrada del historial y con el foco
+function cerrarHerramientas({ desdeHistorial = false, sinHistorial = false, traspaso = false } = {}) {
+  const overlay = document.getElementById('herramientasOverlay');
+  if (!overlay?.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  const panel = document.getElementById('herramientasPanel');
+  panel.style.transform = ''; panel.style.transition = '';
+  unlockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
+  if (_herrHistorial) {
+    _herrHistorial = false;
+    if (traspaso) _reusarEntrada = true;
+    else if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
+  }
+  const btn = document.getElementById('herramientasBtn');
+  btn?.setAttribute('aria-expanded', 'false');
+  if (!sinHistorial && !traspaso) btn?.focus({ preventScroll: true });
+}
+
+function herramientaElegir(k) {
+  cerrarHerramientas({ traspaso: true });
+  ({ tejidos: abrirTiemposTejido, cuestionarios: abrirCuestionarios, pregunta: abrirPreguntaIA })[k]?.();
+  // Si la herramienta no llegó a abrirse, la entrada del menú sobra
+  if (_reusarEntrada) { _reusarEntrada = false; _popIgnorar = true; history.back(); }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('herramientasOverlay')?.classList.contains('open')) cerrarHerramientas();
+});
+
 // ─── PREGUNTAR A LA IA (cabecera, solo standalone) ──────────────
 // Pregunta libre del clínico, en cualquier fase: abre Perplexity, Google (modo
 // IA) o Claude en otra pestaña con la pregunta. Lo único que se añade del caso
@@ -3255,7 +3318,7 @@ function abrirPreguntaIA() {
   document.getElementById('preguntaIABtn')?.setAttribute('aria-expanded', 'true');
   lockBodyScroll();
   if (_esMovil()) {
-    history.pushState({ phase: state.currentPhase, pregunta: true }, '');
+    _entradaOverlay({ phase: state.currentPhase, pregunta: true });
     _preguntaHistorial = true;
   }
   _ajustarPreguntaTeclado();
@@ -3310,7 +3373,7 @@ function cerrarPreguntaIA({ desdeHistorial = false, sinHistorial = false } = {})
   }
   const btn = document.getElementById('preguntaIABtn');
   btn?.setAttribute('aria-expanded', 'false');
-  if (!sinHistorial) btn?.focus({ preventScroll: true });
+  if (!sinHistorial) _botonCabecera(btn)?.focus({ preventScroll: true });
 }
 
 // Con el teclado abierto en móvil, la hoja se apoya encima de él en vez de
@@ -3472,7 +3535,7 @@ function abrirTiemposTejido() {
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
   if (_esMovil()) {
-    history.pushState({ phase: state.currentPhase, tejidos: true }, '');
+    _entradaOverlay({ phase: state.currentPhase, tejidos: true });
     _tejidosHistorial = true;
   }
   const panel = document.getElementById('tejidosPanel');
@@ -3495,7 +3558,7 @@ function cerrarTiemposTejido({ desdeHistorial = false, sinHistorial = false } = 
   }
   const btn = document.getElementById('tejidosBtn');
   btn?.setAttribute('aria-expanded', 'false');
-  if (!sinHistorial) btn?.focus({ preventScroll: true });
+  if (!sinHistorial) _botonCabecera(btn)?.focus({ preventScroll: true });
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('tejidosOverlay')?.classList.contains('open')) cerrarTiemposTejido();
@@ -3620,7 +3683,7 @@ function abrirCuestionarios(id) {
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
   if (_esMovil()) {
-    history.pushState({ phase: state.currentPhase, cuestionarios: true }, '');
+    _entradaOverlay({ phase: state.currentPhase, cuestionarios: true });
     _cuestHistorial = true;
   }
   document.getElementById('cuestPanel').focus({ preventScroll: true });
@@ -3649,7 +3712,7 @@ function cerrarCuestionarios({ desdeHistorial = false, sinHistorial = false, sin
   _refrescarEnlacesCalcular();
   if (!sinHistorial && !sinFoco) {
     const vuelta = origen && [...document.querySelectorAll(`[data-cuest-abrir="${origen}"]`)].find(b => b.offsetParent);
-    (vuelta || btn)?.focus({ preventScroll: true });
+    (vuelta || _botonCabecera(btn))?.focus({ preventScroll: true });
   }
 }
 document.addEventListener('keydown', e => {
@@ -4124,7 +4187,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
@@ -4198,6 +4261,8 @@ Object.assign(window, {
   if (compartir) initSwipe(compartir, () => cerrarMenuCompartir(), _esMovil);
   const pregunta = document.getElementById('preguntaPanel');
   if (pregunta) initSwipe(pregunta, () => cerrarPreguntaIA(), _esMovil);
+  const herr = document.getElementById('herramientasPanel');
+  if (herr) initSwipe(herr, () => cerrarHerramientas(), _esMovil);
   const tejidos = document.getElementById('tejidosPanel');
   if (tejidos) initSwipe(tejidos, () => cerrarTiemposTejido(), _esMovil);
   const cuest = document.getElementById('cuestPanel');
