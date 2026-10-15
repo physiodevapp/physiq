@@ -13,7 +13,7 @@ import { hipotesis, hipotesisActivas, esTratada } from './phase4b.js';
 import { getDerivacionesArbol } from './phase4.js';
 import { ramaPauta } from './lib/pauta.js';
 import { conProtocolo, semanasCirugia, pautaHipPosq, TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
-import { nombreRegion, regionConLado } from './lib/region.js';
+import { regionConLado } from './lib/region.js';
 import { payloadSintomas } from './lib/sintomas.js';
 import {
   saveSession, showConfirmBanner, getUrgenciasActivas, getCirugiaPayload, compartirTexto, cerrarMenuCompartir, partirPrimeraFrase,
@@ -132,8 +132,9 @@ function pintar() {
   const c = _contenedor;
   if (!c) return;
   if (!REGIONES_PLAN.includes(state.region)) {
+    // Con las siete regiones dentro (decisión 90), solo se llega aquí sin región
     c.innerHTML = `<div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>
-      <strong>El plan de tratamiento está en fase piloto.</strong> De momento solo está disponible para ${esc(new Intl.ListFormat('es', { type: 'conjunction' }).format(REGIONES_PLAN.map(r => nombreRegion(r).toLowerCase())))}; ${esc(state.region ? nombreRegion(state.region).toLowerCase() : 'esta región')} se añadirá después, con revisión clínica.</div></div>`;
+      <strong>Sin región.</strong> El plan de tratamiento depende de la región: elígela en la fase 2.</div></div>`;
     return;
   }
   const { hs, plan } = planActual();

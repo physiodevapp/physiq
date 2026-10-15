@@ -13,8 +13,9 @@
 // Maitland's Peripheral Manipulation (Hengeveld y Banks 2005; decisiones 43–49).
 // Codo (L3), la segunda periférica (decisiones 64–71). Rodilla (L3), la
 // tercera periférica (decisiones 72–80). Cadera (L3), la cuarta periférica
-// (decisiones 81–89).
-export const REGIONES_PLAN = ['lumbar', 'cervical', 'hombro', 'codo', 'rodilla', 'cadera'];
+// (decisiones 81–89). Tobillo y pie (L3), la quinta y última periférica
+// (decisiones 90–98): con ella están las siete regiones.
+export const REGIONES_PLAN = ['lumbar', 'cervical', 'hombro', 'codo', 'rodilla', 'cadera', 'tobillo_pie'];
 
 // Familia de cada región para los escalones, la cantidad por sesión, la
 // progresión y las reglas del mes (decisiones 43–46): columna = Maitland 2005
@@ -154,6 +155,21 @@ export const AVISOS = {
   nervioCadera: 'Neuropatías de cadera e ingle: los escalones se refieren a la articulación. En la meralgia parestésica (nervio cutáneo femoral lateral), el slump en decúbito lateral con extensión y aducción de la cadera puede provocar los síntomas, y la palpación profunda justo por debajo de la espina ilíaca anterosuperior, reproducirlos; es esencial tratar a la vez los signos lumbares y de la cadera, la movilización neurodinámica respetando los síntomas, y aconsejar sobre la ropa ajustada y la pérdida de peso; según algunos autores, en muchos casos se resuelve sola en 2 años (Hengeveld y Banks 2005, cap. 14, cuadro 14.7, p. 480). Para los nervios obturador e ilioinguinal, variantes del slump en decúbito lateral y de las pruebas del nervio femoral (pp. 451 y 455; cuadro 14.4, p. 477). Los signos neurológicos se exploran pronto y no se empeoran con pruebas vigorosas (cap. 6, p. 158).',
   sensibilizacionCentral: 'Sensibilización central: con hiperalgesia secundaria, los grados I y II solos no alivian el dolor y los III y IV pueden aumentar la sensibilización, y el tratamiento local tiene poco efecto duradero (Hengeveld y Banks 2005, cap. 10, recuadro 10.3, pp. 264–265).',
   posqCadera: 'Tras una cirugía de cadera: el cap. 14 no trata la prótesis; el movimiento lateral sirve para recuperar el recorrido tras una fractura del fémur o de la región acetabular (Hengeveld y Banks 2005, cap. 14, p. 462). Su técnica principal, la flexión-aducción (F/Ad), con compresión o rotación medial añadidas, lleva la cadera a flexión y aducción (pp. 457–460): si el cirujano ha pautado precauciones de luxación, comprobar antes que las respeta. Siempre dentro del protocolo del cirujano.',
+  // Tobillo y pie (L3, decisiones 91–95; cap. 16 de Peripheral)
+  esguinceTobillo: 'Esguince lateral de tobillo: en la fase aguda, reposo, compresión (vendaje o tobillera) y elevación o muletas; contracciones y movimientos desde unos 3 días, al principio en los rangos libres de resistencia, y después movilización pasiva suave dentro de la resistencia, control muscular y sentido de posición articular (Hengeveld y Banks 2005, cap. 16, cuadro 16.4, pp. 564–565). Si es reciente, movimientos lentos y pequeños, en grupos de unos 5, solo hasta una molestia mínima, y reevaluar a las 24 h; el estiramiento suave, desde el 5.º–6.º día (cap. 8, p. 220). Movimientos accesorios en distintas posiciones del retropié; la flexión dorsal y plantar con compresión de la talocrural, solo si hay un trastorno intraarticular y no antes del comienzo de la remodelación tardía, hacia las 6–8 semanas (cuadro 16.4). La tibioperonea inferior suele afectarse en los traumatismos fuertes y se pasa por alto (p. 541). Si está implicado el nervio peroneo superficial, los síntomas pueden durar más y ser urentes (cuadro 16.4; p. 529).',
+  sindesmosis: 'Lesión de la sindesmosis: la pauta no incluye terapia manual, y mientras duran la descarga y la bota (6 semanas, van Dijk 2016) los escalones no se aplican. La sindesmosis impide que la tibia y el peroné se separen con la carga, y en la flexión dorsal el peroné se desplaza hacia fuera (Hengeveld y Banks 2005, cap. 16, p. 527); la rotación lateral del astrágalo en la mortaja lleva el peroné hacia atrás (pp. 544–545): por la regla general de no usar técnicas firmes con ligamentos debilitados (cap. 8, pp. 224–225), sin técnicas firmes al final de la flexión dorsal ni de la rotación lateral del astrágalo mientras el ligamento cura.',
+  aquiles: 'Tendinopatía del Aquiles: la base es la carga de su pauta, con su propia dosis, y es ejercicio (en casa o en consulta), no un número de sesiones; los escalones solo se refieren a la terapia manual. El cap. 16 trata los signos articulares del retropié (tibioperonea distal y tobillo), moviliza el arco del pie si se puede y la columna lumbar si está relacionada, y más adelante integra el tratamiento neurodinámico (nervios sural y tibial posterior) si lo está; la flexión dorsal y la eversión suelen provocar los síntomas. Cuidado con la rotura completa: prueba de Thompson (Hengeveld y Banks 2005, cap. 16, cuadro 16.5, pp. 565–566).',
+  monitorizacionDolor: 'Porción media del Aquiles: su pauta pide la carga más alta que se tolere, sin fijar un criterio de dolor. Uno estudiado precisamente aquí: durante el ejercicio, dolor de hasta 5/10; después, hasta 5/10 pero desaparecido a la mañana siguiente; y el dolor y la rigidez, sin aumentar de semana en semana. En ese ensayo, seguir corriendo y saltando con este modelo no fue peor que el reposo activo; no prueba que sea mejor (Silbernagel 2007; no incluyó la insercional).',
+  aquilesInsercional: 'Tendinopatía insercional: la pauta evita cargar el tendón en flexión dorsal, que lo comprime contra el calcáneo (Jonsson 2008; Pringels 2025). Por lo mismo, sin técnicas firmes al final de la flexión dorsal (inferencia de la pauta; la flexión dorsal suele provocar los síntomas, Hengeveld y Banks 2005, cap. 16, cuadro 16.5, p. 565).',
+  tibialPosterior: 'Tendinopatía del tibial posterior: la base son las plantillas, el estiramiento y el ejercicio de su pauta, con su propia dosis y sin dolor en el tendón (Kulig 2009); los escalones solo se refieren a la terapia manual. La vaina se explora con resistencia en todo el recorrido y palpando: puede aumentar los síntomas y notarse crepitación (Hengeveld y Banks 2005, cap. 16, p. 535). La tenosinovitis del tibial posterior es una de las causas del síndrome del túnel del tarso: explorar también el nervio tibial posterior (p. 525).',
+  inestabilidadTobillo: 'Inestabilidad crónica del tobillo: la terapia manual de la pauta (movilizaciones graduadas y movilización con movimiento, en carga y sin carga, para la flexión dorsal y el equilibrio dinámico) va junto al ejercicio (Martin 2021, A y B); la manipulación que también recoge la guía no está en los escalones, porque la app no propone grado V (Hengeveld y Banks 2005, cap. 8, p. 198). El cap. 16 incluye las inestabilidades recurrentes en el perfil del esguince, con la pérdida del control muscular y del sentido de posición articular como factores (cuadro 16.4, p. 564), y el equilibrio monopodal es una prueba esencial tras un traumatismo (p. 533).',
+  talon: 'Dolor plantar del talón: la terapia manual articular de la pauta (sobre todo la flexión dorsal talocrural) y de tejidos blandos va con el estiramiento y el resto del núcleo (Koc 2023, A). En el caso clínico del cap. 16, un «espolón» resultó un componente neural (nervio tibial posterior mecanosensible, muy irritable): técnicas articulares locales, accesorios del calcáneo en flexión dorsal y eversión, siempre antes del dolor, y la movilización neurodinámica solo cuando el dolor dominaba menos (Hengeveld y Banks 2005, cap. 16, pp. 570–574). El nervio plantar puede dar síntomas con un espolón (p. 529).',
+  nervioTobillo: 'Nervios del tobillo y el pie: los escalones se refieren a la articulación. El cap. 16 relaciona el nervio sural con la tendinopatía del Aquiles, el tibial posterior con el túnel del tarso y el nervio plantar con el dolor del talón (Hengeveld y Banks 2005, cap. 16, p. 529). Pruebas neurodinámicas: elevación de la pierna recta o slump con flexión plantar e inversión (peroneos superficial y profundo), con abducción del retropié y flexión dorsal (tibial posterior) o con aducción del retropié y flexión dorsal (sural) (p. 538, figura 16.11). En el túnel del tarso, la fuerza de los músculos de los nervios plantares y la sensibilidad de la planta (p. 538); puede deberse a una tenosinovitis del tibial posterior, un traumatismo, el sobreuso o un esguince del ligamento medial (p. 525). Con un nervio mecanosensible e irritable, primero técnicas articulares locales antes del dolor, y la movilización neurodinámica cuando el dolor domine menos (caso clínico 16.1, pp. 571–574). Los signos neurológicos se exploran pronto y no se empeoran con pruebas vigorosas (cap. 6, p. 158).',
+  morton: 'Neuroma de Morton o bursitis intermetatarsiana: los escalones se refieren a la articulación. El cap. 16 relaciona los nervios intermetatarsianos con el arco transverso aplanado (neuralgia de Morton) y los palpa en la planta entre las cabezas del 3.º y el 4.º y del 4.º y el 5.º metatarsianos (Hengeveld y Banks 2005, cap. 16, pp. 529 y 539); los movimientos intermetatarsianos sirven en la metatarsalgia por disfunción de esas articulaciones (p. 563), y en las deformidades del antepié, la movilización con automovilizaciones y la actividad de la musculatura intrínseca (p. 541). Si es una bursitis y no el nervio, la exploración del nervio de cada sesión sobra.',
+  artrosisTobillo: 'Artrosis de tobillo o pie: el cap. 16 no trae un perfil de artrosis. Con un trastorno intraarticular, grado III con movimientos amplios hasta el límite (Hengeveld y Banks 2005, cap. 16, p. 541), y la compresión del retropié para los trastornos intraarticulares estables y menores (p. 547). En una articulación con artrosis, grados II o III− también cuando lo que se trata es otra estructura (cap. 8, p. 224).',
+  fracturaEstresMetatarsiano: 'Fractura de estrés de un metatarsiano: la pauta es dejar de correr, modificar la actividad guiándose por el dolor y volver con un programa graduado (Warden 2014). Ninguna fuente leída trata la terapia manual sobre una fractura de estrés que consolida: los escalones no se aplican en el foco. Las técnicas intermetatarsianas sirven sobre todo tras la fase de inmovilización, con el pie rígido (Hengeveld y Banks 2005, cap. 16, pp. 562–563).',
+  apofisitisPie: 'Apofisitis del pie en crecimiento (Sever, Iselin): la pauta, por analogía con la de Osgood-Schlatter, es de carga progresiva y una escalera de actividad guiada por el dolor, sin terapia manual (Rathleff 2020). Ninguna fuente leída trata la movilización pasiva del pie con el esqueleto inmaduro (el cap. 16 de Peripheral no lo trata). Los escalones de terapia manual no se aplican.',
+  posqTobillo: 'Tras una cirugía de tobillo o pie: el cap. 16 no trata la cirugía. Tras una inmovilización el pie puede quedar rígido (Hengeveld y Banks 2005, cap. 16, p. 528), y entonces sirven las técnicas intermetatarsianas (pp. 562–563); el sentido de posición articular puede disminuir tras un traumatismo, y el equilibrio monopodal es una prueba esencial (p. 533). Siempre dentro del protocolo del cirujano.',
   dosFamilias: 'Las dos hipótesis se tratan en zonas distintas (columna y articulación periférica): los escalones y las reglas del mes son los de la principal; la cantidad por sesión y la progresión, las de cada una.',
   // Varios síntomas (Fase N, docs/sintomas-multiples.md; decisión 35)
   dosificaOtro: 'Dosificado según el síntoma más irritable de la fase 3, no según P1 (a igualdad de irritabilidad, manda P1). La gravedad es la de su NRS.',
@@ -201,6 +217,20 @@ export const AVISOS_HIP = {
   ca15: ['sensibilizacionCentral'],                          // cap. 10, recuadro 10.3
   ca16: ['cargaCadera', 'ingleDeportiva'], ca17: ['cargaCadera', 'ingleDeportiva'],
   ca18: ['ingleDeportiva'], ca19: ['ingleDeportiva'],        // sin pauta
+  // Tobillo y pie (decisiones 91–95; cap. 16 de Peripheral)
+  tp1: ['esguinceTobillo'],                                  // cuadro 16.4 y cap. 8, p. 220
+  tp2: ['sindesmosis'],                                      // p. 527 y cap. 8, pp. 224–225 (inferencia)
+  tp8: ['aquiles', 'monitorizacionDolor'],                   // cuadro 16.5; Silbernagel 2007
+  tp9: ['aquiles', 'aquilesInsercional'],                    // cuadro 16.5; su pauta
+  tp10: ['aquiles'],                                         // cuadro 16.5 (peritendón); sin pauta
+  tp12: ['nervioTobillo'], tp16: ['nervioTobillo'], tp28: ['nervioTobillo'], // pp. 529 y 538; caso 16.1
+  tp14: ['tibialPosterior'],                                 // pp. 525 y 535
+  tp21: ['inestabilidadTobillo'],                            // cuadro 16.4 y p. 533
+  tp24: ['artrosisTobillo'],                                 // pp. 541 y 547; cap. 8, p. 224
+  tp26: ['talon'],                                           // caso clínico 16.1
+  tp33: ['fracturaEstresMetatarsiano'],                      // los escalones no se aplican en el foco
+  tp34: ['morton'],                                          // pp. 529, 539, 541 y 563
+  tp36: ['apofisitisPie'],                                   // esqueleto inmaduro
 };
 
 // Avisos con mecanismo Post-quirúrgico en una región periférica (decisión 47):
@@ -210,7 +240,7 @@ export const AVISOS_POSQ_PERIFERICA = ['protesis'];
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
 // empezar a movilizar tras la cirugía.
-export const AVISOS_POSQ_REGION = { rodilla: ['posqRodilla'], cadera: ['posqCadera'] };
+export const AVISOS_POSQ_REGION = { rodilla: ['posqRodilla'], cadera: ['posqCadera'], tobillo_pie: ['posqTobillo'] };
 
 // Bloques de la sesión de 50 minutos: organización orientativa y editable, no
 // evidencia (docs/plan-tratamiento.md, «Sesión de 50 minutos»). `duracion` en
@@ -252,6 +282,11 @@ export const TEXTOS_SESION = {
   // Cadera (decisión 88): fractura de estrés, infección y TVP, siempre
   cierreFracturaEstres: 'Red de seguridad: explicar qué síntomas exigen dejar la actividad que lo empeora e ir hoy mismo al médico (dolor de ingle o de cadera que va a más al apoyar el peso o con la actividad y aparece también de noche: posible fractura de estrés del cuello del fémur, que una radiografía negativa no descarta) y comprobar que lo ha entendido (Lluch 2020; Goodman 2018; May y Marappa-Ganeshan 2023, como en el razonamiento de ca_os1).',
   cierreInfeccionCadera: 'Red de seguridad: explicar qué síntomas exigen ir hoy mismo a urgencias (la cadera duele mucho, hasta no poder apoyar la pierna, con fiebre o malestar general) y, con una prótesis, cuáles piden ir al médico (un dolor nuevo que no cede en reposo y sigue de noche, sobre todo tras una infección), y comprobar que lo ha entendido (Momodu y Savaliya 2023; Goodman 2018, como en el razonamiento de ca_in1 y ca_in3).',
+  // Tobillo y pie (decisión 96): fractura de estrés, infección y TVP, siempre;
+  // rotura del Aquiles con tp8 y tp9 (RED_HIP, decisión 97)
+  cierreFracturaEstresPie: 'Red de seguridad: explicar qué síntomas piden dejar la actividad que lo empeora e ir al médico (un dolor del pie o del tobillo que empieza poco a poco, va a más con la carga o la actividad, no mejora al calentar y molesta por la noche: posible fractura de estrés, que la radiografía tarda 2–3 semanas en mostrar) y comprobar que lo ha entendido (May y Marappa-Ganeshan 2023; Lluch 2020, como en el razonamiento de tp_o1).',
+  cierreInfeccionTobillo: 'Red de seguridad: explicar qué síntomas exigen ir hoy mismo a urgencias (el tobillo o una articulación del pie hinchada, caliente y muy dolorosa, con fiebre o malestar general) y cuáles, hoy mismo al médico (lo mismo de golpe, aunque no haya fiebre), y comprobar que lo ha entendido (Momodu y Savaliya 2023; Goodman 2018, como en el razonamiento de tp_i1).',
+  cierreRoturaAquiles: 'Red de seguridad: explicar qué síntomas piden dejar los ejercicios e ir al médico sin esperar a la próxima sesión (un golpe o una patada de repente detrás del tobillo o de la pantorrilla, a veces con un chasquido, y desde entonces cojear o no poder ponerse de puntillas) y comprobar que lo ha entendido (Lluch 2020; Shamrock 2023, como en el razonamiento de tp_t3; Hengeveld y Banks 2005, cap. 16, cuadro 16.5, p. 565).',
   cierreArterial: 'Red de seguridad: explicar qué síntomas exigen ir a urgencias (dolor de cabeza o de cuello de golpe y distinto a cualquier otro, visión doble, dificultad para hablar o tragar, inestabilidad al caminar o caídas súbitas) y comprobar que lo ha entendido; los de una disección pueden llegar días después (Rushton 2023, tablas 1–2 y 6, pp. 9–12).',
 };
 
@@ -321,6 +356,19 @@ export const FRECUENCIA_PAUTA = {
     plan: 'B',
     nota: 'Dolor inguinal de larga evolución relacionado con el aductor: su pauta son 3 sesiones supervisadas por semana, de unos 90 min y en grupos de 2–4, durante 8–12 semanas, con el módulo I en casa los días intermedios (Hölmich 1999): incluso el plan B queda por debajo de esa pauta.',
   },
+  // Tobillo y pie (decisión 94)
+  tp14: {
+    plan: 'A',
+    nota: 'Tendinopatía del tibial posterior: su pauta son 12 semanas de ejercicio en casa, dos veces al día, con una revisión semanal de 30 min durante 10 semanas (Kulig 2009), así que encaja con el plan A; el programa para casa es el que lleva la carga.',
+  },
+  tp21: {
+    plan: 'B',
+    nota: 'Inestabilidad crónica del tobillo: el protocolo concreto de su pauta son 12 sesiones supervisadas, 3 por semana durante 4 semanas (McKeon 2008): incluso el plan B queda por debajo de lo estudiado. La guía no fija una dosis (Martin 2021).',
+  },
+  tp36: {
+    plan: 'A',
+    nota: 'Apofisitis del pie en crecimiento: su pauta, por analogía con la de Osgood-Schlatter, usa 4 visitas en 12 semanas, con los padres, y el resto del trabajo es en casa (Rathleff 2020); el plan A ya queda por encima de esas visitas, y el programa para casa es el que lleva la carga.',
+  },
 };
 
 // Criterio de progresión genérico, cuando la pauta no trae el suyo (decisión 14).
@@ -375,6 +423,7 @@ export const HIP_NERVIO_PERIFERICO = [
   'co8', 'co9', 'co13',  // codo: cubital, radial / interóseo posterior, mediano / pronador
   'ro19',                // rodilla: peroneo común en la cabeza del peroné (decisión 73)
   'ca7', 'ca14',         // cadera: ciático en el espacio glúteo profundo; cutáneo femoral lateral, obturador, ilioinguinal… (decisión 82)
+  'tp12', 'tp16', 'tp28', 'tp34', // tobillo y pie: sural, tibial posterior (túnel del tarso), nervios del talón, interdigital (Morton) (decisión 92)
 ];
 export const HIP_NEURO_DESCARTADAS = {
   ce2: 'Disfunción neuromuscular cervical: déficit de control motor (coordinación, propiocepción), no compromiso de la raíz ni de la médula.',
@@ -421,12 +470,30 @@ export const RED_SEGURIDAD = {
     { cierre: 'cierreInfeccionCadera', casa: 'alarmaInfeccionCadera' },
     { cierre: 'cierreTVP', casa: 'alarmaTVP' },
   ] },
+  // Tobillo y pie (decisión 96): tres de siempre, la fractura de estrés (tp_o1:
+  // la dispara la carga, y varias pautas progresan la carrera y los saltos), la
+  // infección (tp_i1) y la TVP (tp_v2, pq_tep: varias pautas inmovilizan o
+  // descargan; la misma que rodilla). No van al programa para casa el
+  // compartimental tras un traumatismo (tp_t1), la neuropatía aguda (tp_n1),
+  // hem_5 ni hem_6, ni las demás posquirúrgicas (pq_*: manda el cirujano).
+  tobillo_pie: { siempre: [
+    { cierre: 'cierreFracturaEstresPie', casa: 'alarmaFracturaEstresPie' },
+    { cierre: 'cierreInfeccionTobillo', casa: 'alarmaInfeccionTobillo' },
+    { cierre: 'cierreTVP', casa: 'alarmaTVP' },
+  ] },
 };
 
 // Hipótesis de otra región cuya pauta trae terapia manual de la columna
 // cervical, por id: añaden la red de seguridad arterial de cervical (decisión
 // 50; el mismo motivo que la decisión 39).
-export const RED_HIP = { h6: { cierre: 'cierreArterial', casa: 'alarmaArterial' } };
+// tp8 y tp9 (tendinopatías del Aquiles, decisión 97): su pauta carga el tendón,
+// la tendinopatía es factor de riesgo de rotura (tp_t3) y la rotura puede pasar
+// por un esguince, porque se camina «sorprendentemente bien».
+export const RED_HIP = {
+  h6: { cierre: 'cierreArterial', casa: 'alarmaArterial' },
+  tp8: { cierre: 'cierreRoturaAquiles', casa: 'alarmaRoturaAquiles' },
+  tp9: { cierre: 'cierreRoturaAquiles', casa: 'alarmaRoturaAquiles' },
+};
 
 // Programa para casa: lo único que ve el paciente. Lenguaje llano, sin
 // puntuaciones ni fuentes en el texto; `fuente` solo para la revisión
@@ -467,6 +534,13 @@ export const TEXTOS_CASA = {
   // en lenguaje llano. La TVP usa alarmaTVP, la misma que rodilla.
   alarmaFracturaEstres: { texto: 'Si el dolor de la ingle o de la cadera va a más al apoyar el peso o con la actividad, y empieza a dolerte también de noche, deja la actividad que lo empeora (correr, saltar) y ve hoy mismo al médico.', fuente: 'Lluch 2020, Goodman 2018 y May y Marappa-Ganeshan 2023, como en el razonamiento de ca_os1 y el recuadro de urgencia de cadera: la fractura de estrés del cuello femoral es de alto riesgo y, si se sigue cargando, puede completarse y desplazarse; dolor que empeora con la carga y aparece de noche; derivación urgente, y una radiografía negativa no la descarta' },
   alarmaInfeccionCadera: { texto: 'Si la cadera te empieza a doler mucho, hasta el punto de no poder apoyar la pierna, y tienes fiebre o te encuentras mal en general, ve hoy mismo a urgencias. Si tienes una prótesis y aparece un dolor nuevo que no se calma en reposo y sigue de noche, sobre todo después de una infección, ve al médico.', fuente: 'Momodu y Savaliya 2023 (StatPearls, «Septic Arthritis») y Goodman 2018, como en el razonamiento de ca_in1 (artritis séptica: urgencias hoy; la fiebre solo aparece en el 40–60 %) y de ca_in3 (prótesis con una infección reciente y dolor nuevo, o dolor que no cede en reposo y sigue de noche: derivación médica)' },
+  // Tobillo y pie (RED_SEGURIDAD, decisión 96): síntomas del razonamiento de
+  // tp_o1 (fractura de estrés; derivar, no urgencia) y de tp_i1 (artritis
+  // infecciosa; la gota se le parece y también pide médico) y, por id, de tp_t3
+  // (rotura del Aquiles, RED_HIP, decisión 97). La TVP usa alarmaTVP.
+  alarmaFracturaEstresPie: { texto: 'Si un dolor del pie o del tobillo empieza poco a poco, va a más al apoyar o con la actividad, no mejora al calentar y te molesta también por la noche, deja la actividad que lo empeora (correr, saltar) y ve al médico.', fuente: 'May y Marappa-Ganeshan 2023 y Lluch 2020, como en el razonamiento de tp_o1: presentación típica de una fractura de estrés; algunas del pie son de alto riesgo (navicular, base del 5.º metatarsiano); la radiografía tarda 2–3 semanas en mostrarla; derivar para confirmarla con imagen' },
+  alarmaInfeccionTobillo: { texto: 'Si el tobillo o una articulación del pie se te pone hinchada, caliente y muy dolorosa y tienes fiebre o te encuentras mal en general, ve hoy mismo a urgencias. Aunque no tengas fiebre, si se pone así de golpe, ve hoy mismo al médico.', fuente: 'Momodu y Savaliya 2023 (StatPearls, «Septic Arthritis») y Goodman 2018, como en el razonamiento de tp_i1 y el recuadro de urgencia de tobillo y pie: artritis infecciosa, urgencia hoy; la fiebre solo aparece en el 40–60 %, y la gota se le parece y solo el líquido articular las separa' },
+  alarmaRoturaAquiles: { texto: 'Si de repente notas como un golpe o una patada detrás del tobillo o de la pantorrilla, a veces con un chasquido, y desde entonces cojeas o no puedes ponerte de puntillas sobre esa pierna, deja los ejercicios y ve al médico sin esperar a la próxima sesión.', fuente: 'Lluch 2020 y Shamrock 2023, como en el razonamiento de tp_t3 (la tendinopatía previa es factor de riesgo; camina sorprendentemente bien, y entre el 20 y el 25 % se toman al principio por un esguince; derivación preferente); Hengeveld y Banks 2005, cap. 16, cuadro 16.5, p. 565 (cuidado con la rotura completa, prueba de Thompson)' },
   alarmaArterial: { texto: 'Si te empieza de golpe un dolor de cabeza o de cuello distinto a cualquiera que hayas tenido, o notas visión doble, dificultad para hablar o tragar, inestabilidad al caminar o caídas sin perder el conocimiento, ve a urgencias hoy mismo.', fuente: 'Rushton 2023 (marco IFOMPT cervical), tablas 1–2 y 6, pp. 9–12, como en el razonamiento de cv_ar1 y cv_ar2: disección arterial e insuficiencia vertebrobasilar; los síntomas neurológicos pueden llegar días después' },
 };
 
@@ -512,4 +586,4 @@ export const REEVALUACION_RETROSPECTIVA = [
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.
-export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023'];
+export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023'];
