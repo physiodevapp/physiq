@@ -10,13 +10,28 @@ import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, RAZON_ISQUEMIA_AGUD
 // ── Fase 3 · ZONAS_SINTOMA.cadera — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
 // `id` estable: se guarda en la sesión.
+// `pasos` (Fase N, paso 3): pasos del árbol de abajo en los que el síntoma de
+// esa zona sale en el recuadro «📝 Refiere el paciente». Solo recuerda; nunca
+// contesta el paso. Revisados por el usuario (2026-10):
+//   ca_step1  ¿referido de la columna o la sacroilíaca? → zona lumbar y glúteo
+//             (la sacroilíaca duele inferomedial a la EIPS)
+//   ca_step1b lesión aguda de ingle → ingle
+//   ca_step2  perfil degenerativo → ingle, muslo anterior y rodilla, donde
+//             se refiere a menudo el dolor de la artrosis de cadera
+//   ca_step3  intraarticular (dolor inguinal) → ingle
+//   ca_step4  cuadrante lateral → cadera lateral
+//   ca_step5  cuadrante posterior → glúteo
+//   ca_step6  entidades de la ingle → ingle
+//   ca_step7  neuropático → muslo anterior (meralgia) e ingle (obturador,
+//             ilioinguinal, genitofemoral)
+// ca_step3b (Thomas) no lleva: es de exploración, no de dónde duele.
 export const zonas = [
-  { id: 'ingle',      nombre: 'Ingle' },
-  { id: 'cadera_lat', nombre: 'Cadera lateral' },
-  { id: 'gluteo',     nombre: 'Glúteo' },
-  { id: 'muslo_ant',  nombre: 'Muslo anterior' },
-  { id: 'rodilla',    nombre: 'Rodilla' },
-  { id: 'lumbar',     nombre: 'Zona lumbar' },
+  { id: 'ingle',      nombre: 'Ingle',          pasos: ['ca_step1b', 'ca_step2', 'ca_step3', 'ca_step6', 'ca_step7'] },
+  { id: 'cadera_lat', nombre: 'Cadera lateral', pasos: ['ca_step4'] },
+  { id: 'gluteo',     nombre: 'Glúteo',         pasos: ['ca_step1', 'ca_step5'] },
+  { id: 'muslo_ant',  nombre: 'Muslo anterior', pasos: ['ca_step2', 'ca_step7'] },
+  { id: 'rodilla',    nombre: 'Rodilla',        pasos: ['ca_step2'] },
+  { id: 'lumbar',     nombre: 'Zona lumbar',    pasos: ['ca_step1'] },
 ];
 
 // ── Fase 2 · SYSTEMIC_SCREENING.cadera
