@@ -3102,6 +3102,22 @@ body.posquirurgico .solo-posq { display: block; }
 .tej-info-datos dt { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); }
 .tej-info-datos dd { margin: 0; display: flex; align-items: center; gap: 6px; }
 .tej-info-datos .tej-ley-muestra { flex: 0 0 auto; }
+.tej-info-datos .tej-info-fuentes { align-items: start; }
+.tej-info-datos .tej-info-fuentes dt { padding-top: 3px; }
+.tej-info-datos .tej-info-fuentes dd { display: block; }
+.tej-fuentes-lista { list-style: none; margin: 0; padding: 0; }
+.tej-fuentes-lista li + li { margin-top: 2px; }
+.tej-fuente-enlace { color: var(--accent); text-decoration: none; }
+@media (hover: hover) { .tej-fuente-enlace:hover { text-decoration: underline; } }
+/* En táctil, cada fuente es una fila de 40 px para el dedo */
+@media (pointer: coarse) {
+  .tej-fuente-enlace { display: flex; align-items: center; min-height: 40px; }
+  .tej-fuentes-lista li + li { margin-top: 0; }
+  .tej-info-datos .tej-info-fuentes dt { padding-top: 14px; }
+}
+.tej-grupo-fuentes { margin: -4px 0 8px; font-size: 0.72rem; color: var(--text3); }
+.tej-grupo-fuentes summary { cursor: pointer; width: max-content; color: var(--accent); }
+.tej-grupo-fuentes .tej-fuentes-lista { margin: 4px 0 0 1em; }
 @media print { .tejidos-btn { display: none !important; } .tej-info { display: none !important; } }
 
 /* ─── Calculadora de cuestionarios (cabecera, lib/cuestionarios.js) ───

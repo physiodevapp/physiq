@@ -5,7 +5,7 @@
 import { state } from './state.js';
 import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, TIEMPOS_TEJIDO, ZONAS_SINTOMA, CUESTIONARIOS, GRUPOS_CUESTIONARIO, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
-import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML, anatomiaLineaHTML, anatomiaPanelHTML } from './phase4b.js';
+import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML, anatomiaLineaHTML, anatomiaPanelHTML, registroReferencias } from './phase4b.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 import {
   COMPLICACIONES, cirugiaVacia, esPosquirurgico, semanasCirugia, semanasTexto, conProtocolo, cirugiaPayload,
@@ -20,7 +20,7 @@ import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
-import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
+import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML } from './lib/tejidos.js';
 import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
 import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, urlIA } from './ampliar-ia.js';
 
@@ -3421,7 +3421,7 @@ function _pintarTiemposTejido() {
   _cerrarInfoBarra({ sinFoco: true });
   const posquirurgico = esPosquirurgico(state.mecanismo);
   document.getElementById('tejidosCuerpo').innerHTML = tiemposTejidoHTML(TIEMPOS_TEJIDO, {
-    posquirurgico, semanas: posquirurgico ? semanasCirugia(state.cirugia) : null, filtro: _filtroTejidos(),
+    posquirurgico, semanas: posquirurgico ? semanasCirugia(state.cirugia) : null, filtro: _filtroTejidos(), REF: _refTejidos,
   });
   const fila = document.querySelector('#tejidosCuerpo .tej-filtro');
   if (!fila) return;
@@ -3450,16 +3450,30 @@ document.getElementById('tejidosCuerpo')?.addEventListener('click', e => {
   cuerpo.querySelector(`.tej-filtro-btn[data-grupo="${b.dataset.grupo}"]`)?.focus({ preventScroll: true });
 });
 
-// Tarjeta de una barra (infoBarraHTML, lib/tejidos.js): su gravedad, qué mide y
-// su plazo, junto a la barra tocada, para no bajar hasta la leyenda. Va en
+// Tarjeta de una barra (infoBarraHTML, lib/tejidos.js): su gravedad, qué mide,
+// su plazo y sus fuentes con enlace, junto a la barra tocada, para no bajar hasta la leyenda. Va en
 // <body> y con position: fixed (el panel se anima con transform, que la
 // recolocaría). Se cierra al tocar fuera o la misma barra, con Escape (antes
 // que el panel), al desplazar, al cambiar el filtro y al cerrar el panel.
 let _barraInfo = null, _scrollInfo = 0;
+// Registro de referencias para enlazar las fuentes (de la tarjeta y de las notas de
+// grupo): se carga con import() al abrir el panel, como el «Ampliar» de la fase 4b.
+// Si llega con algo ya pintado, pone los enlaces; si falla, las fuentes quedan sin enlace.
+let _refTejidos = null;
+function _cargarRefTejidos() {
+  if (_refTejidos) return;
+  registroReferencias().then(REF => {
+    _refTejidos = REF;
+    document.querySelectorAll('#tejidosCuerpo .tej-grupo-fuentes ul[data-claves]')
+      .forEach(ul => { ul.innerHTML = fuentesTejidoHTML(ul.dataset.claves.split('|'), REF); });
+    if (_barraInfo) { document.getElementById('tejInfo').innerHTML = _infoBarraHTML(_barraInfo); _colocarInfoBarra(); }
+  });
+}
+const _infoBarraHTML = barra => infoBarraHTML(TIEMPOS_TEJIDO, barra.dataset.barra, _refTejidos);
 function _alternarInfoBarra(barra) {
   if (_barraInfo === barra) { _cerrarInfoBarra(); return; }
   _cerrarInfoBarra({ sinFoco: true });
-  const html = infoBarraHTML(TIEMPOS_TEJIDO, barra.dataset.barra);
+  const html = _infoBarraHTML(barra);
   if (!html) return;
   let info = document.getElementById('tejInfo');
   if (!info) {
@@ -3518,6 +3532,7 @@ document.addEventListener('keydown', e => {
 function abrirTiemposTejido() {
   const overlay = document.getElementById('tejidosOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
+  _cargarRefTejidos();
   _pintarTiemposTejido();
   overlay.classList.add('open');
   document.getElementById('tejidosBtn')?.setAttribute('aria-expanded', 'true');

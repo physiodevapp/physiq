@@ -98,10 +98,26 @@ export function buscarFila(datos, id) {
   return null;
 }
 
+// Fuentes de una barra o de la nota de un grupo: un <li> por clave del registro
+// (data/referencias.js), enlazada a su `url` o, sin ella, a su DOI. `REF` es el registro
+// ya cargado (app.js lo carga con import() al abrir el panel); sin él, o si la clave no
+// tiene enlace, solo el texto.
+export function fuentesTejidoHTML(claves, REF = null) {
+  return claves.map(k => {
+    const r = REF?.[k];
+    const url = r?.url || (r?.doi ? `https://doi.org/${r.doi}` : null);
+    return url
+      ? `<li><a class="tej-fuente-enlace" href="${esc(url)}" target="_blank" rel="noopener noreferrer"${r.titulo ? ` title="${esc(r.titulo)}"` : ''}>${esc(k)} ↗</a></li>`
+      : `<li>${esc(k)}</li>`;
+  }).join('');
+}
+
 // Tarjeta que se abre al tocar una barra: la leyenda de esa barra sola, sin tener que
 // bajar hasta el final ni descifrar color y relleno. La muestra de «Mide» va en el color
-// de la gravedad de la barra, como en el diagrama. '' si el id no existe.
-export function infoBarraHTML(datos, id) {
+// de la gravedad de la barra, como en el diagrama. Al final, las fuentes de esa barra con
+// su enlace (solo aquí, a demanda: debajo de cada fila llenarían el diagrama; decisión del
+// usuario, 2026-10). '' si el id no existe.
+export function infoBarraHTML(datos, id, REF = null) {
   const r = buscarFila(datos, id);
   if (!r || !tieneBarra(r.fila)) return '';
   const { fila: f, madre, gravedad } = r;
@@ -114,6 +130,7 @@ export function infoBarraHTML(datos, id) {
     + `<div><dt>Gravedad</dt><dd><span class="tej-ley-muestra tej-${esc(gravedad)}" aria-hidden="true"></span>${esc(datos.gravedades[gravedad] || gravedad)}</dd></div>`
     + (m.etiqueta ? `<div><dt>Mide</dt><dd><span class="tej-ley-muestra tej-${esc(gravedad)}${m.relleno ? ` tej-relleno-${esc(m.relleno)}` : ''}" aria-hidden="true"></span>${esc(m.etiqueta)}</dd></div>` : '')
     + `<div><dt>Plazo</dt><dd>${esc(plazo)}</dd></div>`
+    + (f.fuentes?.length ? `<div class="tej-info-fuentes"><dt>Fuentes</dt><dd><ul class="tej-fuentes-lista">${fuentesTejidoHTML(f.fuentes, REF)}</ul></dd></div>` : '')
     + '</dl>';
 }
 
@@ -127,8 +144,9 @@ export function gruposVisibles(grupos, filtro) {
 // `filtro`: id de un grupo de tejido, o 'todos'. Las pastillas del filtro y los
 // títulos de grupo llevan `data-filtro-tejido` (el filtro que ponen al tocarlos:
 // el suyo, o 'todos' si ya era el activo); abrirTiemposTejido() (app.js)
-// vuelve a pintar con el filtro elegido.
-export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false, filtro = 'todos' } = {}) {
+// vuelve a pintar con el filtro elegido. `REF`: el registro de referencias, si ya
+// está cargado (enlaces de las fuentes de las notas de grupo).
+export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false, filtro = 'todos', REF = null } = {}) {
   const { columnas, gravedades, medidas = {}, grupos, fases, fasesNota, notas, fuente, fasesFuente } = datos;
   const n = columnas.length;
   const hoy = posquirurgico ? marcaHoy(semanas, columnas) : null;
@@ -171,6 +189,12 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
     + `<button type="button" class="tej-grupo" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(activo === g.id ? 'todos' : g.id)}" title="${esc(activo === g.id ? 'Ver todos los tejidos' : `Ver solo ${g.tejido.toLowerCase()}`)}">${esc(g.tejido)}</button>`
     // Lo que no cabe en una barra (p. ej. la axonotmesis, que depende de la distancia)
     + (g.nota ? `<p class="tej-grupo-nota">${esc(g.nota)}</p>` : '')
+    // Sus fuentes, plegadas como las de una barra (a demanda); `data-claves` deja que
+    // app.js ponga los enlaces si el registro llega después de pintar
+    + (g.nota && g.notaFuentes?.length
+      ? `<details class="tej-grupo-fuentes"><summary>Fuentes (${g.notaFuentes.length})</summary>`
+        + `<ul class="tej-fuentes-lista" data-claves="${esc(g.notaFuentes.join('|'))}">${fuentesTejidoHTML(g.notaFuentes, REF)}</ul></details>`
+      : '')
     + g.filas.map(f => filaHTML(f, ctx)
       + (f.subtipos?.length
         ? `<details class="tej-subtipos"><summary>Ver ${f.subtipos.length} ${f.subtipos.length === 1 ? 'subtipo' : 'subtipos'}</summary>`
