@@ -50,6 +50,30 @@ export function irritabilidadSINSS({ irritabilidad, irritabilidadNivel, irritabi
   return { nivel: suma <= 1 ? 'baja' : suma <= 4 ? 'moderada' : 'alta', estimada: false, fase3: porNivel };
 }
 
+// Varios síntomas (decisión 35; docs/sintomas-multiples.md, decisión 7): el
+// plan se dosifica según el síntoma más irritable y, a igualdad, P1. Los
+// secundarios (`ss` del payload) traen su NRS y una irritabilidad elegida
+// directamente; «otra región» no cuenta (no se valora hoy), ni un secundario
+// sin irritabilidad. P1 sin irritabilidad cuenta como alta, que es lo prudente
+// (construirPlan la toma así), así que ningún secundario lo supera.
+const RANGO_IRR = { baja: 0, moderada: 1, alta: 2 };
+export function sintomaQueDosifica({ severidad = null, zonaP1 = '', secundarios = [] } = {}, irrP1 = null) {
+  let elegido = { n: 1, z: zonaP1 || '', nrs: severidad ?? null, irr: irrP1 };
+  for (const s of secundarios) {
+    const irr = DESDE_NIVEL[s.ir];
+    if (s.or || !irr) continue;
+    if (RANGO_IRR[irr] > RANGO_IRR[elegido.irr || 'alta']) elegido = { n: s.n, z: s.z || '', nrs: s.nr ?? null, irr };
+  }
+  return elegido;
+}
+
+// Secundarios marcados «Independiente» de P1 (sin «otra región», que ya se
+// dice pendiente de valorar en todas partes)
+export const sintomasIndependientes = (secundarios = []) => secundarios.filter(s => !s.or && s.re === 'independiente');
+
+// «P2 · Pierna por debajo de la rodilla»
+export const nombreSintoma = s => `P${s.n}${s.z ? ` · ${s.z}` : ''}`;
+
 // Escalón de B (1 muy suave … 3 moderada) por gravedad × irritabilidad
 // (Petersen 2021). Revisión clínica, 2026-10:
 //  · irritabilidad alta → 1 siempre, también con gravedad mínima (con
@@ -127,16 +151,22 @@ export function rangosBloques(duraciones = {}) {
 // { region, regionTexto, modo, posq: { conProtocolo, semanas, restricciones } | null,
 //   urgencias, derivaciones, hipotesis: [{ id, name, prom, pauta, pautaFuente, derivar,
 //   tratada, posq, pronostico, sinTests }], elegidas: [id, id?], severidad,
-//   irritabilidad, irritabilidadNivel, irritabilidadDirecta, estabilidad, riesgoPsico,
+//   irritabilidad, irritabilidadNivel, irritabilidadDirecta, zonaP1, secundarios (`ss`
+//   del payload: [{ n, z, nr, ir, re, or }]), estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
 export function construirPlan(e) {
   const bloqueos = bloqueosPlan(e);
-  const gravedadNRS = gravedadSINSS(e.severidad);
-  const irr = irritabilidadSINSS(e);
+  const irrP1 = irritabilidadSINSS(e);
+  // El síntoma que dosifica: P1, o el secundario más irritable (decisión 35)
+  const dosifica = sintomaQueDosifica(e, irrP1.nivel);
+  const porOtro = dosifica.n !== 1;
+  const irr = porOtro ? { nivel: dosifica.irr, estimada: true, fase3: null } : irrP1;
+  const gravedadNRS = gravedadSINSS(dosifica.nrs);
   const gravedad = e.gravedadManual || gravedadNRS;
   const irritabilidad = e.irritabilidadManual || irr.nivel || 'alta';
   const avisos = [AVISOS.propuesta, AVISOS.orientativo];
+  if (porOtro) avisos.push(AVISOS.dosificaOtro);
   if (!gravedad) avisos.push(AVISOS.sinNRS);
   if (!e.irritabilidadManual && irr.estimada) avisos.push(AVISOS.estimada);
   const difiereFase3 = !irr.estimada && irr.fase3 && irr.fase3 !== irr.nivel;
@@ -154,6 +184,8 @@ export function construirPlan(e) {
   if (e.posq) avisosHip.push(textoPosq(e.posq.conProtocolo));
   if (elegidas.some(h => h.id === 'ce13')) avisosHip.push(AVISOS.vertigo);
   if (elegidas.length > 1) avisosHip.push(AVISOS.dosHipotesis);
+  const independientes = sintomasIndependientes(e.secundarios);
+  if (independientes.length) avisosHip.push(`${AVISOS.independiente} (${independientes.map(nombreSintoma).join('; ')})`);
 
   const intervencion = elegidas.map(h => ({
     id: h.id, name: h.name, posq: !!h.posq,
@@ -177,6 +209,7 @@ export function construirPlan(e) {
     bloqueos,
     avisos,
     avisosHip,
+    dosifica: { ...dosifica, nombre: nombreSintoma(dosifica), porOtro, varios: (e.secundarios || []).some(s => !s.or) },
     gravedad, gravedadNRS, irritabilidad, irritabilidadCalculada: irr.nivel, irritabilidadEstimada: irr.estimada,
     irritabilidadFase3: difiereFase3 ? irr.fase3 : null,
     niveles: nv,
@@ -216,7 +249,7 @@ export function textoPlanSesion(plan, e, nivel = 'B') {
   const out = cab('PLAN DE SESIÓN (50 min) — propuesta', e);
   if (plan.bloqueado) return out.concat(bloqueoTexto(plan)).join('\n');
   const esc = plan.escalones[nivel] || plan.escalones.B;
-  out.push(`Gravedad: ${NOMBRE_GRAVEDAD[plan.gravedad] || 'sin registrar'} · Irritabilidad: ${NOMBRE_IRRITABILIDAD[plan.irritabilidad]}`);
+  out.push(`Gravedad: ${NOMBRE_GRAVEDAD[plan.gravedad] || 'sin registrar'} · Irritabilidad: ${NOMBRE_IRRITABILIDAD[plan.irritabilidad]}${plan.dosifica.porOtro ? ` (según ${plan.dosifica.nombre}, el síntoma más irritable)` : ''}`);
   out.push(`Nivel ${nivel} · ${esc.nombre} (${esc.modo})`);
   out.push(...plan.avisosHip.map(a => `⚠ ${a}`));
   if (plan.sesion.notaPrimera) out.push(plan.sesion.notaPrimera);

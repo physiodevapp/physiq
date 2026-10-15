@@ -66,6 +66,9 @@ export const AVISOS = {
   breveSinTests: 'Hipótesis de trabajo, pendiente de confirmar: no tiene ningún test hecho.',
   dosHipotesis: 'Dos hipótesis: la intervención principal se reparte entre ambas y el tiempo de cada una baja.',
   vertigo: 'No usar ninguna técnica cervical que produzca mareo; probar antes con movimientos exploratorios (Maitland 2005, cap. 9, p. 224).',
+  // Varios síntomas (Fase N, docs/sintomas-multiples.md; decisión 35)
+  dosificaOtro: 'Dosificado según el síntoma más irritable de la fase 3, no según P1 (a igualdad de irritabilidad, manda P1). La gravedad es la de su NRS.',
+  independiente: 'Un síntoma va independiente de P1: puede ser un segundo problema que este plan no trata. Valóralo aparte.',
 };
 
 // Bloques de la sesión de 50 minutos: organización orientativa y editable, no
@@ -176,6 +179,7 @@ export const TIPO_TEXTO = {
   'AVISOS.soloTerapiaManual': 'decision:20',
   'AVISOS.sinNRS': 'decision:27', 'AVISOS.difiereFase3': 'decision:25', 'AVISOS.estimada': 'decision:12',
   'AVISOS.breveSinTests': 'app', 'AVISOS.dosHipotesis': 'decision:10',
+  'AVISOS.dosificaOtro': 'decision:35', 'AVISOS.independiente': 'decision:35',
   'TEXTOS_SESION.educacionBase': 'organizacion', 'TEXTOS_SESION.domiciliario': 'organizacion',
 };
 

@@ -3208,6 +3208,7 @@ body.posquirurgico .solo-posq { display: block; }
     text-transform: uppercase; color: var(--accent); margin: 0.9rem 0 6px;
   }
   .plan-calc { text-transform: none; letter-spacing: 0; color: var(--text3); font-family: 'Outfit', sans-serif; font-size: 0.75rem; }
+  .plan-dosifica { font-size: 0.82rem; color: var(--text2); background: var(--surface2); border-radius: var(--radius); padding: 6px 10px; margin: 0 0 0.6rem; }
   .plan-niveles { margin: 0.25rem 0 0.5rem; }
   .plan-niveles .option-btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .plan-escalon, .plan-bloque {

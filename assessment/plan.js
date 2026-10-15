@@ -3,7 +3,7 @@
 // a lib/plan-tratamiento.js y lo pinta. Diseño: docs/plan-tratamiento.md.
 // Nunca toca buildPhysiQPayload(), 📋 Notas ni 📄 Informe (decisión 9).
 import { state } from './state.js';
-import { DOSIS_DERIVAR } from './data.js';
+import { DOSIS_DERIVAR, ZONAS_SINTOMA } from './data.js';
 import { REGIONES_PLAN, ESCALONES, AVISOS, MINUTOS_SESION } from './data/plan-tratamiento.js';
 import {
   construirPlan, elegible, hipotesisPorDefecto, textoPlanSesion, textoPlanMes, textoDomiciliario, faltaEnCasa, textoPosq,
@@ -14,6 +14,7 @@ import { getDerivacionesArbol } from './phase4.js';
 import { ramaPauta } from './lib/pauta.js';
 import { conProtocolo, semanasCirugia, pautaHipPosq, TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
 import { nombreRegion, regionConLado } from './lib/region.js';
+import { payloadSintomas } from './lib/sintomas.js';
 import {
   saveSession, showConfirmBanner, getUrgenciasActivas, getCirugiaPayload, compartirTexto, cerrarMenuCompartir, partirPrimeraFrase,
 } from './app.js';
@@ -61,6 +62,8 @@ function hipotesisEntrada() {
 function entrada(hs) {
   const pt = state.planTratamiento;
   const cq = getCirugiaPayload();
+  // Varios síntomas (Fase N): el plan se dosifica según el más irritable
+  const { z1, ss } = payloadSintomas(state, ZONAS_SINTOMA[state.region] || []);
   return {
     region: state.region, regionTexto: regionConLado(state.region, state.lado),
     paciente: state.patient || '', fecha: new Date().toLocaleDateString('es-ES'),
@@ -70,6 +73,7 @@ function entrada(hs) {
     hipotesis: hs, elegidas: pt.hipotesis,
     severidad: state.severidad, irritabilidad: state.irritabilidad,
     irritabilidadNivel: state.irritabilidadNivel, irritabilidadDirecta: state.irritabilidadDirecta,
+    zonaP1: z1?.z || '', secundarios: ss || [],
     estabilidad: state.estabilidad, riesgoPsico: state.riesgoPsico, psico_miedo: state.psico_miedo,
     signoComparable: state.signoComparable,
     sesion: pt.sesion, gravedadManual: pt.gravedad, irritabilidadManual: pt.irritabilidad,
@@ -171,7 +175,8 @@ function pintar() {
   <div class="card">
     <div class="card-title">Gravedad e irritabilidad</div>
     <p class="plan-ayuda">Calculadas de la fase 3 (gravedad: NRS con los cortes de SINSS; irritabilidad: dolor en reposo, movimiento y tolerancia de la matriz). Puedes cambiarlas.</p>
-    <div class="plan-campo"><div class="plan-campo-et">Gravedad${plan.gravedadNRS ? ` <span class="plan-calc">· calculada: ${NOMBRE_GRAVEDAD[plan.gravedadNRS]} (NRS ${state.severidad}/10)</span>` : ' <span class="plan-calc">· sin NRS</span>'}</div>
+    ${plan.dosifica.varios ? `<div class="plan-dosifica" id="planDosifica">Según <strong>${esc(plan.dosifica.nombre)}</strong>${plan.dosifica.porOtro ? ', el síntoma más irritable' : ' (principal)'}</div>` : ''}
+    <div class="plan-campo"><div class="plan-campo-et">Gravedad${plan.gravedadNRS ? ` <span class="plan-calc">· calculada: ${NOMBRE_GRAVEDAD[plan.gravedadNRS]} (NRS ${plan.dosifica.nrs}/10)</span>` : ' <span class="plan-calc">· sin NRS</span>'}</div>
       <div class="option-group">${NIVELES_GRAVEDAD.map(g => opcion('gravedad', g, NOMBRE_GRAVEDAD[g], plan.gravedad === g)).join('')}</div></div>
     <div class="plan-campo"><div class="plan-campo-et">Irritabilidad${plan.irritabilidadCalculada ? ` <span class="plan-calc">· calculada: ${NOMBRE_IRRITABILIDAD[plan.irritabilidadCalculada]}${plan.irritabilidadEstimada ? ' (estimada)' : ''}</span>` : ''}${plan.irritabilidadFase3 ? ` <span class="plan-calc">· en la fase 3: ${NOMBRE_IRRITABILIDAD[plan.irritabilidadFase3]}</span>` : ''}</div>
       ${plan.irritabilidadFase3 ? `<div class="plan-ayuda">${esc(AVISOS.difiereFase3)}</div>` : ''}
