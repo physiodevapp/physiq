@@ -6,7 +6,7 @@ import { state } from './state.js';
 import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, TIEMPOS_TEJIDO, ZONAS_SINTOMA, CUESTIONARIOS, GRUPOS_CUESTIONARIO, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
 import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML, anatomiaLineaHTML, anatomiaPanelHTML } from './phase4b.js';
-import { registroReferencias, citasHTML } from './lib/citas.js';
+import { registroReferencias, citasHTML, citasEnTexto } from './lib/citas.js';
 import { alternarFicha, actualizarFicha, cerrarFicha, fichaAbierta } from './ficha.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 import {
@@ -2024,7 +2024,7 @@ function renderIrritabResumen(nivel, matriz = null) {
   if (!div) return;
   const T = TEXTOS_IRRITABILIDAD;
   if (!nivel) {
-    div.innerHTML = `<div class="alert alert-info"><span class="alert-icon">⚪</span><span>${T.noRegistrada}</span></div>`;
+    div.innerHTML = `<div class="alert alert-info"><span class="alert-icon">⚪</span><span>${citasEnTexto(T.noRegistrada)}</span></div>`;
     return;
   }
   const { color, emoji } = { Baja: { color: 'var(--green)', emoji: '🟢' }, Moderada: { color: 'var(--orange)', emoji: '🟠' }, Alta: { color: 'var(--red)', emoji: '🔴' } }[nivel] || { color: 'var(--green)', emoji: '🟢' };
@@ -2033,7 +2033,7 @@ function renderIrritabResumen(nivel, matriz = null) {
   const falta = !state.irritabilidadDirecta && matriz?.incompleta ? (matriz.sinCalma ? T.sinCalma : T.incompleta) : '';
   div.innerHTML = `<div class="alert alert-info" style="border-color:${color}33; background:${color}11;">
     <span class="alert-icon">${emoji}</span>
-    <span><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — ${textos.join(' ')}${falta ? `<br><em>${falta}</em>` : ''}<br><span class="irritab-ayuda">${T.margen}</span></span>
+    <span><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — ${citasEnTexto(textos.join(' '))}${falta ? `<br><em>${citasEnTexto(falta)}</em>` : ''}<br><span class="irritab-ayuda">${citasEnTexto(T.margen)}</span></span>
   </div>`;
 }
 
@@ -2091,10 +2091,10 @@ function partirPrimeraFrase(texto) {
 function _pautaPlegableHTML(dosis, fuente) {
   const { primera, resto } = partirPrimeraFrase(dosis);
   const fuenteHTML = fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
-  if (!resto) return `<div class="exercise-box">${dosis}</div>${fuenteHTML}`;
+  if (!resto) return `<div class="exercise-box">${citasEnTexto(dosis)}</div>${fuenteHTML}`;
   return `<details class="pauta-det">
-    <summary class="exercise-box"><span class="pauta-det-primera">${primera}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
-    <div class="pauta-det-resto">${resto}</div>
+    <summary class="exercise-box"><span class="pauta-det-primera">${citasEnTexto(primera)}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
+    <div class="pauta-det-resto">${citasEnTexto(resto)}</div>
     ${fuenteHTML}
     <button type="button" class="pauta-det-menos" onclick="const d=this.closest('details'); d.open=false; d.scrollIntoView({block:'nearest'})">Ocultar pauta ▴</button>
   </details>`;
@@ -2108,7 +2108,7 @@ function _pautaConRamasHTML(hyp) {
   if (!r) return _pautaPlegableHTML(hyp.dosis, hyp.dosisFuente);
   const otras = r.otras.length
     ? `<details class="pauta-otras"><summary>Otras situaciones (${r.otras.length})</summary>
-        ${r.otras.map(o => `<div class="pauta-otra"><div class="pauta-rama-tit">${o.titulo}</div>${o.texto}</div>`).join('')}
+        ${r.otras.map(o => `<div class="pauta-otra"><div class="pauta-rama-tit">${o.titulo}</div>${citasEnTexto(o.texto)}</div>`).join('')}
       </details>`
     : '';
   return `<div class="pauta-rama-tit">Para este caso: ${r.rama.titulo}</div>${_pautaPlegableHTML(r.texto, hyp.dosisFuente)}${otras}`;
@@ -2336,14 +2336,14 @@ function buildResults() {
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent2); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">${tratada ? ETIQUETA_TRATADA : hyp.dosis === DOSIS_DERIVAR ? '🚑 Derivación' : hyp.dosisFuente ? '💊 Pauta de Tratamiento' : '💊 Dosis Día 1 (Baja Fricción)'}</div>
           ${!tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR
             ? _pautaConRamasHTML(hyp)
-            : `<div class="exercise-box">${tratada ? _textoTratada(cq) : hyp.dosis || '<em style="color:var(--text3)">Sin dosis de referencia: a criterio del clínico.</em>'}</div>
+            : `<div class="exercise-box">${tratada ? _textoTratada(cq) : citasEnTexto(hyp.dosis) || '<em style="color:var(--text3)">Sin dosis de referencia: a criterio del clínico.</em>'}</div>
           ${!tratada && hyp.dosis && hyp.dosisFuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(hyp.dosisFuente)}</div>` : ''}`}
           ${cq && !tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR ? `<div class="nota-posq" style="margin-top:6px;">🏥 ${TEXTO_PAUTA_COMPATIBLE}</div>` : ''}
         </div>
         ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;">
           <summary style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase;">🧭 Pronóstico y derivación</summary>
-          ${hyp.pronostico.horizonte ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${hyp.pronostico.horizonte}</div>` : ''}
-          ${hyp.pronostico.derivacion ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${hyp.pronostico.derivacion}</div>` : ''}
+          ${hyp.pronostico.horizonte ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${citasEnTexto(hyp.pronostico.horizonte)}</div>` : ''}
+          ${hyp.pronostico.derivacion ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${citasEnTexto(hyp.pronostico.derivacion)}</div>` : ''}
           ${hyp.pronostico.fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(hyp.pronostico.fuente)}</div>` : ''}
         </details>` : ''}
       </div>`;

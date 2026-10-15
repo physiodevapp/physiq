@@ -15,12 +15,14 @@ import { ramaPauta } from './lib/pauta.js';
 import { conProtocolo, semanasCirugia, pautaHipPosq, TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
 import { regionConLado } from './lib/region.js';
 import { payloadSintomas } from './lib/sintomas.js';
-import { citasHTML } from './lib/citas.js';
+import { citasHTML, citasEnTexto } from './lib/citas.js';
 import {
   saveSession, showConfirmBanner, getUrgenciasActivas, getCirugiaPayload, compartirTexto, cerrarMenuCompartir, partirPrimeraFrase,
 } from './app.js';
 
 const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// Texto de data/ con sus citas entre paréntesis tocables (lib/citas.js); nunca en atributos ni en los <textarea>
+const escC = t => citasEnTexto(esc(t));
 
 let _contenedor = null;
 
@@ -121,14 +123,14 @@ function opcion(grupo, valor, texto, seleccionado, { deshabilitado = false, titu
 function pautaHTML(texto, fuente) {
   const { primera, resto } = partirPrimeraFrase(texto);
   const f = fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
-  if (!resto) return `<div class="exercise-box">${esc(texto)}</div>${f}`;
+  if (!resto) return `<div class="exercise-box">${escC(texto)}</div>${f}`;
   return `<details class="pauta-det">
-    <summary class="exercise-box"><span class="pauta-det-primera">${esc(primera)}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
-    <div class="pauta-det-resto">${esc(resto)}</div>${f}
+    <summary class="exercise-box"><span class="pauta-det-primera">${escC(primera)}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
+    <div class="pauta-det-resto">${escC(resto)}</div>${f}
   </details>`;
 }
 
-const lista = items => `<ul class="plan-lista">${items.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`;
+const lista = items => `<ul class="plan-lista">${items.map(t => `<li>${escC(t)}</li>`).join('')}</ul>`;
 
 function pintar() {
   const c = _contenedor;
@@ -144,7 +146,7 @@ function pintar() {
 
   if (plan.bloqueado) {
     c.innerHTML = plan.bloqueos.map(b => `<div class="alert alert-danger"><span class="alert-icon">${b.tipo === 'urgencia' ? '🚨' : '🩺'}</span><div>
-      <strong>${esc(b.titulo)}.</strong> Sin plan de tratamiento hasta resolverlo.${b.lineas.map(l => `<div>· ${esc(l)}</div>`).join('')}</div></div>`).join('');
+      <strong>${esc(b.titulo)}.</strong> Sin plan de tratamiento hasta resolverlo.${b.lineas.map(l => `<div>· ${escC(l)}</div>`).join('')}</div></div>`).join('');
     return;
   }
 
@@ -155,7 +157,7 @@ function pintar() {
     const orden = sel ? (pt.hipotesis[0] === h.id ? 'Principal' : 'Segunda') : '';
     return `<div class="plan-hip${el.ok ? '' : ' plan-hip-no'}">
       ${opcion('hipotesis', h.id, `${esc(h.name)}${orden ? ` <span class="plan-hip-orden">· ${orden}</span>` : ''}`, sel, { deshabilitado: !el.ok, titulo: el.motivo })}
-      ${el.ok ? '' : `<div class="plan-hip-motivo">${esc(el.motivo)}</div>`}
+      ${el.ok ? '' : `<div class="plan-hip-motivo">${escC(el.motivo)}</div>`}
     </div>`;
   }).join('');
 
@@ -166,7 +168,7 @@ function pintar() {
   const mes = plan.mes[pt.frecuencia];
 
   c.innerHTML = `
-  ${plan.avisos.map(a => `<div class="plan-aviso">${esc(a)}${a === AVISOS.sinNRS
+  ${plan.avisos.map(a => `<div class="plan-aviso">${escC(a)}${a === AVISOS.sinNRS
     ? ' <button type="button" class="plan-enlace" onclick="goToPhase(3)">Registrar NRS en la fase 3 →</button>'
     : a === AVISOS.incompleta || a === AVISOS.sinIrritabilidad
       ? ' <button type="button" class="plan-enlace" onclick="goToPhase(3)">Completar la matriz en la fase 3 →</button>' : ''}</div>`).join('')}
@@ -191,7 +193,7 @@ function pintar() {
 
   <div class="card" id="planSesion">
     <div class="card-title">Sesión de 50 minutos <span class="plan-chip">Minutos orientativos</span></div>
-    ${plan.avisosHip.map(a => `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${esc(a)}</div></div>`).join('')}
+    ${plan.avisosHip.map(a => `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${escC(a)}</div></div>`).join('')}
     <div class="option-group plan-niveles">
       ${['A', 'B', 'C'].map(k => {
         // A igual que B no se ofrece: elegirla no cambiaría nada
@@ -200,15 +202,15 @@ function pintar() {
         return opcion('nivel', k, `<strong>${k}</strong> · ${e ? esc(e.nombre) : '—'}`, nivel === k, { deshabilitado: !n, titulo: n ? '' : k === 'A' ? TEXTO_NIVELES.aIgual : nv.sinC });
       }).join('')}
     </div>
-    ${nv.sinC ? `<div class="plan-ayuda">${esc(nv.sinC)}</div>` : ''}
-    ${nv.aIgual ? `<div class="plan-ayuda">${esc(TEXTO_NIVELES.aIgual)}</div>` : ''}
+    ${nv.sinC ? `<div class="plan-ayuda">${escC(nv.sinC)}</div>` : ''}
+    ${nv.aIgual ? `<div class="plan-ayuda">${escC(TEXTO_NIVELES.aIgual)}</div>` : ''}
     <div class="plan-escalon">
       <div class="plan-escalon-tit">Nivel ${nivel} · ${esc(esc_.nombre)} <span class="plan-calc">(${esc(esc_.modo)})</span></div>
-      <div>${esc(esc_.texto)}</div>
+      <div>${escC(esc_.texto)}</div>
       <div class="test-source" style="margin:6px 0 0;">${citasHTML(esc_.citas)}</div>
-      <div class="plan-ayuda" style="margin-top:6px;">${esc(AVISOS.soloTerapiaManual)}</div>
+      <div class="plan-ayuda" style="margin-top:6px;">${escC(AVISOS.soloTerapiaManual)}</div>
     </div>
-    ${s.notaPrimera ? `<div class="plan-aviso">${esc(s.notaPrimera)}</div>` : ''}
+    ${s.notaPrimera ? `<div class="plan-aviso">${escC(s.notaPrimera)}</div>` : ''}
     <div class="plan-bloques">
       ${s.bloques.map(b => `<div class="plan-bloque">
         <div class="plan-bloque-cab"><span class="plan-bloque-min">${b.minutos} min</span> ${esc(b.titulo)}
@@ -233,13 +235,13 @@ function pintar() {
     <div class="card-title">Plan de un mes</div>
     <div class="option-group">${opcion('frecuencia', 'A', 'A · 1 sesión/semana', pt.frecuencia === 'A')}${opcion('frecuencia', 'B', 'B · 2 sesiones/semana', pt.frecuencia === 'B')}</div>
     <div class="summary-row"><span class="summary-label">Sesiones</span><span class="summary-value">${mes.sesiones}</span></div>
-    <div class="summary-row"><span class="summary-label">Reevaluación intermedia</span><span class="summary-value">${esc(mes.intermedia)}</span></div>
-    <div class="summary-row"><span class="summary-label">Reevaluación final</span><span class="summary-value">${esc(mes.final)}${plan.mes.prom.length ? `, con ${esc(plan.mes.prom.join(' / '))}` : ''}</span></div>
-    <div class="summary-row"><span class="summary-label">Programa domiciliario</span><span class="summary-value">${esc(mes.domiciliario)}</span></div>
+    <div class="summary-row"><span class="summary-label">Reevaluación intermedia</span><span class="summary-value">${escC(mes.intermedia)}</span></div>
+    <div class="summary-row"><span class="summary-label">Reevaluación final</span><span class="summary-value">${escC(mes.final)}${plan.mes.prom.length ? `, con ${esc(plan.mes.prom.join(' / '))}` : ''}</span></div>
+    <div class="summary-row"><span class="summary-label">Programa domiciliario</span><span class="summary-value">${escC(mes.domiciliario)}</span></div>
     <details class="plan-registro"><summary>Qué comparar en las reevaluaciones intermedia y final</summary>${lista(plan.mes.retrospectiva)}
       <div class="test-source">${citasHTML(plan.mes.fuenteRetrospectiva)}</div></details>
     ${lista([...mes.notas, ...plan.mes.notasPauta])}
-    ${plan.mes.posq ? `<div class="nota-posq">🏥 ${plan.mes.posq.semanas != null ? `Semana ${plan.mes.posq.semanas} tras la cirugía. ` : ''}${esc(textoPosq(plan.mes.posq.conProtocolo))}</div>` : ''}
+    ${plan.mes.posq ? `<div class="nota-posq">🏥 ${plan.mes.posq.semanas != null ? `Semana ${plan.mes.posq.semanas} tras la cirugía. ` : ''}${escC(textoPosq(plan.mes.posq.conProtocolo))}</div>` : ''}
     <div class="plan-sub">Progresión</div>${lista(plan.mes.progresion)}
     <div class="plan-sub">Seguir o cambiar</div>${lista(plan.mes.reglas)}
     ${plan.mes.pronostico.length ? `<div class="plan-sub">Pronóstico y cuándo reconsiderar</div>${lista(plan.mes.pronostico.flatMap(p => [

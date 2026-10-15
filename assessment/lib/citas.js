@@ -51,8 +51,14 @@ export function enlaceCita(cita, REF) {
   return url ? { texto: cita, url } : cita;
 }
 
-// Un trozo que empieza como una referencia: «Autor 2005», «Autor y Autor 2005».
-const EMPIEZA_REFERENCIA = /^\p{Lu}[^,(;:]*\b(19|20)\d{2}\b/u;
+// Un trozo que empieza como una referencia: «Autor 2005», «Autor y Autor 2005»,
+// o una guía NICE («NICE NG59», «NICE CG147»), que no lleva año en la clave.
+const EMPIEZA_REFERENCIA = /^(\p{Lu}[^,(;:]*\b(19|20)\d{2}\b|NICE (NG|CG)\d+\b)/u;
+export const esReferencia = c => EMPIEZA_REFERENCIA.test(String(c).trim());
+// Dentro de una frase, además, la referencia tiene que acabar ahí o seguir con
+// «, », « (» o «: » (capítulo, páginas…): «(Petersen 2021 incluye las banderas
+// amarillas…)» es una frase, no una cita, y se queda como texto.
+const CITA_SUELTA = /^(\p{Lu}[^,(;:]*\b(19|20)\d{2}|NICE (NG|CG)\d+)(?=$|, | \(|: )/u;
 
 // Una fuente → sus citas. Separa por « · » (el separador de toda la app) y por
 // «; » solo cuando lo que sigue empieza otra referencia («Maitland 2005, cap.
@@ -87,12 +93,80 @@ export function etiquetaCita(cita) {
   return corta.length > MAX_ETIQUETA ? `${corta.slice(0, MAX_ETIQUETA - 1).trimEnd()}…` : corta;
 }
 
-// Botones de las citas de una fuente, separados por « · ». La cita entera va en
-// data-cita (la ficha la lee; al imprimir se imprime ella, no la forma corta).
+// Botón de una cita: se ve la forma corta; el resto de la cita va en un <span>
+// oculto (.cita-resto), así el texto del botón sigue siendo la cita entera para
+// quien lo lea con textContent (pruebas, «Ampliar con IA»), y al imprimir se ve.
+// La cita entera va además en data-cita (la ficha la lee; al imprimir, si la forma
+// corta no es el principio de la cita, se imprime data-cita).
+function citaBotonHTML(c) {
+  const corta = etiquetaCita(c);
+  const prefijo = c.startsWith(corta);
+  const resto = prefijo && c.length > corta.length ? `<span class="cita-resto">${esc(c.slice(corta.length))}</span>` : '';
+  return `<button type="button" class="cita${prefijo ? '' : ' cita-abreviada'}" data-cita="${esc(c)}" aria-expanded="false"><span class="cita-corta">${esc(corta)}</span>${resto}</button>`;
+}
+
+// Botones de las citas de una fuente, separados por « · ».
 export function citasHTML(fuente) {
-  return partirCitas(fuente).map(c =>
-    `<button type="button" class="cita" data-cita="${esc(c)}" aria-expanded="false"><span class="cita-corta">${esc(etiquetaCita(c))}</span></button>`,
-  ).join('<span class="cita-sep" aria-hidden="true"> · </span>');
+  return partirCitas(fuente).map(citaBotonHTML).join('<span class="cita-sep" aria-hidden="true"> · </span>');
+}
+
+const desescapar = s => s.replace(/&(amp|lt|gt|quot|#39);/g, (_, e) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" }[e]));
+
+// Citas dentro de una frase («… la mitad si duele mucho (Maitland 2005, cap. 9,
+// pp. 213, 216 y 219).»): en cada paréntesis de primer nivel, cada cita que
+// empieza como una referencia y sigue como una cita (CITA_SUELTA) pasa a botón; lo demás del
+// paréntesis («acuerdo del 71 %, kappa 0,39–0,44; Barakatt 2009») y sus
+// separadores se quedan como están. Recibe HTML ya escapado (o de confianza, de
+// data/) y devuelve HTML; un paréntesis con etiquetas dentro no se toca. Solo
+// cambia lo que se ve: los textos de data/ y lo que se comparte siguen enteros.
+export function citasEnTexto(html) {
+  if (html == null) return '';
+  const s = String(html);
+  if (!s.includes('(')) return s;
+  let out = '', prof = 0, ini = -1, desde = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '(') { if (prof === 0) ini = i; prof++; }
+    else if (s[i] === ')' && prof > 0 && --prof === 0) {
+      const dentro = s.slice(ini + 1, i);
+      if (/[<>]/.test(dentro)) continue;
+      const nuevo = citasEnGrupo(dentro);
+      if (nuevo === dentro) continue;
+      // El botón es una caja en línea: sin pegarlos, «(» o «).» podrían quedarse
+      // solos al principio o al final de una línea
+      const punt = /[.,;:]/.test(s[i + 1] || '') ? s[i + 1] : '';
+      out += s.slice(desde, ini) + pegarParentesis(nuevo, punt);
+      desde = i + 1 + punt.length;
+    }
+  }
+  return out + s.slice(desde);
+}
+function pegarParentesis(g, punt) {
+  const FIN = '</button>';
+  let ini = '(', fin = `)${punt}`, medio = g;
+  if (medio.startsWith('<button')) {
+    const e = medio.indexOf(FIN) + FIN.length;
+    ini = `<span class="cita-pegada">(${medio.slice(0, e)}`;
+    medio = medio.slice(e);
+    if (!medio) return `${ini}${fin}</span>`;
+    ini += '</span>';
+  }
+  if (medio.endsWith(FIN)) {
+    const e = medio.lastIndexOf('<button');
+    fin = `<span class="cita-pegada">${medio.slice(e)}${fin}</span>`;
+    medio = medio.slice(0, e);
+  }
+  return ini + medio + fin;
+}
+function citasEnGrupo(g) {
+  let out = '', pos = 0, cambia = false;
+  for (const parte of partirCitas(g)) {
+    const idx = g.indexOf(parte, pos);
+    if (idx < 0) return g;
+    out += g.slice(pos, idx);
+    if (CITA_SUELTA.test(parte)) { out += citaBotonHTML(desescapar(parte)); cambia = true; } else out += parte;
+    pos = idx + parte.length;
+  }
+  return cambia ? out + g.slice(pos) : g;
 }
 
 // Contenido de la ficha de una cita: el texto entero; del registro, el título

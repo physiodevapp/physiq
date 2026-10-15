@@ -3337,9 +3337,13 @@ body.posquirurgico .solo-posq { display: block; }
 .cita-ficha .cita-ficha-enlace { display: inline-flex; align-items: center; min-height: 32px; margin-top: 6px; color: var(--accent); font-weight: 600; text-decoration: none; }
 @media (pointer: coarse) { .cita-ficha .cita-ficha-enlace { min-height: 40px; } }
 .cita-ficha .cita-ficha-sin { margin-top: 6px; color: var(--text3); font-size: 0.72rem; }
-/* Al imprimir, la cita entera (data-cita), no la forma corta */
+.cita-resto { display: none; }
+.cita-pegada { white-space: nowrap; }
+/* Al imprimir, la cita entera: la forma corta y su resto, o data-cita si la forma
+   corta está abreviada con «…» */
 @media print {
   .cita { text-decoration: none; }
-  .cita-corta { display: none; }
-  .cita::before { content: attr(data-cita); }
+  .cita-resto { display: inline; }
+  .cita-abreviada .cita-corta { display: none; }
+  .cita-abreviada::before { content: attr(data-cita); }
 }
