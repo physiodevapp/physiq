@@ -10,7 +10,8 @@
 // ============================================================
 
 import { slugPaciente, fechaArchivo, exportarValoracion } from './valoracion-json.js';
-import { clavePunto, claveComprobacion } from './revision-informe.js';
+import { clavePunto as clavePuntoInf, claveComprobacion as claveComprobacionInf } from './revision-informe.js';
+import { clavePuntoPlan, claveComprobacionPlan } from './revision-plan.js';
 
 // `audio` del nombre de los ficheros: como en tests/fixtures/informes
 const tipoAudio = inf => !inf.conAudio ? 'sin-audio' : inf.dictado ? 'dictado' : 'audio';
@@ -19,8 +20,9 @@ export function nombrePaquete(paciente, ahora = new Date()) {
   return `revision-informe-${slugPaciente(paciente)}-${fechaArchivo(ahora)}.zip`;
 }
 
-// Puntos y comprobaciones en el mismo formato que tools/revisar-informe.mjs
-export function textoRevision(puntos = [], comprobaciones = [], revisados = []) {
+// Puntos y comprobaciones en el mismo formato que tools/revisar-informe.mjs.
+// `claves`: las del plan detallado con IA (paquete del plan); por defecto, las del informe
+export function textoRevision(puntos = [], comprobaciones = [], revisados = [], { clavePunto = clavePuntoInf, claveComprobacion = claveComprobacionInf } = {}) {
   const hechos = new Set(revisados || []);
   const marca = clave => hechos.has(clave) ? ' [revisado]' : '';
   const altos = puntos.filter(p => p.nivel === 'alto').length;
@@ -86,4 +88,47 @@ export function ficherosPaquete({ inf, informe, state, puntos = [], comprobacion
     ...(inf.prompt ? [{ nombre: 'prompt.txt', texto: inf.prompt }] : []),
   ];
   return { nombre: nombrePaquete(state?.patient, ahora), ficheros };
+}
+
+// ── Paquete del plan detallado con IA (fase 6, plan-ia.js) ──────────────────
+// Lo mismo para revisar un plan: el plan tal como se generó (markdown, el que
+// irá a tests/fixtures/planes/), el programa para casa como lo recibe el
+// paciente, los puntos de revisión del plan, la valoración y el prompt (que ya
+// lleva la transcripción, si se usó).
+export function nombrePaquetePlan(paciente, ahora = new Date()) {
+  return `revision-plan-${slugPaciente(paciente)}-${fechaArchivo(ahora)}.zip`;
+}
+
+// { ia: state.planTratamiento.ia, casa: textoCasaIA(), state, puntos,
+//   comprobaciones, versionActual, cambiado, ahora } → { nombre, ficheros }
+export function ficherosPaquetePlan({ ia, casa = '', state, puntos = [], comprobaciones = [], versionActual = 'dev', cambiado = false, ahora = new Date() }) {
+  const slug = slugPaciente(state?.patient);
+  const fecha = ia.fecha ? new Date(ia.fecha).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+  const palabras = (String(ia.texto || '').replace(/[#|*-]/g, ' ').match(/\S+/g) || []).length;
+  const altos = puntos.filter(p => p.nivel === 'alto').length;
+  const info = [
+    'Paquete de revisión del plan detallado con IA · PhysiQ-Assessment',
+    '',
+    `Plan generado: ${fecha}, con la versión ${ia.version || 'no registrada'}`,
+    `Paquete descargado: ${ahora.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}, con la versión ${versionActual}`,
+    `Nivel: ${ia.nivel || '—'}${ia.escalon ? ` (${ia.escalon})` : ''} · ${ia.frecuenciaNombre || ia.frecuencia || '—'}`,
+    `Transcripción del informe con IA: ${ia.conTranscripcion ? 'sí (va dentro de prompt.txt)' : 'no'}`,
+    `Palabras: ${palabras}`,
+    `Revisión automática: ${puntos.length ? `${puntos.length} ${puntos.length === 1 ? 'punto' : 'puntos'}${altos ? ` (${altos} de nivel alto)` : ''}` : 'sin incidencias'}`,
+    `Valoración y plan: ${cambiado ? 'han cambiado desde que se detalló (el .json es el de ahora; los puntos se calculan con él)' : 'los mismos con los que se detalló'}`,
+    `Prompt: ${ia.prompt ? 'el exacto que se envió (prompt.txt)' : 'no guardado'}`,
+    '',
+    'Contiene datos clínicos y el nombre del paciente.',
+    '',
+  ].join('\n');
+  const fin = t => (t.endsWith('\n') ? t : t + '\n');
+  const ficheros = [
+    { nombre: 'info.txt', texto: info },
+    { nombre: `${slug}-plan-ia.txt`, texto: fin(String(ia.texto || '')) },
+    ...(casa ? [{ nombre: `${slug}-programa-casa-ia.txt`, texto: fin(casa) }] : []),
+    { nombre: 'revision.txt', texto: textoRevision(puntos, comprobaciones, ia.revisados, { clavePunto: clavePuntoPlan, claveComprobacion: claveComprobacionPlan }) },
+    { nombre: `valoracion-${slug}.json`, texto: JSON.stringify(exportarValoracion(state, ahora), null, 2) + '\n' },
+    ...(ia.prompt ? [{ nombre: 'prompt.txt', texto: ia.prompt }] : []),
+  ];
+  return { nombre: nombrePaquetePlan(state?.patient, ahora), ficheros };
 }

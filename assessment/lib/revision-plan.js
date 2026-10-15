@@ -72,7 +72,7 @@ export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], 
 
   // Secciones: sin el programa para casa no hay red de seguridad que comprobar
   const faltan = ['SESIÓN', 'PLAN DEL MES', 'PROGRAMA PARA CASA'].filter(s => sec[s] == null);
-  if (faltan.length) puntos.push({ id: 'secciones', nivel: 'alto', mensaje: `Falta ${faltan.length > 1 ? 'las secciones' : 'la sección'} ${faltan.join(', ')}: el plan parece incompleto.` });
+  if (faltan.length) puntos.push({ id: 'secciones', nivel: 'alto', mensaje: `${faltan.length > 1 ? 'Faltan las secciones' : 'Falta la sección'} ${faltan.join(', ')}: el plan parece incompleto.` });
 
   // 1. Volumen sin marcar
   const enEsqueleto = new Set(cifras(esqueleto));

@@ -231,7 +231,9 @@ function pintarResultado(ctx) {
       <div class="ia-informe pia-plan">${planIAHtml(ia.texto)}</div>
     </details>
     <div class="ia-acciones"><button class="phase5-copy-btn ia-btn-descartar" onclick="piaDescartar()">Descartar</button></div>
-    <div class="ia-rev-nota pia-compartir-nota">Para compartirlo: «📤 Compartir» de abajo → «Plan detallado (IA)» o «Programa para casa (IA)»; este último, con todos los puntos revisados.</div>`;
+    <div class="ia-rev-nota pia-compartir-nota">Para compartirlo: «📤 Compartir» de abajo → «Plan detallado (IA)» o «Programa para casa (IA)»; este último, con todos los puntos revisados.</div>
+    <div class="ia-rev-paquete"><button type="button" class="ia-rev-paquete-btn" onclick="piaPaqueteRevision()"
+      title="Descarga un .zip con el plan detallado, el programa para casa, los puntos a revisar, la valoración y el prompt, para revisar el plan. Contiene datos clínicos y el nombre del paciente.">⬇ Paquete de revisión</button></div>`;
   $('piaResultadoDet').addEventListener('toggle', ev => { _resAbierto = ev.target.open; });
   pintarRevision(ctx);
 }
@@ -312,6 +314,43 @@ function piaMarcarRevisado(marcado, tipo, i) {
   saveSession();
   $(tipo === 'p' ? 'piaRevision' : 'piaComprobar')?.querySelectorAll('li')[i]?.classList.toggle('ia-rev-hecho', marcado);
   cabeceras();
+}
+
+// «⬇ Paquete de revisión»: como el del informe con IA (lib/paquete-revision.js
+// y lib/zip.js, cargados al usarlo): el plan tal como se generó, el programa
+// para casa como lo recibe el paciente, los puntos, la valoración y el prompt.
+async function piaPaqueteRevision() {
+  const ia = state.planTratamiento?.ia;
+  if (!ia?.texto) return;
+  saveSession();
+  try {
+    const [{ crearZip }, { ficherosPaquetePlan }] = await Promise.all([import('./lib/zip.js'), import('./lib/paquete-revision.js')]);
+    let ctx = null;
+    try { ctx = contexto(); } catch { /* sin contexto: el resto del paquete sigue valiendo */ }
+    const { puntos, comprobaciones } = puntosDe(ctx, ia);
+    const { e, plan } = planActual();
+    const ahora = new Date();
+    const { nombre, ficheros } = ficherosPaquetePlan({
+      ia, state, puntos, comprobaciones,
+      casa: plan.bloqueado ? '' : textoCasaIA(ia.texto, { paciente: e.paciente, fecha: e.fecha, alarmas: plan.alarmasCasa }),
+      versionActual: VERSION_SHA, cambiado: !!(ctx && ia.huella && ia.huella !== ctx.huella), ahora,
+    });
+    const archivo = new File([crearZip(ficheros, ahora)], nombre, { type: 'application/zip' });
+    // En el móvil, la hoja de compartir permite mandarlo o guardarlo en Archivos
+    if (window.matchMedia?.('(pointer: coarse)').matches && navigator.canShare?.({ files: [archivo] })) {
+      try { await navigator.share({ files: [archivo], title: nombre }); return; }
+      catch (err) { if (err?.name === 'AbortError') return; }
+    }
+    const url = URL.createObjectURL(archivo);
+    const a = Object.assign(document.createElement('a'), { href: url, download: nombre });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast(`✓ Paquete de revisión descargado: ${nombre}`, 'success');
+  } catch {
+    showToast('No se ha podido preparar el paquete de revisión.', 'warning');
+  }
 }
 
 function piaDescartar() {
@@ -528,4 +567,4 @@ export { contexto as contextoPlanIA };
 
 // Exposed for inline onclick/onchange attributes in the HTML strings above and
 // in the share menu (app.js).
-Object.assign(window, { piaGenerar, piaCancelar, piaDescartar, piaMarcarRevisado, piaReintentarLicencia, compartirPlanIA, compartirCasaIA });
+Object.assign(window, { piaGenerar, piaCancelar, piaDescartar, piaPaqueteRevision, piaMarcarRevisado, piaReintentarLicencia, compartirPlanIA, compartirCasaIA });
