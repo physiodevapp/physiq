@@ -173,7 +173,7 @@ export const screening = {
           } }
       ],
       banderasAmarillas: [
-        { texto: 'Dolor lumbar constante que no varía con la postura corporal', fase1: 'br4' },
+        { texto: 'Dolor lumbar constante que no varía con la postura corporal', pregunta: 'l4', fase1: 'br4' },
         { texto: 'Fiebre y escalofríos acompañando el dolor lumbar', pregunta: 'l4' },
         { texto: 'Cambios en la orina (color, olor, cantidad)', pregunta: 'l4' }
       ],
@@ -314,9 +314,9 @@ export const screening = {
           } }
       ],
       banderasAmarillas: [
-        'Dolor de espalda y abdominal al mismo nivel (simultáneo o alterno)',
-        'Uso crónico de AINEs',
-        'Dolor modificado por ingesta o defecación'
+        { texto: 'Dolor de espalda y abdominal al mismo nivel (simultáneo o alterno)', pregunta: ['l1', 'l3'] },
+        { texto: 'Uso crónico de AINEs', pregunta: 'l_gi2' },
+        { texto: 'Dolor modificado por ingesta o defecación', pregunta: ['l1', 'l_gi2'] }
       ],
       preguntas: [
         { id: 'l1', anatomia: ['intestino_grueso'], text: '¿El dolor lumbar, sacro o pélvico se alivia o cambia después de tener una evacuación intestinal o al expulsar gases?', alerta: true, s1: true,
@@ -424,7 +424,7 @@ export const screening = {
               { texto: 'NICE NG65 — NICE, «Spondyloarthritis in over 16s: diagnosis and management» (2017), recomendaciones 1.1.2 y 1.1.5.', url: 'https://www.nice.org.uk/guidance/ng65' }
             ]
           } },
-        'Antecedente de osteoporosis o uso prolongado de corticosteroides (riesgo de fractura por insuficiencia)',
+        { texto: 'Antecedente de osteoporosis o uso prolongado de corticosteroides (riesgo de fractura por insuficiencia)', pregunta: 'l_e4' },
         { texto: 'Engrosamiento óseo palpable o deformidad (Paget)', pregunta: 'l_e5' }
       ],
       preguntas: [
@@ -694,7 +694,7 @@ export const screening = {
           } }
       ],
       banderasAmarillas: [
-        'Mayor con factores de riesgo cardiovascular (HTA, diabetes, colesterol, tabaco)'
+        { texto: 'Mayor con factores de riesgo cardiovascular (HTA, diabetes, colesterol, tabaco)', pregunta: ['l_v1', 'l_v2', 'l_v3'] }
       ],
       preguntas: [
         { id: 'l_v1', anatomia: ['arteria_femoral', 'arteria_poplitea'], text: '¿El dolor de piernas al caminar se le pasa con solo pararse de pie, sin necesidad de sentarse ni inclinarse?', alerta: true, s1: true,
@@ -777,7 +777,7 @@ export const screening = {
           } }
       ],
       banderasAmarillas: [
-        'Diabetes, corticoides prolongados u otros inmunosupresores, insuficiencia renal crónica o consumo de drogas'
+        { texto: 'Diabetes, corticoides prolongados u otros inmunosupresores, insuficiencia renal crónica o consumo de drogas', pregunta: 'l_inf1' }
       ],
       preguntas: [
         { id: 'l_inf1', anatomia: ['columna_lumbar', 'discos_intervertebrales'], text: '¿Ha tenido fiebre o alguna infección en las últimas semanas, le han operado o infiltrado la espalda hace poco, o tiene las defensas bajas (corticoides, inmunosupresores, VIH, diabetes)?', alerta: true, s1: true,

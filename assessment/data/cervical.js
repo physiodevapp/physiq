@@ -322,7 +322,16 @@ export const screening = {
         { texto: 'Hematuria', pregunta: 'cv_r2' }
       ],
       banderasAmarillas: [
-        { texto: 'Dolor que no cambia con postura corporal', fase1: 'br4' },
+        { texto: 'Dolor que no cambia con postura corporal', fase1: 'br4',
+          razonamiento: {
+            porque: 'Un dolor del cuello que viene de las articulaciones, los discos o los músculos cambia con la postura, el movimiento o el reposo. Si no cambia con nada, la fuente probable no es mecánica: una víscera que refiere el dolor (el riñón, por ejemplo, duele igual en cualquier postura), una infección o un tumor (Goodman).',
+            peso: 'Es una bandera amarilla que comparte la bandera roja de la fase 1 (dolor no mecánico). Goodman pide derivar al médico un dolor constante que no depende de la actividad, sobre todo si va a más, no mejora como se espera o aparecen déficits neurológicos. Pesa más con fiebre, pérdida de peso, dolor nocturno o antecedente de cáncer (preguntas de los sistemas oncológico e infeccioso).',
+            detalle: 'Cómo distinguirlo (Goodman): el dolor renal no cambia con la postura ni con los movimientos de la columna o el hombro; el seudorrenal, por irritación de los nervios costales desde las articulaciones costovertebrales, frecuente en la columna cervical y torácica, sí cambia con la postura y con los movimientos. El dolor de un tumor óseo de la columna no se alivia al tumbarse y a menudo empeora de noche.\n\nQué hacer: comprobar en la exploración si algún movimiento, posición o palpación lo modifica; si nada lo cambia, preguntar por los demás sistemas y derivar.',
+            fuentes: ['Goodman 2018'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 10, p. 362; cap. 13, p. 488; cap. 14, p. 564.'
+            ]
+          } },
         { texto: 'Fiebre y escalofríos acompañando el dolor de espalda', pregunta: 'cv_r2' },
         { texto: 'Cambios en el color u olor de la orina', pregunta: 'cv_r2' }
       ],
