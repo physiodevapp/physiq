@@ -2554,7 +2554,10 @@
   .razon-cerrar { display: none; }
   .razon > summary { font-size: 0.8rem; padding: 6px 0; }
   .razon-cuerpo { font-size: 0.85rem; }
-  .razon-ampliar { font-size: 0.8rem; padding: 6px 0 6px 6px; }
+  /* Área de toque con ::after, no con padding vertical, que agrandaba la línea de
+     la fuente (mismo arreglo que las citas) */
+  .razon-ampliar { font-size: 0.8rem; position: relative; }
+  .razon-ampliar::after { content: ''; position: absolute; inset: -6px 0; }
 }
 @media print { .razon, .razon-panel, .razon-scrim { display: none !important; } }
 /* Fisiología paso a paso (nivel 2): cadena numerada con conectores; la metáfora
@@ -2628,7 +2631,10 @@
 @media (hover: hover) { .ia-menu-op:hover { border-color: var(--border2); } }
 @media (max-width: 768px) {
   .ia-parrafo { font-size: 0.8rem; }
-  .ia-parrafo-ir, .ia-elegir { padding-top: 4px; padding-bottom: 4px; }
+  /* Área de toque con ::after: el padding vertical del botón ▾ agrandaba la última
+     línea del párrafo */
+  .ia-parrafo-ir, .ia-elegir { position: relative; }
+  .ia-parrafo-ir::after, .ia-elegir::after { content: ''; position: absolute; inset: -4px 0; }
 }
 .in-hub .ia-parrafo, .in-hub .razon-ia-pie { display: none; }
 @media print { .ia-parrafo, .razon-ia-pie, .ia-barra, .ia-menu { display: none !important; } }
@@ -3362,10 +3368,13 @@ body.posquirurgico .solo-posq { display: block; }
 .cita[aria-expanded="true"] { color: var(--accent); text-decoration-color: var(--accent); }
 .cita:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 @media (hover: hover) { .cita:hover { color: var(--accent); text-decoration-color: var(--accent); } }
-/* En táctil, más aire entre líneas para que cada cita se toque sin rozar la de al lado */
+/* En táctil, el área de toque de cada cita crece con un ::after invisible que se sale
+   4 px por arriba y por abajo, no con más interlineado ni padding: con line-height 2.1
+   las líneas de fuentes que envuelven quedaban muy separadas (decisión del usuario,
+   2026-10; mismo arreglo que las fuentes de los tiempos de tejido y la «Anatomía») */
 @media (pointer: coarse) {
-  .test-source:has(.cita), .razon-pie:has(.cita), p:has(> .cuest-fuente-et) { line-height: 2.1; }
-  .cita { padding: 4px 0; }
+  .cita { position: relative; }
+  .cita::after { content: ''; position: absolute; inset: -4px 0; }
 }
 .cita-ficha .cita-ficha-texto { overflow-wrap: anywhere; }
 .cita-ficha .cita-ficha-titulo { margin-top: 6px; color: var(--text2); font-style: italic; overflow-wrap: anywhere; }
