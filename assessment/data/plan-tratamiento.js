@@ -100,7 +100,7 @@ export const TEXTO_NIVELES = {
     irritabilidad: 'Sin propuesta C: la irritabilidad no es baja (Petersen 2021; Maitland 2005, cap. 6, p. 117).',
     estabilidad: 'Sin propuesta C: los síntomas empeoran. Tratamiento suave y evaluación en cada sesión (Maitland 2005, cap. 6, pp. 101 y 107, que lo dice de los síntomas que varían mucho de un día a otro).',
   },
-  aIgual: 'A coincide con B: ya es el escalón más suave.',
+  aIgual: 'Una sola propuesta: B es la que se ajusta a esta gravedad e irritabilidad, y ya es el escalón más suave. A sería uno menos y no lo hay.',
 };
 
 // Avisos de la parte superior de la fase.
