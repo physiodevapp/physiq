@@ -11,13 +11,29 @@ import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZO
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10); con
 // «Rodilla» delante de anterior, medial, lateral y posterior para que se lean
 // solas en los resúmenes. `id` estable: se guarda en la sesión.
+// `pasos` (Fase N, paso 3): pasos del árbol de abajo en los que el síntoma de
+// esa zona sale en el recuadro «📝 Refiere el paciente». Solo recuerda; nunca
+// contesta el paso. Revisados por el usuario (2026-10):
+//   ro_step1b Ottawa → rodilla anterior (rótula aislada) y lateral (cabeza
+//             del peroné)
+//   ro_step2b menor sin mecanismo: cadera primero → muslo, por donde baja el
+//             dolor de la epifisiólisis y el Perthes
+//   ro_step2c ¿referido de cadera o columna? → muslo y pierna
+//   ro_step3  ¿dónde se concentra? → rodilla anterior, medial y lateral
+//   ro_step4  anterior persistente → rodilla anterior
+//   ro_step5  medial persistente → rodilla medial
+//   ro_step6  lateral persistente → rodilla lateral y pierna (nervio peroneo)
+//   ro_step7  posterior persistente → rodilla posterior y pierna (TVP,
+//             quiste roto que baja a la pantorrilla)
+// ro_step1 (mecanismo) y ro_step2 (perfil por edad) no llevan: no dependen de
+// dónde duele.
 export const zonas = [
-  { id: 'rodilla_ant',  nombre: 'Rodilla anterior (rótula)' },
-  { id: 'rodilla_med',  nombre: 'Rodilla medial' },
-  { id: 'rodilla_lat',  nombre: 'Rodilla lateral' },
-  { id: 'rodilla_post', nombre: 'Rodilla posterior (hueco poplíteo)' },
-  { id: 'muslo',        nombre: 'Muslo' },
-  { id: 'pierna',       nombre: 'Pierna' },
+  { id: 'rodilla_ant',  nombre: 'Rodilla anterior (rótula)',          pasos: ['ro_step1b', 'ro_step3', 'ro_step4'] },
+  { id: 'rodilla_med',  nombre: 'Rodilla medial',                     pasos: ['ro_step3', 'ro_step5'] },
+  { id: 'rodilla_lat',  nombre: 'Rodilla lateral',                    pasos: ['ro_step1b', 'ro_step3', 'ro_step6'] },
+  { id: 'rodilla_post', nombre: 'Rodilla posterior (hueco poplíteo)', pasos: ['ro_step7'] },
+  { id: 'muslo',        nombre: 'Muslo',                              pasos: ['ro_step2b', 'ro_step2c'] },
+  { id: 'pierna',       nombre: 'Pierna',                             pasos: ['ro_step2c', 'ro_step6', 'ro_step7'] },
 ];
 
 // ── Fase 2 · SYSTEMIC_SCREENING.rodilla
