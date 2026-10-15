@@ -9,6 +9,7 @@
 import { state } from './state.js';
 import { ZONAS_SINTOMA } from './data.js';
 import { saveSession, showConfirmBanner, injectQuickInputBar, repintarP1Fase3 } from './app.js';
+import { matrizVacia } from './lib/irritabilidad.js';
 import {
   MAX_SECUNDARIOS, sintomaVacio, normalizarSintomas, tieneDatos, PATRONES, PROFUNDIDADES,
   NIVELES_IRRITABILIDAD, RELACIONES, CHIPS_DESCRIPCION,
@@ -143,7 +144,7 @@ function sintQuitar(i) {
 // relación de los demás era con el P1 anterior: se borra.
 function sintHacerPrincipal(i) {
   showConfirmBanner(`P${i + 1} pasa a ser el principal`,
-    'Su intensidad e irritabilidad pasan a las tarjetas de P1, y el P1 actual queda como secundario. La relación de cada secundario con P1 se borra, porque era con el principal anterior.',
+    'Su intensidad e irritabilidad pasan a las tarjetas de P1, y el P1 actual queda como secundario. La relación de cada secundario con P1 se borra, porque era con el principal anterior, y la matriz de irritabilidad se vacía por lo mismo.',
     'Cambiar', () => cambiar(() => {
       const sec = sintoma(i), p1 = state.sintomaPrincipal;
       const nrsP1 = state.severidad ?? null, irrP1 = state.irritabilidadNivel || '';
@@ -153,6 +154,9 @@ function sintHacerPrincipal(i) {
       state.severidad = sec.nrs ?? null;
       state.irritabilidadNivel = sec.irritabilidad || null;
       state.irritabilidadDirecta = true;
+      // La matriz era del P1 anterior: se vacía (decisión 104). El impacto en
+      // las actividades es del paciente, no de un síntoma: se queda.
+      state.irritabilidad = matrizVacia(state.irritabilidad?.discapacidad || '');
       repintarP1Fase3();
     }), { borra: false });
 }

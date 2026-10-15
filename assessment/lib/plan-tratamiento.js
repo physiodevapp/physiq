@@ -11,6 +11,7 @@ import {
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
+import { nivelMatriz } from './irritabilidad.js';
 
 // Mismos textos que la fase 5 (lib/posquirurgico.js), ya revisados.
 export const textoPosq = conProtocolo => conProtocolo ? TEXTO_PAUTA_COMPATIBLE : `${TEXTO_SIN_PROTOCOLO}.`;
@@ -28,29 +29,22 @@ export function gravedadSINSS(nrs) {
   return n <= 3 ? 'minima' : n <= 7 ? 'moderada' : 'maxima';
 }
 
-// La matriz de la fase 3 mezcla gravedad (dolor, discapacidad) e irritabilidad
-// (dolor en reposo, movimiento, tolerancia). La fase 6 usa solo los tres
-// ítems de irritabilidad (decisión 12): suman 0–6, con cortes asimétricos
-// hacia lo prudente (revisión clínica, 2026-10): 0–1 baja, 2–4 moderada,
-// 5–6 alta. Quedarse corto es el error peligroso: con irritabilidad baja
-// aparecen la propuesta C y los escalones firmes.
-export const ITEMS_IRRITABILIDAD = {
-  reposo: ['Ausente', 'Intermitente', 'Presente'],
-  movimiento: ['Al final del rango con SP', 'Al final del rango', 'Antes del final del rango'],
-  tolerancia: ['Alta', 'Moderada', 'Baja'],
-};
+// Irritabilidad: la misma regla que la fase 3 (lib/irritabilidad.js,
+// decisiones 99–101), así que las dos fases dan el mismo nivel. El tiempo en
+// calmarse marca el suelo; reposo + movimiento + tolerancia (cortes de la
+// decisión 25: 0–1 baja, 2–4 moderada, 5–6 alta) solo lo suben. Quedarse corto
+// es el error peligroso: con irritabilidad baja aparecen la propuesta C y los
+// escalones firmes. `estimada` = elegida directamente (modo breve, «Hacer
+// principal»); `incompleta` = falta alguna fila de la matriz.
 const DESDE_NIVEL = { Baja: 'baja', Moderada: 'moderada', Alta: 'alta' };
 
 export function irritabilidadSINSS({ irritabilidad, irritabilidadNivel, irritabilidadDirecta } = {}) {
   const porNivel = DESDE_NIVEL[irritabilidadNivel] || null;
-  if (irritabilidadDirecta) return { nivel: porNivel, estimada: true, fase3: porNivel };
-  let suma = 0;
-  for (const [k, opciones] of Object.entries(ITEMS_IRRITABILIDAD)) {
-    const i = opciones.indexOf(irritabilidad?.[k]);
-    if (i < 0) return { nivel: porNivel, estimada: true, fase3: porNivel };
-    suma += i;
-  }
-  return { nivel: suma <= 1 ? 'baja' : suma <= 4 ? 'moderada' : 'alta', estimada: false, fase3: porNivel };
+  if (irritabilidadDirecta) return { nivel: porNivel, estimada: true, incompleta: false };
+  const r = nivelMatriz(irritabilidad);
+  // Sin matriz pero con un nivel guardado (un estado armado a mano): ese nivel, como estimado
+  if (!r.nivel && porNivel) return { nivel: porNivel, estimada: true, incompleta: false };
+  return { nivel: r.nivel, estimada: false, incompleta: r.incompleta };
 }
 
 // Varios síntomas (decisión 35; docs/sintomas-multiples.md, decisión 7): el
@@ -204,7 +198,7 @@ export function construirPlan(e) {
   // El síntoma que dosifica: P1, o el secundario más irritable (decisión 35)
   const dosifica = sintomaQueDosifica(e, irrP1.nivel);
   const porOtro = dosifica.n !== 1;
-  const irr = porOtro ? { nivel: dosifica.irr, estimada: true, fase3: null } : irrP1;
+  const irr = porOtro ? { nivel: dosifica.irr, estimada: true, incompleta: false } : irrP1;
   const gravedadNRS = gravedadSINSS(dosifica.nrs);
   const gravedad = e.gravedadManual || gravedadNRS;
   const irritabilidad = e.irritabilidadManual || irr.nivel || 'alta';
@@ -212,7 +206,7 @@ export function construirPlan(e) {
   if (porOtro) avisos.push(AVISOS.dosificaOtro);
   if (!gravedad) avisos.push(AVISOS.sinNRS);
   if (!e.irritabilidadManual && irr.estimada) avisos.push(AVISOS.estimada);
-  const difiereFase3 = !irr.estimada && irr.fase3 && irr.fase3 !== irr.nivel;
+  else if (!e.irritabilidadManual && irr.incompleta) avisos.push(irr.nivel ? AVISOS.incompleta : AVISOS.sinIrritabilidad);
   if (e.psico_miedo === 'Sí' || e.riesgoPsico === 'Alto') avisos.push(AVISOS.miedo);
 
   const porId = Object.fromEntries((e.hipotesis || []).map(h => [h.id, h]));
@@ -263,7 +257,6 @@ export function construirPlan(e) {
     avisosHip,
     dosifica: { ...dosifica, nombre: nombreSintoma(dosifica), porOtro, varios: (e.secundarios || []).some(s => !s.or) },
     gravedad, gravedadNRS, irritabilidad, irritabilidadCalculada: irr.nivel, irritabilidadEstimada: irr.estimada,
-    irritabilidadFase3: difiereFase3 ? irr.fase3 : null,
     niveles: nv,
     familia,
     tablaEscalones: tabla,

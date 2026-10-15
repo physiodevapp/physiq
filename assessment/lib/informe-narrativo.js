@@ -178,6 +178,7 @@
 
 import { ladoTexto } from './region.js';
 import { bloqueSintomasIA } from './sintomas.js';
+import { ITEMS_IRRITABILIDAD } from '../data/irritabilidad.js';
 
 // Reglas del prompt compartidas con physiq-report: fichero idéntico en los dos
 // repos, con su huella fijada en un test de cada uno (ver su cabecera).
@@ -311,7 +312,7 @@ Paciente: ${data.p || '—'}${ampliado?.edad != null ? ` · Edad: ${ampliado.eda
 Motivo de consulta: ${data.mo || '—'}
 Mecanismo: ${data.me || '—'} · Cronología: ${data.cr || '—'}
 NRS: ${data.nr != null ? `${data.nr}/10 ${NOTA_NRS}` : 'no registrado'}
-Irritabilidad: ${data.ir || '—'} · Naturaleza: ${data.na || '—'}
+Irritabilidad: ${data.ir || 'no registrada'} · Naturaleza: ${data.na || '—'}
 ${bloqueSintomasIA(data) ? `${bloqueSintomasIA(data)}\n` : ''}Riesgo psicosocial: ${data.rp || '—'}
 Banderas rojas:
 ${brText}
@@ -413,8 +414,13 @@ export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (a.signoComparable) fase3.push(`Signo comparable (movimiento que reproduce los síntomas): ${a.signoComparable}`);
   if (a.estabilidad) fase3.push(`Evolución reciente del cuadro: ${a.estabilidad}`);
   if (a.irritabilidad) {
+    // Solo los ítems de irritabilidad contestados (data/irritabilidad.js); el
+    // impacto en las actividades es gravedad y va aparte (decisión 100). El
+    // «nivel de dolor» de las sesiones antiguas no sale: el NRS ya está arriba.
     const i = a.irritabilidad;
-    fase3.push(`Detalle de la irritabilidad: nivel de dolor ${i.dolor || '—'}; dolor en reposo ${i.reposo || '—'}; dolor con movimiento ${i.movimiento || '—'}; discapacidad ${i.discapacidad || '—'}; tolerancia al estrés físico ${i.tolerancia || '—'}`);
+    const partes = ITEMS_IRRITABILIDAD.filter(it => i[it.clave]).map(it => `${it.clave === 'calma' ? 'tiempo en calmarse tras la actividad que lo provoca' : it.nombre.toLowerCase()}: ${i[it.clave]}`);
+    if (partes.length) fase3.push(`Detalle de la irritabilidad: ${partes.join('; ')}`);
+    if (i.discapacidad) fase3.push(`Impacto en las actividades (gravedad): ${i.discapacidad}`);
   }
   if (fase3.length) b.push(fase3.join('\n'));
   if (a.psico?.length) b.push(`Cribado psicosocial detallado:\n${a.psico.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);

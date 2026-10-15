@@ -36,8 +36,12 @@ const state = {
   sistemicoBreve: {},     // solo modo breve: { [sisId]: 'SI'|'NO' } — respuesta del embudo por sistema
   // Fase 3
   severidad: null,
-  irritabilidad: { dolor: 'Baja (≤3/10)', reposo: 'Ausente', movimiento: 'Al final del rango con SP', discapacidad: 'Mínima', tolerancia: 'Alta' },
-  irritabilidadNivel: 'Baja',
+  // Matriz sin preselección ('' = sin contestar; data/irritabilidad.js,
+  // decisiones 99–101 de docs/plan-tratamiento.md). `discapacidad` es el
+  // impacto en las actividades (gravedad): no cuenta para el nivel. Las sesiones
+  // antiguas traen además `dolor` y no traen `calma`; nada lee `dolor`.
+  irritabilidad: { reposo: '', movimiento: '', tolerancia: '', calma: '', discapacidad: '' },
+  irritabilidadNivel: null,  // 'Baja'|'Moderada'|'Alta'|null (no registrada)
   irritabilidadDirecta: false,  // true si el nivel se eligió directamente (modo breve) y no con la matriz
   // Tarjeta «Síntomas» (sintomas.js, lib/sintomas.js; docs/sintomas-multiples.md).
   // P1: dónde y cómo es el dolor principal; su NRS e irritabilidad son los de

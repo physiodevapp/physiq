@@ -626,6 +626,8 @@
       </div>
     </div>
     <div class="nrs-label" id="nrsLabel">— Sin seleccionar —</div>
+    <!-- Impacto en las actividades: gravedad, no irritabilidad (decisión 100) -->
+    <div class="irritab-impacto breve-opcional" id="impactoActividades"></div>
   </div>
 
   <div class="card">
@@ -633,107 +635,18 @@
     <!-- Modo breve: nivel directo en vez de la matriz (la matriz queda plegada) -->
     <div class="breve-only">
       <div class="plan-note-hint">Consulta breve: estime el nivel directamente; la matriz queda como pendiente (se abre con «Mostrar campos opcionales»).</div>
+      <div class="plan-note-hint" id="irritabPistaBreve"></div>
       <div class="option-group option-group-full" id="irritabDirecta">
         <button class="option-btn" onclick="selectIrritabDirecta(this,'Baja')">🟢 Baja</button>
         <button class="option-btn" onclick="selectIrritabDirecta(this,'Moderada')">🟠 Moderada</button>
         <button class="option-btn" onclick="selectIrritabDirecta(this,'Alta')">🔴 Alta</button>
       </div>
     </div>
-    <!-- Tabla: visible en desktop -->
-    <div class="irritab-table-wrap irritab-desktop breve-opcional"><table class="irritab-table">
-      <thead>
-        <tr>
-          <th>Criterio</th>
-          <th>Seleccione nivel</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Nivel de dolor</td>
-          <td><div class="irritab-select">
-            <button class="irritab-btn selected" onclick="selectIrritab('dolor',this,'Baja (≤3/10)')">Baja ≤3</button>
-            <button class="irritab-btn" onclick="selectIrritab('dolor',this,'Media (4-6/10)')">Media</button>
-            <button class="irritab-btn" onclick="selectIrritab('dolor',this,'Alta (≥7/10)')">Alta ≥7</button>
-          </div></td>
-        </tr>
-        <tr>
-          <td>Dolor en reposo</td>
-          <td><div class="irritab-select">
-            <button class="irritab-btn selected" onclick="selectIrritab('reposo',this,'Ausente')">Ausente</button>
-            <button class="irritab-btn" onclick="selectIrritab('reposo',this,'Intermitente')">Intermitente</button>
-            <button class="irritab-btn" onclick="selectIrritab('reposo',this,'Presente')">Presente</button>
-          </div></td>
-        </tr>
-        <tr>
-          <td>Dolor con movimiento</td>
-          <td><div class="irritab-select">
-            <button class="irritab-btn selected" onclick="selectIrritab('movimiento',this,'Al final del rango con SP')">FR + SP</button>
-            <button class="irritab-btn" onclick="selectIrritab('movimiento',this,'Al final del rango')">Final rango</button>
-            <button class="irritab-btn" onclick="selectIrritab('movimiento',this,'Antes del final del rango')">Antes FR</button>
-          </div></td>
-        </tr>
-        <tr>
-          <td>Discapacidad</td>
-          <td><div class="irritab-select">
-            <button class="irritab-btn selected" onclick="selectIrritab('discapacidad',this,'Mínima')">Mínima</button>
-            <button class="irritab-btn" onclick="selectIrritab('discapacidad',this,'Moderada')">Moderada</button>
-            <button class="irritab-btn" onclick="selectIrritab('discapacidad',this,'Alta')">Alta</button>
-          </div></td>
-        </tr>
-        <tr>
-          <td>Tolerancia al estrés físico</td>
-          <td><div class="irritab-select">
-            <button class="irritab-btn selected" onclick="selectIrritab('tolerancia',this,'Alta')">Alta</button>
-            <button class="irritab-btn" onclick="selectIrritab('tolerancia',this,'Moderada')">Moderada</button>
-            <button class="irritab-btn" onclick="selectIrritab('tolerancia',this,'Baja')">Baja</button>
-          </div></td>
-        </tr>
-      </tbody>
-    </table></div>
-
-    <!-- Cards: visible en móvil/tablet -->
-    <div class="irritab-cards irritab-mobile breve-opcional">
-      <div class="irritab-card">
-        <div class="irritab-card-label">Nivel de dolor</div>
-        <div class="irritab-card-btns">
-          <button class="irritab-btn selected" onclick="selectIrritabSync('dolor',this,'Baja (≤3/10)')">Baja ≤3/10</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('dolor',this,'Media (4-6/10)')">Media</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('dolor',this,'Alta (≥7/10)')">Alta ≥7/10</button>
-        </div>
-      </div>
-      <div class="irritab-card">
-        <div class="irritab-card-label">Dolor en reposo</div>
-        <div class="irritab-card-btns">
-          <button class="irritab-btn selected" onclick="selectIrritabSync('reposo',this,'Ausente')">Ausente</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('reposo',this,'Intermitente')">Intermitente</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('reposo',this,'Presente')">Presente</button>
-        </div>
-      </div>
-      <div class="irritab-card">
-        <div class="irritab-card-label">Dolor con movimiento</div>
-        <div class="irritab-card-btns">
-          <button class="irritab-btn selected" onclick="selectIrritabSync('movimiento',this,'Al final del rango con SP')">FR + SP</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('movimiento',this,'Al final del rango')">Final rango</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('movimiento',this,'Antes del final del rango')">Antes FR</button>
-        </div>
-      </div>
-      <div class="irritab-card">
-        <div class="irritab-card-label">Discapacidad</div>
-        <div class="irritab-card-btns">
-          <button class="irritab-btn selected" onclick="selectIrritabSync('discapacidad',this,'Mínima')">Mínima</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('discapacidad',this,'Moderada')">Moderada</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('discapacidad',this,'Alta')">Alta</button>
-        </div>
-      </div>
-      <div class="irritab-card">
-        <div class="irritab-card-label">Tolerancia al estrés físico</div>
-        <div class="irritab-card-btns">
-          <button class="irritab-btn selected" onclick="selectIrritabSync('tolerancia',this,'Alta')">Alta</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('tolerancia',this,'Moderada')">Moderada</button>
-          <button class="irritab-btn" onclick="selectIrritabSync('tolerancia',this,'Baja')">Baja</button>
-        </div>
-      </div>
-    </div>
+    <!-- Matriz de irritabilidad (decisiones 99–101 de docs/plan-tratamiento.md):
+         la pinta pintarMatrizIrritabilidad() (app.js) desde data/irritabilidad.js,
+         sin preselección. Tabla en escritorio, tarjetas en móvil. -->
+    <div class="irritab-table-wrap irritab-desktop breve-opcional" id="irritabTabla"></div>
+    <div class="irritab-cards irritab-mobile breve-opcional" id="irritabTarjetas"></div>
     <div id="irritabilidadResumen" style="margin-top:1rem;"></div>
   </div>
 

@@ -16,6 +16,8 @@ import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { nombreRegion, regionConLado } from './lib/region.js';
 import { TEXTO_VALORACION_BREVE, textoNotas, textoInformePaciente } from './lib/resumenes.js';
 import { ramaPauta } from './lib/pauta.js';
+import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
+import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
 import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
@@ -936,7 +938,8 @@ function getPendientesBreve() {
   } else if (state.maxVisitedIdx >= 1) {
     pendientes.push({ fase: 2, texto: 'Cribado sistémico sin hacer (falta la región)' });
   }
-  if (state.irritabilidadDirecta) pendientes.push({ fase: 3, texto: 'Irritabilidad estimada sin la matriz' });
+  if (state.irritabilidadDirecta && state.irritabilidadNivel) pendientes.push({ fase: 3, texto: 'Irritabilidad estimada sin la matriz' });
+  else if (!state.irritabilidadNivel) pendientes.push({ fase: 3, texto: 'Irritabilidad sin registrar' });
   const sinTests = state.activeHypotheses
     .filter(h => HYPOTHESES[h] && !esTratada(h) && !Object.values(state.testResults[h] || {}).some(r => r === 'pos' || r === 'neg'))
     .map(h => HYPOTHESES[h].name);
@@ -1026,7 +1029,7 @@ function resetPhase3UI() {
   state.estabilidad = '';
   state.signoComparable = '';
   state.severidad = null;
-  state.irritabilidad = { dolor: 'Baja (≤3/10)', reposo: 'Ausente', movimiento: 'Al final del rango con SP', discapacidad: 'Mínima', tolerancia: 'Alta' };
+  state.irritabilidad = matrizVacia();
   state.irritabilidadNivel = null;
   state.irritabilidadDirecta = false;
   state.sintomaPrincipal = sintomaVacio();
@@ -1044,21 +1047,8 @@ function resetPhase3UI() {
   const sc = document.getElementById('signoComparable');
   if (sc) sc.value = '';
 
-  // Reset irritab buttons to defaults
-  // Desktop
-  document.querySelectorAll('.irritab-select').forEach(sel => {
-    sel.querySelectorAll('.irritab-btn').forEach((b, i) => {
-      b.classList.toggle('selected', i === 0);
-    });
-  });
-  // Mobile cards
-  document.querySelectorAll('.irritab-card-btns').forEach(card => {
-    card.querySelectorAll('.irritab-btn').forEach((b, i) => {
-      b.classList.toggle('selected', i === 0);
-    });
-  });
-
-  // Recalculate irritability display
+  // Matriz sin preselección (decisión 101)
+  _pintarSeleccionIrritab();
   calcIrritabilidad();
   pintarSintomas();
 }
@@ -1958,51 +1948,43 @@ function initNRS() {
   });
 }
 
-function selectIrritab(key, btn, value) {
-  const row = btn.closest('td');
-  row.querySelectorAll('.irritab-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.irritabilidad[key] = value;
-  _usarMatrizIrritabilidad();
-  syncIrritabMobile(key, value);
-  calcIrritabilidad();
-  saveSession();
+// Matriz de irritabilidad (decisiones 99–101 de docs/plan-tratamiento.md). Se
+// pinta desde data/irritabilidad.js dos veces, tabla (escritorio) y tarjetas
+// (móvil), con los mismos botones `data-key`/`data-valor`: elegir en una vista
+// repinta las dos desde el estado. Sin preselección; un segundo toque en la
+// opción marcada la vacía. El impacto en las actividades (gravedad) va en la
+// tarjeta de severidad con los mismos botones.
+const _btnIrritab = (clave, o) =>
+  `<button type="button" class="irritab-btn" data-key="${clave}" data-valor="${o.valor}" onclick="selectIrritab(this)">${o.corto}</button>`;
+function pintarMatrizIrritabilidad() {
+  const tabla = document.getElementById('irritabTabla');
+  if (tabla) tabla.innerHTML = `<table class="irritab-table"><thead><tr><th>Criterio</th><th>Seleccione nivel</th></tr></thead><tbody>${
+    ITEMS_IRRITABILIDAD.map(it => `<tr><td>${it.nombre}${it.ayuda ? `<div class="irritab-ayuda">${it.ayuda}</div>` : ''}</td><td><div class="irritab-select">${it.opciones.map(o => _btnIrritab(it.clave, o)).join('')}</div></td></tr>`).join('')
+  }</tbody></table>`;
+  const tarjetas = document.getElementById('irritabTarjetas');
+  if (tarjetas) tarjetas.innerHTML = ITEMS_IRRITABILIDAD.map(it => `<div class="irritab-card"><div class="irritab-card-label">${it.nombre}</div>${it.ayuda ? `<div class="irritab-ayuda">${it.ayuda}</div>` : ''}<div class="irritab-card-btns">${it.opciones.map(o => _btnIrritab(it.clave, o)).join('')}</div></div>`).join('');
+  const impacto = document.getElementById('impactoActividades');
+  if (impacto) impacto.innerHTML = `<div class="irritab-card-label">${ITEM_IMPACTO.nombre}</div><div class="irritab-card-btns">${ITEM_IMPACTO.opciones.map(o => _btnIrritab(ITEM_IMPACTO.clave, o)).join('')}</div>`;
+  const pista = document.getElementById('irritabPistaBreve');
+  if (pista) pista.textContent = TEXTOS_IRRITABILIDAD.pistaBreve;
+  _pintarSeleccionIrritab();
 }
 
-function selectIrritabSync(key, btn, value) {
-  const card = btn.closest('.irritab-card');
-  card.querySelectorAll('.irritab-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.irritabilidad[key] = value;
-  _usarMatrizIrritabilidad();
-  syncIrritabDesktop(key, value);
-  calcIrritabilidad();
-  saveSession();
-}
-
-// Sincronizar selección de desktop → mobile
-function syncIrritabMobile(key, value) {
-  const cards = document.querySelectorAll('.irritab-card');
-  const keyOrder = ['dolor','reposo','movimiento','discapacidad','tolerancia'];
-  const idx = keyOrder.indexOf(key);
-  if (idx === -1 || !cards[idx]) return;
-  cards[idx].querySelectorAll('.irritab-btn').forEach(b => {
-    b.classList.toggle('selected', b.onclick && b.onclick.toString().includes(value) ||
-      b.getAttribute('onclick') && b.getAttribute('onclick').includes(value));
+function _pintarSeleccionIrritab() {
+  document.querySelectorAll('.irritab-btn[data-key]').forEach(b => {
+    b.classList.toggle('selected', (state.irritabilidad || {})[b.dataset.key] === b.dataset.valor);
   });
 }
 
-// Sincronizar selección de mobile → desktop
-function syncIrritabDesktop(key, value) {
-  const rows = document.querySelectorAll('.irritab-table tr');
-  rows.forEach(row => {
-    const btns = row.querySelectorAll('.irritab-btn');
-    btns.forEach(b => {
-      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(key)) {
-        b.classList.toggle('selected', b.getAttribute('onclick').includes(value));
-      }
-    });
-  });
+function selectIrritab(btn) {
+  const { key, valor } = btn.dataset;
+  if (!state.irritabilidad) state.irritabilidad = matrizVacia();
+  state.irritabilidad[key] = state.irritabilidad[key] === valor ? '' : valor;
+  // El impacto en las actividades es gravedad: no toca el nivel ni lo estimado
+  if (key !== ITEM_IMPACTO.clave) _usarMatrizIrritabilidad();
+  _pintarSeleccionIrritab();
+  calcIrritabilidad();
+  saveSession();
 }
 
 // Modo breve: nivel de irritabilidad elegido directamente, sin la matriz.
@@ -2021,33 +2003,33 @@ function _usarMatrizIrritabilidad() {
   document.querySelectorAll('#irritabDirecta .option-btn').forEach(b => b.classList.remove('selected'));
 }
 
+// Nivel de la matriz con la misma regla que la fase 6 (lib/irritabilidad.js):
+// el tiempo en calmarse marca el suelo y reposo + movimiento + tolerancia solo
+// lo suben. Sin ninguna fila contestada, «no registrada» (null).
 function calcIrritabilidad() {
   if (state.irritabilidadDirecta) { renderIrritabResumen(state.irritabilidadNivel); return; }
-  const { dolor, reposo, movimiento, discapacidad, tolerancia } = state.irritabilidad;
-  let score = 0;
-  const opts = { dolor: ['Baja (≤3/10)','Media (4-6/10)','Alta (≥7/10)'],
-                 reposo: ['Ausente','Intermitente','Presente'],
-                 movimiento: ['Al final del rango con SP','Al final del rango','Antes del final del rango'],
-                 discapacidad: ['Mínima','Moderada','Alta'],
-                 tolerancia: ['Alta','Moderada','Baja'] };
-  for (const [k, v] of Object.entries(state.irritabilidad)) {
-    score += opts[k].indexOf(v);
-  }
-  let nivel = 'Baja';
-  if (score >= 5 && score <= 9) nivel = 'Moderada';
-  if (score >= 10) nivel = 'Alta';
-  state.irritabilidadNivel = nivel;
-  renderIrritabResumen(nivel);
+  const r = nivelMatriz(state.irritabilidad);
+  state.irritabilidadNivel = r.nivel ? NOMBRE_NIVEL[r.nivel] : null;
+  renderIrritabResumen(state.irritabilidadNivel, r);
 }
 
-function renderIrritabResumen(nivel) {
-  // Sin nivel (p. ej., un secundario sin irritabilidad que pasa a ser P1): nada que resumir
-  if (!nivel) { document.getElementById('irritabilidadResumen').innerHTML = ''; return; }
-  const { color, emoji } = { Baja: { color: 'var(--green)', emoji: '🟢' }, Moderada: { color: 'var(--orange)', emoji: '🟠' }, Alta: { color: 'var(--red)', emoji: '🔴' } }[nivel] || { color: 'var(--green)', emoji: '🟢' };
+// Textos con fuente (decisión 102): los dos modos de Maitland. Baja → «hasta
+// el límite»; moderada y alta → «hasta el dolor»; alta añade la adaptación.
+function renderIrritabResumen(nivel, matriz = null) {
   const div = document.getElementById('irritabilidadResumen');
+  if (!div) return;
+  const T = TEXTOS_IRRITABILIDAD;
+  if (!nivel) {
+    div.innerHTML = `<div class="alert alert-info"><span class="alert-icon">⚪</span><span>${T.noRegistrada}</span></div>`;
+    return;
+  }
+  const { color, emoji } = { Baja: { color: 'var(--green)', emoji: '🟢' }, Moderada: { color: 'var(--orange)', emoji: '🟠' }, Alta: { color: 'var(--red)', emoji: '🔴' } }[nivel] || { color: 'var(--green)', emoji: '🟢' };
+  const textos = [nivel === 'Baja' ? T.hastaLimite : T.hastaDolor];
+  if (nivel === 'Alta') textos.push(T.alta);
+  const falta = !state.irritabilidadDirecta && matriz?.incompleta ? (matriz.sinCalma ? T.sinCalma : T.incompleta) : '';
   div.innerHTML = `<div class="alert alert-info" style="border-color:${color}33; background:${color}11;">
     <span class="alert-icon">${emoji}</span>
-    <span><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — ${nivel === 'Baja' ? 'Exploración completa posible. Puede aplicar técnicas más agresivas con seguridad.' : nivel === 'Moderada' ? 'Proceder con precaución. Evitar técnicas de alta intensidad. Valorar la respuesta post-sesión.' : 'Evaluación muy cuidadosa. Priorizar técnicas pasivas de baja intensidad. Sesión breve.'}</span>
+    <span><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — ${textos.join(' ')}${falta ? `<br><em>${falta}</em>` : ''}<br><span class="irritab-ayuda">${T.margen}</span></span>
   </div>`;
 }
 
@@ -2277,7 +2259,9 @@ function buildResults() {
     <div class="summary-row"><span class="summary-label">Región valorada</span><span class="summary-value">${regionConLado(state.region, state.lado)}</span></div>
     ${_sintomasResultadosHTML()}
     <div class="summary-row"><span class="summary-label">Severidad (EVN)${_hayVariosSintomas() ? ' de P1' : ''}</span><span class="summary-value">${state.severidad != null ? `${state.severidad}/10` : 'No registrada'}</span></div>
-    <div class="summary-row"><span class="summary-label">Irritabilidad${_hayVariosSintomas() ? ' de P1' : ''}</span><span class="summary-value">${state.irritabilidadNivel || '—'}${state.irritabilidadDirecta && state.irritabilidadNivel ? ' (estimada, sin matriz)' : ''}</span></div>
+    <div class="summary-row"><span class="summary-label">Irritabilidad${_hayVariosSintomas() ? ' de P1' : ''}</span><span class="summary-value">${state.irritabilidadNivel || 'No registrada'}${state.irritabilidadDirecta && state.irritabilidadNivel ? ' (estimada, sin matriz)' : ''}</span></div>
+    ${!state.irritabilidadDirecta && state.irritabilidad?.calma ? `<div class="summary-row"><span class="summary-label">Tiempo en calmarse</span><span class="summary-value">${state.irritabilidad.calma}</span></div>` : ''}
+    ${state.irritabilidad?.discapacidad ? `<div class="summary-row"><span class="summary-label">Impacto en las actividades</span><span class="summary-value">${state.irritabilidad.discapacidad}</span></div>` : ''}
     <div class="summary-row"><span class="summary-label">Naturaleza</span><span class="summary-value">${state.naturaleza || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Estabilidad</span><span class="summary-value">${state.estabilidad || '—'}</span></div>
     <div class="summary-row"><span class="summary-label">Signo comparable</span><span class="summary-value">${state.signoComparable || '—'}</span></div>
@@ -3077,7 +3061,7 @@ function buildPhysiQPayload() {
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
-    ir: state.irritabilidadNivel && state.irritabilidadDirecta ? `${state.irritabilidadNivel} (estimada)` : state.irritabilidadNivel,
+    ir: state.irritabilidadNivel && state.irritabilidadDirecta ? `${state.irritabilidadNivel} (estimada)` : (state.irritabilidadNivel || null),
     ...payloadSintomas(state, ZONAS_SINTOMA[state.region] || []),   // z1 (zona de P1), ss (P2–P4)
     na: state.naturaleza,
     si: state.sistemicoAlerta,
@@ -3856,14 +3840,7 @@ function repintarP1Fase3() {
   });
   const nrsLabel = document.getElementById('nrsLabel');
   if (nrsLabel) nrsLabel.textContent = state.severidad !== null ? `${state.severidad}/10 — ${NRS_LABELS[state.severidad]}` : '— Sin seleccionar —';
-  document.querySelectorAll('.irritab-table .irritab-btn').forEach(btn => {
-    const m = (btn.getAttribute('onclick') || '').match(/selectIrritab\('(\w+)',\s*this,\s*'([^']*)'\)/);
-    if (m) btn.classList.toggle('selected', state.irritabilidad[m[1]] === m[2]);
-  });
-  document.querySelectorAll('.irritab-card-btns .irritab-btn').forEach(btn => {
-    const m = (btn.getAttribute('onclick') || '').match(/selectIrritabSync\('(\w+)',\s*this,\s*'([^']*)'\)/);
-    if (m) btn.classList.toggle('selected', state.irritabilidad[m[1]] === m[2]);
-  });
+  _pintarSeleccionIrritab();
   document.querySelectorAll('#irritabDirecta .option-btn').forEach(btn => {
     const m = (btn.getAttribute('onclick') || '').match(/'(\w+)'\)/);
     btn.classList.toggle('selected', !!(state.irritabilidadDirecta && m && m[1] === state.irritabilidadNivel));
@@ -4014,7 +3991,8 @@ function hideTranslateBanner() {
 document.addEventListener('DOMContentLoaded', () => {
   // Init NRS buttons with color classes
   initNRS();
-  // Init irritability
+  // Init irritability: la matriz sale de data/irritabilidad.js
+  pintarMatrizIrritabilidad();
   calcIrritabilidad();
   // Init mobile phase bar
   updateMobilePhaseBar(1);
@@ -4194,7 +4172,7 @@ Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
   abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
-  selectIrritabSync, selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
+  selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
   cycleThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor,

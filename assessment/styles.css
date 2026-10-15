@@ -1642,6 +1642,16 @@
     min-height: 32px;
   }
   .irritab-btn.selected { background: rgba(79,156,249,0.1); border-color: var(--accent); color: var(--accent); }
+  /* Ayuda de una fila de la matriz (tiempo en calmarse) */
+  .irritab-ayuda { font-size: 0.72rem; color: var(--text3); line-height: 1.35; margin-top: 4px; }
+  /* Tabla: la columna de botones no se estrecha por la ayuda (una línea por fila) */
+  .irritab-table td:last-child { width: 1%; }
+  .irritab-table td:last-child .irritab-select { flex-wrap: nowrap; }
+  .irritab-table .irritab-btn { white-space: nowrap; }
+  .irritab-card .irritab-ayuda { margin: -2px 0 8px; }
+  /* Impacto en las actividades, en la tarjeta de severidad (gravedad, decisión 100) */
+  .irritab-impacto { margin-top: 14px; }
+  .irritab-impacto .irritab-card-label { margin-bottom: 6px; }
 
   /* Irritabilidad — Cards móvil */
   .irritab-desktop { display: block; }

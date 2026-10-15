@@ -165,7 +165,9 @@ function pintar() {
 
   c.innerHTML = `
   ${plan.avisos.map(a => `<div class="plan-aviso">${esc(a)}${a === AVISOS.sinNRS
-    ? ' <button type="button" class="plan-enlace" onclick="goToPhase(3)">Registrar NRS en la fase 3 →</button>' : ''}</div>`).join('')}
+    ? ' <button type="button" class="plan-enlace" onclick="goToPhase(3)">Registrar NRS en la fase 3 →</button>'
+    : a === AVISOS.incompleta || a === AVISOS.sinIrritabilidad
+      ? ' <button type="button" class="plan-enlace" onclick="goToPhase(3)">Completar la matriz en la fase 3 →</button>' : ''}</div>`).join('')}
 
   <div class="card">
     <div class="card-title">Hipótesis a tratar</div>
@@ -175,12 +177,11 @@ function pintar() {
 
   <div class="card">
     <div class="card-title">Gravedad e irritabilidad</div>
-    <p class="plan-ayuda">Calculadas de la fase 3 (gravedad: NRS con los cortes de SINSS; irritabilidad: dolor en reposo, movimiento y tolerancia de la matriz). Puedes cambiarlas.</p>
+    <p class="plan-ayuda">Calculadas de la fase 3 (gravedad: NRS con los cortes de SINSS; irritabilidad: la de la fase 3, con su misma regla: el tiempo en calmarse y, para subirla, dolor en reposo, movimiento y tolerancia). Puedes cambiarlas.</p>
     ${plan.dosifica.varios ? `<div class="plan-dosifica" id="planDosifica">Según <strong>${esc(plan.dosifica.nombre)}</strong>${plan.dosifica.porOtro ? ', el síntoma más irritable' : ' (principal)'}</div>` : ''}
     <div class="plan-campo"><div class="plan-campo-et">Gravedad${plan.gravedadNRS ? ` <span class="plan-calc">· calculada: ${NOMBRE_GRAVEDAD[plan.gravedadNRS]} (NRS ${plan.dosifica.nrs}/10)</span>` : ' <span class="plan-calc">· sin NRS</span>'}</div>
       <div class="option-group">${NIVELES_GRAVEDAD.map(g => opcion('gravedad', g, NOMBRE_GRAVEDAD[g], plan.gravedad === g)).join('')}</div></div>
-    <div class="plan-campo"><div class="plan-campo-et">Irritabilidad${plan.irritabilidadCalculada ? ` <span class="plan-calc">· calculada: ${NOMBRE_IRRITABILIDAD[plan.irritabilidadCalculada]}${plan.irritabilidadEstimada ? ' (estimada)' : ''}</span>` : ''}${plan.irritabilidadFase3 ? ` <span class="plan-calc">· en la fase 3: ${NOMBRE_IRRITABILIDAD[plan.irritabilidadFase3]}</span>` : ''}</div>
-      ${plan.irritabilidadFase3 ? `<div class="plan-ayuda">${esc(AVISOS.difiereFase3)}</div>` : ''}
+    <div class="plan-campo"><div class="plan-campo-et">Irritabilidad${plan.irritabilidadCalculada ? ` <span class="plan-calc">· calculada: ${NOMBRE_IRRITABILIDAD[plan.irritabilidadCalculada]}${plan.irritabilidadEstimada ? ' (estimada)' : ''}</span>` : ' <span class="plan-calc">· sin registrar</span>'}</div>
       <div class="option-group">${NIVELES_IRRITABILIDAD.map(i => opcion('irritabilidad', i, NOMBRE_IRRITABILIDAD[i], plan.irritabilidad === i)).join('')}</div></div>
     <div class="plan-campo"><div class="plan-campo-et">Sesión</div>
       <div class="option-group">${opcion('sesion', 'primera', 'Primera de tratamiento', pt.sesion === 'primera')}${opcion('sesion', 'siguiente', 'Siguientes', pt.sesion === 'siguiente')}</div></div>

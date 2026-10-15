@@ -30,7 +30,7 @@ export function textoNotas(d) {
     ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
-Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}
+Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA (árbol CIF): ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
@@ -88,8 +88,7 @@ ${d.mo || '—'}
 Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
 
 VALORACIÓN
-${lineasInformeSintomas(d).map(l => `${l}\n`).join('')}${d.nr != null ? `Intensidad del dolor referida: ${d.nr}/10\n` : ''}Irritabilidad del cuadro: ${d.ir || '—'}
-Naturaleza del dolor: ${d.na || '—'}
+${lineasInformeSintomas(d).map(l => `${l}\n`).join('')}${d.nr != null ? `Intensidad del dolor referida: ${d.nr}/10\n` : ''}${d.ir ? `Irritabilidad del cuadro: ${d.ir}\n` : ''}Naturaleza del dolor: ${d.na || '—'}
 Riesgo psicosocial: ${d.rp || '—'}
 
 CRIBADO DE SEGURIDAD
