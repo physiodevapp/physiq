@@ -11,7 +11,7 @@ import {
 } from './lib/posquirurgico.js';
 import { iaParrafoHTML, ctxTest, attrIA } from './ampliar-ia.js';
 import { ESTRUCTURAS, KENHUB_BASE, KENHUB_BASE_ES } from './data/anatomia.js';
-import { citasHTML, partirCitas, registroReferencias, enlaceCita } from './lib/citas.js';
+import { citasHTML, citasEnTexto, partirCitas, registroReferencias, enlaceCita } from './lib/citas.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -329,7 +329,7 @@ export function buildTestItem(hId, test, idx) {
     ? `<button type="button" class="razon-ampliar" onclick="abrirRazonamientoTest(this,'${hId}',${idx})">Ampliar →</button>` : '';
   const porque = r?.porque ? `<details class="razon">
       <summary>ⓘ ¿Por qué?</summary>
-      <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxTest(hyp?.region, test.name, hyp?.name))}"><p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
+      <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxTest(hyp?.region, test.name, hyp?.name))}"><p><span class="razon-etq">Por qué</span> ${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>
         ${r.fuentes?.length ? `<div class="razon-pie">— ${citasHTML(r.fuentes)}</div>` : ''}</div>
     </details>` : '';
   // Autor y año de cada cita; al tocarla, la cita entera y su enlace (lib/citas.js)
@@ -341,7 +341,7 @@ export function buildTestItem(hId, test, idx) {
     <div class="test-name">${test.name}</div>
     ${statsHtml}
     <div class="test-peso">${hyp ? pesoTest(hyp, test, idx) : ''}</div>
-    <div class="test-criterion">${test.criterio}</div>
+    <div class="test-criterion">${citasEnTexto(test.criterio)}</div>
     ${porque}
     ${fuente}
     ${anatomiaLineaHTML(test)}
@@ -372,13 +372,13 @@ export async function abrirRazonamientoTest(btn, hId, idx) {
   const r = test?.razonamiento;
   if (!r) return;
   const REF = await registroReferencias();
-  const parrafos = (r.detalle || '').split('\n\n').filter(Boolean).map(p => `<p>${p}${iaParrafoHTML()}</p>`).join('');
+  const parrafos = (r.detalle || '').split('\n\n').filter(Boolean).map(p => `<p>${citasEnTexto(p)}${iaParrafoHTML()}</p>`).join('');
   const citas = citasTest(test).map(c => enlaceCita(c, REF));
   abrirPanelRazon({
     btn, kicker: 'Test · por qué y evidencia', titulo: test.name,
     ia: ctxTest(hyp.region, test.name, hyp.name),
     html: `
-    ${r.porque ? `<div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}${iaParrafoHTML()}</p></div>` : ''}
+    ${r.porque ? `<div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${citasEnTexto(r.porque)}${iaParrafoHTML()}</p></div>` : ''}
     <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${pesoTest(hyp, test, idx)}</p></div>
     ${parrafos ? `<div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>` : ''}
     ${anatomiaPanelHTML(test)}

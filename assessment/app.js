@@ -1358,8 +1358,8 @@ function razonamientoInlineHTML(sis, q) {
   return `<details class="razon">
       <summary>ⓘ ¿Por qué?</summary>
       <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxCribado(state.region, q.text))}">
-        <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
-        <p><span class="razon-etq">Cuánto pesa</span> ${r.peso}</p>
+        <p><span class="razon-etq">Por qué</span> ${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>
+        <p><span class="razon-etq">Cuánto pesa</span> ${citasEnTexto(r.peso)}</p>
         ${anatomiaLineaHTML(q)}
         <div class="razon-pie">— ${citasHTML(r.fuentes)}${ampliar}</div>
       </div>
@@ -1372,8 +1372,8 @@ function razonamientoInlineHTML(sis, q) {
 function razonFisiologiaHTML(f) {
   if (!f) return '';
   return `<div class="razon-seccion razon-fisio"><div class="razon-etq">Fisiología, paso a paso</div>
-      <ol class="razon-pasos">${f.pasos.map(p => `<li>${p}</li>`).join('')}</ol>
-      ${f.nota ? `<p class="razon-fisio-nota">${f.nota}</p>` : ''}
+      <ol class="razon-pasos">${f.pasos.map(p => `<li>${citasEnTexto(p)}</li>`).join('')}</ol>
+      ${f.nota ? `<p class="razon-fisio-nota">${citasEnTexto(f.nota)}</p>` : ''}
       <div class="razon-ia-pie">${iaParrafoHTML()}</div>
       ${f.metafora ? `<p class="razon-metafora"><span aria-hidden="true">💡</span> ${f.metafora}</p>` : ''}
     </div>`;
@@ -1396,10 +1396,10 @@ function _buscarPregunta(sisId, qId) {
 // Secciones del panel para un `razonamiento` del cribado (de una pregunta o de
 // una bandera); `x` lleva el `anatomia` (pregunta) o nada (bandera).
 function razonCribadoPanelHTML(r, x = {}) {
-  const parrafos = r.detalle ? r.detalle.split('\n\n').map(p => `<p>${p}${iaParrafoHTML()}</p>`).join('') : '';
+  const parrafos = r.detalle ? r.detalle.split('\n\n').map(p => `<p>${citasEnTexto(p)}${iaParrafoHTML()}</p>`).join('') : '';
   return `
-    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}${iaParrafoHTML()}</p></div>
-    <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${r.peso}</p></div>
+    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${citasEnTexto(r.porque)}${iaParrafoHTML()}</p></div>
+    <div class="razon-seccion"><div class="razon-etq">Cuánto pesa</div><p>${citasEnTexto(r.peso)}</p></div>
     ${razonFisiologiaHTML(r.fisiologia)}
     ${parrafos ? `<div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>` : ''}
     ${anatomiaPanelHTML(x)}

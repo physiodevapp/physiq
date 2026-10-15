@@ -5,7 +5,7 @@
 import { CIF_TREES, HYPOTHESES, ZONAS_SINTOMA } from './data.js';
 import { state } from './state.js';
 import { saveSession, showConfirmBanner, paintNav, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento } from './app.js';
-import { registroReferencias, enlaceCita, citasHTML } from './lib/citas.js';
+import { registroReferencias, enlaceCita, citasHTML, citasEnTexto } from './lib/citas.js';
 import { iaParrafoHTML, ctxArbol, attrIA } from './ampliar-ia.js';
 import { pistasHTML } from './lib/pistas.js';
 import { pistasSintomasPaso } from './lib/sintomas.js';
@@ -208,7 +208,7 @@ export function razonamientoPasoHTML(step, region) {
   return `<details class="razon">
       <summary>ⓘ ¿Por qué esta pregunta?</summary>
       <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxArbol(region, step.iaPregunta || step.question))}">
-        <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
+        <p><span class="razon-etq">Por qué</span> ${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>
         <div class="razon-pie">— ${citasHTML(r.fuentes)}${ampliar}</div>
       </div>
     </details>`;
@@ -222,13 +222,13 @@ export async function abrirRazonamientoPaso(btn, stepId) {
   const r = step?.razonamiento;
   if (!r?.detalle) return;
   const REF = await registroReferencias();
-  const parrafos = r.detalle.split('\n\n').filter(Boolean).map(p => `<p>${p}${iaParrafoHTML()}</p>`).join('');
+  const parrafos = r.detalle.split('\n\n').filter(Boolean).map(p => `<p>${citasEnTexto(p)}${iaParrafoHTML()}</p>`).join('');
   const citas = (r.citas || r.fuentes).map(c => enlaceCita(c, REF));
   abrirPanelRazon({
     btn, kicker: '¿Por qué esta pregunta?', titulo: step.question,
     ia: ctxArbol(state.region, step.iaPregunta || step.question),
     html: `
-    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${r.porque}${iaParrafoHTML()}</p></div>
+    <div class="razon-seccion"><div class="razon-etq">Por qué</div><p>${citasEnTexto(r.porque)}${iaParrafoHTML()}</p></div>
     <div class="razon-seccion"><div class="razon-etq">En detalle</div>${parrafos}</div>
     <div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div>
       <ul>${citas.map(razonCitaHTML).join('')}</ul></div>`,
