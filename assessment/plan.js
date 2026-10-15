@@ -25,6 +25,7 @@ const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const escC = t => citasEnTexto(esc(t));
 
 let _contenedor = null;
+let _ia = null;   // plan-ia.js («✨ Detallar con IA»), solo fuera del hub
 
 // ─── Estado de la fase ───────────────────────────────────────────
 function planVacio(idDefecto) {
@@ -113,6 +114,12 @@ function planActual() {
 export function montarPlan(contenedor) {
   _contenedor = contenedor;
   pintar();
+  // Capa de IA (decisión 106): solo standalone; en el hub ni se descarga
+  if (!_ia && !document.body.classList.contains('in-hub')) {
+    import('./plan-ia.js')
+      .then(m => { _ia = m; m.montarPlanIA(document.getElementById('planIA')); })
+      .catch(() => {});
+  }
 }
 
 function opcion(grupo, valor, texto, seleccionado, { deshabilitado = false, titulo = '' } = {}) {
@@ -132,7 +139,14 @@ function pautaHTML(texto, fuente) {
 
 const lista = items => `<ul class="plan-lista">${items.map(t => `<li>${escC(t)}</li>`).join('')}</ul>`;
 
+// Tras cada repintado, la tarjeta de la IA se muestra u oculta y revisa si su
+// plan detallado sigue al día (plan-ia.js)
 function pintar() {
+  pintarPlan();
+  _ia?.refrescarPlanIA();
+}
+
+function pintarPlan() {
   const c = _contenedor;
   if (!c) return;
   if (!REGIONES_PLAN.includes(state.region)) {
@@ -304,6 +318,13 @@ export function opcionesCompartir() {
   // esa conversación es en persona.
   if (REGIONES_PLAN.includes(state.region) && !planActual().plan.bloqueado) {
     ops.push({ accion: 'compartirDomiciliario', nombre: 'Programa para casa', sub: 'Para el paciente, en lenguaje llano' });
+    // Plan detallado con IA (decisión 111): el del paciente, solo revisado
+    const r = _ia?.estadoRevisionPlanIA();
+    if (r) {
+      const sin = r.pendientes ? `<span class="compartir-op-aviso${r.altosPendientes ? ' alto' : ''}">⚠ ${r.pendientes === r.total ? r.total : `${r.pendientes} de ${r.total}`} ${r.total === 1 ? 'punto' : 'puntos'} sin revisar</span>` : '';
+      ops.push({ accion: 'compartirPlanIA', nombre: 'Plan detallado (IA)', sub: sin || 'Sesión, mes y casa con IA, para ti' });
+      ops.push({ accion: 'compartirCasaIA', nombre: 'Programa para casa (IA)', sub: r.pendientes ? 'Para el paciente: antes, marca todos los puntos como revisados' : 'Para el paciente, revisado' });
+    }
   }
   return ops;
 }

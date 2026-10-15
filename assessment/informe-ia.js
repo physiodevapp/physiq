@@ -25,11 +25,12 @@ import { esPosquirurgico, cirugiaPayload, pautaHipPosq } from './lib/posquirurgi
 import { revisarInforme, comprobacionesManuales, clavePunto, claveComprobacion, resumenRevisados } from './lib/revision-informe.js';
 import { VERSION_SHA } from './lib/version.js';
 import {
-  ORCHESTRATOR_URL, TURNSTILE_SITEKEY, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto, MODOS_AUDIO,
+  ORCHESTRATOR_URL, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto, MODOS_AUDIO,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
   informeTruncado, markdownAHtml, textoParaCompartir, extensionAudio, errorLegible, errorConexion,
   transcripcionSinVoz, TEXTO_SIN_VOZ, textoOpcionIA, seccionLegible,
 } from './lib/informe-narrativo.js';
+import { crearTurnstile } from './lib/turnstile.js';
 import { estadoLicencia, onLicencia, comprobarLicencia, probarClave, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
 import {
   onGrabadora, audioActual, estadoGrabacion, idAudio, cerrarGrabacion, fijarArchivo, quitarAudio, fmtTiempo, fmtMB,
@@ -51,10 +52,6 @@ let _modoAudio = 'dialogo';      // 'dialogo' | 'dictado': quién habla en el au
 let _resultadoAbierto = false;   // el informe generado se muestra plegado hasta que se abre
 let _vivoAbierto = false;        // «Ver mientras se escribe», mientras dura una generación
 let _error = null;               // último fallo al generar: errorLegible() — se muestra hasta el siguiente intento
-let _turnstileToken = null;
-let _turnstileWidget = null;
-let _turnstileFallo = false;
-let _turnstileCargando = false;
 
 // ── Montaje ──────────────────────────────────────────────────────────────────
 // Se llama en cada buildResults(): la primera vez pinta la tarjeta y se suscribe
@@ -182,45 +179,11 @@ async function iaGuardarClave() {
 function iaReintentarLicencia() { comprobarLicencia(true); }
 
 // ── Turnstile ────────────────────────────────────────────────────────────────
-// El worker lo exige en modo real. Se carga solo aquí, y solo con licencia.
-function cargarTurnstile() {
-  if (_turnstileWidget != null || _turnstileCargando) { pintarGenerador(); return; }
-  _turnstileCargando = true;
-  window.__iaTurnstileOnload = renderTurnstile;
-  if (window.turnstile) { renderTurnstile(); return; }
-  const s = document.createElement('script');
-  s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__iaTurnstileOnload';
-  s.async = true;
-  s.onerror = () => { _turnstileFallo = true; pintarGenerador(); };
-  document.head.appendChild(s);
-  // Un bloqueador puede impedir que llegue a pintarse: sin este aviso solo se
-  // vería un botón desactivado sin explicación.
-  setTimeout(() => { if (_turnstileWidget == null) { _turnstileFallo = true; pintarGenerador(); } }, 10000);
-}
-
-function renderTurnstile() {
-  const box = $('iaTurnstile');
-  if (!box || !window.turnstile || _turnstileWidget != null) return;
-  try {
-    _turnstileWidget = window.turnstile.render(box, {
-      sitekey: TURNSTILE_SITEKEY,
-      appearance: 'always',
-      callback: t => { _turnstileToken = t; _turnstileFallo = false; pintarGenerador(); },
-      'expired-callback': () => { _turnstileToken = null; pintarGenerador(); },
-      'error-callback': () => { _turnstileToken = null; pintarGenerador(); },
-    });
-  } catch {
-    _turnstileFallo = true;
-  }
-  pintarGenerador();
-}
-
-function consumirToken() {
-  const t = _turnstileToken;
-  _turnstileToken = null;
-  if (window.turnstile && _turnstileWidget != null) { try { window.turnstile.reset(_turnstileWidget); } catch {} }
-  return t;
-}
+// El worker lo exige en modo real. Se carga solo aquí, y solo con licencia
+// (lib/turnstile.js, compartido con «✨ Detallar con IA» de la fase 6).
+const _turnstile = crearTurnstile({ caja: () => $('iaTurnstile'), alCambiar: () => pintarGenerador() });
+const cargarTurnstile = () => _turnstile.cargar();
+const consumirToken = () => _turnstile.consumir();
 
 // ── Resultado ────────────────────────────────────────────────────────────────
 // Plegado: a la vista quedan la fecha, los avisos y las acciones (compartir
@@ -532,6 +495,15 @@ export function construirAmpliado() {
 // Huella de todo lo que entra en el prompt: el resumen y los datos ampliados.
 const huellaActual = () => huellaPayload({ ...buildPhysiQPayload(), _ampliado: construirAmpliado() });
 
+// Para «✨ Detallar con IA» de la fase 6: la transcripción que se
+// guardó con el informe, si la hay, y si la valoración cambió después. Nunca
+// el texto del informe (decisión 4 de docs/plan-tratamiento.md).
+export function transcripcionInforme() {
+  const inf = state.informeIA;
+  if (!inf?.conAudio || !inf.transcripcion?.trim()) return null;
+  return { texto: inf.transcripcion, dictado: !!inf.dictado, desactualizada: !!inf.huella && inf.huella !== huellaActual() };
+}
+
 function textoInforme() {
   return textoParaCompartir(state.informeIA?.texto || '', state.informeIA?.datos || buildPhysiQPayload(), nombreRegion);
 }
@@ -668,7 +640,7 @@ function motivoBloqueo() {
   if (_gen || _cerrando) return 'generando';
   if (audio && audio.blob.size > MAX_AUDIO_BYTES) return 'El audio supera los 25 MB.';
   if (idAudio() !== null && !consentido()) return 'Marca el consentimiento del paciente para enviar el audio.';
-  if (!_turnstileToken) return _turnstileFallo ? 'turnstile' : 'Completa la verificación de seguridad.';
+  if (!_turnstile.token()) return _turnstile.fallo() ? 'turnstile' : 'Completa la verificación de seguridad.';
   return '';
 }
 

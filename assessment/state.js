@@ -76,7 +76,10 @@ const state = {
   // { hipotesis: [id, id?], nivel: 'A'|'B'|'C', frecuencia: 'A'|'B',
   //   sesion: 'primera'|'siguiente', gravedad?: string, irritabilidad?: string,
   //   notas: { sesion, mes, domiciliario, parar },
-  //   duraciones: { [bloqueId]: minutos } } | null
+  //   duraciones: { [bloqueId]: minutos },
+  //   ia?: { texto, fecha, nivel, escalon, frecuencia, frecuenciaNombre, conTranscripcion,
+  //          prompt, version, huella, revisados } | null — «✨ Detallar con IA»
+  //          (plan-ia.js, solo standalone); tampoco va al .json exportado } | null
   planTratamiento: null,
   // Formulario previo (formulario.js): { comun: {id: valor}, regiones: { lumbar: {...} } }
   formularioPrevio: { comun: {}, regiones: {} },

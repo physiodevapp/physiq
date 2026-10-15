@@ -18,10 +18,13 @@ export const TIPO = 'valoracion';
 export const VERSION = 1;
 
 const FASES = [1, 2, 3, 4, '4b', 5, 6];
+const sinIA = ({ ia, ...pt }) => pt;
 
 // → objeto listo para JSON.stringify
 export function exportarValoracion(state, ahora = new Date()) {
   const { informeIA, ...resto } = state || {};
+  // Ni el informe ni el plan detallado con IA: el sentido es volver a generarlos
+  if (resto.planTratamiento?.ia) resto.planTratamiento = sinIA(resto.planTratamiento);
   return {
     app: APP_ID,
     tipo: TIPO,
@@ -65,5 +68,6 @@ export function leerImportacion(texto, regionesValidas = []) {
   if (s.region && regionesValidas.length && !regionesValidas.includes(s.region))
     return { ok: false, error: `La región del archivo («${s.region}») no existe en esta versión de la app.` };
   const { informeIA, ...assessmentState } = s;
+  if (assessmentState.planTratamiento?.ia) assessmentState.planTratamiento = sinIA(assessmentState.planTratamiento);
   return { ok: true, assessmentState, paciente: String(s.patient || ''), exportado: obj.exportado || '' };
 }

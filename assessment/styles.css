@@ -2667,6 +2667,19 @@
 .ia-informe h4 { font-size: 0.9rem; color: var(--text); margin: 0.9rem 0 0.35rem; font-weight: 600; }
 .ia-informe h5, .ia-informe h6 { font-size: 0.85rem; color: var(--text2); margin: 0.7rem 0 0.3rem; font-weight: 600; }
 .ia-informe p { margin: 0 0 0.6rem; }
+/* «✨ Detallar con IA» de la fase 6 (plan-ia.js): lo que propone la IA sin
+   fuente va aparte, con borde y etiqueta (decisión 8 de docs/plan-tratamiento.md) */
+#planIA { margin-top: 1rem; }
+.pia-que { font-size: 0.85rem; color: var(--text2); line-height: 1.5; margin-bottom: 0.6rem; }
+.pia-que-linea + .pia-que-linea { margin-top: 4px; }
+.pia-aviso-t { color: var(--alert-warning-text); }
+.pia-plan ul { margin: 0 0 0.6rem; padding-left: 1.1rem; }
+.pia-plan li { margin: 0 0 0.3rem; }
+.pia-sug { background: var(--orange-bg); border-left: 3px solid var(--orange); border-radius: 4px; padding: 2px 6px; }
+.pia-plan li.pia-sug { margin-left: -6px; list-style-position: inside; }
+.pia-sug-et { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.66rem; letter-spacing: 0.3px; color: var(--alert-warning-text); border: 1px solid var(--orange); border-radius: 4px; padding: 0 4px; white-space: nowrap; vertical-align: 1px; }
+.pia-leyenda { font-size: 0.78rem; color: var(--text2); padding: 0.6rem 1.2rem 0; line-height: 1.5; }
+.pia-compartir-nota { margin-top: 0.4rem; }
 .ia-tabla { overflow-x: auto; margin: 0.4rem 0 0.8rem; }
 .ia-tabla table { border-collapse: collapse; font-size: 0.8rem; min-width: 100%; }
 .ia-tabla th, .ia-tabla td { border: 1px solid var(--border2); padding: 5px 8px; text-align: left; }
