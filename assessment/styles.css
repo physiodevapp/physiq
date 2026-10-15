@@ -920,7 +920,14 @@
   .razon-anatomia ul { list-style: none; padding: 0; margin: 0; }
   .razon-anatomia li { padding: 2px 0; }
   .in-hub .test-anat, .in-hub .razon-anatomia { display: none; }
-  @media (pointer: coarse) { .test-anat .anat-enlace { display: inline-block; padding: 6px 0; } }
+  /* En táctil, el área de toque crece con un ::after invisible que se sale 6 px por
+     arriba y por abajo, no con padding: con inline-block + padding cada línea del
+     ajuste medía 40 px y los enlaces quedaban muy separados (decisión del usuario,
+     2026-10; mismo arreglo que las fuentes de los tiempos de tejido) */
+  @media (pointer: coarse) {
+    .test-anat .anat-enlace { position: relative; }
+    .test-anat .anat-enlace::after { content: ''; position: absolute; inset: -6px 0; }
+  }
   @media print { .test-anat { display: none; } }
   .test-criterion {
     font-size: 0.78rem;
