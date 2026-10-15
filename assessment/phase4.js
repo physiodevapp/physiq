@@ -2,11 +2,13 @@
 // PhysiQ-Assessment · PHASE4.JS
 // Algoritmo CIF — árbol de decisión clínica
 // ============================================================
-import { CIF_TREES, HYPOTHESES } from './data.js';
+import { CIF_TREES, HYPOTHESES, ZONAS_SINTOMA } from './data.js';
 import { state } from './state.js';
 import { saveSession, showConfirmBanner, paintNav, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento } from './app.js';
 import { registroReferencias, enlaceCita } from './phase4b.js';
 import { iaParrafoHTML, ctxArbol, attrIA } from './ampliar-ia.js';
+import { pistasHTML } from './lib/pistas.js';
+import { pistasSintomasPaso } from './lib/sintomas.js';
 
 // Derivaciones médicas que piden las respuestas del árbol (`derivacion` en una
 // opción de CIF_TREES): mensajes de las opciones elegidas, en el orden de los
@@ -151,6 +153,17 @@ export function resetCIFTree() {
   );
 }
 
+// «📝 Refiere el paciente» del paso: respuestas del formulario previo ligadas
+// al paso (formulario.js, cargado con import(): sin él, solo los síntomas) y
+// los síntomas de la fase 3 con una zona ligada (`pasos`, lib/sintomas.js).
+// El árbol se repinta entero al entrar en la fase 4, así que siempre está al día.
+function pistasPasoHTML(stepId) {
+  return pistasHTML([
+    ...(window.fpPistasPaso?.(stepId) || []),
+    ...pistasSintomasPaso(state, ZONAS_SINTOMA[state.region] || [], stepId),
+  ]);
+}
+
 export function renderStep(step) {
   const container = document.getElementById('cifTree');
   const existing = document.getElementById(step.id);
@@ -163,7 +176,7 @@ export function renderStep(step) {
     <div class="tree-step-badge">${step.tag}</div>
     <div class="tree-question-text">${step.question}</div>
     ${razonamientoPasoHTML(step, state.region)}
-    ${window.fpPistasPasoHTML?.(step.id) || ''}
+    ${pistasPasoHTML(step.id)}
     <div class="option-group" id="opts_${step.id}">
       ${step.options.map((opt, i) => `
         <button class="option-btn" style="width:100%; text-align:left; justify-content:flex-start;"

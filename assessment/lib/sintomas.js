@@ -123,3 +123,23 @@ export function bloqueSintomasIA(d) {
     + 'Describe cada síntoma con sus propios datos: no atribuyas a uno la intensidad, la irritabilidad ni el comportamiento de otro.'
     + ((d.ss || []).some(s => s.or) ? ` Lo marcado como «${TEXTO_OTRA_REGION}» no se exploró: menciónalo solo como pendiente de valorar, sin hipótesis ni plan.` : '');
 }
+
+// Pistas para un paso del árbol (decisión 8): los síntomas con alguna zona
+// ligada a ese paso (`pasos` en la zona), en el formato del recuadro «📝» —
+// { q, a }, ver lib/pistas.js. Recuerdan; nunca contestan el paso. Otra región
+// no lleva pistas: no se valora hoy.
+export function pistasSintomasPaso(st, zonas = [], stepId) {
+  const ligadas = new Set(zonas.filter(z => z.pasos?.includes(stepId)).map(z => z.id));
+  if (!ligadas.size) return [];
+  const toca = s => !s.otraRegion && (s.zonas || []).some(id => ligadas.has(id));
+  const { z1, ss } = payloadSintomas(st, zonas);
+  const out = [];
+  if (st.sintomaPrincipal && toca(st.sintomaPrincipal)) {
+    out.push({ q: 'Síntoma P1 (principal):', a: [lineaP1(z1), st.severidad != null && `NRS ${st.severidad}/10`].filter(Boolean).join(' · ') });
+  }
+  // `ss` son los secundarios con datos, en el mismo orden
+  (st.sintomasSecundarios || []).filter(tieneDatos).forEach((s, k) => {
+    if (toca(s)) out.push({ q: `Síntoma P${ss[k].n}:`, a: lineaSecundario(ss[k]) });
+  });
+  return out;
+}

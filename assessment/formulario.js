@@ -10,6 +10,7 @@
 // ============================================================
 import { state } from './state.js';
 import { saveSession, injectQuickInputBar, _actualizarBandas } from './app.js';
+import { pistasHTML } from './lib/pistas.js';
 import COMUN from './formularios/comun.js';
 
 // Regiones con archivo formularios/<region>.js. Al añadir uno, añadirlo aquí
@@ -394,22 +395,8 @@ function _pistas(refs) {
   return out;
 }
 
-function _pistasHTML(p) {
-  if (!p.length) return '';
-  // «Refiere el paciente», como el «SEGÚN REFIERE EL PACIENTE» del 📄 Informe:
-  // la voz del paciente, distinta de la clasificación del fisio de debajo.
-  // textoRespuesta() pone el detalle al final, así que `cita` es el sufijo de `a`.
-  const resp = x => {
-    if (!x.cita) return esc(x.a);
-    const pre = x.a.slice(0, x.a.length - x.cita.length);
-    return `${esc(pre)}<span class="fp-pista-cita">«${esc(x.cita)}»</span>`;
-  };
-  return `<div class="fp-pistas"><div class="fp-pistas-title">📝 Refiere el paciente</div>${
-    p.map(x => `<div class="fp-pista"><span class="fp-pista-q">${esc(x.q)}</span> <span class="fp-pista-a">${resp(x)}</span></div>`).join('')}</div>`;
-}
-
 export function pistasPasoHTML(stepId) {
-  return _pistasHTML(pistasPaso(stepId));
+  return pistasHTML(pistasPaso(stepId));
 }
 
 // Pinta las pistas en #fpPistas_<campo> de la fase 1. Va con el contador:
@@ -417,7 +404,7 @@ export function pistasPasoHTML(stepId) {
 function _actualizarPistasFase1() {
   Object.keys(COMUN.pistas || {}).forEach(campo => {
     const el = document.getElementById(`fpPistas_${campo}`);
-    if (el) el.innerHTML = _pistasHTML(pistasFase1(campo));
+    if (el) el.innerHTML = pistasHTML(pistasFase1(campo));
   });
 }
 
@@ -458,4 +445,4 @@ export async function precargarFormulario() {
 // Exposed for inline onclick/oninput attributes built above — those resolve
 // only against the global scope, never a module's private scope.
 Object.assign(window, { fpUnica, fpMulti, fpEscala, fpMatriz, fpTexto, fpToggle,
-  fpPistasPasoHTML: pistasPasoHTML });
+  fpPistasPaso: pistasPaso });

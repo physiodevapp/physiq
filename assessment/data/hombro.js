@@ -8,8 +8,8 @@
 import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.hombro — zonas del mapa corporal para P1–P4
-// (docs/sintomas-multiples.md). Tabla aceptada por el usuario (2026-10),
-// pendiente de revisión; `id` estable: se guarda en la sesión.
+// (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
+// `id` estable: se guarda en la sesión.
 export const zonas = [
   { id: 'hombro_ant',  nombre: 'Hombro anterior' },
   { id: 'hombro_lat',  nombre: 'Hombro lateral (deltoides)' },

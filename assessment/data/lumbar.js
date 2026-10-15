@@ -10,14 +10,24 @@ import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
 // ── Fase 3 · ZONAS_SINTOMA.lumbar — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
 // `id` estable: se guarda en la sesión.
+// `pasos` (Fase N, paso 3): pasos del árbol de abajo en los que el síntoma de
+// esa zona sale en el recuadro «📝 Refiere el paciente». Solo recuerda; nunca
+// contesta el paso. Revisados por el usuario (2026-10):
+//   lu_step1  ¿la pierna duele más que la espalda? → la zona lumbar, para
+//             comparar, y todo lo que baja por la pierna
+//   lu_step1c déficit en la pierna → muslo anterior (L2–L4), pierna y pie
+//   lu_step2  estenosis: dolor en glúteos y muslos → glúteo, muslos, pierna
+//   lu_step3  «sin dolor bajo la rodilla» (agudo) → pierna y pie
+//   lu_step4  facetario «sin pasar de la rodilla», sacroilíaca (glúteo) y
+//             «revisar siempre cadera» (ingle) → glúteo, ingle, pierna
 export const zonas = [
-  { id: 'lumbar',     nombre: 'Zona lumbar' },
-  { id: 'gluteo',     nombre: 'Glúteo' },
-  { id: 'ingle',      nombre: 'Ingle' },
-  { id: 'muslo_ant',  nombre: 'Muslo anterior' },
-  { id: 'muslo_post', nombre: 'Muslo posterior o lateral' },
-  { id: 'pierna',     nombre: 'Pierna por debajo de la rodilla' },
-  { id: 'pie',        nombre: 'Pie' },
+  { id: 'lumbar',     nombre: 'Zona lumbar',                     pasos: ['lu_step1'] },
+  { id: 'gluteo',     nombre: 'Glúteo',                          pasos: ['lu_step2', 'lu_step4'] },
+  { id: 'ingle',      nombre: 'Ingle',                           pasos: ['lu_step4'] },
+  { id: 'muslo_ant',  nombre: 'Muslo anterior',                  pasos: ['lu_step1', 'lu_step1c', 'lu_step2'] },
+  { id: 'muslo_post', nombre: 'Muslo posterior o lateral',       pasos: ['lu_step1', 'lu_step2'] },
+  { id: 'pierna',     nombre: 'Pierna por debajo de la rodilla', pasos: ['lu_step1', 'lu_step1c', 'lu_step2', 'lu_step3', 'lu_step4'] },
+  { id: 'pie',        nombre: 'Pie',                             pasos: ['lu_step1', 'lu_step1c', 'lu_step3'] },
 ];
 
 // ── Fase 2 · SYSTEMIC_SCREENING.lumbar
