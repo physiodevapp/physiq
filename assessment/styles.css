@@ -3116,15 +3116,18 @@ body.posquirurgico .solo-posq { display: block; }
 .tej-fuente-enlace { color: var(--accent); text-decoration: none; }
 @media (hover: hover) { .tej-fuente-enlace:hover { text-decoration: underline; } }
 .tej-fuente-enlace:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 3px; }
-/* En táctil, la zona de toque de cada enlace mide 32 px de alto (WCAG 2.2 pide 24) y el
-   separador es más ancho, para no tocar el enlace de al lado. La caja de las fuentes se
-   sale 6 px por arriba y por abajo: la zona de toque crece sin empujar el texto, que
-   queda a la misma distancia de «Plazo» que las demás filas (con 40 px sobraba hueco;
-   decisión del usuario, 2026-10) */
+/* En táctil cada línea de enlaces mide 24 px (como las filas de arriba), pero cada enlace
+   responde en 32 px de alto (WCAG 2.2 pide 24): un ::after invisible sobresale 4 px por
+   arriba y por abajo. Entre dos líneas solo se solapan en el hueco entre textos, y el de
+   abajo queda encima, así que tocar sobre un texto abre siempre ese enlace. La caja de
+   las fuentes se sale esos 4 px para que el recorte no se coma el área de la primera y
+   la última línea. El separador es más ancho, para no tocar el enlace de al lado
+   (decisión del usuario, 2026-10: con líneas de 32 o 40 px sobraba hueco) */
 @media (pointer: coarse) {
   .tej-fuentes-lista { --tej-sep: 24px; }
-  .tej-fuente-enlace { display: inline-flex; align-items: center; min-height: 32px; }
-  .tej-info-datos .tej-info-fuentes dd { margin: -6px 0; }
+  .tej-fuente-enlace { position: relative; display: inline-flex; align-items: center; min-height: 24px; }
+  .tej-fuente-enlace::after { content: ''; position: absolute; inset: -4px 0; }
+  .tej-info-datos .tej-info-fuentes dd { margin: -4px 0; padding: 4px 0; }
 }
 .tej-grupo-fuentes { margin: -4px 0 8px; font-size: 0.72rem; color: var(--text3); }
 .tej-grupo-fuentes summary { cursor: pointer; width: max-content; color: var(--accent); }
