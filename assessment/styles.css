@@ -1227,14 +1227,21 @@
   .flag-item:last-child { border-bottom: none; }
   .flag-dot-red { color: var(--red); flex-shrink: 0; font-size: 0.6rem; margin-top: 4px; }
   .flag-dot-yellow { color: var(--accent3); flex-shrink: 0; font-size: 0.6rem; margin-top: 4px; }
-  /* «¿Por qué?» de una bandera (docs/razonamiento-banderas.md): abre el panel del razonamiento */
+  /* «¿Por qué?» de una bandera (docs/razonamiento-banderas.md): el ⓘ despliega
+     debajo «Por qué» y «Cuánto pesa»; «Ampliar →» abre el panel del razonamiento */
+  .flag-cuerpo { min-width: 0; flex: 1; }
   .flag-texto { min-width: 0; }
+  .razon-bandera { margin: 4px 0 2px; }
+  .razon-bandera[hidden] { display: none; }
+  .razon-bandera-q { color: var(--text); }
+  .razon-bandera-q:not(:first-child) { margin-top: 8px; }
   .flag-fase1 { font-family: 'DM Mono', monospace; font-size: 0.66rem; color: var(--text3); white-space: nowrap; }
   .flag-porque {
     background: none; border: none; cursor: pointer; font: inherit; font-size: 0.85rem; line-height: 1;
     color: var(--accent); padding: 6px 8px; margin: -6px -8px -6px -2px; vertical-align: -1px;
   }
-  .flag-porque:hover { color: var(--text); }
+  .flag-porque[aria-expanded="true"] { color: var(--text); }
+  @media (hover: hover) { .flag-porque:hover { color: var(--text); } }
   .flag-porque:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
 
   .flags-box {

@@ -1433,14 +1433,45 @@ function preguntasDeBandera(sis, f) {
   return sis.preguntas.filter(q => ids.includes(q.id) && q.razonamiento);
 }
 
+// Dos niveles, como las preguntas: el ⓘ despliega bajo la bandera «Por qué» y
+// «Cuánto pesa» (los de la pregunta enlazada, o los suyos); «Ampliar →» abre
+// el panel con todo. Un botón y no un <details>, para que el ⓘ siga al final
+// del texto y la lista no crezca una línea por bandera.
 function banderaHTML(sis, f, tipo, i) {
   const dot = tipo === 'rojas' ? 'flag-dot-red' : 'flag-dot-yellow';
-  const conPorque = typeof f !== 'string' && (f.razonamiento || preguntasDeBandera(sis, f).length);
   const fase1 = typeof f !== 'string' && f.fase1
     ? ` <span class="flag-fase1" title="También se pregunta en las banderas rojas de la fase 1">· fase 1</span>` : '';
-  const porque = conPorque
-    ? ` <button type="button" class="flag-porque" aria-label="¿Por qué esta bandera?" onclick="abrirRazonBandera(this,'${sis.id}','${tipo}',${i})">ⓘ</button>` : '';
-  return `<div class="flag-item"><span class="${dot}">●</span><span class="flag-texto">${textoBandera(f)}${fase1}${porque}</span></div>`;
+  const cuerpo = razonBanderaInlineHTML(sis, f, tipo, i);
+  const porque = cuerpo
+    ? ` <button type="button" class="flag-porque" aria-expanded="false" aria-label="¿Por qué esta bandera?" onclick="toggleRazonBandera(this)">ⓘ</button>` : '';
+  return `<div class="flag-item"><span class="${dot}">●</span><div class="flag-cuerpo"><span class="flag-texto">${textoBandera(f)}${fase1}${porque}</span>${cuerpo}</div></div>`;
+}
+
+// Nivel 1 del «¿Por qué?» de una bandera, o '' si no tiene. Con varias
+// preguntas enlazadas, cada «Por qué» lleva delante su pregunta.
+function razonBanderaInlineHTML(sis, f, tipo, i) {
+  if (typeof f === 'string') return '';
+  const fuentes = f.razonamiento ? [{ r: f.razonamiento, x: f }] : preguntasDeBandera(sis, f).map(q => ({ r: q.razonamiento, x: q }));
+  if (!fuentes.length) return '';
+  const varias = fuentes.length > 1;
+  const ampliar = fuentes.some(({ r }) => r.detalle || r.fisiologia)
+    ? ` <button type="button" class="razon-ampliar" onclick="abrirRazonBandera(this,'${sis.id}','${tipo}',${i})">Ampliar →</button>` : '';
+  const partes = fuentes.map(({ r, x }) => `${varias ? `<p class="razon-bandera-q"><span class="razon-etq">Se pregunta así</span> ${x.text}</p>` : ''}
+        <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
+        <p><span class="razon-etq">Cuánto pesa</span> ${r.peso}</p>
+        ${anatomiaLineaHTML(x)}`).join('');
+  const citas = [...new Set(fuentes.flatMap(({ r }) => r.fuentes))];
+  return `<div class="razon razon-cuerpo razon-bandera" hidden data-ia-ctx="${attrIA(ctxCribado(state.region, textoBandera(f)))}">
+        ${partes}
+        <div class="razon-pie">— ${citasHTML(citas)}${ampliar}</div>
+      </div>`;
+}
+
+function toggleRazonBandera(btn) {
+  const cuerpo = btn.closest('.flag-item').querySelector('.razon-bandera');
+  const abrir = cuerpo.hidden;
+  cuerpo.hidden = !abrir;
+  btn.setAttribute('aria-expanded', String(abrir));
 }
 
 // Contenido del panel de una bandera, o null si no tiene «¿Por qué?».
@@ -4138,7 +4169,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // and dynamically-generated HTML — those resolve only against the global
 // scope, never a module's private scope.
 Object.assign(window, {
-  abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
+  abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
   abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
