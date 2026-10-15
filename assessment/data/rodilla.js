@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZON_ISQUEMIA_AGUDA } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.rodilla — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10); con
@@ -39,14 +39,34 @@ export const screening = {
     {
       id: 'ro_vascular', icon: '🩸', nombre: 'Vascular',
       banderasRojas: [
-        'Claudicación: dolor que aparece al caminar y cede al detenerse',
-        'Calambres nocturnos en pantorrilla que interrumpen el sueño',
-        'Signos de TVP: edema asimétrico, calor, eritema y sensibilidad en pantorrilla',
+        { texto: 'Claudicación: dolor que aparece al caminar y cede al detenerse', pregunta: ['r_v1', 'r_v4'] },
+        { texto: 'Calambres nocturnos en pantorrilla que interrumpen el sueño',
+          razonamiento: {
+            porque: 'Los calambres de la pierna y la pantorrilla son frecuentes en adultos, sobre todo en mayores, deportistas y embarazadas, y casi siempre benignos. Pero entre sus causas más frecuentes Goodman cuenta la oclusión de una arteria por enfermedad arterial periférica, la claudicación neurógena por estenosis de canal lumbar, la neuropatía, los fármacos, las alteraciones metabólicas y el déficit de vitaminas o calcio. El dolor de la isquemia se describe a menudo como un calambre, aunque el músculo no tenga ningún espasmo.',
+            peso: 'Aislados pesan poco. Pesan si hay factores de riesgo vascular (tabaco, diabetes, hipertensión, colesterol, más de 50 años), si la pantorrilla también duele al caminar y cede al parar (pregunta de claudicación), o si hay pérdida de vello, piel fría, pálida o brillante, uñas que crecen mal o pulsos débiles: entonces pide valoración médica. El dolor nocturno del pie o del antepié que mejora al colgar la pierna es dolor isquémico en reposo (amarilla de este sistema).',
+            detalle: 'Otras causas que da Goodman: deshidratación (en el deportista, un calambre con deshidratación grave puede anunciar un golpe de calor) y síndrome compartimental anterior por traumatismo, hemofilia, drepanocitosis, quemadura, yeso o mordedura. En el deportista, las fracturas y las roturas de ligamentos pueden imitar un calambre.\n\nQué mirar: pulsos femoral, poplíteo y del pie comparando los dos lados, temperatura y color de la piel, vello y uñas; y si hay dolor lumbar o en las nalgas al caminar que mejora al sentarse o inclinarse (claudicación neurógena).',
+            fuentes: ['Goodman 2018'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, p. 254; cap. 16, p. 624.'
+            ]
+          } },
+        { texto: 'Signos de TVP: edema asimétrico, calor, eritema y sensibilidad en pantorrilla', pregunta: 'r_v2' },
         // Tarjeta rodilla (guía de consulta), BANDERAS «TVP · Wells con puntuación» y «Pseudotromboflebitis por quiste poplíteo»
-        'TVP · Wells con puntuación: +1 cada uno: cáncer activo (tratamiento en 6 meses o paliativo) · parálisis, paresia o inmovilización con férula · encamamiento ≥3 días o cirugía mayor en 12 SEMANAS · dolor en el trayecto venoso profundo · hinchazón de toda la pierna · pantorrilla >3 cm más gruesa, medida 10 cm bajo la tuberosidad tibial · edema con fóvea solo en la pierna sintomática · venas colaterales no varicosas · TVP previa documentada. −2: hay un diagnóstico alternativo al menos tan probable como la TVP. 2 o más → TVP probable; 1 o menos → improbable. El capítulo lista el ítem que resta junto a los demás y sobreestima. Orienta la derivación, no la sustituye.',
-        'Pseudotromboflebitis por quiste poplíteo: dolor o hinchazón en la pantorrilla y signo de Homans positivo en un quiste grande, disecado o roto. El quiste también puede causar síndrome compartimental y neuropatías por compresión. Clínicamente no se puede separar de una tromboflebitis real: derivar. La ecografía es la primera opción para diferenciar quiste de TVP.'
+        { texto: 'TVP · Wells con puntuación: +1 cada uno: cáncer activo (tratamiento en 6 meses o paliativo) · parálisis, paresia o inmovilización con férula · encamamiento ≥3 días o cirugía mayor en 12 SEMANAS · dolor en el trayecto venoso profundo · hinchazón de toda la pierna · pantorrilla >3 cm más gruesa, medida 10 cm bajo la tuberosidad tibial · edema con fóvea solo en la pierna sintomática · venas colaterales no varicosas · TVP previa documentada. −2: hay un diagnóstico alternativo al menos tan probable como la TVP. 2 o más → TVP probable; 1 o menos → improbable. El capítulo lista el ítem que resta junto a los demás y sobreestima. Orienta la derivación, no la sustituye.', pregunta: 'r_v2' },
+        { texto: 'Pseudotromboflebitis por quiste poplíteo: dolor o hinchazón en la pantorrilla y signo de Homans positivo en un quiste grande, disecado o roto. El quiste también puede causar síndrome compartimental y neuropatías por compresión. Clínicamente no se puede separar de una tromboflebitis real: derivar. La ecografía es la primera opción para diferenciar quiste de TVP.', pregunta: 'r_v3' }
       ],
-      banderasAmarillas: ['Dolor en reposo que mejora al colgar la pierna fuera de la cama'],
+      banderasAmarillas: [
+        { texto: 'Dolor en reposo que mejora al colgar la pierna fuera de la cama',
+          razonamiento: {
+            porque: 'Es el dolor isquémico en reposo, propio de una enfermedad arterial avanzada: la arteria está tan estrechada que ni en reposo llega sangre suficiente al pie. Tumbado empeora, y al colgar la pierna fuera de la cama la gravedad empuja la sangre hacia abajo y el dolor cede (Goodman). Suele ser un dolor quemante o sordo en el pie y el antepié, de noche.',
+            peso: 'Indica una enfermedad arterial más grave que la claudicación y pide valoración médica pronto. Si el dolor en reposo ha empezado de golpe, o una claudicación ha empeorado bruscamente, puede ser una tromboembolia y Goodman pide comunicarlo al médico de inmediato.',
+            detalle: 'Cómo reconocerlo (Goodman): empeora al elevar la pierna y mejora al colgarla de la cama o de la silla; se acompaña de cambios de color, temperatura, piel y uñas: piel fría, seca, descamada o brillante, poco vello y uñas que crecen mal. En los casos avanzados la pierna se pone roja o cianótica al colgarla, y pueden aparecer úlceras o gangrena.\n\nQuién: sobre todo hombres de más de 50 años; tabaco, diabetes, hipertensión, colesterol alto y edad.\n\nPor qué no es la rodilla: el dolor de rodilla mecánico no mejora al colgar la pierna; el de la isquemia no cambia con el movimiento de la rodilla.',
+            fuentes: ['Goodman 2018'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 228, 254 y 262.'
+            ]
+          } }
+      ],
       preguntas: [
         { id: 'r_v1', anatomia: ['arteria_femoral', 'arteria_poplitea'], text: '¿El dolor aparece tras caminar unos minutos y cede casi de inmediato al parar (claudicación)?', alerta: true,
           razonamiento: {
@@ -114,7 +134,9 @@ export const screening = {
               'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 223–225.',
               { texto: 'Leib 2023 — Leib, Roshan, Foris y Varacallo, «Baker’s Cyst», StatPearls [Internet], NCBI Bookshelf, última actualización 4 de agosto de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK430774/' }
             ]
-          } }
+          } },
+        { id: 'r_v4', anatomia: ['arteria_femoral', 'arteria_poplitea'], text: '¿Se le ha puesto la pierna de repente fría, pálida, muy dolorosa, con hormigueo o debilidad, o le ha empeorado de golpe el dolor al caminar?', alerta: true, urgencia: 'Posible isquemia aguda de la pierna (trombo o émbolo): a urgencias hoy, sin esperar.',
+          razonamiento: RAZON_ISQUEMIA_AGUDA }
       ],
       zonasDolor: [
         { zona: 'Pantorrilla / Rodilla', desc: 'Claudicación distal o TVP' }
@@ -125,13 +147,15 @@ export const screening = {
     {
       id: 'ro_infecciosa', icon: '🦠', nombre: 'Infecciosa / Inflamatoria',
       banderasRojas: [
-        'Fiebre, enrojecimiento intenso, calor y tumefacción articular (artritis séptica)',
-        'Artritis séptica: urgencia médica — derivar de inmediato',
-        'Inicio muy agudo con articulación bloqueada en posición de confort',
+        { texto: 'Fiebre, enrojecimiento intenso, calor y tumefacción articular (artritis séptica)', pregunta: 'r1' },
+        { texto: 'Artritis séptica: urgencia médica — derivar de inmediato', pregunta: 'r1' },
+        { texto: 'Inicio muy agudo con articulación bloqueada en posición de confort', pregunta: 'r1' },
         // Tarjeta rodilla (guía de consulta), URGENCIA
-        'Bursitis prerrotuliana séptica: la FIEBRE >37,7 °C solo se ha descrito en la séptica. Derivación el mismo día.'
+        { texto: 'Bursitis prerrotuliana séptica: la FIEBRE >37,7 °C solo se ha descrito en la séptica. Derivación el mismo día.', pregunta: 'r_i3' }
       ],
-      banderasAmarillas: ['Antecedente de infección reciente (urinaria, respiratoria, cutánea)'],
+      banderasAmarillas: [
+        { texto: 'Antecedente de infección reciente (urinaria, respiratoria, cutánea)', pregunta: 'r_i2' }
+      ],
       preguntas: [
         { id: 'r1', anatomia: ['art_rodilla'], urgencia: 'Sospecha de artritis séptica: urgencia hospitalaria hoy.', text: '¿Hay fiebre, enrojecimiento intenso y calor local junto con la tumefacción de la rodilla (artritis séptica)?', alerta: true,
           razonamiento: {
@@ -208,13 +232,15 @@ export const screening = {
     {
       id: 'ro_oncologico', icon: '🔬', nombre: 'Oncológico / Hematológico',
       banderasRojas: [
-        'Dolor nocturno constante e intenso sin alivio postural',
-        'Masa o bulto palpable en zona periarticular',
-        'Antecedentes de cáncer o edad <25 años (cánceres óseos primarios)',
+        { texto: 'Dolor nocturno constante e intenso sin alivio postural', pregunta: 'r2' },
+        { texto: 'Masa o bulto palpable en zona periarticular', pregunta: 'r3' },
+        { texto: 'Antecedentes de cáncer o edad <25 años (cánceres óseos primarios)', pregunta: ['r2', 'r3'] },
         // Tarjeta rodilla (guía de consulta), BANDERAS «Tumor»
-        'Tumor: el capítulo no da criterios clínicos propios: solo lo menciona como bandera roja que la radiografía ayuda a descartar al valorar una apofisitis tibial en el adolescente. Si se pide imagen en un adolescente con dolor en la tuberosidad tibial, la radiografía simple ayuda a descartar fractura aguda y tumor.'
+        { texto: 'Tumor: el capítulo no da criterios clínicos propios: solo lo menciona como bandera roja que la radiografía ayuda a descartar al valorar una apofisitis tibial en el adolescente. Si se pide imagen en un adolescente con dolor en la tuberosidad tibial, la radiografía simple ayuda a descartar fractura aguda y tumor.', pregunta: ['r2', 'r3'] }
       ],
-      banderasAmarillas: ['Edad entre 10-30 años con dolor óseo inexplicado'],
+      banderasAmarillas: [
+        { texto: 'Edad entre 10-30 años con dolor óseo inexplicado', pregunta: 'r2' }
+      ],
       preguntas: [
         { id: 'r2', text: '¿El dolor es constante, nocturno, intenso y no se alivia con ninguna posición ni reposo?', alerta: true,
           razonamiento: {
@@ -301,12 +327,12 @@ export const screening = {
       // rodilla de Lluch 2020 (cap. 4.2, p. 217), decisión del usuario (2026-10).
       id: 'ro_trauma', icon: '🦴', nombre: 'Traumático / Mecánico',
       banderasRojas: [
-        'Fractura de rótula o de meseta tibial: mecanismo conocido: golpe directo, rótula contra el salpicadero, caída sobre la rodilla, o indirecto (saltar y caer mal). Meseta: alta energía en varones jóvenes, baja energía en mujeres mayores u osteoporóticas. Hinchazón inmediata, incapacidad para cargar, movilidad limitada, chasquido en el momento. Regla de Ottawa. Palpación de rótula, cabeza del peroné y meseta; posible escalón palpable; dolor con extensión resistida; marcha antiálgica con rodilla rígida.',
-        'Rotura del aparato extensor: la regla de Ottawa NO lo detecta. NO puede elevar la pierna extendida ni mantener la rodilla extendida contra gravedad. Escalón palpable por encima de la rótula (cuádriceps) o por debajo (rotuliano); hemartrosis; rótula alta o baja. Reparación precoz (2 primeras semanas) → mejores resultados.',
-        'Luxación de rodilla y traumatismo multiligamentoso: alta energía, golpe en la cara anteromedial, lesión de salpicadero o hiperextensión. Hasta el 95 % de las lesiones del LCP vistas en urgencias son combinadas; en hemartrosis agudas por lesión ligamentosa, un 9 % tiene lesión de la EPL. Hemartrosis aguda tras alta energía: valorar función neurovascular y derivar antes de forzar la exploración.',
-        'Compromiso neurovascular tras traumatismo: cambios de temperatura, adormecimiento, parestesias o debilidad tras fractura de meseta o luxación → pulsos distales, cribado neurológico e índice tobillo-brazo.',
-        'Lesión del nervio peroneo común: pie caído, tropezar con el pie, parestesias y debilidad en la cara lateral de la pierna y el dorso del pie, tras esguince o luxación de la tibioperonea proximal, fractura de tibia o peroné, lesión ligamentosa o cirugía de rodilla. Más frecuente aún sin traumatismo: cruzar las piernas, cuclillas prolongadas, pérdida de peso importante reciente o una masa que lo comprime. Marcha en steppage; fuerza de eversión y de flexión dorsal de tobillo y dedos; sensibilidad; Tinel sobre la cabeza del peroné.',
-        'Lesión osteocondral inestable: chasquidos, enganches o bloqueos muy dolorosos: el fragmento bloquea físicamente el movimiento. Derrame y pérdida de rango. Derrame + tope mecánico + rango limitado → imagen (radiografía de elección) y derivación.'
+        { texto: 'Fractura de rótula o de meseta tibial: mecanismo conocido: golpe directo, rótula contra el salpicadero, caída sobre la rodilla, o indirecto (saltar y caer mal). Meseta: alta energía en varones jóvenes, baja energía en mujeres mayores u osteoporóticas. Hinchazón inmediata, incapacidad para cargar, movilidad limitada, chasquido en el momento. Regla de Ottawa. Palpación de rótula, cabeza del peroné y meseta; posible escalón palpable; dolor con extensión resistida; marcha antiálgica con rodilla rígida.', pregunta: 'ro_t1' },
+        { texto: 'Rotura del aparato extensor: la regla de Ottawa NO lo detecta. NO puede elevar la pierna extendida ni mantener la rodilla extendida contra gravedad. Escalón palpable por encima de la rótula (cuádriceps) o por debajo (rotuliano); hemartrosis; rótula alta o baja. Reparación precoz (2 primeras semanas) → mejores resultados.', pregunta: 'ro_t2' },
+        { texto: 'Luxación de rodilla y traumatismo multiligamentoso: alta energía, golpe en la cara anteromedial, lesión de salpicadero o hiperextensión. Hasta el 95 % de las lesiones del LCP vistas en urgencias son combinadas; en hemartrosis agudas por lesión ligamentosa, un 9 % tiene lesión de la EPL. Hemartrosis aguda tras alta energía: valorar función neurovascular y derivar antes de forzar la exploración.', pregunta: 'ro_t3' },
+        { texto: 'Compromiso neurovascular tras traumatismo: cambios de temperatura, adormecimiento, parestesias o debilidad tras fractura de meseta o luxación → pulsos distales, cribado neurológico e índice tobillo-brazo.', pregunta: 'ro_t4' },
+        { texto: 'Lesión del nervio peroneo común: pie caído, tropezar con el pie, parestesias y debilidad en la cara lateral de la pierna y el dorso del pie, tras esguince o luxación de la tibioperonea proximal, fractura de tibia o peroné, lesión ligamentosa o cirugía de rodilla. Más frecuente aún sin traumatismo: cruzar las piernas, cuclillas prolongadas, pérdida de peso importante reciente o una masa que lo comprime. Marcha en steppage; fuerza de eversión y de flexión dorsal de tobillo y dedos; sensibilidad; Tinel sobre la cabeza del peroné.', pregunta: 'ro_t5' },
+        { texto: 'Lesión osteocondral inestable: chasquidos, enganches o bloqueos muy dolorosos: el fragmento bloquea físicamente el movimiento. Derrame y pérdida de rango. Derrame + tope mecánico + rango limitado → imagen (radiografía de elección) y derivación.', pregunta: 'ro_t6' }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -458,7 +484,7 @@ export const screening = {
       // cap. 4.2, p. 201 («consistent pain pattern»; antes «es constante»).
       id: 'ro_pediatrico', icon: '🧒', nombre: 'Niño o Adolescente',
       banderasRojas: [
-        'Epifisiólisis femoral proximal o Perthes: niño o adolescente con dolor de rodilla SIN mecanismo conocido. Por su patrón de dolor y porque obliga a derivar, cribado de cadera PRIMERO: rango activo y pasivo de la cadera ipsilateral. Solo si es normal, la rodilla es la localización primaria.'
+        { texto: 'Epifisiólisis femoral proximal o Perthes: niño o adolescente con dolor de rodilla SIN mecanismo conocido. Por su patrón de dolor y porque obliga a derivar, cribado de cadera PRIMERO: rango activo y pasivo de la cadera ipsilateral. Solo si es normal, la rodilla es la localización primaria.', pregunta: 'ro_p1' }
       ],
       banderasAmarillas: [],
       preguntas: [

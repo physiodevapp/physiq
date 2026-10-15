@@ -53,14 +53,14 @@ export const screening = {
     {
       id: 'cv_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [
-        'Antecedentes de cáncer o tratamiento oncológico',
-        'Edad >50 años con inicio insidioso',
-        'Dolor nocturno constante e intenso que despierta al paciente',
-        'Fracaso del tratamiento conservador tras 1 mes sin mejoría',
-        'Pérdida de peso inexplicada (>5 % del peso en 6 meses)',
-        'Ganglios linfáticos duros, fijos e indoloros',
+        { texto: 'Antecedentes de cáncer o tratamiento oncológico', pregunta: 'cv4' },
+        { texto: 'Edad >50 años con inicio insidioso', pregunta: 'cv4' },
+        { texto: 'Dolor nocturno constante e intenso que despierta al paciente', pregunta: 'cv1' },
+        { texto: 'Fracaso del tratamiento conservador tras 1 mes sin mejoría', pregunta: 'cv4' },
+        { texto: 'Pérdida de peso inexplicada (>5 % del peso en 6 meses)', pregunta: 'cv5', fase1: 'br1' },
+        { texto: 'Ganglios linfáticos duros, fijos e indoloros', pregunta: 'cv4' },
         // Tarjeta cervical (guía de consulta), BANDERAS «Tumor vertebral»
-        'Tumor vertebral (benigno, maligno o metástasis): dolor cervical incesante que no cambia con postura, movimiento ni reposo; dolor nocturno frecuente; rigidez y pérdida de movilidad posibles; debilidad o entumecimiento si comprime médula o raíces. Malestar general: febrícula, sudor nocturno, cansancio, inapetencia'
+        { texto: 'Tumor vertebral (benigno, maligno o metástasis): dolor cervical incesante que no cambia con postura, movimiento ni reposo; dolor nocturno frecuente; rigidez y pérdida de movilidad posibles; debilidad o entumecimiento si comprime médula o raíces. Malestar general: febrícula, sudor nocturno, cansancio, inapetencia', pregunta: ['cv1', 'cv4', 'cv5'] }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -152,14 +152,23 @@ export const screening = {
     {
       id: 'cv_cardio', icon: '❤️', nombre: 'Cardiovascular',
       banderasRojas: [
-        'Dolor de cuello/mandíbula acompañado de sudores, náuseas u opresión torácica',
-        'Síncope repentino sin mareo previo',
-        'Angina no aliviada por reposo (>20 min)',
+        { texto: 'Dolor de cuello/mandíbula acompañado de sudores, náuseas u opresión torácica', pregunta: ['cv2', 'cv_c3'] },
+        { texto: 'Síncope repentino sin mareo previo',
+          razonamiento: {
+            porque: 'Un síncope es una pérdida breve de conocimiento porque llega poco oxígeno al cerebro. El vasovagal, por ansiedad o estrés, y el de la tensión baja al incorporarse suelen avisar antes con mareo, aturdimiento o náuseas. Un síncope que llega sin ningún aviso orienta al corazón: un problema de una válvula o una arritmia (Goodman).',
+            peso: 'Goodman recomienda derivar al médico cualquier síncope sin explicación, porque por esas mismas causas puede haber una muerte súbita; pesa más con enfermedad del corazón o de la circulación, o con factores de riesgo de infarto o ictus. Es una derivación para estudiarlo, no una urgencia por sí sola.',
+            detalle: 'Otras causas cardiacas de síncope o de aturdimiento que da Goodman: arritmias, hipotensión ortostática, mala función del ventrículo, enfermedad coronaria e insuficiencia vertebral. La hipotensión ortostática da aturdimiento al cambiar rápido de postura tras un rato tumbado o sentado, o al hacer fuerza con presión abdominal (al defecar, al levantar peso); quien tiene estenosis aórtica lo nota con esas mismas actividades. Al empezar o ajustar fármacos del corazón, como los vasodilatadores, también puede aparecer.\n\nEn el cuello: la exploración cervical puede provocar mareo; si aparecen nistagmo, cambios en el tamaño de las pupilas o alteraciones de la vista, hay que buscar la causa (ver las preguntas de insuficiencia vertebrobasilar del sistema arterial).',
+            fuentes: ['Goodman 2018'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 227 y 261.'
+            ]
+          } },
+        { texto: 'Angina no aliviada por reposo (>20 min)', pregunta: ['cv2', 'cv_c3'] },
         // Tarjeta cervical (guía de consulta), BANDERAS «Cardiaco»
-        'Cardiaco: dolor cervical, habitualmente anterior. No se relaciona con movimientos ni posturas del cuello'
+        { texto: 'Cardiaco: dolor cervical, habitualmente anterior. No se relaciona con movimientos ni posturas del cuello', pregunta: ['cv2', 'cv_c2'] }
       ],
       banderasAmarillas: [
-        'Dolor de espalda que empeora con esfuerzo físico de piernas'
+        { texto: 'Dolor de espalda que empeora con esfuerzo físico de piernas', pregunta: 'cv_c2' }
       ],
       preguntas: [
         { id: 'cv2', anatomia: ['corazon'], text: '¿Tiene síntomas como sudores, náuseas, o dolor en el pecho/mandíbula al mismo tiempo que el dolor de cuello/espalda?', alerta: true, s1: true,
@@ -206,6 +215,16 @@ export const screening = {
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 226 y 234–236; cap. 14, pp. 537, 543 y 567.',
               { texto: 'Gillen 2026 — Gillen, Shams y Goyal, «Stable Angina», StatPearls [Internet], NCBI Bookshelf, última actualización 17 de junio de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK559016/' }
             ]
+          } },
+        { id: 'cv_c3', anatomia: ['corazon'], text: '¿Tiene ahora mismo dolor u opresión en el pecho, el cuello, la mandíbula, la espalda o el brazo que dura más de 20 minutos o no se le pasa al parar, o que le viene con sudor frío, náuseas, vómitos o falta de aire?', alerta: true, urgencia: 'Posible infarto o angina que no cede: llamar al 112.',
+          razonamiento: {
+            porque: 'Un infarto puede doler solo en la mandíbula, la parte alta del cuello, la espalda o el brazo, sin dolor en el pecho (Goodman). La angina estable cede en 3 a 5 minutos al parar; un dolor que no cede con el reposo ni al cambiar de postura, o que se acompaña de náuseas, vómitos o sudor profuso, es el de un infarto en curso.',
+            peso: 'Goodman pide intervención médica inmediata si el dolor anginoso no cede en 20 minutos o viene con náuseas, vómitos o sudor profuso, y también si la angina cambia de patrón (más intensa, con menos esfuerzo o más larga). Con un SÍ, llamar al 112 y no dejar que el paciente se vaya solo. El infarto se completa en unas 6 horas: cuanto antes vuelva el riego, menos músculo del corazón se pierde.',
+            detalle: 'Por qué una pregunta aparte de cv2: cv2 recoge si esos síntomas acompañan al dolor de cuello, también en el pasado, y un SÍ pide derivar al médico; esta pregunta es solo para el episodio que está pasando ahora, que es una urgencia.\n\nCómo se presenta (Goodman): dolor u opresión fuerte y persistente detrás del esternón, que puede irradiar a los brazos, la garganta, el cuello, la mandíbula o la espalda; palidez, sudor profuso, náuseas o vómitos (a veces se confunde con una indigestión), falta de aire, debilidad o sensación de desmayo. Puede pasar en reposo o con el esfuerzo, sobre todo trabajando con los brazos por encima de la cabeza.\n\nEn mujeres, mayores y diabéticos puede ser atípico o silente: pesadez o dolor en el lado izquierdo del pecho, el abdomen, la zona dorsal media, el hombro o el brazo, cansancio, náuseas o falta de aire brusca.',
+            fuentes: ['Goodman 2018'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 236 y 260.'
+            ]
           } }
       ],
       zonasDolor: [
@@ -224,13 +243,13 @@ export const screening = {
     {
       id: 'cv_pulmonar', icon: '🫁', nombre: 'Pulmonar',
       banderasRojas: [
-        'Dolor de cuello/hombro que empeora al toser, respirar profundamente o reír',
-        'Hemoptisis, tos persistente, disnea en reposo',
-        'Fiebre y sudores nocturnos (neumonía, tuberculosis)'
+        { texto: 'Dolor de cuello/hombro que empeora al toser, respirar profundamente o reír', pregunta: 'cv_p1' },
+        { texto: 'Hemoptisis, tos persistente, disnea en reposo', pregunta: ['cv_p1', 'cv_p2'] },
+        { texto: 'Fiebre y sudores nocturnos (neumonía, tuberculosis)', pregunta: 'cv_p1' }
       ],
       banderasAmarillas: [
-        'Tabaquismo prolongado',
-        'Antecedente de cáncer con potencial de metástasis pulmonar'
+        { texto: 'Tabaquismo prolongado', pregunta: 'cv_p1' },
+        { texto: 'Antecedente de cáncer con potencial de metástasis pulmonar', pregunta: 'cv_p1' }
       ],
       preguntas: [
         { id: 'cv_p1', anatomia: ['pleura', 'nervio_frenico'], text: '¿El dolor de cuello o espalda empeora al toser, reír, estornudar o respirar profundo?', alerta: true,
@@ -288,14 +307,24 @@ export const screening = {
     {
       id: 'cv_renal', icon: '🫘', nombre: 'Renal / Urológico',
       banderasRojas: [
-        'Prueba de percusión de Murphy positiva (ángulo costovertebral)',
-        'Cambio en control de esfínteres junto con dolor cervical (compresión medular)',
-        'Hematuria'
+        { texto: 'Prueba de percusión de Murphy positiva (ángulo costovertebral)',
+          razonamiento: {
+            porque: 'Percutir con suavidad el ángulo costovertebral, entre la última costilla y la columna, sacude el riñón: si está infectado o inflamado, duele. Busca un dolor profundo, visceral, propio de una infección o inflamación del riñón; apretar con el pulgar, en cambio, puede despertar el dolor local de un nervio que sale por ahí (Goodman). La causa típica es la pielonefritis aguda, una infección del riñón que casi siempre sube desde la vejiga y suele doler solo en el lado afectado (Belyayeva). En un paciente que consulta por el cuello cuenta cuando el dolor llega a la zona dorsal baja o al flanco.',
+            peso: 'Goodman pide derivar con una percusión positiva, sobre todo si hubo hace poco una infección urinaria o del riñón, aunque advierte que el valor diagnóstico del test nunca se ha validado: se valora con el resto del cuadro. Con fiebre, dolor en el flanco y náuseas o vómitos (la tríada clásica, aunque no siempre está completa) pide valoración médica: análisis y cultivo de orina. Pesa más si la fiebre es alta (a menudo de más de 39,4 °C) y es grave si la tensión sistólica baja de 90 mm Hg, que sugiere una sepsis (Belyayeva).',
+            detalle: 'Cómo se presenta (Belyayeva): fiebre, dolor en el flanco y náuseas o vómitos, que aparecen en horas o en un día; a veces escozor, urgencia o sangre en la orina, más en mujeres. Muchos pacientes no parecen muy enfermos pese a la fiebre. En mayores puede debutar con confusión brusca, fiebre y falta de apetito, y en hombres, mayores y niños pequeños los hallazgos son más variables.\n\nQuién tiene más riesgo de una forma complicada: embarazo, diabetes mal controlada, trasplante de riñón, alteraciones anatómicas de la vía urinaria, insuficiencia renal, inmunodepresión e infección adquirida en el hospital. Si un cálculo obstruye la salida de la orina, la infección puede volverse una pielonefritis obstructiva, una urgencia quirúrgica que no siempre se distingue por la clínica.\n\nLo que no es: la pielonefritis no da defensa ni rigidez abdominal, y el abdomen solo duele, poco o moderadamente, encima del pubis. Un dolor en el flanco con vesículas en la piel apunta a un herpes zóster. El dolor pseudorrenal, por irritación de los nervios costales desde las articulaciones costovertebrales o costotransversas, es frecuente en la columna cervical y torácica (sobre todo T10–T12): suele empezar tras un esfuerzo o un golpe, cambia con la postura y los movimientos de la columna, duele al apretar el ángulo y la percusión es negativa. El dolor renal verdadero casi no cambia con los movimientos de la columna ni del hombro (Goodman).',
+            fuentes: ['Goodman 2018', 'Belyayeva 2024'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 10, pp. 362–363 y 377.',
+              { texto: 'Belyayeva 2024 — Belyayeva, Leslie, Rout y Jeong, «Acute Pyelonephritis», StatPearls [Internet], NCBI Bookshelf, última actualización 28 de febrero de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK519537/' }
+            ]
+          } },
+        { texto: 'Cambio en control de esfínteres junto con dolor cervical (compresión medular)', pregunta: 'cv3' },
+        { texto: 'Hematuria', pregunta: 'cv_r2' }
       ],
       banderasAmarillas: [
-        'Dolor que no cambia con postura corporal',
-        'Fiebre y escalofríos acompañando el dolor de espalda',
-        'Cambios en el color u olor de la orina'
+        { texto: 'Dolor que no cambia con postura corporal', fase1: 'br4' },
+        { texto: 'Fiebre y escalofríos acompañando el dolor de espalda', pregunta: 'cv_r2' },
+        { texto: 'Cambios en el color u olor de la orina', pregunta: 'cv_r2' }
       ],
       preguntas: [
         { id: 'cv3', anatomia: ['medula_espinal'], text: '¿Ha notado algún cambio en su control de esfínteres (vejiga o intestino)?', alerta: true, s1: true,
@@ -355,14 +384,23 @@ export const screening = {
     {
       id: 'cv_gi', icon: '🫃', nombre: 'Gastrointestinal',
       banderasRojas: [
-        'Dolor de espalda que empeora o mejora al comer o tras una evacuación',
-        'Dolor nocturno entre la medianoche y las 3 am que cede con antiácidos (úlcera duodenal)',
-        'Heces negras/alquitranadas o vómito en posos de café (sangrado GI)'
+        { texto: 'Dolor de espalda que empeora o mejora al comer o tras una evacuación', pregunta: 'cv_gi1' },
+        { texto: 'Dolor nocturno entre la medianoche y las 3 am que cede con antiácidos (úlcera duodenal)', pregunta: 'cv_gi2' },
+        { texto: 'Heces negras/alquitranadas o vómito en posos de café (sangrado GI)', pregunta: 'cv_gi2' }
       ],
       banderasAmarillas: [
-        'Dolor de espalda y abdominal al mismo nivel de forma simultánea o alterna',
-        'Uso crónico de AINEs (riesgo de úlcera péptica)',
-        'Saciedad precoz o intolerancia a comidas grasas'
+        { texto: 'Dolor de espalda y abdominal al mismo nivel de forma simultánea o alterna',
+          razonamiento: {
+            porque: 'Un órgano del abdomen refiere su dolor a la piel y al músculo de la espalda que comparten con él segmento medular. El estómago, el duodeno, la vesícula y el esófago lo llevan a la zona dorsal, entre T3 y T6 o T7, a veces atravesando el tórax; el intestino delgado, el páncreas y el apéndice, al ombligo y a la zona lumbar a la misma altura (Goodman). Si el dolor de espalda coincide o se alterna con dolor abdominal al mismo nivel, la fuente probable es una víscera, no la columna.',
+            peso: 'Goodman pide valoración médica ante un dolor de espalda con dolor abdominal al mismo nivel. La forma alterna es la que más se escapa: primero un episodio de dolor abdominal que se pasa, después dolor de espalda, y el paciente no los relaciona si no se le pregunta.',
+            detalle: 'El caso que cuenta Goodman: un hombre mayor tratado por una contractura lumbar tras un esfuerzo, sin preguntarle por otros síntomas; llevaba 3 años con molestias digestivas y dolor lumbar, siempre alternos y nunca a la vez. Era un cáncer de colon y murió 6 semanas después. Su única bandera roja visible era la edad.\n\nQué preguntar con un SÍ: relación con las comidas o con la evacuación, sangre en las heces o heces negras, uso de AINE, y las demás preguntas de este sistema. En el cuello, la zona que importa es la dorsal alta: dolor entre las escápulas con ardor, digestiones pesadas o dolor en la boca del estómago.',
+            fuentes: ['Goodman 2018'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 8, pp. 303–305 y 326.'
+            ]
+          } },
+        { texto: 'Uso crónico de AINEs (riesgo de úlcera péptica)', pregunta: 'cv_gi2' },
+        { texto: 'Saciedad precoz o intolerancia a comidas grasas', pregunta: 'cv_gi1' }
       ],
       preguntas: [
         { id: 'cv_gi1', anatomia: ['esofago', 'estomago'], text: '¿El dolor de espalda empeora o mejora al comer, o cambia tras una evacuación intestinal?', alerta: true, s1: true,
@@ -428,11 +466,11 @@ export const screening = {
       // BANDERAS «Otras cefaleas secundarias».
       id: 'cv_arterial', icon: '🧠', nombre: 'Arterial / Traumatismo / Cefalea de alarma',
       banderasRojas: [
-        'Disección arterial (<55 a): cefalea o dolor cervical súbito, desconocido para el paciente, moderado o grave y a menudo progresivo; alteración del equilibrio o la marcha, Horner, déficit de pares craneales. Puede imitar una cefalea cervicogénica → urgencias hoy',
-        'Insuficiencia vertebrobasilar (suele ser >65 a, posible en jóvenes) · 5 D y 3 N: mareo o inestabilidad, diplopía o pérdida de campo visual, disartria o disfasia, disfagia o ronquera, caídas súbitas sin pérdida de conciencia; nistagmo espontáneo, náuseas o vómitos, entumecimiento peribucal → urgencias hoy',
-        'Fractura, subluxación o luxación (incluye la inestabilidad cervical alta traumática): traumatismo importante en persona mayor o mecanismo peligroso → urgencias hoy',
-        'Cefalea con signos de alarma: cambio súbito de calidad, intensidad o frecuencia; síntomas neurológicos nuevos; inicio súbito y grave; fiebre u otros síntomas sistémicos → urgencias hoy',
-        'Otras cefaleas secundarias: pseudotumor cerebri; arteritis temporal; sospecha de tumor, aneurisma, hemorragia, ictus o meningitis. Pseudotumor: examen ocular, TC o RM, punción lumbar. Arteria temporal: palpación, analítica, biopsia. Resto: RM y analítica'
+        { texto: 'Disección arterial (<55 a): cefalea o dolor cervical súbito, desconocido para el paciente, moderado o grave y a menudo progresivo; alteración del equilibrio o la marcha, Horner, déficit de pares craneales. Puede imitar una cefalea cervicogénica → urgencias hoy', pregunta: 'cv_ar1' },
+        { texto: 'Insuficiencia vertebrobasilar (suele ser >65 a, posible en jóvenes) · 5 D y 3 N: mareo o inestabilidad, diplopía o pérdida de campo visual, disartria o disfasia, disfagia o ronquera, caídas súbitas sin pérdida de conciencia; nistagmo espontáneo, náuseas o vómitos, entumecimiento peribucal → urgencias hoy', pregunta: 'cv_ar2' },
+        { texto: 'Fractura, subluxación o luxación (incluye la inestabilidad cervical alta traumática): traumatismo importante en persona mayor o mecanismo peligroso → urgencias hoy', pregunta: 'cv_ar3' },
+        { texto: 'Cefalea con signos de alarma: cambio súbito de calidad, intensidad o frecuencia; síntomas neurológicos nuevos; inicio súbito y grave; fiebre u otros síntomas sistémicos → urgencias hoy', pregunta: 'cv_ar4' },
+        { texto: 'Otras cefaleas secundarias: pseudotumor cerebri; arteritis temporal; sospecha de tumor, aneurisma, hemorragia, ictus o meningitis. Pseudotumor: examen ocular, TC o RM, punción lumbar. Arteria temporal: palpación, analítica, biopsia. Resto: RM y analítica', pregunta: 'cv_ar4' }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -542,10 +580,10 @@ export const screening = {
       // «Fijación rotatoria atloaxoidea».
       id: 'cv_neuro', icon: '⚡', nombre: 'Médula / Estructural',
       banderasRojas: [
-        'Mielopatía cervical: espondilosis avanzada que estrecha el canal y comprime la médula; más probable de mediana edad en adelante. También con tumores avanzados o malformación congénita (Klippel-Feil). Falla la conducción de la médula, no la de la raíz: exploración neurológica que incluya pruebas centrales (Babinski, dedo-nariz). La RM muestra la compresión',
-        'Inestabilidad cervical alta no traumática: erosión del ligamento transverso en AR; ausencia congénita de ligamentos; síndrome de Down; Klippel-Feil (cuello corto, asimetría facial, cefalea crónica). La queja principal puede ser una cefalea con rasgos de cervicogénica',
-        'Distonía cervical: contracciones involuntarias con postura y movimientos anómalos de la cabeza; puede doler. Observación de la postura y del movimiento',
-        'Fijación rotatoria atloaxoidea: más frecuente en niños. Tortícolis con rotación muy limitada. Puede aparecer tras amigdalitis o adenoamigdalectomía (síndrome de Grisel). Requiere derivación médica'
+        { texto: 'Mielopatía cervical: espondilosis avanzada que estrecha el canal y comprime la médula; más probable de mediana edad en adelante. También con tumores avanzados o malformación congénita (Klippel-Feil). Falla la conducción de la médula, no la de la raíz: exploración neurológica que incluya pruebas centrales (Babinski, dedo-nariz). La RM muestra la compresión', pregunta: 'cv_n4' },
+        { texto: 'Inestabilidad cervical alta no traumática: erosión del ligamento transverso en AR; ausencia congénita de ligamentos; síndrome de Down; Klippel-Feil (cuello corto, asimetría facial, cefalea crónica). La queja principal puede ser una cefalea con rasgos de cervicogénica', pregunta: 'cv_n1' },
+        { texto: 'Distonía cervical: contracciones involuntarias con postura y movimientos anómalos de la cabeza; puede doler. Observación de la postura y del movimiento', pregunta: 'cv_n2' },
+        { texto: 'Fijación rotatoria atloaxoidea: más frecuente en niños. Tortícolis con rotación muy limitada. Puede aparecer tras amigdalitis o adenoamigdalectomía (síndrome de Grisel). Requiere derivación médica', pregunta: 'cv_n3' }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -617,6 +655,17 @@ export const screening = {
               { texto: 'Cunha 2023 — Cunha, Tadi y Bragg, «Torticollis», StatPearls [Internet], NCBI Bookshelf, última actualización 8 de agosto de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK539857/' },
               'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 5.3 (Jull y Falla), tabla 1, p. 384.'
             ]
+          } },
+        { id: 'cv_n4', anatomia: ['medula_espinal'], text: '¿Ha notado torpeza en las manos (para abotonarse, escribir o coger monedas), que le ha cambiado la letra, o que camina con menos equilibrio, con las piernas pesadas o agarrándose a la barandilla?', alerta: true,
+          razonamiento: {
+            porque: 'Son los síntomas más frecuentes de la mielopatía cervical, y aparecen antes que los de esfínteres. Si la artrosis, los discos, el ligamento amarillo engrosado o la osificación del ligamento longitudinal posterior estrechan el canal cervical, comprimen la médula y sus arterias. Fallan las vías largas: la corticoespinal (control voluntario) y la espinocerebelosa (propiocepción). De ahí la torpeza de las manos y la marcha inestable, que no se explican por una raíz (Margetis y Donnally).',
+            peso: 'Un SÍ pide la exploración neurológica con los signos centrales y, si apunta a una mielopatía, derivar al especialista con RM, la prueba de referencia, antes si es moderada o grave o va a más: el retraso empeora la recuperación, y con más de 18 meses de síntomas el pronóstico es peor. Ningún signo aislado basta: la hiperreflexia y el signo de Trömner son los más sensibles, y el Babinski, el clonus y el reflejo supinador invertido, los más específicos. Torpeza de manos o un equilibrio algo peor en mayores de 45 ya justifican pensar en una RM aunque la fuerza sea normal (Margetis y Donnally). Goodman pide derivar ante cualquier déficit neurológico nuevo o que progresa, mielopatía incluida.',
+            detalle: 'Cómo se presenta (Margetis y Donnally): parestesias (86 %) y entumecimiento de las manos (82 %), marcha alterada (72 %, a veces antes que las manos, con piernas «pesadas»), torpeza para abotonarse, comer con cubiertos o escribir, y signo de Lhermitte (descarga eléctrica al flexionar el cuello). El dolor de cuello u hombro está en la mitad. La vejiga (38 %) y el intestino (23 %) fallan tarde. Empieza de forma insidiosa y empeora a escalones.\n\nQué explorar: tono, fuerza, sensibilidad, reflejos, coordinación y marcha en tándem (muchos no mantienen la base estrecha antes de perder fuerza); Hoffmann, Trömner, reflejo radial invertido, signo de escape de los dedos, test de prensión repetida, atrofia de la eminencia tenar. Tres de cinco hallazgos (Hoffmann, supinador invertido, Babinski, marcha alterada, más de 45 años) suben la probabilidad por encima del 90 % (Margetis y Donnally); la combinación de flexión de los dedos, Hoffmann y Babinski detecta la compresión medular con una sensibilidad del 91,7 % y una especificidad del 87,5 % (Goodman). Goodman añade a los síntomas el cambio visible de la letra, la dificultad para manejar monedas y la marcha de base ancha, torpe.\n\nPrecaución en fisioterapia: las movilizaciones pasivas del cuello forzadas, rápidas o extremas pueden lesionar una médula ya comprimida, y alargar la fisioterapia retrasa la descompresión.\n\nCon qué se confunde: la radiculopatía (dolor y déficit de un dermatoma, sin signos en las piernas ni hiperreflexia); el túnel carpiano (atrofia tenar y manos dormidas, pero sin alteración de la marcha); la ELA (sin pérdida de sensibilidad ni de esfínteres); tumores, absceso epidural, esclerosis múltiple o déficit de vitamina B12.',
+            fuentes: ['Margetis y Donnally 2025', 'Goodman 2018'],
+            citas: [
+              { texto: 'Margetis y Donnally 2025 — Margetis y Donnally, «Cervical Myelopathy», StatPearls [Internet], NCBI Bookshelf, última actualización 2 de agosto de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK482312/' },
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 14, pp. 531 y 564.'
+            ]
           } }
       ]
     },
@@ -625,8 +674,8 @@ export const screening = {
       // «Artritis inflamatoria».
       id: 'cv_inflam', icon: '🔥', nombre: 'Inflamatoria / Infecciosa',
       banderasRojas: [
-        'Infección (discitis, osteomielitis, absceso epidural): dolor incesante y nocturno que no alivia con reposo, postura ni movimiento; cuello rígido con pérdida de movilidad; signos neurológicos si está avanzada. Malestar general: febrícula, sudor nocturno, cansancio, inapetencia. Analítica si se sospecha (decisión médica)',
-        'Artritis inflamatoria (AR, EA): dolor y rigidez prolongada, sobre todo por la mañana. AR: visible en articulaciones periféricas. EA: empieza en lo lumbopélvico'
+        { texto: 'Infección (discitis, osteomielitis, absceso epidural): dolor incesante y nocturno que no alivia con reposo, postura ni movimiento; cuello rígido con pérdida de movilidad; signos neurológicos si está avanzada. Malestar general: febrícula, sudor nocturno, cansancio, inapetencia. Analítica si se sospecha (decisión médica)', pregunta: 'cv_in1' },
+        { texto: 'Artritis inflamatoria (AR, EA): dolor y rigidez prolongada, sobre todo por la mañana. AR: visible en articulaciones periféricas. EA: empieza en lo lumbopélvico', pregunta: 'cv_in2' }
       ],
       banderasAmarillas: [],
       preguntas: [

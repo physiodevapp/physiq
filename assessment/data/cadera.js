@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, RAZON_ISQUEMIA_AGUDA } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.cadera — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -37,23 +37,69 @@ export const screening = {
     {
       id: 'ca_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [
-        'Dolor óseo intenso al cargar peso o fractura patológica ante trauma menor',
-        'Dolor constante nocturno en cadera/muslo sin alivio postural',
-        'Antecedentes de cáncer de próstata, testículo, colon o riñón',
-        'Masa palpable en muslo o zona glútea',
+        { texto: 'Dolor óseo intenso al cargar peso o fractura patológica ante trauma menor', pregunta: 'ca_on2' },
+        { texto: 'Dolor constante nocturno en cadera/muslo sin alivio postural', pregunta: 'ca_on2' },
+        { texto: 'Antecedentes de cáncer de próstata, testículo, colon o riñón', pregunta: 'c5' },
+        { texto: 'Masa palpable en muslo o zona glútea', pregunta: 'ca_on3' },
         // Tarjeta cadera (guía de consulta), BANDERAS «Cáncer». Sin la «S 100 %» de la
         // combinación: ningún estudio ha evaluado combinaciones de banderas (Henschke 2013).
-        'Factores de riesgo de malignidad: ≥50 años, sin mejoría en 1 mes, pérdida de peso inexplicada, cáncer previo (ninguna combinación está validada). Lo que más informa: cáncer previo, sospecha clínica, VSG elevada y hematocrito bajo',
-        'Masas o ganglios que crecen o fluctúan; avulsión ósea en un adulto mayor (descartar metástasis)',
-        'Adenopatía inguinal sin foco séptico en el miembro inferior: considerar malignidad',
+        { texto: 'Factores de riesgo de malignidad: ≥50 años, sin mejoría en 1 mes, pérdida de peso inexplicada, cáncer previo (ninguna combinación está validada). Lo que más informa: cáncer previo, sospecha clínica, VSG elevada y hematocrito bajo',
+          razonamiento: {
+            porque: 'Son los datos de la historia que se han estudiado para detectar un cáncer en el dolor lumbar: la edad, el cáncer previo, la pérdida de peso inexplicada y la falta de mejoría en un mes. En la cadera se usan por analogía: el fémur y la pelvis están, tras las vértebras, entre los huesos donde más metastatiza un cáncer, y la próstata llega a la pelvis por su plexo venoso (Jayarangaiah).',
+            peso: 'Solo el cáncer previo sube de verdad la probabilidad: en el dolor lumbar la lleva al 7–33 %, mientras que la edad, la pérdida de peso y la falta de mejoría al mes la dejan por debajo del 3 % (Downie). La mayoría tiene muchos falsos positivos y ningún estudio ha validado combinarlas (Henschke). No se deriva por una sola, salvo el cáncer previo; lo que pesa es el conjunto con los demás signos.',
+            detalle: 'Qué suma sospecha en la cadera (Goodman, cap. 16): dolor óseo al cargar peso, dolor nocturno constante que no cambia con la postura, dolor que alivia de forma desproporcionada la aspirina, fiebre, pérdida de peso, sangrados o lesiones de la piel, y ganglios inguinales o poplíteos que crecen sin doler. No mejorar con la fisioterapia, o empeorar, es otra bandera, sobre todo con un cáncer previo o sin causa conocida. Goodman pide derivación inmediata si quien ha tenido cáncer tiene ganglios sospechosos que persisten o en más de una zona.\n\nLas cifras vienen de estudios de dolor lumbar en atención primaria, donde el cáncer es raro (menos del 1 %; Downie); no hay estudios equivalentes en la cadera. Lluch (p. 146) recoge que lo que más informa es el cáncer previo, la sospecha clínica del terapeuta, una VSG alta y un hematocrito bajo; los dos últimos son análisis que pide el médico. También recoge que la combinación de edad de 50 años o más, falta de mejoría al mes, pérdida de peso y cáncer previo tuvo una sensibilidad del 100 %; la revisión Cochrane, de más peso, no encontró ningún estudio que evaluara combinaciones (Henschke), así que esa cifra no se usa.',
+            fuentes: ['Downie 2013', 'Henschke 2013', 'Lluch 2020', 'Goodman 2018', 'Jayarangaiah 2023'],
+            citas: [
+              { texto: 'Downie 2013 — Downie, Williams, Henschke et al., «Red flags to screen for malignancy and fracture in patients with low back pain: systematic review», BMJ 2013;347:f7095 (texto completo en PMC).', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3898572/' },
+              { texto: 'Henschke 2013 — Henschke, Maher, Ostelo et al., «Red flags to screen for malignancy in patients with low-back pain», Cochrane Database Syst Rev 2013;(2):CD008686 (resumen y conclusiones de los autores).', url: 'https://doi.org/10.1002/14651858.CD008686.pub2' },
+              'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 146.',
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 16, pp. 630–632 y 639–640.',
+              { texto: 'Jayarangaiah 2023 — Jayarangaiah, Kemp y Theetha Kariyanna, «Bone Metastasis», StatPearls [Internet], NCBI Bookshelf, última actualización 31 de julio de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK507911/' }
+            ]
+          } },
+        { texto: 'Masas o ganglios que crecen o fluctúan; avulsión ósea en un adulto mayor (descartar metástasis)', pregunta: ['ca_on3', 'ca_on4'] },
+        { texto: 'Adenopatía inguinal sin foco séptico en el miembro inferior: considerar malignidad', pregunta: 'ca_on4' },
         // Lluch 2020, cap. 4.1.3, p. 147 (tabla 2); Goodman 2018, cap. 16, pp. 614 y 631–632
-        'Tumores óseos primarios (osteoma osteoide: dolor sordo nocturno en el joven que alivian la actividad y, de forma desproporcionada, la aspirina; condrosarcoma, tumor de células gigantes, Ewing) y masas de partes blandas'
+        { texto: 'Tumores óseos primarios (osteoma osteoide: dolor sordo nocturno en el joven que alivian la actividad y, de forma desproporcionada, la aspirina; condrosarcoma, tumor de células gigantes, Ewing) y masas de partes blandas',
+          razonamiento: {
+            porque: 'Los tumores primarios del hueso son raros, pero varios prefieren la pelvis y el fémur proximal y empiezan como un dolor de cadera, ingle o muslo. El dolor aparece cuando el tumor expande la cortical y estira el periostio, y el hueso debilitado puede romperse con poca carga: fractura patológica (Goodman).',
+            peso: 'Un dolor óseo sin explicación o un bulto que crece piden derivar; NICE propone una radiografía muy urgente en niños y jóvenes con dolor o hinchazón ósea sin explicación, y una ecografía urgente en el adulto con un bulto de partes blandas que crece (posible sarcoma). Orienta la edad: el osteoma osteoide y el Ewing, en niños y jóvenes; el tumor de células gigantes, de los 20 a los 40 años; el condrosarcoma, sobre todo por encima de los 50.',
+            detalle: 'Osteoma osteoide (Goodman; Dookie): benigno, entre los 5 y los 25 años, más en varones; el 20 % en el fémur proximal y el 10 % en la pelvis. Dolor sordo, peor de noche, que alivian la actividad y la aspirina o los AINE (lo explica la pregunta del dolor nocturno).\n\nEwing (Durer; Goodman): adolescentes y adultos jóvenes (mediana, 15 años; 3 varones por cada mujer), en la pelvis, el fémur y el esqueleto axial. Dolor, rigidez o hinchazón durante semanas o meses; en más de la mitad, dolor intermitente que empeora de noche. En la pelvis puede doler como una lumbalgia, y la fiebre o la pérdida de peso suelen indicar metástasis.\n\nCondrosarcoma (Limaiem; Goodman): el tumor maligno de cartílago; la mayoría por encima de los 50 años, en la pelvis y después el fémur proximal. El de la pelvis suele ser grande y doler en la espalda o el muslo, con ciática, síntomas urinarios o edema de una pierna.\n\nTumor de células gigantes (Hosseinzadeh): benigno pero localmente agresivo, la mitad entre los 20 y los 40 años y raro por encima de los 50; en el esqueleto axial, sobre todo el ala del sacro. Recidiva en torno al 35 %.\n\nSarcoma de partes blandas (Goodman): suele ser un bulto que no duele y crece; en la pelvis, hinchazón de la pierna o dolor en el territorio del nervio femoral o del ciático. Goodman describe una «plenitud» en el muslo que crecía desde hacía 3 meses.',
+            fuentes: ['Goodman 2018', 'NICE NG12', 'Dookie y Joseph 2023', 'Durer 2024', 'Limaiem 2023', 'Hosseinzadeh 2024'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 13, pp. 494–498; cap. 16, pp. 614, 618 y 631–632.',
+              { texto: 'NICE NG12 — NICE, «Suspected cancer: recognition and referral» (2015, actualizada el 15 de abril de 2026), recomendaciones 1.11.1–1.11.7 (sarcomas).', url: 'https://www.nice.org.uk/guidance/ng12' },
+              { texto: 'Dookie y Joseph 2023 — Dookie y Joseph, «Osteoid Osteoma», StatPearls [Internet], NCBI Bookshelf, última actualización 14 de agosto de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK537279/' },
+              { texto: 'Durer 2024 — Durer, Gasalberti y Shaikh, «Ewing Sarcoma», StatPearls [Internet], NCBI Bookshelf, última actualización 8 de enero de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK559183/' },
+              { texto: 'Limaiem 2023 — Limaiem, Davis y Sticco, «Chondrosarcoma», StatPearls [Internet], NCBI Bookshelf, última actualización 14 de agosto de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK538132/' },
+              { texto: 'Hosseinzadeh 2024 — Hosseinzadeh, Tiwari y De Jesus, «Giant Cell Tumor (Osteoclastoma)», StatPearls [Internet], NCBI Bookshelf, última actualización 31 de enero de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK559229/' }
+            ]
+          } }
       ],
       banderasAmarillas: [
-        'Edad >50 años con dolor insidioso en cadera',
-        'Pérdida de peso inexplicada',
+        { texto: 'Edad >50 años con dolor insidioso en cadera',
+          razonamiento: {
+            porque: 'Con la edad aumentan el cáncer y las metástasis óseas, y también otras causas graves de dolor de cadera (aneurisma, enfermedad arterial). Goodman cuenta la edad de más de 40 años, y sobre todo de más de 50, entre las banderas del dolor de cadera e ingle.',
+            peso: 'Sola pesa poco: en el dolor lumbar, la edad avanzada deja la probabilidad de cáncer por debajo del 3 % (Downie) y tiene muchos falsos positivos (Henschke). Pesa junto a un cáncer previo, un dolor que no responde al tratamiento o signos generales.',
+            fuentes: ['Downie 2013', 'Henschke 2013', 'Goodman 2018'],
+            citas: [
+              { texto: 'Downie 2013 — Downie, Williams, Henschke et al., «Red flags to screen for malignancy and fracture in patients with low back pain: systematic review», BMJ 2013;347:f7095 (texto completo en PMC).', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3898572/' },
+              { texto: 'Henschke 2013 — Henschke, Maher, Ostelo et al., «Red flags to screen for malignancy in patients with low-back pain», Cochrane Database Syst Rev 2013;(2):CD008686 (resumen y conclusiones de los autores).', url: 'https://doi.org/10.1002/14651858.CD008686.pub2' },
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 16, pp. 619 y 631.'
+            ]
+          } },
+        { texto: 'Pérdida de peso inexplicada', pregunta: 'ca_on3', fase1: 'br1' },
         // Lluch 2020, cap. 4.1.3, p. 146
-        'Antecedente familiar de cáncer'
+        { texto: 'Antecedente familiar de cáncer',
+          razonamiento: {
+            porque: 'Lluch lo cuenta entre los factores de riesgo generales que hay que identificar en la entrevista, junto a la edad de 50 años o más, la falta de mejoría al mes y el cáncer previo del propio paciente: son banderas de malignidad que suelen proponer las guías clínicas. Goodman pide preguntar por el cáncer previo y familiar ante un bulto o una adenopatía en la ingle (linfoma).',
+            peso: 'Pesa poco por sí solo: las fuentes leídas no dan cifras de su valor, y lo que más informa es el cáncer previo del propio paciente (Lluch; Downie, en el dolor lumbar). Sirve para completar la historia junto a los demás datos.',
+            fuentes: ['Lluch 2020', 'Goodman 2018'],
+            citas: [
+              'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 146.',
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 16, p. 618.'
+            ]
+          } }
       ],
       preguntas: [
         { id: 'c5', anatomia: ['hueso_coxal', 'femur'], text: '¿Tiene antecedentes de cáncer de cualquier tipo (especialmente próstata, mama, pulmón, riñón)?', alerta: true, s1: true,
@@ -161,16 +207,16 @@ export const screening = {
     {
       id: 'ca_vascular', icon: '🩸', nombre: 'Vascular',
       banderasRojas: [
-        'Claudicación: dolor que aparece a los 5-10 min de caminar y cede casi de inmediato al parar',
-        'Calambres nocturnos en pantorrilla que interrumpen el sueño profundo',
-        'Aneurisma aórtico: dolor desgarrador irradiado a glúteo o parte posterior del muslo',
-        'Signos de TVP: edema, eritema, calor y dolor en pantorrilla',
+        { texto: 'Claudicación: dolor que aparece a los 5-10 min de caminar y cede casi de inmediato al parar', pregunta: 'c2' },
+        { texto: 'Calambres nocturnos en pantorrilla que interrumpen el sueño profundo', pregunta: 'ca_v2' },
+        { texto: 'Aneurisma aórtico: dolor desgarrador irradiado a glúteo o parte posterior del muslo', pregunta: 'ca_v4' },
+        { texto: 'Signos de TVP: edema, eritema, calor y dolor en pantorrilla', pregunta: 'ca_v2' },
         // Tarjeta cadera (guía de consulta), BANDERAS «Vascular»: sin pistas propias, regla del dolor atípico
-        'Oclusión aortoilíaca (síndrome de Leriche), enfermedad vascular periférica, variz de la safena'
+        { texto: 'Oclusión aortoilíaca (síndrome de Leriche), enfermedad vascular periférica, variz de la safena', pregunta: ['c2', 'ca_v3'] }
       ],
       banderasAmarillas: [
-        'Claudicación que empeora repentinamente',
-        'Dolor en reposo isquémico que se alivia al colgar la pierna fuera de la cama'
+        { texto: 'Claudicación que empeora repentinamente', pregunta: ['c2', 'ca_v5'] },
+        { texto: 'Dolor en reposo isquémico que se alivia al colgar la pierna fuera de la cama', pregunta: 'ca_v3' }
       ],
       preguntas: [
         { id: 'c2', anatomia: ['arteria_femoral'], text: '¿El dolor aparece tras 5-10 minutos de caminar y se alivia casi de inmediato al detenerse (claudicación vascular)?', alerta: true, s1: true,
@@ -238,7 +284,21 @@ export const screening = {
               { texto: 'Zemaitis 2026 — Zemaitis, Boll, Kato y Golla, «Peripheral Arterial Disease», StatPearls [Internet], NCBI Bookshelf, última actualización 31 de enero de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK430745/' },
               { texto: 'NICE CG147 — NICE, «Peripheral arterial disease: diagnosis and management» (2012, actualizada el 11 de diciembre de 2020), recomendaciones 1.3.2–1.3.4 y 1.6.1, y contexto.', url: 'https://www.nice.org.uk/guidance/cg147' }
             ]
-          } }
+          } },
+        { id: 'ca_v4', anatomia: ['aorta'], text: '¿Ha empezado de golpe un dolor intenso en el abdomen, la espalda, la ingle o las nalgas, desgarrador, que no cambia al moverse, o con mareo o desmayo?', alerta: true, urgencia: 'Posible rotura de un aneurisma de aorta abdominal: llamar al 112.',
+          razonamiento: {
+            porque: 'Un aneurisma de la aorta abdominal crece sin síntomas hasta que se fisura o se rompe. La mayoría está justo por debajo de las arterias renales; al crecer presiona estructuras vecinas y puede doler en el abdomen, la espalda, el flanco, la ingle o las nalgas, con irradiación a la cara posterior de los muslos (Goodman; Shaw).',
+            peso: 'Con un SÍ, llamar al 112: la rotura es una urgencia vital, muchos mueren antes de llegar al hospital (Shaw). NICE pide pensar en ella ante un dolor abdominal o de espalda nuevo, un colapso o una pérdida de conocimiento, sobre todo con un aneurisma conocido, más de 60 años, tabaco o hipertensión, y recuerda que en la mujer se rompe con más facilidad. Señales (Goodman): dolor de ingle intenso y brusco, casi siempre con dolor abdominal o lumbar, desgarrador, que no cambia con la postura, con piernas frías y sin pulso, mareo o tensión baja.',
+            detalle: 'Quién (NICE; Shaw; Goodman): varones de 65 años o más, fumadores o exfumadores, con hipertensión, colesterol alto, EPOC, enfermedad coronaria, cerebrovascular o arterial periférica, o antecedentes familiares de aneurisma; Goodman añade el levantamiento de pesas en el mayor y los anticoagulantes. Sin romperse, la mayoría no da síntomas; el más frecuente es notar una masa que late en el abdomen.\n\nQué puede explorar el fisioterapeuta (Goodman): la anchura del pulso aórtico por encima del ombligo (normal, 2,5–4 cm); notar una masa pulsátil tiene una sensibilidad del 28 % y una especificidad del 97 %. Tensión sistólica por debajo de 100 y pulso por encima de 100 sugieren shock.\n\nCon un aneurisma conocido, el levantamiento de pesas está contraindicado; enseñar a hacer fuerza sin maniobra de Valsalva (Goodman).',
+            fuentes: ['NICE NG156', 'Goodman 2018', 'Shaw 2025'],
+            citas: [
+              { texto: 'NICE NG156 — NICE, «Abdominal aortic aneurysm: diagnosis and management» (19 de marzo de 2020), recomendaciones 1.1.1–1.1.9.', url: 'https://www.nice.org.uk/guidance/ng156' },
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 240–243; cap. 16, pp. 636–637.',
+              { texto: 'Shaw 2025 — Shaw, Loree y Oropallo, «Abdominal Aortic Aneurysm», StatPearls [Internet], NCBI Bookshelf, última actualización 19 de enero de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470237/' }
+            ]
+          } },
+        { id: 'ca_v5', anatomia: ['arteria_femoral', 'arteria_poplitea'], text: '¿Se le ha puesto la pierna de repente fría, pálida, muy dolorosa, con hormigueo o debilidad, o le ha empeorado de golpe el dolor al caminar?', alerta: true, urgencia: 'Posible isquemia aguda de la pierna (trombo o émbolo): a urgencias hoy, sin esperar.',
+          razonamiento: RAZON_ISQUEMIA_AGUDA }
       ],
       zonasDolor: [
         { zona: 'Pantorrilla / Glúteo', desc: 'Claudicación vascular según nivel de oclusión' },
@@ -257,17 +317,26 @@ export const screening = {
     {
       id: 'ca_urogenital', icon: '🫘', nombre: 'Urogenital / Renal',
       banderasRojas: [
-        'Hematuria (sangre en orina) de cualquier cantidad',
-        'Masa testicular indolora y dura',
-        'Fiebre con dolor en flanco y escalofríos (pielonefritis)',
+        { texto: 'Hematuria (sangre en orina) de cualquier cantidad', pregunta: 'c3' },
+        { texto: 'Masa testicular indolora y dura', pregunta: 'ca_u2' },
+        { texto: 'Fiebre con dolor en flanco y escalofríos (pielonefritis)', pregunta: 'c3' },
         // Tarjeta cadera (guía de consulta), BANDERAS «Visceral, urogenital o ginecológico» y URGENCIA
-        'Litiasis renal, uretritis; prostatitis, epididimitis, torsión testicular (urgencias hoy)',
-        'Endometriosis, quiste ovárico, enfermedad inflamatoria pélvica; cáncer ginecológico, de próstata, testículo o vía urinaria',
-        'Denominador común: dolor atípico, sin relación clara con la carga, nocturno o con síntomas no musculoesqueléticos'
+        { texto: 'Litiasis renal, uretritis; prostatitis, epididimitis, torsión testicular (urgencias hoy)', pregunta: ['c3', 'ca_u2', 'ca_u3'] },
+        { texto: 'Endometriosis, quiste ovárico, enfermedad inflamatoria pélvica; cáncer ginecológico, de próstata, testículo o vía urinaria', pregunta: ['ca_u4', 'ca_u2', 'c3'] },
+        { texto: 'Denominador común: dolor atípico, sin relación clara con la carga, nocturno o con síntomas no musculoesqueléticos',
+          razonamiento: {
+            porque: 'El riñón, el uréter, la próstata, los testículos y los órganos ginecológicos comparten inervación con la ingle, la cadera y el muslo: su dolor llega a la zona sin que la cadera tenga nada (Goodman). Por eso, la pista común de todas estas causas es un dolor que no se comporta como un problema mecánico.',
+            peso: 'No es un diagnóstico, sino un patrón que obliga a preguntar por los demás sistemas: síntomas que no cambian con el reposo, el movimiento ni la postura, dolor nocturno constante, falta de respuesta a la fisioterapia, o síntomas que no son musculoesqueléticos (fiebre, orina, flujo o sangrado, cambios intestinales) (Goodman). Goodman pide preguntar siempre si hay algún otro síntoma, del tipo que sea, en cualquier otra parte del cuerpo.',
+            detalle: 'Causas urogenitales de dolor inguinal que recoge Goodman (tabla de causas de dolor de ingle): próstata (prostatitis, hiperplasia, cáncer), epididimitis y torsión testicular, uretritis o infección urinaria, y problemas del riñón o el uréter; ginecológicas: cáncer o masas de útero u ovario, miomas, quistes, endometriosis, embarazo ectópico, infecciones de transmisión sexual y enfermedad inflamatoria pélvica. Las preguntas de este sistema las recorren una a una.',
+            fuentes: ['Goodman 2018'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 16, pp. 617, 624 y 639–640.'
+            ]
+          } }
       ],
       banderasAmarillas: [
-        'Ardor o dificultad al orinar acompañando el dolor de ingle',
-        'Dolor en ingle que no cambia con movimiento de cadera'
+        { texto: 'Ardor o dificultad al orinar acompañando el dolor de ingle', pregunta: 'c3' },
+        { texto: 'Dolor en ingle que no cambia con movimiento de cadera', pregunta: 'ca_u2' }
       ],
       preguntas: [
         { id: 'c3', anatomia: ['rinon', 'ureteres'], text: '¿Ha notado sangre en la orina, ardor o dolor al orinar, o fiebre/escalofríos?', alerta: true, s1: true,
@@ -391,18 +460,28 @@ export const screening = {
     {
       id: 'ca_gi', icon: '🫃', nombre: 'Gastrointestinal',
       banderasRojas: [
-        'Dolor en ingle/cadera que se alivia al pasar gases o defecar',
-        'Signo del psoas positivo (sospecha de apendicitis o absceso)',
-        'Fiebre y dolor abdominal simultáneo al dolor de cadera',
+        { texto: 'Dolor en ingle/cadera que se alivia al pasar gases o defecar', pregunta: 'c4' },
+        { texto: 'Signo del psoas positivo (sospecha de apendicitis o absceso)', pregunta: 'c4' },
+        { texto: 'Fiebre y dolor abdominal simultáneo al dolor de cadera', pregunta: 'c4' },
         // Tarjeta cadera (guía de consulta), BANDERAS «Hernia inguinal o femoral» y «Visceral»
-        'Apendicitis, enfermedad de Crohn, diverticulitis; cáncer digestivo, linfoma',
-        'Hernia inguinal (80 % varones: dolor, tumefacción y bulto con sensación de peso o arrastre) o femoral (unas 4 veces más en mujeres: nódulo lateral e inferior al tubérculo púbico). Palpar DE PIE el canal inguinal y, si no se nota, pedir que tosa',
+        { texto: 'Apendicitis, enfermedad de Crohn, diverticulitis; cáncer digestivo, linfoma', pregunta: ['c4', 'ca_gi2'] },
+        { texto: 'Hernia inguinal (80 % varones: dolor, tumefacción y bulto con sensación de peso o arrastre) o femoral (unas 4 veces más en mujeres: nódulo lateral e inferior al tubérculo púbico). Palpar DE PIE el canal inguinal y, si no se nota, pedir que tosa', pregunta: 'ca_gi3' },
         // Lluch 2020, cap. 4.1.3, p. 147 (tabla 2); Goodman 2018, cap. 16, pp. 617 y 639
-        'Líquido en la cavidad peritoneal (ascitis por cirrosis, insuficiencia cardiaca, cáncer): abdomen distendido con dolor inguinal o lumbar; preguntar por enfermedad hepática o alcohol'
+        { texto: 'Líquido en la cavidad peritoneal (ascitis por cirrosis, insuficiencia cardiaca, cáncer): abdomen distendido con dolor inguinal o lumbar; preguntar por enfermedad hepática o alcohol',
+          razonamiento: {
+            porque: 'La ascitis es líquido acumulado en la cavidad peritoneal. Su causa principal es la cirrosis (en torno al 80 %): la hipertensión portal dilata las arterias del intestino, y el riñón retiene sodio y agua; también la producen el cáncer del peritoneo (un 10 %), la insuficiencia cardiaca y otras (Goosenberg). El abdomen distendido, las hernias y la lordosis lumbar que provoca pueden dar dolor de ingle o lumbar (Goodman).',
+            peso: 'La ascitis se ve. Un abdomen distendido con dolor de ingle o de espalda pide preguntar por enfermedad del hígado, alcohol, insuficiencia cardiaca o cáncer, y derivar si no hay un diagnóstico conocido (Goodman). A menudo indica una enfermedad avanzada: en la cirrosis, la mortalidad llega al 15 % al año y al 44 % a los 5 años (Goosenberg).',
+            detalle: 'Qué buscar con el abdomen distendido (Goodman): temblor en aleteo de las manos (asterixis), palmas rojas, arañas vasculares en el tronco, uñas blanquecinas (de Terry) y síntomas de túnel carpiano o tarsiano, todos signos de enfermedad del hígado.',
+            fuentes: ['Goodman 2018', 'Goosenberg 2025'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 16, pp. 617 y 639.',
+              { texto: 'Goosenberg 2025 — Goosenberg, Kudaravalli y Samant, «Ascites», StatPearls [Internet], NCBI Bookshelf, última actualización 30 de noviembre de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470482/' }
+            ]
+          } }
       ],
       banderasAmarillas: [
-        'Distensión abdominal acompañando el dolor de cadera',
-        'Uso crónico de AINEs'
+        { texto: 'Distensión abdominal acompañando el dolor de cadera', pregunta: 'c4' },
+        { texto: 'Uso crónico de AINEs', pregunta: 'ca_gi2' }
       ],
       preguntas: [
         { id: 'c4', anatomia: ['iliopsoas', 'intestino_grueso'], text: '¿El dolor en la ingle o cadera se acompaña de molestias, distensión abdominal o se alivia al defecar/pasar gases?', alerta: true, s1: true,
@@ -488,17 +567,28 @@ export const screening = {
       // más la URGENCIA de cuello femoral. Radiografía negativa NO descarta.
       id: 'ca_oseo', icon: '🦴', nombre: 'Óseo / Desarrollo',
       banderasRojas: [
-        'Fractura de estrés del cuello femoral: dolor inguinal vago e insidioso que empeora con la actividad, dolor al final del rango (sobre todo en RI), dolor profundo nocturno o en carga → DERIVACIÓN URGENTE',
-        'Fractura de estrés de rama púbica (corredores, mucho trabajo de aductores; el dolor NO aumenta con abducción pasiva ni aducción resistida) o de diáfisis femoral (dolor vago en muslo anterior en carga; fulcro S 88–93 %, E 13–75 %)',
+        { texto: 'Fractura de estrés del cuello femoral: dolor inguinal vago e insidioso que empeora con la actividad, dolor al final del rango (sobre todo en RI), dolor profundo nocturno o en carga → DERIVACIÓN URGENTE', pregunta: 'ca_os1' },
+        { texto: 'Fractura de estrés de rama púbica (corredores, mucho trabajo de aductores; el dolor NO aumenta con abducción pasiva ni aducción resistida) o de diáfisis femoral (dolor vago en muslo anterior en carga; fulcro S 88–93 %, E 13–75 %)', pregunta: 'ca_os1' },
         // Lluch 2020, cap. 4.1.3, p. 147 (tabla 2); Goodman 2018, cap. 15, p. 583
-        'Fractura de estrés del acetábulo o del sacro (sacro: osteoporosis, embarazo o posparto, radioterapia pélvica, corticoides prolongados, deportistas y militares)',
-        'Osteonecrosis de la cabeza femoral: corticoides o alcohol prolongados, traumatismo o fractura previos, lupus y otras conectivopatías, hiperlipidemia; dolor inguinal profundo en carga',
-        'Lesiones del desarrollo: EFCF (9–16 años, durante el estirón), Perthes (4–10 años, más en varones), displasia, apofisitis púbica',
-        'Fractura por avulsión en el adolescente con tracción brusca (EIAI, EIAS, pubis, tuberosidad isquiática, trocánteres); en un adulto mayor, descartar metástasis'
+        { texto: 'Fractura de estrés del acetábulo o del sacro (sacro: osteoporosis, embarazo o posparto, radioterapia pélvica, corticoides prolongados, deportistas y militares)',
+          razonamiento: {
+            porque: 'El sacro sufre tres tipos de fractura sin un gran traumatismo: de fatiga, por cargas repetidas sobre un hueso normal (deportistas, corredores, militares y, a veces, embarazadas o puérperas que corren); por insuficiencia, por cargas normales sobre un hueso débil (osteoporosis posmenopáusica o por corticoides, radioterapia); y patológica, sobre un tumor o una infección (Goodman).',
+            peso: 'Dan dolor de cadera, lumbar, sacro, ingle o nalga, dolor a la palpación y cojera, y se confunden con un problema discal o con una metástasis (Goodman). El dolor al cargar peso es bandera roja de fractura de estrés en cualquier persona (Goodman). La radiografía es negativa al principio en dos de cada tres: si se sospecha, derivar para resonancia o gammagrafía. El sacro y las ramas púbicas son fracturas de bajo riesgo, que suelen consolidar con descarga relativa (May y Marappa-Ganeshan).',
+            detalle: 'Quién (Goodman; May y Marappa-Ganeshan): corredores y deportistas de alta intensidad, militares, mujeres (en las deportistas, la pelvis es de las localizaciones más frecuentes) y la tríada de la deportista; en el mayor, la osteoporosis, los corticoides prolongados, la radioterapia o la quimioterapia, la insuficiencia renal y el Paget. También tras una artrodesis lumbosacra de varios niveles: un dolor sacro o glúteo nuevo 1–2 semanas después, sobre todo con osteoporosis, debe estudiarse (Goodman).\n\nAcetábulo: Lluch (tabla 2) la incluye entre las fracturas de estrés de la pelvis, pero no la detalla. Para todas, la radiografía suele ser negativa en las primeras semanas, y la gammagrafía y la resonancia son las pruebas más sensibles (Lluch).',
+            fuentes: ['Goodman 2018', 'Lluch 2020', 'May y Marappa-Ganeshan 2023'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 15, pp. 583–584; cap. 16, pp. 624–625.',
+              'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 147 y 149.',
+              { texto: 'May y Marappa-Ganeshan 2023 — May y Marappa-Ganeshan, «Stress Fractures», StatPearls [Internet], NCBI Bookshelf, última actualización 10 de julio de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK554538/' }
+            ]
+          } },
+        { texto: 'Osteonecrosis de la cabeza femoral: corticoides o alcohol prolongados, traumatismo o fractura previos, lupus y otras conectivopatías, hiperlipidemia; dolor inguinal profundo en carga', pregunta: 'ca_os2' },
+        { texto: 'Lesiones del desarrollo: EFCF (9–16 años, durante el estirón), Perthes (4–10 años, más en varones), displasia, apofisitis púbica', pregunta: ['ca_os3', 'ca_os4'] },
+        { texto: 'Fractura por avulsión en el adolescente con tracción brusca (EIAI, EIAS, pubis, tuberosidad isquiática, trocánteres); en un adulto mayor, descartar metástasis', pregunta: 'ca_os3' }
       ],
       banderasAmarillas: [
-        'Perfil de fractura de estrés: corredor de fondo, militar o deportista de alta intensidad; poca forma al empezar, cambio de superficie o calzado; mujer con tríada de la deportista; corticoides prolongados',
-        'Antecedente de EFCF, Perthes o displasia: hace más probable el dolor de cadera en el joven'
+        { texto: 'Perfil de fractura de estrés: corredor de fondo, militar o deportista de alta intensidad; poca forma al empezar, cambio de superficie o calzado; mujer con tríada de la deportista; corticoides prolongados', pregunta: 'ca_os1' },
+        { texto: 'Antecedente de EFCF, Perthes o displasia: hace más probable el dolor de cadera en el joven', pregunta: 'ca_os4' }
       ],
       preguntas: [
         { id: 'ca_os1', anatomia: ['femur'], text: '¿Hace deporte de resistencia o de alta intensidad (o es militar), y el dolor de ingle empezó poco a poco, empeora al cargar peso o al hacer actividad y le duele también de noche?', alerta: true, s1: true, urgencia: 'Sospecha de fractura de estrés del cuello femoral: derivación urgente (una radiografía negativa no la descarta).',
@@ -597,11 +687,19 @@ export const screening = {
       // y URGENCIA («sospecha de artritis séptica: urgencias hoy»).
       id: 'ca_inflam', icon: '🔥', nombre: 'Inflamatoria / Infecciosa',
       banderasRojas: [
-        'Artritis séptica, osteomielitis, absceso del psoas: fiebre, malestar general, tumefacción dolorosa → urgencias hoy si se sospecha artritis séptica',
-        'AR y otras artropatías multiarticulares, espondilitis anquilosante'
+        { texto: 'Artritis séptica, osteomielitis, absceso del psoas: fiebre, malestar general, tumefacción dolorosa → urgencias hoy si se sospecha artritis séptica', pregunta: 'ca_in1' },
+        { texto: 'AR y otras artropatías multiarticulares, espondilitis anquilosante', pregunta: 'ca_in2' }
       ],
       banderasAmarillas: [
-        'VSG como prueba de bajo coste antes que la RM'
+        { texto: 'VSG como prueba de bajo coste antes que la RM',
+          razonamiento: {
+            porque: 'Lluch recoge, citando a Cook (2018), una atención basada en el valor: ante la sospecha clínica de una patología grave, empezar por pruebas de bajo coste, como la VSG o la radiografía, y pedir la resonancia solo si son positivas. Entre los datos que más informan de un cáncer cuenta una VSG alta y un hematocrito bajo.',
+            peso: 'No la pide el fisioterapeuta, pero orienta la derivación. Un resultado normal no descarta la patología: por eso Lluch propone una espera vigilada, siguiendo de cerca cómo cambian los síntomas, y derivar al médico si no mejoran como se esperaba.',
+            fuentes: ['Lluch 2020'],
+            citas: [
+              'Lluch 2020 — Lluch, López-Cubas, Jones, Jull, Hall y Lewis (eds.), Pattern Recognition of Clinical Syndromes Related to Neuromusculoskeletal Pain Disorders (ZERAPI, 2020), cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 146 y 148.'
+            ]
+          } }
       ],
       preguntas: [
         { id: 'ca_in1', anatomia: ['art_cadera'], text: '¿Tiene fiebre o se encuentra mal en general, con la cadera muy dolorosa o hinchada, hasta el punto de no poder apoyar la pierna?', alerta: true, s1: true, urgencia: 'Sospecha de artritis séptica: derivación a urgencias hoy.',

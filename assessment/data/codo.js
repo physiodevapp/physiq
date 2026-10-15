@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZON_XANTOMAS, RAZON_CALCIFICANTE } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.codo — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -38,9 +38,9 @@ export const screening = {
     {
       id: 'co_trauma', icon: '🦴', nombre: 'Traumático (Fractura o Luxación)',
       banderasRojas: [
-        'Caída o golpe reciente y el codo no llega a estirarse del todo: casi un 50 % de fracturas (Appelboam 2008; Lluch 2020, cap. 3.2 (Coombes y Bisset), p. 94)',
-        'Deformidad del codo tras una caída (luxación), o mano dormida, fría o pálida: compromiso neurovascular (Lluch 2020, cap. 3.2 (Coombes y Bisset), p. 93)',
-        'Niño pequeño que no mueve el brazo tras un tirón (pronación dolorosa): descartar una fractura o una infección (Lluch 2020, cap. 3.2 (Coombes y Bisset), p. 94)'
+        { texto: 'Caída o golpe reciente y el codo no llega a estirarse del todo: casi un 50 % de fracturas (Appelboam 2008; Lluch 2020, cap. 3.2 (Coombes y Bisset), p. 94)', pregunta: 'co_t1' },
+        { texto: 'Deformidad del codo tras una caída (luxación), o mano dormida, fría o pálida: compromiso neurovascular (Lluch 2020, cap. 3.2 (Coombes y Bisset), p. 93)', pregunta: 'co_t2' },
+        { texto: 'Niño pequeño que no mueve el brazo tras un tirón (pronación dolorosa): descartar una fractura o una infección (Lluch 2020, cap. 3.2 (Coombes y Bisset), p. 94)', pregunta: 'co_t2' }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -97,11 +97,22 @@ export const screening = {
     {
       id: 'co_vascular', icon: '🩸', nombre: 'Vascular / Neurológica',
       banderasRojas: [
-        'Cambios de color en mano/dedos (palidez, cianosis) con el frío (fenómeno de Raynaud)',
-        'Debilidad progresiva en brazo/mano no relacionada con dolor local',
-        'Síntomas vasculares en un codo postoperatorio'
+        { texto: 'Cambios de color en mano/dedos (palidez, cianosis) con el frío (fenómeno de Raynaud)', pregunta: ['co4a', 'co4a_uni', 'co4a_prog'] },
+        { texto: 'Debilidad progresiva en brazo/mano no relacionada con dolor local', pregunta: 'co3' },
+        { texto: 'Síntomas vasculares en un codo postoperatorio',
+          razonamiento: {
+            porque: 'Una cirugía o un procedimiento sobre una arteria, un traumatismo con lesión arterial y la inmovilización pueden cortar o reducir el riego del antebrazo y la mano: Goodman pone la cirugía vascular, los procedimientos arteriales invasivos y el traumatismo entre los factores de riesgo de una oclusión arterial aguda, que empieza en menos de una hora.',
+            peso: 'Es una urgencia si aparecen las «6 P» de la oclusión aguda: dolor, palidez, ausencia de pulso, hormigueo, frialdad y, en los casos graves, parálisis (Goodman). Con mecanismo Post-quirúrgico, el cribado posquirúrgico de esta región pregunta además por el síndrome compartimental y la trombosis venosa del brazo, que también son urgencias.',
+            detalle: 'Qué mirar, comparando con el otro brazo: pulsos radial y cubital, color y temperatura de la mano, relleno capilar, sensibilidad y fuerza de los dedos. Un yeso o una férula apretados también pueden causar un síndrome compartimental, y una fractura o una rotura de ligamento pueden imitar un calambre (Goodman).',
+            fuentes: ['Goodman 2018'],
+            citas: [
+              'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, p. 254 (tabla 6.7); cap. 16, p. 624.'
+            ]
+          } }
       ],
-      banderasAmarillas: ['Parestesias en 4º y 5º dedo sin dolor localizado en codo'],
+      banderasAmarillas: [
+        { texto: 'Parestesias en 4º y 5º dedo sin dolor localizado en codo', pregunta: 'co4b' }
+      ],
       preguntas: [
         { id: 'co4a', text: '¿Se le ponen los dedos blancos o azules con el frío o con los nervios?', alerta: false,
           razonamiento: {
@@ -249,12 +260,14 @@ export const screening = {
     {
       id: 'co_infecciosa', icon: '🦠', nombre: 'Infecciosa / Inflamatoria',
       banderasRojas: [
-        'Fiebre, enrojecimiento intenso, calor marcado y tumefacción articular (artritis séptica)',
-        'Inicio muy agudo con impotencia funcional severa'
+        { texto: 'Fiebre, enrojecimiento intenso, calor marcado y tumefacción articular (artritis séptica)', pregunta: 'co1' },
+        { texto: 'Inicio muy agudo con impotencia funcional severa', pregunta: 'co1' }
       ],
-      banderasAmarillas: ['Infección reciente en otra localización'],
+      banderasAmarillas: [
+        { texto: 'Infección reciente en otra localización', pregunta: 'co1' }
+      ],
       preguntas: [
-        { id: 'co1', anatomia: ['art_codo'], text: '¿Hay fiebre, enrojecimiento intenso y calor local en la articulación del codo?', alerta: true,
+        { id: 'co1', anatomia: ['art_codo'], text: '¿Hay fiebre, enrojecimiento intenso y calor local en la articulación del codo?', alerta: true, urgencia: 'Sospecha de artritis séptica o de bursitis séptica del olécranon: derivación hoy.',
           razonamiento: {
             porque: 'La fiebre con enrojecimiento intenso y calor en el codo hace pensar en una infección: una artritis séptica de la articulación o una bursitis séptica del olécranon. La bursa del olécranon está justo bajo la piel, así que se infecta con facilidad por una herida o un roce.',
             peso: 'La artritis séptica es una emergencia ortopédica que destruye la articulación si se retrasa el tratamiento (Momodu y Savaliya); la fiebre solo aparece en el 40–60 %, así que su ausencia no la descarta. En la bursitis séptica del olécranon hay dolor a la palpación en el 88 %, enrojecimiento en el 83 %, calor en el 84 % y fiebre en el 38 %, frente al 36 %, 27 %, 56 % y 0 % de la no infecciosa (Pangia et al.). Lo que orienta a la articulación es el movimiento limitado y doloroso; en la bursitis suele conservarse. Ante la sospecha, derivación médica sin demora.',
@@ -309,13 +322,13 @@ export const screening = {
     {
       id: 'co_endocrino', icon: '⚗️', nombre: 'Endocrino / Metabólico',
       banderasRojas: [
-        'Síndrome del túnel carpiano BILATERAL (alerta endocrina/metabólica)',
-        'Debilidad muscular proximal y fatiga sistémica inexplicada',
-        'Xantomas en tendones extensores'
+        { texto: 'Síndrome del túnel carpiano BILATERAL (alerta endocrina/metabólica)', pregunta: 'co_e1' },
+        { texto: 'Debilidad muscular proximal y fatiga sistémica inexplicada', pregunta: 'co_e2a' },
+        { texto: 'Xantomas en tendones extensores', razonamiento: RAZON_XANTOMAS }
       ],
       banderasAmarillas: [
-        'Tendinitis calcificante bilateral del hombro junto con síntomas en codo',
-        'Cambios en el cabello, uñas, piel o tolerancia térmica'
+        { texto: 'Tendinitis calcificante bilateral del hombro junto con síntomas en codo', razonamiento: RAZON_CALCIFICANTE },
+        { texto: 'Cambios en el cabello, uñas, piel o tolerancia térmica', pregunta: 'co_e2a' }
       ],
       preguntas: [
         { id: 'co_e1', anatomia: ['nervio_mediano', 'nervio_cubital'], text: '¿Tiene síndrome del túnel carpiano en ambas manos a la vez, o síntomas similares también en el codo contralateral?', alerta: true,

@@ -11,20 +11,108 @@
 export const DOSIS_DERIVAR = 'Derivar: sin tratamiento de fisioterapia hasta el diagnóstico médico';
 
 // ── SISTEMAS TRANSVERSALES (aplicados a todas las regiones) ──
+
+// Cita de Goodman en el razonamiento propio de las banderas (Fase M); cada una añade sus páginas.
+const GOODMAN_BANDERAS = 'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), ';
+
+// Razonamientos de banderas que también lleva el sistema endocrino propio de codo (data/codo.js)
+export const RAZON_XANTOMAS = {
+  porque: 'Cuando los lípidos de la sangre están muy altos, salen de los vasos y se depositan en la piel o en los tendones, donde los macrófagos los engullen y forman nódulos amarillentos. En la diabetes mal controlada indican que la glucosa y los lípidos no están controlados (Goodman).',
+  peso: 'Es un signo de exploración: pide derivar al médico para estudiar y controlar los lípidos (Goodman, Bell). Bell distingue dos tipos. Los eruptivos son pápulas rojo-amarillentas de 1 a 5 mm en las caras de extensión de brazos y piernas, nalgas y manos, a veces con picor o dolor; indican triglicéridos muy altos (a menudo por encima de 3000–4000 mg/dL), con riesgo de pancreatitis. Los tendinosos son nódulos firmes en el Aquiles o en los tendones extensores de manos, rodillas o codos, con la piel normal; indican hipercolesterolemia, a menudo familiar, y aterosclerosis.',
+  detalle: 'Qué sube los triglicéridos (Bell): diabetes, obesidad, alcohol, estrógenos orales, tiacidas, retinoides y algunos antipsicóticos. Los eruptivos desaparecen en semanas al tratar los lípidos; los tendinosos tardan años o no desaparecen.\n\nLas placas amarillas en los párpados (xantelasma) son otro signo de lípidos altos (Goodman). El ejercicio sigue siendo clave en el tratamiento.',
+  fuentes: ['Goodman 2018', 'Bell y Saleh 2026'],
+  citas: [
+    GOODMAN_BANDERAS + 'cap. 11, pp. 402–403 y 421–422.',
+    { texto: 'Bell y Saleh 2026 — Bell y Saleh, «Xanthoma», StatPearls [Internet], NCBI Bookshelf, última actualización 14 de septiembre de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK562241/' }
+  ]
+};
+export const RAZON_CALCIFICANTE = {
+  porque: 'La periartritis (inflamación de tendones, ligamentos y cápsula) y la tendinitis calcificante aparecen sobre todo en el hombro de personas con enfermedad endocrina: del tiroides (hipertiroidismo) y del metabolismo de los estrógenos, y también en los trastornos de las paratiroides.',
+  peso: 'Por sí sola no es grave, pero bilateral orienta a una causa sistémica (para Goodman, todo síntoma bilateral es una bandera roja): buscar otros signos endocrinos. Con causa endocrina suele empezar a una edad más joven, durar más y acabar más a menudo en cirugía; la periartritis crónica mejora al tratar el hipertiroidismo.',
+  detalle: 'En el hipertiroidismo, la restricción dolorosa del hombro puede ser uni o bilateral y avanzar a una capsulitis adhesiva (hombro congelado); también se ha descrito tendinitis calcificante aguda de la muñeca. La calcificación se ve en la radiografía. (StatPearls no tiene un capítulo vigente sobre la tendinitis calcificante.)',
+  fuentes: ['Goodman 2018'],
+  citas: [
+    GOODMAN_BANDERAS + 'cap. 11, pp. 388, 395, 399 y 422.'
+  ]
+};
+// Isquemia aguda de la pierna: pregunta urgente de cadera (ca_v5) y de rodilla (r_v4)
+export const RAZON_ISQUEMIA_AGUDA = {
+  porque: 'Si un trombo o un émbolo tapa de golpe una arteria de la pierna, el músculo y los nervios se quedan sin riego. A diferencia de la claudicación crónica, que aparece al caminar y cede al parar, el dolor de la oclusión aguda empieza de repente, en menos de una hora, y puede afectar a toda la pierna por debajo de la obstrucción (Goodman).',
+  peso: 'Goodman pide comunicar de inmediato al médico el empeoramiento brusco de una claudicación, porque puede ser una tromboembolia. Los signos de la oclusión aguda son las «6 P»: dolor, palidez, ausencia de pulso, hormigueo, frialdad y, en los casos graves, parálisis. Con un SÍ, urgencias hoy, sin esperar.',
+  detalle: 'Quién tiene más riesgo (Goodman, tabla 6.7): cirugía vascular o un procedimiento arterial previos, aneurisma abdominal, traumatismo con lesión arterial y fibrilación auricular crónica.\n\nQué mirar: la pierna fría y pálida, la falta de pulso pedio o poplíteo comparando con el otro lado, y la sensibilidad y la fuerza del pie.\n\nLa claudicación estable, que aparece siempre a una distancia parecida y cede al parar, no es urgente y se pregunta aparte.',
+  fuentes: ['Goodman 2018'],
+  citas: [
+    'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 254 y 260; cap. 16, p. 636.'
+  ]
+};
 export const SIS_ENDOCRINO = {
   id: 'transversal_endocrino', icon: '⚗️', nombre: 'Endocrino / Metabólico',
   banderasRojas: [
-    'Síndrome del túnel carpiano bilateral (alerta endocrina/metabólica)',
-    'Signos de tormenta tiroidea: taquicardia, hipertermia, agitación',
-    'Confusión, letargo o sudoración profusa sin ejercicio en diabéticos (riesgo hipoglucemia/cetoacidosis)',
-    'Signos de depleción de potasio por diuréticos: arritmias, calambres',
-    'Aparición de xantomas eruptivos en tendones extensores',
-    'Nódulos palpables supraclaviculares o fiebre inexplicable en pacientes con corticosteroides'
+    { texto: 'Síndrome del túnel carpiano bilateral (alerta endocrina/metabólica)',
+      razonamiento: {
+        porque: 'Las enfermedades sistémicas afectan a las dos muñecas a la vez: en el mixedema o la acromegalia se engrosa el ligamento transverso del carpo, la retención de líquidos (embarazo, insuficiencia renal o cardiaca) aumenta el contenido del túnel, y la diabetes, el hipotiroidismo, la amiloidosis o la artritis inflamatoria lesionan o comprimen el nervio mediano.',
+        peso: 'Para Goodman, todo síntoma bilateral es una bandera roja. Pero el túnel carpiano bilateral también es frecuente sin causa sistémica (suele empezar por la mano dominante; Sevy), así que lo que pesa es lo que lo acompaña: buscar otros signos endocrinos o metabólicos (debilidad proximal, cansancio, cambios de peso, de piel o de pelo, sed y orina excesivas) y, si los hay o no hay una causa conocida, derivar al médico.',
+        detalle: 'Síntomas: hormigueo, adormecimiento o dolor en el pulgar, el índice, el medio y la mitad radial del anular, peor de noche y que alivia sacudiendo la mano; puede irradiar al antebrazo. Si el adormecimiento llega al meñique, al dorso de la mano o al cuello, pensar en otro diagnóstico (Sevy).\n\nCausas sistémicas (Goodman, tabla 11.2; Sevy): diabetes, hipo e hipertiroidismo, acromegalia, menopausia, embarazo, obesidad, insuficiencia renal o cardiaca, artritis reumatoide, gota y amiloidosis, algunos fármacos (anticonceptivos orales) y la quimioterapia. El secundario a una diabetes tiene peor pronóstico (Sevy). Puede acompañarse de un túnel tarsiano en los dos pies (Goodman).',
+        fuentes: ['Goodman 2018', 'Sevy 2023'],
+        citas: [
+          GOODMAN_BANDERAS + 'cap. 11, pp. 387–389 y 422.',
+          { texto: 'Sevy 2023 — Sevy, Sina y Varacallo, «Carpal Tunnel Syndrome», StatPearls [Internet], NCBI Bookshelf, última actualización 29 de octubre de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK448179/' }
+        ]
+      } },
+    { texto: 'Signos de tormenta tiroidea: taquicardia, hipertermia, agitación',
+      razonamiento: {
+        porque: 'Es la forma extrema del hipertiroidismo: un desencadenante (cirugía, traumatismo, infección, dejar de golpe la medicación antitiroidea, estrés intenso o incluso el ejercicio) dispara los efectos de la hormona tiroidea y el gasto de oxígeno. Da fiebre alta con sudor, taquicardia que puede llevar a insuficiencia cardiaca y arritmias, agitación, delirio o coma, y náuseas, vómitos, diarrea o dolor abdominal.',
+        peso: 'Es rara, pero es una urgencia vital: muere entre el 8 % y el 25 % aun con tratamiento (Pokhrel). El diagnóstico es clínico y no se esperan los análisis. Ante la sospecha, llamar a emergencias. Vigilar sobre todo a quien tiene un hipertiroidismo conocido, o sus signos, tras una operación, un traumatismo o una infección (Goodman).',
+        detalle: 'Qué se ve (Pokhrel): fiebre de 40–41 °C con sudor, pulso por encima de 140, a veces fibrilación auricular, edemas o falta de aire por insuficiencia cardiaca, agitación, ansiedad, delirio o psicosis, temblor, piel caliente y húmeda, bocio o exoftalmos. La afectación neurológica empeora el pronóstico.\n\nCon qué se confunde (Pokhrel): sepsis o infección, golpe de calor, consumo de cocaína, feocromocitoma, síndrome neuroléptico maligno y psicosis.\n\nNo se pregunta: se reconoce por lo que se ve en la consulta. Goodman la incluye entre lo que pide atención médica inmediata; Pokhrel recomienda que quien tiene hipertiroidismo conozca los signos y vaya a urgencias sin demora.',
+        fuentes: ['Goodman 2018', 'Pokhrel 2022'],
+        citas: [
+          GOODMAN_BANDERAS + 'cap. 11, pp. 395–396 y 421.',
+          { texto: 'Pokhrel 2022 — Pokhrel, Aiman y Bhusal, «Thyroid Storm», StatPearls [Internet], NCBI Bookshelf, última actualización 6 de octubre de 2022.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK448095/' }
+        ]
+      } },
+    { texto: 'Confusión, letargo o sudoración profusa sin ejercicio en diabéticos (riesgo hipoglucemia/cetoacidosis)',
+      razonamiento: {
+        porque: 'En la persona con diabetes pueden ser una hipoglucemia, de inicio brusco (insulina o antidiabéticos como las sulfonilureas, con poca comida o más actividad), o una hiperglucemia grave, de inicio gradual: la cetoacidosis o el estado hiperosmolar, cuando falta insulina o aumentan las necesidades por una infección, un traumatismo, una cirugía, estrés o fármacos como los corticoides. El cerebro depende de la glucosa de la sangre: sin ella aparecen confusión y cansancio, y en los casos graves convulsiones y coma.',
+        peso: 'Pide actuar en el momento. Goodman pide atención médica inmediata y medir la glucosa con un pinchazo en el dedo si se puede. Si está consciente y no se sabe si la glucosa está alta o baja, darle azúcar: es lo más seguro (Goodman). Si está desorientado o pierde el conocimiento, llamar a emergencias (Mathew). Toda hipoglucemia, o sospecha, se comunica al médico.',
+        detalle: 'Hipoglucemia (Mathew): glucosa por debajo de 70 mg/dL, aunque los síntomas suelen aparecer por debajo de 50–55, y en el diabético mal controlado pueden aparecer con cifras más altas. Avisos del sistema nervioso autónomo: temblor, palpitaciones, ansiedad, hambre, sudor y hormigueos; por falta de glucosa en el cerebro: cambios de conducta, confusión, cansancio, convulsiones y coma. Es tres veces más frecuente en la diabetes tipo 1. Trampas (Goodman): los betabloqueantes ocultan los avisos, y de noche puede dar solo pesadillas, sudor o cefalea.\n\nCetoacidosis (Lizzo): glucosa por encima de 250 mg/dL con acidosis y cuerpos cetónicos. Sed y orina abundante, boca seca y deshidratación, náuseas, vómitos y dolor abdominal, respiración profunda y rápida (Kussmaul), aliento afrutado, taquicardia y, en los casos graves, confusión y somnolencia. Con los inhibidores de SGLT2 puede darse con la glucosa casi normal.\n\nEn la consulta: con el paciente consciente, hidratos de absorción rápida (Mathew: un zumo de fruta; Goodman: 10–15 g suelen bastar, por ejemplo media taza de zumo o dos sobres de azúcar). Tenerlos siempre a mano.',
+        fuentes: ['Goodman 2018', 'Mathew y Thoppil 2022', 'Lizzo 2025'],
+        citas: [
+          GOODMAN_BANDERAS + 'cap. 11, pp. 407–409 y 421–423.',
+          { texto: 'Mathew y Thoppil 2022 — Mathew y Thoppil, «Hypoglycemia», StatPearls [Internet], NCBI Bookshelf, última actualización 26 de diciembre de 2022.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK534841/' },
+          { texto: 'Lizzo 2025 — Lizzo, Goyal y Kaur, «Adult Diabetic Ketoacidosis», StatPearls [Internet], NCBI Bookshelf, última actualización 30 de noviembre de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK560723/' }
+        ]
+      } },
+    { texto: 'Signos de depleción de potasio por diuréticos: arritmias, calambres',
+      razonamiento: {
+        porque: 'Muchos diuréticos (los que no ahorran potasio, como las tiacidas o los diuréticos de asa) hacen perder por la orina sodio, agua y potasio. El potasio mantiene el potencial de membrana de nervios y músculos: si falta, aparecen debilidad, calambres, cansancio, palpitaciones y estreñimiento, y el corazón se vuelve propenso a las arritmias.',
+        peso: 'La leve (3,0–3,5 mmol/L) a menudo no da síntomas; suelen aparecer por debajo de 3,0, y la debilidad importante, por debajo de 2,5, aunque antes si la bajada es brusca (Castro). La grave puede causar arritmias mortales o parálisis de los músculos respiratorios. El riesgo de arritmia es mayor en el mayor, con enfermedad cardiaca o con digoxina. Con estos síntomas en quien toma diuréticos, consultar al médico antes de hacer ejercicio (Goodman).',
+        detalle: 'Cómo se presenta (Castro): debilidad ascendente, primero en las piernas y después en el tronco y los brazos; calambres, palpitaciones, estreñimiento, distensión abdominal, náuseas y vómitos. Los reflejos pueden estar disminuidos con los diuréticos.\n\nOtras causas de pérdida de potasio: vómitos, diarrea, laxantes, sudor excesivo, corticoides crónicos y la insulina.\n\nQué hacer con la sospecha (Goodman): tomar el pulso buscando arritmias, preguntar por náuseas y vómitos, y buscar los signos de deshidratación (labios y piel secos, mareo al ponerse de pie, debilidad), que en quien toma diuréticos también se comunican al médico.',
+        fuentes: ['Goodman 2018', 'Castro y Sharma 2025'],
+        citas: [
+          GOODMAN_BANDERAS + 'cap. 11, pp. 390, 410–411 y 421–423.',
+          { texto: 'Castro y Sharma 2025 — Castro y Sharma, «Hypokalemia», StatPearls [Internet], NCBI Bookshelf, última actualización 19 de enero de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK482465/' }
+        ]
+      } },
+    { texto: 'Xantomas: pápulas amarillentas en las caras de extensión (eruptivos) o nódulos en los tendones extensores o el Aquiles (tendinosos)',
+      razonamiento: RAZON_XANTOMAS },
+    { texto: 'Nódulos palpables supraclaviculares o fiebre inexplicable en pacientes con corticosteroides',
+      razonamiento: {
+        porque: 'Junta dos avisos distintos. El ganglio supraclavicular drena el mediastino, los pulmones y el esófago (Farmer), y un nódulo en la parte baja del cuello, sobre los escalenos, puede ser la primera manifestación de un cáncer de tiroides (Goodman). Los corticoides frenan la inflamación y la inmunidad: aumentan el riesgo de infección y pueden ocultar sus primeros signos, así que una fiebre sin explicación puede ser la única pista (Goodman, Hodgens).',
+        peso: 'Los dos piden valoración médica, aunque Goodman no los incluye entre lo que pide atención inmediata. El ganglio: la probabilidad de cáncer es baja en atención primaria (0,4 % por debajo de 40 años, alrededor del 4 % por encima), pero sube con más de 40 años, un cáncer previo, alcohol o tabaco, más de 4 semanas de evolución o síntomas generales (Farmer); también con ronquera nueva, tos con sangre o tensión alta (Goodman). La fiebre sin otros síntomas en quien toma corticoides se deriva siempre (Goodman).',
+        detalle: 'Ganglio (Farmer): duro como una piedra orienta a cáncer, más a menudo a una metástasis; gomoso, a linfoma; blando, a infección o inflamación. El dolor no distingue lo benigno de lo maligno. Si dura menos de 2 semanas, o más de un año sin cambios, suele ser benigno.\n\nCorticoides (Hodgens): el riesgo de infección sube con 10 mg al día o más, con la edad, con otras enfermedades y con los fármacos modificadores de la enfermedad; son frecuentes las infecciones por hongos y virus. Tomados mucho tiempo dan un síndrome de Cushing y frenan la glándula suprarrenal, incluso inhalados o en crema, así que no se retiran de golpe.',
+        fuentes: ['Goodman 2018', 'Farmer y Matto 2026', 'Hodgens y Sharman 2023'],
+        citas: [
+          GOODMAN_BANDERAS + 'cap. 11, pp. 392, 398–399 y 421–423.',
+          { texto: 'Farmer y Matto 2026 — Farmer y Matto, «Lymphadenopathy», StatPearls [Internet], NCBI Bookshelf, última actualización 9 de septiembre de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK513250/' },
+          { texto: 'Hodgens y Sharman 2023 — Hodgens y Sharman, «Corticosteroids», StatPearls [Internet], NCBI Bookshelf, última actualización 1 de mayo de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK554612/' }
+        ]
+      } }
   ],
   banderasAmarillas: [
     { texto: 'Debilidad muscular proximal, mialgias y fatiga sistémica inexplicada', pregunta: 'end_1' },
-    'Periartritis o tendinitis calcificante bilateral de hombro',
-    'Cambios inexplicables en cabello, uñas, piel o tolerancia a la temperatura',
+    { texto: 'Periartritis o tendinitis calcificante bilateral de hombro',
+      razonamiento: RAZON_CALCIFICANTE },
+    { texto: 'Cambios inexplicables en cabello, uñas, piel o tolerancia a la temperatura', pregunta: 'end_3' },
     { texto: 'Polidipsia y poliuria (sed y orina excesivas)', pregunta: 'end_2' }
   ],
   preguntas: [
@@ -157,15 +245,49 @@ export const SIS_HEMATOLOGICO = {
   banderasRojas: [
     { texto: 'Sangrado espontáneo, petequias o equimosis sin traumatismo (trombocitopenia)', pregunta: 'hem_1' },
     { texto: 'Heces negras/alquitranadas indicativas de trombocitopenia o sangrado GI', pregunta: 'hem_4' },
-    'Episodios nuevos de dolor muscular o articular en pacientes con hemofilia',
+    { texto: 'Episodios nuevos de dolor muscular o articular en pacientes con hemofilia', pregunta: 'hem_6' },
     { texto: 'Hemoptisis (toser sangre) en pacientes con hemofilia', pregunta: 'hem_4' },
-    'Fiebre alta, escalofríos y sudores por infecciones en pacientes con leucopenia'
+    { texto: 'Fiebre alta, escalofríos y sudores por infecciones en pacientes con leucopenia', pregunta: ['hem_3', 'hem_5'] }
   ],
   banderasAmarillas: [
-    'Palidez en pliegues palmares, mucosas o lechos ungueales',
-    'Uñas cóncavas o quebradizas (coiloniquia — alerta de anemia ferropénica)',
+    { texto: 'Palidez en pliegues palmares, mucosas o lechos ungueales',
+      razonamiento: {
+        porque: 'La anemia baja la capacidad de la sangre para llevar oxígeno, y el cuerpo reparte la que hay hacia los órganos más sensibles a su falta (cerebro, corazón, músculo), a costa de las manos y los riñones: por eso palidecen las palmas, los lechos ungueales, las mucosas y la conjuntiva (Goodman).',
+        peso: 'La palidez de la conjuntiva multiplica por 4,5 la probabilidad de una anemia importante (hemoglobina de 9 g/dL o menos), y la de los pliegues palmares es muy específica (Regalla). Sugiere anemia, pero no dice su causa; en fisioterapia las más habituales son la pérdida de sangre digestiva por AINE, las enfermedades crónicas o inflamatorias y el cáncer o su tratamiento (Goodman). Pesa más con cansancio, falta de aire, palpitaciones o mareo con poco esfuerzo: que el médico la confirme y busque la causa.',
+        detalle: 'Cómo mirarla (Goodman): con las manos a la altura del corazón y calientes, porque el frío las palidece. Buscar palmas pálidas con pliegues de color normal; en la anemia grave también palidecen los pliegues. En la piel oscura, la palidez es la falta del tono rojizo: amarillenta en la morena, grisácea en la negra.\n\nLa anemia lenta se tolera bien y muchos no notan síntomas hasta que la hemoglobina baja de 7 g/dL; en la ferropénica, la palidez es un signo tardío (Regalla, Hanif). En el hombre y en la mujer posmenopáusica, una anemia ferropénica obliga a estudiar el tubo digestivo (Regalla).\n\nCon anemia conocida, el médico aprueba antes el ejercicio, que se dosifica por el esfuerzo percibido vigilando pulso y tensión (Goodman).',
+        fuentes: ['Goodman 2018', 'Regalla y Killeen 2026', 'Hanif 2026'],
+        citas: [
+          GOODMAN_BANDERAS + 'cap. 5, pp. 213–215 y 220–221.',
+          { texto: 'Regalla y Killeen 2026 — Regalla y Killeen, «Anemia», StatPearls [Internet], NCBI Bookshelf, última actualización 5 de julio de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK499994/' },
+          { texto: 'Hanif 2026 — Hanif, Rout y Anwer, «Iron Deficiency and Microcytic Hypochromic Anemia», StatPearls [Internet], NCBI Bookshelf, última actualización 21 de febrero de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK560876/' }
+        ]
+      } },
+    { texto: 'Uñas cóncavas o quebradizas (coiloniquia — alerta de anemia ferropénica)',
+      razonamiento: {
+        porque: 'La falta de hierro mantenida altera el crecimiento de la uña: se vuelve quebradiza y cóncava, en cuchara, en lugar de convexa (Goodman, tabla 5.1; Hanif). En fisioterapia, la causa más habitual de la falta de hierro es la pérdida crónica de sangre digestiva por AINE (Goodman).',
+        peso: 'Sugiere una falta de hierro de larga evolución (Goodman; Regalla), no una urgencia. Lo que importa es su causa: en el hombre y en la mujer posmenopáusica una anemia ferropénica obliga a estudiar el tubo digestivo (Regalla). Con coiloniquia, preguntar por AINE, heces negras, reglas abundantes y cansancio, y que el médico la confirme.',
+        detalle: 'Otros signos de falta de hierro (Hanif): cansancio, debilidad, falta de aire con el esfuerzo, cefalea, caída del pelo, boca seca, lengua lisa y dolorosa, grietas en las comisuras, piernas inquietas (hasta el 40 % de quienes las tienen tienen falta de hierro) y el antojo de comer hielo o cosas que no son comida. Pueden aparecer antes de que haya anemia; la palidez llega tarde.',
+        fuentes: ['Goodman 2018', 'Hanif 2026', 'Regalla y Killeen 2026'],
+        citas: [
+          GOODMAN_BANDERAS + 'cap. 5, pp. 214 y 220–221.',
+          { texto: 'Hanif 2026 — Hanif, Rout y Anwer, «Iron Deficiency and Microcytic Hypochromic Anemia», StatPearls [Internet], NCBI Bookshelf, última actualización 21 de febrero de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK560876/' },
+          { texto: 'Regalla y Killeen 2026 — Regalla y Killeen, «Anemia», StatPearls [Internet], NCBI Bookshelf, última actualización 5 de julio de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK499994/' }
+        ]
+      } },
     { texto: 'Disnea rápida, dolor de pecho, debilidad y fatiga con palpitaciones', pregunta: 'hem_2' },
-    'Uso crónico de AINEs (predispone a sangrado GI y anemia)'
+    { texto: 'Uso crónico de AINEs (predispone a sangrado GI y anemia)',
+      razonamiento: {
+        porque: 'Los AINE inhiben la ciclooxigenasa (COX-1): bajan las prostaglandinas que protegen el estómago (menos moco, menos bicarbonato, menos riego de la mucosa) y frenan las plaquetas (Saad, Malik). Son la segunda causa de úlcera péptica, tras Helicobacter pylori (Malik); la úlcera puede sangrar, y un sangrado lento y mantenido acaba en anemia por falta de hierro (Goodman).',
+        peso: 'Por sí solo no es una bandera de enfermedad, pero da más peso a otros hallazgos: con AINE crónicos, las heces negras, los signos de anemia (cansancio, palidez, falta de aire con poco esfuerzo) o un dolor nuevo de espalda o de hombro hacen más probable una úlcera que sangra, y piden valoración médica (Goodman). La lesión puede no dar síntomas hasta que está avanzada (Goodman), y la úlcera, el sangrado o la perforación pueden ocurrir a cualquier edad, aunque más en el mayor (Saad).',
+        detalle: 'Qué aumenta el riesgo (Goodman, recuadro 8.3; Antunes): más de 65 años, úlcera previa, tabaco y alcohol, corticoides orales, anticoagulantes o antiagregantes (también la aspirina a dosis baja), antidepresivos ISRS, y antiácidos, que ocultan los síntomas. Los inhibidores de la COX-2 reducen el riesgo, pero no lo quitan.\n\nHeces negras (Antunes): la melena es negra, pegajosa y de olor característico; el hierro y el bismuto también ennegrecen las heces sin que haya sangrado. Un sangrado importante da mareo al levantarse o síncope.\n\nPor qué la espalda o el hombro: la úlcera por AINE suele estar en la pared posterior del estómago (Goodman). Otros efectos: suben la tensión y empeoran la insuficiencia cardiaca (Saad). Preguntar si combina varios AINE, con o sin receta.',
+        fuentes: ['Goodman 2018', 'Saad y Mathew 2025', 'Malik 2023', 'Antunes 2024'],
+        citas: [
+          GOODMAN_BANDERAS + 'cap. 5, pp. 213 y 220; cap. 8, pp. 306 y 314–317.',
+          { texto: 'Saad y Mathew 2025 — Saad y Mathew, «Nonsteroidal Anti-Inflammatory Drugs Toxicity», StatPearls [Internet], NCBI Bookshelf, última actualización 15 de septiembre de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK526006/' },
+          { texto: 'Malik 2023 — Malik, Gnanapandithan y Singh, «Peptic Ulcer Disease», StatPearls [Internet], NCBI Bookshelf, última actualización 5 de junio de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK534792/' },
+          { texto: 'Antunes 2024 — Antunes, Tian y Copelin, «Upper Gastrointestinal Bleeding», StatPearls [Internet], NCBI Bookshelf, última actualización 17 de agosto de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470300/' }
+        ]
+      } }
   ],
   preguntas: [
     { id: 'hem_1', text: '¿Sangra o se le forman moretones fácilmente después de un traumatismo menor, cirugía o procedimiento dental?', alerta: true, s1: false,
@@ -230,6 +352,32 @@ export const SIS_HEMATOLOGICO = {
         citas: [
           'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 5, pp. 213, 217–218 y 221.',
           { texto: 'Rout 2024 — Rout, Reynolds y Zito, «Neutropenia», StatPearls [Internet], NCBI Bookshelf, última actualización 7 de junio de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK507702/' }
+        ]
+      } },
+    { id: 'hem_5', text: '¿Está recibiendo tratamiento contra el cáncer (quimioterapia o radioterapia) y se encuentra mal o tiene fiebre?', alerta: true, s1: false,
+      urgencia: 'Posible sepsis neutropénica: a urgencias hoy, sin demora, o al teléfono de 24 horas de su servicio de oncología.',
+      razonamiento: {
+        porque: 'Los tratamientos contra el cáncer, sobre todo la quimioterapia y también la radioterapia, pueden frenar la capacidad de la médula ósea para responder a una infección: bajan los neutrófilos y una infección puede acabar en una sepsis. Como la quimioterapia suele darse de forma ambulatoria, la mayoría de los episodios empiezan fuera del hospital.',
+        peso: 'Es una urgencia médica: la sepsis neutropénica puede ser mortal (entre el 2 % y el 21 % de los adultos en los estudios que recoge NICE). NICE pide sospecharla en todo paciente con tratamiento contra el cáncer que se encuentra mal, no solo cuando tiene fiebre, y derivarlo de inmediato al hospital, donde el antibiótico se empieza enseguida, antes de conocer la causa.',
+        detalle: 'Cómo se confirma (NICE): neutrófilos de 0,5 × 10⁹/L o menos, con fiebre de más de 38 °C u otros signos o síntomas de sepsis. El recuento se hace en el hospital, así que en la consulta no se puede descartar: ante la sospecha, se deriva.\n\nNICE pide que quien recibe tratamiento contra el cáncer sepa, por escrito y de palabra, cómo y cuándo llamar al teléfono de 24 horas de oncología y cuándo ir a urgencias: con un SÍ, preguntar si tiene ese teléfono.\n\nPor qué no esperar (Punnapuzha): la defensa frente a la infección está tan baja que el dolor y la sensibilidad en una zona pueden ser el único signo de infección, y el antibiótico precoz reduce la mortalidad; es una urgencia oncológica, y una fiebre nueva en quien recibe quimioterapia pide actuar con urgencia. Tienen más riesgo los mayores, quienes tienen otras enfermedades y según el tipo de cáncer y de quimioterapia.\n\nLa guía habla solo de los tratamientos contra el cáncer (quimioterapia y radioterapia, entre otros). Las infecciones de repetición o la fiebre baja sin este tratamiento se preguntan aparte, sin urgencia.',
+        fuentes: ['NICE CG151', 'Punnapuzha 2023'],
+        citas: [
+          { texto: 'NICE CG151 — NICE, «Neutropenic sepsis: prevention and management in people with cancer» (2012, actualizada en septiembre de 2024), introducción, recomendaciones 1.1.1.1, 1.3.1.1–1.3.1.2, 1.4.1.1 y 1.4.4.1, y «Terms used in this guideline».', url: 'https://www.nice.org.uk/guidance/cg151' },
+          { texto: 'Punnapuzha 2023 — Punnapuzha, Edemobi y Elmoheen, «Febrile Neutropenia», StatPearls [Internet], NCBI Bookshelf, última actualización 30 de marzo de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK541102/' }
+        ]
+      } },
+    { id: 'hem_6', text: '(Si tiene hemofilia u otro trastorno hereditario de la coagulación) ¿Tiene un dolor nuevo en una articulación o un músculo, con hormigueo o tirantez, hinchazón, calor o dificultad para moverla?', alerta: true, s1: false,
+      urgencia: 'Posible sangrado articular o muscular en la hemofilia: tratarlo hoy con su factor según su pauta y avisar a su unidad de hemofilia; a urgencias si hay hormigueo, adormecimiento o pérdida de fuerza, o dolor en la ingle o el abdomen.',
+      razonamiento: {
+        porque: 'En la hemofilia falta la función del factor VIII (hemofilia A) o IX (B): se sangra durante más tiempo. El sangrado dentro de la articulación (hemartros) es su manifestación típica, sobre todo en rodillas, tobillos y codos; en la grave (menos del 1 % de factor) aparece sin traumatismo, en la moderada tras golpes menores y en la leve tras traumatismos importantes o cirugía (Awidi). El segundo sitio es el músculo.',
+        peso: 'Con un SÍ, el sangrado se trata hoy, sin esperar. La guía de la WFH pide tratar con el factor de inmediato, en cuanto el paciente sospecha el sangrado y antes de que aparezcan la hinchazón, la pérdida de movilidad y el dolor; muchos lo notan antes como un «aura» de hormigueo y tirantez en la articulación. El dolor suele llegar antes que cualquier otro signo (Goodman). Un sangrado en un músculo profundo (psoasilíaco, compartimentos posteriores de la pierna, flexores del antebrazo) puede comprimir nervios y vasos: pide manejo inmediato, y un síndrome compartimental confirmado se opera en las 12 horas siguientes (WFH). Nunca aplicar calor sobre una zona que sangra o puede sangrar (Goodman).',
+        detalle: 'Hemartros agudo: hormigueo, rigidez en la postura de alivio, menos movilidad, dolor, hinchazón y calor (Goodman); tras un traumatismo, la hinchazón aparece en pocas horas, y en quien tiene la sensibilidad alterada el dolor puede ser mínimo (Killeen). Hemorragia muscular: dolor que va a más, espasmo protector y músculo en posición acortada; puede comprimir un nervio (femoral, cubital o mediano) (Goodman).\n\nSangrado en el psoas o el ilíaco (Goodman): dolor en el abdomen bajo o la ingle (a la derecha puede parecer una apendicitis), pérdida de sensibilidad en la cara anterior del muslo y cadera en flexión. Flexionar el tronco duele mucho si sangra el psoas y poco si sangra la cadera; rotar la cadera con suavidad, al revés.\n\nLos hemartros repetidos acaban en artropatía hemofílica (sinovitis, destrucción del cartílago, deformidad, atrofia), la principal causa de discapacidad (Awidi, Killeen). Los anticoagulantes y las enfermedades del hígado o el riñón también pueden causar hemartros (Killeen).\n\nMedidas de apoyo (WFH), junto al factor y nunca en su lugar: reposo (cabestrillo en el brazo), hielo sin contacto directo con la piel durante 15–20 minutos, compresión y elevación si se tolera; sin cargar peso en la cadera, la rodilla o el tobillo hasta recuperar la movilidad y la función previas, y después movilización suave y progresiva. Para el dolor, paracetamol o inhibidores de la COX-2, no otros AINE. La WFH pide que en urgencias se les valore de inmediato, sin esperas.\n\nSe pregunta aparte de los moratones o el sangrado fácil, que no piden urgencias por sí solos.',
+        fuentes: ['WFH 2020', 'Goodman 2018', 'Awidi y Babiker 2026', 'Killeen y Cardenas 2025'],
+        citas: [
+          { texto: 'WFH 2020 — Srivastava, Santagostino, Dougall et al., «WFH Guidelines for the Management of Hemophilia, 3rd edition», Haemophilia 2020;26(supl. 6):1–158, principios 5 y 6 (p. 13), cap. 7.1–7.2 (hemorragia articular, pp. 86–89) y cap. 10.4 (hemorragia muscular y síndrome compartimental, pp. 129–130).', url: 'https://doi.org/10.1111/hae.14046' },
+          GOODMAN_BANDERAS + 'cap. 5, pp. 218–221.',
+          { texto: 'Awidi y Babiker 2026 — Awidi y Babiker, «Hemophilia A», StatPearls [Internet], NCBI Bookshelf, última actualización 8 de septiembre de 2026.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470265/' },
+          { texto: 'Killeen y Cardenas 2025 — Killeen y Cardenas, «Hemarthrosis», StatPearls [Internet], NCBI Bookshelf, última actualización 7 de noviembre de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK525999/' }
         ]
       } },
     { id: 'hem_4', text: '¿Ha notado heces negras/alquitranadas, sangre en orina, o ha tosido o vomitado sangre?', alerta: true, s1: false,
@@ -315,7 +463,7 @@ export const SIS_POSQUIRURGICO = {
   id: 'transversal_posquirurgico', icon: '🏥', nombre: 'Posquirúrgico', soloPosquirurgico: true,
   banderasRojas: [
     { texto: 'Herida más roja, caliente, hinchada o dolorosa, que supura o se abre, o fiebre y malestar tras la operación (infección)', pregunta: 'pq_herida' },
-    'En las 48–72 horas siguientes, dolor desproporcionado con piel oscura, ampollas, crepitación o signos de sepsis (infección necrotizante: urgencia quirúrgica)',
+    { texto: 'En las 48–72 horas siguientes, dolor desproporcionado con piel oscura, ampollas, crepitación o signos de sepsis (infección necrotizante: urgencia quirúrgica)', pregunta: 'pq_herida' },
     { texto: 'Pierna hinchada, caliente o dolorosa (TVP)', pregunta: ['pq_tvp', 'pq_tvp_ms'] },
     { texto: 'Falta de aire brusca, dolor en el pecho al respirar, tos con sangre o síncope (embolia pulmonar)', pregunta: 'pq_tep' },
     { texto: 'Dolor desproporcionado que va a más, sobre todo al estirar los dedos, con el compartimento tenso, en las horas siguientes a la lesión, la operación o un yeso o vendaje (síndrome compartimental)', regiones: ['codo', 'rodilla', 'tobillo_pie'], pregunta: 'pq_compart' },
@@ -324,7 +472,7 @@ export const SIS_POSQUIRURGICO = {
   ],
   banderasAmarillas: [
     { texto: 'Dolor continuo y desproporcionado con cambios de color, temperatura, sudoración o hinchazón, o dolor al roce (SDRC)', regiones: PQ_MIEMBROS, pregunta: 'pq_sdrc' },
-    { texto: 'Yeso o vendaje que aprieta, o dolor desproporcionado mientras se lleva o al retirarlo (aviso precoz de SDRC)', regiones: PQ_MIEMBROS }
+    { texto: 'Yeso o vendaje que aprieta, o dolor desproporcionado mientras se lleva o al retirarlo (aviso precoz de SDRC)', regiones: PQ_MIEMBROS, pregunta: ['pq_sdrc', 'pq_compart'] }
   ],
   preguntas: [
     { id: 'pq_herida', urgencia: 'Posible infección de la herida quirúrgica: que la valore hoy el cirujano o urgencias.', text: '¿Desde la operación, la herida está más roja, caliente, hinchada o dolorosa, supura o se ha abierto, o ha tenido fiebre, escalofríos o malestar general?', alerta: true,

@@ -52,12 +52,12 @@ export const screening = {
       // «Fracturas del 5.º MT» y «Rotura del tibial posterior o del FHL».
       id: 'tp_trauma', icon: '🦴', nombre: 'Traumático / Mecánico',
       banderasRojas: [
-        'SÍNDROME COMPARTIMENTAL Y COMPROMISO NEUROVASCULAR tras lesión grave del mediopié (Lisfranc): el flujo puede caer tras luxarse el 2.º MT → cirugía urgente. Cinco P: palidez · dolor desproporcionado · parestesias · sin pulso · frialdad.',
-        'ROTURA AGUDA DEL AQUILES: golpe o patada detrás de la pierna en un gesto explosivo, a veces chasquido; camina sorprendentemente bien, con cojera. Thompson: prono, pie fuera de la camilla; al comprimir la pantorrilla el tobillo no se mueve → S 96 % · E 93 % → derivación preferente.',
-        'Lisfranc: Caída hacia delante sobre el pie en punta (fallar un escalón), pie fijo con sacudida, aplastamiento. Dolor inmediato, no carga. Casi el 20 % pasa desapercibido. En consulta: Equimosis plantar: patognomónica (tarda 24–48 h). 1.º y 2.º MT en direcciones opuestas → dolor. Cinco P.',
-        'Fractura de calcáneo: Caída desde altura sobre el talón; a menudo con alcohol, no recuerda el mecanismo. No quiere apoyar. En consulta: Talón doloroso, hinchado, con equimosis. La radiografía es poco sensible: TC.',
-        'Fracturas del 5.º MT: Inversión con flexión plantar. Jones: dolor lateral previo de bajo grado. En consulta: Dolor en la base del 5.º MT. Jones: riesgo de pseudoartrosis sin fijación.',
-        'Rotura del tibial posterior o del FHL: Tendinopatía que progresa o eversión forzada (TP). Impulso o aterrizaje forzado; artritis reumatoide (FHL). En consulta: TP: arco aplanado, «demasiados dedos», no inicia la ETM. FHL: no flexiona la interfalángica del primer dedo.'
+        { texto: 'SÍNDROME COMPARTIMENTAL Y COMPROMISO NEUROVASCULAR tras lesión grave del mediopié (Lisfranc): el flujo puede caer tras luxarse el 2.º MT → cirugía urgente. Cinco P: palidez · dolor desproporcionado · parestesias · sin pulso · frialdad.', pregunta: 'tp_t1' },
+        { texto: 'ROTURA AGUDA DEL AQUILES: golpe o patada detrás de la pierna en un gesto explosivo, a veces chasquido; camina sorprendentemente bien, con cojera. Thompson: prono, pie fuera de la camilla; al comprimir la pantorrilla el tobillo no se mueve → S 96 % · E 93 % → derivación preferente.', pregunta: 'tp_t3' },
+        { texto: 'Lisfranc: Caída hacia delante sobre el pie en punta (fallar un escalón), pie fijo con sacudida, aplastamiento. Dolor inmediato, no carga. Casi el 20 % pasa desapercibido. En consulta: Equimosis plantar: patognomónica (tarda 24–48 h). 1.º y 2.º MT en direcciones opuestas → dolor. Cinco P.', pregunta: ['tp_t4', 'tp_t1'] },
+        { texto: 'Fractura de calcáneo: Caída desde altura sobre el talón; a menudo con alcohol, no recuerda el mecanismo. No quiere apoyar. En consulta: Talón doloroso, hinchado, con equimosis. La radiografía es poco sensible: TC.', pregunta: 'tp_t4' },
+        { texto: 'Fracturas del 5.º MT: Inversión con flexión plantar. Jones: dolor lateral previo de bajo grado. En consulta: Dolor en la base del 5.º MT. Jones: riesgo de pseudoartrosis sin fijación.', pregunta: 'tp_t2' },
+        { texto: 'Rotura del tibial posterior o del FHL: Tendinopatía que progresa o eversión forzada (TP). Impulso o aterrizaje forzado; artritis reumatoide (FHL). En consulta: TP: arco aplanado, «demasiados dedos», no inicia la ETM. FHL: no flexiona la interfalángica del primer dedo.', pregunta: 'tp_t5' }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -184,7 +184,7 @@ export const screening = {
       // Tarjeta tobillo y pie (guía de consulta), BANDERAS «Fractura de estrés de alto riesgo o múltiple».
       id: 'tp_oseo', icon: '🦴', nombre: 'Fractura de Estrés',
       banderasRojas: [
-        'Fractura de estrés de alto riesgo o múltiple: Insidiosa tras un cambio de carga, sin efecto de calentamiento, dolor nocturno. Más de dos en huesos distintos → densidad ósea, RED-S, endocrino, nutricional. En consulta: Punto N doloroso > lado sano: navicular hasta que se demuestre lo contrario. Calcáneo: compresión medial y lateral a la vez.'
+        { texto: 'Fractura de estrés de alto riesgo o múltiple: Insidiosa tras un cambio de carga, sin efecto de calentamiento, dolor nocturno. Más de dos en huesos distintos → densidad ósea, RED-S, endocrino, nutricional. En consulta: Punto N doloroso > lado sano: navicular hasta que se demuestre lo contrario. Calcáneo: compresión medial y lateral a la vez.', pregunta: ['tp_o1', 'tp_o2'] }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -244,8 +244,8 @@ export const screening = {
       // BANDERAS «Artritis inflamatoria».
       id: 'tp_infecciosa', icon: '🦠', nombre: 'Infecciosa / Inflamatoria',
       banderasRojas: [
-        'ARTRITIS INFECCIOSA: monoartritis aguda con MALESTAR SISTÉMICO Y FIEBRE ALTA → URGENCIA HOY. En la gota suele estar sistémicamente bien, aunque un brote agudo puede dar fiebre y leucocitosis: solo el análisis del líquido articular las separa.',
-        'Artritis inflamatoria: Rigidez matutina de más de 60 min que mejora con la actividad (reumatoide, espondiloartropatía, psoriásica, reactiva). En consulta: Tumefacción caliente, a menudo simétrica; dactilitis y uñas en la psoriásica.'
+        { texto: 'ARTRITIS INFECCIOSA: monoartritis aguda con MALESTAR SISTÉMICO Y FIEBRE ALTA → URGENCIA HOY. En la gota suele estar sistémicamente bien, aunque un brote agudo puede dar fiebre y leucocitosis: solo el análisis del líquido articular las separa.', pregunta: 'tp_i1' },
+        { texto: 'Artritis inflamatoria: Rigidez matutina de más de 60 min que mejora con la actividad (reumatoide, espondiloartropatía, psoriásica, reactiva). En consulta: Tumefacción caliente, a menudo simétrica; dactilitis y uñas en la psoriásica.', pregunta: 'tp_i2' }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -304,8 +304,8 @@ export const screening = {
       // tumores» y «Malignidad o infección».
       id: 'tp_oncologico', icon: '🔬', nombre: 'Oncológico / Sistémico',
       banderasRojas: [
-        'Osteoma osteoide y otros tumores: Segunda década. Dolor sordo peor de noche, sin relación con la actividad; alivio en <20 min con AINE. Sin alivio → otras causas (osteosarcoma: masa blanda). En consulta: Dolor puntual y tumefacción. ≈25 % no se ve en radiografía.',
-        'Malignidad o infección: Síntomas sistémicos, pérdida de peso, sudores nocturnos; dolor nocturno que despierta. En consulta: Cribado general de la ficha. No reproducir el dolor conocido también obliga a pensarlo, igual que un dolor conocido que no mejora con una infiltración diagnóstica.'
+        { texto: 'Osteoma osteoide y otros tumores: Segunda década. Dolor sordo peor de noche, sin relación con la actividad; alivio en <20 min con AINE. Sin alivio → otras causas (osteosarcoma: masa blanda). En consulta: Dolor puntual y tumefacción. ≈25 % no se ve en radiografía.', pregunta: 'tp_c2' },
+        { texto: 'Malignidad o infección: Síntomas sistémicos, pérdida de peso, sudores nocturnos; dolor nocturno que despierta. En consulta: Cribado general de la ficha. No reproducir el dolor conocido también obliga a pensarlo, igual que un dolor conocido que no mejora con una infiltración diagnóstica.', pregunta: 'tp_c1' }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -363,8 +363,8 @@ export const screening = {
       // neurógena» y «TVP tras inmovilización · Wells».
       id: 'tp_vascular', icon: '🩸', nombre: 'Vascular',
       banderasRojas: [
-        'Claudicación vascular o neurógena: Dolor o calambre a una distancia o duración de esfuerzo reproducible. En consulta: Pulsos distales y exploración neurológica.',
-        'TVP tras inmovilización · Wells: +1 cada uno: cáncer activo · parálisis, paresia o inmovilización con férula · encamamiento ≥3 días o cirugía mayor en 12 semanas · dolor en el trayecto venoso profundo · hinchazón de toda la pierna · pantorrilla >3 cm más gruesa (10 cm bajo la tuberosidad tibial) · edema con fóvea solo en esa pierna · venas colaterales no varicosas · TVP previa. −2: diagnóstico alternativo al menos tan probable. En consulta: El capítulo no la menciona. ≥2 → probable; ≤1 → improbable. Orienta la derivación, no la sustituye.'
+        { texto: 'Claudicación vascular o neurógena: Dolor o calambre a una distancia o duración de esfuerzo reproducible. En consulta: Pulsos distales y exploración neurológica.', pregunta: 'tp_v1' },
+        { texto: 'TVP tras inmovilización · Wells: +1 cada uno: cáncer activo · parálisis, paresia o inmovilización con férula · encamamiento ≥3 días o cirugía mayor en 12 semanas · dolor en el trayecto venoso profundo · hinchazón de toda la pierna · pantorrilla >3 cm más gruesa (10 cm bajo la tuberosidad tibial) · edema con fóvea solo en esa pierna · venas colaterales no varicosas · TVP previa. −2: diagnóstico alternativo al menos tan probable. En consulta: El capítulo no la menciona. ≥2 → probable; ≤1 → improbable. Orienta la derivación, no la sustituye.', pregunta: 'tp_v2' }
       ],
       banderasAmarillas: [],
       preguntas: [
@@ -422,8 +422,8 @@ export const screening = {
       // árbol, nodo 1 (debilidad simétrica progresiva con arreflexia → urgencia).
       id: 'tp_neuro', icon: '🧠', nombre: 'Neurológico',
       banderasRojas: [
-        'Neuropatía sistémica: Dolor neuropático simétrico (diabetes), pie caído (mononeuritis múltiple), debilidad simétrica que progresa en días o pocas semanas con arreflexia (desmielinizante aguda → mismo día). En consulta: Reflejo aquíleo, vibración, pinchazo, temperatura.',
-        'SDRC: Signos autonómicos tras una lesión: rubor, hinchazón más allá de la fase aguda, hiperestesia, hiperalgesia. En consulta: Temperatura, color, sudoración y sensibilidad frente al lado sano.'
+        { texto: 'Neuropatía sistémica: Dolor neuropático simétrico (diabetes), pie caído (mononeuritis múltiple), debilidad simétrica que progresa en días o pocas semanas con arreflexia (desmielinizante aguda → mismo día). En consulta: Reflejo aquíleo, vibración, pinchazo, temperatura.', pregunta: ['tp_n1', 'tp_n2'] },
+        { texto: 'SDRC: Signos autonómicos tras una lesión: rubor, hinchazón más allá de la fase aguda, hiperestesia, hiperalgesia. En consulta: Temperatura, color, sudoración y sensibilidad frente al lado sano.', pregunta: 'tp_n3' }
       ],
       banderasAmarillas: [],
       preguntas: [
