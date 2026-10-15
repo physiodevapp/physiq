@@ -7,6 +7,18 @@
 // ============================================================
 import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO } from './comun.js';
 
+// ── Fase 3 · ZONAS_SINTOMA.cadera — zonas del mapa corporal para P1–P4
+// (docs/sintomas-multiples.md). Tabla aceptada por el usuario (2026-10),
+// pendiente de revisión; `id` estable: se guarda en la sesión.
+export const zonas = [
+  { id: 'ingle',      nombre: 'Ingle' },
+  { id: 'cadera_lat', nombre: 'Cadera lateral' },
+  { id: 'gluteo',     nombre: 'Glúteo' },
+  { id: 'muslo_ant',  nombre: 'Muslo anterior' },
+  { id: 'rodilla',    nombre: 'Rodilla' },
+  { id: 'lumbar',     nombre: 'Zona lumbar' },
+];
+
 // ── Fase 2 · SYSTEMIC_SCREENING.cadera
 export const screening = {
   label: 'Cuadrante Inferior — Cadera, Ingle y Muslo',
