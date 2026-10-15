@@ -19,14 +19,36 @@ import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } fro
 // ── Fase 3 · ZONAS_SINTOMA.tobillo_pie — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
 // `id` estable: se guarda en la sesión.
+// `pasos` (Fase N, paso 3): pasos del árbol de abajo en los que el síntoma de
+// esa zona sale en el recuadro «📝 Refiere el paciente». Solo recuerda; nunca
+// contesta el paso. Revisados por el usuario (2026-10):
+//   tp_step2  Ottawa, Thompson, Lisfranc, calcáneo → tobillo lateral y medial
+//             (zona maleolar), mediopié (Ottawa de pie, Lisfranc), Aquiles
+//             (Thompson) y talón (calcáneo)
+//   tp_step3  mecanismo del tobillo agudo → tobillo lateral (esguince),
+//             anterior (sindesmosis) y medial (luxación del tibial posterior)
+//   tp_step4  niño o adolescente → Aquiles y talón (Sever), mediopié (Köhler,
+//             Iselin) y antepié (Freiberg)
+//   tp_step5  ¿la exploración local no reproduce? → pantorrilla (referido
+//             de la columna lumbar)
+//   tp_step6  posterior → Aquiles y pantorrilla (plantar delgado, sural)
+//   tp_step7  medial → tobillo medial
+//   tp_step8  lateral → tobillo lateral
+//   tp_step9  anterior → tobillo anterior
+//   tp_step10 talón plantar → talón o planta
+//   tp_step11 mediopié → mediopié (zona añadida con este paso; usuario, 2026-10)
+//   tp_step12 antepié → antepié o dedos
+//   tp_step13 dolor vago tras un esguince → tobillo lateral y anterior
+// tp_step1 (¿traumatismo?) no lleva: no depende de dónde duele.
 export const zonas = [
-  { id: 'tobillo_lat', nombre: 'Tobillo lateral' },
-  { id: 'tobillo_med', nombre: 'Tobillo medial' },
-  { id: 'tobillo_ant', nombre: 'Tobillo anterior' },
-  { id: 'aquiles',     nombre: 'Tendón de Aquiles' },
-  { id: 'talon',       nombre: 'Talón o planta' },
-  { id: 'antepie',     nombre: 'Antepié o dedos' },
-  { id: 'pantorrilla', nombre: 'Pantorrilla' },
+  { id: 'tobillo_lat', nombre: 'Tobillo lateral',   pasos: ['tp_step2', 'tp_step3', 'tp_step8', 'tp_step13'] },
+  { id: 'tobillo_med', nombre: 'Tobillo medial',    pasos: ['tp_step2', 'tp_step3', 'tp_step7'] },
+  { id: 'tobillo_ant', nombre: 'Tobillo anterior',  pasos: ['tp_step3', 'tp_step9', 'tp_step13'] },
+  { id: 'aquiles',     nombre: 'Tendón de Aquiles', pasos: ['tp_step2', 'tp_step4', 'tp_step6'] },
+  { id: 'talon',       nombre: 'Talón o planta',    pasos: ['tp_step2', 'tp_step4', 'tp_step10'] },
+  { id: 'mediopie',    nombre: 'Mediopié',          pasos: ['tp_step2', 'tp_step4', 'tp_step11'] },
+  { id: 'antepie',     nombre: 'Antepié o dedos',   pasos: ['tp_step4', 'tp_step12'] },
+  { id: 'pantorrilla', nombre: 'Pantorrilla',       pasos: ['tp_step5', 'tp_step6'] },
 ];
 
 // ── Fase 2 · SYSTEMIC_SCREENING.tobillo_pie
