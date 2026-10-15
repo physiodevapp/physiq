@@ -10,14 +10,29 @@ import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } fro
 // ── Fase 3 · ZONAS_SINTOMA.cervical — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
 // `id` estable: se guarda en la sesión.
+// `pasos` (Fase N, paso 3): pasos del árbol de abajo en los que el síntoma de
+// esa zona sale en el recuadro «📝 Refiere el paciente». Solo recuerda; nunca
+// contesta el paso. Revisados por el usuario (2026-10):
+//   ce_step1  mielopatía (manos torpes o dormidas) → antebrazo y mano
+//   ce_step3  ¿el brazo duele más que el cuello? → el cuello, para comparar,
+//             y todo lo que baja: trapecio o escápula (el dolor radicular
+//             C5–C8 suele referirse a la escápula), hombro, brazo, mano
+//   ce_step3b radicular o radiculopatía → brazo y mano; cabeza, por la opción
+//             «aura migrañosa» (síntomas que preceden a la cefalea)
+//   ce_step4  ¿cefalea o dolor en la base del cuello u hombro? → cuello,
+//             cabeza, trapecio o escápula (1ª costilla), hombro
+//   ce_step6  dónde está la disfunción → cuello, cabeza (craneocervical,
+//             C1–2) y zona dorsal (cervical baja y cervicotorácica)
+// ce_step2 (latigazo), ce_step4b (mareo) y ce_step5 (dominio mecánico) no
+// llevan: no dependen de dónde duele.
 export const zonas = [
-  { id: 'cuello',         nombre: 'Cuello' },
-  { id: 'cabeza',         nombre: 'Cabeza' },
-  { id: 'trapecio',       nombre: 'Trapecio o escápula' },
-  { id: 'hombro',         nombre: 'Hombro' },
-  { id: 'brazo',          nombre: 'Brazo' },
-  { id: 'antebrazo_mano', nombre: 'Antebrazo y mano' },
-  { id: 'dorsal',         nombre: 'Zona dorsal' },
+  { id: 'cuello',         nombre: 'Cuello',              pasos: ['ce_step3', 'ce_step4', 'ce_step6'] },
+  { id: 'cabeza',         nombre: 'Cabeza',              pasos: ['ce_step3b', 'ce_step4', 'ce_step6'] },
+  { id: 'trapecio',       nombre: 'Trapecio o escápula', pasos: ['ce_step3', 'ce_step4'] },
+  { id: 'hombro',         nombre: 'Hombro',              pasos: ['ce_step3', 'ce_step4'] },
+  { id: 'brazo',          nombre: 'Brazo',               pasos: ['ce_step3', 'ce_step3b'] },
+  { id: 'antebrazo_mano', nombre: 'Antebrazo y mano',    pasos: ['ce_step1', 'ce_step3', 'ce_step3b'] },
+  { id: 'dorsal',         nombre: 'Zona dorsal',         pasos: ['ce_step6'] },
 ];
 
 // ── Fase 2 · SYSTEMIC_SCREENING.cervical
