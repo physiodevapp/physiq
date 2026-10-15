@@ -1457,8 +1457,8 @@ function razonBanderaInlineHTML(sis, f, tipo, i) {
   const ampliar = fuentes.some(({ r }) => r.detalle || r.fisiologia)
     ? ` <button type="button" class="razon-ampliar" onclick="abrirRazonBandera(this,'${sis.id}','${tipo}',${i})">Ampliar →</button>` : '';
   const partes = fuentes.map(({ r, x }) => `${varias ? `<p class="razon-bandera-q"><span class="razon-etq">Se pregunta así</span> ${x.text}</p>` : ''}
-        <p><span class="razon-etq">Por qué</span> ${r.porque}${iaParrafoHTML()}</p>
-        <p><span class="razon-etq">Cuánto pesa</span> ${r.peso}</p>
+        <p><span class="razon-etq">Por qué</span> ${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>
+        <p><span class="razon-etq">Cuánto pesa</span> ${citasEnTexto(r.peso)}</p>
         ${anatomiaLineaHTML(x)}`).join('');
   const citas = [...new Set(fuentes.flatMap(({ r }) => r.fuentes))];
   return `<div class="razon razon-cuerpo razon-bandera" hidden data-ia-ctx="${attrIA(ctxCribado(state.region, textoBandera(f)))}">
