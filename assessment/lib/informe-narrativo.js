@@ -406,6 +406,11 @@ export const AVISO_SQ = 'preguntas del cribado contestadas SÍ: el SÍ quiere de
 // criterios de un síndrome de dolor regional complejo y lo deja para vigilar, y el
 // informe lo proponía en «Hipótesis adicionales», con una «fase inicial» inventada
 export const AVISO_NO_CUMPLE = 'Lo que el fisioterapeuta dice en la consulta que no cumple los criterios de un diagnóstico y deja para vigilar no es una hipótesis adicional: recógelo en el plan como hallazgo a vigilar, con lo que él indicó (vigilarlo, comentarlo con el médico o el cirujano), sin fases, tipos ni estadios que no consten.';
+// Ronda 33 (Andrés, lumbar, caso simulado para la fase 6): la plantilla pedía
+// «episodios previos» y el informe rellenó «No refiere episodios previos
+// similares» sin que nadie preguntara, y en Factores Ambientales dedujo
+// «escasas posibilidades de modificación postural» en el trabajo. Las dos
+// secciones dicen ahora «si constan» (ver la estructura de buildNarrativePrompt)
 export const AVISO_HALLAZGOS = 'Cada línea es la conclusión del fisioterapeuta: los signos, síntomas o criterios que nombran la pregunta o la opción describen un patrón, no hallazgos de este paciente; no los afirmes si no constan en otro dato o en la consulta.';
 export function bloquesAmpliados(a, { urgente = false } = {}) {
   if (!a) return [];
@@ -594,12 +599,12 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Edad y sexo solo si constan en los datos; actividad física y laboral, comorbilidades, medicación, signos vitales y antropometría si constan, y el riesgo psicosocial]
 
 ### Factores Ambientales
-[Solo si hay datos de domicilio, apoyo familiar, trabajo o ayudas técnicas; la cirugía y las restricciones del cirujano no van aquí]
+[Solo si hay datos de domicilio, apoyo familiar, trabajo o ayudas técnicas, tal como constan, sin deducir facilidades ni dificultades que nadie dijo (p. ej. «con escasas posibilidades de cambiar de postura»); la cirugía y las restricciones del cirujano no van aquí]
 
 ## HISTORIA CLÍNICA Y EVOLUCIÓN
 
 ### Presentación Inicial y Antecedentes
-[Mecanismo, inicio, evolución cronológica y episodios previos. La intensidad y la irritabilidad van en Dolor]
+[Mecanismo, inicio, evolución cronológica y episodios previos si constan (si nadie los menciona, no escribas que no los hay). La intensidad y la irritabilidad van en Dolor]
 
 ### Intervención Quirúrgica
 [Solo si hay cirugía: fecha, protocolo del cirujano con sus restricciones tal como constan, complicaciones y evolución posquirúrgica, sin repetir lo dicho en Condición de Salud]

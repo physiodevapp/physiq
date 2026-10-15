@@ -4,9 +4,9 @@
 // Nunca toca buildPhysiQPayload(), 📋 Notas ni 📄 Informe (decisión 9).
 import { state } from './state.js';
 import { DOSIS_DERIVAR, ZONAS_SINTOMA } from './data.js';
-import { REGIONES_PLAN, AVISOS, MINUTOS_SESION } from './data/plan-tratamiento.js';
+import { REGIONES_PLAN, AVISOS, MINUTOS_SESION, TEXTO_NIVELES } from './data/plan-tratamiento.js';
 import {
-  construirPlan, elegible, hipotesisPorDefecto, frecuenciaPorDefecto, textoPlanSesion, textoPlanMes, textoDomiciliario, faltaEnCasa, textoPosq,
+  construirPlan, elegible, nivelEfectivo, hipotesisPorDefecto, frecuenciaPorDefecto, textoPlanSesion, textoPlanMes, textoDomiciliario, faltaEnCasa, textoPosq,
   NIVELES_GRAVEDAD, NIVELES_IRRITABILIDAD, NOMBRE_GRAVEDAD, NOMBRE_IRRITABILIDAD,
 } from './lib/plan-tratamiento.js';
 import { hipotesis, hipotesisActivas, esTratada } from './phase4b.js';
@@ -101,7 +101,8 @@ function planActual() {
   const e = entrada(hs);
   const plan = construirPlan(e);
   const pt = state.planTratamiento;
-  if (pt.nivel === 'C' && !plan.niveles.C) pt.nivel = 'B';
+  // C sin propuesta, o A igual que B (no se ofrece): vale B
+  pt.nivel = nivelEfectivo(plan.niveles, pt.nivel);
   return { hs, e, plan };
 }
 
@@ -158,8 +159,8 @@ function pintar() {
   }).join('');
 
   const nv = plan.niveles;
-  const nivel = pt.nivel;
-  const esc_ = plan.tablaEscalones[nv[nivel] || nv.B];
+  const nivel = nivelEfectivo(nv, pt.nivel);
+  const esc_ = plan.tablaEscalones[nv[nivel]];
   const s = plan.sesion;
   const mes = plan.mes[pt.frecuencia];
 
@@ -192,13 +193,14 @@ function pintar() {
     ${plan.avisosHip.map(a => `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${esc(a)}</div></div>`).join('')}
     <div class="option-group plan-niveles">
       ${['A', 'B', 'C'].map(k => {
-        const n = nv[k];
+        // A igual que B no se ofrece: elegirla no cambiaría nada
+        const n = k === 'A' && nv.aIgual ? null : nv[k];
         const e = n ? plan.tablaEscalones[n] : null;
-        return opcion('nivel', k, `<strong>${k}</strong> · ${e ? esc(e.nombre) : '—'}`, nivel === k, { deshabilitado: !n, titulo: n ? '' : nv.sinC });
+        return opcion('nivel', k, `<strong>${k}</strong> · ${e ? esc(e.nombre) : '—'}`, nivel === k, { deshabilitado: !n, titulo: n ? '' : k === 'A' ? TEXTO_NIVELES.aIgual : nv.sinC });
       }).join('')}
     </div>
     ${nv.sinC ? `<div class="plan-ayuda">${esc(nv.sinC)}</div>` : ''}
-    ${nv.aIgual ? '<div class="plan-ayuda">A coincide con B: ya es el escalón más suave.</div>' : ''}
+    ${nv.aIgual ? `<div class="plan-ayuda">${esc(TEXTO_NIVELES.aIgual)}</div>` : ''}
     <div class="plan-escalon">
       <div class="plan-escalon-tit">Nivel ${nivel} · ${esc(esc_.nombre)} <span class="plan-calc">(${esc(esc_.modo)})</span></div>
       <div>${esc(esc_.texto)}</div>
@@ -308,7 +310,7 @@ function _compartir(doc, titulo, copiado) {
   const { e, plan } = planActual();
   const pt = state.planTratamiento;
   let texto;
-  if (doc === 'sesion') texto = textoPlanSesion(plan, e, pt.nivel);
+  if (doc === 'sesion') texto = textoPlanSesion(plan, e, nivelEfectivo(plan.niveles, pt.nivel));
   else if (doc === 'mes') texto = textoPlanMes(plan, e, pt.frecuencia);
   else texto = textoDomiciliario(plan, e, { ejercicios: pt.notas.domiciliario, parar: pt.notas.parar, planNotes: state.planNotes, frecuencia: pt.frecuencia });
   const extra = doc === 'sesion' ? pt.notas.sesion : doc === 'mes' ? pt.notas.mes : '';

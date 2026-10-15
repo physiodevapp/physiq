@@ -108,6 +108,7 @@ const titulosNarrativo = () => (_titulos ??= PLANTILLAS.narrativo
   .prompt({ p: '', r: '', d: '', h: [{ name: 'H' }], br: [], sq: [], pn: {} }, { conAudio: false, nombreRegion: r => r, ampliado: null })
   .split('ESTRUCTURA OBLIGATORIA')[1].split('\n')
   .filter(l => /^#{2,3} /.test(l)).map(l => l.replace(/^#+\s*/, '').trim()));
+const SINONIMOS_DX = { neoplas: ['cancer', 'tumor'], cancer: ['neoplas', 'tumor'], tumor: ['neoplas', 'cancer'], tumoral: ['neoplas', 'cancer', 'tumor'] };
 const RE_DIAGNOSTICOS = /\b(hemorragi\w*|aneurism\w*|intracraneal\w*|ictus|meningitis|tumor\w*|neoplasi\w*|neoplasic\w*|cancer\w*|metasta\w*|diseccion\w*|trombosis|infarto)\b/g;
 // Palabras de «para descartar X» que no nombran nada concreto
 const GENERICAS_DESCARTAR = new Set(['patologia', 'patologias', 'causas', 'origen', 'lesiones', 'afectacion', 'condiciones', 'condicion', 'alteracion', 'alteraciones', 'compromiso', 'presencia', 'posible', 'posibles', 'estructural', 'estructurales', 'procesos', 'proceso', 'problemas', 'subyacente', 'persistente', 'relevante', 'relevantes', 'grave', 'graves', 'otras', 'otros']);
@@ -426,13 +427,14 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   }
   // «confirma la hipótesis»: los tests apoyan, no confirman. No cuentan «pendiente
   // de confirmar» (modo breve) ni «confirmar con el cirujano» (posquirúrgico).
-  for (const m of t.matchAll(/\bconfirm(?:a|an|ado|ada|ados|adas|ar|aría|arían)\b/gi)) {
+  for (const m of t.matchAll(/\bconfirm(?:a|an|ado|ada|ados|adas|ar|aría|arían|ando)\b/gi)) {
     const antes = t.slice(Math.max(0, m.index - 30), m.index).toLowerCase();
     const frase = fraseEn(t, m.index);
     if (/pendientes? de\s*$|por\s*$|sin\s*$|\bno (?:se |la |lo )?\s*$/.test(antes) || /cirujano/i.test(frase)) continue;
     // Lo confirmado es la hipótesis o el diagnóstico (antes o justo después), no un síntoma
     const cerca = t.slice(Math.max(0, m.index - 60), m.index + 70);
-    if (!/hip[oó]tesis|diagn[oó]stic|s[ií]ndrome|patolog[ií]a|lesi[oó]n|tendinopat|rotura/i.test(cerca)) continue;
+    // (Andrés, lumbar, ronda 33: «…mejora al liberar la flexión cervical, confirmando la sensibilización neural»)
+    if (!/hip[oó]tesis|diagn[oó]stic|s[ií]ndrome|patolog[ií]a|lesi[oó]n|tendinopat|rotura|sensibilizaci[oó]n|neural|radicular/i.test(cerca)) continue;
     out.push(punto('confirma', 'medio', 'Dice que la exploración o los tests «confirman»: apoyan o son compatibles con una hipótesis.', frase));
     break;
   }
@@ -459,6 +461,12 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
     if (m) out.push(punto('limitaciones-negativas', 'medio', 'Limitaciones enumera lo que no le empeora; ahí solo van las actividades que le cuestan.', fraseEn(t, iLim + m.index)));
   }
   if ((r = primera(t, /no se dispone de|no se realiz[oó]|no se realizaron|no se (?:midi[oó]|evalu[oó]|explor[oó])|no ha sido (?:objeto de )?explora|no fue explorad|no se ha explorado|no evaluad[oa]|\bdesconoce\b|no sabr[ií]a decir|\bno sé\b|no se refieren? tratamientos|no constan? tratamientos|sin tratamientos previos/i)))
+    out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
+  // Episodios previos negados sin que nadie los mencionara: la plantilla pide
+  // «episodios previos» y el informe rellenó «No refiere episodios previos
+  // similares» (Andrés, lumbar, ronda 33)
+  else if (!/episodio|primera vez|recaida|anteriormente|(?:le|me) habia pasado/.test(fuenteN)
+    && (r = primera(t, /\b(?:no refiere|niega|sin|no presenta|no constan?|no se describen)\s+(?:otros\s+|ningún\s+)?(?:episodios?|cuadros?|antecedentes)\s+(?:previos|similares|anteriores)/i)))
     out.push(punto('relleno', 'medio', 'Menciona algo que no se hizo o que el paciente no sabía; lo que no consta no se menciona.', r.cita));
   // En modo breve, «el formulario previo» dentro de la frase de lo pendiente
   // es un pendiente, no una fuente: se sigue buscando
@@ -580,7 +588,12 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   }
   // Diagnósticos graves que no están ni en los datos ni en la consulta
   // («hemorragia subaracnoidea», «patología intracraneal»)
-  const dx = [...tn.matchAll(RE_DIAGNOSTICOS)].filter(m => !fuenteN.includes(m[1].slice(0, 7)));
+  // Sinónimos: «antecedentes de cáncer» en la consulta → «neoplasia» en el informe
+  // no es un diagnóstico nuevo (Andrés, lumbar, ronda 33)
+  const dx = [...tn.matchAll(RE_DIAGNOSTICOS)].filter(m => {
+    const raiz = m[1].slice(0, 7);
+    return ![raiz, ...(SINONIMOS_DX[raiz] || [])].some(r => fuenteN.includes(r));
+  });
   if (dx.length) {
     const nombres = [...new Set(dx.map(m => t.slice(m.index, m.index + m[1].length).toLowerCase()))];
     out.push(punto('diagnostico', 'medio', `Nombra diagnósticos que no están en los datos: ${nombres.map(n => `«${n}»`).join(', ')}.`, fraseEn(t, dx[0].index)));

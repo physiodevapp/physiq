@@ -100,6 +100,15 @@ export function niveles({ gravedad, irritabilidad, estabilidad }) {
   return { A: a, B: b, C: c, sinC, aIgual: a === b };
 }
 
+// El nivel que vale de verdad: B cuando el elegido no existe (C sin propuesta)
+// o no añade nada (A igual que B, que entonces no se ofrece). Así ni la
+// pantalla ni el texto compartido dicen «Nivel A» o «Nivel C» de una propuesta
+// que es la B.
+export function nivelEfectivo(nv, nivel) {
+  if (!nv?.[nivel] || (nivel === 'A' && nv.aIgual)) return 'B';
+  return nivel;
+}
+
 // Bloqueos que impiden cualquier plan (decisión 5): urgencias de la fase 2 y
 // derivaciones del árbol sin resolver.
 export function bloqueosPlan({ urgencias = [], derivaciones = [] } = {}) {
