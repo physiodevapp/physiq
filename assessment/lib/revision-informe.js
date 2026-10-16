@@ -98,7 +98,7 @@ const frases = t => t.split(/(?<=[.!?])\s+|\n+/).map(f => f.replace(/^[#\s]+/, '
 // Síntomas que el modelo puede sacar de un ejemplo del prompt: [nombre, raíz
 // en el texto sin acentos]. Solo cuenta si la raíz no aparece en los datos ni
 // en la transcripción (Lucía sí dijo «¿te despierta por la noche?»).
-const RE_CONSEJOS = /\b(pausas?|adaptacion (?:temporal )?del puesto|ergonomi\w*)\b/;
+const RE_CONSEJOS = /\b(pausas?|adaptacion (?:temporal )?del puesto|ergonomi\w*|modificacion (?:temporal )?de (?:las )?actividades)\b/;
 const INVENTABLES = [
   ['despertares nocturnos', /despert|despiert/],
 ];
@@ -566,8 +566,10 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // Consejos que nadie dio. Ronda 34 (Andrés, dictado): «Se recomienda la
   // adaptación temporal del puesto de trabajo… así como pausas durante la
   // conducción cada 20 minutos»; ni el fisio ni los datos lo indicaban.
+  // Ronda 35 (Andrés, dictado 3): «Se han proporcionado recomendaciones sobre
+  // modificación temporal de las actividades…», que tampoco constaba.
   if ((r = primera(tn, RE_CONSEJOS)) && !RE_CONSEJOS.test(fuenteN)) {
-    out.push(punto('consejo-inventado', 'medio', 'Recomienda algo que nadie indicó (pausas, adaptación del puesto, ergonomía): en el plan solo van las indicaciones que constan.', r.cita));
+    out.push(punto('consejo-inventado', 'medio', 'Recomienda algo que nadie indicó (pausas, adaptación del puesto, ergonomía, modificación de las actividades): en el plan solo van las indicaciones que constan.', r.cita));
   }
 
   // Secciones y subsecciones en el orden de la plantilla (movió Intervención

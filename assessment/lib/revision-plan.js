@@ -13,6 +13,7 @@
 //   noElegidas / derivar: nombres de hipótesis que el plan no trata
 //   independientes: síntomas independientes, «P3 · Zona lumbar» o { nombre, lado }
 //   primera: primera sesión de tratamiento (regla neural-primera)
+//   fuente: texto de los datos y de la consulta (regla diagnostico-estructural)
 // → [{ id, nivel: 'alto'|'medio', mensaje, cita? }]
 import { LIMITE_ESCALON, seccionesPlan, tieneMarca, normalizar } from './plan-ia.js';
 
@@ -33,6 +34,8 @@ const RE_POR = /\b\d+\s*[x×]\s*\d+\b/gi;
 const NUMEROS = { una: 1, un: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10 };
 const RE_PALABRA = /\b(una|un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\s+(series?|repeticiones?|veces|vez)\b/gi;
 function cifras(t) {
+  // «Descansa 1 minuto. Repite 3 veces» = 3 series (plan 2 de Andrés)
+  t = String(t).replace(/\b(repit\w*\s+)(\d+)\s+veces\b/gi, '$1$2 series');
   const out = [];
   for (const m of String(t).matchAll(RE_PALABRA)) {
     out.push(`${NUMEROS[m[1].toLowerCase()]} ${UNIDADES.find(([re]) => re.test(m[2].toLowerCase()))[1]}`);
@@ -72,9 +75,21 @@ const RE_NEURAL = /\b(slump|neural\w*|neurodin\w*|deslizamiento del nervio|tensi
 // Tensor o posición mantenida: lo que Butler deja para cuando el nervio tolera
 // carga; unos segundos sin oscilación también cuentan como mantenidos
 const RE_MANTENER = /\b(mant[eé]n\w*|mantenid[oa]s?|sost[eé]n\w*|sostenid[oa]s?)\b/i;
-const RE_TENSOR = /\b(tensor(?:es)?|en tensi[oó]n|mant[eé]n\w*|mantenid[oa]s?|sost[eé]n\w*|sostenid[oa]s?)\b/i;
+const RE_TENSOR = /\b(tensor(?:es)?|en tensi[oó]n)\b/i;
 const RE_SEGUNDOS = /\b(\d+(?:\s*[–-]\s*\d+)?)\s*(?:s|seg|segundos)\b/i;
-const RE_OSCILA = /\b(oscila\w*|r[ií]tmic\w*|vaiv[eé]n|de un lado a otro)\b/i;
+const RE_OSCILA = /\b(oscila\w*|r[ií]tmic\w*|vaiv[eé]n|de un lado a otro|desliz\w*|balance\w*)\b/i;
+// «mantener» de sostener la postura, no de «seguir haciendo»: con segundos o una
+// postura en su misma frase («mantener el deslizador» no cuenta; plan 2 de Andrés)
+function mantenidoEnFrase(l) {
+  for (const m of l.matchAll(new RegExp(RE_MANTENER.source, 'gi'))) {
+    const ini = Math.max(...[';', '.', ':'].map(c => l.lastIndexOf(c, m.index))) + 1;
+    const finRel = l.slice(m.index).search(/[;.:]/);
+    const frase = l.slice(ini, finRel < 0 ? l.length : m.index + finRel);
+    if (negadoEnFrase(l, m.index)) continue;
+    if (RE_SEGUNDOS.test(frase) || /\b(posici[oó]n|postura|en tensi[oó]n)\b/i.test(frase)) return { m, frase };
+  }
+  return null;
+}
 // Líneas con su contexto neural: un subpunto sangrado hereda el de su
 // ejercicio («1. Movilización del nervio…» → «   - Mantén 3 segundos»)
 function lineasNeurales(texto) {
@@ -83,7 +98,10 @@ function lineasNeurales(texto) {
   for (const raw of String(texto || '').split('\n')) {
     if (!raw.trim()) continue;
     const propio = RE_NEURAL.test(raw) || /\bnervios?\b/i.test(raw);
-    if (/^\S/.test(raw)) ctx = propio;
+    // Solo un título de ejercicio (encabezado, negrita o «1.») abre contexto; una
+    // viñeta o un párrafo lo heredan (plan 2 de Andrés: el bird-dog colgaba de
+    // la viñeta «mantener el deslizador neural…»)
+    if (/^(#|\*\*|\d+\.\s)/.test(raw)) ctx = propio;
     if (/^#/.test(raw)) continue;
     out.push({ l: raw.trim(), neural: propio || ctx });
   }
@@ -104,8 +122,14 @@ function primeraTecnica(sesion) {
     if (/^[-*•]\s/.test(l.trim())) break;
   }
   const t = tramo.join(' ');
-  return RE_NEURAL.test(t) ? tramo[tramo.length - 1] : null;
+  const tecnica = tramo[tramo.length - 1];
+  // Un deslizador u oscilación suave no cuenta (decisión 120): es como Butler
+  // manda empezar en lo irritable, lejos de la fuente (Butler 1991, pp. 188–189);
+  // el aviso de Maitland es del slump (plan 2 de Andrés)
+  return RE_NEURAL.test(t) && !RE_OSCILA.test(tecnica) ? tecnica : null;
 }
+
+const RE_ESTRUCTURA = /\b(protrusi[oó]n\w*|hernia\w*|extrusi[oó]n\w*|comprimi\w*|compresi[oó]n de la ra[ií]z|pinzamiento\w*|discopat\w*)\b/i;
 
 // ── 2. Fuentes ────────────────────────────────────────────────────────────────
 // «Autor 2021», «Autor y Autor 2005», «Autor et al. 2019», «(Autor, 2019)», NICE…
@@ -113,7 +137,7 @@ const RE_FUENTE = /\b([A-ZÁÉÍÓÚÑ][a-záéíóúñü'-]+)(?:\s+(?:y|e|&)\s+
 const RE_GUIA = /\b(NICE|APTA|JOSPT|KNGF|Cochrane)\b/g;
 const NO_AUTOR = new Set(['Sesión', 'Sesiones', 'Semana', 'Semanas', 'Plan', 'Nivel', 'Día', 'Días', 'En', 'Desde', 'Hasta', 'Octubre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Noviembre', 'Diciembre']);
 
-export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], noElegidas = [], derivar = [], independientes = [], primera = false } = {}) {
+export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], noElegidas = [], derivar = [], independientes = [], primera = false, fuente = '' } = {}) {
   const puntos = [];
   const sec = seccionesPlan(texto);
   const sesionMes = [sec['SESIÓN'] || '', sec['PLAN DEL MES'] || ''].join('\n');
@@ -170,15 +194,28 @@ export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], 
   // programa para casa también lleva ejercicios neurales.
   for (const { l, neural } of lineasNeurales(texto)) {
     if (!neural) continue;
+    const mant = mantenidoEnFrase(l);
     if (escalon <= 2) {
       let m = l.match(RE_TENSOR);
       if (m && negadoEnFrase(l, m.index)) m = null;
+      if (!m && mant) m = mant.m;
       if (!m && !RE_OSCILA.test(l)) m = l.match(RE_SEGUNDOS);
       if (m) puntos.push({ id: 'neural-tensor', nivel: 'medio', mensaje: `Técnica neural en tensión o mantenida («${m[0].trim()}») con el escalón ${escalon}: en fase aguda o irritable, deslizadores u oscilaciones lentas en series de unos 20–30 s, con el resto del cuerpo descargado y antes del síntoma, nada mantenido (Butler 2000, pp. 379–381 y 387; Butler 1991, pp. 188–189).`, cita: recorte(l) });
     } else {
-      const m = l.match(RE_MANTENER);
-      const largo = m && !negadoEnFrase(l, m.index) && [...l.matchAll(new RegExp(RE_SEGUNDOS.source, 'gi'))].find(x => Math.max(...x[1].split(/[–-]/).map(Number)) > 10);
+      const largo = mant && [...mant.frase.matchAll(new RegExp(RE_SEGUNDOS.source, 'gi'))].find(x => Math.max(...x[1].split(/[–-]/).map(Number)) > 10);
       if (largo) puntos.push({ id: 'neural-tensor', nivel: 'medio', mensaje: `Técnica neural mantenida más de 10 s («${largo[0].trim()}»): como mucho 10 s, y lo provocado debe ceder a los pocos segundos de soltar (Butler 1991, pp. 192–193).`, cita: recorte(l) });
+    }
+  }
+
+  // 3d. Diagnóstico estructural que no consta (decisión 120): el plan 2 de
+  // Andrés explicaba el dolor «por una protrusión discal que está comprimiendo
+  // la raíz», sin imagen ni dato que lo dijera.
+  const base = normalizar(`${esqueleto} ${fuente}`);
+  for (const l of lineas(texto)) {
+    const m = l.match(RE_ESTRUCTURA);
+    if (m && !base.includes(normalizar(m[1]).slice(0, 6)) && !negado(l, m.index)) {
+      puntos.push({ id: 'diagnostico-estructural', nivel: 'medio', mensaje: `Atribuye el dolor a una estructura o lesión que no consta en los datos («${m[1]}»): explica la hipótesis sin dar por hecha la lesión.`, cita: recorte(l) });
+      break;
     }
   }
 
