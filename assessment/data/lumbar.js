@@ -33,7 +33,7 @@ import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_ENDOCRINO, SIS_HEMATOLOGICO 
 // tarjeta no dice «el lado de la región» (sin preselección: el fisio marca).
 // `recordatorio` (lib/sintomas.js, recordatoriosZona()): texto bajo los chips,
 // solo mientras `l6` no esté en SÍ, con enlace a esa pregunta. Solo recuerda:
-// nunca contesta, quita ni rebaja la urgencia de l6.
+// nunca contesta, quita ni rebaja la urgencia de l6. Texto revisado por el usuario (2026-10).
 // `redNeuro`: un síntoma en esa zona trae a la fase 6 la red de seguridad
 // neurológica de la región (cola de caballo, Finucane 2020, sección 2) aunque
 // no haya hipótesis neurológica.
