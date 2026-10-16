@@ -18,6 +18,9 @@ import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { nombreRegion, regionConLado } from './lib/region.js';
 import { TEXTO_VALORACION_BREVE, textoNotas, textoInformePaciente } from './lib/resumenes.js';
 import { ramaPauta } from './lib/pauta.js';
+import { HM, ESTADOS_HM, SUBTIPOS_HM, hipermovilidadVacia, normalizarHipermovilidad, hmActiva, elementoHMVisible,
+  cuestionarioVisible, beightonVisible, casillasBeighton, resultadoHAG, siCuestionario, respondidasCuestionario,
+  reglaVascular, hmPayload, lineasRecomendacionHM } from './lib/hipermovilidad.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -287,6 +290,7 @@ function _softResetApp() {
   state.antropometria = { talla: null, peso: null };
   state.mecanismo = '';
   state.cirugia = cirugiaVacia();
+  state.hipermovilidad = hipermovilidadVacia();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -388,6 +392,7 @@ function _softResetApp() {
   }
   _pintarModoUI();   // el modo se conserva, pero el bucle de .option-btn de arriba quitó su selección
   _pintarCirugiaUI();
+  _pintarHMUI();
 }
 
 // «Reiniciar valoración» vive en el panel de sesión (antes, en la cabecera):
@@ -870,6 +875,145 @@ function getCirugiaPayload() {
   return cirugiaPayload(state.mecanismo, state.cirugia);
 }
 
+// ─── HIPERMOVILIDAD / EHLERS-DANLOS (Fase P, docs/hipermovilidad.md) ─────
+// Tarjeta de la fase 1: No consta (nada marcado) · Diagnosticada · Sospecha,
+// con subtipo si está diagnosticada. Activa el sistema de la fase 2, el aviso
+// de los tests de laxitud de la 4b y el recuadro de la fase 5.
+function _pintarHMUI() {
+  const hm = state.hipermovilidad;
+  document.body.classList.toggle('hipermovilidad', hmActiva(hm));
+  document.querySelectorAll('#hmEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === hm.estado));
+  document.querySelectorAll('#hmSubtipo .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === hm.subtipo));
+  const sub = document.getElementById('hmSubtipoWrap');
+  if (sub) sub.style.display = hm.estado === 'diagnosticada' ? '' : 'none';
+}
+
+// Cambiar el estado o el subtipo cambia qué se pregunta en la fase 2 (se
+// repinta conservando las respuestas) y los avisos de la 4b.
+function _hmCambio() {
+  _pintarHMUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectHMEstado(valor) {
+  state.hipermovilidad.estado = state.hipermovilidad.estado === valor ? '' : valor;
+  _hmCambio();
+}
+
+function selectHMSubtipo(valor) {
+  state.hipermovilidad.subtipo = state.hipermovilidad.subtipo === valor ? '' : valor;
+  _hmCambio();
+}
+
+// Cuestionario de 5 preguntas: un segundo toque sobre la respuesta marcada la quita.
+function selectHMCuest(id, valor) {
+  const c = state.hipermovilidad.cuestionario;
+  if (c[id] === valor) delete c[id]; else c[id] = valor;
+  _pintarHMBloques();
+  saveSession();
+}
+
+function hmBeightonHacer() {
+  state.hipermovilidad.beighton = {};
+  _pintarHMBloques();
+  saveSession();
+}
+
+function hmBeightonQuitar() {
+  state.hipermovilidad.beighton = null;
+  _pintarHMBloques();
+  saveSession();
+}
+
+function toggleHMBeighton(k) {
+  const b = state.hipermovilidad.beighton;
+  if (!b) return;
+  if (b[k]) delete b[k]; else b[k] = true;
+  _pintarHMBloques();
+  saveSession();
+}
+
+// Payload `hm` (null sin la condición activa).
+function getHMPayload() {
+  return hmPayload(state.hipermovilidad, state.edadPaciente, state.sistemicoAnswers);
+}
+
+// Bloque del sistema de la fase 2 (va dos veces: panel de escritorio y acordeón).
+function _hmBloqueHTML() {
+  const hm = state.hipermovilidad;
+  const partes = [];
+  if (cuestionarioVisible(hm)) {
+    const n = respondidasCuestionario(hm), si = siCuestionario(hm);
+    partes.push(`<div class="screening-section-title">📝 Cuestionario de 5 preguntas</div>
+      ${HM.cuestionario.map((q, i) => `<div class="sq2 hm-cq">
+        <div class="sq2-badge">${i + 1}</div>
+        <div class="sq2-text">${q.texto}</div>
+        <div class="sq-btns">
+          <button type="button" class="sq-btn si${hm.cuestionario[q.id] === 'SI' ? ' selected' : ''}" onclick="selectHMCuest('${q.id}','SI')">SÍ</button>
+          <button type="button" class="sq-btn no${hm.cuestionario[q.id] === 'NO' ? ' selected' : ''}" onclick="selectHMCuest('${q.id}','NO')">NO</button>
+        </div>
+      </div>`).join('')}
+      <div class="hm-resultado">${n ? `${si} de ${n} con «sí»${si >= 2 ? ': cuestionario positivo' : ''}` : 'Sin contestar'}</div>
+      <div class="hm-fuente">${citasEnTexto(HM.cuestionarioFuente)}</div>`);
+  }
+  if (beightonVisible(hm)) {
+    const b = hm.beighton;
+    let cuerpo;
+    if (!b) {
+      cuerpo = `<button type="button" class="btn-secondary hm-btn" onclick="hmBeightonHacer()">Hacer la escala de Beighton</button>`;
+    } else {
+      const r = resultadoHAG(hm, state.edadPaciente);
+      const fila = (k, txt) => `<label class="hm-casilla"><input type="checkbox"${b[k] ? ' checked' : ''} onchange="toggleHMBeighton('${k}')"> ${txt}</label>`;
+      cuerpo = `${HM.beighton.map(m => `<div class="hm-maniobra">
+          <div class="hm-maniobra-txt">${m.texto}</div>
+          <div class="hm-lados">${m.lados ? fila(`${m.id}_d`, 'Derecho') + fila(`${m.id}_i`, 'Izquierdo') : fila(m.id, 'Positivo')}</div>
+        </div>`).join('')}
+        <div class="hm-resultado">Beighton ${r.puntos}/9${r.corte != null ? ` · corte ${r.corte} (${r.grupo})` : ''}</div>
+        ${r.estado === 'sin-edad' ? `<div class="criterio-compuesto-hint">Indique la edad del paciente en la Fase 1 para aplicar el corte por edad.</div>` : ''}
+        ${r.estado === 'hag' ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(HM.textos.derivarHAG)}${r.porCuestionario ? '<div class="hm-nota">Un punto por debajo del corte, con el cuestionario positivo.</div>' : ''}</div></div>` : ''}
+        ${r.estado === 'no-hag' ? `<div class="hm-nota">${HM.textos.sinHAG}</div>` : ''}
+        <div class="hm-fuente">${citasEnTexto(HM.beightonFuente)} ${citasEnTexto(HM.cortesFuente)}</div>
+        <div class="hm-fuente">${citasEnTexto(HM.notaLimitacion)}</div>
+        <button type="button" class="hm-quitar" onclick="hmBeightonQuitar()">Quitar la escala</button>`;
+    }
+    partes.push(`<div class="screening-section-title">🤸 Escala de Beighton${hm.estado === 'diagnosticada' ? ' (opcional)' : ''}</div>${cuerpo}`);
+  }
+  return partes.join('');
+}
+
+function _pintarHMVascular() {
+  const r = reglaVascular(state.hipermovilidad, state.sistemicoAnswers);
+  const html = !r || !r.total ? ''
+    : r.derivar
+      ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(HM.textos.derivarVascular)}</div></div>`
+      : `<div class="criterio-compuesto-hint">${citasEnTexto(HM.textos.hallazgoVascular)}</div>`;
+  document.querySelectorAll('[data-hm-vascular]').forEach(el => { el.innerHTML = html; });
+}
+
+function _pintarHMBloques() {
+  const html = _hmBloqueHTML();
+  document.querySelectorAll('[data-hm-bloque]').forEach(el => { el.innerHTML = html; });
+  _pintarHMVascular();
+}
+
+// Recuadro de la fase 5 (docs/hipermovilidad.md): nunca se pliega.
+function _hipermovilidadResultadosHTML(d) {
+  const estado = d.es === 'diagnosticada'
+    ? `Diagnosticada${d.st && d.st !== 'ns' ? ` · subtipo ${SUBTIPOS_HM[d.st].toLowerCase()}` : ''}`
+    : 'Sospecha';
+  const datos = [d.bt != null ? `Beighton ${d.bt}/9${d.co != null ? ` (corte ${d.co})` : ''}` : '',
+    d.cu != null ? `cuestionario ${d.cu}/5` : ''].filter(Boolean).join(' · ');
+  return `
+    <div class="alert alert-info hm-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">🧬</span>
+      <div><strong>Hipermovilidad.</strong> ${estado}${datos ? ` · ${datos}` : ''}
+        ${lineasRecomendacionHM(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
 // «Ya diagnosticada y tratada» (casilla en la 4b y en la fase 5; decisión 5).
 // No depende del mecanismo: también vale para una fractura con yeso o una
 // gota ya en tratamiento.
@@ -947,8 +1091,9 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const porEmbudo = sistemasActivos().filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
-    const sinCribar = sistemasActivos().filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad);   // el de hipermovilidad no tiene embudo
+    const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
+    const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
     if (sinCribar.length) pendientes.push({ fase: 2, texto: `Sistemas sin cribar: ${sinCribar.join(', ')}` });
   } else if (state.maxVisitedIdx >= 1) {
@@ -963,6 +1108,9 @@ function getPendientesBreve() {
   if (!resumenFormularioPrevio().length) pendientes.push({ fase: 1, texto: 'Formulario previo sin rellenar' });
   if (esPosquirurgico(state.mecanismo) && !conProtocolo(state.cirugia)) {
     pendientes.push({ fase: 1, ancla: 'cardCirugia', texto: `${TEXTO_SIN_PROTOCOLO} (sin protocolo)` });
+  }
+  if (state.hipermovilidad?.estado === 'sospecha' && state.hipermovilidad.beighton === null) {
+    pendientes.push({ fase: 2, texto: 'Escala de Beighton sin hacer (sospecha de hipermovilidad)' });
   }
   return pendientes;
 }
@@ -1115,9 +1263,12 @@ function applyRegionChange(regionId, card) {
 function sistemasActivos(regionId = state.region) {
   const data = SYSTEMIC_SCREENING[regionId];
   if (!data) return [];
-  const enRegion = x => typeof x === 'string' || !x.regiones || x.regiones.includes(regionId);
+  // Fase P: el sistema de hipermovilidad solo con la tarjeta activa, y de él
+  // solo las preguntas y banderas de su estado (`hm`, lib/hipermovilidad.js)
+  const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId)) && elementoHMVisible(x, state.hipermovilidad);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
+    .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -1154,6 +1305,7 @@ function _repintarCribado() {
   });
   evaluarCriteriosCompuestos(state.region);
   sistemasActivos().forEach(sis => _pintarEmbudo(sis.id));
+  _pintarHMBloques();
   updateSistemicoAlert();
 }
 
@@ -1241,6 +1393,7 @@ function buildSistemicoQuestions(regionId) {
 
   wrap.style.display = 'block';
   evaluarCriteriosCompuestos(regionId);
+  _pintarHMBloques();
   sistemas.forEach(sis => _pintarEmbudo(sis.id));
   updateSistemicoAlert();
 }
@@ -1276,7 +1429,12 @@ function buildSistemaHTML(sis) {
   // Con NO se pliegan las preguntas del sistema salvo las de `urgencia`, que
   // se ven siempre. Oculto por CSS en modo completo.
   const tieneUrg = sis.preguntas.some(q => q.urgencia);
-  html += `<div class="embudo" data-embudo="${sis.id}">
+  // El sistema de hipermovilidad (Fase P) no tiene embudo: lo activó el fisio
+  // a propósito y sus pocas preguntas se hacen siempre (`sinEmbudo`).
+  if (sis.soloHipermovilidad) {
+    html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
+      <div class="hm-bloque" data-hm-bloque></div>`;
+  } else html += `<div class="embudo" data-embudo="${sis.id}">
       <span class="embudo-q">¿Presenta alguna de estas banderas rojas?
         <span class="embudo-nota">SÍ abre las preguntas de este sistema una a una.${tieneUrg ? ' Las preguntas de urgencia se hacen siempre.' : ''}</span></span>
       <div class="sq-btns">
@@ -1287,7 +1445,7 @@ function buildSistemaHTML(sis) {
     <div class="sis-body${tieneUrg ? ' tiene-urg' : ''}" data-sis-body="${sis.id}">`;
 
   // Screening questions
-  html += `<div class="screening-section-title">❓ Preguntas de Cribado</div>`;
+  if (sis.preguntas.length) html += `<div class="screening-section-title">❓ Preguntas de Cribado</div>`;
   sis.preguntas.forEach((q, qi) => {
     const urgBadge = q.urgencia ? `<span class="sq2-urg-badge">Urgencia</span>` : '';
     html += `
@@ -1312,6 +1470,8 @@ function buildSistemaHTML(sis) {
   if (sis.criterioCompuesto) {
     html += `<div id="criterioCompuesto_${sis.id}" class="criterio-compuesto-alert"></div>`;
   }
+  // Regla de sospecha del subtipo vascular (lib/hipermovilidad.js)
+  if (sis.soloHipermovilidad) html += `<div class="criterio-compuesto-alert" data-hm-vascular></div>`;
 
   html += `<div class="sis-extra">`;
   // Referred pain zones
@@ -1613,6 +1773,7 @@ function updateEdadPaciente(value) {
   const edad = value === '' ? null : parseInt(value, 10);
   state.edadPaciente = (edad === null || isNaN(edad)) ? null : edad;
   evaluarCriteriosCompuestos(state.region);
+  _pintarHMBloques();   // el corte de Beighton depende de la edad
   saveSession();
 }
 
@@ -1879,6 +2040,7 @@ function selectSistQ(btn, id, value, isAlerta, sisId) {
     if (tab) tab.classList.toggle('has-alert', hasAlert);
     if (accRow) accRow.classList.toggle('has-alert', hasAlert);
     if (sis.criterioCompuesto) evaluarCriterioCompuesto(sis);
+    if (sis.soloHipermovilidad) _pintarHMVascular();
     _pintarEmbudo(sisId);
   }
 
@@ -1911,7 +2073,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -2280,6 +2442,9 @@ function buildResults() {
   // ── Paciente posquirúrgico: el plan se supedita al protocolo del cirujano
   const cq = getCirugiaPayload();
   if (cq) container.innerHTML += _cirugiaResultadosHTML(cq);
+  // ── Hipermovilidad (Fase P): consideraciones para el plan, nunca plegadas
+  const hm = getHMPayload();
+  if (hm) container.innerHTML += _hipermovilidadResultadosHTML(hm);
 
   // ── Header summary
   container.innerHTML += `
@@ -3106,6 +3271,7 @@ function buildPhysiQPayload() {
     an: { ...state.antropometria, imc: calcImc(state.antropometria.peso, state.antropometria.talla) },
     me: state.mecanismo,
     ...(getCirugiaPayload() ? { cq: getCirugiaPayload() } : {}),
+    ...(getHMPayload() ? { hm: getHMPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
@@ -3808,6 +3974,7 @@ function _hasAssessmentData() {
     || _hasVitalsData()
     || !!state.mecanismo
     || !!state.cirugia?.intervencion
+    || !!state.hipermovilidad?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -3905,9 +4072,11 @@ function _restoreSessionDOM() {
   ['mecanismo', 'cronologia', 'riesgoPsico', 'sexo'].forEach(g => _restoreOptionBtnGroup(g, state[g]));
   // Sesiones anteriores al posquirúrgico: sin cirugia / derivacionResuelta
   state.cirugia = { ...cirugiaVacia(), ...(state.cirugia || {}) };
+  state.hipermovilidad = normalizarHipermovilidad(state.hipermovilidad);   // sesiones anteriores a la Fase P
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
   _pintarCirugiaUI();
+  _pintarHMUI();
   _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
@@ -4033,6 +4202,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuickInputBars();
   // Tarjeta «Cirugía»: chips de complicaciones (se repinta al restaurar sesión)
   _pintarCirugiaUI();
+  _pintarHMUI();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
   precargarFormularioPrevio();
 
@@ -4208,6 +4378,7 @@ Object.assign(window, {
   cycleThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor,
   updateCirugia, selectCirProtocolo, toggleCirComplicacion, toggleDiagnosticoTratado,
+  selectHMEstado, selectHMSubtipo, selectHMCuest, toggleHMBeighton, hmBeightonHacer, hmBeightonQuitar,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========

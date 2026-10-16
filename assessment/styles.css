@@ -2916,6 +2916,28 @@ body.posquirurgico .solo-posq { display: block; }
 .dx-tratada-ayuda { display: block; font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
 .dx-tratada-tests > summary { cursor: pointer; font-size: 0.8rem; color: var(--text3); margin-bottom: 8px; }
 
+/* ── Hipermovilidad / Ehlers-Danlos (Fase P, docs/hipermovilidad.md) ──
+   Tarjeta de la fase 1, bloque del sistema de la fase 2 (cuestionario y
+   escala de Beighton), aviso de los tests de laxitud (4b) y recuadro de la
+   fase 5. Lo activa body.hipermovilidad (_pintarHMUI en app.js). */
+.hm-subtipo { margin-top: 12px; margin-bottom: 0; }
+.hm-subtipos { flex-wrap: wrap; }
+.hm-subtipos .option-btn { width: auto; flex: 0 0 auto; padding: 8px 12px; font-size: 0.8rem; min-height: 40px; }
+.hm-bloque:empty { display: none; }
+.hm-bloque { margin-bottom: 1rem; }
+.hm-btn { min-height: 44px; }
+.hm-maniobra { padding: 10px 12px; margin-bottom: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); }
+.hm-maniobra-txt { font-size: 0.85rem; line-height: 1.45; color: var(--text); margin-bottom: 6px; }
+.hm-lados { display: flex; gap: 16px; flex-wrap: wrap; }
+.hm-casilla { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; font-size: 0.85rem; color: var(--text2); cursor: pointer; }
+.hm-casilla input { width: 18px; height: 18px; accent-color: var(--accent); }
+.hm-resultado { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--accent); margin: 8px 0; }
+.hm-nota { font-size: 0.8rem; color: var(--text2); margin: 6px 0; }
+.hm-fuente { font-size: 0.75rem; color: var(--text3); line-height: 1.45; margin-top: 6px; }
+.hm-quitar { background: none; border: none; padding: 8px 0; min-height: 40px; font: inherit; font-size: 0.8rem; color: var(--text3); text-decoration: underline; cursor: pointer; }
+.hm-aviso-test { margin: 6px 0; font-size: 0.8rem; line-height: 1.45; color: var(--text2); border-left: 2px solid var(--orange); padding-left: 8px; }
+.hm-fase5 > div > div { margin-top: 4px; }
+
 /* Aviso inferior (showToast, app.js). En escritorio, píldora centrada abajo;
    width: max-content porque con left: 50% el navegador solo le dejaba medio
    viewport y un mensaje corto se partía en tres líneas. En móvil (≤768 px),

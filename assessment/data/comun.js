@@ -591,3 +591,132 @@ export const HIP_POSQUIRURGICA = {
     tobillo_pie: 'FAAM o LEFS',
   },
 };
+
+// ─── Condición especial: hipermovilidad / Ehlers-Danlos (Fase P) ─────────────
+// docs/hipermovilidad.md. Sistema común a las 7 regiones que solo se ve con la
+// tarjeta «Hipermovilidad» de la fase 1 en Diagnosticada o Sospecha
+// (`soloHipermovilidad`, sistemasActivos() en app.js). Cada pregunta lleva
+// `hm`: 'urgencia' (con el subtipo vascular diagnosticado o con Sospecha) o
+// 'sospecha' (con Sospecha, o Diagnosticada con subtipo otro o no lo sabe);
+// `hmPeso` es el peso de la regla de sospecha del subtipo vascular (lib/hipermovilidad.js).
+// El cuestionario y la escala de Beighton no son preguntas de cribado (un «sí»
+// no es una bandera): van en `hipermovilidad` y se guardan en state.hipermovilidad.
+const HM_CITA = {
+  malfait: 'Malfait 2017 — Malfait, Francomano, Byers et al., «The 2017 international classification of the Ehlers-Danlos syndromes», Am J Med Genet C Semin Med Genet 2017;175(1):8–26',
+  byers: 'Byers 2017 — Byers, Belmont, Black et al., «Diagnosis, natural history, and management in vascular Ehlers-Danlos syndrome», Am J Med Genet C Semin Med Genet 2017;175(1):40–47',
+};
+export const SIS_HIPERMOVILIDAD = {
+  id: 'transversal_hipermovilidad', icon: '🧬', nombre: 'Hipermovilidad', soloHipermovilidad: true,
+  banderasRojas: [
+    { texto: 'Dolor brusco e intenso que va a más en el abdomen, el flanco, la espalda, el pecho o un miembro (disección o rotura arterial, rotura de colon)', hm: 'urgencia', pregunta: 'hm_v_dolor' },
+    { texto: 'Zumbido brusco en la sien con el ojo rojo, dolorido o más saltón (fístula carótido-cavernosa)', hm: 'urgencia', pregunta: 'hm_v_ojo' },
+    { texto: 'Falta de aire brusca (neumotórax espontáneo)', hm: 'urgencia', pregunta: 'hm_v_aire' },
+  ],
+  banderasAmarillas: [],
+  preguntas: [
+    { id: 'hm_v_dolor', hm: 'urgencia', urgencia: 'Posible disección o rotura arterial, o rotura de colon: urgencias hoy.', alerta: true,
+      text: '¿Ha tenido de forma brusca un dolor intenso, que va a más, en el abdomen, el flanco, la espalda, el pecho o un brazo o una pierna?',
+      razonamiento: {
+        porque: 'En el SED vascular, una variante de COL3A1 altera el colágeno de tipo III, proteína principal de la pared de los vasos y de las vísceras huecas: por eso las arterias y el colon se disecan o se rompen (Byers 2017, p. 40). La disección duele por el desgarro de la pared, por su distensión o por la isquemia del órgano o del miembro distal (Byers 2017, p. 43). La rotura del colon da un dolor en crescendo rápido, sin alivio, casi siempre en la fosa iliaca izquierda (Byers 2017, p. 44).',
+        peso: 'La disección o rotura arterial es la causa principal de muerte en el SED vascular, con una mediana de vida de unos 51 años (Byers 2017, p. 41). Las arterias que más dan síntomas son las iliacas y femorales, las mesentéricas y el tronco celiaco, las renales, la aorta y las de los miembros (p. 43); también hay disección coronaria con infarto (p. 44). La rotura de colon llega a afectar al 25–30 % (p. 42). Ante el cuadro, urgencias hoy.',
+        fuentes: ['Byers 2017'],
+        citas: [`${HM_CITA.byers}, pp. 40–44.`]
+      } },
+    { id: 'hm_v_ojo', hm: 'urgencia', urgencia: 'Posible fístula carótido-cavernosa: urgencia médica, hoy.', alerta: true,
+      text: '¿Ha notado de repente un zumbido en la sien, con el ojo rojo, dolorido o más saltón?',
+      razonamiento: {
+        porque: 'En la fístula carótido-cavernosa la sangre arterial vuelve por las venas que rodean el ojo. El paciente puede notar un zumbido brusco en la sien, y después el ojo se inyecta, duele alrededor y se hace más saltón, con pérdida lenta de agudeza visual (Byers 2017, p. 45).',
+        peso: 'Es una urgencia médica; el único tratamiento es cerrar la fístula, casi siempre por cateterismo (Byers 2017, p. 45). Un ojo algo saltón forma parte de la cara característica del SED vascular y por sí solo no es este cuadro (p. 45).',
+        fuentes: ['Byers 2017'],
+        citas: [`${HM_CITA.byers}, p. 45.`]
+      } },
+    { id: 'hm_v_aire', hm: 'urgencia', urgencia: 'Posible neumotórax: urgencias hoy.', alerta: true,
+      text: '¿Le ha faltado el aire de forma brusca, o le duele el pecho al respirar?',
+      razonamiento: {
+        porque: 'El neumotórax espontáneo aparece en el 12 % de las personas con SED vascular, a menudo como primera manifestación; la causa probable es la rotura de pequeñas ampollas del pulmón (Byers 2017, p. 44).',
+        peso: 'Recurre con frecuencia y puede necesitar desde una aspiración con aguja hasta un drenaje torácico (Byers 2017, p. 42): ante la sospecha, urgencias hoy.',
+        fuentes: ['Byers 2017'],
+        citas: [`${HM_CITA.byers}, pp. 42 y 44.`]
+      } },
+    { id: 'hm_s_familia', hm: 'sospecha', hmPeso: 'mayor',
+      text: '¿Algún familiar de primer grado con SED vascular, o con una rotura o disección arterial antes de los 40 años?',
+      razonamiento: {
+        porque: 'El SED vascular se hereda de forma autosómica dominante (Byers 2017, p. 40). Alrededor de la mitad de los casos no tienen antecedentes familiares, y entonces el diagnóstico suele llegar tras una complicación grave (p. 41).',
+        peso: 'Un antecedente familiar de la enfermedad, o de rotura o disección arterial antes de los 40 años, debe llevar a estudiar el subtipo vascular (Malfait 2017, p. 16). Por eso un SÍ basta para la derivación preferente a genética.',
+        fuentes: ['Malfait 2017', 'Byers 2017'],
+        citas: [`${HM_CITA.malfait}, p. 16.`, `${HM_CITA.byers}, pp. 40–41.`]
+      } },
+    { id: 'hm_s_rotura', hm: 'sospecha', hmPeso: 'mayor',
+      text: '¿Ha tenido una rotura arterial o una rotura de intestino sin causa conocida?',
+      razonamiento: {
+        porque: 'La rotura arterial a edad joven y la perforación espontánea del sigma sin enfermedad diverticular son criterios mayores del SED vascular (Malfait 2017, p. 16). Sin antecedentes familiares, el diagnóstico no suele plantearse hasta después de una rotura (Byers 2017, p. 41).',
+        peso: 'Una rotura arterial antes de los 40 años o una rotura de sigma sin causa deben llevar a estudiar el subtipo vascular (Malfait 2017, p. 16). Un SÍ basta para la derivación preferente a genética.',
+        fuentes: ['Malfait 2017', 'Byers 2017'],
+        citas: [`${HM_CITA.malfait}, p. 16.`, `${HM_CITA.byers}, p. 41.`]
+      } },
+    { id: 'hm_s_neumo', hm: 'sospecha', hmPeso: 'menor',
+      text: '¿Ha tenido algún neumotórax espontáneo?',
+      razonamiento: {
+        porque: 'El neumotórax espontáneo es un criterio menor del SED vascular (Malfait 2017, p. 16); aparece en el 12 % de los afectados, a menudo como primera manifestación (Byers 2017, p. 44).',
+        peso: 'Malfait lo cuenta para estudiar el subtipo vascular solo junto con otros rasgos compatibles (p. 16): por sí solo es un hallazgo, sin derivación.',
+        fuentes: ['Malfait 2017', 'Byers 2017'],
+        citas: [`${HM_CITA.malfait}, p. 16.`, `${HM_CITA.byers}, p. 44.`]
+      } },
+    { id: 'hm_s_piel', hm: 'sospecha', hmPeso: 'menor',
+      text: '¿Le salen hematomas sin golpes, en sitios poco habituales (mejillas, espalda), o tiene la piel fina y translúcida, con las venas muy visibles?',
+      razonamiento: {
+        porque: 'Los hematomas sin un traumatismo identificado o en sitios poco habituales, como las mejillas o la espalda, y la piel fina y translúcida con las venas más visibles son criterios menores del SED vascular (Malfait 2017, p. 16). En la infancia, los hematomas fáciles son la forma de presentación más común (Byers 2017, p. 41).',
+        peso: 'La piel fina suele ser un hallazgo sutil; son más frecuentes los hematomas sin traumatismo, que aumentan con la aspirina o los antiinflamatorios (Byers 2017, p. 45). Cuenta como criterio menor: deriva junto con otro rasgo (Malfait 2017, p. 16).',
+        fuentes: ['Malfait 2017', 'Byers 2017'],
+        citas: [`${HM_CITA.malfait}, p. 16.`, `${HM_CITA.byers}, pp. 41 y 45.`]
+      } },
+    { id: 'hm_s_varices', hm: 'sospecha', hmPeso: 'menor',
+      text: '¿Tuvo varices antes de los 30 años (y, si es mujer, sin haber estado embarazada)?',
+      razonamiento: {
+        porque: 'Las varices de comienzo precoz, antes de los 30 años y, en una mujer, sin embarazos, son un criterio menor del SED vascular (Malfait 2017, p. 16). La insuficiencia venosa superficial es más frecuente que en la población general (37 % frente a 17–23 %) y casi la mitad la nota antes de los 20 años (Byers 2017, p. 45).',
+        peso: 'Cuenta como criterio menor: deriva junto con otro rasgo (Malfait 2017, p. 16).',
+        fuentes: ['Malfait 2017', 'Byers 2017'],
+        citas: [`${HM_CITA.malfait}, p. 16.`, `${HM_CITA.byers}, p. 45.`]
+      } },
+  ],
+  // Cuestionario, escala de Beighton y textos de la condición. Las citas de
+  // los textos cuentan en docs/referencias.md como menciones del cribado.
+  hipermovilidad: {
+    cuestionario: [
+      { id: 'cq1', texto: '¿Puede ahora (o pudo alguna vez) apoyar las palmas de las manos en el suelo sin doblar las rodillas?' },
+      { id: 'cq2', texto: '¿Puede ahora (o pudo alguna vez) doblar el pulgar hasta tocar el antebrazo?' },
+      { id: 'cq3', texto: 'De niño o niña, ¿entretenía a sus amigos contorsionando el cuerpo en posturas raras, o podía abrirse de piernas del todo (spagat)?' },
+      { id: 'cq4', texto: 'De niño o adolescente, ¿se le salió el hombro o la rótula más de una vez?' },
+      { id: 'cq5', texto: '¿Se considera una persona hiperlaxa, «de goma», o con las articulaciones muy flexibles?' },
+    ],
+    cuestionarioFuente: 'Malfait 2017, tabla III, p. 17 (adaptado del cuestionario de Hakim y Grahame; traducción propia, no validada). Dos o más «sí» sugieren hipermovilidad: sensibilidad del 80–85 % y especificidad del 80–90 %.',
+    beighton: [
+      { id: 'menique', texto: 'Meñique: la MCF se hiperextiende más de 90° con la palma y el antebrazo apoyados y el codo a 90°', lados: true },
+      { id: 'pulgar', texto: 'Pulgar: se lleva pasivamente hasta tocar el antebrazo, con el brazo al frente y la mano en pronación', lados: true },
+      { id: 'codo', texto: 'Codo: se extiende más de 10°, con el brazo en cruz y la mano en supinación', lados: true },
+      { id: 'rodilla', texto: 'Rodilla: de pie, con las rodillas bloqueadas en recurvatum, se extiende más de 10°', lados: true },
+      { id: 'tronco', texto: 'Tronco: con las rodillas extendidas y los pies juntos, apoya las palmas planas en el suelo delante de los pies', lados: false },
+    ],
+    beightonFuente: 'Malfait 2017, fig. 2, p. 15: cada articulación con goniómetro y cada lado por separado; máximo 9 puntos.',
+    // Cortes para la hipermovilidad generalizada en el SEDh (Malfait 2017,
+    // p. 17): ≥6 en niños prepúberes y adolescentes, ≥5 hasta los 50, ≥4 por
+    // encima. La pubertad no se deduce de la edad: hasta los 17, el de 6.
+    cortes: [
+      { edadMax: 17, corte: 6, grupo: 'niños y adolescentes' },
+      { edadMax: 50, corte: 5, grupo: 'hasta los 50 años' },
+      { edadMax: null, corte: 4, grupo: 'por encima de los 50 años' },
+    ],
+    cortesFuente: 'Malfait 2017, p. 17: con 1 punto menos que el corte de su edad y el cuestionario positivo también hay hipermovilidad generalizada.',
+    notaLimitacion: 'Una limitación adquirida (cirugía, artrodesis lumbar…) puntúa negativa si hoy no se puede hacer, aunque antes sí se pudiera (Malfait 2017, p. 18).',
+    textos: {
+      laxitud: 'Hipermovilidad: compara siempre con el lado sano y anota si la laxitud es simétrica. Cuenta como positivo una laxitud asimétrica o que reproduzca su síntoma.',
+      ejercicio: 'Ejercicio graduado; vigila la carga para asegurar la recuperación (Engelbert 2017, p. 165). El dolor empeora con la actividad y puede aparecer en las 24 h siguientes (observado en niños; Engelbert 2017, p. 160).',
+      sistemicos: 'Si hay disautonomía o síntomas digestivos o urinarios importantes, derivar al especialista (Engelbert 2017, p. 165).',
+      vascular: 'Subtipo vascular: evitar deportes de colisión, ejercicio isométrico y aceleraciones bruscas; intensidad que permita conversar, control de la respiración al levantar peso y cargas ligeras (Byers 2017, p. 42).',
+      derivarHAG: 'Hipermovilidad articular generalizada: valorar derivación a reumatología o genética. No es un diagnóstico de SED hipermóvil, que exige además otros criterios (Malfait 2017, p. 17).',
+      sinHAG: 'Sin hipermovilidad articular generalizada según la escala de Beighton.',
+      derivarVascular: 'Rasgos que hacen sospechar el subtipo vascular: derivación preferente a genética (Malfait 2017, p. 16).',
+      hallazgoVascular: 'Un rasgo menor del subtipo vascular: por sí solo es un hallazgo; deriva junto con otro (Malfait 2017, p. 16).',
+    },
+  },
+};

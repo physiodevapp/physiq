@@ -10,6 +10,7 @@ import { regionConLado } from './region.js';
 import { cqConProtocolo, fechaSemanasTexto, TEXTO_SIN_PROTOCOLO } from './posquirurgico.js';
 import { lineaCuestionario } from './cuestionarios.js';
 import { lineaNotasSintomas, lineasInformeSintomas } from './sintomas.js';
+import { lineaNotasHM, lineasInformeHM } from './hipermovilidad.js';
 
 // Línea fija de transparencia del modo breve: fase 5, 📋 Notas y 📄 Informe.
 // Nunca se omite en breve (docs/modo-breve.md, decisión 3).
@@ -30,7 +31,7 @@ export function textoNotas(d) {
     ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
-Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}
+Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA (árbol CIF): ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
@@ -73,6 +74,10 @@ export function textoInformePaciente(d, fpInf = { historia: [], antecedentes: []
       ? `\n  · El tratamiento sigue el protocolo y las restricciones indicadas por el cirujano${cq.re ? `: ${cq.re}` : '.'}`
       : `\n  · ${TEXTO_SIN_PROTOCOLO}.${cq.re ? ` Restricciones referidas: ${cq.re}` : ''}`;
 
+  // Hipermovilidad (Fase P): antecedente o recomendación de valoración
+  const lineasHM = d.hm ? lineasInformeHM(d.hm) : [];
+  const bloqueHM = lineasHM.length ? `\n\nHIPERMOVILIDAD ARTICULAR\n${lineasHM.map(l => `  · ${l}`).join('\n')}` : '';
+
   // `fpInf`: solo lo marcado con `informe` en formularios/*.js (informeFormularioPrevio,
   // formulario.js) — nunca el formulario entero
   const bloqueFp = (titulo, lista) => lista.length
@@ -85,7 +90,7 @@ Región valorada: ${region}${breve ? `\n\n${TEXTO_VALORACION_BREVE}` : ''}
 
 MOTIVO DE CONSULTA
 ${d.mo || '—'}
-Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
+Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueHM}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
 
 VALORACIÓN
 ${lineasInformeSintomas(d).map(l => `${l}\n`).join('')}${d.nr != null ? `Intensidad del dolor referida: ${d.nr}/10\n` : ''}${d.ir ? `Irritabilidad del cuadro: ${d.ir}\n` : ''}Naturaleza del dolor: ${d.na || '—'}

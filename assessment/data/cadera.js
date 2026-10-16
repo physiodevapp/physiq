@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, RAZON_ISQUEMIA_AGUDA } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_ENDOCRINO, SIS_HEMATOLOGICO, RAZON_ISQUEMIA_AGUDA } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.cadera — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -49,6 +49,7 @@ export const screening = {
   },
   sistemas: [
     SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
+    SIS_HIPERMOVILIDAD,  // solo con la tarjeta «Hipermovilidad» activa (docs/hipermovilidad.md)
     {
       id: 'ca_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [
@@ -1175,7 +1176,7 @@ export const hypotheses = {
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 137; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 163; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 175'
     },
     tests: [
-      { name: 'Log roll', anatomia: ['art_cadera'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más RE en el lado afectado, o el borde lateral del pie toca la camilla → laxitud capsular anterior o retroversión.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 160' },
+      { name: 'Log roll', laxitud: true, anatomia: ['art_cadera'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Más RE en el lado afectado, o el borde lateral del pie toca la camilla → laxitud capsular anterior o retroversión.', fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 160' },
       { name: 'Movilidad aumentada', anatomia: ['art_cadera'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Movilidad AUMENTADA en inestabilidad. Sin síntoma específico: descartar lo intraarticular con flexión-RI y FADDIR.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 135 y 137; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 162' },
       { name: 'Episodio de fallo', anatomia: ['art_cadera'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Al menos un episodio de fallo.', fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 137' }
     ]

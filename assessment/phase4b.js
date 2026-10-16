@@ -12,6 +12,7 @@ import {
 import { iaParrafoHTML, ctxTest, attrIA } from './ampliar-ia.js';
 import { ESTRUCTURAS, KENHUB_BASE, KENHUB_BASE_ES } from './data/anatomia.js';
 import { citasHTML, citasEnTexto, partirCitas, registroReferencias, enlaceCita } from './lib/citas.js';
+import { HM, hmActiva } from './lib/hipermovilidad.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -341,6 +342,7 @@ export function buildTestItem(hId, test, idx) {
     <div class="test-name">${test.name}</div>
     ${statsHtml}
     <div class="test-peso">${hyp ? pesoTest(hyp, test, idx) : ''}</div>
+    ${test.laxitud && hmActiva(state.hipermovilidad) ? `<div class="hm-aviso-test">🧬 ${HM.textos.laxitud}</div>` : ''}
     <div class="test-criterion">${citasEnTexto(test.criterio)}</div>
     ${porque}
     ${fuente}

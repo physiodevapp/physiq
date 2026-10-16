@@ -339,6 +339,25 @@
     </div>
   </div>
 
+  <!-- Condición especial (docs/hipermovilidad.md): sin marcar = no consta -->
+  <div class="card" id="cardHipermovilidad">
+    <div class="card-title">Hipermovilidad / Ehlers-Danlos</div>
+    <div class="plan-note-hint">Sin marcar = no consta. Con «Diagnosticada» o «Sospecha» se añaden su cribado en la fase 2, un aviso en los tests de laxitud y consideraciones para el plan.</div>
+    <div class="option-group option-group-full" id="hmEstado">
+      <button type="button" class="option-btn" data-valor="diagnosticada" onclick="selectHMEstado('diagnosticada')">Diagnosticada</button>
+      <button type="button" class="option-btn" data-valor="sospecha" onclick="selectHMEstado('sospecha')">Sospecha</button>
+    </div>
+    <div class="form-group hm-subtipo" id="hmSubtipoWrap" style="display:none">
+      <div class="form-label">Subtipo</div>
+      <div class="option-group hm-subtipos" id="hmSubtipo">
+        <button type="button" class="option-btn" data-valor="hipermovil" onclick="selectHMSubtipo('hipermovil')">Hipermóvil (SEDh) o TEH</button>
+        <button type="button" class="option-btn" data-valor="vascular" onclick="selectHMSubtipo('vascular')">Vascular</button>
+        <button type="button" class="option-btn" data-valor="otro" onclick="selectHMSubtipo('otro')">Otro</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectHMSubtipo('ns')">No lo sabe</button>
+      </div>
+    </div>
+  </div>
+
   <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>

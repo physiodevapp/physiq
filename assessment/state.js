@@ -24,6 +24,11 @@ const state = {
   // docs/posquirurgico.md y lib/posquirurgico.js). Las semanas desde `fecha`
   // se calculan al mostrarlas; `semanasAprox` solo cuando no hay fecha.
   cirugia: { intervencion: '', fecha: '', semanasAprox: null, protocolo: '', restricciones: '', complicaciones: [], complicacionOtra: '' },
+  // Condición especial «Hipermovilidad / Ehlers-Danlos» (Fase P, docs/hipermovilidad.md,
+  // lib/hipermovilidad.js). estado: '' (no consta) | 'diagnosticada' | 'sospecha';
+  // subtipo: '' | 'hipermovil' | 'vascular' | 'otro' | 'ns'; beighton: null (sin hacer)
+  // o { [maniobra_lado]: true }; cuestionario: { cq1…cq5: 'SI'|'NO' }.
+  hipermovilidad: { estado: '', subtipo: '', beighton: null, cuestionario: {} },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',

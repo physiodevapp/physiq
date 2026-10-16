@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.hombro — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -35,6 +35,7 @@ export const screening = {
   label: 'Hombro y Cuadrante Superior',
   sistemas: [
     SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
+    SIS_HIPERMOVILIDAD,  // solo con la tarjeta «Hipermovilidad» activa (docs/hipermovilidad.md)
     {
       id: 'h_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [
@@ -924,7 +925,7 @@ export const hypotheses = {
       { name: 'Anterior: aprensión, recolocación y sorpresa en conjunto', anatomia: ['art_glenohumeral'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Aprensión, recolocación y sorpresa (S y E >72 %). Interpretar la aprensión, no el dolor. Cada test ya puntúa por separado arriba; esta fila no multiplica.', fuente: 'Lluch 2020, cap. 3.1 (Struyf), pp. 58–59' },
       { name: 'Posterior: Jerk, Kim y signo de pinzamiento posterior agrupados', anatomia: ['art_glenohumeral'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'No usar un test aislado; agrupar Jerk, Kim y signo de pinzamiento posterior junto con la historia.', fuente: 'Lluch 2020, cap. 3.1 (Struyf), p. 59' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Aprensión de 0 a 10 en abducción + RE; en posterior, la posición provocadora. ② Fuerza isométrica de RE y RI con dinamómetro si se dispone, siempre en la misma posición.', fuente: 'Tarjeta de consulta hombro (guía clínica de hombro, ap. 5)' },
-      { name: 'Inestabilidad multidireccional: surco + tests en una dirección', anatomia: ['art_glenohumeral'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Diagnóstico clínico propuesto: signo del surco positivo (inestabilidad inferior) y, al menos en una dirección (anterior o posterior), 2 de 3 tests positivos: cajón anterior y posterior a 10–30° de abducción, cajón anterior y posterior a 80–120° de abducción, y aprensión anterior y posterior.', razonamiento: { detalle: 'Los síntomas suelen aparecer en el rango medio del movimiento; puede haber atrofia generalizada y discinesia, y síntomas neurológicos pasajeros. Sin S ni E.' }, fuente: 'Lluch 2020, cap. 3.1 (Struyf), pp. 58–59' }
+      { name: 'Inestabilidad multidireccional: surco + tests en una dirección', laxitud: true, anatomia: ['art_glenohumeral'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Diagnóstico clínico propuesto: signo del surco positivo (inestabilidad inferior) y, al menos en una dirección (anterior o posterior), 2 de 3 tests positivos: cajón anterior y posterior a 10–30° de abducción, cajón anterior y posterior a 80–120° de abducción, y aprensión anterior y posterior.', razonamiento: { detalle: 'Los síntomas suelen aparecer en el rango medio del movimiento; puede haber atrofia generalizada y discinesia, y síntomas neurológicos pasajeros. Sin S ni E.' }, fuente: 'Lluch 2020, cap. 3.1 (Struyf), pp. 58–59' }
     ]
   },
   h5: {
