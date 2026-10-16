@@ -35,6 +35,13 @@
     --tej-grave: rgba(196,38,38,0.90);
     --tej-hoy: #4f9cf9;
     --lime: #b4dc50;
+    /* Silueta de la fase 2 (data/siluetas.js) */
+    --sil-contorno: #1a2236;
+    --sil-parte: #2c3858;
+    --sil-pelo: #222c45;
+    --sil-borde: #43557f;
+    --sil-zona: #7086ad;
+    --sil-sin-region: #3e4864;
     --on-accent: #fff;
     --scrim: rgba(0,0,0,0.6);
     --scrim-blur: blur(6px);
@@ -81,6 +88,12 @@
     --tej-grave: rgba(176,26,26,0.85);
     --tej-hoy: #1d6fd8;
     --lime: #5f7d0f;
+    --sil-contorno: #c3cde0;
+    --sil-parte: #dde4f0;
+    --sil-pelo: #b9c4d8;
+    --sil-borde: #97a6c2;
+    --sil-zona: #4f6185;
+    --sil-sin-region: #a3afc6;
     --scrim: rgba(19,26,41,0.38);
     --modal-shadow: 0 20px 60px rgba(19,26,41,0.22);
     color-scheme: light;   /* native controls (checkboxes, date inputs) in light style */
@@ -640,32 +653,62 @@
   .btn-secondary:hover { border-color: var(--text2); color: var(--text); }
 
   /* Region selector grid */
-  .region-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-  /* Un botón que queda solo en la última fila ocupa toda la fila, en vez de
-     dejar un hueco (7 regiones: con 3 columnas sobra 1, con 2 también). Las
-     filas completas no cambian. */
-  .region-grid > .region-card:last-child:nth-child(3n+1) { grid-column: 1 / -1; }
+  /* Lista de regiones (reserva de la silueta): botones compactos que se
+     reparten en las filas que haga falta. */
+  .region-lista { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+  .region-grid { display: flex; flex-wrap: wrap; gap: 8px; }
   .region-card {
     background: var(--surface2);
     border: 1px solid var(--border2);
     border-radius: var(--radius);
-    padding: 1.2rem;
+    min-height: 40px;
+    padding: 0 14px;
+    display: flex; align-items: center;
     cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
   }
-  @media (hover: hover) { .region-card:hover { border-color: var(--accent); transform: translateY(-2px); } }
+  @media (hover: hover) { .region-card:hover { border-color: var(--accent); } }
   .region-card.selected {
     background: rgba(79,156,249,0.1);
     border-color: var(--accent);
     box-shadow: 0 0 0 1px var(--accent);
   }
   .region-name { font-size: 0.9rem; font-weight: 500; color: var(--text); }
-  .region-sub { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
+  .region-card.selected .region-name { color: var(--accent); }
+
+  /* Silueta de la fase 2 (lib/silueta.js): un toque en una zona elige región
+     y lado. Zonas de 44 px colocadas en % del dibujo. */
+  .silueta-region { display: flex; flex-direction: column; gap: 10px; }
+  .silueta-region:empty { display: none; }
+  .sil-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; }
+  .sil-elegida { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .sil-elegida-texto { font-size: 1.1rem; font-weight: 600; color: var(--text2); }
+  .silueta-region.con-region .sil-elegida-texto { color: var(--accent); }
+  .sil-elegida-sub { font-size: 0.78rem; color: var(--text3); }
+  .sil-elegida-sub:empty { display: none; }
+  .sil-figura { min-height: 44px; padding: 0 12px; border-radius: 22px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font: inherit; font-size: 0.82rem; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+  @media (hover: hover) { .sil-figura:hover { border-color: var(--accent); } }
+  .sil-nota { font-size: 0.78rem; line-height: 1.4; color: var(--accent); }
+  .sil-lienzo { position: relative; width: min(280px, 100%); margin: 0 auto; }
+  .sil-lienzo svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .sil-contorno { fill: var(--sil-contorno); stroke: var(--sil-borde); stroke-width: 3; }
+  .sil-parte { fill: var(--sil-parte); }
+  .sil-pelo { fill: var(--sil-pelo); }
+  .sil-lado { position: absolute; top: 0; font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; color: var(--text2); }
+  .sil-lado-izq { left: 0; }
+  .sil-lado-der { right: 0; }
+  .sil-zona, .sil-sin-region { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; }
+  .sil-zona { width: 44px; height: 44px; padding: 0; background: transparent; border: 1.5px dashed var(--sil-zona); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .sil-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--sil-zona); }
+  .sil-zona.sil-zona-region { border: 2px dashed var(--accent); background: rgba(79,156,249,0.10); }
+  .sil-zona.sil-zona-on { border: 2px solid var(--accent); background: rgba(79,156,249,0.28); }
+  .sil-zona-region .sil-punto, .sil-zona-on .sil-punto { background: var(--accent); }
+  .sil-zona-on .sil-punto { width: 12px; height: 12px; }
+  .sil-zona:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (hover: hover) { .sil-zona:hover { border-color: var(--accent); } }
+  .sil-sin-region { width: 34px; height: 34px; border: 1.5px dotted var(--sil-sin-region); pointer-events: none; }
+  .sil-pie { font-size: 0.75rem; line-height: 1.4; color: var(--text3); text-align: center; }
+  .sil-credito { display: block; font-size: 0.65rem; margin-top: 2px; }
 
   /* Decision tree questions */
   .tree-question {
@@ -1862,9 +1905,6 @@
     .phase-header { margin-bottom: 1.2rem; }
     .card { padding: 1.1rem; }
     .card-title { font-size: 0.72rem; }
-    .region-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .region-grid > .region-card:last-child:nth-child(3n+1) { grid-column: auto; }
-    .region-grid > .region-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
     /* A fixed 50% basis would force every row to 2 columns, splitting the
        4-item (fc/fr/spo2/edad) row across two lines — a min-basis instead
        lets it keep as many items together as fit, only wrapping what
@@ -1879,7 +1919,6 @@
        intrinsic content size and force a wrap on narrow phones). */
     .vitals-row.vitals-row-3 { flex-wrap: nowrap; }
     .vitals-row.vitals-row-3 .form-group { flex: 1 1 0; min-width: 0; }
-    .region-card { padding: 1rem; }
     .region-name { font-size: 0.82rem; }
     .tree-question { padding: 1.1rem; }
     .tree-question-text { font-size: 0.95rem; }
@@ -1968,10 +2007,7 @@
     .main { margin-top: 88px; padding: 1rem 1rem 5rem; }
     .phase-title { font-size: 1.35rem; }
     .phase-tag { font-size: 0.58rem; letter-spacing: 2px; }
-    .region-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .region-card { padding: 0.8rem 0.6rem; }
     .region-name { font-size: 0.82rem; }
-    .region-sub { font-size: 0.62rem; }
     .tree-question { padding: 1rem; }
     .tree-question-text { font-size: 1rem; }
     .option-btn { font-size: 0.95rem; padding: 9px 10px; white-space: normal; line-height: 1.3; }

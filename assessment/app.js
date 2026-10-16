@@ -16,6 +16,8 @@ import {
 } from './lib/posquirurgico.js';
 import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { nombreRegion, regionConLado } from './lib/region.js';
+import { SILUETAS } from './data/siluetas.js';
+import { figuraSilueta, estadoZona, ladoAlTocar, textoElegida, notaFigura, siluetaHTML } from './lib/silueta.js';
 import { TEXTO_VALORACION_BREVE, textoNotas, textoInformePaciente } from './lib/resumenes.js';
 import { ramaPauta } from './lib/pauta.js';
 import { HM, ESTADOS_HM, SUBTIPOS_HM, hipermovilidadVacia, normalizarHipermovilidad, hmActiva, elementoHMVisible,
@@ -286,6 +288,7 @@ function _softResetApp() {
   state.motivoConsulta = '';
   state.edadPaciente = null;
   state.sexo = '';
+  _figuraElegida = '';
   state.signosVitales = { fc: null, fr: null, spo2: null, tas: null, tad: null };
   state.antropometria = { talla: null, peso: null };
   state.mecanismo = '';
@@ -712,6 +715,8 @@ function selectOption(groupId, btn, value) {
   if (groupId === 'psico_miedo' || groupId === 'psico_autoef' || groupId === 'psico_emocional') {
     updatePsicoRecomendacion();
   }
+  // La silueta marca el lado, y su figura sigue al sexo
+  if (groupId === 'lado' || groupId === 'sexo') _pintarSilueta();
   if (groupId === 'mecanismo') {
     _pintarCirugiaUI();
     // `pq1` y la casilla «Tratada con la cirugía» dependen del mecanismo
@@ -1148,18 +1153,65 @@ function completarPendientesBreve() {
 }
 
 // ─── PHASE 2 HELPERS ─────────────────────────────────────────
-function selectRegion(regionId, card) {
+// `despues`: lo que hay que hacer una vez cambiada la región (la silueta fija
+// el lado); no se hace si se cancela el cambio.
+function selectRegion(regionId, card, despues) {
+  const aplicar = () => { applyRegionChange(regionId, card); despues?.(); };
   // If changing region after having visited phase 3+, ask for confirmation
   if (state.region && state.region !== regionId && state.maxVisitedIdx >= 2) {
     showConfirmBanner(
       'Cambiar región de valoración',
       'Al cambiar de región se perderá todo el progreso de las fases SINSS, Algoritmo CIF y Confirmación de Hipótesis. ¿Desea continuar?',
       'Cambiar región',
-      () => applyRegionChange(regionId, card)
+      aplicar
     );
     return;
   }
-  applyRegionChange(regionId, card);
+  aplicar();
+}
+
+// ─── Silueta de la fase 2 (lib/silueta.js, data/siluetas.js) ─────
+// Figura elegida con el botón de la tarjeta ('' = la del sexo de la fase 1).
+// Solo cambia el dibujo, nunca `state.sexo`; no se guarda en la sesión.
+let _figuraElegida = '';
+let _figuraPintada = '';
+
+function _pintarSilueta() {
+  const cont = document.getElementById('siluetaRegion');
+  if (!cont) return;
+  const figura = figuraSilueta(state.sexo, _figuraElegida);
+  if (_figuraPintada !== figura || !cont.firstElementChild) {
+    cont.innerHTML = siluetaHTML(SILUETAS[figura], figura);
+    _figuraPintada = figura;
+  }
+  cont.classList.toggle('con-region', !!state.region);
+  cont.querySelectorAll('.sil-zona').forEach(b => {
+    const e = estadoZona({ region: b.dataset.region, lado: b.dataset.lado }, state.region, state.lado);
+    b.classList.toggle('sil-zona-on', e === 'on');
+    b.classList.toggle('sil-zona-region', e === 'region');
+    b.setAttribute('aria-pressed', String(e === 'on'));
+  });
+  const { principal, sub } = textoElegida(state.region, state.lado);
+  cont.querySelector('.sil-elegida-texto').textContent = principal;
+  cont.querySelector('.sil-elegida-sub').textContent = sub;
+  const nota = cont.querySelector('.sil-nota');
+  nota.textContent = notaFigura(state.sexo, _figuraElegida);
+  nota.hidden = !nota.textContent;
+}
+
+// Toque en una zona: región y lado a la vez. Cambiar de región pasa por
+// selectRegion (con su confirmación); el lado se fija después.
+function tocarZonaSilueta(region, lado) {
+  const nuevoLado = ladoAlTocar({ region, lado }, state.region, state.lado);
+  const fijarLado = () => { state.lado = nuevoLado; _pintarLado(); saveSession(); };
+  if (state.region === region) { fijarLado(); return; }
+  selectRegion(region, document.querySelector(`.region-card[data-region="${region}"]`), fijarLado);
+}
+
+function alternarFiguraSilueta() {
+  _figuraElegida = figuraSilueta(state.sexo, _figuraElegida) === 'mujer' ? 'hombre' : 'mujer';
+  _pintarSilueta();
+  document.querySelector('#siluetaRegion .sil-figura')?.focus();
 }
 
 // Estadio del SINSS = la cronología de la fase 1 (mismas categorías). Se
@@ -2412,6 +2464,7 @@ function _pintarLado() {
   if (state.lado === 'Central' && !columna) state.lado = '';
   wrap.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   _restoreOptionBtnGroup('lado', state.lado);
+  _pintarSilueta();
 }
 
 // Fase 5: P1–P4 de la tarjeta «Síntomas» (solo lo que tiene datos)
@@ -4226,6 +4279,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Tarjeta «Cirugía»: chips de complicaciones (se repinta al restaurar sesión)
   _pintarCirugiaUI();
   _pintarHMUI();
+  // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
+  _pintarSilueta();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
   precargarFormularioPrevio();
 
@@ -4397,6 +4452,7 @@ Object.assign(window, {
   abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
+  tocarZonaSilueta, alternarFiguraSilueta,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
   cycleThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor,
