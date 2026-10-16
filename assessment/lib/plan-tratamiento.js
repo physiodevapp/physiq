@@ -198,7 +198,8 @@ export function rangosBloques(duraciones = {}) {
 //   urgencias, derivaciones, hipotesis: [{ id, name, prom, pauta, pautaFuente, derivar,
 //   tratada, posq, pronostico, sinTests }], elegidas: [id, id?], severidad,
 //   irritabilidad, irritabilidadNivel, irritabilidadDirecta, zonaP1, secundarios (`ss`
-//   del payload: [{ n, z, nr, ir, re, or }]), estabilidad, riesgoPsico,
+//   del payload: [{ n, z, nr, ir, re, or }]), redNeuroZona (algún síntoma en una
+//   zona `redNeuro`: periné en lumbar), estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
 export function construirPlan(e) {
@@ -225,7 +226,9 @@ export function construirPlan(e) {
   const neuro = elegidas.some(pideExploracionNeuro);
   const radicular = elegidas.some(esRadicular);
   const nervio = elegidas.some(esNervioPeriferico);
-  const red = redSeguridad(e.region, neuro, elegidas);
+  // La red neurológica también con un síntoma en una zona `redNeuro` (hoy el
+  // periné en lumbar: cola de caballo), aunque no haya hipótesis neurológica
+  const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas);
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
   const tabla = tablaEscalones(familia);

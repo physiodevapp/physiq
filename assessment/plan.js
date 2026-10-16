@@ -14,7 +14,7 @@ import { getDerivacionesArbol } from './phase4.js';
 import { ramaPauta } from './lib/pauta.js';
 import { conProtocolo, semanasCirugia, pautaHipPosq, TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
 import { regionConLado } from './lib/region.js';
-import { payloadSintomas } from './lib/sintomas.js';
+import { payloadSintomas, zonaConRedNeuro } from './lib/sintomas.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
 import {
   saveSession, showConfirmBanner, getUrgenciasActivas, getCirugiaPayload, compartirTexto, cerrarMenuCompartir, partirPrimeraFrase,
@@ -78,6 +78,8 @@ function entrada(hs) {
     severidad: state.severidad, irritabilidad: state.irritabilidad,
     irritabilidadNivel: state.irritabilidadNivel, irritabilidadDirecta: state.irritabilidadDirecta,
     zonaP1: z1?.z || '', secundarios: ss || [],
+    // Zona perineal marcada (`redNeuro`): red de seguridad de cola de caballo
+    redNeuroZona: zonaConRedNeuro(state, ZONAS_SINTOMA[state.region] || []),
     estabilidad: state.estabilidad, riesgoPsico: state.riesgoPsico, psico_miedo: state.psico_miedo,
     signoComparable: state.signoComparable,
     sesion: pt.sesion, gravedadManual: pt.gravedad, irritabilidadManual: pt.irritabilidad,

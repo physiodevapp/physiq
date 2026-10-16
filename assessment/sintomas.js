@@ -12,7 +12,7 @@ import { saveSession, showConfirmBanner, injectQuickInputBar, repintarP1Fase3 } 
 import { matrizVacia } from './lib/irritabilidad.js';
 import {
   MAX_SECUNDARIOS, sintomaVacio, normalizarSintomas, tieneDatos, PATRONES, PROFUNDIDADES,
-  NIVELES_IRRITABILIDAD, RELACIONES, CHIPS_DESCRIPCION,
+  NIVELES_IRRITABILIDAD, RELACIONES, CHIPS_DESCRIPCION, todasCentrales, recordatoriosZona,
 } from './lib/sintomas.js';
 
 const COLUMNA = ['cervical', 'lumbar'];
@@ -47,10 +47,18 @@ function itemHTML(i, zonas) {
         ${s.otraRegion ? '' : `<button type="button" class="sint-accion" onclick="sintHacerPrincipal(${i})">Hacer principal</button>`}
         <button type="button" class="sint-accion sint-quitar" onclick="sintQuitar(${i})" aria-label="Quitar P${i + 1}" title="Quitar P${i + 1}"><svg class="icono-x" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`;
 
-  const ladoHint = p1 && !s.lado && state.lado ? `<div class="sint-hint">Sin marcar: el de la región (${esc(state.lado.toLowerCase())}).</div>` : '';
+  // Zonas de la línea media (sacro, cóccix, periné): no se da por hecho el lado
+  // de la región, y no se preselecciona Central (decisión 5 de docs/tarlov.md)
+  const ladoHint = !p1 || s.lado ? ''
+    : todasCentrales(s, zonas) ? `<div class="sint-hint sint-hint-central">Zona central: marca Central, o el lado si el paciente lo localiza a un lado.</div>`
+    : state.lado ? `<div class="sint-hint">Sin marcar: el de la región (${esc(state.lado.toLowerCase())}).</div>` : '';
+  // Recordatorio de la fase 2 (hoy el periné → l6): solo recuerda, nunca contesta
+  const recordatorios = recordatoriosZona(state, s, zonas).map(r =>
+    `<div class="sint-recordatorio" role="note"><strong>${esc(r.zona)}:</strong> ${esc(r.texto)}
+      <button type="button" class="sint-recordatorio-ir" onclick="irAPreguntaCribado('${r.pregunta}')">Ir a la pregunta →</button></div>`).join('');
   const partes = [
     cab,
-    campoHTML('Zona', `<div class="option-group sint-zonas">${chips}</div>${libre}`),
+    campoHTML('Zona', `<div class="option-group sint-zonas">${chips}</div>${libre}${recordatorios}`),
     campoHTML('Lado', grupoHTML(i, 'lado', lados, s.lado, 'lado-group') + ladoHint),
   ];
   if (p1) {

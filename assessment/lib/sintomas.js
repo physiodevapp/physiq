@@ -143,3 +143,34 @@ export function pistasSintomasPaso(st, zonas = [], stepId) {
   });
   return out;
 }
+
+// Zonas de la línea media (`central: true`, hoy sacro, cóccix y periné en
+// lumbar): con todas las zonas de un síntoma centrales, la tarjeta no da por
+// hecho el lado de la región. Sin zonas marcadas, false.
+export function todasCentrales(s, zonas = []) {
+  if (!s || s.otraRegion || !s.zonas?.length) return false;
+  return s.zonas.every(id => zonas.find(z => z.id === id)?.central);
+}
+
+// Recordatorios de la fase 2 de las zonas marcadas en un síntoma (`recordatorio`
+// en la zona: hoy el periné → l6, cauda equina; decisión 5 de docs/tarlov.md).
+// Solo mientras esa pregunta no esté en SÍ (con SÍ, la urgencia ya sale en
+// todas partes); nunca en otra región. Solo lee `sistemicoAnswers`: nunca
+// contesta ni cambia una respuesta, la alerta, `ur` ni `dv`.
+// → [{ zona, pregunta, texto }]
+export function recordatoriosZona(st, s, zonas = []) {
+  if (!s || s.otraRegion) return [];
+  return (s.zonas || []).map(id => zonas.find(z => z.id === id)).filter(z => z?.recordatorio)
+    .filter(z => st.sistemicoAnswers?.[z.recordatorio.pregunta] !== 'SI')
+    .map(z => ({ zona: z.nombre, pregunta: z.recordatorio.pregunta, texto: z.recordatorio.texto }));
+}
+
+// Algún síntoma (P1–P4, nunca otra región) en una zona con `redNeuro`: la fase 6
+// añade la red de seguridad neurológica de la región (cola de caballo en lumbar)
+// aunque no haya hipótesis neurológica.
+export function zonaConRedNeuro(st, zonas = []) {
+  const ids = new Set(zonas.filter(z => z.redNeuro).map(z => z.id));
+  if (!ids.size) return false;
+  return [st.sintomaPrincipal, ...(st.sintomasSecundarios || [])]
+    .some(s => s && !s.otraRegion && (s.zonas || []).some(id => ids.has(id)));
+}

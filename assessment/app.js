@@ -1154,6 +1154,31 @@ function completarPendientesBreve() {
   if (idx !== undefined && idx <= state.maxVisitedIdx) goToPhase(primero.fase);
 }
 
+// Enlace del recordatorio de una zona de la tarjeta «Síntomas» (fase 3; hoy el
+// periné → l6): vuelve a la fase 2, abre el sistema de esa pregunta (pestaña en
+// escritorio, acordeón en móvil) y la destaca. Solo lleva; no contesta nada.
+function irAPreguntaCribado(qId) {
+  goToPhase(2);
+  setTimeout(() => {
+    const copias = [...document.querySelectorAll(`[id="sq2_${qId}"]`)];
+    const panel = copias.map(c => c.closest('.sistema-panel')).find(Boolean);
+    if (!panel) return;
+    const sisId = panel.id.replace('panel_', '');
+    const ids = [...document.querySelectorAll('#sistemaPanels .sistema-panel')].map(p => p.id.replace('panel_', ''));
+    activeSistemaTab(sisId, ids.map(id => ({ id })));
+    const row = document.getElementById(`acc_${sisId}`);
+    if (row && !row.classList.contains('open') && row.offsetParent !== null) toggleAccordionRow(sisId, ids.join(','));
+    setTimeout(() => {
+      const visible = copias.find(c => c.offsetParent !== null);
+      if (!visible) return;
+      visible.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      visible.classList.remove('flash-destacar');
+      void visible.offsetWidth;
+      visible.classList.add('flash-destacar');
+    }, 60);
+  }, 150);
+}
+
 // ─── PHASE 2 HELPERS ─────────────────────────────────────────
 // `despues`: lo que hay que hacer una vez cambiada la región (la silueta fija
 // el lado); no se hace si se cancela el cambio.
@@ -4467,7 +4492,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // and dynamically-generated HTML — those resolve only against the global
 // scope, never a module's private scope.
 Object.assign(window, {
-  abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
+  abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
   abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,

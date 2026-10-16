@@ -18,12 +18,36 @@ import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_ENDOCRINO, SIS_HEMATOLOGICO 
 //   lu_step1c déficit en la pierna → muslo anterior (L2–L4), pierna y pie
 //   lu_step2  estenosis: dolor en glúteos y muslos → glúteo, muslos, pierna
 //   lu_step3  «sin dolor bajo la rodilla» (agudo) → pierna y pie
-//   lu_step4  facetario «sin pasar de la rodilla», sacroilíaca (glúteo) y
-//             «revisar siempre cadera» (ingle) → glúteo, ingle, pierna
+//   lu_step4  facetario «sin pasar de la rodilla», sacroilíaca (glúteo y zona
+//             de Fortin, junto a la EIPS) y «revisar siempre cadera» (ingle) →
+//             glúteo, ingle, pierna; y el sacro (Fortin, y la línea media del
+//             disco: Lluch 2020, cap. 5.1, pp. 314–324)
+// Sacro, cóccix y periné (decisión 5 de docs/tarlov.md; diseño en
+// docs/sintomas-multiples.md, «Zonas sacra, coccígea y perineal en lumbar»):
+//   sacro   lu_step1 (es espalda, para comparar con la pierna) y lu_step4
+//   coxis   sin pasos: ningún paso pregunta por él; lo nombra l_u5 (fase 2)
+//   perine  lu_step1c: la exploración habitual no llega a S2–S4 (Murphy 2023;
+//           Paredes Mogica 2023, p. 377). Ese paso solo sale en la rama
+//           radicular, así que lleva además `recordatorio`.
+// `central`: zona de la línea media; con todas las zonas de P1 centrales, la
+// tarjeta no dice «el lado de la región» (sin preselección: el fisio marca).
+// `recordatorio` (lib/sintomas.js, recordatoriosZona()): texto bajo los chips,
+// solo mientras `l6` no esté en SÍ, con enlace a esa pregunta. Solo recuerda:
+// nunca contesta, quita ni rebaja la urgencia de l6.
+// `redNeuro`: un síntoma en esa zona trae a la fase 6 la red de seguridad
+// neurológica de la región (cola de caballo, Finucane 2020, sección 2) aunque
+// no haya hipótesis neurológica.
 export const zonas = [
   { id: 'lumbar',     nombre: 'Zona lumbar',                     pasos: ['lu_step1'] },
+  { id: 'sacro',      nombre: 'Sacro',                           pasos: ['lu_step1', 'lu_step4'], central: true },
+  { id: 'coxis',      nombre: 'Cóccix',                          central: true },
   { id: 'gluteo',     nombre: 'Glúteo',                          pasos: ['lu_step2', 'lu_step4'] },
   { id: 'ingle',      nombre: 'Ingle',                           pasos: ['lu_step4'] },
+  { id: 'perine',     nombre: 'Periné, ano o genitales',         pasos: ['lu_step1c'], central: true, redNeuro: true,
+    recordatorio: {
+      pregunta: 'l6',
+      texto: 'Si hay pérdida de sensibilidad en silla de montar o cambios al orinar o al hacer de vientre nuevos o que van a más, es la pregunta de cauda equina de la fase 2: urgencia hoy, aunque se conozca un quiste de Tarlov. Si son antiguos y el dolor empeora sentado y se alivia tumbado, repasa la del quiste de Tarlov.',
+    } },
   { id: 'muslo_ant',  nombre: 'Muslo anterior',                  pasos: ['lu_step1', 'lu_step1c', 'lu_step2'] },
   { id: 'muslo_post', nombre: 'Muslo posterior o lateral',       pasos: ['lu_step1', 'lu_step2'] },
   { id: 'pierna',     nombre: 'Pierna por debajo de la rodilla', pasos: ['lu_step1', 'lu_step1c', 'lu_step2', 'lu_step3', 'lu_step4'] },

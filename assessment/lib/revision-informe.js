@@ -182,7 +182,9 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   // ── Datos personales que contradicen la valoración o no constan ──
   const la = datos.la || '';
   const lados = { Derecho: 'izquierd', Izquierdo: 'derech' };
-  const ladosSintomas = [datos.z1?.la, ...(datos.ss || []).map(x => x.la)].filter(Boolean);   // tarjeta «Síntomas»
+  // Tarjeta «Síntomas»: un síntoma Central (sacro, cóccix, periné, columna) no
+  // es un lado, así que no cuenta ni como «el otro lado» ni como lado que consta
+  const ladosSintomas = [datos.z1?.la, ...(datos.ss || []).map(x => x.la)].filter(l => l && l !== 'Central');
   if (lados[la] && (r = primera(t, new RegExp(lados[la] === 'izquierd' ? 'izquierd[oa]s?' : 'derech[oa]s?', 'i')))) {
     // Si el paciente habló del otro lado en la consulta, mencionarlo puede ser
     // correcto: se avisa igual, pero como algo a comprobar, no como contradicción.
