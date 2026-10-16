@@ -115,7 +115,7 @@ export const REFERENCIAS = {
   },
   'NICE NG226': {
     publicacion: 'Guía NICE «Osteoarthritis in over 16s: diagnosis and management» (19 de octubre de 2022)', doi: '', url: 'https://www.nice.org.uk/guidance/ng226',
-    revision: { fecha: '2026-10', resultado: 'Sin cambios: nice.org.uk leído (2026-10), la guía sigue siendo la de 2022, sin actualizaciones. Respalda el diagnóstico clínico de ro1 (sin S ni E; no puntúa) y su pauta (recomendaciones 1.3.1–1.3.11).' }
+    revision: { fecha: '2026-10', resultado: 'Sin cambios: nice.org.uk leído (2026-10), la guía sigue siendo la de 2022, sin actualizaciones. Respalda el diagnóstico clínico de ro1 (sin S ni E; no puntúa) y su pauta (recomendaciones 1.3.1–1.3.11). Releídas 1.1.1–1.1.2 y 1.3.1–1.3.11 en la sesión de las pautas de tobillo y pie (2026-10): pauta de tp24 y nota del aviso artrosisTobillo (la terapia manual, solo en cadera y rodilla, 1.3.6).' }
   },
   'NICE NG158': {
     publicacion: 'Guía NICE «Venous thromboembolic diseases: diagnosis, management and thrombophilia testing» (2020, actualizada el 2 de agosto de 2023)', doi: '', url: 'https://www.nice.org.uk/guidance/ng158', revision: { fecha: '2026-10', resultado: 'Sin cambios: la página de NICE sigue con la última actualización del 2 de agosto de 2023, y la revisión del 1 de mayo de 2026 decidió no actualizarla. Las recomendaciones 1.1.1–1.1.8 y 1.1.15–1.1.18 y las tablas 1 y 2 (escalas de Wells de dos niveles) dicen lo que recoge el razonamiento de ca_v2, r_v2, tp_v2, pq_tvp, pq_tvp_ms y pq_tep (consultado en nice.org.uk en 2026-10).' },

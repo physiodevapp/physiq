@@ -1185,7 +1185,8 @@ export const hypotheses = {
     id: 'tp24', region: 'tobillo_pie', num: '㉔',
     name: 'Artrosis de Tobillo o Pie',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: 'Ejercicio terapéutico adaptado a la persona (por ejemplo, fortalecimiento local y forma física aeróbica general), para todos: recomendación firme (rec. 1.3.1). Valorar sesiones supervisadas (1.3.2) y combinarlo con educación o cambio de conducta en un paquete estructurado (1.3.4). Avisar de que el dolor puede aumentar al empezar y de que es la constancia a largo plazo la que reduce el dolor y mejora la función (1.3.3). Con sobrepeso, cualquier pérdida de peso ayuda, y el 10 % más que el 5 % (1.3.5). NICE solo considera la terapia manual en la artrosis de cadera o rodilla (1.3.6), no en la de tobillo o pie. No ofrecer acupuntura ni punción seca (1.3.8), ni TENS, ultrasonido, interferenciales, láser, onda corta pulsada o electroestimulación neuromuscular (1.3.9). Valorar ayudas para la marcha, como un bastón (1.3.10); plantillas, ortesis o vendajes solo si hay inestabilidad o carga anómala y el ejercicio solo no basta (1.3.11). La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico.',
+    dosisFuente: 'NICE NG226 (2022; recomendaciones 1.3.1–1.3.11, leídas en nice.org.uk en 2026-10; vale para la artrosis de cualquier articulación salvo donde nombra la cadera o la rodilla; NICE marca la fuerza con el verbo: «offer» = recomendación firme, «consider» = más débil, «do not offer» = no hacer)',
     pronostico: {
       horizonte: 'Diagnóstico clínico: más de 45 años, dolor con el uso, rigidez de menos de 30 min. La radiografía no se correlaciona de forma fiable.',
       derivacion: 'En jóvenes o con rasgos inflamatorios, progresión rápida o síntomas constitucionales → más pruebas; VSG y PCR deben ser normales.',
