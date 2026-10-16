@@ -21,6 +21,7 @@ import { construirAmpliado, transcripcionInforme } from './informe-ia.js';
 import { REGIONES_PLAN } from './data/plan-tratamiento.js';
 import {
   textoPlanSesion, textoPlanMes, textoDomiciliario, cuandoParar, nivelEfectivo, elegible, sintomasIndependientes, nombreSintoma,
+  esRadicular, esNervioPeriferico,
 } from './lib/plan-tratamiento.js';
 import { promptPlan, huellaPlan, planTruncado, planIAHtml, textoPlanIA, textoCasaIA, MAX_TOKENS_PLAN, ETIQUETA_SUGERENCIA } from './lib/plan-ia.js';
 import { revisarPlan, comprobacionesPlan, clavePuntoPlan, claveComprobacionPlan, resumenRevisadosPlan } from './lib/revision-plan.js';
@@ -63,6 +64,7 @@ function contexto() {
     frecuencia: { clave: pt.frecuencia, nombre: plan.mes[pt.frecuencia].nombre },
     sinC: !plan.niveles.C,
     primera: plan.primera,
+    neural: plan.hipotesis.some(h => esRadicular(h) || esNervioPeriferico(h)),
     elegidas: plan.hipotesis.map(h => h.name),
     noElegidas: hs.filter(h => !elegidas.has(h.id) && elegible(h).ok && !h.posq).map(h => h.name),
     derivar: hs.filter(h => h.derivar && !h.tratada).map(h => h.name),

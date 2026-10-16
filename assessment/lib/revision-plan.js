@@ -12,6 +12,7 @@
 //   alarmas: frases de la red de seguridad del programa para casa
 //   noElegidas / derivar: nombres de hipótesis que el plan no trata
 //   independientes: síntomas independientes, «P3 · Zona lumbar» o { nombre, lado }
+//   primera: primera sesión de tratamiento (regla neural-primera)
 // → [{ id, nivel: 'alto'|'medio', mensaje, cita? }]
 import { LIMITE_ESCALON, seccionesPlan, tieneMarca, normalizar } from './plan-ia.js';
 
@@ -68,6 +69,25 @@ function porEncima(l, escalon) {
 // Primera técnica del bloque de intervención: su subtítulo (si lo hay) y su
 // primera línea de lista; la devuelve si es neural (slump, movilización neural…)
 const RE_NEURAL = /\b(slump|neural\w*|neurodin\w*|deslizamiento del nervio|tensi[oó]n neural)\b/i;
+// Tensor o posición mantenida: lo que Butler deja para cuando el nervio tolera carga
+const RE_TENSOR = /\b(tensor(?:es)?|en tensi[oó]n|mant[eé]n\w*|mantenid[oa]s?|sost[eé]n\w*|sostenid[oa]s?)\b|\b\d+(?:\s*[–-]\s*\d+)?\s*(?:s|seg|segundos)\b/i;
+// Líneas con su contexto neural: un subpunto sangrado hereda el de su
+// ejercicio («1. Movilización del nervio…» → «   - Mantén 3 segundos»)
+function lineasNeurales(texto) {
+  const out = [];
+  let ctx = false;
+  for (const raw of String(texto || '').split('\n')) {
+    if (!raw.trim()) continue;
+    const propio = RE_NEURAL.test(raw) || /\bnervios?\b/i.test(raw);
+    if (/^\S/.test(raw)) ctx = propio;
+    if (/^#/.test(raw)) continue;
+    out.push({ l: raw.trim(), neural: propio || ctx });
+  }
+  return out;
+}
+// Negación solo dentro de la misma frase o inciso («…sin que llegue a doler;
+// mantener 3 segundos» no está negado)
+const negadoEnFrase = (l, i) => { const ini = Math.max(...[';', '.', ',', ':'].map(c => l.lastIndexOf(c, i))) + 1; return negado(l.slice(ini), i - ini); };
 function primeraTecnica(sesion) {
   const ls = String(sesion).split('\n');
   const i = ls.findIndex(l => /^###\s+.*INTERVENCI/i.test(l));
@@ -135,6 +155,19 @@ export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], 
   if (primera) {
     const neural = primeraTecnica(sec['SESIÓN'] || '');
     if (neural) puntos.push({ id: 'neural-primera', nivel: 'medio', mensaje: 'La primera sesión empieza la intervención con una técnica neural: rara vez es la primera técnica; si se usa con vigor, 2–3 días entre sesiones y reevaluar a las 24 h (Maitland 2005, cap. 6, p. 149).', cita: recorte(neural) });
+  }
+
+  // 3c. Técnica neural en tensión o mantenida con escalón 1–2 (decisión 118):
+  // en estados agudos y sensibles, deslizadores con el cuerpo descargado y antes
+  // del dolor, no tensores (Butler 2000, pp. 379–381 y 387). El primer plan de
+  // Andrés (L5, ronda 1) mantenía el slump 30 s en escalón 1. En las tres
+  // secciones: el programa para casa también lleva ejercicios neurales.
+  if (escalon <= 2) {
+    for (const { l, neural } of lineasNeurales(texto)) {
+      if (!neural) continue;
+      const m = l.match(RE_TENSOR);
+      if (m && !negadoEnFrase(l, m.index)) puntos.push({ id: 'neural-tensor', nivel: 'medio', mensaje: `Técnica neural en tensión o mantenida («${m[0].trim()}») con el escalón ${escalon}: en fase aguda o irritable, deslizadores con el resto del cuerpo descargado, antes del síntoma y por repeticiones, no mantenidos (Butler 2000, pp. 379–381 y 387).`, cita: recorte(l) });
+    }
   }
 
   // 4. Red de seguridad en el programa para casa, copiada tal cual
