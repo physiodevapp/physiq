@@ -126,8 +126,19 @@ export const TIEMPOS_TEJIDO = {
               nota: 'Ejercicio resistido de los extensores de la muñeca, 3 × 15 durante 6–12 semanas (evidencia moderada y opinión de expertos).' },
             { id: 'epicondilalgia_medial', mide: 'programa', nombre: 'Epicondilalgia medial', desde: 4, hasta: 4, fuentes: ['See 2026'],
               nota: 'Los estudios usaron excéntrico de flexores y pronadores durante 12 semanas; la revisión no recomienda una pauta concreta. Certeza baja o muy baja.' },
+            // Fila 12 (2026-10): Kulig 2009 (ensayo aleatorizado, estadios I–II), PDF del usuario
+            // leído: «a 12-week program» con ortesis y ejercicio, revisión de 30 min «once per week
+            // for 10 weeks». 12 sem = «2–3 m» (4).
+            { id: 'tendinopatia_tibial_posterior', mide: 'programa', nombre: 'Tibial posterior (estadios I–II)', desde: 4, hasta: 4, fuentes: ['Kulig 2009'],
+              nota: 'Programa de 12 semanas con ortesis a medida, estiramientos y ejercicio de resistencia progresivo dos veces al día, con una revisión semanal durante 10 semanas.' },
           ],
         },
+        // Fila 12 (2026-10): Sanchez-Alvarado 2024 (revisión de alcance), PDF del usuario leído:
+        // «HAS exercises with a graded progression for 4 to 8 weeks form the core of conservative
+        // treatment in runners with ITBS»; «only 44% of runners returning to their sport after 6–8
+        // weeks of conservative therapy». 4–8 sem = «3–4 s» a «5–8 s» (2–3).
+        { id: 'banda_iliotibial', mide: 'programa', nombre: 'Síndrome de la banda iliotibial (corredores)', desde: 2, hasta: 3, gravedad: 'leve', fuentes: ['Sanchez-Alvarado 2024'],
+          nota: 'Ejercicio de fuerza de abductores de cadera con progresión gradual durante 4–8 semanas como base del tratamiento. Solo el 44 % de los corredores vuelve a su deporte tras 6–8 semanas de tratamiento conservador.' },
         {
           // Wu 2017, «Tendon healing»: «The remodelling stage … begins after six to eight
           // weeks after injury and takes around one to two years, depending on the age and
@@ -166,6 +177,18 @@ export const TIEMPOS_TEJIDO = {
               nota: '2 semanas de inmovilización estricta y movilidad pasiva protegida hasta la 6.ª (grado A en roturas pequeñas o medianas); 6 semanas de inmovilización si preocupa la cicatrización. A las 6 semanas la reparación tiene solo un 19–30 % de la resistencia normal. Manda el protocolo del cirujano.' },
             { id: 'manguito_programa', mide: 'programa', nombre: 'Manguito rotador reparado, rehabilitación', desde: 5, hasta: 5, fuentes: ['Thigpen 2016'],
               nota: 'Movilidad activa desde la 6.ª semana, fuerza progresiva desde la 12.ª y fortalecimiento avanzado de la 20.ª a la 26.ª, solo para trabajo pesado o deporte por encima de la cabeza. El trabajo específico de deporte o trabajo puede empezar hacia los 4–5 meses; el tendón no se acerca a su resistencia normal hasta los 6 meses como pronto. Consenso de expertos (nivel V).' },
+            // Fila 12 (2026-10): Rubinger 2020 (revisión sistemática, 40 estudios, 1270 pacientes),
+            // PDF del usuario leído: tras la reparación, el 89 % vuelve al trabajo sin cambiar de
+            // tareas, a las 14,37 semanas de media (17 estudios); «a range between 3 and 4 months,
+            // with variation dependent on job demands». 3–4 meses = «2–3 m» a «3–6 m» (4–5).
+            { id: 'biceps_distal_reparado', mide: 'deporte', nombre: 'Bíceps distal reparado, vuelta al trabajo', desde: 4, hasta: 5, fuentes: ['Rubinger 2020'],
+              nota: 'Vuelta al trabajo a las 14 semanas de media (3–4 meses, según lo exigente que sea el trabajo); el 89 % vuelve sin cambiar de tareas.' },
+            // Boufadel 2025 (revisión sistemática, 42 estudios, 1093 pacientes) y Pitsilos 2022 (10
+            // estudios, 157 deportistas), PDF del usuario leídos: vuelta al deporte del 91,5 %, «a mean
+            // time of 6.3 months» (18 estudios, de 3,0 a 12,55 meses) y 9,4 meses en deportistas;
+            // Pitsilos, «a mean time of 6.2 months». 6–9 meses = «3–6 m» a «6m–1a» (5–6).
+            { id: 'biceps_distal_deporte', mide: 'deporte', nombre: 'Bíceps distal reparado, vuelta al deporte', desde: 5, hasta: 6, fuentes: ['Boufadel 2025', 'Pitsilos 2022'],
+              nota: 'Vuelve al deporte el 91,5 %, a los 6,3 meses de media (de 3 a 12,5 meses); en deportistas, a los 6–9 meses.' },
           ],
         },
       ],
@@ -245,6 +268,18 @@ export const TIEMPOS_TEJIDO = {
           ] },
         { id: 'aductores', mide: 'deporte', nombre: 'Aductores (lesión aguda, futbolistas)', desde: 1, hasta: 2, gravedad: 'leve', fuentes: ['Forsythe 2025'],
           nota: 'Vuelta al juego a los 14–20 días de media en futbolistas profesionales; la osteítis de pubis suma unas 5 semanas. Recaen 1 de cada 5.' },
+        // Fila 12 (2026-10): Kamonseki 2022 (ensayo aleatorizado, n = 64), PDF del usuario leído:
+        // «16 sessions … two times a week over 8 weeks»; mejoras a las 4 semanas «sustained over
+        // the remaining 8 weeks». 8 sem = «5–8 s» (3).
+        { id: 'discinesia_escapular', mide: 'programa', nombre: 'Discinesia escapular con dolor de hombro', desde: 3, hasta: 3, gravedad: 'leve', fuentes: ['Kamonseki 2022'],
+          nota: '16 sesiones de ejercicio en 8 semanas (dos por semana). El dolor y la función mejoraron a las 4 semanas y se mantuvieron a las 12, igual con ejercicio escapular específico que con ejercicio estándar.' },
+        // Fila 12 (2026-10): Hölmich 1999 (ensayo aleatorizado, 68 deportistas con dolor de ingle
+        // por los aductores de larga evolución), PDF del usuario leído: «The treatment period was
+        // 8–12 weeks» («minimum … 8 weeks», nunca más de 12); con el entrenamiento activo, «median
+        // time … until complete symptom-free return to sport was 18·5 weeks (range 13–26)».
+        // 8–12 sem = «5–8 s» a «2–3 m» (3–4).
+        { id: 'aductores_cronico', mide: 'programa', nombre: 'Aductores, dolor de ingle de larga evolución', desde: 3, hasta: 4, gravedad: 'moderada', fuentes: ['Hölmich 1999'],
+          nota: 'Entrenamiento activo durante 8–12 semanas, sin deporte mientras dura. Con él, la vuelta al deporte sin síntomas llegó a las 18,5 semanas de mediana (de 13 a 26). Es distinto de la lesión aguda de aductores.' },
       ],
     },
     {
@@ -320,6 +355,18 @@ export const TIEMPOS_TEJIDO = {
             { id: 'sindesmosis_cirugia', mide: 'deporte', nombre: 'Operada (tornillo o sutura dinámica)', desde: 4, hasta: 4, fuentes: ['Salameh 2022', 'Li y Sun 2026'],
               nota: 'Vuelta al deporte a los 71 días de media, en lesiones de más grado; con sutura dinámica, la misma tasa de vuelta (98 %) que sin cirugía. Manda el protocolo del cirujano.' },
           ] },
+        // Fila 12 (2026-10): Biz 2019 (revisión sistemática, 15 estudios, nivel IV), PDF del
+        // usuario leído entero. «a brief period of rehabilitation therapy, at least 3 months, is
+        // useful to discern which patients really need MUCL repair»; el tratamiento conservador
+        // se intentó «for a minimum of 3 months to a maximum of 9 months» antes de operar; tras el
+        // conservador «only 42% of athletes returned to sport activity after 6 months» (Rettig).
+        // 3–9 meses = «3–6 m» a «6m–1a» (5–6).
+        { id: 'codo_lcc', mide: 'programa', nombre: 'Ligamento colateral cubital del codo, sin cirugía', desde: 5, hasta: 6, gravedad: 'moderada', fuentes: ['Biz 2019'],
+          nota: 'Rehabilitación de al menos 3 meses para distinguir a quién hay que operar; en los estudios, de 3 a 9 meses antes de la cirugía. Tras el tratamiento conservador, solo el 42 % de los deportistas había vuelto al deporte a los 6 meses. Evidencia de nivel IV.' },
+        // Fila 12 (2026-10): McKeon 2008 (ensayo aleatorizado), PDF del usuario leído: «12
+        // supervised training sessions, three sessions per week» durante «4 wk». 4 sem = «3–4 s» (2).
+        { id: 'tobillo_inestabilidad_cronica', mide: 'programa', nombre: 'Inestabilidad crónica de tobillo', desde: 2, hasta: 2, gravedad: 'leve', fuentes: ['McKeon 2008'],
+          nota: 'Programa de equilibrio de 4 semanas: 12 sesiones supervisadas, 3 por semana, que mejoró la función referida y el control postural.' },
       ],
     },
     {
@@ -390,6 +437,18 @@ export const TIEMPOS_TEJIDO = {
           nota: 'Fisioterapia desde las primeras 24 horas y fuerza de alta intensidad desde la 1.ª semana (guía APTA). Vuelve al deporte el 19 % a los 3 meses, el 70 % a los 6 y el 84 % al año, casi siempre a deportes de bajo impacto. Manda el protocolo del cirujano.' },
         { id: 'protesis_cadera', mide: 'deporte', nombre: 'Prótesis total de cadera', desde: 4, hasta: 5, gravedad: 'moderada', fuentes: ['Telang 2024', 'Pan 2024'],
           nota: 'La mayoría vuelve a su deporte en los primeros 6 meses y la mitad en los 3 primeros, sobre todo a deportes de bajo impacto. Los cirujanos lo permiten a las 6–12 semanas o a los 3 meses, y no hay pruebas de que más actividad acorte la vida de la prótesis. Vuelta al trabajo, con pocos datos (vía anterior): 30–60 % a los 3 meses y 87 % al año. Manda el protocolo del cirujano.' },
+        // Fila 12 (2026-10), PDF del usuario leídos. Ophey 2025 (guía holandesa): «PFP should be
+        // treated with quadriceps- and/or hip-focused exercise therapy for at least 6 to 12 weeks»;
+        // reconsiderar el diagnóstico sin mejoría a las 12 semanas; cirugía solo tras «at least 6
+        // months of non-operative treatments». 6–12 sem = «5–8 s» a «2–3 m» (3–4).
+        { id: 'dolor_patelofemoral', mide: 'programa', nombre: 'Dolor patelofemoral', desde: 3, hasta: 4, gravedad: 'leve', fuentes: ['Ophey 2025'],
+          nota: 'Ejercicio de cuádriceps y cadera durante al menos 6–12 semanas, mejor con supervisión de fisioterapia. Si a las 12 semanas no hay mejoría, reconsiderar el diagnóstico; tratamiento no quirúrgico al menos 6 meses antes de pensar en cirugía.' },
+        // Consenso de Zúrich (Kemp 2020): «Exercise-based treatment should be at least 3 months
+        // duration». Griffin 2018 (FASHIoN): «between six and ten face-to-face contacts with the
+        // physiotherapist over 12–24 weeks». Enseki 2023 (guía JOSPT) recoge el mínimo de 3 meses
+        // de Kemp, «based on limited evidence». 3–6 meses = «2–3 m» a «3–6 m» (4–5).
+        { id: 'sifa_conservador', mide: 'programa', nombre: 'SIFA o lesión del labrum, sin cirugía', desde: 4, hasta: 5, gravedad: 'moderada', fuentes: ['Consenso de Zúrich IHiPRN', 'Griffin 2018', 'Enseki 2023'],
+          nota: 'Tratamiento basado en el ejercicio de al menos 3 meses (consenso, que recoge la guía JOSPT; nivel de evidencia limitado). En el ensayo FASHIoN, de 6 a 10 sesiones de fisioterapia en 12–24 semanas.' },
       ],
     },
     // Columna (bloque 8 de la ampliación, 2026-10): no son plazos de cicatrización, sino lo que
@@ -414,6 +473,18 @@ export const TIEMPOS_TEJIDO = {
           nota: 'La mayoría se resuelve en 4–6 semanas, más despacio con déficit neurológico. En atención primaria, solo el 55 % ha mejorado su discapacidad al año. Tras discectomía, el 73 % no tiene dolor de pierna al año.' },
         { id: 'radiculopatia_cervical', mide: 'evolucion', nombre: 'Radiculopatía cervical', desde: 3, hasta: 7, gravedad: 'moderada', fuentes: ['Margetis y Magnus 2025', 'Wong 2014'],
           nota: 'Más del 85 % de las agudas se resuelve en 8–12 semanas. La mejoría importante llega en los primeros 4–6 meses y la recuperación completa, a los 2–3 años en el 83 %; puede recidivar con menos intensidad.' },
+        // Fila 12 (2026-10): Blanpied 2017 (guía JOSPT), PDF del usuario leído. Recomendación B
+        // (agudo, incluido el latigazo): «Reassurance to the patient that recovery is expected to
+        // occur within the first 2 to 3 months»; «approximately 50% will fully recover within 1
+        // year following WAD», según la definición de recuperación; tres trayectorias. 0–3 meses
+        // = columnas 0–4, como la lumbalgia aguda.
+        { id: 'wad_agudo', mide: 'evolucion', nombre: 'Latigazo cervical (WAD) agudo', desde: 0, hasta: 4, gravedad: 'leve', fuentes: ['Blanpied 2017'],
+          nota: 'La guía tranquiliza al paciente: la recuperación se espera en los primeros 2–3 meses. Al año se ha recuperado del todo en torno a la mitad, según cómo se defina la recuperación; la evolución sigue una de tres trayectorias (rápida, lenta con secuelas o mala con discapacidad grave).' },
+        // Fila 12 (2026-10): Reid 2014 (ensayo aleatorizado), PDF del usuario leído: «2 to 6
+        // therapist-delivered treatments over 6 weeks»; efectos mantenidos «for 12 weeks after
+        // treatment». 6 sem = «5–8 s» (3).
+        { id: 'mareo_cervicogenico', mide: 'programa', nombre: 'Mareo cervicogénico crónico', desde: 3, hasta: 3, gravedad: 'leve', fuentes: ['Reid 2014'],
+          nota: 'De 2 a 6 sesiones de terapia manual (SNAG de Mulligan o movilizaciones de Maitland) en 6 semanas; la mejoría del mareo se mantenía 12 semanas después.' },
         // Columna operada (bloque 2 de la ampliación, 2026-10), PDF del usuario leídos. Son
         // vuelta al trabajo (`deporte` = vuelta a la función), no consolidación. Wang 2017
         // (revisión sistemática, 36 estudios): TLIF mínimamente invasiva 7 semanas frente a 11
@@ -578,6 +649,18 @@ export const TIEMPOS_TEJIDO = {
             { id: 'estres_tibia_anterior', mide: 'deporte', nombre: 'Tibia anterior (alto riesgo)', desde: 6, hasta: 6, gravedad: 'grave', fuentes: ['Robertson y Wood 2017', 'Hoenig 2023'],
               nota: 'Vuelta al deporte a los 7 meses, con o sin cirugía (Robertson y Wood 2017); vuelve el 75,5 % y hay complicaciones en el 41 % (Hoenig 2023).' },
           ] },
+        // Fila 12 (2026-10), PDF del usuario leídos enteros. Rathleff 2020 (serie de casos, nivel
+        // 4, 51 adolescentes de 10–14 años, Osgood-Schlatter; excluyó el Sinding-Larsen-Johansson):
+        // intervención de 12 semanas; éxito 80 % a las 12 semanas y 90 % a los 12 meses; vuelta al
+        // deporte 16 % a las 12 semanas, 67 % a los 6 meses, 69 % a los 12. 12 sem = «2–3 m» (4).
+        { id: 'osgood_schlatter', mide: 'programa', nombre: 'Osgood-Schlatter (apofisitis de la tuberosidad tibial)', desde: 4, hasta: 4, gravedad: 'leve', fuentes: ['Rathleff 2020'],
+          nota: 'Programa de 12 semanas (modificar la actividad, fuerza progresiva y vuelta gradual al deporte): mejoran el 80 % a las 12 semanas y el 90 % al año. Vuelven al deporte el 16 % a las 12 semanas, el 67 % a los 6 meses y el 69 % al año. Serie de casos en adolescentes de 10–14 años.' },
+        // Schöberl 2017 (ensayo aleatorizado, 44 futbolistas aficionados con osteítis de pubis en
+        // la RM): rehabilitación intensiva en 3 fases; 42 de 44 vuelven a jugar «within 4 months»,
+        // de media 73,2 días con ondas de choque y 102,6 sin ellas; los que solo dejaron el deporte,
+        // 240 días y recaída en el 51 %. 73–103 días = «2–3 m» a «3–6 m» (4–5).
+        { id: 'osteitis_pubis', mide: 'deporte', nombre: 'Sobrecarga del pubis (osteítis de pubis), futbolistas', desde: 4, hasta: 5, gravedad: 'moderada', fuentes: ['Schöberl 2017'],
+          nota: 'Con un programa intensivo de rehabilitación en 3 fases, 42 de 44 futbolistas aficionados volvieron a jugar antes de 4 meses (de media, 73 días con ondas de choque y 103 sin ellas). Los que solo dejaron el deporte tardaron 240 días de media y la mitad recayó.' },
       ],
     },
     // Nervio periférico (Fase J, 9), PDF del usuario leídos enteros (2026-10).
@@ -669,8 +752,24 @@ export const TIEMPOS_TEJIDO = {
     ro11: [{ id: 'fx_rotula_conservador', posq: false }, { id: 'fx_meseta_conservador', posq: false }, { id: 'fx_meseta_cirugia', posq: true }],
     co1: ['epicondilalgia_lateral'],
     co2: ['epicondilalgia_medial'],
-    // La barra general (biología del tendón, Wu 2017), sin los subtipos de Aquiles y manguito
-    co7: [{ id: 'tendon_rotura', soloFila: true }],
+    // Sin cirugía, la barra general (biología del tendón, Wu 2017), sin los subtipos de Aquiles y
+    // manguito; operado, los subtipos del bíceps distal (vuelta al trabajo y al deporte)
+    co7: [{ id: 'tendon_rotura', soloFila: true, posq: false }, { id: 'biceps_distal_reparado', posq: true }, { id: 'biceps_distal_deporte', posq: true }],
+    co4: ['codo_lcc'],
+    // Latigazo: el plazo de la guía es el del agudo
+    ce5: [{ id: 'wad_agudo', cronologia: 'Agudo (<6 semanas)' }],
+    // Solo la Osgood-Schlatter (tp36, Sever y las demás, no: Rathleff 2020 no las incluyó)
+    ro15: ['osgood_schlatter'],
+    ca19: ['osteitis_pubis'],
+    ca16: ['aductores_cronico'],
+    h8: ['discinesia_escapular'],
+    ce13: ['mareo_cervicogenico'],
+    ro3: ['dolor_patelofemoral'],
+    ro6: ['banda_iliotibial'],
+    tp14: ['tendinopatia_tibial_posterior'],
+    tp21: ['tobillo_inestabilidad_cronica'],
+    ca2: ['sifa_conservador'],
+    ca3: ['sifa_conservador'],
     tp1: [
       { id: 'tobillo_lateral_g1', posq: false }, { id: 'tobillo_lateral_g2', posq: false }, { id: 'tobillo_lateral_g3', posq: false },
       { id: 'tobillo_lateral_cirugia', posq: true },
