@@ -3228,9 +3228,15 @@ body.posquirurgico .solo-posq { display: block; }
 .cuest-item-n { display: inline-block; min-width: 1.6em; font-family: 'DM Mono', monospace; color: var(--text3); }
 .cuest-item-nota { font-size: 0.72rem; color: var(--text3); }
 .cuest-ops { display: grid; gap: 6px; }
-/* Escala: una fila si cabe; 0–10 en dos filas en móvil (botones de 40 px como mínimo) */
+/* Escala: una fila si cabe; 0–10 en dos filas que llenan el ancho en móvil,
+   repartidas como la EVA de la fase 3 (0–4 / 5–10; botones de 40 px como mínimo) */
 .cuest-ops-escala { grid-template-columns: repeat(var(--cuest-n), minmax(0, 1fr)); }
-@media (max-width: 520px) { .cuest-ops-escala.cuest-ops-largo { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.cuest-salto { display: none; }
+@media (max-width: 520px) {
+  .cuest-ops-escala.cuest-ops-largo { display: flex; flex-wrap: wrap; row-gap: 0; }
+  .cuest-ops-largo .cuest-op { flex: 1 1 0; min-width: 0; }
+  .cuest-ops-largo .cuest-salto { display: block; flex-basis: 100%; height: 6px; }
+}
 .cuest-ops-numero { display: flex; align-items: center; gap: 10px; }
 .cuest-num { width: 6.5em; min-height: 44px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); font-family: 'DM Mono', monospace; font-size: 1rem; }
 .cuest-num:focus { outline: none; border-color: var(--accent); }

@@ -311,6 +311,9 @@ function botonesItem(def, item, r) {
     for (let v = min; v <= max; v++) ops.push(boton(v, v, r === v));
     if (na) ops.push(na);
     const n = max - min + 1 + (na ? 1 : 0);
+    // Larga (0–10): en móvil, dos filas que llenan el ancho, como la EVA de la
+    // fase 3 (0–4 arriba, 5–10 abajo); el salto solo se ve por debajo de 520 px
+    if (n > 7) ops.splice(Math.floor(n / 2), 0, '<span class="cuest-salto" aria-hidden="true"></span>');
     return `<div class="cuest-ops cuest-ops-escala${n > 7 ? ' cuest-ops-largo' : ''}" style="--cuest-n:${n}">${ops.join('')}</div>`;
   }
   if (tipo === 'numero') {
