@@ -576,6 +576,18 @@ function wireQuickInputBar(fieldId) {
   if (!field) return;
   syncQuickPhraseChips(fieldId);
   field.addEventListener('input', () => syncQuickPhraseChips(fieldId));
+  const fila = field.nextElementSibling?.classList.contains('quick-input-bar')
+    ? field.nextElementSibling.querySelector('.chip-row') : null;
+  if (fila) _vigilarBordesScroll(fila);
+}
+
+// Degradado en el lado por el que quedan chips fuera de la vista. El
+// ResizeObserver lo recalcula también cuando la fila pasa de oculta (fase no
+// activa, <details> cerrado: ancho 0) a visible, y al girar la pantalla.
+function _vigilarBordesScroll(fila) {
+  _bordesScroll(fila);
+  fila.addEventListener('scroll', () => _bordesScroll(fila), { passive: true });
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => _bordesScroll(fila)).observe(fila);
 }
 
 function appendQuickPhrase(btn) {
@@ -3464,11 +3476,12 @@ function _pintarTiemposTejido() {
   // La pastilla activa, a la vista aunque esté al final de la fila
   const activa = fila.querySelector('.tej-filtro-btn.activo');
   if (activa) fila.scrollLeft = Math.max(0, activa.offsetLeft - fila.offsetLeft - 16);
-  _bordesFiltroTejidos(fila);
-  fila.addEventListener('scroll', () => _bordesFiltroTejidos(fila), { passive: true });
+  _bordesScroll(fila);
+  fila.addEventListener('scroll', () => _bordesScroll(fila), { passive: true });
 }
-// Degradado en el lado por el que quedan pastillas fuera de la vista
-function _bordesFiltroTejidos(fila) {
+// Degradado en el lado por el que quedan pastillas o chips fuera de la vista
+// (filtro de tejidos y filas de chips de los campos de texto)
+function _bordesScroll(fila) {
   const max = fila.scrollWidth - fila.clientWidth;
   fila.classList.toggle('mas-izda', fila.scrollLeft > 2);
   fila.classList.toggle('mas-dcha', fila.scrollLeft < max - 2);

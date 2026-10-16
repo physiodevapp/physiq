@@ -3079,9 +3079,9 @@ body.posquirurgico .solo-posq { display: block; }
 .tej-filtro::-webkit-scrollbar { display: none; }
 .tej-filtro-btn { flex: 0 0 auto; }
 /* Degradado en el borde por el que quedan pastillas fuera (clases que pone app.js) */
-.tej-filtro.mas-dcha { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
-.tej-filtro.mas-izda { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); }
-.tej-filtro.mas-izda.mas-dcha { -webkit-mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); }
+.tej-filtro.mas-dcha, .chip-row.mas-dcha { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+.tej-filtro.mas-izda, .chip-row.mas-izda { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); }
+.tej-filtro.mas-izda.mas-dcha, .chip-row.mas-izda.mas-dcha { -webkit-mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); }
 .tej-filtro-btn { min-height: 32px; padding: 4px 12px; border-radius: 16px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text2); font-family: inherit; font-size: 0.78rem; cursor: pointer; }
 .tej-filtro-btn.activo { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 @media (hover: hover) { .tej-filtro-btn:hover { border-color: var(--accent); } }
