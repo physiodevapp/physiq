@@ -140,46 +140,61 @@ export function gruposVisibles(grupos, filtro) {
 }
 
 // Filtro «Este paciente» (Fase J): las filas y subtipos de las hipótesis activas, según
-// `datos.porHipotesis` y el mecanismo. → { ids, hipotesis } (ids sin repetir, en el orden
-// de las hipótesis; hipotesis = las que aportan alguna fila).
+// `datos.porHipotesis` y el contexto. Una entrada objeto solo vale si encaja con todas sus
+// condiciones: `posq` (boolean, mecanismo Post-quirúrgico o no), `mecanismo` y `cronologia`
+// (el texto de la fase 1). `soloFila: true` enseña la fila sin sus subtipos (si ninguna otra
+// entrada la pide entera). → { ids, hipotesis, sinFilas, soloFila } (ids sin repetir, en el
+// orden de las hipótesis; hipotesis = las que aportan alguna fila; sinFilas = las demás).
 export const FILTRO_PACIENTE = 'paciente';
-export function filasPaciente(datos, hipIds = [], { posquirurgico = false } = {}) {
-  const ids = [], hipotesis = [];
+export function encajaEntrada(e, { posquirurgico = false, mecanismo = '', cronologia = '' } = {}) {
+  if (typeof e === 'string') return true;
+  if (e.posq !== undefined && e.posq !== posquirurgico) return false;
+  if (e.mecanismo !== undefined && e.mecanismo !== mecanismo) return false;
+  if (e.cronologia !== undefined && e.cronologia !== cronologia) return false;
+  return true;
+}
+export function filasPaciente(datos, hipIds = [], contexto = {}) {
+  const ids = [], hipotesis = [], sinFilas = [], enteras = new Set(), soloFila = new Set();
   for (const h of hipIds) {
     const propias = (datos.porHipotesis?.[h] || [])
-      .filter(e => typeof e === 'string' || e.posq === undefined || e.posq === posquirurgico)
-      .map(e => (typeof e === 'string' ? e : e.id))
-      .filter(id => buscarFila(datos, id));
-    if (!propias.length) continue;
+      .filter(e => encajaEntrada(e, contexto))
+      .filter(e => buscarFila(datos, typeof e === 'string' ? e : e.id));
+    if (!propias.length) { sinFilas.push(h); continue; }
     hipotesis.push(h);
-    for (const id of propias) if (!ids.includes(id)) ids.push(id);
+    for (const e of propias) {
+      const id = typeof e === 'string' ? e : e.id;
+      if (!ids.includes(id)) ids.push(id);
+      (e.soloFila ? soloFila : enteras).add(id);
+    }
   }
-  return { ids, hipotesis };
+  return { ids, hipotesis, sinFilas, soloFila: [...soloFila].filter(id => !enteras.has(id)) };
 }
 
 // Los grupos recortados a las filas del paciente: una fila entra si es suya (con todos
-// sus subtipos) o si lo es alguno de sus subtipos (solo esos). Grupos sin ninguna, fuera.
-function gruposPaciente(grupos, ids) {
+// sus subtipos, o sin ninguno si está en `soloFila`) o si lo es alguno de sus subtipos
+// (solo esos). Grupos sin ninguna, fuera.
+function gruposPaciente(grupos, ids, soloFila = []) {
   return grupos.map(g => ({
     ...g,
     filas: g.filas.flatMap(f => {
-      if (ids.includes(f.id)) return [f];
+      if (ids.includes(f.id)) return [soloFila.includes(f.id) ? { ...f, subtipos: [] } : f];
       const st = (f.subtipos || []).filter(x => ids.includes(x.id));
       return st.length ? [{ ...f, subtipos: st }] : [];
     }),
   })).filter(g => g.filas.length);
 }
 
-// HTML del cuerpo del panel. `semanas`: semanas desde la cirugía (o null);
 // `posquirurgico`: si el mecanismo es Post-quirúrgico (para el texto de ayuda);
 // `filtro`: id de un grupo de tejido, o 'todos'. Las pastillas del filtro y los
 // títulos de grupo llevan `data-filtro-tejido` (el filtro que ponen al tocarlos:
 // el suyo, o 'todos' si ya era el activo); abrirTiemposTejido() (app.js)
 // vuelve a pintar con el filtro elegido. `REF`: el registro de referencias, si ya
 // está cargado (enlaces de las fuentes de las notas de grupo).
-// `paciente`: { ids, nombres } de filasPaciente() (nombres = de las hipótesis), o null:
-// con ids, una primera pastilla «Este paciente» (FILTRO_PACIENTE) que muestra solo esas
-// filas, con los subtipos desplegados, y una línea que dice de qué hipótesis salen.
+// `paciente`: { ids, nombres, sinPlazo, soloFila } de filasPaciente() (nombres y sinPlazo =
+// nombres de las hipótesis con y sin filas), o null: con ids, una primera pastilla «Este
+// paciente» (FILTRO_PACIENTE) que muestra solo esas filas, con los subtipos desplegados, y
+// una línea que dice de qué hipótesis salen; las que no tienen fila se nombran aparte, y si
+// ninguna la tiene, una línea lo dice (para que no parezca que el filtro ha fallado).
 export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false, filtro = 'todos', REF = null, paciente = null } = {}) {
   const { columnas, gravedades, medidas = {}, grupos, fases, fasesNota, notas, fuente, fasesFuente } = datos;
   const n = columnas.length;
@@ -222,10 +237,15 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
     + '</ul></div>';
 
   const ctx = { columnas, hoy, pendienteChip, medidas };
+  const sinPlazo = paciente?.sinPlazo || [];
   const lineaPaciente = soloPaciente
-    ? `<p class="tej-paciente">Según ${paciente.nombres.length === 1 ? 'la hipótesis activa' : 'las hipótesis activas'}: ${paciente.nombres.map(esc).join(' · ')}. Vuelve a tocar «Este paciente» para ver todos los tejidos.</p>`
-    : '';
-  const visibles = soloPaciente ? gruposPaciente(grupos, paciente.ids) : gruposVisibles(grupos, activo);
+    ? `<p class="tej-paciente">Según ${paciente.nombres.length === 1 ? 'la hipótesis activa' : 'las hipótesis activas'}: ${paciente.nombres.map(esc).join(' · ')}.`
+      + (sinPlazo.length ? ` Sin plazo propio en este panel: ${sinPlazo.map(esc).join(' · ')}.` : '')
+      + ' Vuelve a tocar «Este paciente» para ver todos los tejidos.</p>'
+    : !conPaciente && sinPlazo.length
+      ? `<p class="tej-paciente">${sinPlazo.length === 1 ? 'La hipótesis activa no tiene' : 'Las hipótesis activas no tienen'} plazo propio en este panel: ${sinPlazo.map(esc).join(' · ')}.</p>`
+      : '';
+  const visibles = soloPaciente ? gruposPaciente(grupos, paciente.ids, paciente.soloFila) : gruposVisibles(grupos, activo);
   const cuerpo = visibles.map(g => `<div class="tej-bloque" data-grupo="${esc(g.id)}">`
     // El título del grupo también filtra (o vuelve a «Todos» si ya es el filtrado)
     + `<button type="button" class="tej-grupo" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(activo === g.id ? 'todos' : g.id)}" title="${esc(activo === g.id ? 'Ver todos los tejidos' : `Ver solo ${g.tejido.toLowerCase()}`)}">${esc(g.tejido)}</button>`

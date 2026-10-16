@@ -3471,8 +3471,11 @@ function _filtroTejidos() {
   try { return localStorage.getItem(_CLAVE_FILTRO_TEJIDOS) || 'todos'; } catch { return 'todos'; }
 }
 function _pacienteTejidos() {
-  const { ids, hipotesis } = filasPaciente(TIEMPOS_TEJIDO, state.activeHypotheses || [], { posquirurgico: esPosquirurgico(state.mecanismo) });
-  return ids.length ? { ids, nombres: hipotesis.map(h => HYPOTHESES[h]?.name || h) } : null;
+  const { ids, hipotesis, sinFilas, soloFila } = filasPaciente(TIEMPOS_TEJIDO, state.activeHypotheses || [], {
+    posquirurgico: esPosquirurgico(state.mecanismo), mecanismo: state.mecanismo, cronologia: state.cronologia,
+  });
+  const nombre = h => HYPOTHESES[h]?.name || h;
+  return ids.length || sinFilas.length ? { ids, soloFila, nombres: hipotesis.map(nombre), sinPlazo: sinFilas.map(nombre) } : null;
 }
 function _pintarTiemposTejido() {
   _cerrarInfoBarra({ sinFoco: true });
@@ -3544,7 +3547,7 @@ function abrirTiemposTejido() {
   const overlay = document.getElementById('tejidosOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
   _cargarRefTejidos();
-  _filtroTejidosSesion = _pacienteTejidos() ? FILTRO_PACIENTE : null;
+  _filtroTejidosSesion = _pacienteTejidos()?.ids.length ? FILTRO_PACIENTE : null;
   _pintarTiemposTejido();
   overlay.classList.add('open');
   document.getElementById('tejidosBtn')?.setAttribute('aria-expanded', 'true');

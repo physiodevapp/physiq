@@ -53,7 +53,7 @@
 //               `tejido`: la fase solo vale para ese tejido (se pinta más clara);
 //               `fasesNota` y `fasesFuente`, su aviso y su cita bajo la leyenda
 //   fuentes     claves de data/referencias.js (las cuenta tests/referencias.mjs)
-//   porHipotesis { <hipId>: [id | { id, posq }] } — filas o subtipos de cada hipótesis
+//   porHipotesis { <hipId>: [id | { id, posq?, mecanismo?, cronologia?, soloFila? }] } — filas o subtipos de cada hipótesis
 //               para el filtro «Este paciente» (lib/tejidos.js, filasPaciente()); no va
 //               a physiq-wiki, que no tiene hipótesis
 
@@ -631,15 +631,18 @@ export const TIEMPOS_TEJIDO = {
   // Hipótesis → filas o subtipos del diagrama (Fase J, el último paso). Con alguna de
   // estas hipótesis activa en la fase 4, el panel se abre con la pastilla «Este
   // paciente»: solo esas filas, con sus subtipos desplegados. Una entrada es el id de
-  // una fila o subtipo, o { id, posq } para elegir según el mecanismo Post-quirúrgico
-  // (true: solo operado; false: solo sin cirugía). Una fila madre trae todos sus
-  // subtipos. Solo donde la fila es esa misma lesión; sin fila propia, nada (un
+  // una fila o subtipo, o un objeto con condiciones (lib/tejidos.js, encajaEntrada()):
+  // `posq` (true: solo operado; false: solo sin cirugía), `mecanismo` o `cronologia` (el
+  // texto exacto de la fase 1). Una fila madre trae todos sus subtipos, salvo con
+  // `soloFila: true`. Solo donde la fila es esa misma lesión; sin fila propia, nada (un
   // atrapamiento nervioso no es una neuropraxia, una tendinopatía crónica de
   // aductores no es la lesión aguda). Un test comprueba que cada id existe.
   porHipotesis: {
     h1: ['capsulitis_adhesiva'],
     h3: [{ id: 'manguito_proteccion', posq: true }, { id: 'manguito_programa', posq: true }],
-    h4: ['hombro_luxacion_anterior'],
+    // La fila es la luxación anterior, traumática; la hipótesis cubre también la inestabilidad
+    // posterior y la multidireccional, que no lo son
+    h4: [{ id: 'hombro_luxacion_anterior', mecanismo: 'Traumático' }],
     ca1: [{ id: 'protesis_cadera', posq: true }],
     ca4: ['tendinopatia_glutea'],
     ca9: ['tendinopatia_isquios_proximal'],
@@ -648,6 +651,13 @@ export const TIEMPOS_TEJIDO = {
     ce12: ['radiculopatia_cervical'],
     lu3: ['radiculopatia_lumbar'],
     lu5: ['radiculopatia_lumbar'],
+    // Lumbalgia inespecífica: la fila es la aguda, así que solo con cronología aguda (el
+    // dolor sacroilíaco, lu8, y la estenosis, lu4, no son inespecíficos)
+    lu1: [{ id: 'lumbalgia_aguda', cronologia: 'Agudo (<6 semanas)' }],
+    lu2: [{ id: 'lumbalgia_aguda', cronologia: 'Agudo (<6 semanas)' }],
+    lu6: [{ id: 'lumbalgia_aguda', cronologia: 'Agudo (<6 semanas)' }],
+    lu7: [{ id: 'lumbalgia_aguda', cronologia: 'Agudo (<6 semanas)' }],
+    lu9: [{ id: 'lumbalgia_aguda', cronologia: 'Agudo (<6 semanas)' }],
     ro1: [{ id: 'protesis_rodilla', posq: true }],
     ro2: [
       { id: 'menisco_traumatica_conservador', posq: false }, { id: 'menisco_degenerativa_conservador', posq: false },
@@ -659,7 +669,8 @@ export const TIEMPOS_TEJIDO = {
     ro11: [{ id: 'fx_rotula_conservador', posq: false }, { id: 'fx_meseta_conservador', posq: false }, { id: 'fx_meseta_cirugia', posq: true }],
     co1: ['epicondilalgia_lateral'],
     co2: ['epicondilalgia_medial'],
-    co7: ['tendon_rotura'],
+    // La barra general (biología del tendón, Wu 2017), sin los subtipos de Aquiles y manguito
+    co7: [{ id: 'tendon_rotura', soloFila: true }],
     tp1: [
       { id: 'tobillo_lateral_g1', posq: false }, { id: 'tobillo_lateral_g2', posq: false }, { id: 'tobillo_lateral_g3', posq: false },
       { id: 'tobillo_lateral_cirugia', posq: true },
