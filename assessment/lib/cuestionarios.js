@@ -329,7 +329,8 @@ function botonesItem(def, item, r) {
   }
   if (tipo === 'marcas') {
     const marcadas = Array.isArray(r) ? r : [];
-    return `<div class="cuest-ops cuest-ops-texto">${item.opciones.map((t, i) => boton(i, esc(t), marcadas.includes(i))).join('')}</div>`;
+    // Marcar varias: en móvil, dos columnas y, si son impares, la última a todo el ancho
+    return `<div class="cuest-ops cuest-ops-texto cuest-ops-marcas">${item.opciones.map((t, i) => boton(i, esc(t), marcadas.includes(i))).join('')}</div>`;
   }
   return '';
 }
