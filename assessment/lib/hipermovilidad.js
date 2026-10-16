@@ -123,8 +123,11 @@ export function hmPayload(hm, edad, respuestas) {
 }
 
 // ── Textos compartidos ───────────────────────────────────────
+// El subtipo en minúscula dentro de una frase, sin tocar las siglas
+// (`toLowerCase()` daba «hipermóvil (sedh) o teh»).
+const _subtipoMinus = st => SUBTIPOS_HM[st].replace(/^\S/, c => c.toLowerCase());
 const _estadoTexto = d => d.es === 'diagnosticada'
-  ? `diagnosticada${d.st && d.st !== 'ns' ? ` (subtipo ${SUBTIPOS_HM[d.st].toLowerCase()})` : ''}`
+  ? `diagnosticada${d.st && d.st !== 'ns' ? ` (subtipo ${_subtipoMinus(d.st)})` : ''}`
   : 'sospecha';
 const _beightonTexto = d => d.bt == null ? '' : `Beighton ${d.bt}/9${d.co != null ? ` (corte ${d.co})` : ''}`;
 
