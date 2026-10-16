@@ -1290,14 +1290,7 @@ function _repintarCribado() {
   buildSistemicoQuestions(state.region);
   Object.assign(state.sistemicoAnswers, savedAnswers);
   state.sistemicoBreve = savedBreve;
-  Object.entries(state.sistemicoAnswers).forEach(([qId, answer]) => {
-    const sq2 = document.getElementById(`sq2_${qId}`);
-    if (!sq2) return;
-    sq2.querySelectorAll('.sq-btn').forEach(btn => {
-      const m = (btn.getAttribute('onclick') || '').match(/'(SI|NO)'/);
-      if (m) btn.classList.toggle('selected', m[1] === answer);
-    });
-  });
+  Object.entries(state.sistemicoAnswers).forEach(([qId, answer]) => _marcarRespuestaSist(qId, answer));
   sistemasActivos().forEach(sis => {
     const alerta = sis.preguntas.some(q => state.sistemicoAnswers[q.id] === 'SI');
     document.getElementById(`tab_${sis.id}`)?.classList.toggle('has-alert', alerta);
@@ -1451,7 +1444,7 @@ function buildSistemaHTML(sis) {
     html += `
       <div class="sq2${q.alerta ? ' alerta-high' : ''}${q.urgencia ? ' sq2-urg' : ''}" id="sq2_${q.id}">
         <div class="sq2-badge${q.alerta ? ' alerta' : ''}">${qi + 1}</div>
-        <div class="sq2-text">${q.text}${urgBadge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}${q.notaPosquirurgica ? `<div class="nota-posq solo-posq">🏥 ${TEXTO_NOTA_TRAUMA}</div>` : ''}${razonamientoInlineHTML(sis, q)}</div>
+        <div class="sq2-text">${q.text}${urgBadge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}${q.derivacion ? `<span class="sq2-deriv-msg">🩺 ${q.derivacion}</span>` : ''}${q.notaPosquirurgica ? `<div class="nota-posq solo-posq">🏥 ${TEXTO_NOTA_TRAUMA}</div>` : ''}${razonamientoInlineHTML(sis, q)}</div>
         <div class="sq-btns">
           <button class="sq-btn si" onclick="selectSistQ(this,'${q.id}','SI',${q.alerta},'${sis.id}')">SÍ</button>
           <button class="sq-btn no selected" onclick="selectSistQ(this,'${q.id}','NO',${q.alerta},'${sis.id}')">NO</button>
@@ -2016,20 +2009,26 @@ function toggleImpact(toggleEl) {
   toggleEl.classList.toggle('open', !isOpen);
 }
 
+// Cada pregunta se pinta dos veces con el mismo id (acordeón móvil y panel de
+// escritorio): botón marcado y clase answered-si/no en las dos copias, o el
+// mensaje de urgencia o derivación solo aparecía en la copia oculta.
+function _marcarRespuestaSist(id, value) {
+  document.querySelectorAll(`[id="sq2_${id}"]`).forEach(row => {
+    row.querySelectorAll('.sq-btn').forEach(b => {
+      const m = (b.getAttribute('onclick') || '').match(/'(SI|NO)'/);
+      if (m) b.classList.toggle('selected', m[1] === value);
+    });
+    row.classList.toggle('answered-si', value === 'SI');
+    row.classList.toggle('answered-no', value === 'NO');
+  });
+}
+
 function selectSistQ(btn, id, value, isAlerta, sisId) {
-  const parent = btn.closest('.sq-btns');
-  parent.querySelectorAll('.sq-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
   state.sistemicoAnswers[id] = value;
+  _marcarRespuestaSist(id, value);
   // Un SÍ contradice un embudo en NO: el sistema pasa a tener hallazgos
   if (value === 'SI' && state.sistemicoBreve[sisId] === 'NO') state.sistemicoBreve[sisId] = 'SI';
 
-  // Visual feedback on the question row
-  const row = document.getElementById(`sq2_${id}`);
-  if (row) {
-    row.classList.toggle('answered-si', value === 'SI');
-    row.classList.toggle('answered-no', value === 'NO');
-  }
 
   // Update tab and accordion alert indicators for this system
   const tab = document.getElementById(`tab_${sisId}`);
@@ -2047,6 +2046,7 @@ function selectSistQ(btn, id, value, isAlerta, sisId) {
   updateSistemicoAlert();
   const q = SYSTEMIC_SCREENING[state.region]?.sistemas.flatMap(x => x.preguntas).find(x => x.id === id);
   if (q?.urgencia && value === 'SI') showToast(`🚨 ${q.urgencia}`, 'warning');
+  else if (q?.derivacion && value === 'SI') showToast(`🩺 ${q.derivacion}`, 'warning');
   saveSession();
 }
 
@@ -2102,6 +2102,20 @@ function getUrgenciasActivas() {
     .map(q => q.urgencia);
 }
 
+// Preguntas del cribado con `derivacion` (derivación médica no urgente, p. ej.
+// el quiste de Tarlov, l_u5) respondidas SÍ. Van con las del árbol CIF en
+// getDerivacionesMedicas(): payload `dv`, fase 5, 📋 Notas y 📄 Informe.
+function getDerivacionesCribado() {
+  return sistemasActivos().flatMap(sis => sis.preguntas)
+    .filter(q => q.derivacion && state.sistemicoAnswers[q.id] === 'SI')
+    .map(q => q.derivacion);
+}
+
+// Todas las derivaciones médicas no urgentes: primero las del cribado.
+function getDerivacionesMedicas() {
+  return [...getDerivacionesCribado(), ...getDerivacionesArbol()];
+}
+
 function updateSistemicoAlert() {
   const alertDiv = document.getElementById('sistemicoAlert');
   const hasPositive = _respuestasActivas().some(([, v]) => v === 'SI');
@@ -2113,14 +2127,22 @@ function updateSistemicoAlert() {
       <div><strong>Derivación urgente hoy.</strong> No continuar con la valoración mecánica.
         ${urgencias.map(u => `<div>· ${u}</div>`).join('')}</div>
     </div>` : '';
-  const soloUrgencias = urgencias.length && !_respuestasActivas()
-    .some(([id, v]) => v === 'SI' && !sistemasActivos().some(s => s.preguntas.some(q => q.id === id && q.urgencia)));
+  const derivaciones = getDerivacionesCribado();
+  const derivHtml = derivaciones.length ? `<div class="alert alert-danger">
+      <span class="alert-icon">🩺</span>
+      <div><strong>Derivación médica.</strong> No es urgente: puede continuar con la valoración.
+        ${derivaciones.map(m => `<div>· ${m}</div>`).join('')}</div>
+    </div>` : '';
+  // Si todos los SÍ son urgencias o derivaciones, sobra el aviso genérico
+  // («no exige derivación automática»), que los contradiría.
+  const soloUrgencias = (urgencias.length || derivaciones.length) && !_respuestasActivas()
+    .some(([id, v]) => v === 'SI' && !sistemasActivos().some(s => s.preguntas.some(q => q.id === id && (q.urgencia || q.derivacion))));
   if (hasPositive && soloUrgencias) {
     alertDiv.style.display = 'block';
-    alertDiv.innerHTML = urgHtml;
+    alertDiv.innerHTML = urgHtml + derivHtml;
   } else if (hasPositive) {
     alertDiv.style.display = 'block';
-    alertDiv.innerHTML = urgHtml + `<div class="alert alert-warning">
+    alertDiv.innerHTML = urgHtml + derivHtml + `<div class="alert alert-warning">
       <span class="alert-icon">⚠️</span>
       <div><strong>Respuesta afirmativa detectada.</strong> Evalúe en el contexto clínico completo. La presencia de una sola bandera sistémica no exige derivación automática (excepto emergencias claras). Considere un enfoque de "watchful waiting" y monitorice la evolución. Puede continuar con la evaluación mecánica.</div>
     </div>`;
@@ -2429,8 +2451,9 @@ function buildResults() {
     </div>`;
   }
 
-  // ── Derivación médica pedida por el árbol CIF (p. ej., claudicación vascular)
-  const derivacionesArbol = getDerivacionesArbol();
+  // ── Derivación médica no urgente: cribado (`derivacion`, p. ej. quiste de
+  //    Tarlov) y árbol CIF (p. ej., claudicación vascular)
+  const derivacionesArbol = getDerivacionesMedicas();
   if (derivacionesArbol.length) {
     container.innerHTML += `
     <div class="alert alert-danger" style="margin-bottom:1rem;">
@@ -3282,7 +3305,7 @@ function buildPhysiQPayload() {
     br: Object.entries(state.banderasRojas).filter(([, v]) => v === 'SI').map(([k]) => BR_LABELS[k]),
     sq: getSistemicoAffirmativeTexts(),
     ur: getUrgenciasActivas(),
-    dv: getDerivacionesArbol(),
+    dv: getDerivacionesMedicas(),
     h:  hipotesisActivas().map(id => hipotesis(id)?.posquirurgica
         ? { id, name: hipotesis(id).name, sc: ETIQUETA_HIP_POSQ, lr: null, tr: {}, pq: true }
         : {

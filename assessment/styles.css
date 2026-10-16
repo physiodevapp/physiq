@@ -2374,6 +2374,8 @@
 .sq2-urg-badge { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; font-size: 0.62rem; font-family: 'DM Mono', monospace; color: var(--red); border: 1px solid var(--red); vertical-align: middle; }
 .sq2-urg-msg { display: none; margin-top: 6px; font-size: 0.78rem; font-weight: 600; color: var(--red); }
 .answered-si .sq2-urg-msg { display: block; }
+.sq2-deriv-msg { display: none; margin-top: 6px; font-size: 0.78rem; font-weight: 600; color: var(--orange); }
+.answered-si .sq2-deriv-msg { display: block; }
 
 /* ─── Modo breve (consulta de aseguradora, 10 min) ──────────── */
 /* body.modo-breve la pone selectModo() (app.js). Pliega lo opcional; nunca
