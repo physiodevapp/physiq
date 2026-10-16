@@ -8,10 +8,9 @@
 
 import { regionConLado } from './region.js';
 
-// Figura que se dibuja: la elegida en la tarjeta con su botón, si la hay; si
-// no, la del sexo de la fase 1 (sin sexo indicado, la masculina).
-export function figuraSilueta(sexo, elegida = '') {
-  if (elegida === 'mujer' || elegida === 'hombre') return elegida;
+// Figura que se dibuja: la del sexo (el mismo dato en las fases 1 y 2; sin
+// sexo indicado, la masculina).
+export function figuraSilueta(sexo) {
   return sexo === 'Mujer' ? 'mujer' : 'hombre';
 }
 
@@ -37,20 +36,16 @@ export function ladoAlTocar(zona, region, lado) {
 // Texto bajo el título: lo elegido, o qué hacer
 export function textoElegida(region, lado) {
   if (!region) return { principal: 'Toca la zona en la silueta', sub: 'Un toque elige la región y el lado' };
+  // Con lado, `sub` vacío: su línea queda reservada (CSS) para que la figura
+  // no suba bajo el dedo al elegir el lado.
   return { principal: regionConLado(region, lado), sub: lado ? '' : 'Lado sin indicar (opcional)' };
 }
 
-// Aviso cuando la figura se cambió con el botón y no coincide con la de la
-// fase 1: el dibujo no cambia el sexo registrado (que llega al informe con IA).
-// Sin sexo indicado, `enlace` pide el botón «Indicarlo en la fase 1 →»: se
-// ofrece, nunca se rellena solo.
-export function notaFigura(sexo, elegida) {
-  if (!elegida || elegida === figuraSilueta(sexo)) return { texto: '', enlace: false };
-  return {
-    texto: 'Figura cambiada aquí: no cambia el sexo de la fase 1'
-      + (sexo ? ` (${sexo.toLowerCase()}).` : ', que sigue sin indicar.'),
-    enlace: !sexo,
-  };
+// Texto junto a los botones de sexo: sin sexo, que falta (la figura es la
+// masculina por defecto); con sexo, nada. La fila tiene alto fijo, así que
+// aparecer o no nunca mueve la figura.
+export function notaSexo(sexo) {
+  return sexo ? '' : 'Sin indicar';
 }
 
 const pct = n => `${Math.round(n * 1000) / 10}%`;
@@ -69,20 +64,21 @@ export function siluetaHTML(fig, figura) {
     `<span class="sil-sin-region" style="${pos(s.x, s.y)}" title="${s.nombre}: sin región en PhysiQ" aria-hidden="true"></span>`).join('');
   const trazos = fig.pelo.map(d => `<path class="sil-pelo" d="${d}"/>`).join('')
     + fig.partes.map(d => `<path class="sil-parte" d="${d}"/>`).join('');
-  const otra = figura === 'mujer' ? 'masculina' : 'femenina';
-  return `<div class="sil-cabecera">
-      <div class="sil-elegida" aria-live="polite"><span class="sil-elegida-texto"></span><span class="sil-elegida-sub"></span></div>
-      <button type="button" class="sil-figura" onclick="alternarFiguraSilueta()" aria-label="Cambiar a figura ${otra}" title="Cambiar a figura ${otra}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></svg>
-        Figura ${figura === 'mujer' ? 'femenina' : 'masculina'}
-      </button>
+  // Sexo: el mismo dato que en la fase 1 (`state.sexo`), con sus mismas reglas
+  // (un segundo toque lo quita); app.js marca el elegido.
+  const sexo = ['Mujer', 'Hombre'].map(s =>
+    `<button type="button" class="option-btn" data-sexo="${s}" aria-pressed="false" onclick="elegirSexoSilueta('${s}')">${s}</button>`).join('');
+  return `<div class="sil-elegida" aria-live="polite"><span class="sil-elegida-texto"></span><span class="sil-elegida-sub"></span></div>
+    <div class="sil-sexo-fila">
+      <span class="sil-sexo-etq" id="silSexoEtq">Sexo</span>
+      <div class="option-group sil-sexo" role="group" aria-labelledby="silSexoEtq">${sexo}</div>
+      <span class="sil-nota"></span>
     </div>
-    <p class="sil-nota" hidden></p>
-    <div class="sil-lienzo" style="aspect-ratio:${w} / ${h}">
+    <div class="sil-lienzo" data-figura="${figura}" style="aspect-ratio:${w} / ${h}">
       <svg viewBox="${fig.caja.join(' ')}" aria-hidden="true" focusable="false"><path class="sil-contorno" d="${fig.contorno}"/>${trazos}</svg>
       <span class="sil-lado sil-lado-izq" aria-hidden="true">IZQ</span><span class="sil-lado sil-lado-der" aria-hidden="true">DER</span>
       ${sin}${zonas}
     </div>
-    <p class="sil-pie">Vista posterior: el lado del paciente es el mismo que el tuyo. En gris punteado, zonas sin región en PhysiQ.
+    <p class="sil-pie">Vista posterior: el lado del paciente es el mismo que el tuyo. En gris punteado, zonas sin región en PhysiQ. El sexo es el mismo de la fase 1.
       <span class="sil-credito">Ilustración: react-native-body-highlighter (licencia MIT)</span></p>`;
 }

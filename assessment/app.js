@@ -17,7 +17,7 @@ import {
 import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { nombreRegion, regionConLado } from './lib/region.js';
 import { SILUETAS } from './data/siluetas.js';
-import { figuraSilueta, estadoZona, ladoAlTocar, textoElegida, notaFigura, siluetaHTML } from './lib/silueta.js';
+import { figuraSilueta, estadoZona, ladoAlTocar, textoElegida, notaSexo, siluetaHTML } from './lib/silueta.js';
 import { TEXTO_VALORACION_BREVE, textoNotas, textoInformePaciente } from './lib/resumenes.js';
 import { ramaPauta } from './lib/pauta.js';
 import { HM, ESTADOS_HM, SUBTIPOS_HM, hipermovilidadVacia, normalizarHipermovilidad, hmActiva, elementoHMVisible,
@@ -288,7 +288,6 @@ function _softResetApp() {
   state.motivoConsulta = '';
   state.edadPaciente = null;
   state.sexo = '';
-  _figuraElegida = '';
   state.signosVitales = { fc: null, fr: null, spo2: null, tas: null, tad: null };
   state.antropometria = { talla: null, peso: null };
   state.mecanismo = '';
@@ -715,9 +714,8 @@ function selectOption(groupId, btn, value) {
   if (groupId === 'psico_miedo' || groupId === 'psico_autoef' || groupId === 'psico_emocional') {
     updatePsicoRecomendacion();
   }
-  // La silueta marca el lado, y su figura sigue al sexo: cambiar el sexo anula
-  // la figura elegida a mano con su botón
-  if (groupId === 'sexo') _figuraElegida = '';
+  // La silueta marca el lado y el sexo (el mismo dato que en la fase 1), y su
+  // figura sigue al sexo
   if (groupId === 'lado' || groupId === 'sexo') _pintarSilueta();
   if (groupId === 'mecanismo') {
     _pintarCirugiaUI();
@@ -1198,15 +1196,12 @@ function selectRegion(regionId, card, despues) {
 }
 
 // ─── Silueta de la fase 2 (lib/silueta.js, data/siluetas.js) ─────
-// Figura elegida con el botón de la tarjeta ('' = la del sexo de la fase 1).
-// Solo cambia el dibujo, nunca `state.sexo`; no se guarda en la sesión.
-let _figuraElegida = '';
 let _figuraPintada = '';
 
 function _pintarSilueta() {
   const cont = document.getElementById('siluetaRegion');
   if (!cont) return;
-  const figura = figuraSilueta(state.sexo, _figuraElegida);
+  const figura = figuraSilueta(state.sexo);
   if (_figuraPintada !== figura || !cont.firstElementChild) {
     cont.innerHTML = siluetaHTML(SILUETAS[figura], figura);
     _figuraPintada = figura;
@@ -1221,11 +1216,11 @@ function _pintarSilueta() {
   const { principal, sub } = textoElegida(state.region, state.lado);
   cont.querySelector('.sil-elegida-texto').textContent = principal;
   cont.querySelector('.sil-elegida-sub').textContent = sub;
-  const nota = cont.querySelector('.sil-nota');
-  const { texto, enlace } = notaFigura(state.sexo, _figuraElegida);
-  nota.textContent = texto;
-  if (enlace) nota.insertAdjacentHTML('beforeend', ' <button type="button" class="sil-nota-enlace" onclick="irASexo()">Indicarlo en la fase 1 →</button>');
-  nota.hidden = !texto;
+  cont.querySelectorAll('.sil-sexo .option-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.sexo === state.sexo);
+    b.setAttribute('aria-pressed', String(b.dataset.sexo === state.sexo));
+  });
+  cont.querySelector('.sil-nota').textContent = notaSexo(state.sexo);
 }
 
 // Toque en una zona: región y lado a la vez. Cambiar de región pasa por
@@ -1237,25 +1232,14 @@ function tocarZonaSilueta(region, lado) {
   selectRegion(region, document.querySelector(`.region-card[data-region="${region}"]`), fijarLado);
 }
 
-// Enlace de la nota de la silueta: vuelve a la fase 1 y lleva al sexo (como
-// «Cambiar en la fase 1 →» de la cronología).
-function irASexo() {
-  goToPhase(1);
-  setTimeout(() => {
-    const g = document.getElementById('sexo');
-    if (!g) return;
-    g.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    g.classList.remove('flash-destacar');
-    void g.offsetWidth;
-    g.classList.add('flash-destacar');
-    g.querySelector('.option-btn')?.focus({ preventScroll: true });
-  }, 150);
-}
-
-function alternarFiguraSilueta() {
-  _figuraElegida = figuraSilueta(state.sexo, _figuraElegida) === 'mujer' ? 'hombre' : 'mujer';
-  _pintarSilueta();
-  document.querySelector('#siluetaRegion .sil-figura')?.focus();
+// Sexo desde la silueta: es el botón de la fase 1 (mismo dato, mismas reglas:
+// un segundo toque lo quita); la figura se repinta, así que el foco vuelve al
+// botón tocado.
+function elegirSexoSilueta(valor) {
+  const btn = [...document.querySelectorAll('#sexo .option-btn')].find(b => b.textContent.trim() === valor);
+  if (!btn) return;
+  selectOption('sexo', btn, valor);
+  document.querySelector(`#siluetaRegion .sil-sexo [data-sexo="${valor}"]`)?.focus();
 }
 
 // Estadio del SINSS = la cronología de la fase 1 (mismas categorías). Se
@@ -4496,7 +4480,7 @@ Object.assign(window, {
   abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
-  tocarZonaSilueta, alternarFiguraSilueta, irASexo,
+  tocarZonaSilueta, elegirSexoSilueta,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
   cycleThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor,
