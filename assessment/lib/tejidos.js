@@ -139,6 +139,37 @@ export function gruposVisibles(grupos, filtro) {
   return grupos.some(g => g.id === filtro) ? grupos.filter(g => g.id === filtro) : grupos;
 }
 
+// Filtro «Este paciente» (Fase J): las filas y subtipos de las hipótesis activas, según
+// `datos.porHipotesis` y el mecanismo. → { ids, hipotesis } (ids sin repetir, en el orden
+// de las hipótesis; hipotesis = las que aportan alguna fila).
+export const FILTRO_PACIENTE = 'paciente';
+export function filasPaciente(datos, hipIds = [], { posquirurgico = false } = {}) {
+  const ids = [], hipotesis = [];
+  for (const h of hipIds) {
+    const propias = (datos.porHipotesis?.[h] || [])
+      .filter(e => typeof e === 'string' || e.posq === undefined || e.posq === posquirurgico)
+      .map(e => (typeof e === 'string' ? e : e.id))
+      .filter(id => buscarFila(datos, id));
+    if (!propias.length) continue;
+    hipotesis.push(h);
+    for (const id of propias) if (!ids.includes(id)) ids.push(id);
+  }
+  return { ids, hipotesis };
+}
+
+// Los grupos recortados a las filas del paciente: una fila entra si es suya (con todos
+// sus subtipos) o si lo es alguno de sus subtipos (solo esos). Grupos sin ninguna, fuera.
+function gruposPaciente(grupos, ids) {
+  return grupos.map(g => ({
+    ...g,
+    filas: g.filas.flatMap(f => {
+      if (ids.includes(f.id)) return [f];
+      const st = (f.subtipos || []).filter(x => ids.includes(x.id));
+      return st.length ? [{ ...f, subtipos: st }] : [];
+    }),
+  })).filter(g => g.filas.length);
+}
+
 // HTML del cuerpo del panel. `semanas`: semanas desde la cirugía (o null);
 // `posquirurgico`: si el mecanismo es Post-quirúrgico (para el texto de ayuda);
 // `filtro`: id de un grupo de tejido, o 'todos'. Las pastillas del filtro y los
@@ -146,20 +177,27 @@ export function gruposVisibles(grupos, filtro) {
 // el suyo, o 'todos' si ya era el activo); abrirTiemposTejido() (app.js)
 // vuelve a pintar con el filtro elegido. `REF`: el registro de referencias, si ya
 // está cargado (enlaces de las fuentes de las notas de grupo).
-export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false, filtro = 'todos', REF = null } = {}) {
+// `paciente`: { ids, nombres } de filasPaciente() (nombres = de las hipótesis), o null:
+// con ids, una primera pastilla «Este paciente» (FILTRO_PACIENTE) que muestra solo esas
+// filas, con los subtipos desplegados, y una línea que dice de qué hipótesis salen.
+export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false, filtro = 'todos', REF = null, paciente = null } = {}) {
   const { columnas, gravedades, medidas = {}, grupos, fases, fasesNota, notas, fuente, fasesFuente } = datos;
   const n = columnas.length;
   const hoy = posquirurgico ? marcaHoy(semanas, columnas) : null;
   const pendienteChip = '<span class="tej-pendiente">pendiente de fuente</span>';
-  const activo = grupos.some(g => g.id === filtro) ? filtro : 'todos';
+  const conPaciente = paciente?.ids?.length > 0;
+  const activo = (conPaciente && filtro === FILTRO_PACIENTE) || grupos.some(g => g.id === filtro) ? filtro : 'todos';
+  const soloPaciente = activo === FILTRO_PACIENTE;
   const claseFase = f => `tej-fase-${esc(f.id)}${f.tejido ? ' tej-fase-parcial' : ''}`;
 
   // Sin pastilla «Todos»: volver a tocar la activa la desmarca y se ven todos
   // (la misma regla que el resto de grupos de opciones de la app). Una sola fila
   // que se desliza en horizontal si no caben (decisión del usuario, 2026-10).
+  const pastilla = (id, texto, clase = '') =>
+    `<button type="button" class="tej-filtro-btn${clase}${id === activo ? ' activo' : ''}" data-grupo="${esc(id)}" data-filtro-tejido="${esc(id === activo ? 'todos' : id)}" aria-pressed="${id === activo}"${id === activo ? ` title="Ver todos los tejidos"` : ''}>${esc(texto)}</button>`;
   const filtroHTML = `<div class="tej-filtro" role="group" aria-label="Filtrar por tejido">`
-    + grupos.map(g =>
-      `<button type="button" class="tej-filtro-btn${g.id === activo ? ' activo' : ''}" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(g.id === activo ? 'todos' : g.id)}" aria-pressed="${g.id === activo}"${g.id === activo ? ` title="Ver todos los tejidos"` : ''}>${esc(g.tejido)}</button>`).join('')
+    + (conPaciente ? pastilla(FILTRO_PACIENTE, 'Este paciente', ' tej-filtro-paciente') : '')
+    + grupos.map(g => pastilla(g.id, g.tejido)).join('')
     + '</div>';
 
   const eje = `<div class="tej-fila tej-eje" aria-hidden="true"><div class="tej-nombre"></div>`
@@ -184,7 +222,11 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
     + '</ul></div>';
 
   const ctx = { columnas, hoy, pendienteChip, medidas };
-  const cuerpo = gruposVisibles(grupos, activo).map(g => `<div class="tej-bloque" data-grupo="${esc(g.id)}">`
+  const lineaPaciente = soloPaciente
+    ? `<p class="tej-paciente">Según ${paciente.nombres.length === 1 ? 'la hipótesis activa' : 'las hipótesis activas'}: ${paciente.nombres.map(esc).join(' · ')}. Vuelve a tocar «Este paciente» para ver todos los tejidos.</p>`
+    : '';
+  const visibles = soloPaciente ? gruposPaciente(grupos, paciente.ids) : gruposVisibles(grupos, activo);
+  const cuerpo = visibles.map(g => `<div class="tej-bloque" data-grupo="${esc(g.id)}">`
     // El título del grupo también filtra (o vuelve a «Todos» si ya es el filtrado)
     + `<button type="button" class="tej-grupo" data-grupo="${esc(g.id)}" data-filtro-tejido="${esc(activo === g.id ? 'todos' : g.id)}" title="${esc(activo === g.id ? 'Ver todos los tejidos' : `Ver solo ${g.tejido.toLowerCase()}`)}">${esc(g.tejido)}</button>`
     // Lo que no cabe en una barra (p. ej. la axonotmesis, que depende de la distancia)
@@ -197,7 +239,7 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
       : '')
     + g.filas.map(f => filaHTML(f, ctx)
       + (f.subtipos?.length
-        ? `<details class="tej-subtipos"><summary>Ver ${f.subtipos.length} ${f.subtipos.length === 1 ? 'subtipo' : 'subtipos'}</summary>`
+        ? `<details class="tej-subtipos"${soloPaciente ? ' open' : ''}><summary>Ver ${f.subtipos.length} ${f.subtipos.length === 1 ? 'subtipo' : 'subtipos'}</summary>`
           + f.subtipos.map(st => filaHTML(st, { ...ctx, gravedad: st.gravedad || f.gravedad, clase: ' tej-subfila' })).join('')
           + '</details>'
         : '')).join('')
@@ -223,7 +265,7 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
       ? '<p class="tej-ayuda">Con la fecha de la cirugía (o las semanas aproximadas) en la tarjeta «Cirugía», se marca dónde está el paciente.</p>'
       : '<p class="tej-ayuda">Con mecanismo Post-quirúrgico y la fecha de la cirugía, se marca dónde está el paciente.</p>';
 
-  return `${filtroHTML}<div class="tej-diagrama">${eje}${franja}${cuerpo}</div>${leyenda}${ayudaHoy}`
+  return `${filtroHTML}${lineaPaciente}<div class="tej-diagrama">${eje}${franja}${cuerpo}</div>${leyenda}${ayudaHoy}`
     + `<ul class="tej-notas">${notas.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`
     + [fuente, fasesFuente].filter(Boolean).map(t => `<p class="tej-fuente">${esc(t)}</p>`).join('');
 }

@@ -22,7 +22,7 @@ import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
-import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML } from './lib/tejidos.js';
+import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML, filasPaciente, FILTRO_PACIENTE } from './lib/tejidos.js';
 import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
 import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, urlIA } from './ampliar-ia.js';
 
@@ -3462,14 +3462,24 @@ let _tejidosHistorial = false;
 // Filtro por tejido («Todos», «Ligamento»…): preferencia de este dispositivo,
 // como el tema o el destino de la IA (localStorage, con try/catch).
 const _CLAVE_FILTRO_TEJIDOS = 'physiq-assessment-tejidos-filtro';
+// «Este paciente» (Fase J) no se guarda: depende de las hipótesis de esta valoración.
+// Con alguna hipótesis activa que tenga filas (porHipotesis, data/tejidos.js), el panel
+// se abre con ese filtro; tocar otra pastilla lo cambia hasta que se cierre.
+let _filtroTejidosSesion = null;
 function _filtroTejidos() {
+  if (_filtroTejidosSesion) return _filtroTejidosSesion;
   try { return localStorage.getItem(_CLAVE_FILTRO_TEJIDOS) || 'todos'; } catch { return 'todos'; }
+}
+function _pacienteTejidos() {
+  const { ids, hipotesis } = filasPaciente(TIEMPOS_TEJIDO, state.activeHypotheses || [], { posquirurgico: esPosquirurgico(state.mecanismo) });
+  return ids.length ? { ids, nombres: hipotesis.map(h => HYPOTHESES[h]?.name || h) } : null;
 }
 function _pintarTiemposTejido() {
   _cerrarInfoBarra({ sinFoco: true });
   const posquirurgico = esPosquirurgico(state.mecanismo);
   document.getElementById('tejidosCuerpo').innerHTML = tiemposTejidoHTML(TIEMPOS_TEJIDO, {
     posquirurgico, semanas: posquirurgico ? semanasCirugia(state.cirugia) : null, filtro: _filtroTejidos(), REF: _refTejidos,
+    paciente: _pacienteTejidos(),
   });
   const fila = document.querySelector('#tejidosCuerpo .tej-filtro');
   if (!fila) return;
@@ -3491,7 +3501,11 @@ document.getElementById('tejidosCuerpo')?.addEventListener('click', e => {
   if (barra) { _alternarInfoBarra(barra); return; }
   const b = e.target instanceof Element ? e.target.closest('[data-filtro-tejido]') : null;
   if (!b) return;
-  try { localStorage.setItem(_CLAVE_FILTRO_TEJIDOS, b.dataset.filtroTejido); } catch { /* sin preferencia guardada */ }
+  if (b.dataset.filtroTejido === FILTRO_PACIENTE) _filtroTejidosSesion = FILTRO_PACIENTE;
+  else {
+    _filtroTejidosSesion = null;
+    try { localStorage.setItem(_CLAVE_FILTRO_TEJIDOS, b.dataset.filtroTejido); } catch { /* sin preferencia guardada */ }
+  }
   _pintarTiemposTejido();
   const cuerpo = document.getElementById('tejidosCuerpo');
   cuerpo.scrollTop = 0;
@@ -3530,6 +3544,7 @@ function abrirTiemposTejido() {
   const overlay = document.getElementById('tejidosOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
   _cargarRefTejidos();
+  _filtroTejidosSesion = _pacienteTejidos() ? FILTRO_PACIENTE : null;
   _pintarTiemposTejido();
   overlay.classList.add('open');
   document.getElementById('tejidosBtn')?.setAttribute('aria-expanded', 'true');

@@ -6,7 +6,8 @@
 // Contenido clínico, sin lógica: lo pinta lib/tejidos.js en el panel
 // «Tiempos de recuperación» (abrirTiemposTejido(), app.js). Solo consulta: no
 // lo lee ningún algoritmo, ni el payload, ni los resúmenes, ni el informe con
-// IA. Diseño y decisiones: docs/tiempos-tejido.md.
+// IA (`porHipotesis` solo decide qué filas enseña la pastilla «Este paciente»).
+// Diseño y decisiones: docs/tiempos-tejido.md.
 //
 // Punto de partida: la tabla «Tiempos de Tejido» de physiq-wiki (adaptada de
 // Snyder-Mackler et al., «Developing Treatment Pathways», 2012), corregida:
@@ -52,6 +53,9 @@
 //               `tejido`: la fase solo vale para ese tejido (se pinta más clara);
 //               `fasesNota` y `fasesFuente`, su aviso y su cita bajo la leyenda
 //   fuentes     claves de data/referencias.js (las cuenta tests/referencias.mjs)
+//   porHipotesis { <hipId>: [id | { id, posq }] } — filas o subtipos de cada hipótesis
+//               para el filtro «Este paciente» (lib/tejidos.js, filasPaciente()); no va
+//               a physiq-wiki, que no tiene hipótesis
 
 export const TIEMPOS_TEJIDO = {
   columnas: [
@@ -623,6 +627,53 @@ export const TIEMPOS_TEJIDO = {
     'El dolor y la función no siguen por fuerza el calendario del tejido: el paciente puede estar listo antes o seguir con síntomas después.',
     'Paciente posquirúrgico: manda el protocolo del cirujano.',
   ],
+
+  // Hipótesis → filas o subtipos del diagrama (Fase J, el último paso). Con alguna de
+  // estas hipótesis activa en la fase 4, el panel se abre con la pastilla «Este
+  // paciente»: solo esas filas, con sus subtipos desplegados. Una entrada es el id de
+  // una fila o subtipo, o { id, posq } para elegir según el mecanismo Post-quirúrgico
+  // (true: solo operado; false: solo sin cirugía). Una fila madre trae todos sus
+  // subtipos. Solo donde la fila es esa misma lesión; sin fila propia, nada (un
+  // atrapamiento nervioso no es una neuropraxia, una tendinopatía crónica de
+  // aductores no es la lesión aguda). Un test comprueba que cada id existe.
+  porHipotesis: {
+    h1: ['capsulitis_adhesiva'],
+    h3: [{ id: 'manguito_proteccion', posq: true }, { id: 'manguito_programa', posq: true }],
+    h4: ['hombro_luxacion_anterior'],
+    ca1: [{ id: 'protesis_cadera', posq: true }],
+    ca4: ['tendinopatia_glutea'],
+    ca9: ['tendinopatia_isquios_proximal'],
+    ca11: ['aductores', 'recto_femoral_proximal'],
+    ce3: ['radiculopatia_cervical'],
+    ce12: ['radiculopatia_cervical'],
+    lu3: ['radiculopatia_lumbar'],
+    lu5: ['radiculopatia_lumbar'],
+    ro1: [{ id: 'protesis_rodilla', posq: true }],
+    ro2: [
+      { id: 'menisco_traumatica_conservador', posq: false }, { id: 'menisco_degenerativa_conservador', posq: false },
+      { id: 'menisco_meniscectomia', posq: true }, { id: 'menisco_sutura', posq: true },
+    ],
+    ro4: [{ id: 'rodilla_lca_conservador', posq: false }, { id: 'rodilla_lca_reconstruido', posq: true }],
+    ro5: ['tendinopatia_rotuliana'],
+    ro8: ['rodilla_lcm_g1'],
+    ro11: [{ id: 'fx_rotula_conservador', posq: false }, { id: 'fx_meseta_conservador', posq: false }, { id: 'fx_meseta_cirugia', posq: true }],
+    co1: ['epicondilalgia_lateral'],
+    co2: ['epicondilalgia_medial'],
+    co7: ['tendon_rotura'],
+    tp1: [
+      { id: 'tobillo_lateral_g1', posq: false }, { id: 'tobillo_lateral_g2', posq: false }, { id: 'tobillo_lateral_g3', posq: false },
+      { id: 'tobillo_lateral_cirugia', posq: true },
+    ],
+    tp2: [{ id: 'sindesmosis_conservador', posq: false }, { id: 'sindesmosis_cirugia', posq: true }],
+    tp3: [{ id: 'aquiles_conservador', posq: false }, { id: 'aquiles_cirugia', posq: true }],
+    tp5: ['fx_quinto_avulsion', 'fx_quinto_jones', 'fx_calcaneo_extra', 'fx_calcaneo_intra'],
+    tp8: ['tendinopatia_aquilea_media'],
+    tp9: ['tendinopatia_aquilea_insercional'],
+    tp17: ['estres_maleolo_medial'],
+    tp30: ['estres_navicular', 'fx_navicular_estres'],
+    tp33: ['estres_metatarsianos'],
+    tp37: [{ id: 'fx_tobillo_estable', posq: false }, { id: 'fx_tobillo_cirugia', posq: true }],
+  },
 
   fasesFuente: 'Fases de reparación: Wallace, Basehore y Zito, «Wound Healing Phases», StatPearls (act. 2023). Rotura de tendón: Wu, Nerlich y Docheva, «Tendon injuries: basic science and new repair proposals», EFORT Open Rev 2017.',
 };
