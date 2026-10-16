@@ -715,7 +715,9 @@ function selectOption(groupId, btn, value) {
   if (groupId === 'psico_miedo' || groupId === 'psico_autoef' || groupId === 'psico_emocional') {
     updatePsicoRecomendacion();
   }
-  // La silueta marca el lado, y su figura sigue al sexo
+  // La silueta marca el lado, y su figura sigue al sexo: cambiar el sexo anula
+  // la figura elegida a mano con su botón
+  if (groupId === 'sexo') _figuraElegida = '';
   if (groupId === 'lado' || groupId === 'sexo') _pintarSilueta();
   if (groupId === 'mecanismo') {
     _pintarCirugiaUI();
@@ -1195,8 +1197,10 @@ function _pintarSilueta() {
   cont.querySelector('.sil-elegida-texto').textContent = principal;
   cont.querySelector('.sil-elegida-sub').textContent = sub;
   const nota = cont.querySelector('.sil-nota');
-  nota.textContent = notaFigura(state.sexo, _figuraElegida);
-  nota.hidden = !nota.textContent;
+  const { texto, enlace } = notaFigura(state.sexo, _figuraElegida);
+  nota.textContent = texto;
+  if (enlace) nota.insertAdjacentHTML('beforeend', ' <button type="button" class="sil-nota-enlace" onclick="irASexo()">Indicarlo en la fase 1 →</button>');
+  nota.hidden = !texto;
 }
 
 // Toque en una zona: región y lado a la vez. Cambiar de región pasa por
@@ -1206,6 +1210,21 @@ function tocarZonaSilueta(region, lado) {
   const fijarLado = () => { state.lado = nuevoLado; _pintarLado(); saveSession(); };
   if (state.region === region) { fijarLado(); return; }
   selectRegion(region, document.querySelector(`.region-card[data-region="${region}"]`), fijarLado);
+}
+
+// Enlace de la nota de la silueta: vuelve a la fase 1 y lleva al sexo (como
+// «Cambiar en la fase 1 →» de la cronología).
+function irASexo() {
+  goToPhase(1);
+  setTimeout(() => {
+    const g = document.getElementById('sexo');
+    if (!g) return;
+    g.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    g.classList.remove('flash-destacar');
+    void g.offsetWidth;
+    g.classList.add('flash-destacar');
+    g.querySelector('.option-btn')?.focus({ preventScroll: true });
+  }, 150);
 }
 
 function alternarFiguraSilueta() {
@@ -4452,7 +4471,7 @@ Object.assign(window, {
   abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
-  tocarZonaSilueta, alternarFiguraSilueta,
+  tocarZonaSilueta, alternarFiguraSilueta, irASexo,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
   cycleThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor,

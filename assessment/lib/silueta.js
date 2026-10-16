@@ -42,10 +42,15 @@ export function textoElegida(region, lado) {
 
 // Aviso cuando la figura se cambió con el botón y no coincide con la de la
 // fase 1: el dibujo no cambia el sexo registrado (que llega al informe con IA).
+// Sin sexo indicado, `enlace` pide el botón «Indicarlo en la fase 1 →»: se
+// ofrece, nunca se rellena solo.
 export function notaFigura(sexo, elegida) {
-  if (!elegida || elegida === figuraSilueta(sexo)) return '';
-  return 'Figura cambiada aquí: no cambia el sexo de la fase 1'
-    + (sexo ? ` (${sexo.toLowerCase()}).` : ', que sigue sin indicar.');
+  if (!elegida || elegida === figuraSilueta(sexo)) return { texto: '', enlace: false };
+  return {
+    texto: 'Figura cambiada aquí: no cambia el sexo de la fase 1'
+      + (sexo ? ` (${sexo.toLowerCase()}).` : ', que sigue sin indicar.'),
+    enlace: !sexo,
+  };
 }
 
 const pct = n => `${Math.round(n * 1000) / 10}%`;
