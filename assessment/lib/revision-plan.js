@@ -69,8 +69,12 @@ function porEncima(l, escalon) {
 // Primera técnica del bloque de intervención: su subtítulo (si lo hay) y su
 // primera línea de lista; la devuelve si es neural (slump, movilización neural…)
 const RE_NEURAL = /\b(slump|neural\w*|neurodin\w*|deslizamiento del nervio|tensi[oó]n neural)\b/i;
-// Tensor o posición mantenida: lo que Butler deja para cuando el nervio tolera carga
-const RE_TENSOR = /\b(tensor(?:es)?|en tensi[oó]n|mant[eé]n\w*|mantenid[oa]s?|sost[eé]n\w*|sostenid[oa]s?)\b|\b\d+(?:\s*[–-]\s*\d+)?\s*(?:s|seg|segundos)\b/i;
+// Tensor o posición mantenida: lo que Butler deja para cuando el nervio tolera
+// carga; unos segundos sin oscilación también cuentan como mantenidos
+const RE_MANTENER = /\b(mant[eé]n\w*|mantenid[oa]s?|sost[eé]n\w*|sostenid[oa]s?)\b/i;
+const RE_TENSOR = /\b(tensor(?:es)?|en tensi[oó]n|mant[eé]n\w*|mantenid[oa]s?|sost[eé]n\w*|sostenid[oa]s?)\b/i;
+const RE_SEGUNDOS = /\b(\d+(?:\s*[–-]\s*\d+)?)\s*(?:s|seg|segundos)\b/i;
+const RE_OSCILA = /\b(oscila\w*|r[ií]tmic\w*|vaiv[eé]n|de un lado a otro)\b/i;
 // Líneas con su contexto neural: un subpunto sangrado hereda el de su
 // ejercicio («1. Movilización del nervio…» → «   - Mantén 3 segundos»)
 function lineasNeurales(texto) {
@@ -157,16 +161,24 @@ export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], 
     if (neural) puntos.push({ id: 'neural-primera', nivel: 'medio', mensaje: 'La primera sesión empieza la intervención con una técnica neural: rara vez es la primera técnica; si se usa con vigor, 2–3 días entre sesiones y reevaluar a las 24 h (Maitland 2005, cap. 6, p. 149).', cita: recorte(neural) });
   }
 
-  // 3c. Técnica neural en tensión o mantenida con escalón 1–2 (decisión 118):
-  // en estados agudos y sensibles, deslizadores con el cuerpo descargado y antes
-  // del dolor, no tensores (Butler 2000, pp. 379–381 y 387). El primer plan de
-  // Andrés (L5, ronda 1) mantenía el slump 30 s en escalón 1. En las tres
-  // secciones: el programa para casa también lleva ejercicios neurales.
-  if (escalon <= 2) {
-    for (const { l, neural } of lineasNeurales(texto)) {
-      if (!neural) continue;
-      const m = l.match(RE_TENSOR);
-      if (m && !negadoEnFrase(l, m.index)) puntos.push({ id: 'neural-tensor', nivel: 'medio', mensaje: `Técnica neural en tensión o mantenida («${m[0].trim()}») con el escalón ${escalon}: en fase aguda o irritable, deslizadores con el resto del cuerpo descargado, antes del síntoma y por repeticiones, no mantenidos (Butler 2000, pp. 379–381 y 387).`, cita: recorte(l) });
+  // 3c. Técnica neural en tensión o mantenida (decisiones 118 y 119). Con
+  // escalón 1–2: deslizadores u oscilaciones de unos 20–30 s, nada mantenido ni
+  // en tensor (Butler 2000, pp. 379–381 y 387; Butler 1991, pp. 188–189); unos
+  // segundos sin oscilación cuentan como mantenidos. Con escalón 3–4: mantener
+  // la posición como mucho 10 s (Butler 1991, p. 192). El primer plan de Andrés
+  // (L5, ronda 1) mantenía el slump 30 s en escalón 1. En las tres secciones: el
+  // programa para casa también lleva ejercicios neurales.
+  for (const { l, neural } of lineasNeurales(texto)) {
+    if (!neural) continue;
+    if (escalon <= 2) {
+      let m = l.match(RE_TENSOR);
+      if (m && negadoEnFrase(l, m.index)) m = null;
+      if (!m && !RE_OSCILA.test(l)) m = l.match(RE_SEGUNDOS);
+      if (m) puntos.push({ id: 'neural-tensor', nivel: 'medio', mensaje: `Técnica neural en tensión o mantenida («${m[0].trim()}») con el escalón ${escalon}: en fase aguda o irritable, deslizadores u oscilaciones lentas en series de unos 20–30 s, con el resto del cuerpo descargado y antes del síntoma, nada mantenido (Butler 2000, pp. 379–381 y 387; Butler 1991, pp. 188–189).`, cita: recorte(l) });
+    } else {
+      const m = l.match(RE_MANTENER);
+      const largo = m && !negadoEnFrase(l, m.index) && [...l.matchAll(new RegExp(RE_SEGUNDOS.source, 'gi'))].find(x => Math.max(...x[1].split(/[–-]/).map(Number)) > 10);
+      if (largo) puntos.push({ id: 'neural-tensor', nivel: 'medio', mensaje: `Técnica neural mantenida más de 10 s («${largo[0].trim()}»): como mucho 10 s, y lo provocado debe ceder a los pocos segundos de soltar (Butler 1991, pp. 192–193).`, cita: recorte(l) });
     }
   }
 

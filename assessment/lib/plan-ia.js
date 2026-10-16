@@ -12,7 +12,8 @@
 // docs/informe-ia.md). Ronda 1 (Andrés, 2026-10): la dosis del mismo ejercicio
 // cambiaba entre la sesión (3 × 30 s) y casa (10 × 3 s), las cifras de casa
 // iban sin marca (regla 4). Ronda 2 (decisión 118): el slump se mantenía
-// 30 s en escalón 1 (regla 13, Butler 2000).
+// 30 s en escalón 1 (regla 13, Butler 2000; decisión 119: oscilaciones de
+// 20–30 s y como mucho 10 s mantenido, Butler 1991).
 import { contextoValoracion, huellaPayload, markdownATexto } from './informe-narrativo.js';
 
 export const PALABRAS_PLAN = 1500;
@@ -79,7 +80,7 @@ INSTRUCCIONES — CUMPLE TODAS:
 10. De la consulta usa solo preferencias y contexto (horarios, actividades, objetivos, lo que puede hacer en casa), nunca para cambiar la dosis ni el nivel.
 11. El programa para casa es para el paciente: en lenguaje llano, de tú, sin siglas, sin grados, sin fuentes ni puntuaciones. Di qué hacer, cuántas veces, cuándo hacerlo${e.parar ? ', cuándo parar' : ''} y qué hacer si empeora. Termina copiando literalmente, cada una en su línea, estas frases${e.alarmas.length ? ':' : ' (no hay red de seguridad para esta región: no inventes ninguna).'}
 ${e.alarmas.map(a => `   «${a}»`).join('\n')}
-12. No escribas el nombre del paciente ni la fecha. Sin negritas ni tablas. Listas con «- ».${e.neural ? `\n13. Técnicas neurales (deslizamientos, slump, movilización del nervio): ${e.escalon.n <= 2 ? 'en este escalón solo deslizadores (el nervio se mueve sin cargarlo por los dos extremos a la vez), con el resto del cuerpo descargado y antes de que aparezca el síntoma; nada de tensores ni de posiciones mantenidas; dosis en repeticiones, no en segundos mantenidos' : 'tensores solo graduados, empezando por el menos provocador'}. Se progresa primero en repeticiones; si no hay mejoría en 2–3 sesiones, se cambia de técnica. Igual en el programa para casa.` : ''}
+12. No escribas el nombre del paciente ni la fecha. Sin negritas ni tablas. Listas con «- ».${e.neural ? `\n13. Técnicas neurales (deslizamientos, slump, movilización del nervio): ${e.escalon.n <= 2 ? 'empieza lejos de la zona de síntomas; solo deslizadores (el nervio se mueve sin cargarlo por los dos extremos a la vez) u oscilaciones lentas y rítmicas de gran amplitud (grado II), con el resto del cuerpo descargado y antes de que aparezca el síntoma; en series de unos 20–30 s de oscilación, reevaluando entre series, y se progresa aumentando el número de series; nada de tensores ni de posiciones mantenidas' : `hasta la resistencia sin provocar dolor: grado III (mejor tolerado)${e.escalon.n >= 4 ? ' o grado IV' : ''}; tensores solo graduados, empezando por el menos provocador; si se mantiene la posición, como mucho 10 s, y lo provocado debe ceder a los pocos segundos de soltar`}. Si no hay mejoría en 2–3 sesiones, se cambia de técnica. En casa, una o dos maniobras, unos minutos al día, con el mismo criterio.` : ''}
 
 ESTRUCTURA — empieza DIRECTAMENTE con «## SESIÓN», sin texto previo:
 
