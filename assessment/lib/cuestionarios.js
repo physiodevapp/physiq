@@ -321,7 +321,8 @@ function botonesItem(def, item, r) {
     return `<div class="cuest-ops cuest-ops-numero"><input type="number" class="cuest-num" inputmode="decimal" min="${min}" max="${max}" step="${item.paso ?? 1}" value="${typeof r === 'number' ? r : ''}" aria-label="${esc(item.t)} (${min}–${max})"><span class="cuest-num-rango">${min}–${max}${item.unidad ? ` ${esc(item.unidad)}` : ''}</span>${na}</div>`;
   }
   if (tipo === 'opciones') {
-    return `<div class="cuest-ops cuest-ops-texto">${item.opciones.map((o, i) => boton(i, esc(o.t), r === i)).join('')}${na}</div>`;
+    // Una sola respuesta: en móvil, una opción por fila (las ordenadas se leen de arriba abajo, como en el papel)
+    return `<div class="cuest-ops cuest-ops-texto cuest-ops-lista">${item.opciones.map((o, i) => boton(i, esc(o.t), r === i)).join('')}${na}</div>`;
   }
   if (tipo === 'sino') {
     return `<div class="cuest-ops cuest-ops-sino">${boton('si', 'Sí', r === 'si')}${boton('no', 'No', r === 'no')}</div>`;

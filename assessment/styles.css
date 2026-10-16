@@ -3244,6 +3244,11 @@ body.posquirurgico .solo-posq { display: block; }
 .cuest-ops-numero .cuest-op { min-width: 64px; }
 .cuest-ops-sino { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cuest-ops-texto { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+/* Una sola respuesta en móvil: una opción por fila, como una lista (las de marcar varias siguen en rejilla) */
+@media (max-width: 520px) {
+  .cuest-ops-lista { grid-template-columns: minmax(0, 1fr); }
+  .cuest-ops-lista .cuest-op { min-height: 40px; padding: 8px 12px; text-align: left; }
+}
 .cuest-op {
   min-height: 44px; padding: 6px 8px; border-radius: 8px;
   border: 1px solid var(--border2); background: var(--surface2); color: var(--text2);
