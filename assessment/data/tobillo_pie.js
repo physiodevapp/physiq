@@ -1297,7 +1297,8 @@ export const hypotheses = {
     id: 'tp31', region: 'tobillo_pie', num: '㉛',
     name: 'Lesión de la 1.ª Metatarsofalángica',
     prom: 'FAAM o LEFS',
-    dosis: '',
+    dosis: 'Si es artrosis de la 1.ª MTF (hallux rigidus; en los estudios, dolor de más de 12 semanas y artrosis en la radiografía): plantillas que rigidizan el calzado de fibra de carbono, que redujeron el dolor más que unas simuladas, aunque menos que la diferencia mínima importante, mejoraron a más pacientes (61 % frente a 34 %) y dieron más dolor en otra parte del pie al principio (Munteanu 2021). Programa en casa: flexor largo del dedo gordo en isométrico, 3 × 10–20; distracción de la MTF 1 min y deslizamiento distal 1 min; masaje plantar con pelota 5 min, 2 veces al día, con plantilla prefabricada con escotadura bajo el primer radio y 3 visitas en 5 semanas (Paterson 2021); o calor, automovilización de la MTF, fuerza de los flexores de los dedos y frío, unos 30 min al día durante 12 semanas (Munteanu 2021). Calzado con profundidad y anchura suficientes, actividad física 30 min casi todos los días y control del peso (Paterson 2021). El programa en casa no se ha probado solo: en los dos estudios iba junto a plantillas. Con sesamoideos o placa plantar, estas fuentes no se aplican.',
+    dosisFuente: 'Munteanu 2021, Osteoarthritis Cartilage 29(4):480–90 (ensayo aleatorizado con control simulado, n = 100; leído entero: rehabilitación p. 482, resultados pp. 484–6, limitaciones p. 488) · Paterson 2021, Arthritis Care Res 73(2):250–8 (ensayo piloto de viabilidad, n = 30, sin contraste estadístico entre grupos; leído entero en la versión aceptada)',
     pronostico: {
       horizonte: 'Calcaneocuboidea: diagnóstico clínico, la imagen ayuda poco. 1.ª MTF: radiografía si fractura o artrosis; sesamoideos bipartitos frecuentes. Morton: ecografía.',
       derivacion: '1.ª MTF caliente e hinchada sin cambio de carga → gota o artritis inflamatoria.',

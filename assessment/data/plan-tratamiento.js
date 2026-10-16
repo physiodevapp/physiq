@@ -326,6 +326,11 @@ export const VOLUMEN_PAUTA = { ce13: 'cantidadReid' };
 // Hipótesis cuya pauta fija la frecuencia, por id (decisión 42): plan del mes
 // que se propone por defecto y nota que lo explica.
 export const FRECUENCIA_PAUTA = {
+  // Hombro (decisión 123): el ensayo del programa estándar de h8 usó 2 sesiones por semana
+  h8: {
+    plan: 'B',
+    nota: 'Discinesia escapular: el programa estándar de su pauta fueron 16 sesiones, 2 por semana durante 8 semanas (Kamonseki 2022), así que encaja con el plan B; con el plan A, el mes queda por debajo de lo estudiado.',
+  },
   ce12: {
     plan: 'B',
     nota: 'Dolor radicular cervical agudo: su pauta fija 2 sesiones por semana durante 6 semanas (12 sesiones), así que encaja con el plan B; con el plan A, el mes queda por debajo de esa pauta (Kuijper 2009).',
@@ -591,4 +596,4 @@ export const REEVALUACION_RETROSPECTIVA = [
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.
-export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023', 'Butler 2000', 'Butler 1991', 'NICE NG193'];
+export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023', 'Butler 2000', 'Butler 1991', 'NICE NG193', 'Kamonseki 2022'];

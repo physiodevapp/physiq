@@ -1283,7 +1283,8 @@ export const hypotheses = {
     id: 'ca19', region: 'cadera', num: '⑲',
     name: 'Dolor Inguinal Relacionado con el Pubis',
     prom: 'HOS o iHOT-12',
-    dosis: '',
+    dosis: 'Programa en 3 fases (osteítis de pubis en futbolistas). Días 1–28: sin deporte; fisioterapia de 90 min al menos 3 veces por semana (activación linfática, liberación lumbar y de cadera, puntos gatillo, técnicas miofasciales, relajación de aductores y abdomen, movilización de pelvis, cadera, columna lumbar y sacro). Días 29–56: bicicleta, natación, patinaje y estiramientos suaves, sin arrancadas ni frenadas. Desde el día 56: propiocepción, cambios de ritmo suaves, excéntricos de tronco, estiramientos y entrenamiento específico progresivo, y vuelta al equipo solo sin dolor; la fisioterapia sigue en paralelo durante 1 año. Nada de abdominales con máquinas. Con dolor: un día sin actividad, dos días a menor intensidad y al cuarto, la intensidad de antes. Con el programa, 42 de 44 volvieron a jugar antes de 4 meses; solo con reposo tardaron 240 días y la mitad recayó, aunque ese grupo no se asignó al azar. Las ondas de choque (3 sesiones semanales de 1500 impulsos sobre la sínfisis) adelantaron el regreso (73 frente a 103 días). Es un solo estudio, en varones futbolistas aficionados con osteítis de pubis en la RM.',
+    dosisFuente: 'Schöberl 2017, Knee Surg Sports Traumatol Arthrosc 25(6):1958–66 (ensayo aleatorizado de ondas de choque frente a simuladas, n = 44, ambos con el programa; grupo de solo reposo no aleatorizado, n = 51; leído entero: programa p. 3, fig. 3, resultados pp. 4–5)',
     pronostico: {
       horizonte: 'Ecografía o RM (planos axiales oblicuos para la inserción): edema óseo en la sínfisis, signo de la hendidura secundaria.',
       derivacion: 'AINE y reposo reducen el dolor, pero suele volver al retomar el deporte. La debilidad de cadera aumenta el riesgo: vuelta al deporte con déficit de fuerza <10–20 %.',
