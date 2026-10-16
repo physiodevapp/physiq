@@ -7,6 +7,11 @@
 // textoPlanMes, textoDomiciliario) para el nivel y la frecuencia elegidos;
 // nunca lo cambia. Lee los datos de la valoración y, si la hay, la
 // transcripción del informe con IA; nunca el texto del informe (decisión 4).
+//
+// Cada cambio del prompt, con la revisión del plan real que lo motivó (como en
+// docs/informe-ia.md). Ronda 1 (Andrés, 2026-10): la dosis del mismo ejercicio
+// cambiaba entre la sesión (3 × 30 s) y casa (10 × 3 s), las cifras de casa
+// iban sin marca (regla 4).
 import { contextoValoracion, huellaPayload, markdownATexto } from './informe-narrativo.js';
 
 export const PALABRAS_PLAN = 1500;
@@ -63,7 +68,7 @@ INSTRUCCIONES — CUMPLE TODAS:
 1. No cambies el esquema: el mismo nivel (${e.nivel}), los mismos bloques con sus minutos, la misma frecuencia, las mismas reevaluaciones y los mismos avisos. No propongas otros niveles${e.sinC ? ' ni una propuesta C (el esquema no la tiene)' : ''}.
 2. Terapia manual solo dentro del escalón elegido: ${lim.texto}. Nada de thrust ni de manipulación de alta velocidad. Para el ejercicio manda la pauta del esquema.
 3. Lo que viene del esquema (pauta, escalón, reglas, criterios, cifras) se escribe sin atribuirle nada más. No nombres ninguna fuente (autor, año, guía) que el esquema no cite, y no atribuyas a una fuente del esquema nada que el esquema no diga.
-4. Todo lo que pongas tú —ejercicios concretos, series, repeticiones, segundos, minutos, veces al día, días— es una sugerencia: termina esa línea con «${MARCA_SUGERENCIA}». Una cifra que ya está en el esquema no lleva la marca. Si la pauta dice que ninguna fuente fija el volumen, el volumen que propongas lleva la marca.
+4. Todo lo que pongas tú —ejercicios concretos, series, repeticiones, segundos, minutos, veces al día, días— es una sugerencia: termina esa línea con «${MARCA_SUGERENCIA}». Una cifra que ya está en el esquema no lleva la marca. Si la pauta dice que ninguna fuente fija el volumen, el volumen que propongas lleva la marca. Vale también en el programa para casa (la marca se quita al dárselo al paciente): «Haz 10 repeticiones (sugerencia de la IA).». Un mismo ejercicio lleva la misma dosis en la sesión y en casa.
 5. No des por hecho ningún hallazgo que no conste en los datos o en la consulta. Si la pauta se apoya en algo que el paciente no tiene (p. ej. centralización o preferencia direccional que no constan o que la consulta niega), dilo y no lo uses como si existiera.
 6. Una hipótesis con «pauta a criterio del fisioterapeuta» no tiene intervención con fuente: no la inventes; escribe «Pauta a criterio del fisioterapeuta» y limita tus sugerencias a la organización de la sesión.
 7. Si hay síntomas independientes, nómbralos solo para decir que este plan no los trata y que se valoran aparte; ningún ejercicio para ellos.
@@ -172,7 +177,7 @@ export function textoPlanIA(texto, { paciente = '', regionTexto = '', fecha = ''
 // IA no la copió, se añade tal cual.
 export function textoCasaIA(texto, { paciente = '', fecha = '', alarmas = [] } = {}) {
   const casa = (seccionesPlan(texto)['PROGRAMA PARA CASA'] || '').replace(RE_MARCA, '');
-  const cuerpo = markdownATexto(casa).replace(/^- /gm, '· ');
+  const cuerpo = markdownATexto(casa).replace(/^(\s*)- /gm, '$1· ');
   const falta = alarmas.filter(a => !normalizar(cuerpo).includes(normalizar(a)));
   return ['PROGRAMA PARA CASA', [paciente, fecha].filter(Boolean).join(' · '), '', cuerpo, ...falta.flatMap(a => ['', a])].join('\n');
 }

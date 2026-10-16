@@ -11,7 +11,7 @@
 //   escalon: número del escalón de terapia manual elegido (1–4)
 //   alarmas: frases de la red de seguridad del programa para casa
 //   noElegidas / derivar: nombres de hipótesis que el plan no trata
-//   independientes: nombres de los síntomas independientes («P3 · Zona lumbar»)
+//   independientes: síntomas independientes, «P3 · Zona lumbar» o { nombre, lado }
 // → [{ id, nivel: 'alto'|'medio', mensaje, cita? }]
 import { LIMITE_ESCALON, seccionesPlan, tieneMarca, normalizar } from './plan-ia.js';
 
@@ -27,8 +27,15 @@ const UNIDADES = [
 ];
 const RE_CIFRA = /(\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?)\s*(series?|repeticiones?|reps?|veces|vez|segundos?|seg|s|minutos?|min|horas?|h|d[ií]as?)(?![\wáéíóúñ])/gi;
 const RE_POR = /\b\d+\s*[x×]\s*\d+\b/gi;
+// «una vez al día», «dos series»: los números escritos también son dosis
+// (plan de Andrés, 2026-10: «Una vez al día» en cada ejercicio de casa)
+const NUMEROS = { una: 1, un: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10 };
+const RE_PALABRA = /\b(una|un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\s+(series?|repeticiones?|veces|vez)\b/gi;
 function cifras(t) {
   const out = [];
+  for (const m of String(t).matchAll(RE_PALABRA)) {
+    out.push(`${NUMEROS[m[1].toLowerCase()]} ${UNIDADES.find(([re]) => re.test(m[2].toLowerCase()))[1]}`);
+  }
   for (const m of String(t).matchAll(RE_CIFRA)) {
     const u = m[2].toLowerCase();
     const raiz = UNIDADES.find(([re]) => re.test(u))?.[1];
@@ -58,13 +65,31 @@ function porEncima(l, escalon) {
   return null;
 }
 
+// Primera técnica del bloque de intervención: su subtítulo (si lo hay) y su
+// primera línea de lista; la devuelve si es neural (slump, movilización neural…)
+const RE_NEURAL = /\b(slump|neural\w*|neurodin\w*|deslizamiento del nervio|tensi[oó]n neural)\b/i;
+function primeraTecnica(sesion) {
+  const ls = String(sesion).split('\n');
+  const i = ls.findIndex(l => /^###\s+.*INTERVENCI/i.test(l));
+  if (i < 0) return null;
+  const tramo = [];
+  for (const l of ls.slice(i + 1)) {
+    if (/^###/.test(l)) break;
+    if (!l.trim()) continue;
+    tramo.push(l.trim());
+    if (/^[-*•]\s/.test(l.trim())) break;
+  }
+  const t = tramo.join(' ');
+  return RE_NEURAL.test(t) ? tramo[tramo.length - 1] : null;
+}
+
 // ── 2. Fuentes ────────────────────────────────────────────────────────────────
 // «Autor 2021», «Autor y Autor 2005», «Autor et al. 2019», «(Autor, 2019)», NICE…
 const RE_FUENTE = /\b([A-ZÁÉÍÓÚÑ][a-záéíóúñü'-]+)(?:\s+(?:y|e|&)\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñü'-]+|\s+et al\.?)?,?\s+\(?((?:19|20)\d{2})\b/g;
 const RE_GUIA = /\b(NICE|APTA|JOSPT|KNGF|Cochrane)\b/g;
 const NO_AUTOR = new Set(['Sesión', 'Sesiones', 'Semana', 'Semanas', 'Plan', 'Nivel', 'Día', 'Días', 'En', 'Desde', 'Hasta', 'Octubre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Noviembre', 'Diciembre']);
 
-export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], noElegidas = [], derivar = [], independientes = [] } = {}) {
+export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], noElegidas = [], derivar = [], independientes = [], primera = false } = {}) {
   const puntos = [];
   const sec = seccionesPlan(texto);
   const sesionMes = [sec['SESIÓN'] || '', sec['PLAN DEL MES'] || ''].join('\n');
@@ -74,8 +99,10 @@ export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], 
   const faltan = ['SESIÓN', 'PLAN DEL MES', 'PROGRAMA PARA CASA'].filter(s => sec[s] == null);
   if (faltan.length) puntos.push({ id: 'secciones', nivel: 'alto', mensaje: `${faltan.length > 1 ? 'Faltan las secciones' : 'Falta la sección'} ${faltan.join(', ')}: el plan parece incompleto.` });
 
-  // 1. Volumen sin marcar
-  const enEsqueleto = new Set(cifras(esqueleto));
+  // 1. Volumen sin marcar. Vale también una cifra que la IA ya propuso con la
+  // marca en otra línea (plan de Andrés, 2026-10: el programa para casa repetía
+  // sin marca las series de la sesión, y daba un punto por cada una)
+  const enEsqueleto = new Set([...cifras(esqueleto), ...lineas(texto).filter(tieneMarca).flatMap(cifras)]);
   for (const l of lineas(texto)) {
     if (tieneMarca(l)) continue;
     const nuevas = cifras(l).filter(c => !enEsqueleto.has(c));
@@ -102,6 +129,14 @@ export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], 
     if (t) puntos.push({ id: 'escalon', nivel: 'alto', mensaje: `Técnica por encima del escalón elegido (${t}): el escalón ${escalon} no la admite.`, cita: recorte(l) });
   }
 
+  // 3b. Técnica neural como primera técnica de la primera sesión (decisión 117):
+  // «el slump rara vez es la primera técnica» (Maitland 2005, cap. 6, p. 149).
+  // El primer plan de Andrés (L5, ronda 1) abrió la intervención con el slump.
+  if (primera) {
+    const neural = primeraTecnica(sec['SESIÓN'] || '');
+    if (neural) puntos.push({ id: 'neural-primera', nivel: 'medio', mensaje: 'La primera sesión empieza la intervención con una técnica neural: rara vez es la primera técnica; si se usa con vigor, 2–3 días entre sesiones y reevaluar a las 24 h (Maitland 2005, cap. 6, p. 149).', cita: recorte(neural) });
+  }
+
   // 4. Red de seguridad en el programa para casa, copiada tal cual
   if (casa != null) {
     const c = normalizar(casa);
@@ -120,12 +155,20 @@ export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], 
     for (const n of noElegidas) {
       if (nl.includes(normalizar(n)) && !negacion.test(l)) puntos.push({ id: 'no-elegida', nivel: 'medio', mensaje: `Nombra una hipótesis que no se eligió para este plan (${n}): comprueba que no la trata.`, cita: recorte(l) });
     }
-    for (const n of independientes) {
-      const zona = normalizar(n.replace(/^P\d+\s*·\s*/, ''));
-      if (zona && nl.includes(zona) && !negacion.test(l)) puntos.push({ id: 'independiente', nivel: 'medio', mensaje: `Nombra el síntoma independiente (${n}) sin decir que este plan no lo trata: comprueba que no le pone ejercicios.`, cita: recorte(l) });
+    // Con su lado, solo si la línea también lo nombra: «zona lumbar» sola es la
+    // región del plan, no la molestia lumbar derecha de Andrés (cuatro falsos
+    // avisos en su primer plan, 2026-10)
+    for (const x of independientes) {
+      const { nombre, lado = '' } = typeof x === 'string' ? { nombre: x } : x;
+      const zona = normalizar(nombre.replace(/^P\d+\s*·\s*/, ''));
+      const raizLado = normalizar(lado).slice(0, 6);   // «derech», «izquie»
+      if (zona && nl.includes(zona) && (!raizLado || nl.includes(raizLado)) && !negacion.test(l)) {
+        puntos.push({ id: 'independiente', nivel: 'medio', mensaje: `Nombra el síntoma independiente (${nombre}) sin decir que este plan no lo trata: comprueba que no le pone ejercicios.`, cita: recorte(l) });
+      }
     }
   }
-  return puntos;
+  // La misma línea repetida («Una vez al día» en cada ejercicio) da un solo punto
+  return puntos.filter((p, i) => puntos.findIndex(q => clavePuntoPlan(q) === clavePuntoPlan(p)) === i);
 }
 
 // Lo que ninguna regla ve: siempre a la vista, cada una con «Revisado».

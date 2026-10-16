@@ -80,6 +80,8 @@ function contexto() {
   };
   return {
     e, plan, entrada,
+    // Para la revisión, con su lado (la regla `independiente` lo necesita)
+    independientes: sintomasIndependientes(e.secundarios).map(s => ({ nombre: nombreSintoma(s), lado: s.la || '' })),
     huella: huellaPlan({ datos, ampliado, elecciones, transcripcion: transcripcion?.texto || '' }),
     esqueleto: [entrada.sesion, entrada.mes, entrada.casa].join('\n'),
   };
@@ -245,7 +247,7 @@ function puntosDe(ctx, ia) {
   try {
     puntos = revisarPlan(ia.texto, {
       esqueleto: ctx.esqueleto, escalon: en.escalon.n, alarmas: en.alarmas,
-      noElegidas: en.noElegidas, derivar: en.derivar, independientes: en.independientes,
+      noElegidas: en.noElegidas, derivar: en.derivar, independientes: ctx.independientes, primera: en.primera,
     });
   } catch { /* una regla rota nunca tumba la tarjeta */ }
   try { comprobaciones = comprobacionesPlan({ posq: !!ctx.plan.mes.posq, transcripcion: !!ia.conTranscripcion }); } catch { /* ídem */ }

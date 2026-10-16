@@ -116,6 +116,9 @@ export const AVISOS = {
   breveSinTests: 'Hipótesis de trabajo, pendiente de confirmar: no tiene ningún test hecho.',
   dosHipotesis: 'Dos hipótesis: la intervención principal se reparte entre ambas y el tiempo de cada una baja.',
   vertigo: 'No usar ninguna técnica cervical que produzca mareo; probar antes con movimientos exploratorios (Maitland 2005, cap. 9, p. 224).',
+  // Decisión 117: el plan con IA de Andrés (L5, ronda 1) abrió la primera sesión
+  // con el slump; Maitland lo desaconseja como primera técnica
+  neuralRadicular: 'Técnicas neurales (p. ej., el slump): rara vez son la primera técnica. Si se usan con vigor, dejar 2–3 días entre sesiones y reevaluar a las 24 h, porque las estructuras del canal tardan más en recuperarse de las agujetas (Maitland 2005, cap. 6, p. 149).',
   manipulacionCervical: 'Sin manipulación forzada con signos de dos raíces cervicales o signos medulares; la movilización suave sí puede ser adecuada, y los cambios neurológicos no impiden movilizar con suavidad desde el principio (Maitland 2005, cap. 9, pp. 222–223).',
   sinTerapiaManualAguda: 'En la fase aguda (menos de 1 mes) la pauta de Kuijper 2009 es sin terapia manual: ahí los escalones no se aplican. La movilización o manipulación entra en la fase crónica (Blanpied 2017, B).',
   // Hombro (L3, decisiones 47 y 51–52)
@@ -180,8 +183,9 @@ export const AVISOS = {
 // Avisos por hipótesis, por id (nunca por el nombre): claves de AVISOS.
 export const AVISOS_HIP = {
   ce13: ['vertigo'],                                         // mareo cervicogénico
-  ce3: ['manipulacionCervical'],                             // radiculopatía cervical
-  ce12: ['manipulacionCervical', 'sinTerapiaManualAguda'],   // dolor radicular cervical (su pauta aguda, data/cervical.js)
+  ce3: ['manipulacionCervical', 'neuralRadicular'],          // radiculopatía cervical
+  ce12: ['manipulacionCervical', 'sinTerapiaManualAguda', 'neuralRadicular'], // dolor radicular cervical (su pauta aguda, data/cervical.js)
+  lu3: ['neuralRadicular'], lu5: ['neuralRadicular'],        // lumbar radicular (decisión 117; Maitland 2005, cap. 6, p. 149)
   h1: ['capsulitisPrecoz', 'capsulitisEstadios'],           // capsulitis adhesiva (su pauta; cap. 11, cuadro 11.9)
   h4: ['inestabilidad'],                                     // inestabilidad glenohumeral (cap. 11, cuadro 11.12)
   h10: ['artrosis'],                                         // artrosis glenohumeral (cap. 11, cuadro 11.11)

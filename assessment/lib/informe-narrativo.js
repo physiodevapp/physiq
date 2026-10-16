@@ -638,7 +638,7 @@ ESTRUCTURA OBLIGATORIA — empieza DIRECTAMENTE con la primera sección, sin tí
 [Solo si refiere afectación del trabajo, el ocio, el deporte o la vida social: describe lo que refiere, sin suponer cómo podría afectarle]
 
 ## CONCLUSIONES Y PLAN DE TRATAMIENTO
-[Si hay derivación, empieza por ella. Después, síntesis clínica con el problema principal y el enfoque terapéutico, en prosa, sin volver a enumerar los tests. El criterio de reevaluación o derivación por falta de mejoría (p. ej. «si no mejora en 12 semanas») va en Seguimiento, aunque venga dentro del texto de la pauta]${hasHypotheses ? `
+[Si hay derivación, empieza por ella. Después, síntesis clínica con el problema principal y el enfoque terapéutico, en prosa, sin volver a enumerar los tests. Solo las indicaciones que constan (la pauta, las indicaciones del fisioterapeuta, la consulta), sin consejos propios (pausas, ergonomía, adaptación del puesto…). El criterio de reevaluación o derivación por falta de mejoría (p. ej. «si no mejora en 12 semanas») va en Seguimiento, aunque venga dentro del texto de la pauta]${hasHypotheses ? `
 
 ### Coherencia con hipótesis de valoración
 [Dos o tres frases: si los hallazgos refuerzan, matizan o contradicen las hipótesis recibidas, sin nombrar los tests ni proponer diagnósticos nuevos; las reglas pronósticas no cuentan como apoyo]
