@@ -3501,3 +3501,17 @@ body.disautonomia .solo-ds { display: block; }
 .ds-tabla .ds-sint { display: flex; justify-content: center; align-items: center; min-height: 40px; }
 .ds-tabla .ds-sint input { width: 20px; height: 20px; accent-color: var(--orange); }
 .ds-fase5 > div > div { margin-top: 4px; }
+.ds-reloj { margin: 8px 0; padding: 10px 12px; border: 1px solid var(--border2); border-radius: 10px; background: var(--surface2); }
+.ds-reloj-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ds-reloj-fase { font-family: 'DM Mono', monospace; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); }
+.ds-reloj-tiempo { font-family: 'DM Mono', monospace; font-size: 1.6rem; font-variant-numeric: tabular-nums; color: var(--text); }
+.ds-reloj-toca { margin-top: 4px; font-weight: 600; color: var(--accent); }
+.ds-reloj-sig { margin-top: 4px; font-size: 0.85rem; color: var(--text2); }
+.ds-reloj-toca:empty, .ds-reloj-sig:empty { display: none; }
+.ds-reloj-botones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.ds-reloj-botones:first-child { margin-top: 0; }
+.ds-reloj-btn { flex: 1 1 auto; min-height: 44px; }
+.ds-fila-et.ds-fila-toca { color: var(--accent); font-weight: 600; }
+.ds-tabla input.ds-fila-toca { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.ds-toma { display: block; font-size: 0.68rem; font-weight: 400; color: var(--orange); }
+@media print { .ds-reloj { display: none; } }

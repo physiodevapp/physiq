@@ -209,3 +209,55 @@ export function bloqueDsIA(d) {
     `  · Consideraciones para el plan: ${lineasRecomendacionDs(d).map(_sinCitas).join(' ')}`,
   ].filter(Boolean).join('\n');
 }
+
+// ── Reloj de la prueba ───────────────────────────────────────
+// Ayuda a tomar cada medida en su minuto: no rellena ni cierra filas.
+// `bipedestacion.reloj`: null (sin reloj) o { fase: 'reposo' | 'pie',
+// inicio: ms (Date.now() al pulsar), tomas: { m3: s, … } } — `tomas`, los
+// segundos de pie en que se escribió la primera FC de cada fila. El tiempo se
+// calcula siempre desde `inicio`, no contando segundos, así que una pantalla
+// apagada o la app en segundo plano no lo desajustan. Solo interfaz: no lo lee
+// ni el payload, ni los resúmenes, ni el informe con IA.
+export const RELOJ = {
+  reposoS: 5 * 60,                              // tumbado al menos 5 min (Raj 2020, rec. 4)
+  finS: DS.prueba.minutos[DS.prueba.minutos.length - 1] * 60 + 60,  // un minuto para la última medida
+  margenS: 30,                                  // una toma más lejos de su minuto se señala
+  caducaS: 30 * 60,                             // un reloj de hace más de 30 min ya no es de esta prueba
+};
+
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+export const textoTiempo = s => mmss(Math.max(0, s));
+
+// Estado en el instante `ahora` (ms). null sin reloj.
+//   reposo: { fase, s, restante, cumplido, fila: 'tumbado' cuando se cumple }
+//   pie:    { fase, s, fila (la que toca ahora o null antes del minuto 1),
+//             proxima: { fila, min, en } | null, terminado }
+// `marcas`: cuántos avisos han llegado ya (fin del reposo, o cada minuto de
+// medida), para avisar una sola vez de cada uno.
+export function estadoReloj(reloj, ahora) {
+  if (!reloj || typeof reloj.inicio !== 'number' || !['reposo', 'pie'].includes(reloj.fase)) return null;
+  const s = Math.max(0, (ahora - reloj.inicio) / 1000);
+  if (s > RELOJ.caducaS) return { fase: reloj.fase, s, caducado: true, marcas: 0 };
+  if (reloj.fase === 'reposo') {
+    const cumplido = s >= RELOJ.reposoS;
+    return { fase: 'reposo', s, restante: Math.max(0, RELOJ.reposoS - s), cumplido, fila: cumplido ? 'tumbado' : null, marcas: cumplido ? 1 : 0 };
+  }
+  const minutos = DS.prueba.minutos;
+  const pasados = minutos.filter(m => s >= m * 60);
+  const ultimo = pasados[pasados.length - 1];
+  const siguiente = minutos.find(m => s < m * 60);
+  return {
+    fase: 'pie', s,
+    fila: ultimo != null && s < RELOJ.finS ? `m${ultimo}` : null,
+    proxima: siguiente != null ? { fila: `m${siguiente}`, min: siguiente, en: siguiente * 60 - s } : null,
+    terminado: s >= RELOJ.finS,
+    marcas: pasados.length,
+  };
+}
+
+// Segundos de pie de una toma alejada más de `margenS` de su minuto; null si
+// está a tiempo o no hay toma.
+export function tomaFueraDeTiempo(fila, t) {
+  if (t == null || !/^m\d+$/.test(fila)) return null;
+  return Math.abs(t - Number(fila.slice(1)) * 60) > RELOJ.margenS ? t : null;
+}

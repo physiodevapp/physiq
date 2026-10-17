@@ -24,7 +24,8 @@ import { HM, ESTADOS_HM, SUBTIPOS_HM, hipermovilidadVacia, normalizarHipermovili
   cuestionarioVisible, beightonVisible, casillasBeighton, resultadoHAG, siCuestionario, respondidasCuestionario,
   reglaVascular, hmPayload, lineasRecomendacionHM } from './lib/hipermovilidad.js';
 import { DS, TIPOS_DS, FILAS_PRUEBA, disautonomiaVacia, normalizarDisautonomia, pruebaVacia, dsActiva, sospechaVisible,
-  siSospecha, respondidasSospecha, otraCausa, resultadoPrueba, dsPayload, textoPrueba, lineasRecomendacionDs } from './lib/disautonomia.js';
+  siSospecha, respondidasSospecha, otraCausa, resultadoPrueba, dsPayload, textoPrueba, lineasRecomendacionDs,
+  estadoReloj, textoTiempo, tomaFueraDeTiempo } from './lib/disautonomia.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -296,6 +297,7 @@ function _softResetApp() {
   state.cirugia = cirugiaVacia();
   state.hipermovilidad = hipermovilidadVacia();
   state.disautonomia = disautonomiaVacia();
+  _dsRelojParar();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -1072,6 +1074,7 @@ function dsPruebaHacer() {
 
 function dsPruebaQuitar() {
   state.disautonomia.bipedestacion = null;
+  _dsRelojParar();
   _pintarDsBloques();
   saveSession();
 }
@@ -1097,6 +1100,12 @@ function updateDsPrueba(fila, campo, el) {
   } else {
     const n = el.value === '' ? null : Number(el.value);
     if (n === null || isNaN(n)) delete b[fila][campo]; else b[fila][campo] = n;
+    // Reloj en marcha: a qué segundo de pie se escribió la primera FC de la fila
+    const e = estadoReloj(b.reloj, Date.now());
+    if (campo === 'fc' && n != null && e?.fase === 'pie' && !e.caducado && fila !== 'tumbado' && b.reloj.tomas?.[fila] == null) {
+      b.reloj.tomas = { ...(b.reloj.tomas || {}), [fila]: Math.round(e.s) };
+      _pintarDsTomas();
+    }
   }
   document.querySelectorAll(`[data-ds-fila="${fila}"][data-ds-campo="${campo}"]`).forEach(x => {
     if (x === el) return;
@@ -1166,9 +1175,10 @@ function _dsBloqueHTML() {
     const num = (f, c) => `<input type="number" inputmode="numeric" class="form-input" min="20" max="260" aria-label="${_ETIQ_FILA_DS(f)}: ${c.toUpperCase()}" data-ds-fila="${f}" data-ds-campo="${c}" value="${b[f]?.[c] ?? ''}" oninput="updateDsPrueba('${f}','${c}',this)">`;
     cuerpo = `<div class="ds-prep">${DS.prueba.preparacion.map(p => `<label class="hm-casilla"><input type="checkbox"${b.prep?.[p.id] ? ' checked' : ''} onchange="toggleDsPrep('${p.id}')"> ${p.texto}</label>`).join('')}</div>
       <div class="ds-nota">${DS.prueba.seguridad}</div>
+      <div class="ds-reloj" data-ds-reloj>${_dsRelojHTML()}</div>
       <div class="ds-tabla">
         <div class="ds-tabla-cab"></div><div class="ds-tabla-cab">FC</div><div class="ds-tabla-cab">TAS</div><div class="ds-tabla-cab">TAD</div><div class="ds-tabla-cab">Sínt.</div>
-        ${FILAS_PRUEBA.map(f => `<div class="ds-fila-et">${_ETIQ_FILA_DS(f)}</div>${num(f, 'fc')}${num(f, 'tas')}${num(f, 'tad')}
+        ${FILAS_PRUEBA.map(f => `<div class="ds-fila-et" data-ds-et="${f}">${_ETIQ_FILA_DS(f)}${_dsTomaHTML(f)}</div>${num(f, 'fc')}${num(f, 'tas')}${num(f, 'tad')}
           <div class="ds-sint">${f === 'tumbado' ? '' : `<input type="checkbox" aria-label="${_ETIQ_FILA_DS(f)}: síntomas" data-ds-fila="${f}" data-ds-campo="sintomas"${b[f]?.sintomas ? ' checked' : ''} onchange="updateDsPrueba('${f}','sintomas',this)">`}</div>`).join('')}
       </div>
       <div data-ds-resultado>${_dsResultadoHTML()}</div>
@@ -1183,7 +1193,166 @@ function _dsBloqueHTML() {
 function _pintarDsBloques() {
   const html = _dsBloqueHTML();
   document.querySelectorAll('[data-ds-bloque]').forEach(el => { el.innerHTML = html; });
+  _dsMarcarFila();
+  _dsRelojArrancar();
 }
+
+// ── Reloj de la prueba de bipedestación (docs/pots.md, «Reloj») ──
+// Un solo reloj para las dos copias del bloque. El tiempo sale de
+// `reloj.inicio` (lib/disautonomia.js, estadoReloj), así que el intervalo solo
+// repinta; avisa una vez por marca (fin del reposo, cada minuto de medida)
+// con un pitido, vibración donde la haya y la fila resaltada.
+let _dsTick = null, _dsMarcasAvisadas = 0, _dsAudio = null, _dsWakeLock = null;
+
+const _dsReloj = () => state.disautonomia?.bipedestacion?.reloj || null;
+
+// Qué muestra el reloj: la parte fija (botones) solo cambia con el `modo`;
+// cada segundo se cambian solo los textos, para no sustituir un botón bajo el
+// dedo (un toque en «Parar» no se pierde).
+function _dsRelojVista(e) {
+  if (!e || e.caducado) return { modo: 'sin' };
+  if (e.fase === 'reposo') {
+    return e.cumplido
+      ? { modo: 'reposo-ok', fase: 'Reposo', tiempo: textoTiempo(e.s), toca: 'Reposo cumplido: toma la medida tumbado.', sig: '' }
+      : { modo: 'reposo', fase: 'Reposo', tiempo: textoTiempo(e.s), toca: '', sig: `Tumbado: quedan ${textoTiempo(Math.ceil(e.restante))}` };
+  }
+  if (e.terminado) return { modo: 'fin', fase: 'De pie', tiempo: textoTiempo(e.s), toca: '', sig: `Prueba terminada: ${DS.prueba.minutos[DS.prueba.minutos.length - 1]} min de pie.` };
+  return { modo: 'pie', fase: 'De pie', tiempo: textoTiempo(e.s),
+    toca: e.fila ? `Ahora: medida de ${_ETIQ_FILA_DS(e.fila)}` : '',
+    sig: e.proxima ? `Siguiente: ${_ETIQ_FILA_DS(e.proxima.fila)} en ${textoTiempo(Math.ceil(e.proxima.en))}` : '' };
+}
+
+function _dsRelojHTML(v = _dsRelojVista(estadoReloj(_dsReloj(), Date.now()))) {
+  const btn = (fn, texto, clase = 'btn-secondary') => `<button type="button" class="${clase} ds-reloj-btn" onclick="${fn}">${texto}</button>`;
+  if (v.modo === 'sin') {
+    return `<div class="ds-reloj-botones" data-modo="sin">${btn("dsRelojEmpezar('reposo')", 'Empezar reposo tumbado (5 min)')}${btn("dsRelojEmpezar('pie')", 'Se pone de pie')}</div>`;
+  }
+  const botones = v.modo === 'fin' ? btn('dsRelojParar()', 'Cerrar el reloj')
+    : v.modo === 'pie' ? btn('dsRelojParar()', 'Parar')
+      : btn("dsRelojEmpezar('pie')", 'Se pone de pie', 'btn-primary') + btn('dsRelojParar()', 'Parar');
+  return `<div class="ds-reloj-cab" data-modo="${v.modo}"><span class="ds-reloj-fase">${v.fase}</span><span class="ds-reloj-tiempo" role="timer" data-r="tiempo">${v.tiempo}</span></div>
+    <div class="ds-reloj-toca" data-r="toca">${v.toca}</div><div class="ds-reloj-sig" data-r="sig">${v.sig}</div>
+    <div class="ds-reloj-botones">${botones}</div>`;
+}
+
+function _pintarDsReloj() {
+  const v = _dsRelojVista(estadoReloj(_dsReloj(), Date.now()));
+  document.querySelectorAll('[data-ds-reloj]').forEach(el => {
+    if (el.querySelector('[data-modo]')?.dataset.modo !== v.modo) { el.innerHTML = _dsRelojHTML(v); return; }
+    el.querySelectorAll('[data-r]').forEach(x => { const t = v[x.dataset.r]; if (x.textContent !== t) x.textContent = t; });
+  });
+}
+
+// «toma a las 3:40» junto a la fila cuando la FC se escribió lejos de su minuto
+function _dsTomaHTML(f) {
+  const t = tomaFueraDeTiempo(f, _dsReloj()?.tomas?.[f]);
+  return t == null ? '' : `<span class="ds-toma">toma a las ${textoTiempo(t)}</span>`;
+}
+
+function _pintarDsTomas() {
+  FILAS_PRUEBA.forEach(f => document.querySelectorAll(`[data-ds-et="${f}"]`).forEach(el => {
+    el.innerHTML = `${_ETIQ_FILA_DS(f)}${_dsTomaHTML(f)}`;
+  }));
+}
+
+// Resalta la fila que toca (etiqueta y casillas) en las dos copias
+function _dsMarcarFila() {
+  const e = estadoReloj(_dsReloj(), Date.now());
+  const fila = e && !e.caducado ? e.fila : null;
+  document.querySelectorAll('[data-ds-et], .ds-tabla [data-ds-fila]').forEach(el => {
+    const f = el.dataset.dsEt || el.dataset.dsFila;
+    el.classList.toggle('ds-fila-toca', f === fila);
+  });
+  return fila;
+}
+
+function _dsPitido() {
+  try {
+    navigator.vibrate?.(200);
+    if (!_dsAudio) return;
+    if (_dsAudio.state === 'suspended') _dsAudio.resume();
+    const o = _dsAudio.createOscillator(), g = _dsAudio.createGain();
+    o.frequency.value = 880;
+    g.gain.setValueAtTime(0.0001, _dsAudio.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.3, _dsAudio.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, _dsAudio.currentTime + 0.35);
+    o.connect(g).connect(_dsAudio.destination);
+    o.start(); o.stop(_dsAudio.currentTime + 0.4);
+  } catch { /* sin sonido: queda el aviso en pantalla */ }
+}
+
+function _dsPantallaEncendida(si) {
+  if (si) {
+    if (_dsWakeLock || document.visibilityState !== 'visible') return;
+    navigator.wakeLock?.request('screen').then(l => {
+      if (_dsTick) _dsWakeLock = l; else l.release().catch(() => {});
+    }).catch(() => {});
+  } else {
+    _dsWakeLock?.release?.().catch(() => {});
+    _dsWakeLock = null;
+  }
+}
+
+function _dsRelojTick() {
+  const reloj = _dsReloj();
+  const e = dsActiva(state.disautonomia) ? estadoReloj(reloj, Date.now()) : null;
+  if (!e || e.caducado || e.terminado || (e.fase === 'reposo' && e.cumplido && e.marcas <= _dsMarcasAvisadas)) {
+    // Nada que contar: último repintado y fuera el intervalo
+    clearInterval(_dsTick); _dsTick = null;
+    _dsPantallaEncendida(false);
+  }
+  _pintarDsReloj();
+  const fila = _dsMarcarFila();
+  if (e && !e.caducado && e.marcas > _dsMarcasAvisadas) {
+    _dsMarcasAvisadas = e.marcas;
+    _dsPitido();
+    // La fila que toca, a la vista (la copia visible: panel o acordeón)
+    const et = [...document.querySelectorAll(`[data-ds-et="${fila}"]`)].find(x => x.offsetParent !== null);
+    if (et) {
+      const r = et.getBoundingClientRect();
+      if (r.top < 80 || r.bottom > window.innerHeight - 80) et.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }
+}
+
+// Arranca el intervalo si hay un reloj en marcha (al pintar el bloque o al
+// restaurar la sesión). Las marcas ya pasadas no vuelven a pitar.
+function _dsRelojArrancar() {
+  if (_dsTick) return;
+  const e = estadoReloj(_dsReloj(), Date.now());
+  if (!e || e.caducado || e.terminado || (e.fase === 'reposo' && e.cumplido)) return;
+  _dsMarcasAvisadas = e.marcas;
+  _dsTick = setInterval(_dsRelojTick, 250);
+  _dsPantallaEncendida(true);
+}
+
+function _dsRelojParar() {
+  clearInterval(_dsTick); _dsTick = null;
+  _dsPantallaEncendida(false);
+}
+
+function dsRelojEmpezar(fase) {
+  const b = state.disautonomia.bipedestacion;
+  if (!b) return;
+  // El toque en el botón permite el sonido después (los navegadores lo exigen)
+  try { _dsAudio = _dsAudio || new (window.AudioContext || window.webkitAudioContext)(); _dsAudio.resume?.(); } catch { _dsAudio = null; }
+  b.reloj = { fase, inicio: Date.now(), tomas: {} };
+  _dsRelojParar();
+  _pintarDsBloques();
+  saveSession();
+}
+
+function dsRelojParar() {
+  const b = state.disautonomia.bipedestacion;
+  if (b) b.reloj = null;
+  _dsRelojParar();
+  _pintarDsBloques();
+  saveSession();
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && _dsTick) { _dsPantallaEncendida(true); _dsRelojTick(); }
+});
 
 // Recuadro de la fase 5 (docs/pots.md): nunca se pliega.
 function _disautonomiaResultadosHTML(d) {
@@ -4687,6 +4856,7 @@ Object.assign(window, {
   updateCirugia, selectCirProtocolo, toggleCirComplicacion, toggleDiagnosticoTratado,
   selectHMEstado, selectHMSubtipo, selectHMCuest, toggleHMBeighton, hmBeightonHacer, hmBeightonQuitar,
   selectDsEstado, selectDsTipo, selectDsSospecha, dsPruebaHacer, dsPruebaQuitar, toggleDsPrep, updateDsPrueba,
+  dsRelojEmpezar, dsRelojParar,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========
