@@ -708,9 +708,14 @@
   .sil-zona, .sil-sin-region { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; }
   .sil-zona { width: 44px; height: 44px; padding: 0; background: transparent; border: 1.5px dashed var(--sil-zona); cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .sil-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--sil-zona); }
-  .sil-zona.sil-zona-region { border: 2px dashed var(--accent); background: rgba(79,156,249,0.10); }
+  /* Región elegida sin lado: borde continuo y «?» («¿qué lado?») en vez del
+     punto. La discontinua queda solo para «no elegido». */
+  .sil-zona.sil-zona-region { border: 2px solid var(--accent); background: var(--surface); }
+  .sil-pregunta { display: none; font-size: 1.1rem; font-weight: 700; line-height: 1; color: var(--accent); }
+  .sil-zona-region .sil-pregunta { display: block; }
+  .sil-zona-region .sil-punto { display: none; }
   .sil-zona.sil-zona-on { border: 2px solid var(--accent); background: rgba(79,156,249,0.28); }
-  .sil-zona-region .sil-punto, .sil-zona-on .sil-punto { background: var(--accent); }
+  .sil-zona-on .sil-punto { background: var(--accent); }
   .sil-zona-on .sil-punto { width: 12px; height: 12px; }
   .sil-zona:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (hover: hover) { .sil-zona:hover { border-color: var(--accent); } }

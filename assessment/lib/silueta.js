@@ -49,8 +49,11 @@ export function textoElegida(region, lado) {
   // Con lado, `sub` vacío: su línea queda reservada (CSS) para que la figura
   // no suba bajo el dedo al elegir el lado. Con «Bilateral» en una región de
   // dos zonas, cómo deshacerlo (por si se tocó el otro lado queriendo corregir).
-  const sub = !lado ? 'Lado sin indicar (opcional)'
-    : lado === 'Bilateral' && !['cervical', 'lumbar'].includes(region) ? 'Toca un lado para quitarlo' : '';
+  // Sin lado en una región de dos zonas, las dos llevan «?»: el texto dice
+  // qué hacer con ellas.
+  const dosZonas = !['cervical', 'lumbar'].includes(region);
+  const sub = !lado ? (dosZonas ? 'Lado sin indicar: toca uno (opcional)' : 'Lado sin indicar (opcional)')
+    : lado === 'Bilateral' && dosZonas ? 'Toca un lado para quitarlo' : '';
   return { principal: regionConLado(region, lado), sub };
 }
 
@@ -71,7 +74,7 @@ export function siluetaHTML(fig, figura) {
   const pos = (x, y) => `left:${pct((x - x0) / w)};top:${pct((y - y0) / h)}`;
   const zonas = fig.zonas.map(z => {
     const nombre = regionConLado(z.region, z.lado);
-    return `<button type="button" class="sil-zona" data-region="${z.region}" data-lado="${z.lado}" style="${pos(z.x, z.y)}" aria-label="${nombre}" title="${nombre}" aria-pressed="false" onclick="tocarZonaSilueta('${z.region}', '${z.lado}')"><span class="sil-punto"></span></button>`;
+    return `<button type="button" class="sil-zona" data-region="${z.region}" data-lado="${z.lado}" style="${pos(z.x, z.y)}" aria-label="${nombre}" title="${nombre}" aria-pressed="false" onclick="tocarZonaSilueta('${z.region}', '${z.lado}')"><span class="sil-punto"></span><span class="sil-pregunta" aria-hidden="true">?</span></button>`;
   }).join('');
   const sin = fig.sinRegion.map(s =>
     `<span class="sil-sin-region" style="${pos(s.x, s.y)}" title="${s.nombre}: sin región en PhysiQ" aria-hidden="true"></span>`).join('');
