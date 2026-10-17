@@ -5,6 +5,9 @@
 // mira, así que «izquierdo» queda a la izquierda de la pantalla.
 //
 // `caja`: viewBox [x, y, ancho, alto] en las coordenadas del dibujo original.
+// Las dos cajas tienen la misma proporción (la de mujer es la de hombre × 1,14,
+// centrada en su cuerpo): así las dos figuras miden lo mismo de alto en
+// pantalla y cambiar de sexo no mueve lo que hay debajo (test unitario).
 // `zonas`: centro de cada zona tocable (una por región y lado; cervical y
 // lumbar sin lado). `sinRegion`: partes del cuerpo sin región en PhysiQ, que
 // se dibujan en gris y no se pueden tocar. Las coordenadas se midieron sobre
@@ -135,7 +138,7 @@ export const SILUETAS = {
     ],
   },
   mujer: {
-    caja: [812, -5, 661, 1445],
+    caja: [772, -7, 741, 1447.8],
     zonas: [
       { region: 'cervical', lado: '', x: 1142, y: 262 },
       { region: 'hombro', lado: 'Izquierdo', x: 1024, y: 330 },
@@ -147,8 +150,8 @@ export const SILUETAS = {
       { region: 'cadera', lado: 'Derecho', x: 1210, y: 700 },
       { region: 'rodilla', lado: 'Izquierdo', x: 1060, y: 995 },
       { region: 'rodilla', lado: 'Derecho', x: 1225, y: 995 },
-      { region: 'tobillo_pie', lado: 'Izquierdo', x: 1088, y: 1355 },
-      { region: 'tobillo_pie', lado: 'Derecho', x: 1195, y: 1355 },
+      { region: 'tobillo_pie', lado: 'Izquierdo', x: 1080, y: 1355 },
+      { region: 'tobillo_pie', lado: 'Derecho', x: 1205, y: 1355 },
     ],
     sinRegion: [
       { nombre: 'Torácica', x: 1142, y: 430 },
