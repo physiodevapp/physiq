@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZON_XANTOMAS, RAZON_CALCIFICANTE } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZON_XANTOMAS, RAZON_CALCIFICANTE } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.codo — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -36,6 +36,7 @@ export const screening = {
   sistemas: [
     SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
     SIS_HIPERMOVILIDAD,  // solo con la tarjeta «Hipermovilidad» activa (docs/hipermovilidad.md)
+    SIS_DISAUTONOMIA,    // solo con la tarjeta «Disautonomía / POTS» activa (docs/pots.md)
     {
       id: 'co_trauma', icon: '🦴', nombre: 'Traumático (Fractura o Luxación)',
       banderasRojas: [
@@ -252,7 +253,8 @@ export const screening = {
                 { texto: 'Beloor Suresh y Asuncion 2023 — Beloor Suresh y Asuncion, «Myasthenia Gravis», StatPearls [Internet], NCBI Bookshelf, última actualización 8 de agosto de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK559331/' },
                 { texto: 'Khalil 2025 — Khalil, Marwaha y Bollu, «Physiology, Neuromuscular Junction», StatPearls [Internet], NCBI Bookshelf, última actualización 17 de febrero de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK470413/' }
             ]
-          } }
+          } },
+        PREGUNTA_SINCOPE   // síncope de alto riesgo, común a las 7 regiones (docs/pots.md, decisión 9)
       ],
       zonasDolor: [{ zona: 'Mano / Dedos 4º-5º', desc: 'Neuropatía cubital o compresión vascular' }],
       impactoDescanso: ['Parestesias nocturnas en mano interrumpen el sueño (síndrome del túnel cubital)'],

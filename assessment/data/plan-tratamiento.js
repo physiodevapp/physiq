@@ -105,6 +105,10 @@ export const TEXTO_NIVELES = {
 
 // Avisos de la parte superior de la fase.
 export const AVISOS = {
+  // Disautonomía / POTS (Fase P, docs/pots.md): con la tarjeta de la fase 1
+  // activa, en todas las regiones (AVISOS_DISAUTONOMIA)
+  disautonomia: 'Disautonomía: empezar el ejercicio semirreclinado, tumbado o en el agua (no muy caliente) y añadir lo vertical poco a poco (Raj 2020, rec. 14; en Fu 2010 y George 2016, hacia el final del 2.º mes); mejor dinámico que isométrico, no comer en la hora anterior y terminar con una vuelta a la calma suave (Hakim 2017, p. 172). Evitar estar mucho rato de pie quieto en la sesión (Raj 2020, p. 367). La mejoría puede tardar 4–6 semanas (Raj 2020, p. 368).',
+  disautonomiaHM: 'Disautonomía con hipermovilidad: adaptar además el ejercicio a la hipermovilidad, la inestabilidad y las lesiones (Hakim 2017, p. 172).',
   orientativo: 'Nivel orientativo: el juicio de irritabilidad varía entre fisioterapeutas (acuerdo del 71 %, kappa 0,39–0,44; Barakatt 2009). Puedes cambiar la gravedad y la irritabilidad.',
   propuesta: 'Es una propuesta, no una prescripción: la decide y la firma el fisioterapeuta.',
   soloTerapiaManual: 'Los escalones se refieren a la terapia manual de la pauta. Para el ejercicio, la dosis es la de la pauta.',
@@ -242,6 +246,12 @@ export const AVISOS_HIP = {
 // condicional, porque la app no sabe si la cirugía fue una prótesis.
 export const AVISOS_POSQ_PERIFERICA = ['protesis'];
 
+// Disautonomía / POTS (docs/pots.md): avisos y red de seguridad con la tarjeta
+// de la fase 1 activa, en cualquier región. La red: un síncope durante el
+// ejercicio obliga a parar hasta la valoración médica (NICE CG109, 1.3.2.2).
+export const AVISOS_DISAUTONOMIA = ['disautonomia'];
+export const RED_DISAUTONOMIA = { cierre: 'cierreSincope', casa: 'alarmaSincope' };
+
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
 // empezar a movilizar tras la cirugía.
@@ -262,6 +272,7 @@ export const BLOQUES_SESION = [
 
 // Contenido fijo de cada bloque (decisiones 18 y 21).
 export const TEXTOS_SESION = {
+  cierreSincope: 'Red de seguridad (disautonomía): explicar que, si se desmaya mientras hace ejercicio, debe parar y no volver a hacer ejercicio hasta que le vea el médico, y comprobar que lo ha entendido (NICE CG109, 1.3.2.2 y 1.5.4.3; Brignole 2018, p. 1911).',
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
   reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3; Hengeveld y Banks 2005, cap. 9, p. 246).',
   reevaluacionRadicular: 'Exploración neurológica al empezar; si empeora, comunicarlo al médico (Maitland 2005, cap. 6, p. 136).',
@@ -510,6 +521,8 @@ export const RED_HIP = {
 // (docs/plan-tratamiento-frases.md). null = redacción propia.
 export const TEXTOS_CASA = {
   titulo: { texto: 'PROGRAMA PARA CASA', tipo: 'etiqueta' },
+  // Disautonomía (RED_DISAUTONOMIA): el síncope durante el ejercicio.
+  alarmaSincope: { texto: 'Si te desmayas mientras haces ejercicio, para y no vuelvas a hacer ejercicio hasta que te vea el médico.', fuente: 'NICE CG109, recomendaciones 1.3.2.2 y 1.5.4.3: con un síncope durante el ejercicio, no hacer ejercicio hasta la valoración; Brignole 2018, p. 1911 (docs/pots.md)' },
   queHacer: { texto: 'Qué hacer:', tipo: 'etiqueta' },
   cuandoHacerlo: { texto: 'Cuándo hacerlo:', tipo: 'etiqueta' },
   cuandoParar: { texto: 'Cuándo parar:', tipo: 'etiqueta' },
@@ -596,4 +609,4 @@ export const REEVALUACION_RETROSPECTIVA = [
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.
-export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023', 'Butler 2000', 'Butler 1991', 'NICE NG193', 'Kamonseki 2022'];
+export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023', 'Butler 2000', 'Butler 1991', 'NICE NG193', 'Kamonseki 2022', 'Raj 2020', 'Fu 2010', 'George 2016', 'Hakim 2017', 'NICE CG109', 'Brignole 2018'];

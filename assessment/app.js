@@ -23,6 +23,8 @@ import { ramaPauta } from './lib/pauta.js';
 import { HM, ESTADOS_HM, SUBTIPOS_HM, hipermovilidadVacia, normalizarHipermovilidad, hmActiva, elementoHMVisible,
   cuestionarioVisible, beightonVisible, casillasBeighton, resultadoHAG, siCuestionario, respondidasCuestionario,
   reglaVascular, hmPayload, lineasRecomendacionHM } from './lib/hipermovilidad.js';
+import { DS, TIPOS_DS, FILAS_PRUEBA, disautonomiaVacia, normalizarDisautonomia, pruebaVacia, dsActiva, sospechaVisible,
+  siSospecha, respondidasSospecha, otraCausa, resultadoPrueba, dsPayload, textoPrueba, lineasRecomendacionDs } from './lib/disautonomia.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -293,6 +295,7 @@ function _softResetApp() {
   state.mecanismo = '';
   state.cirugia = cirugiaVacia();
   state.hipermovilidad = hipermovilidadVacia();
+  state.disautonomia = disautonomiaVacia();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -395,6 +398,7 @@ function _softResetApp() {
   _pintarModoUI();   // el modo se conserva, pero el bucle de .option-btn de arriba quitó su selección
   _pintarCirugiaUI();
   _pintarHMUI();
+  _pintarDsUI();
 }
 
 // «Reiniciar valoración» vive en el panel de sesión (antes, en la cabecera):
@@ -1019,6 +1023,181 @@ function _hipermovilidadResultadosHTML(d) {
     </div>`;
 }
 
+// ─── DISAUTONOMÍA / POTS (Fase P, docs/pots.md) ───────────────────────────
+// Tarjeta de la fase 1: No consta (nada marcado) · Diagnosticada · Sospecha,
+// con «cuál» si está diagnosticada. Activa el sistema de la fase 2 (síncope de
+// alto riesgo, patrón de sospecha y prueba de bipedestación activa), las notas
+// de las fases 3, 4 y 4b, el recuadro de la fase 5 y el aviso de la fase 6.
+function _pintarDsUI() {
+  const ds = state.disautonomia;
+  document.body.classList.toggle('disautonomia', dsActiva(ds));
+  document.querySelectorAll('#dsEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === ds.estado));
+  document.querySelectorAll('#dsTipo .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === ds.tipo));
+  const tipo = document.getElementById('dsTipoWrap');
+  if (tipo) tipo.style.display = ds.estado === 'diagnosticada' ? '' : 'none';
+  const nota = document.getElementById('dsNotaTolerancia');
+  if (nota && !nota.innerHTML) nota.innerHTML = `🫀 ${citasEnTexto(DS.textos.tolerancia)}`;
+}
+
+function _dsCambio() {
+  _pintarDsUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectDsEstado(valor) {
+  state.disautonomia.estado = state.disautonomia.estado === valor ? '' : valor;
+  _dsCambio();
+}
+
+function selectDsTipo(valor) {
+  state.disautonomia.tipo = state.disautonomia.tipo === valor ? '' : valor;
+  _dsCambio();
+}
+
+// Patrón de sospecha: un segundo toque sobre la respuesta marcada la quita.
+function selectDsSospecha(id, valor) {
+  const s = state.disautonomia.sospecha;
+  if (s[id] === valor) delete s[id]; else s[id] = valor;
+  _pintarDsBloques();
+  saveSession();
+}
+
+function dsPruebaHacer() {
+  state.disautonomia.bipedestacion = pruebaVacia();
+  _pintarDsBloques();
+  saveSession();
+}
+
+function dsPruebaQuitar() {
+  state.disautonomia.bipedestacion = null;
+  _pintarDsBloques();
+  saveSession();
+}
+
+function toggleDsPrep(k) {
+  const b = state.disautonomia.bipedestacion;
+  if (!b) return;
+  b.prep = b.prep || {};
+  if (b.prep[k]) delete b.prep[k]; else b.prep[k] = true;
+  _pintarDsBloques();
+  saveSession();
+}
+
+// Una cifra de la prueba. No repinta el bloque (se perdería el foco): copia
+// el valor a la otra copia del sistema (panel o acordeón) y repinta solo el
+// resultado.
+function updateDsPrueba(fila, campo, el) {
+  const b = state.disautonomia.bipedestacion;
+  if (!b) return;
+  b[fila] = b[fila] || {};
+  if (campo === 'sintomas') {
+    if (el.checked) b[fila].sintomas = true; else delete b[fila].sintomas;
+  } else {
+    const n = el.value === '' ? null : Number(el.value);
+    if (n === null || isNaN(n)) delete b[fila][campo]; else b[fila][campo] = n;
+  }
+  document.querySelectorAll(`[data-ds-fila="${fila}"][data-ds-campo="${campo}"]`).forEach(x => {
+    if (x === el) return;
+    if (campo === 'sintomas') x.checked = !!b[fila].sintomas; else x.value = b[fila][campo] ?? '';
+  });
+  _pintarDsResultado();
+  saveSession();
+}
+
+// Payload `ds` (null sin la condición activa).
+function getDsPayload() {
+  return dsPayload(state.disautonomia, state.edadPaciente);
+}
+
+const _ETIQ_FILA_DS = f => (f === 'tumbado' ? 'Tumbado' : `${f.slice(1)} min`);
+
+function _dsResultadoHTML() {
+  const r = resultadoPrueba(state.disautonomia.bipedestacion, state.edadPaciente);
+  const t = DS.textos;
+  const caja = (tono, icono, texto) => `<div class="alert alert-${tono}"><span class="alert-icon">${icono}</span><div>${citasEnTexto(texto)}</div></div>`;
+  const notas = [];
+  if (r.reposoAlta) notas.push(caja('warning', '⚠️', t.reposoAlta));
+  if (r.tasBaja) notas.push(caja('warning', '⚠️', t.tasBaja));
+  const ref = r.referencia != null ? `Referencia ${r.referencia} lpm${r.corte != null ? ` · corte +${r.corte} (${r.grupo})` : ''}` : '';
+  const aumentos = (r.filas || []).filter(f => f.aumento != null).map(f => `${f.min}′ ${f.aumento >= 0 ? '+' : ''}${f.aumento}`).join(' · ');
+  let principal = '';
+  if (r.estado === 'menor12') principal = `<div class="hm-nota">${citasEnTexto(t.menor12)}</div>`;
+  else if (r.estado === 'sin-edad') principal = `<div class="criterio-compuesto-hint">Indique la edad del paciente en la Fase 1 para aplicar el corte (30 lpm en adultos, 40 de 12 a 19 años).</div>`;
+  else if (r.estado === 'ho') principal = caja('warning', '⚠️', t.ho);
+  else if (r.estado === 'compatible') principal = caja('warning', '⚠️', `Aumento de la FC de ${r.dfc} lpm mantenido, sin hipotensión ortostática. ${t.compatible}`) + (r.sintomas ? '' : `<div class="hm-nota">${citasEnTexto(t.sinSintomas)}</div>`);
+  else if (r.estado === 'repetir') principal = `<div class="criterio-compuesto-hint">${citasEnTexto(t.ultima)}</div>`;
+  else if (r.estado === 'no-corte') principal = `<div class="hm-nota">${citasEnTexto(t.noCorte)}</div>`;
+  else if (r.estado === 'incompleta') principal = `<div class="hm-nota">Faltan la FC tumbado o al menos 2 medidas de pie después del primer minuto.</div>`;
+  return `${ref ? `<div class="hm-resultado">${ref}${aumentos ? `<br>${aumentos}` : ''}</div>` : ''}${principal}${notas.join('')}`;
+}
+
+function _pintarDsResultado() {
+  const html = _dsResultadoHTML();
+  document.querySelectorAll('[data-ds-resultado]').forEach(el => { el.innerHTML = html; });
+}
+
+// Bloque del sistema de la fase 2 (va dos veces: panel de escritorio y acordeón).
+function _dsBloqueHTML() {
+  const ds = state.disautonomia;
+  const partes = [];
+  if (sospechaVisible(ds)) {
+    const n = respondidasSospecha(ds), si = siSospecha(ds);
+    partes.push(`<div class="screening-section-title">📝 Patrón de intolerancia ortostática</div>
+      ${DS.sospecha.map((q, i) => `<div class="sq2 ds-io">
+        <div class="sq2-badge">${i + 1}</div>
+        <div class="sq2-text">${q.texto}</div>
+        <div class="sq-btns">
+          <button type="button" class="sq-btn si${ds.sospecha[q.id] === 'SI' ? ' selected' : ''}" onclick="selectDsSospecha('${q.id}','SI')">SÍ</button>
+          <button type="button" class="sq-btn no${ds.sospecha[q.id] === 'NO' ? ' selected' : ''}" onclick="selectDsSospecha('${q.id}','NO')">NO</button>
+        </div>
+      </div>`).join('')}
+      <div class="hm-resultado">${n ? `${si} de 2 con «sí»${otraCausa(ds) ? ' · posible otra causa de taquicardia' : ''}` : 'Sin contestar'}</div>
+      <div class="hm-fuente">${citasEnTexto(DS.sospechaFuente)}</div>
+      <div class="hm-fuente">${citasEnTexto(DS.diferencialFuente)}</div>
+      <div class="hm-fuente">${citasEnTexto(DS.hipermovilidad)}</div>`);
+  }
+  const b = ds.bipedestacion;
+  let cuerpo;
+  if (!b) {
+    cuerpo = `<button type="button" class="btn-secondary hm-btn" onclick="dsPruebaHacer()">Hacer la prueba de bipedestación</button>`;
+  } else {
+    const num = (f, c) => `<input type="number" inputmode="numeric" class="form-input" min="20" max="260" aria-label="${_ETIQ_FILA_DS(f)}: ${c.toUpperCase()}" data-ds-fila="${f}" data-ds-campo="${c}" value="${b[f]?.[c] ?? ''}" oninput="updateDsPrueba('${f}','${c}',this)">`;
+    cuerpo = `<div class="ds-prep">${DS.prueba.preparacion.map(p => `<label class="hm-casilla"><input type="checkbox"${b.prep?.[p.id] ? ' checked' : ''} onchange="toggleDsPrep('${p.id}')"> ${p.texto}</label>`).join('')}</div>
+      <div class="ds-nota">${DS.prueba.seguridad}</div>
+      <div class="ds-tabla">
+        <div class="ds-tabla-cab"></div><div class="ds-tabla-cab">FC</div><div class="ds-tabla-cab">TAS</div><div class="ds-tabla-cab">TAD</div><div class="ds-tabla-cab">Sínt.</div>
+        ${FILAS_PRUEBA.map(f => `<div class="ds-fila-et">${_ETIQ_FILA_DS(f)}</div>${num(f, 'fc')}${num(f, 'tas')}${num(f, 'tad')}
+          <div class="ds-sint">${f === 'tumbado' ? '' : `<input type="checkbox" aria-label="${_ETIQ_FILA_DS(f)}: síntomas" data-ds-fila="${f}" data-ds-campo="sintomas"${b[f]?.sintomas ? ' checked' : ''} onchange="updateDsPrueba('${f}','sintomas',this)">`}</div>`).join('')}
+      </div>
+      <div data-ds-resultado>${_dsResultadoHTML()}</div>
+      <div class="hm-fuente">${citasEnTexto(DS.prueba.fuente)}</div>
+      <div class="hm-fuente">${citasEnTexto(DS.prueba.pesa)}</div>
+      <button type="button" class="hm-quitar" onclick="dsPruebaQuitar()">Quitar la prueba</button>`;
+  }
+  partes.push(`<div class="screening-section-title">🧍 Prueba de bipedestación activa${ds.estado === 'diagnosticada' ? ' (opcional)' : ''}</div>${cuerpo}`);
+  return partes.join('');
+}
+
+function _pintarDsBloques() {
+  const html = _dsBloqueHTML();
+  document.querySelectorAll('[data-ds-bloque]').forEach(el => { el.innerHTML = html; });
+}
+
+// Recuadro de la fase 5 (docs/pots.md): nunca se pliega.
+function _disautonomiaResultadosHTML(d) {
+  const estado = d.es === 'diagnosticada' ? `Diagnosticada${d.ti && d.ti !== 'otra' ? ` · ${TIPOS_DS[d.ti]}` : ''}` : 'Sospecha';
+  const prueba = textoPrueba(d);
+  return `
+    <div class="alert alert-info ds-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">🫀</span>
+      <div><strong>Disautonomía.</strong> ${estado}${prueba ? ` · ${prueba.replace(/^\S/, c => c.toUpperCase())}` : ''}
+        ${lineasRecomendacionDs(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
 // «Ya diagnosticada y tratada» (casilla en la 4b y en la fase 5; decisión 5).
 // No depende del mecanismo: también vale para una fractura con yeso o una
 // gota ya en tratamiento.
@@ -1096,7 +1275,7 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad);   // el de hipermovilidad no tiene embudo
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia);   // los de las condiciones especiales no tienen embudo
     const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
     const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
@@ -1116,6 +1295,9 @@ function getPendientesBreve() {
   }
   if (state.hipermovilidad?.estado === 'sospecha' && state.hipermovilidad.beighton === null) {
     pendientes.push({ fase: 2, texto: 'Escala de Beighton sin hacer (sospecha de hipermovilidad)' });
+  }
+  if (state.disautonomia?.estado === 'sospecha' && state.disautonomia.bipedestacion === null) {
+    pendientes.push({ fase: 2, texto: 'Prueba de bipedestación sin hacer (sospecha de disautonomía)' });
   }
   return pendientes;
 }
@@ -1349,6 +1531,7 @@ function sistemasActivos(regionId = state.region) {
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
     .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
+    .filter(sis => !sis.soloDisautonomia || dsActiva(state.disautonomia))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -1379,6 +1562,7 @@ function _repintarCribado() {
   evaluarCriteriosCompuestos(state.region);
   sistemasActivos().forEach(sis => _pintarEmbudo(sis.id));
   _pintarHMBloques();
+  _pintarDsBloques();
   updateSistemicoAlert();
 }
 
@@ -1467,6 +1651,7 @@ function buildSistemicoQuestions(regionId) {
   wrap.style.display = 'block';
   evaluarCriteriosCompuestos(regionId);
   _pintarHMBloques();
+  _pintarDsBloques();
   sistemas.forEach(sis => _pintarEmbudo(sis.id));
   updateSistemicoAlert();
 }
@@ -1507,6 +1692,10 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) {
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
       <div class="hm-bloque" data-hm-bloque></div>`;
+  } else if (sis.soloDisautonomia) {
+    // El de disautonomía (docs/pots.md) tampoco: primero las preguntas del
+    // síncope y, después de ellas, la sospecha y la prueba (data-ds-bloque)
+    html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">`;
   } else html += `<div class="embudo" data-embudo="${sis.id}">
       <span class="embudo-q">¿Presenta alguna de estas banderas rojas?
         <span class="embudo-nota">SÍ abre las preguntas de este sistema una a una.${tieneUrg ? ' Las preguntas de urgencia se hacen siempre.' : ''}</span></span>
@@ -1545,6 +1734,8 @@ function buildSistemaHTML(sis) {
   }
   // Regla de sospecha del subtipo vascular (lib/hipermovilidad.js)
   if (sis.soloHipermovilidad) html += `<div class="criterio-compuesto-alert" data-hm-vascular></div>`;
+  // Patrón de sospecha y prueba de bipedestación activa (lib/disautonomia.js)
+  if (sis.soloDisautonomia) html += `<div class="ds-bloque" data-ds-bloque></div>`;
 
   html += `<div class="sis-extra">`;
   // Referred pain zones
@@ -1847,6 +2038,7 @@ function updateEdadPaciente(value) {
   state.edadPaciente = (edad === null || isNaN(edad)) ? null : edad;
   evaluarCriteriosCompuestos(state.region);
   _pintarHMBloques();   // el corte de Beighton depende de la edad
+  _pintarDsResultado();  // y el de la prueba de bipedestación también
   saveSession();
 }
 
@@ -2153,7 +2345,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = sis.soloHipermovilidad || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -2549,6 +2741,9 @@ function buildResults() {
   // ── Hipermovilidad (Fase P): consideraciones para el plan, nunca plegadas
   const hm = getHMPayload();
   if (hm) container.innerHTML += _hipermovilidadResultadosHTML(hm);
+  // ── Disautonomía (Fase P): consideraciones para el plan, nunca plegadas
+  const ds = getDsPayload();
+  if (ds) container.innerHTML += _disautonomiaResultadosHTML(ds);
 
   // ── Header summary
   container.innerHTML += `
@@ -3376,6 +3571,7 @@ function buildPhysiQPayload() {
     me: state.mecanismo,
     ...(getCirugiaPayload() ? { cq: getCirugiaPayload() } : {}),
     ...(getHMPayload() ? { hm: getHMPayload() } : {}),
+    ...(getDsPayload() ? { ds: getDsPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
@@ -4079,6 +4275,7 @@ function _hasAssessmentData() {
     || !!state.mecanismo
     || !!state.cirugia?.intervencion
     || !!state.hipermovilidad?.estado
+    || !!state.disautonomia?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -4177,10 +4374,12 @@ function _restoreSessionDOM() {
   // Sesiones anteriores al posquirúrgico: sin cirugia / derivacionResuelta
   state.cirugia = { ...cirugiaVacia(), ...(state.cirugia || {}) };
   state.hipermovilidad = normalizarHipermovilidad(state.hipermovilidad);   // sesiones anteriores a la Fase P
+  state.disautonomia = normalizarDisautonomia(state.disautonomia);         // sesiones anteriores al POTS
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
   _pintarCirugiaUI();
   _pintarHMUI();
+  _pintarDsUI();
   _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
@@ -4307,6 +4506,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Tarjeta «Cirugía»: chips de complicaciones (se repinta al restaurar sesión)
   _pintarCirugiaUI();
   _pintarHMUI();
+  _pintarDsUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
@@ -4486,6 +4686,7 @@ Object.assign(window, {
   updateEdadPaciente, updateVital, updateVitalColor,
   updateCirugia, selectCirProtocolo, toggleCirComplicacion, toggleDiagnosticoTratado,
   selectHMEstado, selectHMSubtipo, selectHMCuest, toggleHMBeighton, hmBeightonHacer, hmBeightonQuitar,
+  selectDsEstado, selectDsTipo, selectDsSospecha, dsPruebaHacer, dsPruebaQuitar, toggleDsPrep, updateDsPrueba,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========

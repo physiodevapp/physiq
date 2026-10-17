@@ -13,6 +13,7 @@ import { iaParrafoHTML, ctxTest, attrIA } from './ampliar-ia.js';
 import { ESTRUCTURAS, KENHUB_BASE, KENHUB_BASE_ES } from './data/anatomia.js';
 import { citasHTML, citasEnTexto, partirCitas, registroReferencias, enlaceCita } from './lib/citas.js';
 import { HM, hmActiva } from './lib/hipermovilidad.js';
+import { DS, dsActiva } from './lib/disautonomia.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -145,6 +146,10 @@ export function buildHypothesisCards() {
       </div>`;
     return;
   }
+
+  // Disautonomía (Fase P, docs/pots.md): una regla de técnica para todas las
+  // hipótesis; no cambia ninguna LR
+  if (dsActiva(state.disautonomia)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota ds-nota-4b">🫀 ${citasEnTexto(DS.textos.tecnica4b)}</div>`);
 
   activas.forEach(hId => {
     const hyp = hipotesis(hId);

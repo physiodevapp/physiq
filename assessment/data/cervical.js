@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.cervical — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -51,6 +51,7 @@ export const screening = {
   sistemas: [
     SIS_POSQUIRURGICO,   // solo con mecanismo Post-quirúrgico (docs/posquirurgico.md)
     SIS_HIPERMOVILIDAD,  // solo con la tarjeta «Hipermovilidad» activa (docs/hipermovilidad.md)
+    SIS_DISAUTONOMIA,    // solo con la tarjeta «Disautonomía / POTS» activa (docs/pots.md)
     {
       id: 'cv_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [
@@ -226,7 +227,8 @@ export const screening = {
             citas: [
               'Goodman 2018 — Goodman, Heick y Lazaro, Differential Diagnosis for Physical Therapists: Screening for Referral, 6.ª ed. (Elsevier, 2018), cap. 6, pp. 236 y 260.'
             ]
-          } }
+          } },
+        PREGUNTA_SINCOPE   // síncope de alto riesgo, común a las 7 regiones (docs/pots.md, decisión 9)
       ],
       zonasDolor: [
         { zona: 'IAM / Angina', desc: 'Retroesternal → zona interescapular, mandíbula, brazo izquierdo' },

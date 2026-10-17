@@ -9,6 +9,7 @@ import { registroReferencias, enlaceCita, citasHTML, citasEnTexto } from './lib/
 import { iaParrafoHTML, ctxArbol, attrIA } from './ampliar-ia.js';
 import { pistasHTML } from './lib/pistas.js';
 import { pistasSintomasPaso } from './lib/sintomas.js';
+import { DS, dsActiva } from './lib/disautonomia.js';
 
 // Derivaciones médicas que piden las respuestas del árbol (`derivacion` en una
 // opción de CIF_TREES): mensajes de las opciones elegidas, en el orden de los
@@ -157,6 +158,14 @@ export function resetCIFTree() {
 // al paso (formulario.js, cargado con import(): sin él, solo los síntomas) y
 // los síntomas de la fase 3 con una zona ligada (`pasos`, lib/sintomas.js).
 // El árbol se repinta entero al entrar en la fase 4, así que siempre está al día.
+// Disautonomía (Fase P, docs/pots.md): una nota en el paso del mareo de
+// cervical, solo con la tarjeta activa. Opciones y navegación sin cambios.
+const NOTA_DS_PASO = { ce_step4b: 'mareoCervical' };
+export function notaDsPasoHTML(stepId) {
+  const k = NOTA_DS_PASO[stepId];
+  return k && dsActiva(state.disautonomia) ? `<div class="ds-nota">🫀 ${citasEnTexto(DS.textos[k])}</div>` : '';
+}
+
 function pistasPasoHTML(stepId) {
   return pistasHTML([
     ...(window.fpPistasPaso?.(stepId) || []),
@@ -176,6 +185,7 @@ export function renderStep(step) {
     <div class="tree-step-badge">${step.tag}</div>
     <div class="tree-question-text">${step.question}</div>
     ${razonamientoPasoHTML(step, state.region)}
+    ${notaDsPasoHTML(step.id)}
     ${pistasPasoHTML(step.id)}
     <div class="option-group" id="opts_${step.id}">
       ${step.options.map((opt, i) => `

@@ -29,6 +29,11 @@ const state = {
   // subtipo: '' | 'hipermovil' | 'vascular' | 'otro' | 'ns'; beighton: null (sin hacer)
   // o { [maniobra_lado]: true }; cuestionario: { cq1…cq5: 'SI'|'NO' }.
   hipermovilidad: { estado: '', subtipo: '', beighton: null, cuestionario: {} },
+  // Condición especial «Disautonomía / POTS» (Fase P, docs/pots.md, lib/disautonomia.js).
+  // estado: '' (no consta) | 'diagnosticada' | 'sospecha'; tipo: '' | 'pots' | 'ho' | 'otra';
+  // sospecha: { io1…io3: 'SI'|'NO' }; bipedestacion: null (sin hacer) o
+  // { prep: { reposo, sala, vejiga }, tumbado: { fc, tas, tad }, m1…m10: { fc, tas, tad, sintomas } }.
+  disautonomia: { estado: '', tipo: '', sospecha: {}, bipedestacion: null },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',

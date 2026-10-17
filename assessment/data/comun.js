@@ -720,3 +720,135 @@ export const SIS_HIPERMOVILIDAD = {
     },
   },
 };
+
+// ─── Condición especial: POTS / disautonomía (Fase P) ─────────────────────────
+// docs/pots.md. Sistema común a las 7 regiones que solo se ve con la tarjeta
+// «Disautonomía / POTS» de la fase 1 en Diagnosticada o Sospecha
+// (`soloDisautonomia`, sistemasActivos() en app.js). Las cuatro preguntas del
+// síncope de alto riesgo (`urgencia`) se ven con los dos estados; la de la
+// taquicardia paroxística lleva `derivacion` (no urgente). El patrón de
+// sospecha y la prueba de bipedestación activa no son preguntas de cribado
+// (un «sí» no es una bandera): van en `disautonomia` y se guardan en
+// state.disautonomia (lib/disautonomia.js).
+const DS_CITA = {
+  brignole: 'Brignole 2018 — Brignole, Moya, de Lange et al., «2018 ESC Guidelines for the diagnosis and management of syncope», Eur Heart J 2018;39(21):1883–1948',
+  nice: 'NICE CG109 — NICE, «Transient loss of consciousness (\'blackouts\') in over 16s», guía clínica CG109 (2010, actualizada en 2023), capítulo «Recommendations»',
+  sheldon: 'Sheldon 2015 — Sheldon, Grubb, Olshansky et al., «2015 Heart Rhythm Society expert consensus statement on the diagnosis and treatment of postural tachycardia syndrome, inappropriate sinus tachycardia, and vasovagal syncope», Heart Rhythm 2015;12(6):e41–e63',
+  raj22: 'Raj 2022 — Raj, Fedorowski y Sheldon, «Diagnosis and management of postural orthostatic tachycardia syndrome», CMAJ 2022;194(10):E378–E385',
+};
+// Pregunta de síncope de alto riesgo para el sistema vascular o cardiovascular
+// de cada región (decisión 9 de docs/pots.md): sin ella, a quien no tiene
+// marcada la tarjeta «Disautonomía / POTS» nadie le preguntaba por el síncope
+// de esfuerzo. La misma instancia en las 7 regiones; no sustituye a las 4
+// preguntas detalladas del sistema de disautonomía, que siguen saliendo con la
+// tarjeta (las dos conviven: ocultar una con la tarjeta haría desaparecer de
+// `ur` un SÍ ya marcado).
+export const PREGUNTA_SINCOPE = { id: 'sx_sincope', urgencia: 'Síncope con rasgos de alto riesgo: valoración médica urgente (en 24 h) y sin ejercicio hasta entonces.', alerta: true,
+  text: 'Si se ha desmayado alguna vez: ¿fue mientras hacía un esfuerzo, estando tumbado, justo después de notar de golpe el corazón muy rápido, o con dolor en el pecho o falta de aire nuevos? ¿O algún familiar suyo murió de forma súbita antes de los 40 años?',
+  razonamiento: {
+    porque: 'La mayoría de los desmayos son reflejos (vasovagales) o por una bajada de tensión al ponerse de pie, y avisan antes con mareo, calor, sudor o náuseas. Los que no encajan con eso orientan al corazón: durante el esfuerzo el corazón tiene que aumentar su gasto y una arritmia o una obstrucción se lo impiden; tumbado, la gravedad no explica el desmayo; y una muerte súbita joven en la familia es a menudo la primera pista de una cardiopatía hereditaria (Brignole 2018, tablas 5 y 6).',
+    peso: 'Son rasgos de alto riesgo en la guía europea: no se da el alta desde urgencias y se pide una valoración temprana (Brignole 2018, tabla 6). NICE pide derivar con urgencia, con revisión en 24 h, el síncope durante el esfuerzo, con antecedente familiar de muerte súbita antes de los 40 años o una cardiopatía hereditaria, con falta de aire nueva, con un soplo o con insuficiencia cardiaca, y no hacer ejercicio hasta la valoración si fue durante el esfuerzo (NICE CG109, 1.1.4.2 y 1.3.2.2).',
+    detalle: 'Durante o después: el síncope durante el ejercicio es probablemente cardiaco; el que llega justo al pararlo, casi siempre reflejo (Brignole 2018, p. 1911). En jóvenes lo más frecuente sigue siendo el vasovagal, pero el síncope de esfuerzo debe estudiarse por miocardiopatía o arritmia (Sheldon 2015, sección 4).\n\nAntecedente familiar: NICE lo da como motivo de derivación urgente con cualquier síncope (1.1.4.2); la guía europea lo considera de alto riesgo solo con cardiopatía estructural o un ECG alterado (tabla 6). Como el fisioterapeuta no puede comprobar ninguna de las dos cosas, PhysiQ sigue a NICE.\n\nSi el paciente tiene un POTS u otra disautonomía, o se sospecha, márcalo en la tarjeta «Disautonomía / POTS» de la fase 1: un POTS conocido no explica un síncope con estos rasgos (que exista una enfermedad no quiere decir que el síncope venga de ella; Brignole 2018, p. 1925).\n\nMientras espera la valoración: explicarle qué hacer si se repite, que evite el esfuerzo y que no conduzca (NICE CG109, 1.5.4.3).',
+    fuentes: ['Brignole 2018', 'NICE CG109', 'Sheldon 2015'],
+    citas: ['Brignole 2018 — Brignole, Moya, de Lange et al., «2018 ESC Guidelines for the diagnosis and management of syncope», Eur Heart J 2018;39(21):1883–1948, tablas 5 y 6 (pp. 1895–1898), p. 1911 y p. 1925.',
+      'NICE CG109 — NICE, «Transient loss of consciousness (\'blackouts\') in over 16s», guía clínica CG109 (2010, actualizada en 2023), capítulo «Recommendations», recomendaciones 1.1.4.2, 1.3.2.2 y 1.5.4.3.',
+      'Sheldon 2015 — Sheldon, Grubb, Olshansky et al., «2015 Heart Rhythm Society expert consensus statement on the diagnosis and treatment of postural tachycardia syndrome, inappropriate sinus tachycardia, and vasovagal syncope», Heart Rhythm 2015;12(6):e41–e63, sección 4.']
+  } };
+
+export const SIS_DISAUTONOMIA = {
+  id: 'transversal_disautonomia', icon: '🫀', nombre: 'Disautonomía', soloDisautonomia: true,
+  banderasRojas: [
+    { texto: 'Síncope durante el esfuerzo (no al pararlo)', pregunta: 'ds_u_esfuerzo' },
+    { texto: 'Síncope tumbado, o justo después de palpitaciones bruscas', pregunta: 'ds_u_tumbado' },
+    { texto: 'Síncope con dolor torácico o falta de aire nuevos, soplo o enfermedad del corazón', pregunta: 'ds_u_corazon' },
+    { texto: 'Síncope con antecedente familiar de muerte súbita antes de los 40 o cardiopatía hereditaria', pregunta: 'ds_u_familia' },
+  ],
+  banderasAmarillas: [
+    { texto: 'Taquicardia que empieza y acaba de golpe y no depende de la postura', pregunta: 'ds_d_paroxistica' },
+  ],
+  preguntas: [
+    { id: 'ds_u_esfuerzo', urgencia: 'Síncope durante el esfuerzo: valoración médica urgente (en 24 h) y sin ejercicio hasta entonces.', alerta: true,
+      text: '¿Se ha desmayado alguna vez mientras hacía un esfuerzo (no justo al pararlo)?',
+      razonamiento: {
+        porque: 'Durante el ejercicio el corazón tiene que aumentar su gasto. Si una arritmia o una obstrucción a la salida del corazón se lo impiden, la tensión cae y el cerebro se queda sin riego. Por eso el síncope durante el esfuerzo orienta a una causa cardiaca, mientras que el que llega justo al pararlo es casi siempre reflejo (Brignole 2018, p. 1911; NICE CG109, 1.3.2.1).',
+        peso: 'Es un rasgo de alto riesgo mayor en la guía europea (Brignole 2018, tabla 6), y NICE pide derivarlo con urgencia para una valoración cardiovascular en 24 h, con prueba de esfuerzo en 7 días y sin hacer ejercicio hasta entonces (NICE CG109, 1.1.4.2 y 1.3.2.2). Un POTS conocido no lo explica: que exista una enfermedad no quiere decir que el síncope venga de ella (Brignole 2018, p. 1925).',
+        detalle: 'Durante o después: el síncope durante el ejercicio es probablemente cardiaco; el que aparece justo después, casi siempre reflejo, por la vasodilatación que queda al parar (Brignole 2018, p. 1911). En jóvenes lo más frecuente sigue siendo el vasovagal, pero el síncope de esfuerzo debe estudiarse por miocardiopatía o arritmia (Sheldon 2015, sección 4).\n\nEn el POTS: del 30 al 50 % de los pacientes se desmaya alguna vez, casi siempre de pie y con aviso; el POTS y el síncope vasovagal pueden coexistir (Sheldon 2015). Esta pregunta busca el que no encaja con eso.\n\nMientras espera la valoración: explicarle qué hacer si se repite, que evite el esfuerzo y que no conduzca (NICE CG109, 1.5.4.3).',
+        fuentes: ['Brignole 2018', 'NICE CG109', 'Sheldon 2015'],
+        citas: [`${DS_CITA.brignole}, tabla 6 (pp. 1897–1898), p. 1911 y p. 1925.`, `${DS_CITA.nice}, recomendaciones 1.1.4.2, 1.3.2.1, 1.3.2.2 y 1.5.4.3.`, `${DS_CITA.sheldon}, secciones 1 y 4.`]
+      } },
+    { id: 'ds_u_tumbado', urgencia: 'Síncope tumbado o tras palpitaciones bruscas: valoración médica urgente (en 24 h).', alerta: true,
+      text: '¿Se ha desmayado estando tumbado, o justo después de notar de golpe el corazón muy rápido?',
+      razonamiento: {
+        porque: 'Tumbado, la gravedad no vacía el cerebro de sangre, así que ni el reflejo vasovagal ni la hipotensión ortostática, que necesitan estar de pie, lo explican. Un síncope tumbado, o el que sigue enseguida a unas palpitaciones bruscas, orienta a una arritmia (Brignole 2018, tablas 5 y 6).',
+        peso: 'Los dos son rasgos de alto riesgo mayores en la guía europea: no se da el alta desde urgencias y se pide una valoración temprana e intensiva (Brignole 2018, tabla 6 y fig. 6). En el POTS la frecuencia sube poco a poco al ponerse de pie, no de golpe (Raj 2022).',
+        fuentes: ['Brignole 2018', 'Raj 2022'],
+        citas: [`${DS_CITA.brignole}, tablas 5 y 6 (pp. 1895–1898) y fig. 6 (p. 1899).`, `${DS_CITA.raj22}, «What other disorders can cause orthostatic intolerance?».`]
+      } },
+    { id: 'ds_u_corazon', urgencia: 'Síncope con síntomas o enfermedad del corazón: valoración médica urgente (en 24 h).', alerta: true,
+      text: 'Si se ha desmayado: ¿tenía a la vez dolor en el pecho o falta de aire nuevos, o le han dicho que tiene un soplo, insuficiencia cardiaca u otra enfermedad del corazón?',
+      razonamiento: {
+        porque: 'Un dolor torácico o una falta de aire nuevos junto al síncope pueden ser una isquemia, una embolia de pulmón o una disección de aorta; con una enfermedad del corazón (insuficiencia cardiaca, valvulopatía, infarto previo) el síncope puede ser arrítmico (Brignole 2018, tabla 6 y p. 1925).',
+        peso: 'Todos son rasgos de alto riesgo mayores (Brignole 2018, tabla 6), y NICE pide la valoración cardiovascular en 24 h ante un síncope con insuficiencia cardiaca, falta de aire nueva o sin explicación, o un soplo (NICE CG109, 1.1.4.2). Con una cardiopatía o una arritmia hereditaria, haber tenido un síncope multiplica por dos a cuatro el riesgo de muerte (Brignole 2018, p. 1925).',
+        fuentes: ['Brignole 2018', 'NICE CG109'],
+        citas: [`${DS_CITA.brignole}, tabla 6 (pp. 1897–1898) y p. 1925.`, `${DS_CITA.nice}, recomendación 1.1.4.2.`]
+      } },
+    { id: 'ds_u_familia', urgencia: 'Síncope con antecedente familiar de muerte súbita o cardiopatía hereditaria: valoración cardiológica en 24 h.', alerta: true,
+      text: 'Si se ha desmayado: ¿algún familiar murió de forma súbita antes de los 40 años, o tiene una enfermedad del corazón hereditaria?',
+      razonamiento: {
+        porque: 'Las cardiopatías hereditarias (miocardiopatía hipertrófica, QT largo, síndrome de Brugada, miocardiopatía arritmogénica) pueden dar síncopes arrítmicos en jóvenes con un corazón que parece normal, y una muerte súbita joven en la familia es a menudo la primera pista (Brignole 2018, tabla 5).',
+        peso: 'NICE pide la valoración cardiovascular en 24 h ante un síncope con antecedente familiar de muerte súbita antes de los 40 años o una cardiopatía hereditaria (NICE CG109, 1.1.4.2). La guía europea lo cuenta como rasgo menor, de alto riesgo solo con cardiopatía estructural o un ECG alterado (Brignole 2018, tabla 6); como el fisioterapeuta no puede comprobar ninguna de las dos cosas, PhysiQ sigue a NICE.',
+        fuentes: ['NICE CG109', 'Brignole 2018'],
+        citas: [`${DS_CITA.nice}, recomendación 1.1.4.2.`, `${DS_CITA.brignole}, tablas 5 y 6 (pp. 1895–1898).`]
+      } },
+    { id: 'ds_d_paroxistica', derivacion: 'Taquicardia de inicio y fin bruscos que no depende de la postura: valoración médica (descartar una taquicardia paroxística).', alerta: true,
+      text: '¿Le dan episodios en que el corazón se le dispara de golpe y se le para también de golpe, aunque esté sentado o tumbado, sin llegar a desmayarse?',
+      razonamiento: {
+        porque: 'En el POTS la taquicardia es sinusal: sube poco a poco al ponerse de pie y baja al tumbarse. Una taquicardia que empieza y acaba de golpe, que no depende de la postura o que se corta con un Valsalva hace pensar en una taquicardia paroxística supraventricular (Raj 2022).',
+        peso: 'Sin desmayo no es una urgencia, pero sí una derivación: el diagnóstico necesita un ECG durante el episodio o un registro ambulatorio. Si las palpitaciones bruscas acaban en desmayo, es la pregunta del síncope tras palpitaciones, un rasgo de alto riesgo (Brignole 2018, tabla 6).',
+        fuentes: ['Raj 2022', 'Brignole 2018'],
+        citas: [`${DS_CITA.raj22}, «What other disorders can cause orthostatic intolerance?».`, `${DS_CITA.brignole}, tabla 6 (pp. 1897–1898).`]
+      } },
+  ],
+  // Patrón de sospecha, prueba de bipedestación activa y textos de la
+  // condición. Las citas de estos textos cuentan en docs/referencias.md como
+  // menciones del cribado.
+  disautonomia: {
+    sospecha: [
+      { id: 'io1', texto: 'Desde hace 3 meses o más, ¿estar de pie le da con frecuencia mareo o aturdimiento, palpitaciones, temblor, debilidad, visión borrosa o cansancio, y se le pasa al tumbarse?' },
+      { id: 'io2', texto: '¿Le empeora con el calor, después de comer, con el alcohol, al hacer fuerza o al levantarse de golpe?' },
+      { id: 'io3', texto: '¿Toma algún fármaco que acelere el corazón (estimulantes, algunos antidepresivos), ha estado mucho tiempo en cama o ha perdido sangre o líquidos hace poco?', diferencial: true },
+    ],
+    sospechaFuente: 'El POTS exige síntomas de pie de 3 meses o más que mejoran al tumbarse (Vernino 2021; Raj 2020, §3.2; Raj 2022, recuadro 2). Agravantes: el calor, la deshidratación, el alcohol y el ejercicio (Sheldon 2015), las comidas y el Valsalva (Hakim 2017, p. 171), levantarse de golpe (Fedorowski 2019, tabla 5).',
+    diferencialFuente: 'Un «sí» en la última no suma: la taquicardia al ponerse de pie por fármacos, reposo en cama o pérdida de volumen es una «taquicardia postural de otra causa» y excluye el POTS (Raj 2020, tabla 5). La anemia, el tiroides y el sangrado ya los pregunta el cribado de la región.',
+    hipermovilidad: 'En las consultas de POTS, entre el 20 y el 30 % cumple los criterios del SED hipermóvil o del trastorno del espectro de la hipermovilidad, con evidencia débil (Vernino 2021; Raj 2022), y no se conoce un mecanismo que los una (Miller 2020). La exploración del POTS incluye valorar la hipermovilidad (Raj 2022): si refiere ser muy flexible, mira la tarjeta «Hipermovilidad».',
+    prueba: {
+      minutos: [1, 3, 5, 8, 10],
+      preparacion: [
+        { id: 'reposo', texto: 'Tumbado al menos 5 min antes de la primera medida' },
+        { id: 'sala', texto: 'Habitación tranquila y templada (20–24 °C)' },
+        { id: 'vejiga', texto: 'Ha vaciado la vejiga' },
+      ],
+      fuente: 'Tumbado al menos 5 min y de pie hasta 10 min; la taquicardia tiene que mantenerse en 2 medidas seguidas después del primer minuto (Raj 2020, rec. 4). Minutos de medida: Raj 2022. Preparación: Hakim 2017, p. 171. Si la FC tumbado es menor de 60, la referencia es 60 (Raj 2020, p. 363).',
+      seguridad: 'Quédate a su lado durante la prueba. Si aparece un mareo fuerte o un presíncope, siéntalo o túmbalo y para: las medidas que falten no cuentan.',
+      pesa: 'Cuánto pesa: con el corte de 30 lpm, la bipedestación de 10 min tuvo una sensibilidad del 87 % y una especificidad del 67 %; uno de cada tres sanos superó el corte (Plash 2013). Por eso el diagnóstico exige además los síntomas y descartar otras causas.',
+    },
+    textos: {
+      compatible: 'Compatible con taquicardia ortostática. El POTS lo diagnostica el médico: exige síntomas de 3 meses o más y descartar otras causas. Derivación preferente a su médico de atención primaria (Raj 2020, recs. 1 y 30).',
+      sinSintomas: 'Sin síntomas durante la prueba: la taquicardia al ponerse de pie sin síntomas no es un POTS (Raj 2020, §3.7).',
+      ho: 'Caída de la tensión al ponerse de pie: hipotensión ortostática, no un POTS. Valoración médica, con revisión de los fármacos (Brignole 2018, p. 1902; NICE CG109, 1.5.4.2).',
+      noCorte: 'No llega al corte. No descarta una disautonomía: con una sospecha alta, repetir otro día, mejor por la mañana (Sivakoti 2026, enunciado 10; Raj 2022).',
+      ultima: 'Solo la última medida supera el corte: repite la medida 1 min después (Raj 2020, p. 361).',
+      reposoAlta: 'FC tumbado por encima de 100: coméntalo con su médico (taquicardia sinusal inapropiada u otra causa; Raj 2020, §3.8).',
+      tasBaja: 'TAS tumbado por debajo de 90: si se ha desmayado, es un rasgo de alto riesgo (Brignole 2018, tabla 6).',
+      menor12: 'Por debajo de los 12 años el POTS no está definido (Vernino 2021, §11): la prueba no se interpreta.',
+      ejercicio: 'Ejercicio regular, al principio semirreclinado (remo, bicicleta reclinada, natación) y lo vertical poco a poco; al menos 4 días por semana, sesiones de al menos 30 min (Raj 2020, rec. 14). La mejoría puede tardar 4–6 semanas y al principio puede encontrarse peor (Raj 2020; Vernino 2021).',
+      adaptaciones: 'Mejor ejercicio dinámico que isométrico (el isométrico provoca maniobras de Valsalva que bajan la tensión), no comer en la hora anterior y terminar con una vuelta a la calma suave (Hakim 2017, p. 172).',
+      seguridad: 'Un desmayo durante el esfuerzo, tumbado, tras palpitaciones bruscas o con síntomas del corazón no lo explica la disautonomía: valoración médica urgente (Brignole 2018, tabla 6; NICE CG109, 1.1.4.2).',
+      derivar: 'Aumento de la FC al ponerse de pie sin hipotensión ortostática: derivación preferente a su médico de atención primaria para confirmar el diagnóstico y descartar otras causas (Raj 2020, rec. 30).',
+      medico: 'El agua, la sal, las prendas de compresión y los fármacos los indica el médico (Raj 2020, recs. 11–13; Brignole 2018, p. 1921).',
+      tolerancia: 'Disautonomía: separa lo que limita estar de pie (mareo, palpitaciones) de lo que limita la carga del tejido; la matriz mide lo segundo. La debilidad, el dolor muscular y la intolerancia al esfuerzo forman parte del cuadro (Fedorowski 2019, tabla 2).',
+      tecnica4b: 'Disautonomía: haz en decúbito o sentado lo que la técnica permita, evita mantener una contracción isométrica o un Valsalva prolongado y, si aparece mareo de pie, vuelve a tumbarlo antes de seguir (Hakim 2017, pp. 171–172).',
+      mareoCervical: 'Disautonomía: el mareo al ponerse de pie que mejora al tumbarse orienta a intolerancia ortostática, no a mareo cervicogénico (Raj 2022, recuadro 2).',
+    },
+  },
+};

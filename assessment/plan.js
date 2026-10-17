@@ -15,6 +15,8 @@ import { ramaPauta } from './lib/pauta.js';
 import { conProtocolo, semanasCirugia, pautaHipPosq, TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
 import { regionConLado } from './lib/region.js';
 import { payloadSintomas, zonaConRedNeuro } from './lib/sintomas.js';
+import { dsActiva } from './lib/disautonomia.js';
+import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
 import {
   saveSession, showConfirmBanner, getUrgenciasActivas, getCirugiaPayload, compartirTexto, cerrarMenuCompartir, partirPrimeraFrase,
@@ -80,6 +82,8 @@ function entrada(hs) {
     zonaP1: z1?.z || '', secundarios: ss || [],
     // Zona perineal marcada (`redNeuro`): red de seguridad de cola de caballo
     redNeuroZona: zonaConRedNeuro(state, ZONAS_SINTOMA[state.region] || []),
+    // Tarjetas de la fase 1 (Fase P, docs/pots.md): aviso y red de la disautonomía
+    disautonomia: dsActiva(state.disautonomia), hipermovilidad: hmActiva(state.hipermovilidad),
     estabilidad: state.estabilidad, riesgoPsico: state.riesgoPsico, psico_miedo: state.psico_miedo,
     signoComparable: state.signoComparable,
     sesion: pt.sesion, gravedadManual: pt.gravedad, irritabilidadManual: pt.irritabilidad,

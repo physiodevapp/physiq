@@ -9,6 +9,7 @@ import {
   MINUTOS_SESION, HIP_EXPLORACION_NEURO, HIP_RADICULARES, TEXTOS_CASA, RED_SEGURIDAD, AVISOS_HIP,
   VOLUMEN_PAUTA, FRECUENCIA_PAUTA, ESCALONES_PERIFERICOS, REGIONES_COLUMNA_PLAN, FAMILIA_HIP,
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
+  AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 import { nivelMatriz } from './irritabilidad.js';
@@ -168,10 +169,12 @@ export function cantidadSesion(elegidas = [], region) {
 // sesión y las del final del programa para casa. Primero la neurológica (solo
 // con una hipótesis que pide exploración neurológica), después la de siempre
 // (una o una lista, decisión 79) y, al final, la de una hipótesis que la trae
-// de otra región (RED_HIP: h6, la arterial de cervical; decisión 50). Sin repetir.
-export function redSeguridad(region, neuro, elegidas = []) {
+// de otra región (RED_HIP: h6, la arterial de cervical; decisión 50) y la de
+// la disautonomía (RED_DISAUTONOMIA, docs/pots.md). Sin repetir.
+export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false } = {}) {
   const r = RED_SEGURIDAD[region] || {};
-  const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id])].filter(Boolean)
+  const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id]),
+    disautonomia && RED_DISAUTONOMIA].filter(Boolean)
     .filter((p, i, a) => a.findIndex(q => q.cierre === p.cierre) === i);
   return {
     cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
@@ -199,7 +202,8 @@ export function rangosBloques(duraciones = {}) {
 //   tratada, posq, pronostico, sinTests }], elegidas: [id, id?], severidad,
 //   irritabilidad, irritabilidadNivel, irritabilidadDirecta, zonaP1, secundarios (`ss`
 //   del payload: [{ n, z, nr, ir, re, or }]), redNeuroZona (algún síntoma en una
-//   zona `redNeuro`: periné en lumbar), estabilidad, riesgoPsico,
+//   zona `redNeuro`: periné en lumbar), disautonomia e hipermovilidad (tarjetas
+//   de la fase 1 activas, docs/pots.md), estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
 export function construirPlan(e) {
@@ -228,7 +232,7 @@ export function construirPlan(e) {
   const nervio = elegidas.some(esNervioPeriferico);
   // La red neurológica también con un síntoma en una zona `redNeuro` (hoy el
   // periné en lumbar: cola de caballo), aunque no haya hipótesis neurológica
-  const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas);
+  const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia });
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
   const tabla = tablaEscalones(familia);
@@ -238,6 +242,10 @@ export function construirPlan(e) {
   if (e.posq) avisosHip.push(textoPosq(e.posq.conProtocolo));
   if (e.posq && familiaRegion(e.region) === 'periferica') avisosHip.push(...AVISOS_POSQ_PERIFERICA.map(k => AVISOS[k]));
   if (e.posq) avisosHip.push(...(AVISOS_POSQ_REGION[e.region] || []).map(k => AVISOS[k]));
+  // Disautonomía (docs/pots.md): en cualquier región; con hipermovilidad,
+  // además la adaptación a la inestabilidad (Hakim 2017)
+  if (e.disautonomia) avisosHip.push(...AVISOS_DISAUTONOMIA.map(k => AVISOS[k]));
+  if (e.disautonomia && e.hipermovilidad) avisosHip.push(AVISOS.disautonomiaHM);
   for (const k of new Set(elegidas.flatMap(h => AVISOS_HIP[h.id] || []))) avisosHip.push(AVISOS[k]);
   if (elegidas.length > 1) avisosHip.push(AVISOS.dosHipotesis);
   if (new Set(familias).size > 1) avisosHip.push(AVISOS.dosFamilias);

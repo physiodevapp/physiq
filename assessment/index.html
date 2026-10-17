@@ -358,6 +358,24 @@
     </div>
   </div>
 
+  <!-- Condición especial (docs/pots.md): sin marcar = no consta -->
+  <div class="card" id="cardDisautonomia">
+    <div class="card-title">Disautonomía / POTS</div>
+    <div class="plan-note-hint">Sin marcar = no consta. Con «Diagnosticada» o «Sospecha» se añaden en la fase 2 las preguntas del síncope de alto riesgo y la prueba de bipedestación, y consideraciones para el ejercicio y el plan.</div>
+    <div class="option-group option-group-full" id="dsEstado">
+      <button type="button" class="option-btn" data-valor="diagnosticada" onclick="selectDsEstado('diagnosticada')">Diagnosticada</button>
+      <button type="button" class="option-btn" data-valor="sospecha" onclick="selectDsEstado('sospecha')">Sospecha</button>
+    </div>
+    <div class="form-group hm-subtipo" id="dsTipoWrap" style="display:none">
+      <div class="form-label">Cuál</div>
+      <div class="option-group hm-subtipos" id="dsTipo">
+        <button type="button" class="option-btn" data-valor="pots" onclick="selectDsTipo('pots')">POTS</button>
+        <button type="button" class="option-btn" data-valor="ho" onclick="selectDsTipo('ho')">Hipotensión ortostática</button>
+        <button type="button" class="option-btn" data-valor="otra" onclick="selectDsTipo('otra')">Otra o no lo sabe</button>
+      </div>
+    </div>
+  </div>
+
   <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>
@@ -663,6 +681,7 @@
          sin preselección. Tabla en escritorio, tarjetas en móvil. -->
     <div class="irritab-table-wrap irritab-desktop breve-opcional" id="irritabTabla"></div>
     <div class="irritab-cards irritab-mobile breve-opcional" id="irritabTarjetas"></div>
+    <div class="ds-nota solo-ds" id="dsNotaTolerancia"></div>
     <div id="irritabilidadResumen" style="margin-top:1rem;"></div>
   </div>
 

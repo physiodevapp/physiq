@@ -2957,6 +2957,8 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: flex; }
    body.posquirurgico (_pintarCirugiaUI en app.js), como .modo-breve. */
 .solo-posq { display: none; }
 body.posquirurgico .solo-posq { display: block; }
+.solo-ds { display: none; }
+body.disautonomia .solo-ds { display: block; }
 .cir-semanas:not(:empty) { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); margin: -4px 0 12px; }
 .cir-complicaciones { flex-wrap: wrap; }
 .cir-complicaciones .option-btn { width: auto; flex: 0 0 auto; padding: 8px 12px; font-size: 0.8rem; min-height: 40px; }
@@ -3481,3 +3483,21 @@ body.posquirurgico .solo-posq { display: block; }
   .cita-abreviada .cita-corta { display: none; }
   .cita-abreviada::before { content: attr(data-cita); }
 }
+
+/* ── Disautonomía / POTS (Fase P, docs/pots.md) ──
+   Tarjeta de la fase 1 (reutiliza .hm-subtipo), bloque del sistema de la
+   fase 2 (patrón de sospecha y prueba de bipedestación activa), notas de las
+   fases 3, 4 y 4b y recuadro de la fase 5. Lo activa body.disautonomia
+   (_pintarDsUI en app.js). */
+.ds-bloque:empty { display: none; }
+.ds-bloque { margin-top: 1rem; }
+.ds-nota { margin: 8px 0; font-size: 0.8rem; line-height: 1.45; color: var(--text2); border-left: 2px solid var(--orange); padding-left: 8px; }
+.ds-prep { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+.ds-tabla { display: grid; grid-template-columns: minmax(52px, auto) repeat(3, minmax(0, 1fr)) 44px; gap: 6px 6px; align-items: center; margin: 8px 0; }
+.ds-tabla-cab { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); text-align: center; }
+.ds-tabla-cab:first-child { text-align: left; }
+.ds-fila-et { font-size: 0.8rem; color: var(--text2); }
+.ds-tabla input[type="number"] { width: 100%; min-width: 0; min-height: 40px; padding: 6px 4px; text-align: center; font-size: 0.9rem; }
+.ds-tabla .ds-sint { display: flex; justify-content: center; align-items: center; min-height: 40px; }
+.ds-tabla .ds-sint input { width: 20px; height: 20px; accent-color: var(--orange); }
+.ds-fase5 > div > div { margin-top: 4px; }

@@ -179,6 +179,7 @@
 import { ladoTexto } from './region.js';
 import { bloqueSintomasIA } from './sintomas.js';
 import { bloqueHMIA } from './hipermovilidad.js';
+import { bloqueDsIA } from './disautonomia.js';
 import { ITEMS_IRRITABILIDAD } from '../data/irritabilidad.js';
 
 // Reglas del prompt compartidas con physiq-report: fichero idéntico en los dos
@@ -275,6 +276,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
   const extra = [];
   if (data.cq) extra.push(bloqueCirugia(data.cq));
   if (data.hm) extra.push(bloqueHMIA(data.hm));
+  if (data.ds) extra.push(bloqueDsIA(data.ds));
   if (data.ur?.length) extra.push(`DERIVACIÓN URGENTE indicada en el cribado (debe constar en el informe):\n${data.ur.map(s => `  · ${s}`).join('\n')}`);
   if (data.dv?.length) extra.push(`Derivación médica indicada en la exploración (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);
   // Cuestionarios puntuados en la calculadora (lib/cuestionarios.js): solo los
@@ -430,6 +432,7 @@ export function bloquesAmpliados(a, { urgente = false } = {}) {
     if (i.discapacidad) fase3.push(`Impacto en las actividades (gravedad): ${i.discapacidad}`);
   }
   if (fase3.length) b.push(fase3.join('\n'));
+  if (a.bipedestacion) b.push(`Prueba de bipedestación activa, cifras de cada medida (el resultado está en el bloque «Disautonomía»):\n  ${a.bipedestacion}`);
   if (a.psico?.length) b.push(`Cribado psicosocial detallado:\n${a.psico.map(x => `  · ${x.q} → ${x.a}`).join('\n')}`);
   if (a.criterios?.length) b.push(`Criterios compuestos del cribado que se cumplen (patrón compatible, no diagnóstico):\n${a.criterios.map(c => `  · ${c.etiqueta} (${c.positivas}/${c.total}): ${c.nota}`).join('\n')}`);
   // La cabecera avisa de que la pregunta y la opción describen un patrón: con

@@ -22,6 +22,7 @@ import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data
 import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA, compartirTexto, registrarValoracionCompleta } from './app.js';
 import { esTratada, hipotesis, hipotesisActivas } from './phase4b.js';
 import { esPosquirurgico, cirugiaPayload, pautaHipPosq } from './lib/posquirurgico.js';
+import { dsActiva, medidasPruebaTexto } from './lib/disautonomia.js';
 import { revisarInforme, comprobacionesManuales, clavePunto, claveComprobacion, resumenRevisados } from './lib/revision-informe.js';
 import { VERSION_SHA } from './lib/version.js';
 import {
@@ -489,6 +490,10 @@ export function construirAmpliado() {
     // Formulario previo agrupado por sección del informe y sin «No sé»
     // (sustituye en el prompt al `fp` del payload)
     formulario: resumenFormularioIA(),
+    // Disautonomía (docs/pots.md): las cifras de cada medida de la prueba de
+    // bipedestación, solo si se hizo (sin ella la huella no cambia)
+    ...(dsActiva(state.disautonomia) && medidasPruebaTexto(state.disautonomia.bipedestacion)
+      ? { bipedestacion: medidasPruebaTexto(state.disautonomia.bipedestacion) } : {}),
   };
 }
 
