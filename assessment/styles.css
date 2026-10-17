@@ -700,9 +700,11 @@
   .sil-contorno { fill: var(--sil-contorno); stroke: var(--sil-borde); stroke-width: 3; }
   .sil-parte { fill: var(--sil-parte); }
   .sil-pelo { fill: var(--sil-pelo); }
-  .sil-lado { position: absolute; top: 0; font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; color: var(--text2); }
-  .sil-lado-izq { left: 0; }
-  .sil-lado-der { right: 0; }
+  /* Encima de la figura: IZQ · Vista desde detrás · DER (fuera del dibujo, que
+     tiene la cabeza arriba en el centro) */
+  .sil-vista { width: min(280px, 100%); margin: 0 auto -4px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .sil-lado { font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; color: var(--text2); }
+  .sil-vista-texto { font-size: 0.78rem; font-weight: 500; color: var(--text2); }
   .sil-zona, .sil-sin-region { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; }
   .sil-zona { width: 44px; height: 44px; padding: 0; background: transparent; border: 1.5px dashed var(--sil-zona); cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .sil-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--sil-zona); }

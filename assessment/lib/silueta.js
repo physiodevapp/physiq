@@ -35,7 +35,8 @@ export function ladoAlTocar(zona, region, lado) {
 
 // Texto bajo el título: lo elegido, o qué hacer
 export function textoElegida(region, lado) {
-  if (!region) return { principal: 'Toca la zona en la silueta', sub: 'Un toque elige la región y el lado' };
+  // La silueta elige región y lado, no el punto del dolor (eso es la fase 3)
+  if (!region) return { principal: 'Toca la región en la silueta', sub: 'Da igual si duele delante o detrás' };
   // Con lado, `sub` vacío: su línea queda reservada (CSS) para que la figura
   // no suba bajo el dedo al elegir el lado.
   return { principal: regionConLado(region, lado), sub: lado ? '' : 'Lado sin indicar (opcional)' };
@@ -74,9 +75,9 @@ export function siluetaHTML(fig, figura) {
       <div class="option-group sil-sexo" role="group" aria-labelledby="silSexoEtq">${sexo}</div>
       <span class="sil-nota"></span>
     </div>
+    <div class="sil-vista"><span class="sil-lado" aria-hidden="true">IZQ</span><span class="sil-vista-texto">Vista desde detrás</span><span class="sil-lado" aria-hidden="true">DER</span></div>
     <div class="sil-lienzo" data-figura="${figura}" style="aspect-ratio:${w} / ${h}">
       <svg viewBox="${fig.caja.join(' ')}" aria-hidden="true" focusable="false"><path class="sil-contorno" d="${fig.contorno}"/>${trazos}</svg>
-      <span class="sil-lado sil-lado-izq" aria-hidden="true">IZQ</span><span class="sil-lado sil-lado-der" aria-hidden="true">DER</span>
       ${sin}${zonas}
     </div>
     <p class="sil-pie">Vista posterior: el lado del paciente es el mismo que el tuyo. En gris punteado, zonas sin región en PhysiQ. El sexo es el mismo de la fase 1.
