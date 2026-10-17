@@ -34,6 +34,15 @@ const state = {
   // sospecha: { io1…io3: 'SI'|'NO' }; bipedestacion: null (sin hacer) o
   // { prep: { reposo, sala, vejiga }, tumbado: { fc, tas, tad }, m1…m10: { fc, tas, tad, sintomas } }.
   disautonomia: { estado: '', tipo: '', sospecha: {}, bipedestacion: null },
+  // Condición especial «Lupus (LES)» (Fase P, docs/lupus.md, lib/lupus.js).
+  // estado: '' (no consta) | 'diagnosticado' | 'sospecha'; con «Diagnosticado»:
+  // corticoides '' | 'no' | 'b' (≤5 mg/día) | 'm' (>5–20) | 'a' (>20) | 'ns';
+  // dosisAltas e inmunosupresores '' | 'SI' | 'NO' | 'NS'; antifosfolipidos
+  // '' | 'no' | 'apl' | 'saf' | 'ns'; antitrombotico, osteonecrosis y raynaud
+  // (casillas); actividad '' | 'estable' | 'brote' | 'peor' | 'ns'; con
+  // «Sospecha», rasgos: { lr1…lr6: 'SI'|'NO' }.
+  lupus: { estado: '', corticoides: '', dosisAltas: '', inmunosupresores: '', antifosfolipidos: '',
+    antitrombotico: false, osteonecrosis: false, raynaud: false, actividad: '', rasgos: {} },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',

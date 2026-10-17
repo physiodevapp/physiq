@@ -2959,6 +2959,12 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: flex; }
 body.posquirurgico .solo-posq { display: block; }
 .solo-ds { display: none; }
 body.disautonomia .solo-ds { display: block; }
+/* Lupus (Fase P, docs/lupus.md): notas de las fases 3 y 4b, que activa
+   body.lupus (_pintarLESUI en app.js). La tarjeta reutiliza .hm-subtipo y
+   el bloque de los rasgos, .ds-bloque. */
+.solo-les { display: none; }
+body.lupus .solo-les { display: block; }
+.les-casillas { display: flex; flex-direction: column; gap: 2px; }
 .cir-semanas:not(:empty) { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); margin: -4px 0 12px; }
 .cir-complicaciones { flex-wrap: wrap; }
 .cir-complicaciones .option-btn { width: auto; flex: 0 0 auto; padding: 8px 12px; font-size: 0.8rem; min-height: 40px; }

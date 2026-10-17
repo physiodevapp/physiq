@@ -180,6 +180,7 @@ import { ladoTexto } from './region.js';
 import { bloqueSintomasIA } from './sintomas.js';
 import { bloqueHMIA } from './hipermovilidad.js';
 import { bloqueDsIA } from './disautonomia.js';
+import { bloqueLESIA } from './lupus.js';
 import { ITEMS_IRRITABILIDAD } from '../data/irritabilidad.js';
 
 // Reglas del prompt compartidas con physiq-report: fichero idéntico en los dos
@@ -277,6 +278,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
   if (data.cq) extra.push(bloqueCirugia(data.cq));
   if (data.hm) extra.push(bloqueHMIA(data.hm));
   if (data.ds) extra.push(bloqueDsIA(data.ds));
+  if (data.le) extra.push(bloqueLESIA(data.le));
   if (data.ur?.length) extra.push(`DERIVACIÓN URGENTE indicada en el cribado (debe constar en el informe):\n${data.ur.map(s => `  · ${s}`).join('\n')}`);
   if (data.dv?.length) extra.push(`Derivación médica indicada en la exploración (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);
   // Cuestionarios puntuados en la calculadora (lib/cuestionarios.js): solo los

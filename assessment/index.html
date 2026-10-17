@@ -376,6 +376,67 @@
     </div>
   </div>
 
+  <!-- Condición especial (docs/lupus.md): sin marcar = no consta -->
+  <div class="card" id="cardLupus">
+    <div class="card-title">Lupus (LES)</div>
+    <div class="plan-note-hint">Sin marcar = no consta. Con «Diagnosticado» se añaden en la fase 2 sus urgencias y derivaciones, y consideraciones para el ejercicio y el plan; con «Sospecha», los rasgos que justifican una valoración médica.</div>
+    <div class="option-group option-group-full" id="lesEstado">
+      <button type="button" class="option-btn" data-valor="diagnosticado" onclick="selectLESEstado('diagnosticado')">Diagnosticado</button>
+      <button type="button" class="option-btn" data-valor="sospecha" onclick="selectLESEstado('sospecha')">Sospecha</button>
+    </div>
+    <div id="lesDiagWrap" style="display:none">
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Corticoides ahora (prednisona o equivalente)</div>
+      <div class="option-group hm-subtipos" data-les-fila="corticoides">
+        <button type="button" class="option-btn" data-valor="no" onclick="selectLESFila('corticoides','no')">No</button>
+        <button type="button" class="option-btn" data-valor="b" onclick="selectLESFila('corticoides','b')">Hasta 5 mg/día</button>
+        <button type="button" class="option-btn" data-valor="m" onclick="selectLESFila('corticoides','m')">Más de 5 hasta 20</button>
+        <button type="button" class="option-btn" data-valor="a" onclick="selectLESFila('corticoides','a')">Más de 20</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectLESFila('corticoides','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Ha tomado más de 20 mg/día durante más de 4 semanas?</div><div class="plan-note-hint">Sin contar los pulsos en vena.</div>
+      <div class="option-group hm-subtipos" data-les-fila="dosisAltas">
+        <button type="button" class="option-btn" data-valor="SI" onclick="selectLESFila('dosisAltas','SI')">Sí</button>
+        <button type="button" class="option-btn" data-valor="NO" onclick="selectLESFila('dosisAltas','NO')">No</button>
+        <button type="button" class="option-btn" data-valor="NS" onclick="selectLESFila('dosisAltas','NS')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Inmunosupresores o biológicos</div><div class="plan-note-hint">La hidroxicloroquina no cuenta. Por ejemplo: metotrexato, micofenolato, azatioprina, ciclofosfamida, rituximab.</div>
+      <div class="option-group hm-subtipos" data-les-fila="inmunosupresores">
+        <button type="button" class="option-btn" data-valor="SI" onclick="selectLESFila('inmunosupresores','SI')">Sí</button>
+        <button type="button" class="option-btn" data-valor="NO" onclick="selectLESFila('inmunosupresores','NO')">No</button>
+        <button type="button" class="option-btn" data-valor="NS" onclick="selectLESFila('inmunosupresores','NS')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Anticuerpos antifosfolípido</div>
+      <div class="option-group hm-subtipos" data-les-fila="antifosfolipidos">
+        <button type="button" class="option-btn" data-valor="no" onclick="selectLESFila('antifosfolipidos','no')">No</button>
+        <button type="button" class="option-btn" data-valor="apl" onclick="selectLESFila('antifosfolipidos','apl')">Positivos, sin trombosis</button>
+        <button type="button" class="option-btn" data-valor="saf" onclick="selectLESFila('antifosfolipidos','saf')">SAF con trombosis previa</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectLESFila('antifosfolipidos','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo les-casillas">
+      <label class="hm-casilla"><input type="checkbox" id="les_antitrombotico" onchange="toggleLESCasilla('antitrombotico')"> Toma anticoagulante o antiagregante (aspirina)</label>
+      <label class="hm-casilla"><input type="checkbox" id="les_osteonecrosis" onchange="toggleLESCasilla('osteonecrosis')"> Osteonecrosis o artropatía de Jaccoud conocidas</label>
+      <label class="hm-casilla"><input type="checkbox" id="les_raynaud" onchange="toggleLESCasilla('raynaud')"> Fenómeno de Raynaud</label>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Ahora mismo</div>
+      <div class="option-group hm-subtipos" data-les-fila="actividad">
+        <button type="button" class="option-btn" data-valor="estable" onclick="selectLESFila('actividad','estable')">Estable</button>
+        <button type="button" class="option-btn" data-valor="brote" onclick="selectLESFila('actividad','brote')">En brote, según su médico</button>
+        <button type="button" class="option-btn" data-valor="peor" onclick="selectLESFila('actividad','peor')">Peor, sin valorar aún</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectLESFila('actividad','ns')">No lo sabe</button>
+      </div>
+    </div>
+    </div>
+  </div>
+
   <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>
@@ -682,11 +743,13 @@
     <div class="irritab-table-wrap irritab-desktop breve-opcional" id="irritabTabla"></div>
     <div class="irritab-cards irritab-mobile breve-opcional" id="irritabTarjetas"></div>
     <div class="ds-nota solo-ds" id="dsNotaTolerancia"></div>
+    <div class="ds-nota solo-les" id="lesNotaBrote" style="display:none"></div>
     <div id="irritabilidadResumen" style="margin-top:1rem;"></div>
   </div>
 
   <div class="card breve-opcional">
     <div class="card-title">Naturaleza del Dolor</div>
+    <div class="ds-nota solo-les" id="lesNotaNaturaleza"></div>
     <div class="option-group option-group-col" id="naturaleza">
       <button class="option-btn" onclick="selectOption('naturaleza',this,'Nociceptiva')">🔴 Nociceptiva</button>
       <button class="option-btn" onclick="selectOption('naturaleza',this,'Neuropática')">⚡ Neuropática</button>

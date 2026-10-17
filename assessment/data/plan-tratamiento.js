@@ -108,6 +108,12 @@ export const AVISOS = {
   // Disautonomía / POTS (Fase P, docs/pots.md): con la tarjeta de la fase 1
   // activa, en todas las regiones (AVISOS_DISAUTONOMIA)
   disautonomia: 'Disautonomía: empezar el ejercicio semirreclinado, tumbado o en el agua (no muy caliente) y añadir lo vertical poco a poco (Raj 2020, rec. 14; en Fu 2010 y George 2016, hacia el final del 2.º mes); mejor dinámico que isométrico, no comer en la hora anterior y terminar con una vuelta a la calma suave (Hakim 2017, p. 172). Evitar estar mucho rato de pie quieto en la sesión (Raj 2020, p. 367). La mejoría puede tardar 4–6 semanas (Raj 2020, p. 368).',
+  // Lupus (Fase P, docs/lupus.md): con la tarjeta en «Diagnosticado», en todas
+  // las regiones (AVISOS_LUPUS); los otros tres según las filas de la tarjeta
+  lupus: 'Lupus: intensidad moderada, con aeróbico y fuerza, individualizada y supervisada por un fisioterapeuta (Blaess 2024, recs. 9, 11 y 14); antes de empezar, su médico valora las contraindicaciones (Blaess 2024, rec. 10). Fotoprotección para prevenir brotes (Parodis 2024, rec. LES 2) y evitar el ejercicio al sol con un índice UV por encima de 3 (opinión de los autores de Frade 2023).',
+  lupusBrote: 'Lupus en brote o peor sin valorar: que su reumatólogo revalore las contraindicaciones antes de seguir (Blaess 2024, rec. 4); en un brote articular, no cargar las articulaciones inflamadas (Blaess 2024, rec. 5).',
+  lupusAntitrombotico: 'Lupus con anticoagulante o antiagregante: precaución con lo que tenga riesgo de golpe (Blaess 2024, rec. 3).',
+  lupusRaynaud: 'Lupus con Raynaud: al aire libre, guantes o ropa contra el frío; evitar tocar superficies frías y secar bien la piel durante y después del ejercicio (Blaess 2024, rec. 2). Por lo mismo, cuidado con el frío local en manos y pies (inferencia, sin fuente propia).',
   disautonomiaHM: 'Disautonomía con hipermovilidad: adaptar además el ejercicio a la hipermovilidad, la inestabilidad y las lesiones (Hakim 2017, p. 172).',
   orientativo: 'Nivel orientativo: el juicio de irritabilidad varía entre fisioterapeutas (acuerdo del 71 %, kappa 0,39–0,44; Barakatt 2009). Puedes cambiar la gravedad y la irritabilidad.',
   propuesta: 'Es una propuesta, no una prescripción: la decide y la firma el fisioterapeuta.',
@@ -252,6 +258,20 @@ export const AVISOS_POSQ_PERIFERICA = ['protesis'];
 export const AVISOS_DISAUTONOMIA = ['disautonomia'];
 export const RED_DISAUTONOMIA = { cierre: 'cierreSincope', casa: 'alarmaSincope' };
 
+// Lupus (docs/lupus.md, decisión 13 y cambio C16): con la tarjeta en
+// «Diagnosticado», en cualquier región: la fiebre (infección), la TVP (la
+// misma de rodilla) y el ictus, este también sin antifosfolípidos (en el lupus
+// es el riesgo que menos recogen las escalas generales, Drosos 2022, p. 773).
+// Avisos: `lupus` siempre; `lupusBrote` en brote o peor sin valorar;
+// `lupusAntitrombotico` con anticoagulante o antiagregante; `lupusRaynaud`
+// con Raynaud.
+export const AVISOS_LUPUS = ['lupus'];
+export const RED_LUPUS = [
+  { cierre: 'cierreFiebreLupus', casa: 'alarmaFiebreLupus' },
+  { cierre: 'cierreTVP', casa: 'alarmaTVP' },
+  { cierre: 'cierreIctusLupus', casa: 'alarmaIctusLupus' },
+];
+
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
 // empezar a movilizar tras la cirugía.
@@ -272,6 +292,8 @@ export const BLOQUES_SESION = [
 
 // Contenido fijo de cada bloque (decisiones 18 y 21).
 export const TEXTOS_SESION = {
+  cierreFiebreLupus: 'Red de seguridad (lupus): explicar que la fiebre, los escalofríos o un malestar general nuevos piden ir hoy mismo al médico, y que con su tratamiento una infección puede dar poca fiebre; comprobar que lo ha entendido (Rao y Mikdashi 2023; Yasir 2023).',
+  cierreIctusLupus: 'Red de seguridad (lupus): explicar que la debilidad o el adormecimiento de un lado, la dificultad para hablar o la pérdida de visión de golpe piden llamar al 112, aunque se pasen (Goodman 2018, cap. 12, p. 445; Drosos 2022, p. 773).',
   cierreSincope: 'Red de seguridad (disautonomía): explicar que, si se desmaya mientras hace ejercicio, debe parar y no volver a hacer ejercicio hasta que le vea el médico, y comprobar que lo ha entendido (NICE CG109, 1.3.2.2 y 1.5.4.3; Brignole 2018, p. 1911).',
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
   reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3; Hengeveld y Banks 2005, cap. 9, p. 246).',
@@ -521,6 +543,9 @@ export const RED_HIP = {
 // (docs/plan-tratamiento-frases.md). null = redacción propia.
 export const TEXTOS_CASA = {
   titulo: { texto: 'PROGRAMA PARA CASA', tipo: 'etiqueta' },
+  // Lupus (RED_LUPUS): la fiebre con su tratamiento y el ictus.
+  alarmaFiebreLupus: { texto: 'Si tienes fiebre o escalofríos, o te encuentras mal de una forma nueva, ve hoy mismo al médico: con tu tratamiento, una infección puede dar poca fiebre.', fuente: 'Rao y Mikdashi 2023, «Proposed Steps» (la fiebre en el lupus es infecciosa mientras no se demuestre lo contrario); Yasir 2023, «Adverse Effects» (los corticoides pueden quitar la fiebre)' },
+  alarmaIctusLupus: { texto: 'Si de golpe notas debilidad o adormecimiento de un lado del cuerpo, dificultad para hablar o pérdida de visión, llama al 112, aunque se te pase.', fuente: 'Goodman 2018, cap. 12, p. 445 (enfermedad cerebrovascular, frecuente en el lupus); Drosos 2022, p. 773; Rout 2024 (síndrome antifosfolípido), «Deterrence and Patient Education» (enseñar los síntomas del AIT)' },
   // Disautonomía (RED_DISAUTONOMIA): el síncope durante el ejercicio.
   alarmaSincope: { texto: 'Si te desmayas mientras haces ejercicio, para y no vuelvas a hacer ejercicio hasta que te vea el médico.', fuente: 'NICE CG109, recomendaciones 1.3.2.2 y 1.5.4.3: con un síncope durante el ejercicio, no hacer ejercicio hasta la valoración; Brignole 2018, p. 1911 (docs/pots.md)' },
   queHacer: { texto: 'Qué hacer:', tipo: 'etiqueta' },

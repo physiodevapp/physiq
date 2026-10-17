@@ -16,6 +16,7 @@ import { conProtocolo, semanasCirugia, pautaHipPosq, TEXTO_PAUTA_COMPATIBLE } fr
 import { regionConLado } from './lib/region.js';
 import { payloadSintomas, zonaConRedNeuro } from './lib/sintomas.js';
 import { dsActiva } from './lib/disautonomia.js';
+import { lesDiagnosticado } from './lib/lupus.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
 import {
@@ -84,6 +85,9 @@ function entrada(hs) {
     redNeuroZona: zonaConRedNeuro(state, ZONAS_SINTOMA[state.region] || []),
     // Tarjetas de la fase 1 (Fase P, docs/pots.md): aviso y red de la disautonomía
     disautonomia: dsActiva(state.disautonomia), hipermovilidad: hmActiva(state.hipermovilidad),
+    // Lupus diagnosticado (docs/lupus.md): avisos y red de seguridad
+    lupus: lesDiagnosticado(state.lupus) ? { brote: ['brote', 'peor'].includes(state.lupus.actividad),
+      antitrombotico: !!state.lupus.antitrombotico, raynaud: !!state.lupus.raynaud } : null,
     estabilidad: state.estabilidad, riesgoPsico: state.riesgoPsico, psico_miedo: state.psico_miedo,
     signoComparable: state.signoComparable,
     sesion: pt.sesion, gravedadManual: pt.gravedad, irritabilidadManual: pt.irritabilidad,

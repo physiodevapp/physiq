@@ -26,6 +26,9 @@ import { HM, ESTADOS_HM, SUBTIPOS_HM, hipermovilidadVacia, normalizarHipermovili
 import { DS, TIPOS_DS, FILAS_PRUEBA, disautonomiaVacia, normalizarDisautonomia, pruebaVacia, dsActiva, sospechaVisible,
   siSospecha, respondidasSospecha, otraCausa, resultadoPrueba, dsPayload, textoPrueba, lineasRecomendacionDs,
   estadoReloj, textoTiempo, tomaFueraDeTiempo } from './lib/disautonomia.js';
+import { LES, ESTADOS_LES, FILAS_LES, CASILLAS_LES, lupusVacio, normalizarLupus, lesActivo, lesDiagnosticado,
+  rasgosVisibles, elementoLESVisible, siRasgos, respondidosRasgos, farmacoNuevo, pendientesLES, lePayload,
+  datosLES, lineasRecomendacionLES } from './lib/lupus.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -298,6 +301,7 @@ function _softResetApp() {
   state.hipermovilidad = hipermovilidadVacia();
   state.disautonomia = disautonomiaVacia();
   _dsRelojParar();
+  state.lupus = lupusVacio();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -401,6 +405,7 @@ function _softResetApp() {
   _pintarCirugiaUI();
   _pintarHMUI();
   _pintarDsUI();
+  _pintarLESUI();
 }
 
 // «Reiniciar valoración» vive en el panel de sesión (antes, en la cabecera):
@@ -987,6 +992,7 @@ function _hmBloqueHTML() {
         ${r.estado === 'no-hag' ? `<div class="hm-nota">${HM.textos.sinHAG}</div>` : ''}
         <div class="hm-fuente">${citasEnTexto(HM.beightonFuente)} ${citasEnTexto(HM.cortesFuente)}</div>
         <div class="hm-fuente">${citasEnTexto(HM.notaLimitacion)}</div>
+        ${lesActivo(state.lupus) ? `<div class="hm-fuente">🦋 ${citasEnTexto(LES.textos.hipermovilidad)}</div>` : ''}
         <button type="button" class="hm-quitar" onclick="hmBeightonQuitar()">Quitar la escala</button>`;
     }
     partes.push(`<div class="screening-section-title">🤸 Escala de Beighton${hm.estado === 'diagnosticada' ? ' (opcional)' : ''}</div>${cuerpo}`);
@@ -1367,6 +1373,108 @@ function _disautonomiaResultadosHTML(d) {
     </div>`;
 }
 
+// ─── LUPUS (Fase P, docs/lupus.md) ─────────────────────────────────────────
+// Tarjeta de la fase 1: No consta (nada marcado) · Diagnosticado · Sospecha.
+// Con «Diagnosticado», cinco filas de botones (corticoides, dosis altas,
+// inmunosupresores, antifosfolípidos, actividad) y tres casillas; activa las
+// urgencias y derivaciones del sistema de la fase 2, las notas de las fases 3
+// y 4b, el recuadro de la fase 5 y los avisos y la red de la fase 6. Con
+// «Sospecha», el sistema solo muestra los rasgos (data-les-bloque).
+function _pintarLESUI() {
+  const les = state.lupus;
+  document.body.classList.toggle('lupus', lesActivo(les));
+  document.querySelectorAll('#lesEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === les.estado));
+  const wrap = document.getElementById('lesDiagWrap');
+  if (wrap) wrap.style.display = lesDiagnosticado(les) ? '' : 'none';
+  Object.keys(FILAS_LES).forEach(k => document.querySelectorAll(`[data-les-fila="${k}"] .option-btn`)
+    .forEach(b => b.classList.toggle('selected', b.dataset.valor === les[k])));
+  CASILLAS_LES.forEach(k => { const c = document.getElementById(`les_${k}`); if (c) c.checked = !!les[k]; });
+  const nat = document.getElementById('lesNotaNaturaleza');
+  if (nat && !nat.innerHTML) nat.innerHTML = `🦋 ${citasEnTexto(LES.textos.naturaleza)}`;
+  const brote = document.getElementById('lesNotaBrote');
+  if (brote) {
+    if (!brote.innerHTML) brote.innerHTML = `🦋 ${citasEnTexto(LES.textos.brote3)}`;
+    brote.style.display = lesDiagnosticado(les) && ['brote', 'peor'].includes(les.actividad) ? '' : 'none';
+  }
+}
+
+function _lesCambio() {
+  _pintarLESUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectLESEstado(valor) {
+  state.lupus.estado = state.lupus.estado === valor ? '' : valor;
+  _lesCambio();
+}
+
+// Filas de la tarjeta: un segundo toque sobre la opción marcada la quita.
+function selectLESFila(fila, valor) {
+  if (!FILAS_LES[fila]) return;
+  state.lupus[fila] = state.lupus[fila] === valor ? '' : valor;
+  _lesCambio();
+}
+
+function toggleLESCasilla(k) {
+  if (!CASILLAS_LES.includes(k)) return;
+  state.lupus[k] = !state.lupus[k];
+  _lesCambio();
+}
+
+// Rasgos de la sospecha: un segundo toque sobre la respuesta marcada la quita.
+function selectLESRasgo(id, valor) {
+  const r = state.lupus.rasgos;
+  if (r[id] === valor) delete r[id]; else r[id] = valor;
+  _pintarLESBloques();
+  saveSession();
+}
+
+function getLePayload() {
+  return lePayload(state.lupus);
+}
+
+// Bloque del sistema de la fase 2 (va dos veces: panel de escritorio y acordeón).
+function _lesBloqueHTML() {
+  const les = state.lupus;
+  if (!rasgosVisibles(les)) return '';
+  const n = respondidosRasgos(les), si = siRasgos(les);
+  const resultado = !n ? '<div class="hm-resultado">Sin contestar</div>'
+    : `<div class="hm-resultado">${si} de 5 con «sí»</div>${si
+      ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(LES.textos.derivar)}</div></div>`
+      : `<div class="hm-nota">${LES.textos.sinRasgos}</div>`}${farmacoNuevo(les) ? `<div class="hm-nota">${citasEnTexto(LES.textos.farmaco)}</div>` : ''}`;
+  return `<div class="screening-section-title">📝 Rasgos que justifican una valoración médica</div>
+    ${LES.rasgos.map((q, i) => `<div class="sq2 les-rasgo">
+      <div class="sq2-badge">${i + 1}</div>
+      <div class="sq2-text">${q.texto}</div>
+      <div class="sq-btns">
+        <button type="button" class="sq-btn si${les.rasgos[q.id] === 'SI' ? ' selected' : ''}" onclick="selectLESRasgo('${q.id}','SI')">SÍ</button>
+        <button type="button" class="sq-btn no${les.rasgos[q.id] === 'NO' ? ' selected' : ''}" onclick="selectLESRasgo('${q.id}','NO')">NO</button>
+      </div>
+    </div>`).join('')}
+    ${resultado}
+    <div class="hm-fuente">${citasEnTexto(LES.rasgosFuente)}</div>
+    <div class="hm-fuente">${citasEnTexto(LES.diferencialFuente)}</div>`;
+}
+
+function _pintarLESBloques() {
+  const html = _lesBloqueHTML();
+  document.querySelectorAll('[data-les-bloque]').forEach(el => { el.innerHTML = html; });
+}
+
+// Recuadro de la fase 5 (docs/lupus.md): nunca se pliega.
+function _lupusResultadosHTML(d) {
+  const datos = datosLES(d);
+  return `
+    <div class="alert alert-info les-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">🦋</span>
+      <div><strong>Lupus.</strong> ${ESTADOS_LES[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
+        ${lineasRecomendacionLES(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
 // «Ya diagnosticada y tratada» (casilla en la 4b y en la fase 5; decisión 5).
 // No depende del mecanismo: también vale para una fractura con yeso o una
 // gota ya en tratamiento.
@@ -1444,7 +1552,7 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia);   // los de las condiciones especiales no tienen embudo
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus);   // los de las condiciones especiales no tienen embudo
     const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
     const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
@@ -1468,6 +1576,7 @@ function getPendientesBreve() {
   if (state.disautonomia?.estado === 'sospecha' && state.disautonomia.bipedestacion === null) {
     pendientes.push({ fase: 2, texto: 'Prueba de bipedestación sin hacer (sospecha de disautonomía)' });
   }
+  pendientes.push(...pendientesLES(state.lupus));   // docs/lupus.md: corticoides o rasgos sin registrar
   return pendientes;
 }
 
@@ -1696,11 +1805,13 @@ function sistemasActivos(regionId = state.region) {
   if (!data) return [];
   // Fase P: el sistema de hipermovilidad solo con la tarjeta activa, y de él
   // solo las preguntas y banderas de su estado (`hm`, lib/hipermovilidad.js)
-  const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId)) && elementoHMVisible(x, state.hipermovilidad);
+  const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId))
+    && elementoHMVisible(x, state.hipermovilidad) && elementoLESVisible(x, state.lupus);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
     .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
     .filter(sis => !sis.soloDisautonomia || dsActiva(state.disautonomia))
+    .filter(sis => !sis.soloLupus || lesActivo(state.lupus))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -1732,6 +1843,7 @@ function _repintarCribado() {
   sistemasActivos().forEach(sis => _pintarEmbudo(sis.id));
   _pintarHMBloques();
   _pintarDsBloques();
+  _pintarLESBloques();
   updateSistemicoAlert();
 }
 
@@ -1821,6 +1933,7 @@ function buildSistemicoQuestions(regionId) {
   evaluarCriteriosCompuestos(regionId);
   _pintarHMBloques();
   _pintarDsBloques();
+  _pintarLESBloques();
   sistemas.forEach(sis => _pintarEmbudo(sis.id));
   updateSistemicoAlert();
 }
@@ -1861,7 +1974,7 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) {
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
       <div class="hm-bloque" data-hm-bloque></div>`;
-  } else if (sis.soloDisautonomia) {
+  } else if (sis.soloDisautonomia || sis.soloLupus) {
     // El de disautonomía (docs/pots.md) tampoco: primero las preguntas del
     // síncope y, después de ellas, la sospecha y la prueba (data-ds-bloque)
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">`;
@@ -1905,6 +2018,8 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) html += `<div class="criterio-compuesto-alert" data-hm-vascular></div>`;
   // Patrón de sospecha y prueba de bipedestación activa (lib/disautonomia.js)
   if (sis.soloDisautonomia) html += `<div class="ds-bloque" data-ds-bloque></div>`;
+  // Rasgos de la sospecha de lupus (lib/lupus.js)
+  if (sis.soloLupus) html += `<div class="ds-bloque" data-les-bloque></div>`;
 
   html += `<div class="sis-extra">`;
   // Referred pain zones
@@ -2514,7 +2629,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -2913,6 +3028,9 @@ function buildResults() {
   // ── Disautonomía (Fase P): consideraciones para el plan, nunca plegadas
   const ds = getDsPayload();
   if (ds) container.innerHTML += _disautonomiaResultadosHTML(ds);
+  // ── Lupus (Fase P, docs/lupus.md): consideraciones para el plan, nunca plegadas
+  const le = getLePayload();
+  if (le) container.innerHTML += _lupusResultadosHTML(le);
 
   // ── Header summary
   container.innerHTML += `
@@ -3741,6 +3859,7 @@ function buildPhysiQPayload() {
     ...(getCirugiaPayload() ? { cq: getCirugiaPayload() } : {}),
     ...(getHMPayload() ? { hm: getHMPayload() } : {}),
     ...(getDsPayload() ? { ds: getDsPayload() } : {}),
+    ...(getLePayload() ? { le: getLePayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
@@ -4445,6 +4564,7 @@ function _hasAssessmentData() {
     || !!state.cirugia?.intervencion
     || !!state.hipermovilidad?.estado
     || !!state.disautonomia?.estado
+    || !!state.lupus?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -4544,11 +4664,13 @@ function _restoreSessionDOM() {
   state.cirugia = { ...cirugiaVacia(), ...(state.cirugia || {}) };
   state.hipermovilidad = normalizarHipermovilidad(state.hipermovilidad);   // sesiones anteriores a la Fase P
   state.disautonomia = normalizarDisautonomia(state.disautonomia);         // sesiones anteriores al POTS
+  state.lupus = normalizarLupus(state.lupus);                               // sesiones anteriores al lupus
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
   _pintarCirugiaUI();
   _pintarHMUI();
   _pintarDsUI();
+  _pintarLESUI();
   _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
@@ -4676,6 +4798,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarCirugiaUI();
   _pintarHMUI();
   _pintarDsUI();
+  _pintarLESUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
@@ -4857,6 +4980,7 @@ Object.assign(window, {
   selectHMEstado, selectHMSubtipo, selectHMCuest, toggleHMBeighton, hmBeightonHacer, hmBeightonQuitar,
   selectDsEstado, selectDsTipo, selectDsSospecha, dsPruebaHacer, dsPruebaQuitar, toggleDsPrep, updateDsPrueba,
   dsRelojEmpezar, dsRelojParar,
+  selectLESEstado, selectLESFila, toggleLESCasilla, selectLESRasgo,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========

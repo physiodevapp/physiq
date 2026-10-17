@@ -14,6 +14,7 @@ import { ESTRUCTURAS, KENHUB_BASE, KENHUB_BASE_ES } from './data/anatomia.js';
 import { citasHTML, citasEnTexto, partirCitas, registroReferencias, enlaceCita } from './lib/citas.js';
 import { HM, hmActiva } from './lib/hipermovilidad.js';
 import { DS, dsActiva } from './lib/disautonomia.js';
+import { LES, lesDiagnosticado } from './lib/lupus.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -150,6 +151,12 @@ export function buildHypothesisCards() {
   // Disautonomía (Fase P, docs/pots.md): una regla de técnica para todas las
   // hipótesis; no cambia ninguna LR
   if (dsActiva(state.disautonomia)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota ds-nota-4b">🫀 ${citasEnTexto(DS.textos.tecnica4b)}</div>`);
+  // Lupus (Fase P, docs/lupus.md): hueso, piel y osteonecrosis; con
+  // anticoagulante o antiagregante, el riesgo de golpe. Tampoco cambia las LR
+  if (lesDiagnosticado(state.lupus)) {
+    const t = LES.textos;
+    container.insertAdjacentHTML('beforeend', `<div class="ds-nota les-nota-4b">🦋 ${citasEnTexto(t.tecnica4b)}${state.lupus.antitrombotico ? ` ${citasEnTexto(t.tecnica4bAntitrombotico)}` : ''}</div>`);
+  }
 
   activas.forEach(hId => {
     const hyp = hipotesis(hId);

@@ -852,3 +852,189 @@ export const SIS_DISAUTONOMIA = {
     },
   },
 };
+
+// ─── Condición especial: lupus eritematoso sistémico (Fase P) ─────────────────
+// docs/lupus.md. Sistema común a las 7 regiones que solo se ve con la tarjeta
+// «Lupus (LES)» de la fase 1 activa (`soloLupus`, sistemasActivos() en app.js).
+// Cada pregunta lleva `les: 'diagnosticado'`: las urgencias y las derivaciones
+// son para quien ya tiene el diagnóstico (decisión 5); con «Sospecha» el
+// sistema solo muestra los rasgos que justifican una valoración médica, que no
+// son preguntas de cribado (un «sí» no es una bandera): van en `lupus.rasgos` y
+// se guardan en state.lupus (lib/lupus.js). Las del cribado regional (artritis
+// séptica, TVP, síncope) siguen saliendo igual con la tarjeta o sin ella.
+const LES_CITA = {
+  aringer: 'Aringer 2019 — Aringer, Costenbader, Daikh et al., «2019 European League Against Rheumatism/American College of Rheumatology classification criteria for systemic lupus erythematosus», Arthritis Rheumatol 2019;71(9):1400–1412',
+  rao: 'Rao y Mikdashi 2023 — Rao y Mikdashi, «A framework to overcome challenges in the management of infections in patients with systemic lupus erythematosus», Open Access Rheumatol 2023;15:125–137',
+  tektonidou: 'Tektonidou 2019 — Tektonidou, Andreoli, Limper et al., «EULAR recommendations for the management of antiphospholipid syndrome in adults», Ann Rheum Dis 2019;78(10):1296–1304',
+  pisetsky: 'Pisetsky 2021 — Pisetsky, Eudy, Clowse y Rogers, «The categorization of pain in systemic lupus erythematosus», Rheum Dis Clin North Am 2021;47(2):215–228',
+  kaneko: 'Kaneko 2021 — Kaneko, Chen, Kaufman et al., «Glucocorticoid-induced osteonecrosis in systemic lupus erythematosus patients», Clin Transl Med 2021;11(10):e526',
+  thanou: 'Thanou 2021 — Thanou, Jupe, Purushothaman, Niewold y Munroe, «Clinical disease activity and flare in SLE: current concepts and novel biomarkers», J Autoimmun 2021;119:102615',
+  ruperto: 'Ruperto 2011 — Ruperto, Hanrahan, Alarcón et al., «International consensus for a definition of disease flare in lupus», Lupus 2011;20(5):453–462',
+  fanouriakis: 'Fanouriakis 2024 — Fanouriakis, Kostopoulou, Andersen et al., «EULAR recommendations for the management of systemic lupus erythematosus: 2023 update», Ann Rheum Dis 2024;83(1):15–29',
+  sammaritano: 'Sammaritano 2025 — Sammaritano, Askanase, Bermas et al., «2025 American College of Rheumatology (ACR) Guideline for the Treatment of Systemic Lupus Erythematosus», Arthritis Rheumatol (2026), versión en línea',
+  gordon: 'Gordon 2018 — Gordon, Amissah-Arthur, Gayed et al., «The British Society for Rheumatology guideline for the management of systemic lupus erythematosus in adults», Rheumatology 2018;57(1):e1–e45',
+  goodman: GOODMAN_BANDERAS + 'cap. 12 «Screening for Immunologic Disease» (Auyeung y Hickman)',
+  nice: 'NICE NG158 — NICE, «Venous thromboembolic diseases: diagnosis, management and thrombophilia testing», guía NG158 (2020, actualizada en 2023), recomendaciones 1.1.1–1.1.4',
+};
+const LES_SP = {
+  bowers: { texto: 'Bowers y Blum 2026 — Bowers y Blum, «Systemic Lupus Erythematosus», StatPearls [Internet], NCBI Bookshelf, última actualización 14 de septiembre de 2026', url: 'https://www.ncbi.nlm.nih.gov/books/NBK535405/' },
+  rout: { texto: 'Rout 2024 (síndrome antifosfolípido) — Rout, Goyal y Singhal, «Antiphospholipid Syndrome», StatPearls [Internet], NCBI Bookshelf, última actualización 6 de mayo de 2024', url: 'https://www.ncbi.nlm.nih.gov/books/NBK430980/' },
+  yasir: { texto: 'Yasir 2023 — Yasir, Goyal y Sonthalia, «Corticosteroid Adverse Effects», StatPearls [Internet], NCBI Bookshelf, última actualización 3 de julio de 2023', url: 'https://www.ncbi.nlm.nih.gov/books/NBK531462/' },
+  matthews: { texto: 'Matthews 2023 — Matthews, Davis, Fish y Stitson, «Avascular Necrosis», StatPearls [Internet], NCBI Bookshelf, última actualización 28 de agosto de 2023', url: 'https://www.ncbi.nlm.nih.gov/books/NBK537007/' },
+  barney: { texto: 'Barney 2023 — Barney, Piuzzi y Akhondi, «Femoral Head Avascular Necrosis», StatPearls [Internet], NCBI Bookshelf, última actualización 3 de julio de 2023', url: 'https://www.ncbi.nlm.nih.gov/books/NBK546658/' },
+  deeb: { texto: 'Deeb y Maher 2026 (Raynaud) — Deeb y Maher, «Raynaud Disease», StatPearls [Internet], NCBI Bookshelf, última actualización 13 de septiembre de 2026', url: 'https://www.ncbi.nlm.nih.gov/books/NBK499833/' },
+  waheed: { texto: 'Waheed 2023 — Waheed, Kudaravalli y Hotwagner, «Deep Venous Thrombosis», StatPearls [Internet], NCBI Bookshelf, última actualización 19 de enero de 2023', url: 'https://www.ncbi.nlm.nih.gov/books/NBK507708/' },
+  saliba: { texto: 'Saliba 2026 — Saliba, Blum, Goyal y Chauhan, «Drug-Induced Lupus Erythematosus», StatPearls [Internet], NCBI Bookshelf, última actualización 10 de enero de 2026', url: 'https://www.ncbi.nlm.nih.gov/books/NBK441889/' },
+};
+// Una cita de StatPearls con su localización: { texto, url } del registro.
+const spCita = (c, donde) => ({ texto: `${c.texto}, ${donde}.`, url: c.url });
+
+export const SIS_LUPUS = {
+  id: 'transversal_lupus', icon: '🦋', nombre: 'Lupus', soloLupus: true,
+  banderasRojas: [
+    { texto: 'Fiebre, escalofríos o malestar general nuevos (infección; con corticoides o inmunosupresores puede no haber fiebre)', les: 'diagnosticado', pregunta: 'les_u_fiebre' },
+    { texto: 'Pierna o brazo hinchados, calientes y dolorosos de forma nueva (TVP)', les: 'diagnosticado', pregunta: 'les_u_tvp' },
+    { texto: 'Falta de aire brusca o dolor torácico al respirar; debilidad, adormecimiento de un lado, habla o visión alterados de golpe (embolia pulmonar, ictus o AIT)', les: 'diagnosticado', pregunta: 'les_u_tep_ictus' },
+    { texto: 'Dolor torácico punzante que empeora al inspirar y mejora inclinado hacia delante (pericarditis o pleuritis)', les: 'diagnosticado', pregunta: 'les_u_pecho' },
+    { texto: 'Úlcera en la yema de un dedo, o dedo blanco o morado que no recupera el color (isquemia digital)', les: 'diagnosticado', pregunta: 'les_u_dedos' },
+    { texto: 'Convulsión, confusión, mielitis, pie o mano caídos de golpe o pérdida de visión (afectación neurológica u ocular)', les: 'diagnosticado', pregunta: 'les_u_neuro' },
+  ],
+  banderasAmarillas: [
+    { texto: 'Dolor profundo en carga de cadera, rodilla, hombro o tobillo con corticoides (osteonecrosis)', les: 'diagnosticado', pregunta: 'les_d_osteonecrosis' },
+    { texto: 'Debilidad proximal nueva (miositis o miopatía por fármacos)', les: 'diagnosticado', pregunta: 'les_d_debilidad' },
+    { texto: 'Articulaciones hinchadas, erupción, llagas en la boca o caída de pelo nuevas (brote)', les: 'diagnosticado', pregunta: 'les_d_brote' },
+    { texto: 'Edemas o hipertensión nuevos, o proteínas o sangre en la orina (riñón)', les: 'diagnosticado', pregunta: 'les_d_rinon' },
+  ],
+  preguntas: [
+    { id: 'les_u_fiebre', les: 'diagnosticado', urgencia: 'Fiebre o malestar general en el lupus: posible infección; valoración médica hoy.', alerta: true,
+      text: '¿Tiene fiebre o escalofríos, o se encuentra mal en general de una forma nueva? (Con corticoides o inmunosupresores puede haber una infección sin fiebre.)',
+      razonamiento: {
+        porque: 'En el lupus el sistema inmune funciona mal y además se frena con los fármacos (corticoides, inmunosupresores, biológicos), así que las infecciones son más frecuentes y más graves; las más habituales son respiratorias, urinarias y de piel y partes blandas, y Staphylococcus aureus y Salmonella pueden dar artritis séptica u osteomielitis (Rao y Mikdashi 2023). Los corticoides frenan la liberación de citocinas y con ella la fiebre y la inflamación, así que la infección puede dar pocos signos (Yasir 2023).',
+        peso: 'Las infecciones causan entre el 20 y el 55 % de las muertes en el lupus y son la primera causa en el primer año tras el diagnóstico (Rao y Mikdashi 2023). «La fiebre en el LES es infecciosa mientras no se demuestre lo contrario» (Rao y Mikdashi 2023), y los criterios de clasificación piden sospechar primero la infección ante cualquier fiebre (Aringer 2019). Un lupus conocido no explica la fiebre: también puede ser un brote o una trombosis (Bowers y Blum 2026).',
+        detalle: 'Dosis: el riesgo de infección aumenta con la dosis de corticoides; por encima de 20 mg/día de prednisona es unas 10 veces mayor (Rao y Mikdashi 2023). La guía EULAR de infecciones da umbrales con duración para cada infección (por ejemplo, más de 15–30 mg/día durante más de 2–4 semanas para la profilaxis de la neumonía por Pneumocystis) y reconoce que no se sabe la dosis mínima (Fragoulis 2023, rec. 8, p. 747). La hidroxicloroquina no es inmunosupresora a estos efectos (Fragoulis 2023, p. 743).\n\nUna articulación roja, caliente e hinchada, con o sin fiebre, sigue siendo la urgencia de artritis séptica del cribado de la región.',
+        fuentes: ['Rao y Mikdashi 2023', 'Yasir 2023', 'Aringer 2019', 'Bowers y Blum 2026', 'Fragoulis 2023'],
+        citas: [`${LES_CITA.rao}, «The Burden of Infections in SLE», «Bacterial Infections», «Impact of Immune Therapy» y «Proposed Steps».`,
+          spCita(LES_SP.yasir, '«Adverse Effects» (infecciones)'),
+          `${LES_CITA.aringer}, discusión.`,
+          spCita(LES_SP.bowers, '«Constitutional Symptoms»'),
+          'Fragoulis 2023 — Fragoulis, Nikiphorou, Dey et al., «2022 EULAR recommendations for screening and prophylaxis of chronic and opportunistic infections in adults with autoimmune inflammatory rheumatic diseases», Ann Rheum Dis 2023;82(6):742–753, pp. 743 y 747.']
+      } },
+    { id: 'les_u_tvp', les: 'diagnosticado', urgencia: 'Posible TVP en un paciente con lupus: derivar hoy (riesgo de embolia pulmonar).', alerta: true,
+      text: '¿Tiene una pantorrilla o una pierna (o un brazo) hinchada, caliente o dolorosa de forma nueva? (Posible TVP: calcular Wells; ≥2 → probable.)',
+      razonamiento: {
+        porque: 'Los anticuerpos antifosfolípido favorecen los coágulos en venas y arterias; la trombosis venosa más frecuente es la TVP de las piernas, que puede acabar en embolia pulmonar, y también hay trombosis en el brazo (Rout, síndrome antifosfolípido). Más del 10 % de los pacientes con lupus tiene alguna trombosis (Bowers y Blum 2026).',
+        peso: 'El lupus suma riesgo de trombosis por sí mismo, aunque los anticuerpos no se conozcan (Tektonidou 2019, principio 1), y muchos pacientes no saben si los tienen: por eso la pregunta sale con cualquier respuesta de la tarjeta. Con signos de TVP, NICE calcula la escala de Wells y, con 2 puntos o más, pide una ecografía en 4 horas (NICE NG158); ningún signo aislado la confirma ni la descarta (Waheed).',
+        detalle: 'La inmovilización prolongada, la cirugía y la hospitalización son situaciones de alto riesgo en las que se usa heparina preventiva (Tektonidou 2019, principio 2). Fuera del posquirúrgico, cuatro regiones (cervical, lumbar, hombro y codo) no tienen otra pregunta de TVP.',
+        fuentes: ['Tektonidou 2019', 'NICE NG158', 'Waheed 2023', 'Rout 2024 (síndrome antifosfolípido)', 'Bowers y Blum 2026'],
+        citas: [`${LES_CITA.tektonidou}, principios generales 1 y 2.`, `${LES_CITA.nice}.`, spCita(LES_SP.waheed, '«History and Physical»'),
+          spCita(LES_SP.rout, '«Introduction» y «Vascular Thrombosis»'), spCita(LES_SP.bowers, '«Hematologic and Reticuloendothelial»')]
+      } },
+    { id: 'les_u_tep_ictus', les: 'diagnosticado', urgencia: 'Posible embolia pulmonar, ictus o accidente isquémico transitorio: llamar al 112.', alerta: true,
+      text: '¿Le ha faltado el aire de repente o le duele el pecho al respirar? ¿O ha tenido de golpe debilidad o adormecimiento de un lado, dificultad para hablar o pérdida de visión, aunque se le haya pasado?',
+      razonamiento: {
+        porque: 'Con anticuerpos antifosfolípido, la trombosis venosa más frecuente es la de las piernas, que puede llegar al pulmón (embolia pulmonar), y la arterial más frecuente es la del cerebro: accidente isquémico transitorio o ictus (Rout, síndrome antifosfolípido). En el lupus, además, la aterosclerosis se acelera (Bowers y Blum 2026).',
+        peso: 'Un AIT o un ictus en una persona joven sin otros factores de riesgo debe hacer pensar en un síndrome antifosfolípido, y hay que enseñar al paciente los síntomas del AIT (Rout, síndrome antifosfolípido). La enfermedad cerebrovascular es de las manifestaciones neuropsiquiátricas más frecuentes del lupus (Goodman 2018, cap. 12, p. 445), y el ictus es el riesgo que menos recogen las escalas cardiovasculares generales en el lupus (Drosos 2022, p. 773). Un AIT que ya ha pasado también es una urgencia.',
+        fuentes: ['Rout 2024 (síndrome antifosfolípido)', 'Bowers y Blum 2026', 'Goodman 2018', 'Drosos 2022'],
+        citas: [spCita(LES_SP.rout, '«Introduction», «Vascular Thrombosis» y «Deterrence and Patient Education»'), spCita(LES_SP.bowers, '«Complications»'),
+          `${LES_CITA.goodman}, p. 445.`,
+          'Drosos 2022 — Drosos, Vedder, Houben et al., «EULAR recommendations for cardiovascular risk management in rheumatic and musculoskeletal diseases, including systemic lupus erythematosus and antiphospholipid syndrome», Ann Rheum Dis 2022;81(6):768–779, p. 773.']
+      } },
+    { id: 'les_u_pecho', les: 'diagnosticado', urgencia: 'Posible pericarditis o pleuritis: valoración médica hoy (descartar infección o embolia).', alerta: true,
+      text: '¿Tiene un dolor en el pecho punzante que empeora al respirar hondo y mejora inclinándose hacia delante?',
+      razonamiento: {
+        porque: 'La inflamación de la pleura o del pericardio (serositis) es frecuente en el lupus: da un dolor torácico punzante que empeora al inspirar y, el del pericardio, mejora al inclinarse hacia delante (Aringer 2019, tabla 1; Bowers y Blum 2026).',
+        peso: 'Las guías tratan la serositis como enfermedad moderada, no como urgencia (Fanouriakis 2024, fig. 1; Sammaritano 2025, p. 20), y la pleuritis leve como actividad leve (Gordon 2018, tabla 7). La app es más prudente a propósito: la serositis exige un diagnóstico pronto que descarte la infección (Pisetsky 2021), y el fisioterapeuta no puede distinguirla de una embolia pulmonar o una infección con el mismo dolor.',
+        fuentes: ['Aringer 2019', 'Bowers y Blum 2026', 'Pisetsky 2021', 'Fanouriakis 2024', 'Sammaritano 2025', 'Gordon 2018'],
+        citas: [`${LES_CITA.aringer}, tabla 1 (pericarditis aguda).`, spCita(LES_SP.bowers, '«Pulmonary» y «Cardiovascular»'), `${LES_CITA.pisetsky}, «Serositis».`,
+          `${LES_CITA.fanouriakis}, fig. 1 (p. 22).`, `${LES_CITA.sammaritano}, p. 20.`, `${LES_CITA.gordon}, tabla 7 (p. e13).`]
+      } },
+    { id: 'les_u_dedos', les: 'diagnosticado', urgencia: 'Posible isquemia digital: atención médica hoy, para evitar la gangrena.', alerta: true,
+      text: '¿Tiene en algún dedo de la mano o del pie una herida o úlcera en la yema, o un dedo que se queda blanco o morado y no recupera el color?',
+      razonamiento: {
+        porque: 'En el lupus el Raynaud es secundario y tiene más riesgo de isquemia: en los ataques graves aparecen úlceras en las yemas de los dedos, y en los casos graves gangrena o pérdida del dedo (Deeb y Maher). Con anticuerpos antifosfolípido también hay isquemia digital y gangrena por trombosis (Rout, síndrome antifosfolípido).',
+        peso: 'Con úlceras, el paciente debe buscar atención médica cuanto antes para evitar la gangrena, y la isquemia digital grave se trata en el hospital (Deeb y Maher). Un Raynaud que se recupera con el calor no es esta urgencia: es la pregunta del cribado de codo y la fila de la tarjeta.',
+        fuentes: ['Deeb y Maher 2026 (Raynaud)', 'Rout 2024 (síndrome antifosfolípido)'],
+        citas: [spCita(LES_SP.deeb, '«Complications», «Treatment of Severe Digital Ischemia» y «Enhancing Healthcare Team Outcomes»'), spCita(LES_SP.rout, '«History and Physical» y «Catastrophic APS»')]
+      } },
+    { id: 'les_u_neuro', les: 'diagnosticado', urgencia: 'Posible afectación neurológica u ocular del lupus: urgencias hoy.', alerta: true,
+      text: '¿Ha tenido una convulsión o confusión nueva; debilidad u hormigueo en las dos piernas que va a más, con cambios al orinar; de golpe, el pie o la mano caídos; o pérdida de visión?',
+      razonamiento: {
+        porque: 'El lupus puede afectar al sistema nervioso: convulsiones, estado confusional agudo, mielitis transversa (debilidad y hormigueo en las piernas con cambios al orinar), mononeuritis múltiple (un pie o una mano caídos de golpe por un nervio inflamado) y neuritis óptica (Bowers y Blum 2026; Sammaritano 2025).',
+        peso: 'Son manifestaciones graves, que amenazan un órgano: la mielopatía, la confusión aguda y la neuritis óptica son brote grave (Gordon 2018, tabla 7), y la ACR trata la neuritis óptica, el estado confusional agudo y la mononeuritis múltiple con dosis altas o pulsos de corticoides e inmunosupresores (Sammaritano 2025). Ante somnolencia, cambios cognitivos u otros signos neurológicos se pide un estudio urgente (Bowers y Blum 2026). Goodman pide preguntar por problemas de visión recientes (Goodman 2018, cap. 12, p. 457).',
+        fuentes: ['Bowers y Blum 2026', 'Sammaritano 2025', 'Gordon 2018', 'Goodman 2018'],
+        citas: [spCita(LES_SP.bowers, '«Neuropsychiatric Manifestations» y «Evaluation»'), `${LES_CITA.sammaritano}, pp. 6 y 18.`, `${LES_CITA.gordon}, tabla 7 (p. e13).`, `${LES_CITA.goodman}, p. 457.`]
+      } },
+    { id: 'les_d_osteonecrosis', les: 'diagnosticado', derivacion: 'Posible osteonecrosis (corticoides o lupus): valoración médica; la radiografía puede ser normal al principio y la prueba es la RM.', alerta: true,
+      text: '¿Tiene un dolor profundo y persistente en la ingle, la rodilla, el hombro o el tobillo, que empeora al cargar o al andar y no se explica por un golpe?',
+      razonamiento: {
+        porque: 'Los corticoides a dosis altas pueden matar el hueso bajo el cartílago (osteonecrosis), sobre todo en la cabeza del fémur; en el lupus aparece también en la rodilla, el hombro y el tobillo, y a veces en varios sitios a la vez (Kaneko 2021; Matthews 2023). Puede ocurrir incluso sin corticoides (Barney 2023).',
+        peso: 'El primer síntoma es un dolor óseo persistente que limita el movimiento y empeora con la carga y la actividad (Kaneko 2021). Al principio la exploración suele ser normal y la radiografía también, así que la prueba es la RM (Matthews 2023). El riesgo crece con las dosis altas (más de 20 mg/día mantenidos, Yasir 2023; más de 40 mg/día, Kaneko 2021), y las lesiones pueden aparecer en los 5 primeros meses de dosis altas (Kaneko 2021). Los pulsos de metilprednisolona en vena no se han relacionado con la osteonecrosis (Fanouriakis 2024, p. 18).',
+        detalle: 'En la cadera, el dolor suele ir a la ingle o al muslo, empeora al andar y subir escaleras y puede seguir en reposo (Barney 2023). No conviene infiltrar con corticoides una cadera con osteonecrosis (Barney 2023). En la cadera ya hay una pregunta parecida (ca_os2); esta cubre también las otras articulaciones.',
+        fuentes: ['Kaneko 2021', 'Matthews 2023', 'Barney 2023', 'Yasir 2023', 'Fanouriakis 2024'],
+        citas: [`${LES_CITA.kaneko}, «Risk factors for the development of ON in patients with SLE», «Pain» y «Musculoskeletal manifestations of SLE».`, spCita(LES_SP.matthews, '«History and Physical» y «Evaluation»'),
+          spCita(LES_SP.barney, '«Etiology», «History and Physical» y «Treatment / Management»'), spCita(LES_SP.yasir, '«Adverse Effects» (musculoesqueléticos)'), `${LES_CITA.fanouriakis}, p. 18.`]
+      } },
+    { id: 'les_d_debilidad', les: 'diagnosticado', derivacion: 'Debilidad proximal nueva: valoración médica preferente, antes de la próxima sesión (miositis del lupus o miopatía por fármacos).', alerta: true,
+      text: '¿Le cuesta cada vez más levantarse de una silla, subir escaleras o levantar los brazos por encima de la cabeza?',
+      razonamiento: {
+        porque: 'Quien tiene problemas para levantar los brazos por encima de la cabeza, subir escaleras o levantarse de una silla baja puede tener una enfermedad del músculo (Goodman 2018, cap. 12, p. 429). En el lupus puede ser una miositis, en menos del 10 % (Bowers y Blum 2026), o una miopatía por corticoides, indolora y sobre todo de la cintura de la cadera (Yasir 2023).',
+        peso: 'La miositis es un brote grave (Gordon 2018, tabla 7), por eso la derivación es preferente. Otras causas que hay que separar: la miopatía por estatinas o por hidroxicloroquina, el hipotiroidismo, presente en el 7 % (Gordon 2018, pp. e14 y e17), y la retirada de los corticoides, que puede imitar síntomas del lupus (Sammaritano 2025, p. 11).',
+        fuentes: ['Goodman 2018', 'Bowers y Blum 2026', 'Yasir 2023', 'Gordon 2018', 'Sammaritano 2025'],
+        citas: [`${LES_CITA.goodman}, p. 429.`, spCita(LES_SP.bowers, '«Musculoskeletal Manifestations»'), spCita(LES_SP.yasir, '«Adverse Effects» (miopatía)'),
+          `${LES_CITA.gordon}, tabla 7 (p. e13) y pp. e14 y e17.`, `${LES_CITA.sammaritano}, p. 11 y tabla 4.`]
+      } },
+    { id: 'les_d_brote', les: 'diagnosticado', derivacion: 'Posibles signos de brote: avisar a su reumatólogo antes de la próxima sesión.', alerta: true,
+      text: 'Desde la última vez que le vio su reumatólogo, ¿tiene articulaciones hinchadas nuevas, una erupción, llagas en la boca o más caída de pelo?',
+      razonamiento: {
+        porque: 'Un brote es un aumento medible de la actividad, con signos o síntomas nuevos o peores, que el clínico considera significativo y que suele llevar a cambiar o aumentar el tratamiento (Ruperto 2011). La mayoría son leves o moderados, con artritis, erupción, úlceras de mucosas o fiebre (Thanou 2021, tabla 2).',
+        peso: 'Los brotes moderados tienen que reconocerse a tiempo para tratarlos (Ruperto 2011): por eso se avisa al reumatólogo, sin urgencia. Lo juzga el clínico: un empeoramiento que nota el paciente no es por sí mismo un brote, porque la infección, los fármacos y la fibromialgia lo imitan (Thanou 2021), y la retirada de los corticoides también (Sammaritano 2025, p. 11). Con fiebre, la pregunta es la de la infección.',
+        detalle: 'Lo que desencadena un brote: el sol, una infección reciente, los cambios hormonales o un cambio o retirada del tratamiento (Gordon 2018, p. e11).',
+        fuentes: ['Ruperto 2011', 'Thanou 2021', 'Sammaritano 2025', 'Gordon 2018'],
+        citas: [`${LES_CITA.ruperto}, definición final y enunciados Q5 y Q9 (pp. 456–457).`, `${LES_CITA.thanou}, «Definition, prevalence, and burden of clinical disease flare in SLE» y tabla 2.`,
+          `${LES_CITA.sammaritano}, p. 11.`, `${LES_CITA.gordon}, p. e11.`]
+      } },
+    { id: 'les_d_rinon', les: 'diagnosticado', derivacion: 'Posible afectación del riñón: valoración médica pronto, sin esperar a la próxima revisión.', alerta: true,
+      text: '¿Se le hinchan las piernas o los tobillos de forma nueva, le han dicho que tiene la tensión alta desde hace poco, o en un análisis que tiene proteínas o sangre en la orina?',
+      razonamiento: {
+        porque: 'La nefritis lúpica afecta a cerca de la mitad de los pacientes con lupus; la hipertensión nueva, la sangre o las proteínas en la orina y los edemas de las piernas deben hacer sospecharla (Bowers y Blum 2026).',
+        peso: 'El riñón puede no dar síntomas, así que un «no» no la descarta (Gordon 2018, p. e8). La EULAR insiste en vigilar la afectación renal nueva, porque retrasar su diagnóstico empeora mucho el pronóstico (Fanouriakis 2024, p. 18). Goodman pide derivación inmediata ante un análisis de orina con proteínas, sangre o cilindros cuando se sospecha un lupus (Goodman 2018, cap. 12, p. 441); en quien ya tiene el diagnóstico y está en seguimiento, la app la deja como derivación sin esperar a la revisión.',
+        fuentes: ['Bowers y Blum 2026', 'Gordon 2018', 'Fanouriakis 2024', 'Goodman 2018'],
+        citas: [spCita(LES_SP.bowers, '«Renal»'), `${LES_CITA.gordon}, p. e8.`, `${LES_CITA.fanouriakis}, p. 18.`, `${LES_CITA.goodman}, p. 441.`]
+      } },
+  ],
+  // Rasgos de la sospecha, textos y fuentes de la condición. Las citas de estos
+  // textos cuentan en docs/referencias.md como menciones del cribado.
+  lupus: {
+    rasgos: [
+      { id: 'lr1', texto: '¿Tiene dolor e hinchazón, o dolor con rigidez por la mañana de 30 minutos o más, en 2 o más articulaciones (sobre todo manos, muñecas o rodillas)?' },
+      { id: 'lr2', texto: '¿Le sale una erupción en la cara (mejillas y nariz) o en zonas expuestas, que empeora con el sol?' },
+      { id: 'lr3', texto: '¿Tiene llagas en la boca o la nariz que vuelven, o se le cae el pelo más de lo normal?' },
+      { id: 'lr4', texto: '¿Ha tenido dolor en el pecho al respirar hondo sin causa conocida?' },
+      { id: 'lr5', texto: '¿Ha tenido fiebre de más de 38,3 °C sin una infección que la explique?' },
+      { id: 'lr6', texto: '¿Empezó todo esto semanas o meses después de un fármaco nuevo (por ejemplo, para el acné, la tensión o un biológico)?', diferencial: true },
+    ],
+    rasgosFuente: 'Rasgos de los criterios de clasificación EULAR/ACR de 2019: afectación articular (6 puntos: sinovitis en 2 o más articulaciones, o dolor en 2 o más con rigidez matutina de 30 min o más), lupus cutáneo, úlceras orales, alopecia, serositis y fiebre de más de 38,3 °C (Aringer 2019, tabla 1). Son de clasificación, no de diagnóstico: exigen anticuerpos antinucleares y analítica, y cada rasgo cuenta solo si nada lo explica mejor (Aringer 2019, discusión). La fatiga y la artralgia sin rigidez no son criterio: eran menos frecuentes en el lupus precoz que en sus imitadores (Aringer 2019). El diagnóstico es médico y se retrasa una mediana de 2 años (Fanouriakis 2024, p. 18).',
+    diferencialFuente: 'Un «sí» en la última no suma: orienta a un lupus inducido por fármacos (anti-TNF, minociclina, hidralazina…), que suele mejorar al retirarlo (Saliba 2026).',
+    textos: {
+      derivar: 'Rasgos que pueden corresponder a una enfermedad inflamatoria sistémica: derivación preferente a su médico de atención primaria. El diagnóstico es médico y necesita analítica (Aringer 2019).',
+      farmaco: 'Si empezó tras un fármaco nuevo, comentarlo con quien lo recetó (Saliba 2026).',
+      sinRasgos: 'Sin rasgos de la lista: la sospecha queda en tu juicio clínico.',
+      naturaleza: 'Lupus: la artritis da hinchazón y rigidez por la mañana de 30 min o más, sobre todo en manos, muñecas y rodillas, y duele y limita igual en activo que en pasivo (Goodman 2018, cap. 12, p. 456). El dolor generalizado a la palpación sin tumefacción orienta a fibromialgia, que acompaña al lupus en el 20–30 %; el diagnóstico es médico (Goodman 2018, cap. 12, p. 444). La fatiga aparece también con el lupus inactivo, así que sola no mide la actividad; si es nueva o empeora, que la valore su reumatólogo (Dures 2024, rec. 4).',
+      brote3: 'Lupus en brote o peor sin valorar: los ensayos de ejercicio solo incluyeron lupus estable (Frade 2023); que su reumatólogo revalore las contraindicaciones antes de seguir (Blaess 2024, rec. 4).',
+      tecnica4b: 'Lupus: con corticoides, el hueso es más frágil y la piel más fina; antes de ejercicios resistidos o movilizaciones, ten en cuenta la densidad ósea (Yasir 2023; Goodman 2018, cap. 12, p. 445). Un dolor profundo en carga de cadera, rodilla, hombro o tobillo puede ser una osteonecrosis aunque la exploración y la radiografía sean normales (Matthews 2023).',
+      tecnica4bAntitrombotico: 'Con anticoagulante o antiagregante, precaución con lo que tenga riesgo de golpe (Blaess 2024, rec. 3).',
+      ejercicio: 'Con el lupus inactivo o leve, llegar poco a poco a 150–300 min por semana de intensidad moderada (esfuerzo 5–6 sobre 10) y fuerza al menos 2 días (Blaess 2024, rec. 9). Sesiones con aeróbico y fuerza, 3–5 por semana (Blaess 2024, rec. 14); fuerza en 1–3 series de 8–12 repeticiones con 1–3 min de descanso (Blaess 2024, rec. 15); aeróbico de 20–30 min hasta 50, en tramos de 4 semanas (Blaess 2024, rec. 12); con calentamiento y vuelta a la calma (Blaess 2024, rec. 13). Supervisado por un fisioterapeuta (Blaess 2024, rec. 11). Puede reducir algo la fatiga, y la actividad del lupus probablemente no cambia (Frade 2023).',
+      antesEmpezar: 'Antes de empezar, su médico valora si hay contraindicaciones; antes de ejercicio vigoroso, puede hacer falta un ECG o una prueba de esfuerzo (Blaess 2024, rec. 10).',
+      especialista: 'Con osteonecrosis o artropatía de Jaccoud, que lo valore un especialista antes de empezar (Blaess 2024, rec. 1).',
+      sol: 'Fotoprotección para prevenir brotes (Parodis 2024, rec. LES 2): protector solar de amplio espectro UVA y UVB, ropa que cubra, sombrero y gafas de sol, y evitar las horas de más sol (Gordon 2018, p. e16; Blaess 2024, rec. 2). Evitar el ejercicio al sol con un índice UV por encima de 3 (opinión de los autores de Frade 2023).',
+      raynaud: 'Raynaud: al aire libre, guantes o ropa contra el frío; evitar tocar superficies frías y secar bien la piel durante y después del ejercicio (Blaess 2024, rec. 2). Por lo mismo, cuidado con el frío local en manos y pies (inferencia, sin fuente propia).',
+      fiebre: 'Fiebre o malestar general nuevos: valoración médica hoy; con corticoides puede no haber fiebre (Rao y Mikdashi 2023; Yasir 2023).',
+      brote: 'En brote, que su reumatólogo revalore las contraindicaciones antes de seguir (Blaess 2024, rec. 4); en un brote articular, no cargar las articulaciones inflamadas (Blaess 2024, rec. 5).',
+      antifosfolipidos: 'Antifosfolípidos: la actividad física se recomienda también con anticoagulantes (Tektonidou 2019, principios generales). No sugerir suspender el anticoagulante: retirarlo desencadena el síndrome antifosfolípido catastrófico (Tektonidou 2019, rec. 12).',
+      osteonecrosis: 'Riesgo de osteonecrosis: un dolor profundo en carga de cadera, rodilla, hombro o tobillo → valoración médica (Kaneko 2021; Matthews 2023).',
+      tabaco: 'Si fuma, dejarlo (Parodis 2024, rec. común 3): el tabaco aumenta la actividad del lupus (Bowers y Blum 2026) y el riesgo cardiovascular (Drosos 2022, principio C).',
+      medico: 'Los corticoides, los inmunosupresores y el anticoagulante los ajusta su reumatólogo (Drosos 2022, principio B).',
+      hipermovilidad: 'Con lupus, el diagnóstico de SED hipermóvil exige los rasgos A y B, y el dolor crónico y la inestabilidad no cuentan (Malfait 2017, p. 19).',
+    },
+  },
+};
