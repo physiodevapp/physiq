@@ -1962,10 +1962,13 @@
     .sq2-btns { align-self: stretch; display: flex; gap: 6px; }
     .sq2-btns .sq-btn { flex: 1; min-height: 44px; font-size: 0.88rem; padding: 10px 6px; }
     .sq2 .sq-btns { align-self: stretch; }
-    /* Mecanismo, Cronología, Fase 3 — las tres en una fila (caben a 320 px sin partir
-       palabras; el texto puede ir en dos líneas), como las opciones cortas de los cuestionarios */
-    .option-group-col { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    /* Mecanismo, Cronología, Fase 3 — las tres en una fila si cada texto cabe en una
+       línea; si no, dos por fila con la tercera a todo el ancho; si tampoco, una por
+       fila (filas.js lo mide con data-filas="3,2,1" y pone data-cols) */
+    .option-group-col { --filas: 1; display: grid; grid-template-columns: repeat(var(--filas-cols, 3), minmax(0, 1fr)); gap: 6px; }
     .option-group-col .option-btn { width: 100%; min-width: 0; text-align: center; padding: 8px 4px; min-height: 48px; font-size: 0.85rem; white-space: normal; line-height: 1.3; hyphens: manual; }
+    .option-group-col[data-cols="2"] .option-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .option-group-col[data-cols="1"] .option-btn { text-align: left; padding: 10px 16px; }
     /* Fase 4b — contexto banner debajo de la barra de fase */
     .hyp-context-banner.visible { display: flex; }
     .hyp-context-banner { top: 94px; }
@@ -3370,14 +3373,15 @@ body.lupus .solo-les { display: block; }
 .cuest-ops-texto { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
 /* Opciones de texto en móvil (una respuesta o varias): dos columnas; con un número
    impar, la última ocupa la fila entera (sin hueco). Si alguna opción es larga
-   (.cuest-ops-largas, LARGO_OPCION_COLUMNA), una por fila alineada a la izquierda; si
-   caben todas en una fila (.cuest-ops-fila, columnasMovil), una sola fila */
+   (.cuest-ops-largas, LARGO_OPCION_COLUMNA), una por fila alineada a la izquierda.
+   De 3 a 4 opciones cortas (.cuest-ops-fila): una sola fila si cada texto cabe en una
+   línea y, si no, dos por fila (filas.js lo mide y pone data-cols) */
 @media (max-width: 520px) {
   .cuest-ops-texto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cuest-ops-texto .cuest-op { min-height: 40px; padding: 8px 10px; }
   .cuest-ops-texto .cuest-op:last-child:nth-child(odd) { grid-column: 1 / -1; }
-  .cuest-ops-texto.cuest-ops-fila { grid-template-columns: repeat(var(--cuest-cols), minmax(0, 1fr)); }
-  .cuest-ops-fila .cuest-op:last-child:nth-child(odd) { grid-column: auto; }
+  .cuest-ops-texto.cuest-ops-fila { --filas: 1; grid-template-columns: repeat(var(--filas-cols, 2), minmax(0, 1fr)); }
+  .cuest-ops-fila:not([data-cols="2"]) .cuest-op:last-child:nth-child(odd) { grid-column: auto; }
   .cuest-ops-texto.cuest-ops-largas { grid-template-columns: minmax(0, 1fr); }
   .cuest-ops-largas .cuest-op { padding: 8px 12px; text-align: left; }
 }
@@ -3388,6 +3392,7 @@ body.lupus .solo-les { display: block; }
 }
 .cuest-ops-escala .cuest-op { font-family: 'DM Mono', monospace; font-size: 0.95rem; padding: 6px 0; }
 @media (hover: hover) { .cuest-op:hover { border-color: var(--accent); color: var(--text); } }
+.filas-midiendo > * { font-weight: 600 !important; }
 .cuest-op.selected { background: color-mix(in srgb, var(--accent) 14%, transparent); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 .cuest-anclas { display: flex; justify-content: space-between; gap: 12px; margin-top: 4px; font-size: 0.7rem; color: var(--text3); }
 .cuest-anclas span:last-child { text-align: right; }

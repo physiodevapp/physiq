@@ -300,23 +300,20 @@ export function resultadoCuestionarioHTML(def, respuestas = {}) {
     + (subs ? `<ul class="cuest-res-subs">${subs}</ul>` : '') + alertas;
 }
 
-// Columnas de las opciones de texto en móvil (≤ 520 px). Todas en una fila si caben a
-// 320 px (hasta 4, ninguna palabra más ancha que el botón y dos líneas como mucho:
-// FILA_UNICA[n] = [palabra más larga, opción más larga], en caracteres); si no, dos
-// por fila; y una por fila si alguna opción pasa de LARGO_OPCION_COLUMNA, porque a
-// dos columnas (~140 px a 320 px) ocuparía tres líneas o más
+// Columnas de las opciones de texto en móvil (≤ 520 px): de 3 a 4 opciones cortas
+// prueban primero a ir todas en una fila y, si algún texto parte en dos líneas,
+// pasan a dos por fila (lo mide filas.js con `data-filas`: «N,2»); el resto, dos
+// por fila aunque alguna opción ocupe dos líneas (decisión del usuario, 2026-10); y
+// una por fila si alguna pasa de LARGO_OPCION_COLUMNA, porque a dos columnas
+// (~140 px a 320 px) ocuparía tres líneas o más
 export const LARGO_OPCION_COLUMNA = 28;
-export const FILA_UNICA = { 2: [14, 28], 3: [10, 20], 4: [7, 14] };
 export function columnasMovil(textos) {
-  const lim = FILA_UNICA[textos.length];
-  const palabra = Math.max(...textos.flatMap(t => t.split(/\s+/).map(w => w.length)));
-  const largo = Math.max(...textos.map(t => t.length));
-  if (lim && palabra <= lim[0] && largo <= lim[1]) return textos.length;
-  return largo > LARGO_OPCION_COLUMNA ? 1 : 2;
+  if (textos.some(t => t.length > LARGO_OPCION_COLUMNA)) return 1;
+  return textos.length >= 3 && textos.length <= 4 ? textos.length : 2;
 }
 const claseCols = textos => {
   const n = columnasMovil(textos);
-  return n === 1 ? ' cuest-ops-largas' : n > 2 ? ` cuest-ops-fila" style="--cuest-cols:${n}` : '';
+  return n === 1 ? ' cuest-ops-largas' : n > 2 ? ` cuest-ops-fila" data-filas="${n},2` : '';
 };
 
 function botonesItem(def, item, r) {

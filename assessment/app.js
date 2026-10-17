@@ -8,6 +8,7 @@ import { initCIFTree, getDerivacionesArbol } from './phase4.js';
 import { buildHypothesisCards, teardownHypObserver, restoreHypObserver, esTratada, marcarTratada, casillaTratadaHTML, hipotesis, hipotesisActivas, sincronizarTratadas, etiquetaHipHTML, anatomiaLineaHTML, anatomiaPanelHTML } from './phase4b.js';
 import { registroReferencias, citasHTML, citasEnTexto } from './lib/citas.js';
 import { alternarFicha, actualizarFicha, cerrarFicha, fichaAbierta } from './ficha.js';
+import { observarFilas } from './filas.js';
 import { writeSession, readSession, clearSession, updateSession } from './lib/session.js';
 import {
   COMPLICACIONES, cirugiaVacia, esPosquirurgico, semanasCirugia, semanasTexto, conProtocolo, cirugiaPayload,
@@ -4449,6 +4450,7 @@ function _pintarCuestionarios({ foco } = {}) {
     cuerpo.innerHTML = listaCuestionariosHTML(CUESTIONARIOS, GRUPOS_CUESTIONARIO, state.cuestionarios || {}, { region: state.region });
   }
   cuerpo.scrollTop = 0;
+  observarFilas(cuerpo);
   if (foco) cuerpo.querySelector(foco)?.focus({ preventScroll: true });
 }
 
@@ -4476,6 +4478,7 @@ function _tocarCuest(item, valorTxt) {
   const nodo = document.querySelector(`#cuestCuerpo .cuest-item[data-item="${it.n}"]`);
   if (nodo) {
     nodo.outerHTML = itemCuestionarioHTML(def, it, r[it.n]);
+    observarFilas(document.querySelector(`#cuestCuerpo .cuest-item[data-item="${it.n}"]`));
     document.querySelector(`#cuestCuerpo .cuest-item[data-item="${it.n}"] .cuest-op[data-valor="${valorTxt}"]`)?.focus({ preventScroll: true });
   }
   document.getElementById('cuestResultado').innerHTML = resultadoCuestionarioHTML(def, r);
@@ -4873,6 +4876,8 @@ document.addEventListener('DOMContentLoaded', () => {
   calcIrritabilidad();
   // Init mobile phase bar
   updateMobilePhaseBar(1);
+  // Grupos de opciones que eligen una fila, dos por fila o una por fila según quepan (filas.js)
+  observarFilas();
   // Init session panel drag-to-dismiss
   _setupSessionPanelDrag();
   // Init quick-input chips + dictation for static text fields
