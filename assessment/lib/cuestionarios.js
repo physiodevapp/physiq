@@ -300,6 +300,25 @@ export function resultadoCuestionarioHTML(def, respuestas = {}) {
     + (subs ? `<ul class="cuest-res-subs">${subs}</ul>` : '') + alertas;
 }
 
+// Columnas de las opciones de texto en móvil (≤ 520 px). Todas en una fila si caben a
+// 320 px (hasta 4, ninguna palabra más ancha que el botón y dos líneas como mucho:
+// FILA_UNICA[n] = [palabra más larga, opción más larga], en caracteres); si no, dos
+// por fila; y una por fila si alguna opción pasa de LARGO_OPCION_COLUMNA, porque a
+// dos columnas (~140 px a 320 px) ocuparía tres líneas o más
+export const LARGO_OPCION_COLUMNA = 28;
+export const FILA_UNICA = { 2: [14, 28], 3: [10, 20], 4: [7, 14] };
+export function columnasMovil(textos) {
+  const lim = FILA_UNICA[textos.length];
+  const palabra = Math.max(...textos.flatMap(t => t.split(/\s+/).map(w => w.length)));
+  const largo = Math.max(...textos.map(t => t.length));
+  if (lim && palabra <= lim[0] && largo <= lim[1]) return textos.length;
+  return largo > LARGO_OPCION_COLUMNA ? 1 : 2;
+}
+const claseCols = textos => {
+  const n = columnasMovil(textos);
+  return n === 1 ? ' cuest-ops-largas' : n > 2 ? ` cuest-ops-fila" style="--cuest-cols:${n}` : '';
+};
+
 function botonesItem(def, item, r) {
   const tipo = item.tipo || 'escala';
   const boton = (valor, texto, activo, extra = '') =>
@@ -321,16 +340,17 @@ function botonesItem(def, item, r) {
     return `<div class="cuest-ops cuest-ops-numero"><input type="number" class="cuest-num" inputmode="decimal" min="${min}" max="${max}" step="${item.paso ?? 1}" value="${typeof r === 'number' ? r : ''}" aria-label="${esc(item.t)} (${min}–${max})"><span class="cuest-num-rango">${min}–${max}${item.unidad ? ` ${esc(item.unidad)}` : ''}</span>${na}</div>`;
   }
   if (tipo === 'opciones') {
-    // Una sola respuesta: en móvil, una opción por fila (las ordenadas se leen de arriba abajo, como en el papel)
-    return `<div class="cuest-ops cuest-ops-texto cuest-ops-lista">${item.opciones.map((o, i) => boton(i, esc(o.t), r === i)).join('')}${na}</div>`;
+    // Una sola respuesta: en móvil, como las de marcar varias (columnasMovil)
+    const textos = item.opciones.map(o => o.t).concat(na ? ['N/A'] : []);
+    return `<div class="cuest-ops cuest-ops-texto cuest-ops-lista${claseCols(textos)}">${item.opciones.map((o, i) => boton(i, esc(o.t), r === i)).join('')}${na}</div>`;
   }
   if (tipo === 'sino') {
     return `<div class="cuest-ops cuest-ops-sino">${boton('si', 'Sí', r === 'si')}${boton('no', 'No', r === 'no')}</div>`;
   }
   if (tipo === 'marcas') {
     const marcadas = Array.isArray(r) ? r : [];
-    // Marcar varias: en móvil, dos columnas y, si son impares, la última a todo el ancho
-    return `<div class="cuest-ops cuest-ops-texto cuest-ops-marcas">${item.opciones.map((t, i) => boton(i, esc(t), marcadas.includes(i))).join('')}</div>`;
+    // Marcar varias: en móvil, una fila si caben, si no dos columnas (impares: la última a todo el ancho), una si alguna es larga
+    return `<div class="cuest-ops cuest-ops-texto cuest-ops-marcas${claseCols(item.opciones)}">${item.opciones.map((t, i) => boton(i, esc(t), marcadas.includes(i))).join('')}</div>`;
   }
   return '';
 }
