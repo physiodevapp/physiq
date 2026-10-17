@@ -26,11 +26,20 @@ export function estadoZona(zona, region, lado) {
   return lado ? 'off' : 'region';
 }
 
-// Lado que queda al tocar una zona: el de la zona; en la columna (zona sin
-// lado), el que ya hubiera si es la misma región, y ninguno si es otra.
+const OTRO_LADO = { Izquierdo: 'Derecho', Derecho: 'Izquierdo' };
+
+// Lado que queda al tocar una zona. Las dos zonas de una misma región son
+// casillas (user decision, 2026-10): tocar el otro lado lo añade («Bilateral»)
+// y tocar uno marcado lo quita (segundo toque, la regla de la app). Zona de
+// otra región: su lado. En la columna (zona sin lado), el que ya hubiera si es
+// la misma región, y ninguno si es otra.
 export function ladoAlTocar(zona, region, lado) {
-  if (zona.lado) return zona.lado;
-  return zona.region === region ? (lado || '') : '';
+  if (!zona.lado) return zona.region === region ? (lado || '') : '';
+  if (zona.region !== region) return zona.lado;
+  if (lado === zona.lado) return '';
+  if (lado === OTRO_LADO[zona.lado]) return 'Bilateral';
+  if (lado === 'Bilateral') return OTRO_LADO[zona.lado];
+  return zona.lado;
 }
 
 // Texto bajo el título: lo elegido, o qué hacer
@@ -38,8 +47,11 @@ export function textoElegida(region, lado) {
   // La silueta elige región y lado, no el punto del dolor (eso es la fase 3)
   if (!region) return { principal: 'Toca la región en la silueta', sub: 'Da igual si duele delante o detrás' };
   // Con lado, `sub` vacío: su línea queda reservada (CSS) para que la figura
-  // no suba bajo el dedo al elegir el lado.
-  return { principal: regionConLado(region, lado), sub: lado ? '' : 'Lado sin indicar (opcional)' };
+  // no suba bajo el dedo al elegir el lado. Con «Bilateral» en una región de
+  // dos zonas, cómo deshacerlo (por si se tocó el otro lado queriendo corregir).
+  const sub = !lado ? 'Lado sin indicar (opcional)'
+    : lado === 'Bilateral' && !['cervical', 'lumbar'].includes(region) ? 'Toca un lado para quitarlo' : '';
+  return { principal: regionConLado(region, lado), sub };
 }
 
 // Texto junto a los botones de sexo: sin sexo, que falta (la figura es la
