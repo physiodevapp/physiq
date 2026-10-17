@@ -53,6 +53,8 @@
     <!-- «Herramientas» (solo ≤768 px): agrupa tiempos de tejido, cuestionarios y
          «Preguntar a la IA», que en móvil no caben como iconos sueltos -->
     <button id="herramientasBtn" class="session-btn herramientas-btn" onclick="abrirHerramientas()" type="button" aria-haspopup="dialog" aria-controls="herramientasOverlay" aria-expanded="false" aria-label="Herramientas" title="Herramientas"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg></button>
+    <!-- Guía de condiciones especiales (cualquier fase, también en el hub; docs/condiciones-especiales.md): cuándo pensar en cada una y cómo llegar a marcarla. Brújula: orientar -->
+    <button id="condBtn" class="session-btn cond-btn" onclick="abrirCondiciones()" type="button" aria-haspopup="dialog" aria-controls="condOverlay" aria-label="Condiciones especiales" title="Condiciones especiales"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></button>
     <!-- «Tiempos de recuperación» de tejidos (consulta, cualquier fase, también en el hub): icono de cronograma, no de reloj, para no confundirlo con el chip «Breve» -->
     <button id="tejidosBtn" class="session-btn tejidos-btn" onclick="abrirTiemposTejido()" type="button" aria-haspopup="dialog" aria-controls="tejidosOverlay" aria-label="Tiempos de recuperación de tejidos" title="Tiempos de recuperación de tejidos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4v16h18"/><path d="M7 8h5"/><path d="M10 12h7"/><path d="M13 16h6"/></svg></button>
     <!-- Calculadora de cuestionarios (cualquier fase, también en el hub; lib/cuestionarios.js): puntuar la hoja que ha rellenado el paciente -->
@@ -194,6 +196,10 @@
     <div class="session-panel-handle"></div>
     <div class="session-panel-title" id="herramientasTitulo">Herramientas</div>
     <div class="compartir-opciones">
+      <button type="button" class="compartir-op" data-herramienta="condiciones" onclick="herramientaElegir('condiciones')">
+        <span class="compartir-op-nombre">Condiciones especiales</span>
+        <span class="compartir-op-sub">Cuándo pensar en ellas y dónde marcarlas</span>
+      </button>
       <button type="button" class="compartir-op" data-herramienta="tejidos" onclick="herramientaElegir('tejidos')">
         <span class="compartir-op-nombre">Tiempos de recuperación</span>
         <span class="compartir-op-sub">Plazos de curación por tejido y lesión</span>
@@ -207,6 +213,17 @@
         <span class="compartir-op-sub">Una duda libre, sin datos del paciente</span>
       </button>
     </div>
+  </div>
+</div>
+
+<!-- CONDICIONES ESPECIALES (cabecera, brújula): hoja inferior en móvil,
+     diálogo centrado en escritorio. Lo rellena abrirCondiciones() (app.js) con
+     condicionesHTML() (lib/condiciones.js); nunca marca nada -->
+<div class="session-panel-overlay" id="condOverlay" onclick="cerrarCondiciones()">
+  <div class="session-panel cond-panel" id="condPanel" role="dialog" aria-modal="true" aria-labelledby="condTitulo" tabindex="-1" onclick="event.stopPropagation()">
+    <div class="session-panel-handle"></div>
+    <div class="session-panel-title" id="condTitulo">Condiciones especiales</div>
+    <div class="cond-cuerpo" id="condCuerpo"></div>
   </div>
 </div>
 
@@ -290,7 +307,7 @@
     <div class="fp-inline" id="fpBody_comun"></div>
   </details>
 
-  <div class="card">
+  <div class="card" id="cardMecanismo">
     <div class="card-title">Mecanismo de Inicio</div>
     <div id="fpPistas_mecanismo"></div>
     <div class="option-group option-group-col" id="mecanismo">

@@ -3264,6 +3264,42 @@ body.lupus .solo-les { display: block; }
 .tej-grupo-fuentes .tej-fuentes-lista { margin-top: 4px; }
 @media print { .tejidos-btn { display: none !important; } .tej-info { display: none !important; } }
 
+/* ─── Condiciones especiales (cabecera, lib/condiciones.js) ───
+   Caja y velo del panel de sesión, como la calculadora. Una fila por
+   condición: nombre y estado, qué es, pistas, qué añade, fuentes y el botón
+   que lleva a marcarla. «No consta» en gris: no marcar es lo normal. */
+.cond-panel { max-width: 560px; width: 94%; max-height: 88vh; display: flex; flex-direction: column; }
+.cond-panel:focus { outline: none; }
+.cond-panel > * { flex-shrink: 0; }
+.cond-panel > .cond-cuerpo { flex: 1 1 auto; overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; min-height: 0; }
+@media (max-width: 768px) {
+  .cond-panel { max-width: 100%; width: 100%; max-height: 90vh; padding-bottom: 20px; }
+}
+.cond-intro { margin: 0 0 6px; font-size: 0.85rem; color: var(--text2); line-height: 1.45; }
+.cond-intro-diag { margin-bottom: 14px; color: var(--text); font-weight: 500; }
+.cond-fila { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--surface2); }
+.cond-fila + .cond-fila { margin-top: 10px; }
+.cond-cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.cond-nombre { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text); line-height: 1.3; min-width: 0; }
+.cond-estado { flex-shrink: 0; font-family: 'DM Mono', monospace; font-size: 0.68rem; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--border2); color: var(--text3); white-space: nowrap; }
+.cond-estado-on { border-color: var(--accent); color: var(--accent); }
+.cond-que { margin: 6px 0 8px; font-size: 0.85rem; color: var(--text2); line-height: 1.45; }
+.cond-piensa { font-size: 0.8rem; color: var(--text); font-weight: 500; }
+.cond-pistas { margin: 4px 0 8px; padding-left: 1.1rem; font-size: 0.82rem; color: var(--text); line-height: 1.45; }
+.cond-pistas li + li { margin-top: 2px; }
+.cond-anade { margin: 0 0 6px; font-size: 0.78rem; color: var(--text2); line-height: 1.45; }
+.cond-anade-et { color: var(--text3); font-family: 'DM Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.cond-fuentes { font-size: 0.72rem; color: var(--text3); margin-bottom: 6px; }
+.cond-acciones { display: flex; justify-content: flex-end; }
+.cond-ir { min-height: 40px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--accent); background: transparent;
+  color: var(--accent); font: inherit; font-size: 0.82rem; cursor: pointer; }
+.cond-ir:disabled { border-color: var(--border2); color: var(--text3); cursor: default; }
+@media (hover: hover) { .cond-ir:not(:disabled):hover { background: var(--hover-tint); } }
+.cond-grupo { margin: 18px 0 8px; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); font-weight: 500; }
+.cond-pie { margin: 14px 0 0; font-size: 0.75rem; color: var(--text3); }
+@media print { .cond-btn { display: none !important; } }
+
 /* ─── Calculadora de cuestionarios (cabecera, lib/cuestionarios.js) ───
    Caja y velo del panel de sesión, como «Tiempos de recuperación». Dentro,
    lista de cuestionarios o el formulario de uno, con el resultado fijo arriba
@@ -3454,7 +3490,7 @@ body.lupus .solo-les { display: block; }
 .herramientas-btn { display: none; }
 @media (max-width: 768px) {
   .app-header .herramientas-btn { display: flex; }
-  .app-header .tejidos-btn, .app-header .cuest-btn, .app-header .pregunta-ia-btn { display: none; }
+  .app-header .cond-btn, .app-header .tejidos-btn, .app-header .cuest-btn, .app-header .pregunta-ia-btn { display: none; }
 }
 .in-hub .herr-op-ia { display: none; }
 @media print { .herramientas-btn { display: none !important; } }

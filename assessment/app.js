@@ -33,6 +33,8 @@ import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
+import { condicionesHTML } from './lib/condiciones.js';
+import { CONDICIONES } from './data/condiciones.js';
 import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML, filasPaciente, FILTRO_PACIENTE } from './lib/tejidos.js';
 import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
 import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, urlIA } from './ampliar-ia.js';
@@ -105,11 +107,17 @@ window.addEventListener('popstate', e => {
   // Sheets del razonamiento (fase 2) y de compartir (fase 5), en móvil: el
   // atrás los cierra sin cambiar de fase, y nuestro propio history.back() al
   // cerrarlos de otra forma no navega.
-  if (_popIgnorar) { _popIgnorar = false; return; }
+  if (_popIgnorar) {
+    _popIgnorar = false;
+    // Lo que esperaba a que se fuera la entrada de una hoja (irACondicion)
+    const f = _trasPop; _trasPop = null; f?.();
+    return;
+  }
   if (_razonHistorial) { cerrarRazonamiento({ desdeHistorial: true }); return; }
   if (_compartirHistorial) { cerrarMenuCompartir({ desdeHistorial: true }); return; }
   if (_herrHistorial) { cerrarHerramientas({ desdeHistorial: true }); return; }
   if (_preguntaHistorial) { cerrarPreguntaIA({ desdeHistorial: true }); return; }
+  if (_condHistorial) { cerrarCondiciones({ desdeHistorial: true }); return; }
   if (_tejidosHistorial) { cerrarTiemposTejido({ desdeHistorial: true }); return; }
   if (_cuestHistorial) { cerrarCuestionarios({ desdeHistorial: true }); return; }
   if (_pendingBackNav) {
@@ -2067,6 +2075,7 @@ function buildSistemaHTML(sis) {
 const _esMovil = () => window.matchMedia ? window.matchMedia('(max-width: 768px)').matches : false;
 let _razonOrigen = null;       // botón «Ampliar» que abrió el panel (para devolverle el foco)
 let _razonHistorial = false;   // el sheet móvil empujó una entrada al historial
+let _trasPop = null;          // a ejecutar tras ese history.back() (irACondicion)
 let _popIgnorar = false;      // el próximo popstate es nuestro history.back() (razonamiento o compartir), no el usuario
 
 function razonamientoInlineHTML(sis, q) {
@@ -3717,6 +3726,7 @@ function _closeAllOverlays() {
   cerrarMenuCompartir({ sinHistorial: true });
   cerrarHerramientas({ sinHistorial: true });
   cerrarPreguntaIA({ sinHistorial: true });
+  cerrarCondiciones({ sinHistorial: true });
   cerrarTiemposTejido({ sinHistorial: true });
   cerrarCuestionarios({ sinHistorial: true });
   closePhaseSheet();
@@ -4059,7 +4069,7 @@ function cerrarHerramientas({ desdeHistorial = false, sinHistorial = false, tras
 
 function herramientaElegir(k) {
   cerrarHerramientas({ traspaso: true });
-  ({ tejidos: abrirTiemposTejido, cuestionarios: abrirCuestionarios, pregunta: abrirPreguntaIA })[k]?.();
+  ({ condiciones: abrirCondiciones, tejidos: abrirTiemposTejido, cuestionarios: abrirCuestionarios, pregunta: abrirPreguntaIA })[k]?.();
   // Si la herramienta no llegó a abrirse, la entrada del menú sobra
   if (_reusarEntrada) { _reusarEntrada = false; _popIgnorar = true; history.back(); }
 }
@@ -4335,6 +4345,79 @@ function cerrarTiemposTejido({ desdeHistorial = false, sinHistorial = false } = 
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('tejidosOverlay')?.classList.contains('open')) cerrarTiemposTejido();
+});
+
+// ─── Condiciones especiales (cabecera, cualquier fase, también en el hub) ───
+// Guía de lectura (docs/condiciones-especiales.md): cuándo pensar en cada
+// condición que la app solo activa si se marca, y un botón que lleva a su
+// tarjeta (fase 1) o a su pregunta (fase 2) y la resalta. Nunca marca nada ni
+// guarda nada. Mismo patrón que «Tiempos de recuperación».
+let _condHistorial = false;
+function abrirCondiciones() {
+  const overlay = document.getElementById('condOverlay');
+  if (!overlay || overlay.classList.contains('open')) return;
+  document.getElementById('condCuerpo').innerHTML = condicionesHTML(state);
+  overlay.classList.add('open');
+  document.getElementById('condBtn')?.setAttribute('aria-expanded', 'true');
+  lockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  if (_esMovil()) {
+    _entradaOverlay({ phase: state.currentPhase, condiciones: true });
+    _condHistorial = true;
+  }
+  const panel = document.getElementById('condPanel');
+  panel.scrollTop = 0;
+  panel.focus({ preventScroll: true });
+}
+
+// `despues`: lo que hay que hacer cuando la entrada del historial de la hoja
+// ya se ha ido (navegar a otra fase antes crearía dos navegaciones a la vez)
+function cerrarCondiciones({ desdeHistorial = false, sinHistorial = false, despues = null } = {}) {
+  const overlay = document.getElementById('condOverlay');
+  if (!overlay?.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  cerrarFicha({ sinFoco: true });
+  const panel = document.getElementById('condPanel');
+  panel.style.transform = ''; panel.style.transition = '';
+  unlockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
+  const btn = document.getElementById('condBtn');
+  btn?.setAttribute('aria-expanded', 'false');
+  if (_condHistorial) {
+    _condHistorial = false;
+    if (!desdeHistorial && !sinHistorial) {
+      _popIgnorar = true; _trasPop = despues; history.back();
+      if (!despues) _botonCabecera(btn)?.focus({ preventScroll: true });
+      return;
+    }
+  }
+  if (despues) despues();
+  else if (!sinHistorial) _botonCabecera(btn)?.focus({ preventScroll: true });
+}
+
+// Botón de una fila: cierra el diálogo y lleva a la tarjeta (fase 1) o a la
+// pregunta del cribado (fase 2), resaltada. No marca nada.
+function irACondicion(id) {
+  const c = CONDICIONES.find(x => x.id === id);
+  if (!c) return;
+  if (c.region && state.region !== c.region) return;
+  const ir = c.destino.pregunta
+    ? () => irAPreguntaCribado(c.destino.pregunta)
+    : () => {
+      goToPhase(1);
+      setTimeout(() => {
+        const card = document.getElementById(c.destino.tarjeta);
+        if (!card) return;
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.remove('flash-destacar');
+        void card.offsetWidth;
+        card.classList.add('flash-destacar');
+      }, 150);
+    };
+  cerrarCondiciones({ despues: ir });
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('condOverlay')?.classList.contains('open')) cerrarCondiciones();
 });
 
 // ─── Calculadora de cuestionarios (cabecera, cualquier fase, también en el hub) ───
@@ -4969,7 +5052,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,
@@ -5050,6 +5133,8 @@ Object.assign(window, {
   if (pregunta) initSwipe(pregunta, () => cerrarPreguntaIA(), _esMovil);
   const herr = document.getElementById('herramientasPanel');
   if (herr) initSwipe(herr, () => cerrarHerramientas(), _esMovil);
+  const cond = document.getElementById('condPanel');
+  if (cond) initSwipe(cond, () => cerrarCondiciones(), _esMovil);
   const tejidos = document.getElementById('tejidosPanel');
   if (tejidos) initSwipe(tejidos, () => cerrarTiemposTejido(), _esMovil);
   const cuest = document.getElementById('cuestPanel');
