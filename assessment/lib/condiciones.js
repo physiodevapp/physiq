@@ -7,6 +7,7 @@
 
 import { CONDICIONES, TEXTOS_CONDICIONES } from '../data/condiciones.js';
 import { citasHTML } from './citas.js';
+import { nombreRegion } from './region.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -48,6 +49,8 @@ export function estadoCondicion(c, st) {
 // (decisión 3): la pregunta solo existe en el cribado de esa región.
 export const destinoDisponible = (c, st) => !c.region || st.region === c.region;
 
+const conRegion = (texto, region) => texto.replace('{region}', nombreRegion(region).toLowerCase());
+
 function filaHTML(c, st) {
   const estado = estadoCondicion(c, st);
   const disponible = destinoDisponible(c, st);
@@ -55,7 +58,7 @@ function filaHTML(c, st) {
   const pistas = c.pistas.map(p => `<li>${esc(p.texto)}</li>`).join('');
   const boton = disponible
     ? `<button type="button" class="cond-ir" data-cond="${c.id}" onclick="irACondicion('${c.id}')">${esc(c.boton)}</button>`
-    : `<button type="button" class="cond-ir" data-cond="${c.id}" disabled>${esc(TEXTOS_CONDICIONES.sinLumbar)}</button>`;
+    : `<button type="button" class="cond-ir" data-cond="${c.id}" disabled>${esc(conRegion(TEXTOS_CONDICIONES.sinRegion, c.region))}</button>`;
   const fuentes = c.fuentes.length ? `<div class="cond-fuentes">${citasHTML(c.fuentes.join(' · '))}</div>` : '';
   return `<section class="cond-fila" data-condicion="${c.id}">
     <div class="cond-cabecera"><h3 class="cond-nombre">${esc(c.nombre)}</h3>${etiqueta}</div>
@@ -72,7 +75,7 @@ export function condicionesHTML(st) {
   const T = TEXTOS_CONDICIONES;
   const transversales = CONDICIONES.filter(c => !c.region).map(c => filaHTML(c, st)).join('');
   const regiones = [...new Set(CONDICIONES.filter(c => c.region).map(c => c.region))];
-  const deRegion = regiones.map(r => `<h3 class="cond-grupo">${esc(T.grupoLumbar)}</h3>`
+  const deRegion = regiones.map(r => `<h3 class="cond-grupo">${esc(conRegion(T.grupoRegion, r))}</h3>`
     + CONDICIONES.filter(c => c.region === r).map(c => filaHTML(c, st)).join('')).join('');
   return `<p class="cond-intro">${esc(T.intro)}</p>
     <p class="cond-intro cond-intro-diag">${esc(T.diagnostico)}</p>

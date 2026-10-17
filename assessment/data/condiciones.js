@@ -12,13 +12,15 @@ export const TEXTOS_CONDICIONES = {
   titulo: 'Condiciones especiales',
   intro: 'Situaciones que cambian el cribado y el plan. Si una encaja, márcala y la app añade lo que necesita.',
   diagnostico: 'Si el paciente ya tiene el diagnóstico, márcala siempre.',
-  grupoLumbar: 'Solo en lumbar',
-  sinLumbar: 'Elige lumbar en la fase 2',
+  // Apartado y botón de las filas de una región ({region}: su nombre en minúscula)
+  grupoRegion: 'Solo en {region}',
+  sinRegion: 'Elige {region} en la fase 2',
   pie: 'Esta lista orienta: no diagnostica ni marca nada por ti.',
 };
 
 // Orden de la decisión 2: transversales de la más frecuente a la menos, y
-// aparte las de lumbar (decisión 3: siempre visibles, para que se conozcan).
+// aparte las de cada región, en su orden (decisión 3: siempre visibles, para
+// que se conozcan).
 // destino: { tarjeta: id de la fase 1 } o { pregunta: id del cribado }.
 export const CONDICIONES = [
   {
@@ -107,5 +109,20 @@ export const CONDICIONES = [
     destino: { pregunta: 'l_u6' },
     boton: 'Ir a la pregunta →',
     fuentes: ['Penfold 2024', 'Mačionienė 2026'],
+  },
+  {
+    id: 'congestionPelvica',
+    region: 'cadera',
+    nombre: 'Síndrome de congestión pélvica',
+    que: 'Venas de la pelvis dilatadas que se llenan al estar de pie; el dolor puede notarse en la ingle o la cadera.',
+    piensa: 'Piensa en él si:',
+    pistas: [
+      { texto: 'en una mujer, desde hace meses, hay un dolor sordo o de peso en la pelvis, la ingle o la cadera, peor de pie o al final del día y mejor tumbada,', de: ['ca_u6'] },
+      { texto: 'y varices en la vulva, el periné, el muslo o la nalga, o un dolor que dura horas después de las relaciones sexuales.', de: ['ca_u6'] },
+    ],
+    anade: 'una derivación médica preferente, no urgente, para descartar otras causas. Un dolor pélvico nuevo con retraso de la regla no es esto: es la pregunta del embarazo ectópico, urgente.',
+    destino: { pregunta: 'ca_u6' },
+    boton: 'Ir a la pregunta →',
+    fuentes: ['Bałabuszek 2022', 'Champaneria 2016', 'Dos Santos 2016'],
   },
 ];
