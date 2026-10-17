@@ -435,6 +435,7 @@ const PQ_CITA = {
   ng125: { texto: 'NICE NG125 — NICE, «Surgical site infections: prevention and treatment» (2019, actualizada el 19 de agosto de 2020), recomendaciones 1.1.3 y 1.4.9, «Terms used in this guideline» y «Context».', url: 'https://www.nice.org.uk/guidance/ng125' },
   ng158: { texto: 'NICE NG158 — NICE, «Venous thromboembolic diseases: diagnosis, management and thrombophilia testing» (2020, actualizada el 2 de agosto de 2023), recomendaciones 1.1.1–1.1.8 y 1.1.15–1.1.18, tablas 1 y 2 (escalas de Wells de dos niveles).', url: 'https://www.nice.org.uk/guidance/ng158' },
   ng89: { texto: 'NICE NG89 — NICE, «Venous thromboembolism in over 16s: reducing the risk of hospital-acquired deep vein thrombosis or pulmonary embolism» (2018, actualizada el 13 de agosto de 2019), recomendaciones 1.2.4, 1.11.1–1.11.16 y 1.12.1–1.12.3.', url: 'https://www.nice.org.uk/guidance/ng89' },
+  lim: { texto: 'Lim 2024 — Lim, Roh, Kim y Nam, «Is the May-Thurner syndrome a major risk factor for deep vein thrombosis in total hip arthroplasty?», Clin Orthop Surg 2024;16(1):34–40.', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10825252/' },
   vyas: { texto: 'Vyas 2024 — Vyas, Sankari y Goyal, «Acute Pulmonary Embolism», StatPearls [Internet], NCBI Bookshelf, última actualización 11 de diciembre de 2024.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK560551/' },
   guthmiller: { texto: 'Guthmiller 2025 — Guthmiller, Dua, Dey y Varacallo, «Complex Regional Pain Syndrome», StatPearls [Internet], NCBI Bookshelf, última actualización 4 de mayo de 2025.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK430719/' },
   torlincasi: { texto: 'Torlincasi 2023 — Torlincasi, Lopez y Waseem, «Acute Compartment Syndrome», StatPearls [Internet], NCBI Bookshelf, última actualización 16 de enero de 2023.', url: 'https://www.ncbi.nlm.nih.gov/books/NBK448124/' },
@@ -456,6 +457,14 @@ const PQ_RAZON_TVP = {
   },
   fuentes: ['NICE NG158', 'NICE NG89', 'Vyas 2024'],
   citas: [PQ_CITA.ng158, PQ_CITA.ng89, PQ_CITA.vyas]
+};
+// pq_tvp (piernas) añade la TVP de la otra pierna tras una prótesis de cadera
+// (May-Thurner, docs/may-thurner.md); pq_tvp_ms (hombro, codo) se queda sin él.
+const PQ_RAZON_TVP_PIERNA = {
+  ...PQ_RAZON_TVP,
+  detalle: PQ_RAZON_TVP.detalle + '\n\nLa otra pierna: tras una prótesis de cadera, la TVP puede aparecer en la pierna izquierda aunque se haya operado la derecha, por una compresión de la vena ilíaca común izquierda (síndrome de May-Thurner): en una serie de 5 TVP tras prótesis de cadera, 4 tenían esa compresión y todas fueron en la izquierda, dos de ellas tras operar la derecha, entre los 24 y los 54 días (Lim 2024, serie pequeña). Por eso la pregunta dice «una pierna», no «la operada».',
+  fuentes: [...PQ_RAZON_TVP.fuentes, 'Lim 2024'],
+  citas: [...PQ_RAZON_TVP.citas, PQ_CITA.lim]
 };
 const PQ_URGENCIA_TVP = 'Posible TVP: derivar hoy (NICE NG158: con Wells ≥2, ecografía en 4 horas; con 1 o menos, dímero D en 4 horas; riesgo de embolia pulmonar).';
 
@@ -492,7 +501,7 @@ export const SIS_POSQUIRURGICO = {
         citas: [PQ_CITA.zabaglo, PQ_CITA.ng125]
       } },
     { id: 'pq_tvp', regiones: ['cadera', 'rodilla', 'tobillo_pie', 'lumbar', 'cervical'], urgencia: PQ_URGENCIA_TVP, text: '¿Desde la operación tiene una pantorrilla o una pierna hinchada, caliente o dolorosa? (Posible TVP: calcular Wells; ≥2 → probable.)', alerta: true,
-      razonamiento: PQ_RAZON_TVP },
+      razonamiento: PQ_RAZON_TVP_PIERNA },
     { id: 'pq_tvp_ms', regiones: ['hombro', 'codo'], urgencia: PQ_URGENCIA_TVP, text: '¿Desde la operación tiene una pantorrilla, una pierna o el brazo operado hinchados, calientes o dolorosos? (En la pierna, posible TVP: calcular Wells; ≥2 → probable.)', alerta: true,
       razonamiento: PQ_RAZON_TVP },
     { id: 'pq_tep', urgencia: 'Posible embolia pulmonar: llamar al 112.', text: '¿Le falta el aire de repente, le duele el pecho al respirar, ha tosido sangre o se ha mareado o desmayado?', alerta: true,
