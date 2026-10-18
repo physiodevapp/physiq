@@ -30,6 +30,8 @@ import { DS, TIPOS_DS, FILAS_PRUEBA, disautonomiaVacia, normalizarDisautonomia, 
 import { LES, ESTADOS_LES, FILAS_LES, CASILLAS_LES, lupusVacio, normalizarLupus, lesActivo, lesDiagnosticado,
   rasgosVisibles, elementoLESVisible, siRasgos, respondidosRasgos, farmacoNuevo, pendientesLES, lePayload,
   datosLES, lineasRecomendacionLES } from './lib/lupus.js';
+import { MA, FILAS_MA, DESENCADENANTES_MA, mastocitosVacio, normalizarMastocitos, maActivo,
+  pendientesMA, maPayload, datosMA, lineasRecomendacionMA } from './lib/mastocitos.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -311,6 +313,7 @@ function _softResetApp() {
   state.disautonomia = disautonomiaVacia();
   _dsRelojParar();
   state.lupus = lupusVacio();
+  state.mastocitos = mastocitosVacio();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -415,6 +418,7 @@ function _softResetApp() {
   _pintarHMUI();
   _pintarDsUI();
   _pintarLESUI();
+  _pintarMAUI();
 }
 
 // «Reiniciar valoración» vive en el panel de sesión (antes, en la cabecera):
@@ -981,7 +985,8 @@ function _hmBloqueHTML() {
         </div>
       </div>`).join('')}
       <div class="hm-resultado">${n ? `${si} de ${n} con «sí»${si >= 2 ? ': cuestionario positivo' : ''}` : 'Sin contestar'}</div>
-      <div class="hm-fuente">${citasEnTexto(HM.cuestionarioFuente)}</div>`);
+      <div class="hm-fuente">${citasEnTexto(HM.cuestionarioFuente)}</div>
+      <div class="hm-fuente">💉 ${citasEnTexto(MA.textos.asociacion)}</div>`);
   }
   if (beightonVisible(hm)) {
     const b = hm.beighton;
@@ -1180,7 +1185,8 @@ function _dsBloqueHTML() {
       <div class="hm-resultado">${n ? `${si} de 2 con «sí»${otraCausa(ds) ? ' · posible otra causa de taquicardia' : ''}` : 'Sin contestar'}</div>
       <div class="hm-fuente">${citasEnTexto(DS.sospechaFuente)}</div>
       <div class="hm-fuente">${citasEnTexto(DS.diferencialFuente)}</div>
-      <div class="hm-fuente">${citasEnTexto(DS.hipermovilidad)}</div>`);
+      <div class="hm-fuente">${citasEnTexto(DS.hipermovilidad)}</div>
+      <div class="hm-fuente">💉 ${citasEnTexto(MA.textos.asociacion)}</div>`);
   }
   const b = ds.bipedestacion;
   let cuerpo;
@@ -1484,6 +1490,84 @@ function _lupusResultadosHTML(d) {
     </div>`;
 }
 
+// ─── TRASTORNO MASTOCITARIO O ANAFILAXIA (Fase P, docs/mastocitaria.md) ────
+// Tarjeta de la fase 1: No consta (nada marcado) · Diagnosticado (sin
+// «Sospecha», decisión 2). Con «Diagnosticado», tres filas de botones (qué le
+// han diagnosticado, anafilaxia previa, autoinyector) y las casillas de lo que
+// le ha provocado episodios; activa la derivación del sistema de la fase 2, la
+// línea de la 4b, el recuadro de la fase 5 y el aviso y la red de la fase 6.
+function _pintarMAUI() {
+  const ma = state.mastocitos;
+  document.body.classList.toggle('mastocitos', maActivo(ma));
+  const nota = document.getElementById('maNota');
+  if (nota && !nota.innerHTML) nota.innerHTML = `Sin marcar = no consta. ${citasEnTexto(MA.textos.nota)}`;
+  document.querySelectorAll('#maEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === ma.estado));
+  const wrap = document.getElementById('maDiagWrap');
+  if (wrap) wrap.style.display = maActivo(ma) ? '' : 'none';
+  Object.keys(FILAS_MA).forEach(k => document.querySelectorAll(`[data-ma-fila="${k}"] .option-btn`)
+    .forEach(b => b.classList.toggle('selected', b.dataset.valor === ma[k])));
+  // «Ninguno: solo ha tenido anafilaxia» ya responde la pregunta de la anafilaxia
+  const an = document.getElementById('maAnafilaxiaWrap');
+  if (an) an.style.display = ma.tipo === 'soloAnafilaxia' ? 'none' : '';
+  const cont = document.getElementById('maDesencadenantes');
+  if (cont) {
+    if (!cont.children.length) {
+      cont.innerHTML = MA.desencadenantes.map(d =>
+        `<label class="hm-casilla"><input type="checkbox" id="ma_${d.id}" onchange="toggleMADesencadenante('${d.id}')"> ${d.texto}</label>`).join('');
+    }
+    DESENCADENANTES_MA.forEach(k => { const c = document.getElementById(`ma_${k}`); if (c) c.checked = !!ma.desencadenantes[k]; });
+  }
+  const otro = document.getElementById('maOtro');
+  if (otro && document.activeElement !== otro) otro.value = ma.otro || '';
+}
+
+function _maCambio() {
+  _pintarMAUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectMAEstado(valor) {
+  state.mastocitos.estado = state.mastocitos.estado === valor ? '' : valor;
+  _maCambio();
+}
+
+// Filas de la tarjeta: un segundo toque sobre la opción marcada la quita.
+function selectMAFila(fila, valor) {
+  if (!FILAS_MA[fila]) return;
+  state.mastocitos[fila] = state.mastocitos[fila] === valor ? '' : valor;
+  _maCambio();
+}
+
+function toggleMADesencadenante(k) {
+  if (!DESENCADENANTES_MA.includes(k)) return;
+  const d = state.mastocitos.desencadenantes;
+  if (d[k]) delete d[k]; else d[k] = true;
+  _maCambio();
+}
+
+// Texto libre: no repinta el cribado ni vacía la 4b (solo cambia el recuadro y los resúmenes)
+function updateMAOtro(valor) {
+  state.mastocitos.otro = String(valor || '').slice(0, 120);
+  saveSession();
+}
+
+function getMaPayload() {
+  return maPayload(state.mastocitos);
+}
+
+// Recuadro de la fase 5 (docs/mastocitaria.md): nunca se pliega.
+function _mastocitosResultadosHTML(d) {
+  return `
+    <div class="alert alert-info ma-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">💉</span>
+      <div><strong>Trastorno mastocitario o anafilaxia.</strong> ${datosMA(d).join(' · ')}
+        ${lineasRecomendacionMA(d).map(t => `<div${t === MA.textos.queHacer ? ' class="ma-que-hacer"' : ''}>${citasEnTexto(t)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
 // «Ya diagnosticada y tratada» (casilla en la 4b y en la fase 5; decisión 5).
 // No depende del mecanismo: también vale para una fractura con yeso o una
 // gota ya en tratamiento.
@@ -1561,7 +1645,7 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus);   // los de las condiciones especiales no tienen embudo
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos);   // los de las condiciones especiales no tienen embudo
     const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
     const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
@@ -1586,6 +1670,7 @@ function getPendientesBreve() {
     pendientes.push({ fase: 2, texto: 'Prueba de bipedestación sin hacer (sospecha de disautonomía)' });
   }
   pendientes.push(...pendientesLES(state.lupus));   // docs/lupus.md: corticoides o rasgos sin registrar
+  pendientes.push(...pendientesMA(state.mastocitos));   // docs/mastocitaria.md: autoinyector sin registrar
   return pendientes;
 }
 
@@ -1821,6 +1906,7 @@ function sistemasActivos(regionId = state.region) {
     .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
     .filter(sis => !sis.soloDisautonomia || dsActiva(state.disautonomia))
     .filter(sis => !sis.soloLupus || lesActivo(state.lupus))
+    .filter(sis => !sis.soloMastocitos || maActivo(state.mastocitos))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -1983,7 +2069,7 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) {
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
       <div class="hm-bloque" data-hm-bloque></div>`;
-  } else if (sis.soloDisautonomia || sis.soloLupus) {
+  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos) {
     // El de disautonomía (docs/pots.md) tampoco: primero las preguntas del
     // síncope y, después de ellas, la sospecha y la prueba (data-ds-bloque)
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">`;
@@ -2639,7 +2725,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -3041,6 +3127,9 @@ function buildResults() {
   // ── Lupus (Fase P, docs/lupus.md): consideraciones para el plan, nunca plegadas
   const le = getLePayload();
   if (le) container.innerHTML += _lupusResultadosHTML(le);
+  // ── Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): qué hacer, nunca plegado
+  const ma = getMaPayload();
+  if (ma) container.innerHTML += _mastocitosResultadosHTML(ma);
 
   // ── Header summary
   container.innerHTML += `
@@ -3871,6 +3960,7 @@ function buildPhysiQPayload() {
     ...(getHMPayload() ? { hm: getHMPayload() } : {}),
     ...(getDsPayload() ? { ds: getDsPayload() } : {}),
     ...(getLePayload() ? { le: getLePayload() } : {}),
+    ...(getMaPayload() ? { ma: getMaPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
@@ -4651,6 +4741,7 @@ function _hasAssessmentData() {
     || !!state.hipermovilidad?.estado
     || !!state.disautonomia?.estado
     || !!state.lupus?.estado
+    || !!state.mastocitos?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -4751,12 +4842,14 @@ function _restoreSessionDOM() {
   state.hipermovilidad = normalizarHipermovilidad(state.hipermovilidad);   // sesiones anteriores a la Fase P
   state.disautonomia = normalizarDisautonomia(state.disautonomia);         // sesiones anteriores al POTS
   state.lupus = normalizarLupus(state.lupus);                               // sesiones anteriores al lupus
+  state.mastocitos = normalizarMastocitos(state.mastocitos);                // sesiones anteriores a la tarjeta mastocitaria
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
   _pintarCirugiaUI();
   _pintarHMUI();
   _pintarDsUI();
   _pintarLESUI();
+  _pintarMAUI();
   _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
@@ -4887,6 +4980,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarHMUI();
   _pintarDsUI();
   _pintarLESUI();
+  _pintarMAUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
@@ -5069,6 +5163,7 @@ Object.assign(window, {
   selectDsEstado, selectDsTipo, selectDsSospecha, dsPruebaHacer, dsPruebaQuitar, toggleDsPrep, updateDsPrueba,
   dsRelojEmpezar, dsRelojParar,
   selectLESEstado, selectLESFila, toggleLESCasilla, selectLESRasgo,
+  selectMAEstado, selectMAFila, toggleMADesencadenante, updateMAOtro,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========

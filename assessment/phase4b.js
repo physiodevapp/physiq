@@ -15,6 +15,7 @@ import { citasHTML, citasEnTexto, partirCitas, registroReferencias, enlaceCita }
 import { HM, hmActiva } from './lib/hipermovilidad.js';
 import { DS, dsActiva } from './lib/disautonomia.js';
 import { LES, lesDiagnosticado } from './lib/lupus.js';
+import { MA, maActivo } from './lib/mastocitos.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -157,6 +158,9 @@ export function buildHypothesisCards() {
     const t = LES.textos;
     container.insertAdjacentHTML('beforeend', `<div class="ds-nota les-nota-4b">🦋 ${citasEnTexto(t.tecnica4b)}${state.lupus.antitrombotico ? ` ${citasEnTexto(t.tecnica4bAntitrombotico)}` : ''}</div>`);
   }
+  // Trastorno mastocitario o anafilaxia (Fase P, docs/mastocitaria.md): roce,
+  // presión, calor, frío y vibración. Una regla de técnica; no cambia las LR
+  if (maActivo(state.mastocitos)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota ma-nota-4b">💉 ${citasEnTexto(MA.textos.tecnica4b)}</div>`);
 
   activas.forEach(hId => {
     const hyp = hipotesis(hId);

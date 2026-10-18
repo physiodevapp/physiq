@@ -454,6 +454,48 @@
     </div>
   </div>
 
+  <!-- Condición especial (docs/mastocitaria.md): sin marcar = no consta; sin «Sospecha» -->
+  <div class="card" id="cardMastocitos">
+    <div class="card-title">Trastorno mastocitario o anafilaxia</div>
+    <div class="plan-note-hint" id="maNota"></div>
+    <div class="option-group option-group-full" id="maEstado">
+      <button type="button" class="option-btn" data-valor="diagnosticado" onclick="selectMAEstado('diagnosticado')">Diagnosticado</button>
+    </div>
+    <div id="maDiagWrap" style="display:none">
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Qué le han diagnosticado?</div>
+      <div class="option-group hm-subtipos" data-ma-fila="tipo">
+        <button type="button" class="option-btn" data-valor="mastocitosis" onclick="selectMAFila('tipo','mastocitosis')">Mastocitosis</button>
+        <button type="button" class="option-btn" data-valor="sama" onclick="selectMAFila('tipo','sama')">Síndrome de activación mastocitaria</button>
+        <button type="button" class="option-btn" data-valor="otro" onclick="selectMAFila('tipo','otro')">Otro trastorno mastocitario</button>
+        <button type="button" class="option-btn" data-valor="soloAnafilaxia" onclick="selectMAFila('tipo','soloAnafilaxia')">Ninguno: solo ha tenido anafilaxia</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectMAFila('tipo','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo" id="maAnafilaxiaWrap">
+      <div class="form-label">¿Ha tenido alguna anafilaxia?</div><div class="plan-note-hint">Una reacción brusca con falta de aire, mareo o desmayo, con o sin ronchas.</div>
+      <div class="option-group hm-subtipos" data-ma-fila="anafilaxia">
+        <button type="button" class="option-btn" data-valor="SI" onclick="selectMAFila('anafilaxia','SI')">Sí</button>
+        <button type="button" class="option-btn" data-valor="NO" onclick="selectMAFila('anafilaxia','NO')">No</button>
+        <button type="button" class="option-btn" data-valor="NS" onclick="selectMAFila('anafilaxia','NS')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Lleva autoinyector de adrenalina?</div>
+      <div class="option-group hm-subtipos" data-ma-fila="autoinyector">
+        <button type="button" class="option-btn" data-valor="SI" onclick="selectMAFila('autoinyector','SI')">Sí</button>
+        <button type="button" class="option-btn" data-valor="NO" onclick="selectMAFila('autoinyector','NO')">No</button>
+        <button type="button" class="option-btn" data-valor="sinReceta" onclick="selectMAFila('autoinyector','sinReceta')">No le han recetado</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo les-casillas">
+      <div class="form-label">¿Qué le ha provocado episodios?</div>
+      <div id="maDesencadenantes"></div>
+      <input type="text" class="form-input" id="maOtro" maxlength="120" placeholder="Otro (escríbelo)" oninput="updateMAOtro(this.value)">
+    </div>
+    </div>
+  </div>
+
   <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>

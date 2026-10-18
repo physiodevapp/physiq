@@ -2975,6 +2975,10 @@ body.disautonomia .solo-ds { display: block; }
 .solo-les { display: none; }
 body.lupus .solo-les { display: block; }
 .les-casillas { display: flex; flex-direction: column; gap: 2px; }
+/* Desencadenantes de la tarjeta «Trastorno mastocitario o anafilaxia» (docs/mastocitaria.md): uno por línea */
+#maDesencadenantes { display: flex; flex-direction: column; gap: 2px; }
+#maOtro { margin-top: 6px; }
+.ma-fase5 .ma-que-hacer { font-weight: 600; }
 .cir-semanas:not(:empty) { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); margin: -4px 0 12px; }
 .cir-complicaciones { flex-wrap: wrap; }
 .cir-complicaciones .option-btn { width: auto; flex: 0 0 auto; padding: 8px 12px; font-size: 0.8rem; min-height: 40px; }

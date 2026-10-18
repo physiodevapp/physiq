@@ -1047,3 +1047,77 @@ export const SIS_LUPUS = {
     },
   },
 };
+
+// ─── Trastorno mastocitario o anafilaxia (Fase P, docs/mastocitaria.md) ───
+// Capa transversal reducida: solo «Diagnosticado» (decisión 2), sin «Sospecha»
+// ni regla automática con la hipermovilidad o el POTS (decisión 5). Lo que
+// cambia la sesión es el riesgo de anafilaxia (Valent 2022, el paraguas de la
+// CIE-10-MC). La fase 2 solo añade una derivación no urgente por episodios
+// nuevos sin valorar (decisión 7); la anafilaxia es un suceso de la sesión y se
+// trata en el recuadro de la fase 5 y la red de seguridad de la fase 6.
+const MA_CITA = {
+  valent: 'Valent 2022 — Valent, Hartmann, Bonadonna et al., «Global classification of mast cell activation disorders: an ICD-10-CM-adjusted proposal of the ECNM-AIM Consortium», J Allergy Clin Immunol Pract 2022;10(8):1941–1950',
+  nice: 'NICE NG258 — NICE, «Anaphylaxis: assessment and referral after emergency treatment», guía NG258, 2026',
+  rcuk: 'RCUK 2021 — Resuscitation Council UK, «Emergency treatment of anaphylaxis: guidelines for healthcare providers», mayo de 2021',
+  cardona: 'Cardona 2020 — Cardona, Ansotegui, Ebisawa et al., «World Allergy Organization anaphylaxis guidance 2020», World Allergy Organ J 2020;13(10):100472',
+  lee: 'Lee y Picard 2025 — Lee y Picard, «Diagnosis and management of mast cell activation syndrome (MCAS) in Canada: a practical approach», Allergy Asthma Clin Immunol 2025;21:49',
+};
+
+export const SIS_MASTOCITOS = {
+  id: 'transversal_mastocitos', icon: '💉', nombre: 'Trastorno mastocitario o anafilaxia', soloMastocitos: true,
+  banderasRojas: [],
+  banderasAmarillas: [
+    { texto: 'Episodios bruscos nuevos o más graves (ronchas, hinchazón, falta de aire, mareo o desmayo) que su médico aún no conoce', pregunta: 'ma_d_episodios' },
+  ],
+  preguntas: [
+    { id: 'ma_d_episodios', derivacion: 'Episodios nuevos o más graves sin valorar: que los valore su alergólogo o su médico, sin esperar a la próxima revisión.',
+      text: 'Desde su última revisión médica, ¿ha tenido episodios bruscos con ronchas, hinchazón, falta de aire, mareo o desmayo que su médico aún no conoce?',
+      razonamiento: {
+        porque: 'Tras una anafilaxia, las guías piden que la valore un servicio especializado de alergia para buscar la causa, reducir el riesgo de otra y preparar al paciente para manejarla (NICE NG258, 1.1.12; RCUK 2021, 8.7; Cardona 2020). En los trastornos mastocitarios, el diagnóstico y la variante se deciden con la triptasa medida durante el episodio y la basal, que solo puede pedir el médico (Valent 2022, tabla I).',
+        peso: 'No es una urgencia: si el episodio está ocurriendo ahora, es una anafilaxia y se trata en el momento (112 y su autoinyector). Esta pregunta busca los episodios pasados que nadie ha valorado: tras una anafilaxia, el riesgo de otra se ha estimado en 1 de cada 12 al año (RCUK 2021, 2.2). Un síntoma aislado de un solo órgano (solo ronchas, solo cansancio, solo dolor de cabeza) no basta para hablar de activación mastocitaria (Lee y Picard 2025, tabla 1).',
+        fuentes: ['NICE NG258', 'RCUK 2021', 'Cardona 2020', 'Valent 2022', 'Lee y Picard 2025'],
+        citas: [`${MA_CITA.nice}, recomendación 1.1.12.`, `${MA_CITA.rcuk}, apartados 2.2 y 8.7.`, `${MA_CITA.cardona}, resumen.`,
+          `${MA_CITA.valent}, tabla I.`, `${MA_CITA.lee}, tabla 1.`]
+      } },
+  ],
+  // Tipos, desencadenantes y textos de la condición. Las citas de estos textos
+  // cuentan en docs/referencias.md como menciones del cribado.
+  mastocitos: {
+    // Diagnóstico concreto dentro del paraguas (decisiones 3 y 16). La
+    // α-triptasemia hereditaria sola no tiene opción propia (decisión 12).
+    tipos: {
+      mastocitosis: 'Mastocitosis',
+      sama: 'Síndrome de activación mastocitaria',
+      otro: 'Otro trastorno mastocitario',
+      soloAnafilaxia: 'Ninguno: solo ha tenido anafilaxia',
+      ns: 'No lo sabe',
+    },
+    // Lo que ya le ha provocado episodios (decisión 8; docs/mastocitaria.md,
+    // «Los desencadenantes que pone la sesión»).
+    desencadenantes: [
+      { id: 'ejercicio', texto: 'Ejercicio o esfuerzo' },
+      { id: 'calor', texto: 'Calor' },
+      { id: 'frio', texto: 'Frío' },
+      { id: 'roce', texto: 'Roce o presión en la piel' },
+      { id: 'vibracion', texto: 'Vibración' },
+      { id: 'estres', texto: 'Estrés' },
+      { id: 'aine', texto: 'Algún antiinflamatorio (AINE)' },
+      { id: 'alimento', texto: 'Un alimento con el ejercicio' },
+      { id: 'picaduras', texto: 'Picaduras' },
+    ],
+    textos: {
+      nota: 'Márcala si un médico le ha diagnosticado un trastorno mastocitario o si ha tenido una anafilaxia. Pregunta qué le dijeron exactamente: «MCAD» puede significar cosas distintas según quién lo diagnostique. Los síntomas crónicos (cansancio, dolor, niebla mental) no bastan para sospecharlo (Lee y Picard 2025, tabla 1).',
+      queHacer: 'Si en la sesión aparecen ronchas, hinchazón, falta de aire, mareo o un desmayo: para, quédate con él y llama al 112; que se ponga su autoinyector en la cara externa del muslo (si no puede, ayúdale a ponérselo si la normativa de tu país lo permite) y, si no mejora, a los 5 minutos el segundo. Tumbado (sentado si le cuesta respirar; de lado si pierde el conocimiento y respira) y sin levantarlo de golpe aunque mejore. Puede no haber ronchas (RCUK 2021, apartados 3.1, 4.4 y 5.1.1; Muraro 2022, recuadro 3; NICE NG258, 1.1.14).',
+      desmayo: 'Un desmayo vasovagal mejora enseguida al tumbarlo, con el pulso lento. Si no se recupera rápido tumbado, o tiene el pulso rápido, ronchas o le cuesta respirar, trátalo como una anafilaxia (RCUK 2021, tabla 3).',
+      despues: 'Tras una anafilaxia, aunque se recupere, lo tiene que ver un médico: puede repetirse en las horas siguientes sin nueva exposición (NICE NG258; RCUK 2021, 8.2).',
+      riesgoAlto: 'Tiene más riesgo de anafilaxia que la población general (Valent 2022, tabla II): que lleve su autoinyector siempre y lo traiga a cada sesión (NICE NG258, 1.1.16).',
+      mastocitosis: 'En la mastocitosis, la anafilaxia suele empezar con calor brusco, palpitaciones, mareo y desmayo, a menudo sin ronchas (Gülen 2023; González-de-Olano 2017).',
+      sinAutoinyector: 'Tras una anafilaxia, las guías indican llevar autoinyector (salvo si fue por un fármaco fácil de evitar), y también con una mastocitosis sistémica y cualquier reacción previa: que su médico lo valore (RCUK 2021, 8.6; Muraro 2022, recuadro 4).',
+      desencadenantes: 'Evita en la sesión lo que ya le ha provocado episodios; no hace falta evitar una lista de todos los descritos (Brockow 2021).',
+      protocolo: 'Ten un protocolo escrito de anafilaxia y ensáyalo con regularidad (Cardona 2020, fig. 4).',
+      tecnica4b: 'Trastorno mastocitario: el roce, la presión mantenida, el calor, el frío y la vibración pueden desencadenar síntomas; haz las maniobras con suavidad y evita lo que ya le ha provocado episodios (Brockow 2021; Muñoz 2024).',
+      // Forma 1 (decisión 1): solo texto en la hipermovilidad y el POTS, sin regla.
+      asociacion: 'Se ha descrito que algunas personas con hipermovilidad o POTS tienen también un síndrome de activación mastocitaria, pero la asociación no se ha demostrado en pacientes que cumplan con claridad los criterios de consenso (Lee y Picard 2025), y en 587 pacientes con esas etiquetas solo se confirmó en 1 (Valdez 2026). Un síndrome de activación mastocitaria se presenta como episodios bruscos y graves en dos o más sistemas a la vez, no como cansancio o dolor crónicos (Valent 2022, tabla I). Si los ha tenido, mira la tarjeta «Trastorno mastocitario o anafilaxia».',
+    },
+  },
+};

@@ -17,6 +17,7 @@ import { regionConLado } from './lib/region.js';
 import { payloadSintomas, zonaConRedNeuro } from './lib/sintomas.js';
 import { dsActiva } from './lib/disautonomia.js';
 import { lesDiagnosticado } from './lib/lupus.js';
+import { maActivo } from './lib/mastocitos.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
 import {
@@ -88,6 +89,8 @@ function entrada(hs) {
     // Lupus diagnosticado (docs/lupus.md): avisos y red de seguridad
     lupus: lesDiagnosticado(state.lupus) ? { brote: ['brote', 'peor'].includes(state.lupus.actividad),
       antitrombotico: !!state.lupus.antitrombotico, raynaud: !!state.lupus.raynaud } : null,
+    // Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): aviso y red de seguridad
+    mastocitos: maActivo(state.mastocitos),
     estabilidad: state.estabilidad, riesgoPsico: state.riesgoPsico, psico_miedo: state.psico_miedo,
     signoComparable: state.signoComparable,
     sesion: pt.sesion, gravedadManual: pt.gravedad, irritabilidadManual: pt.irritabilidad,

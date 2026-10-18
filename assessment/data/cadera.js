@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, SIS_LUPUS, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, RAZON_ISQUEMIA_AGUDA } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, SIS_LUPUS, SIS_MASTOCITOS, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, RAZON_ISQUEMIA_AGUDA } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.cadera — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -52,6 +52,7 @@ export const screening = {
     SIS_HIPERMOVILIDAD,  // solo con la tarjeta «Hipermovilidad» activa (docs/hipermovilidad.md)
     SIS_DISAUTONOMIA,    // solo con la tarjeta «Disautonomía / POTS» activa (docs/pots.md)
     SIS_LUPUS,           // solo con la tarjeta «Lupus (LES)» activa (docs/lupus.md)
+    SIS_MASTOCITOS,      // solo con la tarjeta «Trastorno mastocitario o anafilaxia» activa (docs/mastocitaria.md)
     {
       id: 'ca_cancer', icon: '🔬', nombre: 'Cáncer / Oncológico',
       banderasRojas: [

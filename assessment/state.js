@@ -43,6 +43,13 @@ const state = {
   // «Sospecha», rasgos: { lr1…lr6: 'SI'|'NO' }.
   lupus: { estado: '', corticoides: '', dosisAltas: '', inmunosupresores: '', antifosfolipidos: '',
     antitrombotico: false, osteonecrosis: false, raynaud: false, actividad: '', rasgos: {} },
+  // Condición especial «Trastorno mastocitario o anafilaxia» (Fase P,
+  // docs/mastocitaria.md, lib/mastocitos.js). estado: '' (no consta) |
+  // 'diagnosticado' (sin «Sospecha»); tipo '' | 'mastocitosis' | 'sama' | 'otro' |
+  // 'soloAnafilaxia' | 'ns'; anafilaxia '' | 'SI' | 'NO' | 'NS'; autoinyector
+  // '' | 'SI' | 'NO' | 'sinReceta'; desencadenantes { ejercicio, calor, … : true };
+  // otro: texto libre.
+  mastocitos: { estado: '', tipo: '', anafilaxia: '', autoinyector: '', desencadenantes: {}, otro: '' },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',

@@ -9,7 +9,7 @@ import {
   MINUTOS_SESION, HIP_EXPLORACION_NEURO, HIP_RADICULARES, TEXTOS_CASA, RED_SEGURIDAD, AVISOS_HIP,
   VOLUMEN_PAUTA, FRECUENCIA_PAUTA, ESCALONES_PERIFERICOS, REGIONES_COLUMNA_PLAN, FAMILIA_HIP,
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
-  AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA, AVISOS_LUPUS, RED_LUPUS,
+  AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA, AVISOS_LUPUS, RED_LUPUS, AVISOS_MASTOCITOS, RED_MASTOCITOS,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 import { nivelMatriz } from './irritabilidad.js';
@@ -170,12 +170,13 @@ export function cantidadSesion(elegidas = [], region) {
 // con una hipótesis que pide exploración neurológica), después la de siempre
 // (una o una lista, decisión 79) y, al final, la de una hipótesis que la trae
 // de otra región (RED_HIP: h6, la arterial de cervical; decisión 50) y la de
-// la disautonomía (RED_DISAUTONOMIA, docs/pots.md) y la del lupus (RED_LUPUS,
-// docs/lupus.md). Sin repetir.
-export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false } = {}) {
+// la disautonomía (RED_DISAUTONOMIA, docs/pots.md), la del lupus (RED_LUPUS,
+// docs/lupus.md) y la de la anafilaxia (RED_MASTOCITOS, docs/mastocitaria.md).
+// Sin repetir.
+export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false } = {}) {
   const r = RED_SEGURIDAD[region] || {};
   const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id]),
-    disautonomia && RED_DISAUTONOMIA, ...(lupus ? RED_LUPUS : [])].filter(Boolean)
+    disautonomia && RED_DISAUTONOMIA, ...(lupus ? RED_LUPUS : []), mastocitos && RED_MASTOCITOS].filter(Boolean)
     .filter((p, i, a) => a.findIndex(q => q.cierre === p.cierre) === i);
   return {
     cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
@@ -205,7 +206,9 @@ export function rangosBloques(duraciones = {}) {
 //   del payload: [{ n, z, nr, ir, re, or }]), redNeuroZona (algún síntoma en una
 //   zona `redNeuro`: periné en lumbar), disautonomia e hipermovilidad (tarjetas
 //   de la fase 1 activas, docs/pots.md), lupus (null, o { brote, antitrombotico,
-//   raynaud } con la tarjeta en «Diagnosticado», docs/lupus.md), estabilidad, riesgoPsico,
+//   raynaud } con la tarjeta en «Diagnosticado», docs/lupus.md), mastocitos (la
+//   tarjeta «Trastorno mastocitario o anafilaxia» marcada, docs/mastocitaria.md),
+//   estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
 export function construirPlan(e) {
@@ -234,7 +237,7 @@ export function construirPlan(e) {
   const nervio = elegidas.some(esNervioPeriferico);
   // La red neurológica también con un síntoma en una zona `redNeuro` (hoy el
   // periné en lumbar: cola de caballo), aunque no haya hipótesis neurológica
-  const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia, lupus: !!e.lupus });
+  const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia, lupus: !!e.lupus, mastocitos: !!e.mastocitos });
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
   const tabla = tablaEscalones(familia);
@@ -255,6 +258,8 @@ export function construirPlan(e) {
     if (e.lupus.antitrombotico) avisosHip.push(AVISOS.lupusAntitrombotico);
     if (e.lupus.raynaud) avisosHip.push(AVISOS.lupusRaynaud);
   }
+  // Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): en cualquier región
+  if (e.mastocitos) avisosHip.push(...AVISOS_MASTOCITOS.map(k => AVISOS[k]));
   for (const k of new Set(elegidas.flatMap(h => AVISOS_HIP[h.id] || []))) avisosHip.push(AVISOS[k]);
   if (elegidas.length > 1) avisosHip.push(AVISOS.dosHipotesis);
   if (new Set(familias).size > 1) avisosHip.push(AVISOS.dosFamilias);

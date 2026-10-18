@@ -34,6 +34,8 @@ export function estadoCondicion(c, st) {
       if (ds.estado === 'diagnosticada') return marcada(`Diagnosticada${TIPO_DS[ds.tipo] ? ` (${TIPO_DS[ds.tipo]})` : ''}`);
       return ds.estado === 'sospecha' ? marcada('Sospecha') : sin('No consta');
     }
+    case 'mastocitos':
+      return st.mastocitos?.estado === 'diagnosticado' ? marcada('Diagnosticado') : sin('No consta');
     case 'lupus': {
       const le = st.lupus || {};
       if (le.estado === 'diagnosticado') return marcada('Diagnosticado');

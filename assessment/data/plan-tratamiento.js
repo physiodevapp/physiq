@@ -110,6 +110,9 @@ export const AVISOS = {
   disautonomia: 'Disautonomía: empezar el ejercicio semirreclinado, tumbado o en el agua (no muy caliente) y añadir lo vertical poco a poco (Raj 2020, rec. 14; en Fu 2010 y George 2016, hacia el final del 2.º mes); mejor dinámico que isométrico, no comer en la hora anterior y terminar con una vuelta a la calma suave (Hakim 2017, p. 172). Evitar estar mucho rato de pie quieto en la sesión (Raj 2020, p. 367). La mejoría puede tardar 4–6 semanas (Raj 2020, p. 368).',
   // Lupus (Fase P, docs/lupus.md): con la tarjeta en «Diagnosticado», en todas
   // las regiones (AVISOS_LUPUS); los otros tres según las filas de la tarjeta
+  // Trastorno mastocitario o anafilaxia (Fase P, docs/mastocitaria.md): con la
+  // tarjeta marcada, en todas las regiones (AVISOS_MASTOCITOS)
+  mastocitos: 'Trastorno mastocitario o anafilaxia: que traiga su autoinyector a cada sesión (NICE NG258, 1.1.16); evitar lo que ya le ha provocado episodios, no una lista de todos los descritos (Brockow 2021). Si el calor o el frío se los han provocado, sin termoterapia ni crioterapia y con la sala templada (Muñoz 2024). No hace falta dejar el ejercicio: en la anafilaxia por ejercicio, las guías piden mantenerlo, acompañado y con el autoinyector a mano (Srisuwatchari 2023, tabla 2; extenderlo a la mastocitosis es una inferencia). Si un alimento con el ejercicio le ha dado episodios, no tomarlo en las horas de antes y después del ejercicio (Srisuwatchari 2023, tabla 2).',
   lupus: 'Lupus: intensidad moderada, con aeróbico y fuerza, individualizada y supervisada por un fisioterapeuta (Blaess 2024, recs. 9, 11 y 14); antes de empezar, su médico valora las contraindicaciones (Blaess 2024, rec. 10). Fotoprotección para prevenir brotes (Parodis 2024, rec. LES 2) y evitar el ejercicio al sol con un índice UV por encima de 3 (opinión de los autores de Frade 2023).',
   lupusBrote: 'Lupus en brote o peor sin valorar: que su reumatólogo revalore las contraindicaciones antes de seguir (Blaess 2024, rec. 4); en un brote articular, no cargar las articulaciones inflamadas (Blaess 2024, rec. 5).',
   lupusAntitrombotico: 'Lupus con anticoagulante o antiagregante: precaución con lo que tenga riesgo de golpe (Blaess 2024, rec. 3).',
@@ -272,6 +275,11 @@ export const RED_LUPUS = [
   { cierre: 'cierreIctusLupus', casa: 'alarmaIctusLupus' },
 ];
 
+// Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): con la tarjeta
+// marcada, en cualquier región, el aviso `mastocitos` y la red de la anafilaxia.
+export const AVISOS_MASTOCITOS = ['mastocitos'];
+export const RED_MASTOCITOS = { cierre: 'cierreAnafilaxia', casa: 'alarmaAnafilaxia' };
+
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
 // empezar a movilizar tras la cirugía.
@@ -293,6 +301,7 @@ export const BLOQUES_SESION = [
 // Contenido fijo de cada bloque (decisiones 18 y 21).
 export const TEXTOS_SESION = {
   cierreFiebreLupus: 'Red de seguridad (lupus): explicar que la fiebre, los escalofríos o un malestar general nuevos piden ir hoy mismo al médico, y que con su tratamiento una infección puede dar poca fiebre; comprobar que lo ha entendido (Rao y Mikdashi 2023; Yasir 2023).',
+  cierreAnafilaxia: 'Red de seguridad (trastorno mastocitario o anafilaxia): explicar que, si le salen ronchas, se le hincha la boca, le falta el aire, se marea o se desmaya, debe parar, ponerse el autoinyector y llamar al 112, tumbado y sin levantarse de golpe aunque mejore, y comprobar que lo ha entendido (RCUK 2021, apartados 4.4 y 5.1.1; NICE NG258, 1.1.14).',
   cierreIctusLupus: 'Red de seguridad (lupus): explicar que la debilidad o el adormecimiento de un lado, la dificultad para hablar o la pérdida de visión de golpe piden llamar al 112, aunque se pasen (Goodman 2018, cap. 12, p. 445; Drosos 2022, p. 773).',
   cierreSincope: 'Red de seguridad (disautonomía): explicar que, si se desmaya mientras hace ejercicio, debe parar y no volver a hacer ejercicio hasta que le vea el médico, y comprobar que lo ha entendido (NICE CG109, 1.3.2.2 y 1.5.4.3; Brignole 2018, p. 1911).',
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
@@ -545,6 +554,8 @@ export const TEXTOS_CASA = {
   titulo: { texto: 'PROGRAMA PARA CASA', tipo: 'etiqueta' },
   // Lupus (RED_LUPUS): la fiebre con su tratamiento y el ictus.
   alarmaFiebreLupus: { texto: 'Si tienes fiebre o escalofríos, o te encuentras mal de una forma nueva, ve hoy mismo al médico: con tu tratamiento, una infección puede dar poca fiebre.', fuente: 'Rao y Mikdashi 2023, «Proposed Steps» (la fiebre en el lupus es infecciosa mientras no se demuestre lo contrario); Yasir 2023, «Adverse Effects» (los corticoides pueden quitar la fiebre)' },
+  // Trastorno mastocitario o anafilaxia (RED_MASTOCITOS).
+  alarmaAnafilaxia: { texto: 'Si te salen ronchas, se te hincha la boca, te falta el aire, te mareas o te desmayas, para, ponte el autoinyector y llama al 112. Túmbate (siéntate si te cuesta respirar) y no te levantes de golpe aunque te encuentres mejor.', fuente: 'RCUK 2021, apartados 4.4 y 5.1.1; NICE NG258, recomendación 1.1.14 (docs/mastocitaria.md)' },
   alarmaIctusLupus: { texto: 'Si de golpe notas debilidad o adormecimiento de un lado del cuerpo, dificultad para hablar o pérdida de visión, llama al 112, aunque se te pase.', fuente: 'Goodman 2018, cap. 12, p. 445 (enfermedad cerebrovascular, frecuente en el lupus); Drosos 2022, p. 773; Rout 2024 (síndrome antifosfolípido), «Deterrence and Patient Education» (enseñar los síntomas del AIT)' },
   // Disautonomía (RED_DISAUTONOMIA): el síncope durante el ejercicio.
   alarmaSincope: { texto: 'Si te desmayas mientras haces ejercicio, para y no vuelvas a hacer ejercicio hasta que te vea el médico.', fuente: 'NICE CG109, recomendaciones 1.3.2.2 y 1.5.4.3: con un síncope durante el ejercicio, no hacer ejercicio hasta la valoración; Brignole 2018, p. 1911 (docs/pots.md)' },
@@ -634,4 +645,4 @@ export const REEVALUACION_RETROSPECTIVA = [
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.
-export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023', 'Butler 2000', 'Butler 1991', 'NICE NG193', 'Kamonseki 2022', 'Raj 2020', 'Fu 2010', 'George 2016', 'Hakim 2017', 'NICE CG109', 'Brignole 2018'];
+export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023', 'Butler 2000', 'Butler 1991', 'NICE NG193', 'Kamonseki 2022', 'Raj 2020', 'Fu 2010', 'George 2016', 'Hakim 2017', 'NICE CG109', 'Brignole 2018', 'RCUK 2021', 'NICE NG258', 'Brockow 2021', 'Muñoz 2024', 'Srisuwatchari 2023'];

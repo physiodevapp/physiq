@@ -81,6 +81,20 @@ export const CONDICIONES = [
     fuentes: ['Aringer 2019'],
   },
   {
+    id: 'mastocitos',
+    nombre: 'Trastorno mastocitario o anafilaxia',
+    que: 'Los mastocitos liberan sustancias que pueden dar reacciones alérgicas graves (anafilaxia), a veces sin causa clara. Incluye la mastocitosis y el síndrome de activación mastocitaria.',
+    piensa: 'Márcala si:',
+    pistas: [
+      { texto: 'un médico le ha diagnosticado una mastocitosis o un trastorno o síndrome de activación mastocitaria;', de: ['ma_d_episodios'] },
+      { texto: 'ha tenido una anafilaxia (una reacción brusca con falta de aire, mareo o desmayo, con o sin ronchas), también con el ejercicio.', de: ['ma_d_episodios'] },
+    ],
+    anade: 'qué hacer ante una anafilaxia en la sesión, sus desencadenantes, una derivación si tiene episodios nuevos sin valorar y la red de seguridad del plan. Los síntomas crónicos (cansancio, dolor) no bastan para marcarla.',
+    destino: { tarjeta: 'cardMastocitos' },
+    boton: 'Ir a la tarjeta →',
+    fuentes: ['Valent 2022', 'Cardona 2020', 'Lee y Picard 2025'],
+  },
+  {
     id: 'tarlov',
     region: 'lumbar',
     nombre: 'Quiste de Tarlov',

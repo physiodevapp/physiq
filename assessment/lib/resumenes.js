@@ -13,6 +13,7 @@ import { lineaNotasSintomas, lineasInformeSintomas } from './sintomas.js';
 import { lineaNotasHM, lineasInformeHM } from './hipermovilidad.js';
 import { lineaNotasDs, informeDs } from './disautonomia.js';
 import { lineaNotasLES, informeLES } from './lupus.js';
+import { lineaNotasMA, informeMA } from './mastocitos.js';
 
 // Línea fija de transparencia del modo breve: fase 5, 📋 Notas y 📄 Informe.
 // Nunca se omite en breve (docs/modo-breve.md, decisión 3).
@@ -33,7 +34,7 @@ export function textoNotas(d) {
     ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
-Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}
+Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA: ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
@@ -87,6 +88,10 @@ export function textoInformePaciente(d, fpInf = { historia: [], antecedentes: []
   // médica; con la sospecha, sin la palabra lupus
   const infLe = d.le ? informeLES(d.le) : null;
   const bloqueLe = infLe?.lineas.length ? `\n\n${infLe.titulo}\n${infLe.lineas.map(l => `  · ${l}`).join('\n')}` : '';
+  // Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): antecedente y
+  // lo que se evita en la sesión
+  const infMa = d.ma ? informeMA(d.ma) : null;
+  const bloqueMa = infMa?.lineas.length ? `\n\n${infMa.titulo}\n${infMa.lineas.map(l => `  · ${l}`).join('\n')}` : '';
 
   // `fpInf`: solo lo marcado con `informe` en formularios/*.js (informeFormularioPrevio,
   // formulario.js) — nunca el formulario entero
@@ -100,7 +105,7 @@ Región valorada: ${region}${breve ? `\n\n${TEXTO_VALORACION_BREVE}` : ''}
 
 MOTIVO DE CONSULTA
 ${d.mo || '—'}
-Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueHM}${bloqueDs}${bloqueLe}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
+Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueHM}${bloqueDs}${bloqueLe}${bloqueMa}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
 
 VALORACIÓN
 ${lineasInformeSintomas(d).map(l => `${l}\n`).join('')}${d.nr != null ? `Intensidad del dolor referida: ${d.nr}/10\n` : ''}${d.ir ? `Irritabilidad del cuadro: ${d.ir}\n` : ''}Naturaleza del dolor: ${d.na || '—'}
