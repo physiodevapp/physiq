@@ -60,6 +60,14 @@ const state = {
   // lesion, suelo, conciencia, fragilidad } (los dos estados).
   osteoporosis: { estado: '', causa: '', vertebrales: '', reciente: false, otras: false, tratamiento: '', corticoides: '',
     factores: {}, caidas: { n: '', lesion: false, suelo: false, conciencia: false, fragilidad: false } },
+  // Tarjeta «Embarazo o posparto» (Fase P, docs/embarazo-posparto.md): estado
+  // '' | 'embarazada' | 'posparto'; con «Embarazada», semanas (de gestación) y
+  // familiar '' | 'SI' | 'NO' | 'NS'; con «Posparto», fecha (AAAA-MM-DD) o
+  // semanasAprox, parto '' | 'vaginal' | 'instrumental' | 'cesarea' | 'ns',
+  // esfinter y occipitoposterior (casillas), lactancia '' | 'SI' | 'NO'; en los
+  // dos, animo { w1, w2 } y suelo { sp1…sp3 }: 'SI'|'NO' (bloques de la fase 2).
+  embarazo: { estado: '', semanas: null, familiar: '', fecha: '', semanasAprox: null, parto: '',
+    esfinter: false, occipitoposterior: false, lactancia: '', animo: {}, suelo: {} },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',

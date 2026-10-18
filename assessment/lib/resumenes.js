@@ -15,6 +15,7 @@ import { lineaNotasDs, informeDs } from './disautonomia.js';
 import { lineaNotasLES, informeLES } from './lupus.js';
 import { lineaNotasMA, informeMA } from './mastocitos.js';
 import { lineaNotasOP, informeOP } from './osteoporosis.js';
+import { lineaNotasEM, informeEM } from './embarazo.js';
 
 // Línea fija de transparencia del modo breve: fase 5, 📋 Notas y 📄 Informe.
 // Nunca se omite en breve (docs/modo-breve.md, decisión 3).
@@ -35,7 +36,7 @@ export function textoNotas(d) {
     ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
-Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}${d.op ? `\n${lineaNotasOP(d.op)}` : ''}
+Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}${d.op ? `\n${lineaNotasOP(d.op)}` : ''}${d.em ? `\n${lineaNotasEM(d.em)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA: ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
@@ -97,6 +98,9 @@ export function textoInformePaciente(d, fpInf = { historia: [], antecedentes: []
   // recomendación de valoración médica; con la sospecha, sin la palabra osteoporosis
   const infOp = d.op ? informeOP(d.op) : null;
   const bloqueOp = infOp?.lineas.length ? `\n\n${infOp.titulo}\n${infOp.lineas.map(l => `  · ${l}`).join('\n')}` : '';
+  // Embarazo o posparto (docs/embarazo-posparto.md): sin las respuestas de ánimo
+  const infEm = d.em ? informeEM(d.em) : null;
+  const bloqueEm = infEm?.lineas.length ? `\n\n${infEm.titulo}\n${infEm.lineas.map(l => `  · ${l}`).join('\n')}` : '';
 
   // `fpInf`: solo lo marcado con `informe` en formularios/*.js (informeFormularioPrevio,
   // formulario.js) — nunca el formulario entero
@@ -110,7 +114,7 @@ Región valorada: ${region}${breve ? `\n\n${TEXTO_VALORACION_BREVE}` : ''}
 
 MOTIVO DE CONSULTA
 ${d.mo || '—'}
-Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueHM}${bloqueDs}${bloqueLe}${bloqueMa}${bloqueOp}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
+Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueHM}${bloqueDs}${bloqueLe}${bloqueMa}${bloqueOp}${bloqueEm}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
 
 VALORACIÓN
 ${lineasInformeSintomas(d).map(l => `${l}\n`).join('')}${d.nr != null ? `Intensidad del dolor referida: ${d.nr}/10\n` : ''}${d.ir ? `Irritabilidad del cuadro: ${d.ir}\n` : ''}Naturaleza del dolor: ${d.na || '—'}

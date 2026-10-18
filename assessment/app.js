@@ -36,6 +36,10 @@ import { OP, ESTADOS_OP, FILAS_OP, CASILLAS_OP, CASILLAS_CAIDAS, osteoporosisVac
   opDiagnosticada, factoresVisibles, fracturaVertebral, elementoOPVisible, siFactores, respondidosFactores,
   resultadoSospecha, resultadoCaidas, derivacionCorticoides, derivacionesOP, pendientesOP, opPayload, datosOP,
   lineasRecomendacionOP } from './lib/osteoporosis.js';
+import { EM, ESTADOS_EM, CASILLAS_EM, SEMANAS_POSPARTO_MAX, embarazoVacio, normalizarEmbarazo, emActivo, emEmbarazada,
+  emPosparto, semanasPosparto, elementoEMVisible, reglaTA, urgenciasEM, derivacionesEM, animoPositivo, animoRespondido,
+  sueloRespondido, sueloSintomas, riesgoSuelo, lineaSupino, pendientesEM, emPayload, datosEM,
+  lineasRecomendacionEM } from './lib/embarazo.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -321,6 +325,7 @@ function _softResetApp() {
   state.lupus = lupusVacio();
   state.mastocitos = mastocitosVacio();
   state.osteoporosis = osteoporosisVacio();
+  state.embarazo = embarazoVacio();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -427,6 +432,7 @@ function _softResetApp() {
   _pintarLESUI();
   _pintarMAUI();
   _pintarOPUI();
+  _pintarEMUI();
 }
 
 // «Reiniciar valoración» vive en el panel de sesión (antes, en la cabecera):
@@ -749,6 +755,7 @@ function selectOption(groupId, btn, value) {
   // La silueta marca el lado y el sexo (el mismo dato que en la fase 1), y su
   // figura sigue al sexo
   if (groupId === 'lado' || groupId === 'sexo') _pintarSilueta();
+  if (groupId === 'sexo') _pintarEMUI();   // con «Hombre», la tarjeta del embarazo se pliega
   if (groupId === 'mecanismo') {
     _pintarCirugiaUI();
     // `pq1` y la casilla «Tratada con la cirugía» dependen del mecanismo
@@ -1746,6 +1753,202 @@ function _osteoporosisResultadosHTML(d) {
     </div>`;
 }
 
+// ─── EMBARAZO O POSPARTO (Fase P, docs/embarazo-posparto.md) ──────────────
+// Tarjeta de la fase 1: No consta (nada marcado) · Embarazada · Posparto
+// (hasta 12 meses). Con «Embarazada», las semanas y el familiar con
+// disfunción del suelo pélvico; con «Posparto», la fecha del parto (o las
+// semanas), el tipo de parto, dos casillas y la lactancia. Las semanas
+// deciden qué preguntas del sistema de la fase 2 salen. Con sexo «Hombre» y
+// nada marcado, se pliega en una línea (decisión 2). Activa el sistema de la
+// fase 2 (urgencias, derivaciones, ánimo y suelo pélvico), la regla de la
+// tensión, las líneas de la 4b, el recuadro de la fase 5 y los avisos y la red
+// de la fase 6.
+let _emVerHombre = false;
+// Hipótesis de la sacroilíaca con la línea de Vleeming 2008 en la fase 5 (T8)
+const SACROILIACAS_EM = ['lu8', 'ca10'];   // «Mostrar» con sexo «Hombre»: solo vista, no se guarda
+
+function _pintarEMUI() {
+  const em = state.embarazo;
+  document.body.classList.toggle('embarazo', emActivo(em));
+  const nota = document.getElementById('emNota');
+  if (nota && !nota.innerHTML) nota.innerHTML = `Sin marcar = no consta. ${EM.textos.nota}`;
+  const plegada = state.sexo === 'Hombre' && !emActivo(em) && !_emVerHombre;
+  const hombre = document.getElementById('emHombre');
+  if (hombre) hombre.style.display = plegada ? '' : 'none';
+  const cuerpo = document.getElementById('emCuerpo');
+  if (cuerpo) cuerpo.style.display = plegada ? 'none' : '';
+  document.querySelectorAll('#emEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === em.estado));
+  const emb = document.getElementById('emEmbWrap');
+  if (emb) emb.style.display = emEmbarazada(em) ? '' : 'none';
+  const pp = document.getElementById('emPpWrap');
+  if (pp) pp.style.display = emPosparto(em) ? '' : 'none';
+  const set = (id, v) => { const el = document.getElementById(id); if (el && el.value !== String(v ?? '')) el.value = v ?? ''; };
+  set('emSemanas', em.semanas);
+  set('emFecha', em.fecha);
+  set('emSemanasPp', em.semanasAprox);
+  ['familiar', 'parto', 'lactancia'].forEach(k => document.querySelectorAll(`[data-em-fila="${k}"] .option-btn`)
+    .forEach(b => b.classList.toggle('selected', b.dataset.valor === em[k])));
+  document.querySelectorAll('#cardEmbarazo [data-em-casilla]').forEach(b => {
+    const on = !!em[b.dataset.emCasilla];
+    b.classList.toggle('selected', on);
+    b.setAttribute('aria-pressed', on);
+  });
+  // Pista del formulario previo lumbar («¿Está embarazada, o ha dado a luz en
+  // el último año?»): un recordatorio, nunca marca la tarjeta
+  const pista = document.getElementById('emFormulario');
+  if (pista) {
+    const r = state.formularioPrevio?.regiones?.lumbar?.embarazo;
+    pista.innerHTML = r === 'Sí' && !emActivo(em) ? `<div class="hm-nota">📝 ${EM.textos.formulario}</div>` : '';
+  }
+  _pintarEMSemanas();
+  _pintarEMTA();
+}
+
+// Lo que depende de las semanas o la fecha: el texto calculado y el aviso.
+function _pintarEMSemanas() {
+  const em = state.embarazo;
+  const txt = document.getElementById('emSemanasPpTxt');
+  if (txt) {
+    const n = semanasPosparto(em);
+    txt.textContent = !emPosparto(em) || n == null ? ''
+      : `${semanasTexto(n)} desde el parto${em.fecha ? '' : ' (aprox.)'}${n > SEMANAS_POSPARTO_MAX ? ' · más de 12 meses: la tarjeta ya no aplica' : ''}`;
+  }
+  const aviso = document.getElementById('emSinSemanas');
+  if (aviso) {
+    const falta = (emEmbarazada(em) && em.semanas == null) || (emPosparto(em) && semanasPosparto(em) == null);
+    aviso.textContent = falta ? EM.textos.semanasSin : '';
+  }
+}
+
+// Regla de la tensión (NICE NG201): urgencia o derivación en la tarjeta.
+function _pintarEMTA() {
+  const el = document.getElementById('emTA');
+  if (!el) return;
+  const r = reglaTA(state.embarazo, state.signosVitales);
+  const t = EM.textos;
+  el.innerHTML = r === 'grave'
+    ? `<div class="alert alert-danger"><span class="alert-icon">🚨</span><div>${citasEnTexto(t.taGrave)}</div></div>`
+    : r === 'alta' ? `<div class="alert alert-danger"><span class="alert-icon">🩺</span><div>${citasEnTexto(t.taAlta)}</div></div>`
+    : r === 'sinSemanas' ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>Tensión de 140/90 o más: anota las semanas. ${citasEnTexto(t.taAlta)}</div></div>`
+    : '';
+}
+
+function _emCambio() {
+  _pintarEMUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectEMEstado(valor) {
+  state.embarazo.estado = state.embarazo.estado === valor ? '' : valor;
+  _emCambio();
+}
+
+function emVerTarjeta() {
+  _emVerHombre = true;
+  _pintarEMUI();
+}
+
+// Semanas de gestación, fecha del parto o semanas aproximadas.
+function updateEM(campo, valor) {
+  if (campo === 'semanas' || campo === 'semanasAprox') {
+    const n = valor === '' ? null : Number(valor);
+    valor = n == null || !Number.isFinite(n) || n < 0 ? null : Math.floor(n);
+  }
+  if (!['semanas', 'fecha', 'semanasAprox'].includes(campo)) return;
+  state.embarazo[campo] = valor;
+  _pintarEMSemanas();
+  _pintarEMTA();
+  _invalidar4b();
+  // Las semanas deciden qué preguntas salen: repintar sin perder el foco del campo
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+// Filas de la tarjeta: un segundo toque sobre la opción marcada la quita.
+const _FILAS_EM = { familiar: EM.familiar, parto: EM.partos, lactancia: EM.lactancia };
+function selectEMFila(fila, valor) {
+  if (!_FILAS_EM[fila]) return;
+  state.embarazo[fila] = state.embarazo[fila] === valor ? '' : valor;
+  _pintarEMUI();
+  _pintarEMBloques();
+  saveSession();
+}
+
+function toggleEMCasilla(k) {
+  if (!CASILLAS_EM.includes(k)) return;
+  state.embarazo[k] = !state.embarazo[k];
+  _pintarEMUI();
+  _pintarEMBloques();
+  saveSession();
+}
+
+// Ánimo y suelo pélvico (fase 2): un segundo toque sobre la respuesta la quita.
+function selectEMBloque(bloque, id, valor) {
+  if (bloque !== 'animo' && bloque !== 'suelo') return;
+  const r = state.embarazo[bloque];
+  if (r[id] === valor) delete r[id]; else r[id] = valor;
+  _pintarEMBloques();
+  saveSession();
+}
+
+function getEmPayload() {
+  return emPayload(state.embarazo);
+}
+
+// Bloque del sistema de la fase 2 (va dos veces: panel de escritorio y acordeón).
+function _emBloqueHTML() {
+  const em = state.embarazo;
+  if (!emActivo(em)) return '';
+  const t = EM.textos;
+  const filas = (bloque, lista) => lista.map((q, i) => `<div class="sq2 em-${bloque}">
+      <div class="sq2-badge">${i + 1}</div>
+      <div class="sq2-text">${q.texto}</div>
+      <div class="sq-btns">
+        <button type="button" class="sq-btn si${em[bloque][q.id] === 'SI' ? ' selected' : ''}" onclick="selectEMBloque('${bloque}','${q.id}','SI')">SÍ</button>
+        <button type="button" class="sq-btn no${em[bloque][q.id] === 'NO' ? ' selected' : ''}" onclick="selectEMBloque('${bloque}','${q.id}','NO')">NO</button>
+      </div>
+    </div>`).join('');
+  const animo = animoPositivo(em)
+    ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(t.animoSi)}</div></div>`
+    : animoRespondido(em) ? '<div class="hm-resultado">Sin «sí»</div>' : '<div class="hm-resultado">Sin contestar</div>';
+  const sint = sueloSintomas(em);
+  const suelo = [
+    sint.length ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(t.sueloCon)}${sint.includes('sp2') ? ` ${citasEnTexto(t.sueloHeces)}` : ''}</div></div>`
+      : sueloRespondido(em) ? '<div class="hm-resultado">Sin síntomas</div>' : '<div class="hm-resultado">Sin contestar</div>',
+    !sint.length && riesgoSuelo(em) ? `<div class="hm-nota">${citasEnTexto(t.sueloRiesgo)}</div>` : '',
+    `<div class="hm-nota">${citasEnTexto(t.sueloDiario)}</div>`,
+  ].join('');
+  return `<div class="screening-section-title">💬 Ánimo</div>
+    ${filas('animo', EM.animo)}
+    ${animo}
+    <div class="hm-nota">${citasEnTexto(t.animoAnsiedad)}</div>
+    ${enlacesCalcular('PHQ-9 · GAD-7')}
+    <div class="hm-fuente">${citasEnTexto(t.animoFuente)}</div>
+    <div class="screening-section-title">🌸 Suelo pélvico</div>
+    ${filas('suelo', EM.suelo)}
+    ${suelo}
+    <div class="hm-fuente">${citasEnTexto(t.sueloFuente)}</div>`;
+}
+
+function _pintarEMBloques() {
+  const html = _emBloqueHTML();
+  document.querySelectorAll('[data-em-bloque]').forEach(el => { el.innerHTML = html; });
+}
+
+// Recuadro de la fase 5 (docs/embarazo-posparto.md): nunca se pliega.
+function _embarazoResultadosHTML(d) {
+  const datos = datosEM(d);
+  return `
+    <div class="alert alert-info em-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">${d.es === 'embarazada' ? '🤰' : '🤱'}</span>
+      <div><strong>${d.es === 'embarazada' ? 'Embarazo' : 'Posparto'}.</strong>${datos.length ? ` ${datos.join(' · ')}` : ''}
+        ${lineasRecomendacionEM(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
 // «Ya diagnosticada y tratada» (casilla en la 4b y en la fase 5; decisión 5).
 // No depende del mecanismo: también vale para una fractura con yeso o una
 // gota ya en tratamiento.
@@ -1823,7 +2026,7 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis);   // los de las condiciones especiales no tienen embudo
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis && !s.soloEmbarazo);   // los de las condiciones especiales no tienen embudo
     const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
     const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
@@ -1849,7 +2052,8 @@ function getPendientesBreve() {
   }
   pendientes.push(...pendientesLES(state.lupus));   // docs/lupus.md: corticoides o rasgos sin registrar
   pendientes.push(...pendientesMA(state.mastocitos));   // docs/mastocitaria.md: autoinyector sin registrar
-  pendientes.push(...pendientesOP(state.osteoporosis));   // docs/osteoporosis.md: fracturas vertebrales o factores sin registrar
+  pendientes.push(...pendientesOP(state.osteoporosis));
+  pendientes.push(...pendientesEM(state.embarazo));   // docs/embarazo-posparto.md: semanas o fecha del parto sin registrar   // docs/osteoporosis.md: fracturas vertebrales o factores sin registrar
   return pendientes;
 }
 
@@ -2079,7 +2283,8 @@ function sistemasActivos(regionId = state.region) {
   // Fase P: el sistema de hipermovilidad solo con la tarjeta activa, y de él
   // solo las preguntas y banderas de su estado (`hm`, lib/hipermovilidad.js)
   const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId))
-    && elementoHMVisible(x, state.hipermovilidad) && elementoLESVisible(x, state.lupus) && elementoOPVisible(x, state.osteoporosis);
+    && elementoHMVisible(x, state.hipermovilidad) && elementoLESVisible(x, state.lupus) && elementoOPVisible(x, state.osteoporosis)
+    && elementoEMVisible(x, state.embarazo, state.osteoporosis);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
     .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
@@ -2087,6 +2292,7 @@ function sistemasActivos(regionId = state.region) {
     .filter(sis => !sis.soloLupus || lesActivo(state.lupus))
     .filter(sis => !sis.soloMastocitos || maActivo(state.mastocitos))
     .filter(sis => !sis.soloOsteoporosis || opActivo(state.osteoporosis))
+    .filter(sis => !sis.soloEmbarazo || emActivo(state.embarazo))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -2120,6 +2326,7 @@ function _repintarCribado() {
   _pintarDsBloques();
   _pintarLESBloques();
   _pintarOPBloques();
+  _pintarEMBloques();
   updateSistemicoAlert();
 }
 
@@ -2211,6 +2418,7 @@ function buildSistemicoQuestions(regionId) {
   _pintarDsBloques();
   _pintarLESBloques();
   _pintarOPBloques();
+  _pintarEMBloques();
   sistemas.forEach(sis => _pintarEmbudo(sis.id));
   updateSistemicoAlert();
 }
@@ -2251,7 +2459,7 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) {
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
       <div class="hm-bloque" data-hm-bloque></div>`;
-  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis) {
+  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo) {
     // El de disautonomía (docs/pots.md) tampoco: primero las preguntas del
     // síncope y, después de ellas, la sospecha y la prueba (data-ds-bloque)
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">`;
@@ -2299,6 +2507,8 @@ function buildSistemaHTML(sis) {
   if (sis.soloLupus) html += `<div class="ds-bloque" data-les-bloque></div>`;
   // Factores de la sospecha y caídas de la osteoporosis (lib/osteoporosis.js)
   if (sis.soloOsteoporosis) html += `<div class="ds-bloque" data-op-bloque></div>`;
+  // Ánimo y suelo pélvico del embarazo y el posparto (lib/embarazo.js)
+  if (sis.soloEmbarazo) html += `<div class="ds-bloque" data-em-bloque></div>`;
 
   html += `<div class="sis-extra">`;
   // Referred pain zones
@@ -2696,6 +2906,8 @@ function updateVital(group, field, value) {
 // clinician has actually finished entering the value.
 function updateVitalColor(group, field) {
   if (group === 'antropometria') { updateImcColor(); return; }
+  // La tensión del embarazo se lee con los umbrales de NICE NG201 (decisión 5)
+  if (field === 'tas' || field === 'tad') { _pintarEMTA(); updateSistemicoAlert(); }
   const bands = VITAL_BANDS[field];
   if (!bands) return;
   const val = state[group][field];
@@ -2910,7 +3122,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -2934,9 +3146,12 @@ function renderUrgenciaRegion(data) {
 
 // Preguntas del cribado con `urgencia` respondidas SÍ en la región actual.
 function getUrgenciasActivas() {
-  return sistemasActivos().flatMap(sis => sis.preguntas)
+  return [...sistemasActivos().flatMap(sis => sis.preguntas)
     .filter(q => q.urgencia && state.sistemicoAnswers[q.id] === 'SI')
-    .map(q => q.urgencia);
+    .map(q => q.urgencia),
+  // La tensión de 160/110 o más en el embarazo sale de la tarjeta y de las
+  // constantes de la fase 1 (docs/embarazo-posparto.md, decisión 5)
+  ...urgenciasEM(state.embarazo, state.signosVitales)];
 }
 
 // Preguntas del cribado con `derivacion` (derivación médica no urgente, p. ej.
@@ -2952,7 +3167,8 @@ function getDerivacionesCribado() {
 function getDerivacionesMedicas() {
   // La de los corticoides sin protección ósea sale de la tarjeta de la
   // osteoporosis, no de una pregunta (docs/osteoporosis.md, decisión 5).
-  return [...getDerivacionesCribado(), ...derivacionesOP(state.osteoporosis), ...getDerivacionesArbol()];
+  return [...getDerivacionesCribado(), ...derivacionesOP(state.osteoporosis), ...derivacionesEM(state.embarazo, state.signosVitales),
+    ...getDerivacionesArbol()];
 }
 
 function updateSistemicoAlert() {
@@ -3124,7 +3340,8 @@ function getSistemicoAffirmativeTexts() {
   const texts = [];
   sistemasActivos().forEach(sis => {
     (sis.preguntas || []).forEach(q => {
-      if (affirmativeIds.includes(q.id)) texts.push(q.text);
+      // `privada` (ánimo y psicosis del embarazo): solo cuenta su urgencia, no su texto
+      if (affirmativeIds.includes(q.id) && !q.privada) texts.push(q.text);
     });
   });
   return texts;
@@ -3320,6 +3537,9 @@ function buildResults() {
   // ── Osteoporosis o fragilidad ósea (docs/osteoporosis.md): ejercicio y seguridad, nunca plegados
   const op = getOpPayload();
   if (op) container.innerHTML += _osteoporosisResultadosHTML(op);
+  // ── Embarazo o posparto (docs/embarazo-posparto.md): ejercicio y seguridad, nunca plegados
+  const em = getEmPayload();
+  if (em) container.innerHTML += _embarazoResultadosHTML(em);
 
   // ── Header summary
   container.innerHTML += `
@@ -3422,6 +3642,7 @@ function buildResults() {
             : `<div class="exercise-box">${tratada ? _textoTratada(cq) : citasEnTexto(hyp.dosis) || '<em style="color:var(--text3)">Sin dosis de referencia: a criterio del clínico.</em>'}</div>
           ${!tratada && hyp.dosis && hyp.dosisFuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(hyp.dosisFuente)}</div>` : ''}`}
           ${cq && !tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR ? `<div class="nota-posq" style="margin-top:6px;">🏥 ${TEXTO_PAUTA_COMPATIBLE}</div>` : ''}
+          ${SACROILIACAS_EM.includes(hyp.id) && emActivo(state.embarazo) && !tratada ? `<div class="nota-posq em-sacroiliaca" style="margin-top:6px;">${state.embarazo.estado === 'embarazada' ? '🤰' : '🤱'} ${citasEnTexto(EM.textos.sacroiliaca)}</div>` : ''}
         </div>
         ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;">
           <summary style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase;">🧭 Pronóstico y derivación</summary>
@@ -4170,6 +4391,7 @@ function buildPhysiQPayload() {
     ...(getLePayload() ? { le: getLePayload() } : {}),
     ...(getMaPayload() ? { ma: getMaPayload() } : {}),
     ...(getOpPayload() ? { op: getOpPayload() } : {}),
+    ...(getEmPayload() ? { em: getEmPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
@@ -5034,6 +5256,7 @@ function _hasAssessmentData() {
     || !!state.lupus?.estado
     || !!state.mastocitos?.estado
     || !!state.osteoporosis?.estado
+    || !!state.embarazo?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -5136,6 +5359,7 @@ function _restoreSessionDOM() {
   state.lupus = normalizarLupus(state.lupus);                               // sesiones anteriores al lupus
   state.mastocitos = normalizarMastocitos(state.mastocitos);                // sesiones anteriores a la tarjeta mastocitaria
   state.osteoporosis = normalizarOsteoporosis(state.osteoporosis);          // sesiones anteriores a la osteoporosis
+  state.embarazo = normalizarEmbarazo(state.embarazo);                      // sesiones anteriores al embarazo
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
   _pintarCirugiaUI();
@@ -5144,6 +5368,7 @@ function _restoreSessionDOM() {
   _pintarLESUI();
   _pintarMAUI();
   _pintarOPUI();
+  _pintarEMUI();
   _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
@@ -5276,6 +5501,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarLESUI();
   _pintarMAUI();
   _pintarOPUI();
+  _pintarEMUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
@@ -5460,6 +5686,8 @@ Object.assign(window, {
   selectLESEstado, selectLESFila, toggleLESCasilla, selectLESRasgo,
   selectMAEstado, selectMAFila, toggleMADesencadenante, updateMAOtro,
   selectOPEstado, selectOPFila, toggleOPCasilla, selectOPFactor, selectOPCaidas, toggleOPCaidaCasilla,
+  selectEMEstado, updateEM, selectEMFila, toggleEMCasilla, selectEMBloque, emVerTarjeta,
+  pintarTarjetaEmbarazo: _pintarEMUI,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========

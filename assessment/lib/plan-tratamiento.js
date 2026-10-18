@@ -10,7 +10,7 @@ import {
   VOLUMEN_PAUTA, FRECUENCIA_PAUTA, ESCALONES_PERIFERICOS, REGIONES_COLUMNA_PLAN, FAMILIA_HIP,
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
   AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA, AVISOS_LUPUS, RED_LUPUS, AVISOS_MASTOCITOS, RED_MASTOCITOS,
-  AVISOS_OSTEOPOROSIS, RED_OSTEOPOROSIS,
+  AVISOS_OSTEOPOROSIS, RED_OSTEOPOROSIS, AVISOS_EMBARAZO, AVISOS_POSPARTO, HIP_SACROILIACA, RED_EMBARAZO, RED_POSPARTO,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 import { nivelMatriz } from './irritabilidad.js';
@@ -173,13 +173,14 @@ export function cantidadSesion(elegidas = [], region) {
 // de otra región (RED_HIP: h6, la arterial de cervical; decisión 50) y la de
 // la disautonomía (RED_DISAUTONOMIA, docs/pots.md), la del lupus (RED_LUPUS,
 // docs/lupus.md), la de la anafilaxia (RED_MASTOCITOS, docs/mastocitaria.md) y
-// la de la fractura vertebral (RED_OSTEOPOROSIS, docs/osteoporosis.md).
+// la de la fractura vertebral (RED_OSTEOPOROSIS, docs/osteoporosis.md) y la
+// del embarazo o el posparto (RED_EMBARAZO / RED_POSPARTO, docs/embarazo-posparto.md).
 // Sin repetir.
-export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false, osteoporosis = false } = {}) {
+export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false, osteoporosis = false, embarazo = '' } = {}) {
   const r = RED_SEGURIDAD[region] || {};
   const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id]),
     disautonomia && RED_DISAUTONOMIA, ...(lupus ? RED_LUPUS : []), mastocitos && RED_MASTOCITOS,
-    osteoporosis && RED_OSTEOPOROSIS].filter(Boolean)
+    osteoporosis && RED_OSTEOPOROSIS, embarazo === 'embarazada' && RED_EMBARAZO, embarazo === 'posparto' && RED_POSPARTO].filter(Boolean)
     .filter((p, i, a) => a.findIndex(q => q.cierre === p.cierre) === i);
   return {
     cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
@@ -214,6 +215,8 @@ export function rangosBloques(duraciones = {}) {
 //   osteoporosis (null, o { diagnosticada, impactoLimitado } con la tarjeta
 //   marcada, docs/osteoporosis.md), sinThrust (motivos del tope sin thrust:
 //   'osteoporosis' | 'corticoides' | 'antitrombotico', motivosSinThrust()),
+//   embarazo (null, o { estado: 'embarazada'|'posparto', lactancia } con la tarjeta
+//   marcada, docs/embarazo-posparto.md),
 //   estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
@@ -244,7 +247,7 @@ export function construirPlan(e) {
   // La red neurológica también con un síntoma en una zona `redNeuro` (hoy el
   // periné en lumbar: cola de caballo), aunque no haya hipótesis neurológica
   const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia, lupus: !!e.lupus, mastocitos: !!e.mastocitos,
-    osteoporosis: !!e.osteoporosis?.diagnosticada });
+    osteoporosis: !!e.osteoporosis?.diagnosticada, embarazo: e.embarazo?.estado || '' });
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
   const tabla = tablaEscalones(familia);
@@ -272,6 +275,13 @@ export function construirPlan(e) {
   if (e.osteoporosis) {
     avisosHip.push(...AVISOS_OSTEOPOROSIS.map(k => AVISOS[k]));
     if (e.osteoporosis.diagnosticada) avisosHip.push(e.osteoporosis.impactoLimitado ? AVISOS.osteoporosisImpactoLimitado : AVISOS.osteoporosisImpacto);
+  }
+  // Embarazo o posparto (docs/embarazo-posparto.md): en cualquier región; con la
+  // sacroilíaca elegida, la pauta de Vleeming 2008 (T8). Sin tope de thrust (decisión 8)
+  if (e.embarazo) {
+    avisosHip.push(...(e.embarazo.estado === 'embarazada' ? AVISOS_EMBARAZO : AVISOS_POSPARTO).map(k => AVISOS[k]));
+    if (e.embarazo.estado === 'posparto' && e.embarazo.lactancia) avisosHip.push(AVISOS.lactancia);
+    if (elegidas.some(h => HIP_SACROILIACA.includes(h.id))) avisosHip.push(AVISOS.sacroiliacaEmbarazo);
   }
   // Tope «sin thrust» (decisiones 6 y 15): la osteoporosis, o el lupus con
   // corticoides mantenidos o antitrombótico. Los escalones nunca proponen

@@ -110,6 +110,20 @@ export const CONDICIONES = [
     fuentes: ['Gregson 2025', 'Kanis 2019', 'Hadji 2026'],
   },
   {
+    id: 'embarazo',
+    nombre: 'Embarazo o posparto',
+    que: 'El embarazo y el primer año tras el parto cambian las banderas rojas, la posición en la camilla y el ejercicio.',
+    piensa: 'Márcala si:',
+    pistas: [
+      { texto: 'está embarazada (las preguntas dependen de las semanas);', de: ['em_u_preeclampsia', 'em_u_parto'] },
+      { texto: 'ha dado a luz en el último año, con cualquier tipo de parto.', de: ['em_u_sangrado_pp', 'em_u_infeccion'] },
+    ],
+    anade: 'sus urgencias y derivaciones en la fase 2 según las semanas, la regla de la tensión, el ánimo y el suelo pélvico, una línea sobre estar boca arriba en la 4b, y el ejercicio, la terapia manual y la red de seguridad del plan.',
+    destino: { tarjeta: 'cardEmbarazo' },
+    boton: 'Ir a la tarjeta →',
+    fuentes: ['NICE NG201', 'NICE NG194', 'Mottola 2018'],
+  },
+  {
     id: 'tarlov',
     region: 'lumbar',
     nombre: 'Quiste de Tarlov',

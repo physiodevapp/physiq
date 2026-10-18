@@ -406,6 +406,8 @@ function _actualizarPistasFase1() {
     const el = document.getElementById(`fpPistas_${campo}`);
     if (el) el.innerHTML = pistasHTML(pistasFase1(campo));
   });
+  // La pregunta del embarazo del formulario lumbar recuerda marcar la tarjeta
+  window.pintarTarjetaEmbarazo?.();
 }
 
 // Respuestas para el contador: cada fila contestada de una matriz cuenta

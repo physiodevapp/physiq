@@ -41,6 +41,11 @@ export function estadoCondicion(c, st) {
       if (op.estado === 'diagnosticada') return marcada('Diagnosticada');
       return op.estado === 'sospecha' ? marcada('Sospecha') : sin('No consta');
     }
+    case 'embarazo': {
+      const em = st.embarazo || {};
+      if (em.estado === 'embarazada') return marcada(em.semanas != null ? `Embarazada (${em.semanas} semanas)` : 'Embarazada');
+      return em.estado === 'posparto' ? marcada('Posparto') : sin('No consta');
+    }
     case 'lupus': {
       const le = st.lupus || {};
       if (le.estado === 'diagnosticado') return marcada('Diagnosticado');

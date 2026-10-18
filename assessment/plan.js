@@ -19,6 +19,7 @@ import { dsActiva } from './lib/disautonomia.js';
 import { lesDiagnosticado } from './lib/lupus.js';
 import { maActivo } from './lib/mastocitos.js';
 import { opActivo, opDiagnosticada, impactoLimitado, opPayload, motivosSinThrust } from './lib/osteoporosis.js';
+import { emActivo } from './lib/embarazo.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
 import {
@@ -97,6 +98,8 @@ function entrada(hs) {
     osteoporosis: opActivo(state.osteoporosis) ? { diagnosticada: opDiagnosticada(state.osteoporosis),
       impactoLimitado: impactoLimitado(opPayload(state.osteoporosis, state.edadPaciente)) } : null,
     sinThrust: motivosSinThrust(state.osteoporosis, state.lupus),
+    // Embarazo o posparto (docs/embarazo-posparto.md): avisos y red de seguridad
+    embarazo: emActivo(state.embarazo) ? { estado: state.embarazo.estado, lactancia: state.embarazo.lactancia === 'SI' } : null,
     estabilidad: state.estabilidad, riesgoPsico: state.riesgoPsico, psico_miedo: state.psico_miedo,
     signoComparable: state.signoComparable,
     sesion: pt.sesion, gravedadManual: pt.gravedad, irritabilidadManual: pt.irritabilidad,

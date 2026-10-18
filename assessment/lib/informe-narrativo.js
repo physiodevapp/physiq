@@ -183,6 +183,7 @@ import { bloqueDsIA } from './disautonomia.js';
 import { bloqueLESIA } from './lupus.js';
 import { bloqueMAIA } from './mastocitos.js';
 import { bloqueOPIA } from './osteoporosis.js';
+import { bloqueEMIA } from './embarazo.js';
 import { ITEMS_IRRITABILIDAD } from '../data/irritabilidad.js';
 
 // Reglas del prompt compartidas con physiq-report: fichero idéntico en los dos
@@ -283,6 +284,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
   if (data.le) extra.push(bloqueLESIA(data.le));
   if (data.ma) extra.push(bloqueMAIA(data.ma));
   if (data.op) extra.push(bloqueOPIA(data.op));
+  if (data.em) extra.push(bloqueEMIA(data.em));
   if (data.ur?.length) extra.push(`DERIVACIÓN URGENTE indicada en el cribado (debe constar en el informe):\n${data.ur.map(s => `  · ${s}`).join('\n')}`);
   if (data.dv?.length) extra.push(`Derivación médica indicada en la exploración (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);
   // Cuestionarios puntuados en la calculadora (lib/cuestionarios.js): solo los

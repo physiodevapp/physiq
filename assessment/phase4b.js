@@ -17,6 +17,7 @@ import { DS, dsActiva } from './lib/disautonomia.js';
 import { LES, lesDiagnosticado } from './lib/lupus.js';
 import { MA, maActivo } from './lib/mastocitos.js';
 import { OP, opActivo } from './lib/osteoporosis.js';
+import { emPosparto, lineaSupino, lineaGaenslen } from './lib/embarazo.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -162,6 +163,10 @@ export function buildHypothesisCards() {
   // Trastorno mastocitario o anafilaxia (Fase P, docs/mastocitaria.md): roce,
   // presión, calor, frío y vibración. Una regla de técnica; no cambia las LR
   if (maActivo(state.mastocitos)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota ma-nota-4b">💉 ${citasEnTexto(MA.textos.tecnica4b)}</div>`);
+  // Embarazo de 20 semanas o más (docs/embarazo-posparto.md, T1): una línea
+  // para todos los tests boca arriba, encima de las hipótesis. No cambia las LR
+  const supino = lineaSupino(state.embarazo);
+  if (supino) container.insertAdjacentHTML('beforeend', `<div class="ds-nota em-nota-4b">🤰 ${citasEnTexto(supino)}</div>`);
 
   activas.forEach(hId => {
     const hyp = hipotesis(hId);
@@ -361,6 +366,7 @@ export function buildTestItem(hId, test, idx) {
     <div class="test-peso">${hyp ? pesoTest(hyp, test, idx) : ''}</div>
     ${test.laxitud && hmActiva(state.hipermovilidad) ? `<div class="hm-aviso-test">🧬 ${HM.textos.laxitud}</div>` : ''}
     ${test.cargaOsea && opActivo(state.osteoporosis) ? avisoCargaOseaHTML(test) : ''}
+    ${test.gaenslen && emPosparto(state.embarazo) ? `<div class="hm-aviso-test em-aviso-test">🤱 ${citasEnTexto(lineaGaenslen(state.embarazo))}</div>` : ''}
     <div class="test-criterion">${citasEnTexto(test.criterio)}</div>
     ${porque}
     ${fuente}

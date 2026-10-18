@@ -576,6 +576,73 @@
     </div>
   </div>
 
+  <div class="card" id="cardEmbarazo">
+    <div class="card-title">Embarazo o posparto</div>
+    <div class="plan-note-hint" id="emNota"></div>
+    <div id="emHombre" class="hm-nota" style="display:none">Con sexo «Hombre» no aplica. <button type="button" class="sint-recordatorio-ir" onclick="emVerTarjeta()">Mostrar</button></div>
+    <div id="emCuerpo">
+    <div id="emFormulario"></div>
+    <div class="option-group option-group-full" id="emEstado">
+      <button type="button" class="option-btn" data-valor="embarazada" onclick="selectEMEstado('embarazada')">Embarazada</button>
+      <button type="button" class="option-btn" data-valor="posparto" onclick="selectEMEstado('posparto')">Posparto (hasta 12 meses)</button>
+    </div>
+    <div id="emEmbWrap" style="display:none">
+      <div class="vitals-row">
+        <div class="form-group">
+          <label class="form-label" for="emSemanas">Semanas de gestación</label>
+          <input type="number" class="form-input" id="emSemanas" min="0" max="45" step="1" placeholder="Ej: 24" oninput="updateEM('semanas', this.value)">
+        </div>
+      </div>
+      <div class="form-group hm-subtipo">
+        <div class="form-label">Familiar de primer grado con problemas de suelo pélvico</div>
+        <div class="option-group hm-subtipos" data-em-fila="familiar">
+          <button type="button" class="option-btn" data-valor="SI" onclick="selectEMFila('familiar','SI')">Sí</button>
+          <button type="button" class="option-btn" data-valor="NO" onclick="selectEMFila('familiar','NO')">No</button>
+          <button type="button" class="option-btn" data-valor="NS" onclick="selectEMFila('familiar','NS')">No lo sabe</button>
+        </div>
+      </div>
+    </div>
+    <div id="emPpWrap" style="display:none">
+      <div class="vitals-row">
+        <div class="form-group">
+          <label class="form-label" for="emFecha">Fecha del parto</label>
+          <input type="date" class="form-input" id="emFecha" oninput="updateEM('fecha', this.value)">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="emSemanasPp">O semanas aprox.</label>
+          <input type="number" class="form-input" id="emSemanasPp" min="0" max="60" step="1" placeholder="Ej: 6" oninput="updateEM('semanasAprox', this.value)">
+        </div>
+      </div>
+      <div class="cir-semanas" id="emSemanasPpTxt"></div>
+      <div class="form-group hm-subtipo">
+        <div class="form-label">Tipo de parto</div>
+        <div class="option-group hm-subtipos" data-em-fila="parto">
+          <button type="button" class="option-btn" data-valor="vaginal" onclick="selectEMFila('parto','vaginal')">Vaginal</button>
+          <button type="button" class="option-btn" data-valor="instrumental" onclick="selectEMFila('parto','instrumental')">Vaginal instrumental (fórceps o ventosa)</button>
+          <button type="button" class="option-btn" data-valor="cesarea" onclick="selectEMFila('parto','cesarea')">Cesárea</button>
+          <button type="button" class="option-btn" data-valor="ns" onclick="selectEMFila('parto','ns')">No lo sabe</button>
+        </div>
+      </div>
+      <div class="form-group hm-subtipo">
+        <div class="form-label">Además (marca lo que tenga)</div>
+        <div class="option-group hm-subtipos">
+          <button type="button" class="option-btn" data-em-casilla="esfinter" aria-pressed="false" onclick="toggleEMCasilla('esfinter')">Lesión del esfínter anal</button>
+          <button type="button" class="option-btn" data-em-casilla="occipitoposterior" aria-pressed="false" onclick="toggleEMCasilla('occipitoposterior')">Bebé boca arriba en el expulsivo (occipitoposterior)</button>
+        </div>
+      </div>
+      <div class="form-group hm-subtipo">
+        <div class="form-label">Da el pecho</div>
+        <div class="option-group hm-subtipos" data-em-fila="lactancia">
+          <button type="button" class="option-btn" data-valor="SI" onclick="selectEMFila('lactancia','SI')">Sí</button>
+          <button type="button" class="option-btn" data-valor="NO" onclick="selectEMFila('lactancia','NO')">No</button>
+        </div>
+      </div>
+    </div>
+    <div class="cir-semanas" id="emSinSemanas"></div>
+    <div id="emTA"></div>
+    </div>
+  </div>
+
   <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>

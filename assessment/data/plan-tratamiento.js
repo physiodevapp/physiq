@@ -119,6 +119,13 @@ export const AVISOS = {
   // tarjeta marcada, en todas las regiones (AVISOS_OSTEOPOROSIS); el impacto,
   // según las fracturas; `sinThrust*`, el tope de la decisión 6 y la 15
   osteoporosis: 'Osteoporosis: fuerza progresiva 2–3 días por semana, hasta el peso que levanta 8–12 veces, en 2 series y hasta 3, con movimientos lentos y controlados, sin flexión con carga; si el riesgo de fractura vertebral es alto, sin máquinas que obliguen a flexionar o girar el tronco (Brooke-Wavell 2022, recuadro 1; Giangregorio 2014). Equilibrio a diario, 15–20 min (Giangregorio 2014).',
+  // Embarazo o posparto (Fase P, docs/embarazo-posparto.md): con la tarjeta
+  // marcada, en cualquier región (AVISOS_EMBARAZO / AVISOS_POSPARTO).
+  embarazo: 'Embarazo: actividad de intensidad moderada (puede hablar, no cantar), con aeróbico y fuerza; sin contacto ni riesgo de caída; si se marea, tiene náuseas o se encuentra mal boca arriba, ponerla de lado; parar si sangra, pierde líquido, tiene contracciones regulares y dolorosas, dolor de vientre o de pecho, o falta de aire o mareo que no ceden (Mottola 2018; ACOG 2020).',
+  posparto: 'Posparto: vuelta gradual guiada por los síntomas, sin autorización médica de rutina; consultar antes con su médico con tensión de más de 140/90, dolor en el pecho, falta de aire en reposo, mareo o sangrado sin regla; el dolor lumbar o de cintura pélvica, la incontinencia y la diástasis no contraindican el ejercicio (Davenport 2025). Con síntomas de suelo pélvico, fisioterapia de suelo pélvico (NICE NG210, 1.6.14).',
+  lactancia: 'Da el pecho: mejor dar el pecho o sacarse leche antes del ejercicio, por comodidad (Davenport 2025).',
+  terapiaManualEmbarazo: 'Embarazo o posparto: la terapia manual, como complemento y nunca sola; como mucho, para probar el alivio en pocas sesiones (Hall 2016; Simonds 2022; Vleeming 2008, nivel D). Del thrust en el embarazo solo hay un ensayo piloto de 15 mujeres sin efectos adversos (Liddle y Pennick 2015): no basta para decir que sea seguro.',
+  sacroiliacaEmbarazo: 'Sacroilíaca en el embarazo o el posparto: primero información (no es peligroso y probablemente mejorará) y ejercicio individualizado, o estabilización individualizada tras el parto (Vleeming 2008, nivel C); el cinturón, para probar el alivio por periodos cortos (Vleeming 2008, nivel D; NICE NG201, 1.4.15).',
   osteoporosisImpacto: 'Osteoporosis sin fractura vertebral: impacto moderado la mayoría de los días, unos 50 impactos por sesión, sin caer desde altura (Brooke-Wavell 2022, consenso).',
   osteoporosisImpactoLimitado: 'Osteoporosis con fractura vertebral o varias fracturas por fragilidad: impacto solo hasta caminar a paso ligero, por precaución (Brooke-Wavell 2022, consenso; Giangregorio 2014).',
   osteoporosisMoverse: 'Osteoporosis: enseñar a moverse con seguridad, sin prohibir: bisagra de cadera al agacharse y levantar; la torsión, suave y mejor girando con pasos; no levantar ni dejar cosas en el suelo (Brooke-Wavell 2022, recuadro 3; Giangregorio 2015). Cuidado al pasar de tumbado a sentado o al darse la vuelta: en un ensayo, ejercicios en prono y darse la vuelta de boca arriba a boca abajo rompieron una costilla y un cartílago costal (Gibbs 2019). Con lluvia o hielo, el ejercicio mejor dentro de casa (Giangregorio 2014).',
@@ -298,6 +305,16 @@ export const RED_MASTOCITOS = { cierre: 'cierreAnafilaxia', casa: 'alarmaAnafila
 export const AVISOS_OSTEOPOROSIS = ['osteoporosis', 'osteoporosisMoverse'];
 export const RED_OSTEOPOROSIS = { cierre: 'cierreFracturaVertebral', casa: 'alarmaFracturaVertebral' };
 
+// Embarazo o posparto (docs/embarazo-posparto.md): con la tarjeta marcada, en
+// cualquier región, el aviso de su estado (con «Posparto» y lactancia, el de
+// la lactancia), el de la terapia manual y, con la sacroilíaca elegida (lu8,
+// ca10), el de Vleeming 2008; la red de su estado.
+export const AVISOS_EMBARAZO = ['embarazo', 'terapiaManualEmbarazo'];
+export const AVISOS_POSPARTO = ['posparto', 'terapiaManualEmbarazo'];
+export const HIP_SACROILIACA = ['lu8', 'ca10'];
+export const RED_EMBARAZO = { cierre: 'cierreEmbarazo', casa: 'alarmaEmbarazo' };
+export const RED_POSPARTO = { cierre: 'cierrePosparto', casa: 'alarmaPosparto' };
+
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
 // empezar a movilizar tras la cirugía.
@@ -322,6 +339,8 @@ export const TEXTOS_SESION = {
   cierreAnafilaxia: 'Red de seguridad (trastorno mastocitario o anafilaxia): explicar que, si le salen ronchas, se le hincha la boca, le falta el aire, se marea o se desmaya, debe parar, ponerse el autoinyector y llamar al 112, tumbado y sin levantarse de golpe aunque mejore, y comprobar que lo ha entendido (RCUK 2021, apartados 4.4 y 5.1.1; NICE NG258, 1.1.14).',
   cierreIctusLupus: 'Red de seguridad (lupus): explicar que la debilidad o el adormecimiento de un lado, la dificultad para hablar o la pérdida de visión de golpe piden llamar al 112, aunque se pasen (Goodman 2018, cap. 12, p. 445; Drosos 2022, p. 773).',
   cierreFracturaVertebral: 'Red de seguridad (osteoporosis): explicar que un dolor de espalda fuerte que empieza de golpe tras un esfuerzo pequeño pide parar y que le vea el médico, y que si además nota debilidad u hormigueo en las piernas, o cambios al orinar, debe ir a urgencias (Gregson 2025; Finucane 2020, sección 3).',
+  cierreEmbarazo: 'Red de seguridad (embarazo): explicar que el dolor de cabeza fuerte, la visión borrosa, el dolor fuerte bajo las costillas o la hinchazón brusca de la cara o las manos piden que la vea un profesional hoy; que si nota que el bebé se mueve menos llame a su maternidad a cualquier hora, y que si sangra, pierde líquido o tiene contracciones regulares y dolorosas, pare y llame (NICE NG133, 1.1.1; NICE NG201, 1.2.34; Mottola 2018, recuadro 2).',
+  cierrePosparto: 'Red de seguridad (posparto): explicar que un sangrado brusco o muy abundante, la fiebre o los escalofríos, el flujo maloliente, la pierna hinchada y dolorosa, la falta de aire, el dolor en el pecho o un dolor de cabeza fuerte piden consulta médica sin demora, y comprobar que lo ha entendido (NICE NG194, 1.2.4).',
   cierreSincope: 'Red de seguridad (disautonomía): explicar que, si se desmaya mientras hace ejercicio, debe parar y no volver a hacer ejercicio hasta que le vea el médico, y comprobar que lo ha entendido (NICE CG109, 1.3.2.2 y 1.5.4.3; Brignole 2018, p. 1911).',
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
   reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3; Hengeveld y Banks 2005, cap. 9, p. 246).',
@@ -581,6 +600,9 @@ export const TEXTOS_CASA = {
   alarmaFracturaVertebral: { texto: 'Si te empieza de golpe un dolor de espalda fuerte tras un esfuerzo pequeño, para y que te vea el médico; si además notas debilidad u hormigueo en las piernas, o cambios al orinar, ve a urgencias.', fuente: 'Gregson 2025 (pensar en una fractura vertebral ante un dolor de espalda agudo; derivación urgente con déficit neurológico); Finucane 2020, sección 3 (docs/osteoporosis.md)' },
   // Osteoporosis: moverse con seguridad en casa (AVISOS osteoporosisMoverse)
   moverseOsteoporosis: { texto: 'Al agacharte o levantar algo, dobla las caderas y las rodillas con la espalda recta. Para girarte, da pasos en vez de torcer el tronco. Guarda lo que uses a la altura de la cintura, no en el suelo. Con lluvia o hielo, haz el ejercicio dentro de casa.', fuente: 'Brooke-Wavell 2022, recuadro 3; Giangregorio 2015; Giangregorio 2014 (docs/osteoporosis.md)' },
+  // Embarazo o posparto (RED_EMBARAZO, RED_POSPARTO)
+  alarmaEmbarazo: { texto: 'Si tienes un dolor de cabeza fuerte, ves borroso, te duele mucho bajo las costillas o se te hinchan de golpe la cara o las manos, que te vea hoy tu matrona o tu médico. Si notas que el bebé se mueve menos, llama a tu maternidad a cualquier hora. Si sangras, pierdes líquido por la vagina o tienes contracciones regulares y dolorosas, para y llama a tu maternidad.', fuente: 'NICE NG133, 1.1.1 (síntomas de preeclampsia); NICE NG201, 1.2.34 (movimientos fetales); Mottola 2018, recuadro 2 (motivos para parar y consultar) (docs/embarazo-posparto.md)' },
+  alarmaPosparto: { texto: 'Si sangras de golpe o mucho, tienes fiebre o escalofríos, un flujo que huele mal, una pierna hinchada y dolorosa, te falta el aire, te duele el pecho o tienes un dolor de cabeza fuerte, pide que te vea un médico hoy.', fuente: 'NICE NG194, 1.2.4 (síntomas que piden consulta médica sin demora tras el parto) (docs/embarazo-posparto.md)' },
   alarmaSincope: { texto: 'Si te desmayas mientras haces ejercicio, para y no vuelvas a hacer ejercicio hasta que te vea el médico.', fuente: 'NICE CG109, recomendaciones 1.3.2.2 y 1.5.4.3: con un síncope durante el ejercicio, no hacer ejercicio hasta la valoración; Brignole 2018, p. 1911 (docs/pots.md)' },
   queHacer: { texto: 'Qué hacer:', tipo: 'etiqueta' },
   cuandoHacerlo: { texto: 'Cuándo hacerlo:', tipo: 'etiqueta' },

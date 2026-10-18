@@ -1256,3 +1256,259 @@ export const SIS_OSTEOPOROSIS = {
     },
   },
 };
+
+// ─── Embarazo y posparto (Fase P, docs/embarazo-posparto.md) ──────────────
+// Sistema transversal de las 7 regiones, solo con la tarjeta «Embarazo o
+// posparto» marcada (`soloEmbarazo`). Cada pregunta y bandera lleva `em`: los
+// estados en que sale y, en semanas, desde o hasta cuándo (de gestación con
+// «Embarazada», desde el parto con «Posparto»; lib/embarazo.js,
+// elementoEMVisible). `privada`: su texto no va a `sq` (📄 Informe ni prompt);
+// solo su urgencia (decisión 11). Fuentes leídas enteras en la sesión.
+const EM_CITA = {
+  ng133: 'NICE NG133 — National Institute for Health and Care Excellence, «Hypertension in pregnancy: diagnosis and management», NICE guideline NG133, 2019 (actualizada 2023)',
+  ng201: 'NICE NG201 — National Institute for Health and Care Excellence, «Antenatal care», NICE guideline NG201, 2021',
+  ng194: 'NICE NG194 — National Institute for Health and Care Excellence, «Postnatal care», NICE guideline NG194, 2021 (actualizada 2026)',
+  ng255: 'NICE NG255 — National Institute for Health and Care Excellence, «Suspected sepsis in pregnant or recently pregnant people: recognition, diagnosis and early management», NICE guideline NG255, 2025',
+  cg192: 'NICE CG192 — National Institute for Health and Care Excellence, «Antenatal and postnatal mental health: clinical management and service guidance», NICE guideline CG192, 2014 (actualizada 2020)',
+  ng192: 'NICE NG192 — National Institute for Health and Care Excellence, «Caesarean birth», NICE guideline NG192, 2021',
+  rcog: 'RCOG 2015 — Thomson y Greer, «Thromboembolic Disease in Pregnancy and the Puerperium: Acute Management», RCOG Green-top Guideline No. 37b, abril de 2015',
+  hameed: 'Hameed 2023 — Hameed, Haddock, Wolfe et al., «Alliance for Innovation on Maternal Health: Consensus Bundle on Cardiac Conditions in Obstetric Care», Obstet Gynecol 2023;141(2):253–263',
+  sambola: 'Sambola 2024 — Sambola, Halvorsen, Adlam et al., «Management of cardiac emergencies in women: a clinical consensus statement of the ESC», Eur Heart J Open 2024;4(2):oeae011',
+  mottola: 'Mottola 2018 — Mottola, Davenport, Ruchat et al., «2019 Canadian guideline for physical activity throughout pregnancy», Br J Sports Med 2018;52(21):1339–1346',
+  simonds: 'Simonds 2022 — Simonds, Abraham y Spitznagle, «Clinical Practice Guidelines for Pelvic Girdle Pain in the Postpartum Population», J Womens Health Phys Ther 2022;46(1):E1–E38',
+  clinton: 'Clinton 2017 — Clinton, Newell, Downey y Ferreira, «Pelvic Girdle Pain in the Antepartum Population: Physical Therapy Clinical Practice Guidelines Linked to the ICF», J Womens Health Phys Ther 2017;41(2):102–125',
+  hadji: 'Hadji 2026 — Hadji, Athanasiadis, Brandi et al., «Pregnancy- and lactation-associated osteoporosis: a position statement of the IAPM, IOF, ECTS, ESCEO, IMS, and EMAS», Int J Gynaecol Obstet 2026',
+  scioscia: 'Scioscia 2023 — Scioscia y Zanchetta, «Recent insights into pregnancy and lactation-associated osteoporosis (PLO)», Int J Womens Health 2023;15:1227–1238',
+  deering: 'Deering 2024 — Deering, Donnelly, Brockwell et al., «Clinical and exercise professional opinion on designing a postpartum return-to-running training programme: an international Delphi study and consensus statement», Br J Sports Med 2024;58:183–195',
+};
+
+export const SIS_EMBARAZO = {
+  id: 'transversal_embarazo', icon: '🤰', nombre: 'Embarazo y posparto', soloEmbarazo: true,
+  banderasRojas: [
+    { texto: 'Cefalea intensa, visión borrosa o destellos, dolor fuerte bajo las costillas, vómitos o hinchazón brusca de cara, manos o pies (preeclampsia)', em: { embarazo: { desde: 20 }, posparto: {} }, pregunta: 'em_u_preeclampsia' },
+    { texto: 'Sangrado vaginal sin explicación en el embarazo', em: { embarazo: { desde: 13 } }, pregunta: 'em_u_sangrado' },
+    { texto: 'Menos movimientos del bebé', em: { embarazo: { desde: 24 } }, pregunta: 'em_u_movimientos' },
+    { texto: 'Contracciones regulares y dolorosas o pérdida de líquido por la vagina', em: { embarazo: {} }, pregunta: 'em_u_parto' },
+    { texto: 'Sangrado brusco, muy abundante o que va a más tras el parto, o abdomen muy hinchado', em: { posparto: {} }, pregunta: 'em_u_sangrado_pp' },
+    { texto: 'Fiebre, escalofríos, dolor de vientre, pelvis o periné, o flujo maloliente tras el parto (infección)', em: { posparto: { hasta: 6 } }, pregunta: 'em_u_infeccion' },
+    { texto: 'Pierna dolorosa e hinchada, falta de aire nueva, dolor en el pecho o tos con sangre (trombosis o embolia)', em: { embarazo: {}, posparto: {} }, pregunta: 'em_u_tev' },
+    { texto: 'Dolor en el pecho, palpitaciones o falta de aire en reposo o al tumbarse (problema cardiaco del embarazo o el posparto)', em: { embarazo: {}, posparto: {} }, pregunta: 'em_u_corazon' },
+    { texto: 'Herida del periné o de la cesárea que se abre o se infecta', em: { posparto: {} }, pregunta: 'em_u_perine' },
+    { texto: 'Pérdida continua de orina o heces tras el parto', em: { posparto: {} }, pregunta: 'em_u_incontinencia' },
+    { texto: 'Cambios bruscos de conducta tras el parto: confusión, ideas extrañas, euforia o agitación (psicosis posparto)', em: { posparto: {} }, pregunta: 'em_u_psicosis' },
+    { texto: 'Ideas de hacerse daño', em: { embarazo: {}, posparto: {} }, pregunta: 'em_u_autolesion' },
+  ],
+  banderasAmarillas: [
+    { texto: 'Dolor de espalda intenso y persistente en el embarazo o la lactancia, o pérdida de altura (posible osteoporosis del embarazo)', em: { embarazo: {}, posparto: {}, sinPLO: true }, pregunta: 'em_d_plo' },
+    { texto: 'Dolor intenso o brusco en la pelvis, la nalga o la zona lumbar en las 2 semanas tras el parto, con cojera o sin poder apoyar (posible fractura de estrés)', em: { posparto: { hasta: 2 } }, pregunta: 'em_d_fractura' },
+    { texto: 'Pecho rojo e hinchado más de 24 horas (posible mastitis)', em: { posparto: {} }, pregunta: 'em_d_mama' },
+  ],
+  preguntas: [
+    { id: 'em_u_preeclampsia', em: { embarazo: { desde: 20 }, posparto: {} }, alerta: true,
+      urgencia: 'Posibles síntomas de preeclampsia: que la vea un profesional sanitario ya, hoy.',
+      text: '¿Tiene dolor de cabeza fuerte, ve borroso o destellos, dolor fuerte justo debajo de las costillas, vómitos, o se le han hinchado de golpe la cara, las manos o los pies?',
+      razonamiento: {
+        porque: 'Son los síntomas de la preeclampsia, la hipertensión del embarazo que daña otros órganos; se define a partir de la semana 20 y también aparece tras el parto (NICE NG133).',
+        peso: 'NICE pide que, con estos síntomas, la vea un profesional sanitario «immediately» (NICE NG133, 1.1.1), y tras el parto preguntar por la cefalea intensa y el dolor epigástrico (1.5.15). Si tiene la tensión tomada, el umbral de la fase 1 decide el plazo (NICE NG201, 1.2.26–1.2.27).',
+        fuentes: ['NICE NG133', 'NICE NG201'],
+        citas: [`${EM_CITA.ng133}, 1.1.1, 1.5.15 y «Terms used in this guideline».`, `${EM_CITA.ng201}, 1.2.26–1.2.27.`]
+      } },
+    { id: 'em_u_sangrado', em: { embarazo: { desde: 13 } }, alerta: true,
+      urgencia: 'Sangrado vaginal sin explicación en el embarazo: valoración hospitalaria hoy.',
+      text: '¿Ha tenido un sangrado vaginal que no le han explicado?',
+      razonamiento: {
+        porque: 'Después de la semana 13, un sangrado sin explicar puede venir de la placenta (desprendimiento) o anunciar un parto prematuro (NICE NG201, 1.4.18).',
+        peso: 'NICE pide derivarla al hospital para revisarla (NICE NG201, 1.4.17); el plazo «hoy» es redacción de la app. Antes de la semana 13, el dolor con sangrado ya lo pregunta la pregunta del embarazo ectópico de la región.',
+        fuentes: ['NICE NG201'],
+        citas: [`${EM_CITA.ng201}, 1.4.17–1.4.18.`]
+      } },
+    { id: 'em_u_movimientos', em: { embarazo: { desde: 24 } }, alerta: true,
+      urgencia: 'Menos movimientos del bebé: que llame a su maternidad ahora, a cualquier hora.',
+      text: '¿Nota que el bebé se mueve menos de lo habitual?',
+      razonamiento: {
+        porque: 'Que el bebé se mueva menos puede ser la primera señal de que algo va mal en el embarazo.',
+        peso: 'NICE pide que contacte con su maternidad a cualquier hora del día o de la noche si nota menos movimientos después de la semana 24 (NICE NG201, 1.2.34).',
+        fuentes: ['NICE NG201'],
+        citas: [`${EM_CITA.ng201}, 1.2.34.`]
+      } },
+    { id: 'em_u_parto', em: { embarazo: {} }, alerta: true,
+      urgencia: 'Posible parto prematuro o rotura de la bolsa: que llame a su maternidad ahora.',
+      text: '¿Tiene contracciones regulares y dolorosas, o le sale líquido por la vagina?',
+      razonamiento: {
+        porque: 'Las contracciones regulares y dolorosas pueden ser un parto que empieza antes de tiempo, y la pérdida persistente de líquido, la rotura de la bolsa.',
+        peso: 'La guía canadiense las pone entre los motivos para parar la actividad y consultar «immediately» (Mottola 2018, recuadros 1 y 2); la redacción de la urgencia es de la app.',
+        fuentes: ['Mottola 2018'],
+        citas: [`${EM_CITA.mottola}, recuadros 1 y 2.`]
+      } },
+    { id: 'em_u_sangrado_pp', em: { posparto: {} }, alerta: true,
+      urgencia: 'Posible hemorragia o restos tras el parto: consulta médica sin demora, hoy.',
+      text: '¿Tiene un sangrado vaginal brusco o muy abundante, que va a más, o expulsa coágulos o restos? ¿O se le ha hinchado mucho el vientre?',
+      razonamiento: {
+        porque: 'Tras el parto, un sangrado que aumenta o con restos puede ser placenta retenida o una infección del útero (NICE NG194, 1.2.4).',
+        peso: 'NICE pide consulta médica «without delay» (NICE NG194, 1.2.4 y 1.2.13). La guía de fisioterapia del posparto añade el sangrado intenso y el abdomen muy hinchado entre los signos que piden derivación médica inmediata (Simonds 2022, p. E10).',
+        fuentes: ['NICE NG194', 'Simonds 2022'],
+        citas: [`${EM_CITA.ng194}, 1.2.4 y 1.2.13.`, `${EM_CITA.simonds}, p. E10.`]
+      } },
+    { id: 'em_u_infeccion', em: { posparto: { hasta: 6 } }, alerta: true,
+      urgencia: 'Posible infección tras el parto: consulta médica sin demora, hoy; si está muy mal, confusa, respira muy rápido o le falta el aire, urgencias (112).',
+      text: '¿Tiene fiebre o escalofríos, o dolor de vientre, pelvis o periné, o un flujo que huele mal?',
+      razonamiento: {
+        porque: 'Son los síntomas de una infección tras el parto (NICE NG194, 1.2.4). En las 6 semanas tras el parto, el aborto o la interrupción, la mujer está en el grupo de alto riesgo de sepsis (NICE NG255, 1.2.1).',
+        peso: 'Consulta médica «without delay» (NICE NG194, 1.2.4); con criterios de alto riesgo (alteración mental nueva, frecuencia respiratoria de 25 o más, tensión sistólica de 90 o menos, pulso de más de 130…), urgencias en ambulancia (NICE NG255, 1.6.1 y tabla 1). La sepsis puede no dar fiebre (NICE NG255, 1.1.2), y en el embarazo el pulso basal es 10–15 lpm más alto (1.4.4).',
+        fuentes: ['NICE NG194', 'NICE NG255'],
+        citas: [`${EM_CITA.ng194}, 1.2.4.`, `${EM_CITA.ng255}, 1.1.2, 1.2.1, 1.4.4, 1.6.1 y tabla 1.`]
+      } },
+    { id: 'em_u_tev', em: { embarazo: {}, posparto: {} }, alerta: true,
+      urgencia: 'Posible trombosis o embolia: valoración médica urgente hoy (en el embarazo, el médico empieza el tratamiento antes de confirmarla). Si se desmaya o le falta mucho el aire, 112.',
+      text: '¿Tiene dolor e hinchazón nuevos en una pierna, sobre todo en una sola; o dolor de espalda o de nalga con toda la pierna hinchada; o le falta el aire de forma nueva, le duele el pecho o ha tosido sangre?',
+      razonamiento: {
+        porque: 'En el embarazo y el puerperio, la trombosis da dolor e hinchazón de la pierna, normalmente de un lado, y a veces dolor bajo del vientre; la de la vena iliaca, dolor de espalda o de nalga con toda la pierna hinchada; la embolia, falta de aire, dolor en el pecho, tos con sangre o colapso (RCOG 2015, §2 y §4.1). El puerperio es el momento de más riesgo (RCOG 2015).',
+        peso: 'Ante la sospecha, pruebas sin demora y heparina desde el principio, hasta descartarla (RCOG 2015, §6.1, grado B); el colapso es una emergencia (§6.4). En el embarazo no hay escala de probabilidad validada y el dímero D no sirve para descartarla (RCOG 2015, §4.3 y §4.4): ante la sospecha, derivar. Tras el parto, NICE da los mismos síntomas (NICE NG194, 1.2.4; NICE NG192, 1.7.7). «Hoy» y el 112 son redacción de la app.',
+        detalle: 'Con una trombosis ya diagnosticada y tratada, la guía recomienda moverse con medias de compresión (RCOG 2015, §7.1, grado B). Si se pincha heparina, trátala como a una persona anticoagulada.\n\nEl dolor en el pecho y la falta de aire también salen en la pregunta del corazón: márcalas las dos si hace falta; las dos son urgentes.',
+        fuentes: ['RCOG 2015', 'NICE NG194', 'NICE NG192'],
+        citas: [`${EM_CITA.rcog}, §2, §4.1, §4.3, §4.4, §6.1, §6.4 y §7.1.`, `${EM_CITA.ng194}, 1.2.4.`, `${EM_CITA.ng192}, 1.7.7.`]
+      } },
+    { id: 'em_u_corazon', em: { embarazo: {}, posparto: {} }, alerta: true,
+      urgencia: 'Posible problema cardiaco del embarazo o el posparto: valoración médica urgente hoy.',
+      text: '¿Tiene dolor en el pecho, palpitaciones, o le falta el aire en reposo o al tumbarse?',
+      razonamiento: {
+        porque: 'Con estos síntomas en el embarazo o hasta 12 meses tras el parto hay que pensar en una miocardiopatía periparto u otra enfermedad cardiaca (Hameed 2023, elemento 2). La miocardiopatía periparto aparece al final del embarazo o hasta 6 meses tras el parto y pide ingreso urgente (Sambola 2024).',
+        peso: 'Son signos de un evento cardiaco inminente la falta de aire en reposo, no poder estar tumbada, el pulso en reposo de 120 o más, la sistólica de 160 o más, 30 respiraciones por minuto o más y la saturación de 94 % o menos (Hameed 2023, recuadro 3). Tras el parto, el dolor torácico pide consulta médica sin demora (NICE NG194, 1.2.4).',
+        fuentes: ['Hameed 2023', 'Sambola 2024', 'NICE NG194'],
+        citas: [`${EM_CITA.hameed}, elementos 2 y 10, recuadro 3.`, `${EM_CITA.sambola}, «Peripartum cardiomyopathy».`, `${EM_CITA.ng194}, 1.2.4.`]
+      } },
+    { id: 'em_u_perine', em: { posparto: {} }, alerta: true,
+      urgencia: 'Herida abierta o infectada tras el parto: a su maternidad hoy.',
+      text: '¿Se le ha abierto la herida del periné o la de la cesárea, o tiene más dolor, rojez o supuración en ella?',
+      razonamiento: {
+        porque: 'La herida del periné o de la cesárea puede infectarse o abrirse en las primeras semanas (NICE NG192, 1.7.4).',
+        peso: 'Con la herida del periné abierta, NICE pide derivar con urgencia para que la vean el mismo día (NICE NG194, 1.2.20); en la cesárea, el dolor creciente, la rojez, la supuración o la separación piden revisión (NICE NG192, 1.7.4).',
+        fuentes: ['NICE NG194', 'NICE NG192'],
+        citas: [`${EM_CITA.ng194}, 1.2.15 y 1.2.20.`, `${EM_CITA.ng192}, 1.7.4.`]
+      } },
+    { id: 'em_u_incontinencia', em: { posparto: {} }, alerta: true,
+      urgencia: 'Pérdida continua de orina o heces tras el parto: valoración médica sin demora, hoy.',
+      text: '¿Desde el parto se le escapa la orina o las heces de forma continua, sin poder controlarlo nada?',
+      razonamiento: {
+        porque: 'Una pérdida continua, no unos escapes con el esfuerzo, puede deberse a una fístula obstétrica u otra complicación grave del parto, que a veces se parece a un problema musculoesquelético (Simonds 2022, p. E10).',
+        peso: 'La guía de fisioterapia del posparto pide derivación médica inmediata con la pérdida continua de heces u orina, la fiebre, el sangrado intenso o el abdomen muy hinchado (Simonds 2022, p. E10). Los escapes con el esfuerzo van en el bloque de suelo pélvico, no aquí.',
+        fuentes: ['Simonds 2022'],
+        citas: [`${EM_CITA.simonds}, p. E10.`]
+      } },
+    { id: 'em_u_psicosis', em: { posparto: {} }, alerta: true, privada: true,
+      urgencia: 'Posible psicosis posparto: valoración por salud mental urgente (en 4 horas).',
+      text: '(Si hace falta, al acompañante) ¿Ha notado cambios bruscos desde el parto: confusión, ideas extrañas, euforia o mucha agitación?',
+      razonamiento: {
+        porque: 'La psicosis posparto empieza de forma brusca, casi siempre en las primeras semanas, y puede agravarse muy deprisa (NICE CG192, «Terms used»).',
+        peso: 'Con un inicio brusco de síntomas de psicosis, NICE pide valoración inmediata por salud mental, en las 4 horas siguientes a la derivación (NICE CG192, 1.5.12). La respuesta no va al informe ni al prompt; solo la derivación.',
+        fuentes: ['NICE CG192'],
+        citas: [`${EM_CITA.cg192}, 1.5.11–1.5.12 y «Terms used».`]
+      } },
+    { id: 'em_u_autolesion', em: { embarazo: {}, posparto: {} }, alerta: true, privada: true,
+      urgencia: 'Riesgo para su seguridad: valoración urgente hoy (urgencias) y aviso a su médico.',
+      text: '¿Ha pensado en hacerse daño o en quitarse la vida?',
+      razonamiento: {
+        porque: 'En el embarazo y el primer año tras el parto, NICE pide valorar el riesgo de autolesión y suicidio y avisar a su médico (NICE CG192, 1.6.3 y 1.6.5).',
+        peso: 'La guía de fisioterapia del posparto pide derivar a urgencias ante cualquier idea de suicidio (Simonds 2022, p. E11). Con el riesgo, ayuda según su nivel, avisar a su médico y decirle a ella y a su familia que pidan ayuda si empeora (NICE CG192, 1.6.5). La respuesta no va al informe ni al prompt; solo la derivación.',
+        fuentes: ['Simonds 2022', 'NICE CG192'],
+        citas: [`${EM_CITA.simonds}, p. E11.`, `${EM_CITA.cg192}, 1.6.3 y 1.6.5.`]
+      } },
+    { id: 'em_d_plo', em: { embarazo: {}, posparto: {}, sinPLO: true }, alerta: true,
+      derivacion: 'Posible fractura vertebral por osteoporosis del embarazo o la lactancia: valoración médica especializada pronto. Hasta entonces, sin terapia manual ni carga en la espalda.',
+      text: '¿Tiene un dolor de espalda intenso y que no se le pasa, dorsal o lumbar, en el embarazo o desde el parto, o ha perdido 3 cm o más de altura?',
+      razonamiento: {
+        porque: 'La osteoporosis del embarazo o la lactancia da fracturas vertebrales, sobre todo dorsales y lumbares, al final del embarazo o en los primeros meses de lactancia, y se diagnostica tarde porque el dolor se atribuye al embarazo (Hadji 2026; Scioscia 2023).',
+        peso: 'La declaración de posición pide derivar el dolor de espalda intenso y persistente del embarazo o la lactancia, y la pérdida de talla de 3 cm o más (Hadji 2026, secciones 4.3 y 5).',
+        detalle: 'La osteoporosis transitoria de cadera es otra entidad: ante un dolor de cadera con alteración de la marcha en el embarazo hay que pensar también en ella (Hadji 2026), y la guía de fisioterapia del embarazo pone la fractura de cuello de fémur por osteoporosis transitoria entre las banderas rojas (Clinton 2017, p. 111).\n\nCon la tarjeta «Osteoporosis o fragilidad ósea» marcada con la causa del embarazo o la lactancia, esta pregunta no sale.',
+        fuentes: ['Hadji 2026', 'Scioscia 2023', 'Clinton 2017'],
+        citas: [`${EM_CITA.hadji}, secciones 4.3 y 5.`, `${EM_CITA.scioscia}.`, `${EM_CITA.clinton}, p. 111.`]
+      } },
+    { id: 'em_d_fractura', em: { posparto: { hasta: 2 } }, alerta: true,
+      derivacion: 'Posible fractura de estrés de la pelvis tras el parto: derivar para pruebas de imagen.',
+      text: '¿Desde el parto tiene un dolor intenso o que empezó de golpe en la sacroilíaca, la nalga, la zona lumbar o el pubis, le cuesta apoyar o cojea, o se le alivia tumbada?',
+      razonamiento: {
+        porque: 'En las 2 semanas tras el parto, un dolor de cintura pélvica intenso puede ser una fractura de estrés del sacro o de la pelvis, no un dolor mecánico (Simonds 2022, pp. E4–E5).',
+        peso: 'La guía de fisioterapia del posparto pide palpar el hueso doloroso y derivar a imagen con cualquiera de estos datos en las 2 semanas tras el parto: dolor intenso, apoyo difícil o imposible, cojera, dolor brusco en sacroilíaca, nalga, zona lumbar o pubis, o dolor que alivia tumbada (Simonds 2022, grado A). Pregunta también si da el pecho y si se pinchó heparina en el embarazo, que se asocian a menos densidad ósea (Simonds 2022, evidencia débil).',
+        detalle: 'En deportistas de élite que dan el pecho se han descrito fracturas de estrés (en torno al 3 %), el 43 % de ellas del sacro, algunas con ejercicio sin impacto (Deering 2024, citando otros estudios).',
+        fuentes: ['Simonds 2022', 'Deering 2024'],
+        citas: [`${EM_CITA.simonds}, pp. E4–E5.`, `${EM_CITA.deering}, p. 186.`]
+      } },
+    { id: 'em_d_mama', em: { posparto: {} }, alerta: true,
+      derivacion: 'Posible mastitis: consulta médica.',
+      text: '¿Tiene un pecho rojo e hinchado desde hace más de 24 horas, aunque se lo haya tratado?',
+      razonamiento: {
+        porque: 'Un pecho rojo e hinchado que empeora más de 24 horas pese a cuidarlo puede ser una mastitis (NICE NG194, 1.2.4).',
+        peso: 'NICE lo pone en la lista de síntomas que piden consejo médico sin demora tras el parto (NICE NG194, 1.2.4).',
+        fuentes: ['NICE NG194'],
+        citas: [`${EM_CITA.ng194}, 1.2.4.`]
+      } },
+  ],
+  // Tarjeta, bloques de la fase 2 y textos. Las citas cuentan en
+  // docs/referencias.md como menciones del cribado.
+  embarazo: {
+    estados: { embarazada: 'Embarazada', posparto: 'Posparto (hasta 12 meses)' },
+    familiar: { SI: 'Sí', NO: 'No', NS: 'No lo sabe' },
+    partos: { vaginal: 'Vaginal', instrumental: 'Vaginal instrumental (fórceps o ventosa)', cesarea: 'Cesárea', ns: 'No lo sabe' },
+    casillas: [
+      { id: 'esfinter', texto: 'Lesión del esfínter anal' },
+      { id: 'occipitoposterior', texto: 'Bebé boca arriba en el expulsivo (occipitoposterior)' },
+    ],
+    lactancia: { SI: 'Sí', NO: 'No' },
+    // Bloque de ánimo (decisión 11): las dos preguntas de depresión de NICE
+    // CG192 (1.5.4). Las respuestas viven en la tarjeta, nunca en el informe.
+    animo: [
+      { id: 'w1', texto: 'En el último mes, ¿se ha sentido a menudo decaída, deprimida o sin esperanza?' },
+      { id: 'w2', texto: 'En el último mes, ¿ha tenido a menudo poco interés o poco placer en hacer las cosas?' },
+    ],
+    // Bloque de suelo pélvico (decisión 12): síntomas que preguntar (NICE NG210, 1.5.1), sin puntuar.
+    suelo: [
+      { id: 'sp1', texto: '¿Se le escapa la orina (al toser, reír, saltar o sin poder llegar al baño)?' },
+      { id: 'sp2', texto: '¿Se le escapan los gases o las heces?' },
+      { id: 'sp3', texto: '¿Nota un bulto o un peso en la vagina?' },
+    ],
+    textos: {
+      nota: 'Márcala si está embarazada o ha dado a luz en el último año. Las preguntas de la fase 2 dependen de las semanas.',
+      hombre: 'Con sexo «Hombre» no aplica.',
+      formulario: 'En el formulario previo dice que está embarazada o que ha dado a luz en el último año: marca la tarjeta.',
+      semanasSin: 'Anota las semanas: deciden qué preguntas salen en la fase 2.',
+      // Regla de la tensión arterial (decisión 5)
+      taGrave: 'Tensión de 160/110 o más en el embarazo: valoración el mismo día (NICE NG201, 1.2.27).',
+      taAlta: 'Primera tensión de 140/90 o más desde la semana 20: valoración especializada en 24 h, si no la tiene ya en seguimiento (NICE NG201, 1.2.26).',
+      // Fase 2: ánimo
+      animoSi: 'Con un «sí»: el PHQ-9 de la calculadora o que la vea su médico de cabecera (NICE CG192, 1.5.5).',
+      animoAnsiedad: 'Para la ansiedad, el GAD-7 de la calculadora o su médico de cabecera (NICE CG192, 1.5.4 y 1.5.6).',
+      animoFuente: 'Preguntas de NICE CG192 (1.5.4), para cualquier profesional que la vea con regularidad en el embarazo y el primer año tras el parto (1.5.8). Las respuestas no van al informe.',
+      // Fase 2: suelo pélvico
+      sueloCon: 'Fisioterapia de suelo pélvico: programa supervisado de al menos 3 meses (NICE NG210, 1.6.14).',
+      sueloHeces: 'Con escapes de heces, también valoración médica (NICE NG123, 1.3.20).',
+      sueloRiesgo: 'Sin síntomas, pero con riesgo (familiar de primer grado con disfunción desde la semana 20, parto instrumental, occipitoposterior o lesión del esfínter anal): puede beneficiarse de un programa supervisado de 3 meses (NICE NG210, 1.3.12).',
+      sueloDiario: 'Suelo pélvico a diario, con la técnica aprendida (Mottola 2018; NICE NG210, 1.3.11).',
+      sueloFuente: 'Síntomas que preguntar tras el parto (NICE NG210, 1.5.1 y 1.5.3), sin puntuar.',
+      // Fase 4b
+      supino: 'Embarazada de 20 semanas o más: no la dejes mucho rato boca arriba y, si se marea, tiene náuseas o se encuentra mal, ponla de lado (Mottola 2018; ACOG 2020).',
+      gaensMenos4: 'Posparto de menos de 4 semanas: no hagas el Gaenslen (Simonds 2022).',
+      gaensMas4: 'Posparto: no hagas el Gaenslen si le duele la sínfisis del pubis (Simonds 2022).',
+      // Fase 5: embarazo
+      dosisEmb: 'Activa durante todo el embarazo si no hay contraindicación: al menos 150 min por semana de intensidad moderada (puede hablar, no cantar), repartidos en 3 días o más, con aeróbico y fuerza; si no llega, empezar poco a poco (Mottola 2018, recomendaciones fuertes; Bull 2020).',
+      precaucionesEmb: 'Sin buceo, deportes de contacto, riesgo de caída ni bicicleta en movimiento; sin calor excesivo y bien hidratada; la intensidad alta, solo supervisada; si la maniobra de Valsalva le marea, sin aguantar la respiración (Mottola 2018, opinión de expertos).',
+      supinoEmb: 'Boca arriba: si se marea, tiene náuseas o se encuentra mal, cambiar de posición (Mottola 2018, recomendación débil); desde la semana 20 puede bajar el retorno venoso (ACOG 2020).',
+      pararEmb: 'Parar el ejercicio y consultar si aparece: sangrado vaginal, pérdida de líquido, contracciones regulares y dolorosas, dolor de vientre, dolor en el pecho, falta de aire que no cede en reposo, mareo que no cede, dolor de cabeza, debilidad que afecta al equilibrio, o dolor o hinchazón de pantorrilla (Mottola 2018, recuadro 2; ACOG 2020, recuadro 3).',
+      contraindicaciones: 'Con una contraindicación absoluta (rotura de la bolsa, parto prematuro, sangrado persistente sin explicar, placenta previa después de la semana 28, preeclampsia, cuello del útero incompetente, crecimiento fetal restringido, embarazo de trillizos o más, diabetes tipo 1, hipertensión o tiroides sin controlar, u otra enfermedad cardiovascular, respiratoria o sistémica grave), solo las actividades de la vida diaria; con una relativa, que hable con su obstetra o matrona antes de un ejercicio moderado o intenso (Mottola 2018, tabla 2).',
+      diastasisEmb: 'Con diástasis en el embarazo, la guía canadiense aconseja consejo de fisioterapia y evitar los abdominales tipo curl (Mottola 2018, opinión de expertos).',
+      // Fase 5: posparto
+      vueltaPp: 'Volver a la actividad de forma gradual, guiada por los síntomas (Bull 2020); no hace falta una autorización médica de rutina y la vuelta puede empezar antes de las 6 semanas (Davenport 2025). Tras la cesárea, cuando se sienta recuperada (NICE NG192, 1.7.8). La misma dosis que en el embarazo: 150 min por semana, con fuerza (Bull 2020).',
+      relativasPp: 'Durante el primer año, que consulte con su médico antes del ejercicio moderado o intenso si tiene: tensión de más de 140/90, dolor en el pecho, falta de aire en reposo, mareo o pérdida de conocimiento, síntomas neurológicos, dolor o hinchazón de pantorrilla, sangrado vaginal sin regla, dolor abdominal intenso, anemia o cansancio excesivo, fiebre, o síntomas de la cesárea que empeoran con el ejercicio; casi siempre podrá seguir activa, adaptando (Davenport 2025).',
+      noContraPp: 'No son contraindicaciones: el dolor lumbar, el de cintura pélvica (sin consenso entre los encuestados; lo decidieron los autores), la incontinencia, el prolapso leve o moderado y la diástasis (Davenport 2025).',
+      lactanciaPp: 'Si da el pecho, mejor dar el pecho o sacarse leche antes del ejercicio, por comodidad (Davenport 2025).',
+      correrPp: 'Volver a correr: no antes de 3 semanas y con las heridas del parto, también la cesárea, completamente curadas; el momento es individual, sin plazo fijo de 6 o 12 semanas. Antes, caminar 30 min y tareas de impacto sin síntomas. Con síntomas leves de suelo pélvico puede correr adaptando; con síntomas graves, valoración especializada primero. Si aparecen escapes, peso o presión vaginal al correr, parar y caminar (Christopher 2024; Deering 2024, consenso Delphi).',
+      diastasisPp: 'Diástasis: no hay un corte de consenso; la leve no se asocia a dolor lumbopélvico (Sperstad 2016); se resuelve sola en buena parte durante el primer año (Gluppe 2021); el ejercicio abdominal la reduce poco (Beamish 2025), y no hay que prohibir el curl ni el suelo pélvico (Gluppe 2021).',
+      // Fase 5: dolor lumbopélvico
+      pelvicaEjercicio: 'Dolor lumbar o de cintura pélvica: ejercicio o cinturón lumbopélvico no rígido (NICE NG201, 1.4.15). En el embarazo, el ejercicio de 8–12 semanas reduce el dolor lumbar y pélvico, pero en el dolor solo pélvico no mejora más que la atención habitual (Liddle y Pennick 2015).',
+      pelvicaPosparto: 'En el posparto, ejercicio individualizado con enfoque biopsicosocial y cribado del miedo-evitación (Davenport 2025); el tratamiento, antes de los 3 meses (Simonds 2022). Predicen que persista: dolor intenso, muchas pruebas de provocación positivas, dolor lumbopélvico previo, discapacidad alta, neuroticismo y miedo-evitación (Burani 2023).',
+      terapiaManual: 'La terapia manual no tiene base para ser el tratamiento principal ni para usarse sola (Hall 2016; Simonds 2022): como mucho, para probar el alivio en pocas sesiones (Vleeming 2008, nivel D). Del thrust en el embarazo hay un solo ensayo piloto, con 15 mujeres en decúbito lateral y sin efectos adversos, recogido en la revisión Cochrane (Liddle y Pennick 2015), y la guía de fisioterapia lo deja a criterio del clínico (Clinton 2017, grado C): no basta para decir que sea seguro.',
+      thrustPp: 'En el posparto, el thrust no está indicado con articulaciones simétricas (Simonds 2022).',
+      // Línea de la sacroilíaca (T8): tarjeta de lu8 y ca10 en la fase 5
+      sacroiliaca: 'Embarazo o posparto: primero información (el dolor no es peligroso y probablemente mejorará) y ejercicio individualizado en el embarazo, o estabilización individualizada en el posparto (Vleeming 2008, nivel C); el cinturón, para probar el alivio por periodos cortos (Vleeming 2008, nivel D; NICE NG201, 1.4.15).',
+    },
+  },
+};
