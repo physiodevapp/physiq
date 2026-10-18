@@ -36,6 +36,11 @@ export function estadoCondicion(c, st) {
     }
     case 'mastocitos':
       return st.mastocitos?.estado === 'diagnosticado' ? marcada('Diagnosticado') : sin('No consta');
+    case 'osteoporosis': {
+      const op = st.osteoporosis || {};
+      if (op.estado === 'diagnosticada') return marcada('Diagnosticada');
+      return op.estado === 'sospecha' ? marcada('Sospecha') : sin('No consta');
+    }
     case 'lupus': {
       const le = st.lupus || {};
       if (le.estado === 'diagnosticado') return marcada('Diagnosticado');

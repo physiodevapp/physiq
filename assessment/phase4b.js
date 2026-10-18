@@ -16,6 +16,7 @@ import { HM, hmActiva } from './lib/hipermovilidad.js';
 import { DS, dsActiva } from './lib/disautonomia.js';
 import { LES, lesDiagnosticado } from './lib/lupus.js';
 import { MA, maActivo } from './lib/mastocitos.js';
+import { OP, opActivo } from './lib/osteoporosis.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -359,6 +360,7 @@ export function buildTestItem(hId, test, idx) {
     ${statsHtml}
     <div class="test-peso">${hyp ? pesoTest(hyp, test, idx) : ''}</div>
     ${test.laxitud && hmActiva(state.hipermovilidad) ? `<div class="hm-aviso-test">🧬 ${HM.textos.laxitud}</div>` : ''}
+    ${test.cargaOsea && opActivo(state.osteoporosis) ? avisoCargaOseaHTML(test) : ''}
     <div class="test-criterion">${citasEnTexto(test.criterio)}</div>
     ${porque}
     ${fuente}
@@ -684,6 +686,15 @@ export function recalcHypScore(hId) {
   const card = document.getElementById(`hypcard_${hId}`);
   card.className = `hypothesis-card ${colorClass}`;
   document.getElementById(`score_${hId}`).innerHTML = etiquetaHipHTML(label);
+}
+
+// Osteoporosis (Fase P, docs/osteoporosis.md, decisión 7): línea de técnica en
+// los tests que cargan el hueso (`cargaOsea`; 'costilla' en los de la 1.ª
+// costilla), con su porqué plegado. No cambia ninguna LR.
+function avisoCargaOseaHTML(test) {
+  const t = OP.textos;
+  return `<div class="hm-aviso-test op-aviso-test">🦴 ${citasEnTexto(t.tecnica4b)}${test.cargaOsea === 'costilla' ? ` ${citasEnTexto(t.tecnica4bCostilla)}` : ''}
+      <details class="op-razon"><summary>¿Por qué?</summary>${citasEnTexto(t.tecnica4bPorque)}</details></div>`;
 }
 
 // Exposed for inline onclick attributes (index.html static markup + this

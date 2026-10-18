@@ -167,7 +167,16 @@ export function filasPaciente(datos, hipIds = [], contexto = {}) {
       (e.soloFila ? soloFila : enteras).add(id);
     }
   }
-  return { ids, hipotesis, sinFilas, soloFila: [...soloFila].filter(id => !enteras.has(id)) };
+  // Por condición de una tarjeta de la fase 1 (`porCondicion`, hoy la fractura
+  // vertebral de la osteoporosis), no por hipótesis: `contexto.condiciones`.
+  const condiciones = [];
+  for (const k of contexto.condiciones || []) {
+    const propias = (datos.porCondicion?.[k] || []).filter(id => buscarFila(datos, id));
+    if (!propias.length) continue;
+    condiciones.push(k);
+    for (const id of propias) { if (!ids.includes(id)) ids.push(id); enteras.add(id); }
+  }
+  return { ids, hipotesis, sinFilas, condiciones, soloFila: [...soloFila].filter(id => !enteras.has(id)) };
 }
 
 // Los grupos recortados a las filas del paciente: una fila entra si es suya (con todos
@@ -238,8 +247,12 @@ export function tiemposTejidoHTML(datos, { semanas = null, posquirurgico = false
 
   const ctx = { columnas, hoy, pendienteChip, medidas };
   const sinPlazo = paciente?.sinPlazo || [];
+  // `paciente.condiciones`: [{ tarjeta, nombre, notaHTML? }] (notaHTML ya pintada, con sus citas)
+  const porCondicion = (paciente?.condiciones || [])
+    .map(c => ` Según la tarjeta «${esc(c.tarjeta)}»: ${esc(c.nombre)}.${c.notaHTML ? ` ${c.notaHTML}` : ''}`).join('');
   const lineaPaciente = soloPaciente
-    ? `<p class="tej-paciente">Según ${paciente.nombres.length === 1 ? 'la hipótesis activa' : 'las hipótesis activas'}: ${paciente.nombres.map(esc).join(' · ')}.`
+    ? `<p class="tej-paciente">${paciente.nombres.length ? `Según ${paciente.nombres.length === 1 ? 'la hipótesis activa' : 'las hipótesis activas'}: ${paciente.nombres.map(esc).join(' · ')}.` : ''}`
+      + porCondicion
       + (sinPlazo.length ? ` Sin plazo propio en este panel: ${sinPlazo.map(esc).join(' · ')}.` : '')
       + ' Vuelve a tocar «Este paciente» para ver todos los tejidos.</p>'
     : !conPaciente && sinPlazo.length

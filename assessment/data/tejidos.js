@@ -720,6 +720,12 @@ export const TIEMPOS_TEJIDO = {
   // `soloFila: true`. Solo donde la fila es esa misma lesión; sin fila propia, nada (un
   // atrapamiento nervioso no es una neuropraxia, una tendinopatía crónica de
   // aductores no es la lesión aguda). Un test comprueba que cada id existe.
+  // Por condición de una tarjeta de la fase 1, no por hipótesis (lib/tejidos.js,
+  // filasPaciente(), `contexto.condiciones`): la tarjeta «Osteoporosis o fragilidad
+  // ósea» con alguna fractura vertebral (docs/osteoporosis.md, decisión 10).
+  porCondicion: {
+    fracturaVertebral: ['fx_vertebral_compresion'],
+  },
   porHipotesis: {
     h1: ['capsulitis_adhesiva'],
     h3: [{ id: 'manguito_proteccion', posq: true }, { id: 'manguito_programa', posq: true }],

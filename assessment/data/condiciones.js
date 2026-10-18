@@ -95,6 +95,21 @@ export const CONDICIONES = [
     fuentes: ['Valent 2022', 'Cardona 2020', 'Lee y Picard 2025'],
   },
   {
+    id: 'osteoporosis',
+    nombre: 'Osteoporosis o fragilidad ósea',
+    que: 'Hueso con menos masa y peor estructura, que se rompe con un golpe pequeño o sin golpe.',
+    piensa: 'Piensa en ella si:',
+    pistas: [
+      { texto: 'tiene 50 años o más y se rompió algo con una caída desde su altura o menos;', de: ['of1'] },
+      { texto: 'toma corticoides por boca desde hace 3 meses o más;', de: ['of2'] },
+      { texto: 'está embarazada o dando el pecho y tiene un dolor de espalda nuevo, intenso y que no se pasa.', de: ['l_e4'] },
+    ],
+    anade: 'su urgencia y sus derivaciones en la fase 2, las caídas, una línea en los tests que cargan el hueso, y el ejercicio, el tope sin thrust y la red de seguridad del plan; con «Sospecha», los factores que piden valorar el riesgo de fractura.',
+    destino: { tarjeta: 'cardOsteoporosis' },
+    boton: 'Ir a la tarjeta →',
+    fuentes: ['Gregson 2025', 'Kanis 2019', 'Hadji 2026'],
+  },
+  {
     id: 'tarlov',
     region: 'lumbar',
     nombre: 'Quiste de Tarlov',

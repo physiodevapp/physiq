@@ -50,6 +50,16 @@ const state = {
   // '' | 'SI' | 'NO' | 'sinReceta'; desencadenantes { ejercicio, calor, … : true };
   // otro: texto libre.
   mastocitos: { estado: '', tipo: '', anafilaxia: '', autoinyector: '', desencadenantes: {}, otro: '' },
+  // Condición especial «Osteoporosis o fragilidad ósea» (Fase P,
+  // docs/osteoporosis.md, lib/osteoporosis.js). estado: '' (no consta) |
+  // 'diagnosticada' | 'sospecha'; causa '' | 'edad' | 'corticoides' | 'plo' |
+  // 'otra' | 'ns'; vertebrales '' | '0' | '1' | '2' | 'ns'; reciente y otras
+  // (casillas); tratamiento '' | 'no' | 'antirresortivo' | 'otro' | 'ns';
+  // corticoides '' | 'no' | 'b' (< 7,5 mg/día) | 'a' (≥ 7,5) | 'ns'; con
+  // «Sospecha», factores { of1…of6: 'SI'|'NO' }; caidas { n: '' | '0' | '1' | '2',
+  // lesion, suelo, conciencia, fragilidad } (los dos estados).
+  osteoporosis: { estado: '', causa: '', vertebrales: '', reciente: false, otras: false, tratamiento: '', corticoides: '',
+    factores: {}, caidas: { n: '', lesion: false, suelo: false, conciencia: false, fragilidad: false } },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',

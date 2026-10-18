@@ -518,6 +518,64 @@
     </div>
   </div>
 
+  <!-- Condición especial (docs/osteoporosis.md): sin marcar = no consta -->
+  <div class="card" id="cardOsteoporosis">
+    <div class="card-title">Osteoporosis o fragilidad ósea</div>
+    <div class="plan-note-hint" id="opNota"></div>
+    <div class="option-group option-group-full" id="opEstado">
+      <button type="button" class="option-btn" data-valor="diagnosticada" onclick="selectOPEstado('diagnosticada')">Diagnosticada</button>
+      <button type="button" class="option-btn" data-valor="sospecha" onclick="selectOPEstado('sospecha')">Sospecha</button>
+    </div>
+    <div id="opDiagWrap" style="display:none">
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Causa o contexto</div>
+      <div class="option-group hm-subtipos" data-op-fila="causa">
+        <button type="button" class="option-btn" data-valor="edad" onclick="selectOPFila('causa','edad')">Posmenopáusica o por la edad</button>
+        <button type="button" class="option-btn" data-valor="corticoides" onclick="selectOPFila('causa','corticoides')">Por corticoides</button>
+        <button type="button" class="option-btn" data-valor="plo" onclick="selectOPFila('causa','plo')">Asociada al embarazo o la lactancia</button>
+        <button type="button" class="option-btn" data-valor="otra" onclick="selectOPFila('causa','otra')">Otra causa</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectOPFila('causa','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Fracturas vertebrales</div>
+      <div class="option-group hm-subtipos" data-op-fila="vertebrales">
+        <button type="button" class="option-btn" data-valor="0" onclick="selectOPFila('vertebrales','0')">Ninguna conocida</button>
+        <button type="button" class="option-btn" data-valor="1" onclick="selectOPFila('vertebrales','1')">1</button>
+        <button type="button" class="option-btn" data-valor="2" onclick="selectOPFila('vertebrales','2')">2 o más</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectOPFila('vertebrales','ns')">No lo sabe</button>
+      </div>
+      <div class="option-group hm-subtipos" id="opRecienteWrap">
+        <button type="button" class="option-btn" data-op-casilla="reciente" aria-pressed="false" onclick="toggleOPCasilla('reciente')">Alguna en los 2 últimos años, o aún le duele</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="option-group hm-subtipos">
+        <button type="button" class="option-btn" data-op-casilla="otras" aria-pressed="false" onclick="toggleOPCasilla('otras')">Otras fracturas por fragilidad (cadera, muñeca, húmero, pelvis u otra)</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Tratamiento para el hueso</div>
+      <div class="option-group hm-subtipos" data-op-fila="tratamiento">
+        <button type="button" class="option-btn" data-valor="no" onclick="selectOPFila('tratamiento','no')">Ninguno</button>
+        <button type="button" class="option-btn" data-valor="antirresortivo" onclick="selectOPFila('tratamiento','antirresortivo')">Bifosfonato o denosumab</button>
+        <button type="button" class="option-btn" data-valor="otro" onclick="selectOPFila('tratamiento','otro')">Otro (teriparatida…)</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectOPFila('tratamiento','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Corticoides por boca durante 3 meses o más</div><div class="plan-note-hint">Prednisona o equivalente.</div>
+      <div class="option-group hm-subtipos" data-op-fila="corticoides">
+        <button type="button" class="option-btn" data-valor="no" onclick="selectOPFila('corticoides','no')">No</button>
+        <button type="button" class="option-btn" data-valor="b" onclick="selectOPFila('corticoides','b')">Menos de 7,5 mg/día</button>
+        <button type="button" class="option-btn" data-valor="a" onclick="selectOPFila('corticoides','a')">7,5 mg/día o más</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectOPFila('corticoides','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div id="opDerivCorticoides"></div>
+    </div>
+  </div>
+
   <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>

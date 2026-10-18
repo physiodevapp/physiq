@@ -32,6 +32,10 @@ import { LES, ESTADOS_LES, FILAS_LES, CASILLAS_LES, lupusVacio, normalizarLupus,
   datosLES, lineasRecomendacionLES } from './lib/lupus.js';
 import { MA, FILAS_MA, DESENCADENANTES_MA, mastocitosVacio, normalizarMastocitos, maActivo,
   pendientesMA, maPayload, datosMA, lineasRecomendacionMA } from './lib/mastocitos.js';
+import { OP, ESTADOS_OP, FILAS_OP, CASILLAS_OP, CASILLAS_CAIDAS, osteoporosisVacio, normalizarOsteoporosis, opActivo,
+  opDiagnosticada, factoresVisibles, fracturaVertebral, elementoOPVisible, siFactores, respondidosFactores,
+  resultadoSospecha, resultadoCaidas, derivacionCorticoides, derivacionesOP, pendientesOP, opPayload, datosOP,
+  lineasRecomendacionOP } from './lib/osteoporosis.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -316,6 +320,7 @@ function _softResetApp() {
   _dsRelojParar();
   state.lupus = lupusVacio();
   state.mastocitos = mastocitosVacio();
+  state.osteoporosis = osteoporosisVacio();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -421,6 +426,7 @@ function _softResetApp() {
   _pintarDsUI();
   _pintarLESUI();
   _pintarMAUI();
+  _pintarOPUI();
 }
 
 // «Reiniciar valoración» vive en el panel de sesión (antes, en la cabecera):
@@ -1493,8 +1499,17 @@ function _lupusResultadosHTML(d) {
       <span class="alert-icon">🦋</span>
       <div><strong>Lupus.</strong> ${ESTADOS_LES[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
         ${lineasRecomendacionLES(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+        ${_recordatorioOPLupus(d) ? `<div>${citasEnTexto(OP.textos.lupus)}</div>` : ''}
       </div>
     </div>`;
+}
+
+// Recordatorio de la osteoporosis en el recuadro del lupus (docs/osteoporosis.md,
+// decisión 9): solo texto, sin marcar nada, con corticoides de más de 5 mg/día
+// o dosis altas previas y la tarjeta de la osteoporosis sin marcar. No va en
+// bloqueLESIA(), cuyo texto copia physiq-report.
+function _recordatorioOPLupus(d) {
+  return d.es === 'diagnosticado' && (d.gc === 'm' || d.gc === 'a' || d.ga === 'si') && !opActivo(state.osteoporosis);
 }
 
 // ─── TRASTORNO MASTOCITARIO O ANAFILAXIA (Fase P, docs/mastocitaria.md) ────
@@ -1579,6 +1594,158 @@ function _mastocitosResultadosHTML(d) {
     </div>`;
 }
 
+// ─── OSTEOPOROSIS O FRAGILIDAD ÓSEA (Fase P, docs/osteoporosis.md) ─────────
+// Tarjeta de la fase 1: No consta (nada marcado) · Diagnosticada · Sospecha.
+// Con «Diagnosticada», cuatro filas de botones (causa, fracturas vertebrales,
+// tratamiento para el hueso, corticoides) y dos casillas; con «Sospecha», nada
+// más en la tarjeta: los factores van en el sistema de la fase 2
+// (data-op-bloque), con las caídas de los dos estados. Activa la urgencia y las
+// derivaciones del sistema, la línea de los tests que cargan el hueso en la 4b,
+// el recuadro de la fase 5 y el aviso, la red y el tope sin thrust de la fase 6.
+function _pintarOPUI() {
+  const op = state.osteoporosis;
+  document.body.classList.toggle('osteoporosis', opActivo(op));
+  const nota = document.getElementById('opNota');
+  if (nota && !nota.innerHTML) nota.innerHTML = `Sin marcar = no consta. ${citasEnTexto(OP.textos.nota)}`;
+  document.querySelectorAll('#opEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === op.estado));
+  const wrap = document.getElementById('opDiagWrap');
+  if (wrap) wrap.style.display = opDiagnosticada(op) ? '' : 'none';
+  Object.keys(FILAS_OP).forEach(k => document.querySelectorAll(`[data-op-fila="${k}"] .option-btn`)
+    .forEach(b => b.classList.toggle('selected', b.dataset.valor === op[k])));
+  document.querySelectorAll('#cardOsteoporosis [data-op-casilla]').forEach(b => {
+    const on = !!op[b.dataset.opCasilla];
+    b.classList.toggle('selected', on);
+    b.setAttribute('aria-pressed', on);
+  });
+  // «Alguna reciente o aún le duele» solo tiene sentido con alguna fractura vertebral
+  const rec = document.getElementById('opRecienteWrap');
+  if (rec) rec.style.display = fracturaVertebral(op) ? '' : 'none';
+  const deriv = document.getElementById('opDerivCorticoides');
+  if (deriv) {
+    deriv.innerHTML = derivacionCorticoides(op)
+      ? `<div class="alert alert-danger"><span class="alert-icon">🩺</span><div>${citasEnTexto(OP.textos.corticoides)}</div></div>` : '';
+  }
+}
+
+function _opCambio() {
+  _pintarOPUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectOPEstado(valor) {
+  state.osteoporosis.estado = state.osteoporosis.estado === valor ? '' : valor;
+  _opCambio();
+}
+
+// Filas de la tarjeta: un segundo toque sobre la opción marcada la quita.
+function selectOPFila(fila, valor) {
+  if (!FILAS_OP[fila]) return;
+  state.osteoporosis[fila] = state.osteoporosis[fila] === valor ? '' : valor;
+  _opCambio();
+}
+
+function toggleOPCasilla(k) {
+  if (!CASILLAS_OP.includes(k)) return;
+  state.osteoporosis[k] = !state.osteoporosis[k];
+  _opCambio();
+}
+
+// Factores de la sospecha: un segundo toque sobre la respuesta marcada la quita.
+function selectOPFactor(id, valor) {
+  const f = state.osteoporosis.factores;
+  if (f[id] === valor) delete f[id]; else f[id] = valor;
+  _pintarOPBloques();
+  saveSession();
+}
+
+// Caídas en el último año: un segundo toque quita la respuesta; sin caídas,
+// las casillas no cuentan y se limpian.
+function selectOPCaidas(valor) {
+  const c = state.osteoporosis.caidas;
+  c.n = c.n === valor ? '' : valor;
+  if (c.n === '0' || !c.n) CASILLAS_CAIDAS.forEach(k => { c[k] = false; });
+  _pintarOPBloques();
+  saveSession();
+}
+
+function toggleOPCaidaCasilla(k) {
+  if (!CASILLAS_CAIDAS.includes(k)) return;
+  state.osteoporosis.caidas[k] = !state.osteoporosis.caidas[k];
+  _pintarOPBloques();
+  saveSession();
+}
+
+function getOpPayload() {
+  return opPayload(state.osteoporosis, state.edadPaciente);
+}
+
+const _OP_RESULTADO_SOSPECHA = { derivar: 'sospechaDerivar', joven: 'sospechaJoven', sinFactores: 'sospechaSinFactores', sinEdad: 'sospechaSinEdad' };
+const _OP_RESULTADO_CAIDAS = { alto: 'caidasAlto', una: 'caidasUna', no: 'caidasNo' };
+
+// Bloque del sistema de la fase 2 (va dos veces: panel de escritorio y acordeón).
+function _opBloqueHTML() {
+  const op = state.osteoporosis;
+  if (!opActivo(op)) return '';
+  const t = OP.textos;
+  const partes = [];
+  if (factoresVisibles(op)) {
+    const r = resultadoSospecha(op, state.edadPaciente);
+    const n = respondidosFactores(op);
+    const aviso = r === 'derivar' || r === 'joven'
+      ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(t[_OP_RESULTADO_SOSPECHA[r]])}</div></div>`
+      : r ? `<div class="hm-nota">${citasEnTexto(t[_OP_RESULTADO_SOSPECHA[r]])}</div>` : '';
+    partes.push(`<div class="screening-section-title">📝 Factores de riesgo de fractura</div>
+      ${OP.factores.map((q, i) => `<div class="sq2 op-factor">
+        <div class="sq2-badge">${i + 1}</div>
+        <div class="sq2-text">${q.texto}</div>
+        <div class="sq-btns">
+          <button type="button" class="sq-btn si${op.factores[q.id] === 'SI' ? ' selected' : ''}" onclick="selectOPFactor('${q.id}','SI')">SÍ</button>
+          <button type="button" class="sq-btn no${op.factores[q.id] === 'NO' ? ' selected' : ''}" onclick="selectOPFactor('${q.id}','NO')">NO</button>
+        </div>
+      </div>`).join('')}
+      <div class="hm-resultado">${n ? `${siFactores(op)} de ${OP.factores.length} con «sí»` : 'Sin contestar'}</div>
+      ${aviso}
+      <div class="hm-fuente">${citasEnTexto(OP.factoresFuente)}</div>`);
+  }
+  const c = op.caidas;
+  const rc = resultadoCaidas(op);
+  const casillas = c.n === '1' || c.n === '2' ? `<div class="form-label">Además (marca lo que pasó)</div>
+    <div class="option-group hm-subtipos">${OP.caidas.casillas.map(k =>
+    `<button type="button" class="option-btn${c[k.id] ? ' selected' : ''}" data-op-caida="${k.id}" aria-pressed="${!!c[k.id]}" onclick="toggleOPCaidaCasilla('${k.id}')">${k.texto}</button>`).join('')}</div>` : '';
+  const resultado = !rc ? '' : `${rc === 'alto'
+    ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(t.caidasAlto)}</div></div>`
+    : `<div class="hm-nota">${citasEnTexto(t[_OP_RESULTADO_CAIDAS[rc]])}</div>`}${rc === 'no' ? '' : `<div class="hm-nota">${citasEnTexto(t.caidasDosis)}</div>`}`;
+  const sincope = c.conciencia ? `<div class="hm-nota">${OP.caidas.sincope}
+    <button type="button" class="sint-recordatorio-ir" onclick="irAPreguntaCribado('sx_sincope')">Ir a la pregunta →</button></div>` : '';
+  partes.push(`<div class="screening-section-title">🚶 Caídas</div>
+    <div class="form-label">¿Se ha caído en el último año?</div>
+    <div class="option-group hm-subtipos" data-op-caidas>
+      ${Object.entries(OP.caidas.n).map(([v, txt]) => `<button type="button" class="option-btn${c.n === v ? ' selected' : ''}" onclick="selectOPCaidas('${v}')">${txt}</button>`).join('')}
+    </div>
+    ${casillas}${sincope}${resultado}
+    <div class="hm-fuente">${citasEnTexto(OP.caidas.fuente)}</div>`);
+  return partes.join('');
+}
+
+function _pintarOPBloques() {
+  const html = _opBloqueHTML();
+  document.querySelectorAll('[data-op-bloque]').forEach(el => { el.innerHTML = html; });
+}
+
+// Recuadro de la fase 5 (docs/osteoporosis.md): nunca se pliega.
+function _osteoporosisResultadosHTML(d) {
+  const datos = datosOP(d);
+  return `
+    <div class="alert alert-info op-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">🦴</span>
+      <div><strong>Osteoporosis o fragilidad ósea.</strong> ${ESTADOS_OP[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
+        ${lineasRecomendacionOP(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
 // «Ya diagnosticada y tratada» (casilla en la 4b y en la fase 5; decisión 5).
 // No depende del mecanismo: también vale para una fractura con yeso o una
 // gota ya en tratamiento.
@@ -1656,7 +1823,7 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos);   // los de las condiciones especiales no tienen embudo
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis);   // los de las condiciones especiales no tienen embudo
     const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
     const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
@@ -1682,6 +1849,7 @@ function getPendientesBreve() {
   }
   pendientes.push(...pendientesLES(state.lupus));   // docs/lupus.md: corticoides o rasgos sin registrar
   pendientes.push(...pendientesMA(state.mastocitos));   // docs/mastocitaria.md: autoinyector sin registrar
+  pendientes.push(...pendientesOP(state.osteoporosis));   // docs/osteoporosis.md: fracturas vertebrales o factores sin registrar
   return pendientes;
 }
 
@@ -1911,13 +2079,14 @@ function sistemasActivos(regionId = state.region) {
   // Fase P: el sistema de hipermovilidad solo con la tarjeta activa, y de él
   // solo las preguntas y banderas de su estado (`hm`, lib/hipermovilidad.js)
   const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId))
-    && elementoHMVisible(x, state.hipermovilidad) && elementoLESVisible(x, state.lupus);
+    && elementoHMVisible(x, state.hipermovilidad) && elementoLESVisible(x, state.lupus) && elementoOPVisible(x, state.osteoporosis);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
     .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
     .filter(sis => !sis.soloDisautonomia || dsActiva(state.disautonomia))
     .filter(sis => !sis.soloLupus || lesActivo(state.lupus))
     .filter(sis => !sis.soloMastocitos || maActivo(state.mastocitos))
+    .filter(sis => !sis.soloOsteoporosis || opActivo(state.osteoporosis))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -1950,6 +2119,7 @@ function _repintarCribado() {
   _pintarHMBloques();
   _pintarDsBloques();
   _pintarLESBloques();
+  _pintarOPBloques();
   updateSistemicoAlert();
 }
 
@@ -2040,6 +2210,7 @@ function buildSistemicoQuestions(regionId) {
   _pintarHMBloques();
   _pintarDsBloques();
   _pintarLESBloques();
+  _pintarOPBloques();
   sistemas.forEach(sis => _pintarEmbudo(sis.id));
   updateSistemicoAlert();
 }
@@ -2080,7 +2251,7 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) {
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
       <div class="hm-bloque" data-hm-bloque></div>`;
-  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos) {
+  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis) {
     // El de disautonomía (docs/pots.md) tampoco: primero las preguntas del
     // síncope y, después de ellas, la sospecha y la prueba (data-ds-bloque)
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">`;
@@ -2126,6 +2297,8 @@ function buildSistemaHTML(sis) {
   if (sis.soloDisautonomia) html += `<div class="ds-bloque" data-ds-bloque></div>`;
   // Rasgos de la sospecha de lupus (lib/lupus.js)
   if (sis.soloLupus) html += `<div class="ds-bloque" data-les-bloque></div>`;
+  // Factores de la sospecha y caídas de la osteoporosis (lib/osteoporosis.js)
+  if (sis.soloOsteoporosis) html += `<div class="ds-bloque" data-op-bloque></div>`;
 
   html += `<div class="sis-extra">`;
   // Referred pain zones
@@ -2430,6 +2603,7 @@ function updateEdadPaciente(value) {
   evaluarCriteriosCompuestos(state.region);
   _pintarHMBloques();   // el corte de Beighton depende de la edad
   _pintarDsResultado();  // y el de la prueba de bipedestación también
+  _pintarOPBloques();   // y la regla de la sospecha de osteoporosis (50 años)
   saveSession();
 }
 
@@ -2736,7 +2910,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -2776,7 +2950,9 @@ function getDerivacionesCribado() {
 
 // Todas las derivaciones médicas no urgentes: primero las del cribado.
 function getDerivacionesMedicas() {
-  return [...getDerivacionesCribado(), ...getDerivacionesArbol()];
+  // La de los corticoides sin protección ósea sale de la tarjeta de la
+  // osteoporosis, no de una pregunta (docs/osteoporosis.md, decisión 5).
+  return [...getDerivacionesCribado(), ...derivacionesOP(state.osteoporosis), ...getDerivacionesArbol()];
 }
 
 function updateSistemicoAlert() {
@@ -3141,6 +3317,9 @@ function buildResults() {
   // ── Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): qué hacer, nunca plegado
   const ma = getMaPayload();
   if (ma) container.innerHTML += _mastocitosResultadosHTML(ma);
+  // ── Osteoporosis o fragilidad ósea (docs/osteoporosis.md): ejercicio y seguridad, nunca plegados
+  const op = getOpPayload();
+  if (op) container.innerHTML += _osteoporosisResultadosHTML(op);
 
   // ── Header summary
   container.innerHTML += `
@@ -3990,6 +4169,7 @@ function buildPhysiQPayload() {
     ...(getDsPayload() ? { ds: getDsPayload() } : {}),
     ...(getLePayload() ? { le: getLePayload() } : {}),
     ...(getMaPayload() ? { ma: getMaPayload() } : {}),
+    ...(getOpPayload() ? { op: getOpPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
@@ -4375,11 +4555,18 @@ function _filtroTejidos() {
   try { return localStorage.getItem(_CLAVE_FILTRO_TEJIDOS) || 'todos'; } catch { return 'todos'; }
 }
 function _pacienteTejidos() {
-  const { ids, hipotesis, sinFilas, soloFila } = filasPaciente(TIEMPOS_TEJIDO, state.activeHypotheses || [], {
+  // Con la tarjeta de la osteoporosis y alguna fractura vertebral, su fila
+  // (docs/osteoporosis.md, decisión 10), aunque ninguna hipótesis la enlace
+  const op = state.osteoporosis;
+  const { ids, hipotesis, sinFilas, soloFila, condiciones } = filasPaciente(TIEMPOS_TEJIDO, state.activeHypotheses || [], {
     posquirurgico: esPosquirurgico(state.mecanismo), mecanismo: state.mecanismo, cronologia: state.cronologia,
+    condiciones: fracturaVertebral(op) ? ['fracturaVertebral'] : [],
   });
   const nombre = h => HYPOTHESES[h]?.name || h;
-  return ids.length || sinFilas.length ? { ids, soloFila, nombres: hipotesis.map(nombre), sinPlazo: sinFilas.map(nombre) } : null;
+  const conds = condiciones.map(() => ({ tarjeta: 'Osteoporosis o fragilidad ósea', nombre: OP.textos.tejidosNombre,
+    notaHTML: op.causa === 'plo' ? citasEnTexto(OP.textos.tejidosPLO) : '' }));
+  return ids.length || sinFilas.length
+    ? { ids, soloFila, nombres: hipotesis.map(nombre), sinPlazo: sinFilas.map(nombre), condiciones: conds } : null;
 }
 function _pintarTiemposTejido() {
   _cerrarInfoBarra({ sinFoco: true });
@@ -4846,6 +5033,7 @@ function _hasAssessmentData() {
     || !!state.disautonomia?.estado
     || !!state.lupus?.estado
     || !!state.mastocitos?.estado
+    || !!state.osteoporosis?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -4947,6 +5135,7 @@ function _restoreSessionDOM() {
   state.disautonomia = normalizarDisautonomia(state.disautonomia);         // sesiones anteriores al POTS
   state.lupus = normalizarLupus(state.lupus);                               // sesiones anteriores al lupus
   state.mastocitos = normalizarMastocitos(state.mastocitos);                // sesiones anteriores a la tarjeta mastocitaria
+  state.osteoporosis = normalizarOsteoporosis(state.osteoporosis);          // sesiones anteriores a la osteoporosis
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
   _pintarCirugiaUI();
@@ -4954,6 +5143,7 @@ function _restoreSessionDOM() {
   _pintarDsUI();
   _pintarLESUI();
   _pintarMAUI();
+  _pintarOPUI();
   _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
@@ -5085,6 +5275,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarDsUI();
   _pintarLESUI();
   _pintarMAUI();
+  _pintarOPUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
@@ -5268,6 +5459,7 @@ Object.assign(window, {
   dsRelojEmpezar, dsRelojParar,
   selectLESEstado, selectLESFila, toggleLESCasilla, selectLESRasgo,
   selectMAEstado, selectMAFila, toggleMADesencadenante, updateMAOtro,
+  selectOPEstado, selectOPFila, toggleOPCasilla, selectOPFactor, selectOPCaidas, toggleOPCaidaCasilla,
 });
 
 // ========= SWIPE-TO-DISMISS BOTTOM SHEET =========

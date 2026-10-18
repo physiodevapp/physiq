@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, SIS_LUPUS, SIS_MASTOCITOS, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZON_ISQUEMIA_AGUDA } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, SIS_LUPUS, SIS_MASTOCITOS, SIS_OSTEOPOROSIS, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZON_ISQUEMIA_AGUDA } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.rodilla — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10); con
@@ -56,6 +56,7 @@ export const screening = {
     SIS_DISAUTONOMIA,    // solo con la tarjeta «Disautonomía / POTS» activa (docs/pots.md)
     SIS_LUPUS,           // solo con la tarjeta «Lupus (LES)» activa (docs/lupus.md)
     SIS_MASTOCITOS,      // solo con la tarjeta «Trastorno mastocitario o anafilaxia» activa (docs/mastocitaria.md)
+    SIS_OSTEOPOROSIS,    // solo con la tarjeta «Osteoporosis o fragilidad ósea» activa (docs/osteoporosis.md)
     {
       id: 'ro_vascular', icon: '🩸', nombre: 'Vascular',
       banderasRojas: [
@@ -1036,7 +1037,7 @@ export const hypotheses = {
     tests: [
       { name: 'Cadera primero', anatomia: ['art_cadera'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'PRIMERO la cadera (epifisiólisis, Perthes: paso 2b).', fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), p. 201' },
       { name: 'Palpación de la tuberosidad tibial o del polo inferior de la rótula', anatomia: ['tibia', 'tendon_rotuliano'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Tuberosidad tibial dolorosa y visiblemente aumentada (Osgood-Schlatter), o polo inferior de la rótula doloroso sin dolor a lo largo del tendón (Sinding-Larsen).', fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 200–201' },
-      { name: 'Sentadillas, escaleras, step-down, saltos y extensión resistida', anatomia: ['tendon_rotuliano', 'cuadriceps'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Sentadillas, escaleras, step-down y saltos dolorosos. Extensión resistida dolorosa y débil.', fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 200–201' },
+      { name: 'Sentadillas, escaleras, step-down, saltos y extensión resistida', cargaOsea: true, anatomia: ['tendon_rotuliano', 'cuadriceps'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Sentadillas, escaleras, step-down y saltos dolorosos. Extensión resistida dolorosa y débil.', fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 200–201' },
       { name: 'Gesto testigo (①) y medida objetiva (②)', sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: '① Bajada de escalón o sentadilla monopodal → EVA. ② Fuerza de extensión resistida en sedestación a 60° frente al lado sano, o repeticiones de step-down con altura fija.', fuente: 'Tarjeta de consulta rodilla (guía clínica de rodilla, ap. 5)' }
     ]
   },

@@ -10,6 +10,7 @@ import {
   VOLUMEN_PAUTA, FRECUENCIA_PAUTA, ESCALONES_PERIFERICOS, REGIONES_COLUMNA_PLAN, FAMILIA_HIP,
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
   AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA, AVISOS_LUPUS, RED_LUPUS, AVISOS_MASTOCITOS, RED_MASTOCITOS,
+  AVISOS_OSTEOPOROSIS, RED_OSTEOPOROSIS,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 import { nivelMatriz } from './irritabilidad.js';
@@ -171,12 +172,14 @@ export function cantidadSesion(elegidas = [], region) {
 // (una o una lista, decisión 79) y, al final, la de una hipótesis que la trae
 // de otra región (RED_HIP: h6, la arterial de cervical; decisión 50) y la de
 // la disautonomía (RED_DISAUTONOMIA, docs/pots.md), la del lupus (RED_LUPUS,
-// docs/lupus.md) y la de la anafilaxia (RED_MASTOCITOS, docs/mastocitaria.md).
+// docs/lupus.md), la de la anafilaxia (RED_MASTOCITOS, docs/mastocitaria.md) y
+// la de la fractura vertebral (RED_OSTEOPOROSIS, docs/osteoporosis.md).
 // Sin repetir.
-export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false } = {}) {
+export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false, osteoporosis = false } = {}) {
   const r = RED_SEGURIDAD[region] || {};
   const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id]),
-    disautonomia && RED_DISAUTONOMIA, ...(lupus ? RED_LUPUS : []), mastocitos && RED_MASTOCITOS].filter(Boolean)
+    disautonomia && RED_DISAUTONOMIA, ...(lupus ? RED_LUPUS : []), mastocitos && RED_MASTOCITOS,
+    osteoporosis && RED_OSTEOPOROSIS].filter(Boolean)
     .filter((p, i, a) => a.findIndex(q => q.cierre === p.cierre) === i);
   return {
     cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
@@ -208,6 +211,9 @@ export function rangosBloques(duraciones = {}) {
 //   de la fase 1 activas, docs/pots.md), lupus (null, o { brote, antitrombotico,
 //   raynaud } con la tarjeta en «Diagnosticado», docs/lupus.md), mastocitos (la
 //   tarjeta «Trastorno mastocitario o anafilaxia» marcada, docs/mastocitaria.md),
+//   osteoporosis (null, o { diagnosticada, impactoLimitado } con la tarjeta
+//   marcada, docs/osteoporosis.md), sinThrust (motivos del tope sin thrust:
+//   'osteoporosis' | 'corticoides' | 'antitrombotico', motivosSinThrust()),
 //   estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
@@ -237,7 +243,8 @@ export function construirPlan(e) {
   const nervio = elegidas.some(esNervioPeriferico);
   // La red neurológica también con un síntoma en una zona `redNeuro` (hoy el
   // periné en lumbar: cola de caballo), aunque no haya hipótesis neurológica
-  const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia, lupus: !!e.lupus, mastocitos: !!e.mastocitos });
+  const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia, lupus: !!e.lupus, mastocitos: !!e.mastocitos,
+    osteoporosis: !!e.osteoporosis?.diagnosticada });
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
   const tabla = tablaEscalones(familia);
@@ -260,6 +267,18 @@ export function construirPlan(e) {
   }
   // Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): en cualquier región
   if (e.mastocitos) avisosHip.push(...AVISOS_MASTOCITOS.map(k => AVISOS[k]));
+  // Osteoporosis (docs/osteoporosis.md): en cualquier región; el impacto solo
+  // con «Diagnosticada», que es cuando se sabe si hay fracturas
+  if (e.osteoporosis) {
+    avisosHip.push(...AVISOS_OSTEOPOROSIS.map(k => AVISOS[k]));
+    if (e.osteoporosis.diagnosticada) avisosHip.push(e.osteoporosis.impactoLimitado ? AVISOS.osteoporosisImpactoLimitado : AVISOS.osteoporosisImpacto);
+  }
+  // Tope «sin thrust» (decisiones 6 y 15): la osteoporosis, o el lupus con
+  // corticoides mantenidos o antitrombótico. Los escalones nunca proponen
+  // grado V, así que el tope es el aviso.
+  const sinThrust = e.sinThrust || [];
+  if (sinThrust.includes('osteoporosis')) avisosHip.push(AVISOS.sinThrustOsteoporosis);
+  else if (sinThrust.length) avisosHip.push(AVISOS.sinThrustLupus);
   for (const k of new Set(elegidas.flatMap(h => AVISOS_HIP[h.id] || []))) avisosHip.push(AVISOS[k]);
   if (elegidas.length > 1) avisosHip.push(AVISOS.dosHipotesis);
   if (new Set(familias).size > 1) avisosHip.push(AVISOS.dosFamilias);
@@ -299,6 +318,8 @@ export function construirPlan(e) {
     neuro,
     nervio,
     alarmasCasa: red.casa,
+    // Consejos de una tarjeta de la fase 1 para el programa para casa (hoy, la osteoporosis)
+    consejosCasa: e.osteoporosis ? [TEXTOS_CASA.moverseOsteoporosis.texto] : [],
     hipotesis: elegidas,
     sesion: {
       ...rangosBloques(e.duraciones),
@@ -414,6 +435,7 @@ export function textoDomiciliario(plan, e, { ejercicios = '', parar = '', planNo
   if (frecuencia === 'A') out.push(T.anotarAumento, '');
   if (plan.primera) out.push(T.primeraSesion, '');
   if (plan.mes.posq) out.push(T.cirujano, '');
+  for (const c of plan.consejosCasa || []) out.push(c, '');
   out.push(T.empeora);
   for (const a of plan.alarmasCasa || []) out.push('', a);
   return out.join('\n');

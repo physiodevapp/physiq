@@ -115,6 +115,15 @@ export const AVISOS = {
   mastocitos: 'Trastorno mastocitario o anafilaxia: que traiga su autoinyector a cada sesión (NICE NG258, 1.1.16); evitar lo que ya le ha provocado episodios, no una lista de todos los descritos (Brockow 2021). Si el calor o el frío se los han provocado, sin termoterapia ni crioterapia y con la sala templada (Muñoz 2024). No hace falta dejar el ejercicio: en la anafilaxia por ejercicio, las guías piden mantenerlo, acompañado y con el autoinyector a mano (Srisuwatchari 2023, tabla 2; extenderlo a la mastocitosis es una inferencia). Si un alimento con el ejercicio le ha dado episodios, no tomarlo en las horas de antes y después del ejercicio (Srisuwatchari 2023, tabla 2).',
   lupus: 'Lupus: intensidad moderada, con aeróbico y fuerza, individualizada y supervisada por un fisioterapeuta (Blaess 2024, recs. 9, 11 y 14); antes de empezar, su médico valora las contraindicaciones (Blaess 2024, rec. 10). Fotoprotección para prevenir brotes (Parodis 2024, rec. LES 2) y evitar el ejercicio al sol con un índice UV por encima de 3 (opinión de los autores de Frade 2023).',
   lupusBrote: 'Lupus en brote o peor sin valorar: que su reumatólogo revalore las contraindicaciones antes de seguir (Blaess 2024, rec. 4); en un brote articular, no cargar las articulaciones inflamadas (Blaess 2024, rec. 5).',
+  // Osteoporosis o fragilidad ósea (Fase P, docs/osteoporosis.md): con la
+  // tarjeta marcada, en todas las regiones (AVISOS_OSTEOPOROSIS); el impacto,
+  // según las fracturas; `sinThrust*`, el tope de la decisión 6 y la 15
+  osteoporosis: 'Osteoporosis: fuerza progresiva 2–3 días por semana, hasta el peso que levanta 8–12 veces, en 2 series y hasta 3, con movimientos lentos y controlados, sin flexión con carga; si el riesgo de fractura vertebral es alto, sin máquinas que obliguen a flexionar o girar el tronco (Brooke-Wavell 2022, recuadro 1; Giangregorio 2014). Equilibrio a diario, 15–20 min (Giangregorio 2014).',
+  osteoporosisImpacto: 'Osteoporosis sin fractura vertebral: impacto moderado la mayoría de los días, unos 50 impactos por sesión, sin caer desde altura (Brooke-Wavell 2022, consenso).',
+  osteoporosisImpactoLimitado: 'Osteoporosis con fractura vertebral o varias fracturas por fragilidad: impacto solo hasta caminar a paso ligero, por precaución (Brooke-Wavell 2022, consenso; Giangregorio 2014).',
+  osteoporosisMoverse: 'Osteoporosis: enseñar a moverse con seguridad, sin prohibir: bisagra de cadera al agacharse y levantar; la torsión, suave y mejor girando con pasos; no levantar ni dejar cosas en el suelo (Brooke-Wavell 2022, recuadro 3; Giangregorio 2015). Cuidado al pasar de tumbado a sentado o al darse la vuelta: en un ensayo, ejercicios en prono y darse la vuelta de boca arriba a boca abajo rompieron una costilla y un cartílago costal (Gibbs 2019). Con lluvia o hielo, el ejercicio mejor dentro de casa (Giangregorio 2014).',
+  sinThrustOsteoporosis: 'Osteoporosis: sin manipulación con thrust en la columna ni en las costillas; la movilización suave puede ser adecuada (Maitland 2005, cap. 9, p. 223; Puentedura 2015, tabla 1). Los escalones no proponen grado V; si la pauta de una hipótesis incluye manipulación, aquí no se aplica.',
+  sinThrustLupus: 'Lupus con corticoides mantenidos o con anticoagulante o antiagregante: sin manipulación con thrust en la columna torácica (Puentedura 2015, tabla 1: corticoides a largo plazo y tratamiento anticoagulante, contraindicaciones absolutas). Si la pauta de una hipótesis incluye manipulación, aquí no se aplica.',
   lupusAntitrombotico: 'Lupus con anticoagulante o antiagregante: precaución con lo que tenga riesgo de golpe (Blaess 2024, rec. 3).',
   lupusRaynaud: 'Lupus con Raynaud: al aire libre, guantes o ropa contra el frío; evitar tocar superficies frías y secar bien la piel durante y después del ejercicio (Blaess 2024, rec. 2). Por lo mismo, cuidado con el frío local en manos y pies (inferencia, sin fuente propia).',
   disautonomiaHM: 'Disautonomía con hipermovilidad: adaptar además el ejercicio a la hipermovilidad, la inestabilidad y las lesiones (Hakim 2017, p. 172).',
@@ -280,6 +289,15 @@ export const RED_LUPUS = [
 export const AVISOS_MASTOCITOS = ['mastocitos'];
 export const RED_MASTOCITOS = { cierre: 'cierreAnafilaxia', casa: 'alarmaAnafilaxia' };
 
+// Osteoporosis o fragilidad ósea (docs/osteoporosis.md): con la tarjeta
+// marcada, en cualquier región, los avisos de ejercicio y de moverse, el del
+// impacto según las fracturas (con «Diagnosticada») y el del thrust; con
+// «Diagnosticada», la red de la fractura vertebral nueva. El tope «sin thrust»
+// también sale con el lupus con corticoides o antitrombótico (decisión 15,
+// motivosSinThrust() en lib/osteoporosis.js).
+export const AVISOS_OSTEOPOROSIS = ['osteoporosis', 'osteoporosisMoverse'];
+export const RED_OSTEOPOROSIS = { cierre: 'cierreFracturaVertebral', casa: 'alarmaFracturaVertebral' };
+
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
 // empezar a movilizar tras la cirugía.
@@ -303,6 +321,7 @@ export const TEXTOS_SESION = {
   cierreFiebreLupus: 'Red de seguridad (lupus): explicar que la fiebre, los escalofríos o un malestar general nuevos piden ir hoy mismo al médico, y que con su tratamiento una infección puede dar poca fiebre; comprobar que lo ha entendido (Rao y Mikdashi 2023; Yasir 2023).',
   cierreAnafilaxia: 'Red de seguridad (trastorno mastocitario o anafilaxia): explicar que, si le salen ronchas, se le hincha la boca, le falta el aire, se marea o se desmaya, debe parar, ponerse el autoinyector y llamar al 112, tumbado y sin levantarse de golpe aunque mejore, y comprobar que lo ha entendido (RCUK 2021, apartados 4.4 y 5.1.1; NICE NG258, 1.1.14).',
   cierreIctusLupus: 'Red de seguridad (lupus): explicar que la debilidad o el adormecimiento de un lado, la dificultad para hablar o la pérdida de visión de golpe piden llamar al 112, aunque se pasen (Goodman 2018, cap. 12, p. 445; Drosos 2022, p. 773).',
+  cierreFracturaVertebral: 'Red de seguridad (osteoporosis): explicar que un dolor de espalda fuerte que empieza de golpe tras un esfuerzo pequeño pide parar y que le vea el médico, y que si además nota debilidad u hormigueo en las piernas, o cambios al orinar, debe ir a urgencias (Gregson 2025; Finucane 2020, sección 3).',
   cierreSincope: 'Red de seguridad (disautonomía): explicar que, si se desmaya mientras hace ejercicio, debe parar y no volver a hacer ejercicio hasta que le vea el médico, y comprobar que lo ha entendido (NICE CG109, 1.3.2.2 y 1.5.4.3; Brignole 2018, p. 1911).',
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
   reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3; Hengeveld y Banks 2005, cap. 9, p. 246).',
@@ -558,6 +577,10 @@ export const TEXTOS_CASA = {
   alarmaAnafilaxia: { texto: 'Si te salen ronchas, se te hincha la boca, te falta el aire, te mareas o te desmayas, para, ponte el autoinyector y llama al 112. Túmbate (siéntate si te cuesta respirar) y no te levantes de golpe aunque te encuentres mejor.', fuente: 'RCUK 2021, apartados 4.4 y 5.1.1; NICE NG258, recomendación 1.1.14 (docs/mastocitaria.md)' },
   alarmaIctusLupus: { texto: 'Si de golpe notas debilidad o adormecimiento de un lado del cuerpo, dificultad para hablar o pérdida de visión, llama al 112, aunque se te pase.', fuente: 'Goodman 2018, cap. 12, p. 445 (enfermedad cerebrovascular, frecuente en el lupus); Drosos 2022, p. 773; Rout 2024 (síndrome antifosfolípido), «Deterrence and Patient Education» (enseñar los síntomas del AIT)' },
   // Disautonomía (RED_DISAUTONOMIA): el síncope durante el ejercicio.
+  // Osteoporosis (RED_OSTEOPOROSIS): la fractura vertebral nueva y la compresión.
+  alarmaFracturaVertebral: { texto: 'Si te empieza de golpe un dolor de espalda fuerte tras un esfuerzo pequeño, para y que te vea el médico; si además notas debilidad u hormigueo en las piernas, o cambios al orinar, ve a urgencias.', fuente: 'Gregson 2025 (pensar en una fractura vertebral ante un dolor de espalda agudo; derivación urgente con déficit neurológico); Finucane 2020, sección 3 (docs/osteoporosis.md)' },
+  // Osteoporosis: moverse con seguridad en casa (AVISOS osteoporosisMoverse)
+  moverseOsteoporosis: { texto: 'Al agacharte o levantar algo, dobla las caderas y las rodillas con la espalda recta. Para girarte, da pasos en vez de torcer el tronco. Guarda lo que uses a la altura de la cintura, no en el suelo. Con lluvia o hielo, haz el ejercicio dentro de casa.', fuente: 'Brooke-Wavell 2022, recuadro 3; Giangregorio 2015; Giangregorio 2014 (docs/osteoporosis.md)' },
   alarmaSincope: { texto: 'Si te desmayas mientras haces ejercicio, para y no vuelvas a hacer ejercicio hasta que te vea el médico.', fuente: 'NICE CG109, recomendaciones 1.3.2.2 y 1.5.4.3: con un síncope durante el ejercicio, no hacer ejercicio hasta la valoración; Brignole 2018, p. 1911 (docs/pots.md)' },
   queHacer: { texto: 'Qué hacer:', tipo: 'etiqueta' },
   cuandoHacerlo: { texto: 'Cuándo hacerlo:', tipo: 'etiqueta' },

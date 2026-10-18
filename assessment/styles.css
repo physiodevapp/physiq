@@ -3033,6 +3033,9 @@ body.lupus .solo-les { display: block; }
 .hm-fuente { font-size: 0.75rem; color: var(--text3); line-height: 1.45; margin-top: 6px; }
 .hm-quitar { background: none; border: none; padding: 8px 0; min-height: 40px; font: inherit; font-size: 0.8rem; color: var(--text3); text-decoration: underline; cursor: pointer; }
 .hm-aviso-test { margin: 6px 0; font-size: 0.8rem; line-height: 1.45; color: var(--text2); border-left: 2px solid var(--orange); padding-left: 8px; }
+/* Osteoporosis (docs/osteoporosis.md): el porqué de la línea de los tests que cargan el hueso */
+.op-razon { margin-top: 4px; }
+.op-razon summary { cursor: pointer; color: var(--accent); font-size: 0.78rem; min-height: 32px; display: inline-flex; align-items: center; }
 .hm-fase5 > div > div { margin-top: 4px; }
 
 /* Aviso inferior (showToast, app.js). En escritorio, píldora centrada abajo;

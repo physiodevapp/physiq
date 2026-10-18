@@ -1121,3 +1121,138 @@ export const SIS_MASTOCITOS = {
     },
   },
 };
+
+// ─── Osteoporosis o fragilidad ósea (Fase P, docs/osteoporosis.md) ──────────
+// Tarjeta con «Diagnosticada» y «Sospecha» (decisión 2). Sin regla automática
+// con otras tarjetas (decisión 9). Cada pregunta lleva `op` cuando no sale
+// siempre: 'sinFractura' (no consta ya una fractura vertebral) o
+// 'antirresortivo' (con bifosfonato o denosumab). Los factores de la sospecha
+// y las caídas no son preguntas de cribado (un «sí» no es una bandera): van en
+// `osteoporosis` y se guardan en state.osteoporosis (lib/osteoporosis.js).
+const OP_CITA = {
+  gregson: 'Gregson 2025 — Gregson, Armstrong, Avgerinou et al., «The 2024 UK clinical guideline for the prevention and treatment of osteoporosis», Arch Osteoporos 2025;20(1):119',
+  kanis: 'Kanis 2019 — Kanis, Cooper, Rizzoli y Reginster (ESCEO e IOF), «European guidance for the diagnosis and management of osteoporosis in postmenopausal women», Osteoporos Int 2019;30(1):3–44',
+  laurent: 'Laurent 2022 — Laurent, Goemaere, Verroken et al., «Prevention and treatment of glucocorticoid-induced osteoporosis in adults: consensus recommendations from the Belgian Bone Club», Front Endocrinol 2022;13:908727',
+  finucane: 'Finucane 2020 — Finucane, Downie, Mercer et al., «International Framework for Red Flags for Potential Serious Spinal Pathologies», IFOMPT, 2020',
+  downie: 'Downie 2013 — Downie, Williams, Henschke et al., «Red flags to screen for malignancy and fracture in patients with low back pain: systematic review», BMJ 2013;347:f7095',
+  maitland: 'Maitland 2005 — Maitland; Hengeveld, Banks y English (eds.), «Maitland’s Vertebral Manipulation», 7.ª ed., Elsevier Butterworth-Heinemann, 2005',
+  giangregorio15: 'Giangregorio 2015 — Giangregorio, McGill, Wark et al., «Too Fit To Fracture: outcomes of a Delphi consensus process on physical activity and exercise recommendations for adults with osteoporosis with or without vertebral fractures», Osteoporos Int 2015;26(3):891–910',
+};
+
+export const SIS_OSTEOPOROSIS = {
+  id: 'transversal_osteoporosis', icon: '🦴', nombre: 'Osteoporosis', soloOsteoporosis: true,
+  banderasRojas: [
+    { texto: 'Dolor de espalda nuevo con debilidad, hormigueo o torpeza en las piernas, o cambios al orinar o al hacer de vientre (compresión de la médula o las raíces por una fractura vertebral)', pregunta: 'op_u_medula' },
+  ],
+  banderasAmarillas: [
+    { texto: 'Dolor de espalda brusco, sobre todo dorsal, tras un esfuerzo pequeño (posible fractura vertebral nueva)', pregunta: 'op_d_fractura' },
+    { texto: 'Pérdida de 4 cm o más de altura, o espalda cada vez más curvada (posible fractura vertebral sin diagnosticar)', op: 'sinFractura', pregunta: 'op_d_talla' },
+    { texto: 'Dolor de muslo, ingle o cadera sin explicación con bifosfonato o denosumab (posible fractura atípica de fémur)', op: 'antirresortivo', pregunta: 'op_d_femur' },
+  ],
+  preguntas: [
+    { id: 'op_u_medula', urgencia: 'Posible compresión de la médula o de las raíces por una fractura vertebral: urgencias hoy.', alerta: true,
+      text: '¿Tiene un dolor de espalda nuevo con debilidad, hormigueo o torpeza en las piernas que va a más, o cambios al orinar o al hacer de vientre?',
+      razonamiento: {
+        porque: 'Una vértebra que se aplasta puede empujar hueso hacia el canal y comprimir la médula o las raíces, sobre todo si el fragmento se desplaza hacia atrás; por eso, con una fractura vertebral, hay que vigilar los síntomas de compresión medular (Laurent 2022).',
+        peso: 'Si una fractura vertebral se acompaña de un déficit neurológico, o de signos de que va a aparecer, la guía británica pide derivar con urgencia a cirugía de columna (Gregson 2025). La mayoría de las fracturas vertebrales no dan síntomas neurológicos, pero hay que preguntarlos y explorarlos (Finucane 2020, sección 3).',
+        detalle: 'En lumbar, la pregunta de la cola de caballo (l6) pregunta algo parecido desde otro motivo; las dos se mantienen.',
+        fuentes: ['Gregson 2025', 'Laurent 2022', 'Finucane 2020'],
+        citas: [`${OP_CITA.gregson}, «Management of symptomatic osteoporotic vertebral fractures».`, `${OP_CITA.laurent}, apartado 3.2.`, `${OP_CITA.finucane}, sección 3 (fractura), tabla 3.2.`]
+      } },
+    { id: 'op_d_fractura', derivacion: 'Posible fractura vertebral nueva: valoración médica pronto (radiografía). Hasta entonces, sin terapia manual ni ejercicios con carga sobre esa zona.', alerta: true,
+      text: '¿Le empezó de golpe un dolor de espalda, sobre todo en la zona dorsal, tras un esfuerzo pequeño (levantar algo agachado, toser, estornudar, resbalar), y no se le ha ido?',
+      razonamiento: {
+        porque: 'En el hueso osteoporótico, una carga normal basta para aplastar una vértebra: la persona suele notar un dolor brusco en la zona toracolumbar tras resbalar, tropezar, levantar algo desde la flexión o toser (Finucane 2020, sección 3). La mayoría de las fracturas vertebrales son torácicas (Finucane 2020, sección 3).',
+        peso: 'La guía británica pide pensar siempre en una fractura vertebral ante un dolor de espalda de comienzo agudo, sobre todo torácico, en mayores de 50 con factores de riesgo de osteoporosis (Gregson 2025, recomendación fuerte). La mayoría pasan sin diagnosticar (Gregson 2025; Kanis 2019). Una bandera sola informa poco y no conviene actuar por ella (Downie 2013; Finucane 2020); por eso la pregunta junta el dolor con la osteoporosis conocida o sospechada. Ante la sospecha, la primera prueba es la radiografía (Finucane 2020, tabla 3.4).',
+        detalle: 'Hasta que la valore el médico: en la fractura vertebral, la terapia manual está contraindicada (Downie 2013, introducción), y sin manipulación forzada con osteoporosis (Maitland 2005, cap. 9, p. 223).\n\nAl estudiar a quien parecía tener una osteoporosis primaria aparecen a veces otras causas, entre ellas una mastocitosis sistémica (Kanis 2019, «Diagnostic work up»).',
+        fuentes: ['Gregson 2025', 'Finucane 2020', 'Downie 2013', 'Kanis 2019', 'Maitland 2005'],
+        citas: [`${OP_CITA.gregson}, «Models of care for fracture prevention» (recomendación) y «Vertebral fracture assessment».`, `${OP_CITA.finucane}, sección 3 (fractura), tablas 3.1–3.4.`,
+          `${OP_CITA.downie}, introducción y discusión.`, `${OP_CITA.kanis}, «Vertebral fracture assessment» y «Diagnostic work up».`, `${OP_CITA.maitland}, cap. 9, p. 223.`]
+      } },
+    { id: 'op_d_talla', op: 'sinFractura', derivacion: 'Posible fractura vertebral sin diagnosticar: que su médico valore buscarla (radiografía o DXA lateral de la columna).', alerta: true,
+      text: '¿Ha perdido 4 cm o más de altura respecto a cuando era joven (o 2 cm desde la última vez que se la midieron), o se le ha curvado más la espalda?',
+      razonamiento: {
+        porque: 'Cada vértebra que se aplasta resta altura y curva la espalda hacia delante; muchas fracturas vertebrales no dan dolor y solo se notan así (Gregson 2025).',
+        peso: 'La guía británica indica buscar fracturas vertebrales con una pérdida de 4 cm o más, una cifosis torácica o corticoides orales prolongados (Gregson 2025, recomendación fuerte); la europea, igual (Kanis 2019). El consenso belga añade 2 cm desde una medida anterior (Laurent 2022). Una fractura vertebral, aunque no duela, dobla el riesgo de otra fractura (Gregson 2025).',
+        detalle: 'Los umbrales no coinciden entre fuentes: 4 cm frente a la talla de joven (Gregson 2025; Kanis 2019), 2 cm desde una medida anterior (Laurent 2022) y, en un consenso Delphi, 6 cm recordados o 2 cm medidos (Giangregorio 2015). La app usa los dos primeros, que son compatibles.',
+        fuentes: ['Gregson 2025', 'Kanis 2019', 'Laurent 2022', 'Giangregorio 2015'],
+        citas: [`${OP_CITA.gregson}, «Screening and case finding» y recomendaciones de «Fracture risk assessment and case finding».`, `${OP_CITA.kanis}, «Vertebral fracture assessment».`,
+          `${OP_CITA.laurent}, apartado 3.7.`, `${OP_CITA.giangregorio15}, recuadro 2.`]
+      } },
+    { id: 'op_d_femur', op: 'antirresortivo', derivacion: 'Con bifosfonato o denosumab, puede anunciar una fractura atípica de fémur: valoración médica pronto (imagen del fémur); sin impacto ni carga de esa pierna hasta entonces.', alerta: true,
+      text: '¿Tiene un dolor de muslo, ingle o cadera sin explicación?',
+      razonamiento: {
+        porque: 'Con los fármacos que frenan la reabsorción del hueso (bifosfonatos, denosumab) puede aparecer, rara vez, una fractura atípica del fémur, a menudo en los dos lados; antes de romperse da un dolor en el muslo, la ingle o la cadera durante días, semanas o meses (Gregson 2025).',
+        peso: 'La guía británica pide avisar al paciente de que comunique cualquier dolor de muslo, ingle o cadera sin explicación y, si aparece, hacer una prueba de imagen del fémur (recomendación fuerte), restringiendo la carga (Gregson 2025).',
+        fuentes: ['Gregson 2025'],
+        citas: [`${OP_CITA.gregson}, «Rare adverse effects», recomendación 12.`]
+      } },
+  ],
+  // Filas de la tarjeta, factores de la sospecha, caídas y textos. Las citas de
+  // estos textos cuentan en docs/referencias.md como menciones del cribado.
+  osteoporosis: {
+    causas: { edad: 'Posmenopáusica o por la edad', corticoides: 'Por corticoides', plo: 'Asociada al embarazo o la lactancia', otra: 'Otra causa', ns: 'No lo sabe' },
+    vertebrales: { 0: 'Ninguna conocida', 1: '1', 2: '2 o más', ns: 'No lo sabe' },
+    tratamientos: { no: 'Ninguno', antirresortivo: 'Bifosfonato o denosumab', otro: 'Otro (teriparatida…)', ns: 'No lo sabe' },
+    corticoides: { no: 'No', b: 'Menos de 7,5 mg/día', a: '7,5 mg/día o más', ns: 'No lo sabe' },
+    // Sospecha (decisión 3): factores de las tablas de las guías que, a partir
+    // de los 50 años, piden valorar el riesgo de fractura. La selección es propia.
+    factores: [
+      { id: 'of1', texto: '¿Se ha roto algún hueso desde los 50 años con un golpe pequeño o sin golpe (una caída desde su altura o menos)?' },
+      { id: 'of2', texto: '¿Toma corticoides por boca desde hace 3 meses o más?' },
+      { id: 'of3', texto: '¿Su padre o su madre se rompió la cadera?' },
+      { id: 'of4', texto: '¿Tuvo la menopausia antes de los 45 años?' },
+      { id: 'of5', texto: '¿Tiene artritis reumatoide, lupus u otra enfermedad inflamatoria?' },
+      { id: 'of6', texto: '¿Se ha caído dos veces o más en el último año?' },
+    ],
+    factoresFuente: 'Factores de riesgo de fractura de las guías: fractura por fragilidad previa, corticoides orales, fractura de cadera en un progenitor, menopausia precoz, artritis reumatoide y otras enfermedades inflamatorias (con el lupus) y caídas repetidas (Gregson 2025, «Fracture risk assessment tools» y tablas 1 y 3; Kanis 2019, tabla 4). La lista es una selección: la app no calcula el FRAX, que pide el médico (Gregson 2025).',
+    // Caídas (decisión 8): las preguntas comunes de NICE NG249 y la guía mundial.
+    caidas: {
+      n: { 0: 'No', 1: '1 vez', 2: '2 o más' },
+      casillas: [
+        { id: 'lesion', texto: 'Se lesionó y necesitó tratamiento médico' },
+        { id: 'suelo', texto: 'No pudo levantarse solo' },
+        { id: 'conciencia', texto: 'Perdió el conocimiento' },
+        { id: 'fragilidad', texto: 'Vive con fragilidad' },
+      ],
+      fuente: 'Preguntas de NICE NG249 (1.1.2–1.1.6), sin puntuar: la guía pide no usar herramientas que predigan el riesgo de caídas (NICE NG249, 1.1.1).',
+      sincope: 'Perdió el conocimiento: contesta también la pregunta del síncope de la región.',
+    },
+    textos: {
+      nota: 'Márcala si le han diagnosticado una osteoporosis o se ha roto un hueso con un golpe pequeño o sin golpe (una caída desde su altura o menos; Gregson 2025). «Sospecha»: 50 años o más con algún factor de riesgo de fractura.',
+      // Sospecha (fase 2)
+      sospechaDerivar: 'Que su médico valore el riesgo de fractura (FRAX y, si procede, densitometría) (Gregson 2025).',
+      sospechaJoven: 'Fractura por fragilidad antes de los 50: valoración médica para buscar la causa (Gregson 2025, introducción).',
+      sospechaSinFactores: 'Sin factores de la lista: la sospecha queda en tu juicio clínico.',
+      sospechaSinEdad: 'Anota la edad en la fase 1 para interpretar la sospecha: la regla de las guías es a partir de los 50 años.',
+      // Caídas (fase 2 y fase 5)
+      caidasAlto: 'Riesgo alto de caídas: valoración integral de caídas (NICE NG249, 1.1.3; Montero-Odasso 2022).',
+      caidasUna: 'Una caída, sin lesión, sin quedarse en el suelo, sin pérdida de conocimiento y sin fragilidad: valora la marcha y el equilibrio; si están alterados, programa de ejercicio de caídas y revisión de los riesgos del hogar (NICE NG249, 1.1.4–1.1.5). La velocidad de marcha por debajo de 0,8 m/s indica más riesgo (Montero-Odasso 2022).',
+      caidasNo: 'Sin caídas: equilibrio a diario, 15–20 min (unas 2 h por semana; Giangregorio 2014).',
+      caidasDosis: 'Ejercicio de caídas: equilibrio exigente y ejercicio funcional (levantarse de la silla, pasos), 3 o más sesiones por semana, progresado al menos 12 semanas (Montero-Odasso 2022), unas 3 h por semana durante al menos 4 meses (Brooke-Wavell 2022; Gregson 2025). El equilibrio y el ejercicio funcional reducen las caídas; caminar solo no ha demostrado reducirlas (Sherrington 2019).',
+      // Fase 4b
+      tecnica4b: 'Osteoporosis: este test carga el hueso, y no hay ningún signo que avise de que un hueso osteoporótico va a ceder (Maitland 2005, cap. 9, p. 223). Con una fractura vertebral reciente o sospechada en la zona, no lo hagas hasta que la valore el médico; si no, con fuerza progresiva y sin empujes bruscos.',
+      tecnica4bCostilla: 'La presión sobre las costillas puede romper una costilla osteoporótica: con mucho cuidado (Maitland 2005, cap. 9, p. 223).',
+      tecnica4bPorque: 'Un empuje posteroanterior fuerte en la columna torácica puede llegar a la carga con la que se rompe una vértebra torácica en el laboratorio, con datos de cadáver (Puentedura 2015). Son cifras de manipulación con thrust, no de estos tests: por eso la línea pide fuerza progresiva y no da un límite.',
+      // Fase 5
+      fuerza: 'Fuerza progresiva 2–3 días por semana, hasta el peso que levanta 8–12 veces, en 2 series y hasta 3, empezando suave con buena técnica y movimientos lentos y controlados; todos los grupos musculares, también la espalda, sin flexión con carga (Brooke-Wavell 2022, recuadro 1; Giangregorio 2014). Si el riesgo de fractura vertebral es alto, sin máquinas que obliguen a flexionar o girar el tronco (Giangregorio 2014).',
+      impactoSin: 'Impacto moderado la mayoría de los días: unos 50 impactos por sesión (pisotones, trote, saltos bajos), sin caer desde altura (Brooke-Wavell 2022, consenso).',
+      impactoCon: 'Con fractura vertebral o varias fracturas por fragilidad: impacto solo hasta caminar a paso ligero, 150 min por semana, por precaución, sin pruebas de que más sea peligroso; consulta con el fisioterapeuta al empezar (Brooke-Wavell 2022, consenso; Giangregorio 2014).',
+      equilibrio: 'Equilibrio a diario, 15–20 min (unas 2 h por semana; Giangregorio 2014).',
+      reciente: 'Tras una fractura vertebral dolorosa: extensores de espalda a diario, suaves, 3–5 repeticiones mantenidas 3–5 s; con dolor, empieza tumbado boca arriba (Brooke-Wavell 2022, recuadro 3; Gregson 2025). El ejercicio mejora algo la movilidad (certeza moderada); si mejora el dolor no se sabe (certeza muy baja), y los estudios se hicieron meses después de la fractura, no en la fase aguda (Gibbs 2019).',
+      moverse: 'Espalda recta al agacharse y levantar (bisagra de cadera); modifica la flexión mantenida, repetida o al final del recorrido, sobre todo con carga; la torsión, suave y controlada, mejor girando con pasos; cuidado al pasar de tumbado a sentado o al darse la vuelta, y con peso en las manos; no levantar ni dejar cosas en el suelo, sino guardarlas a la altura de la cintura. Enseña cómo, no prohíbas (Brooke-Wavell 2022, recuadro 3; Giangregorio 2014; Giangregorio 2015).',
+      tecnica: 'Sin manipulación forzada; la movilización suave puede ser adecuada (Maitland 2005, cap. 9, p. 223; Puentedura 2015, tabla 1).',
+      seguridad: 'Un dolor de espalda brusco tras un esfuerzo pequeño puede ser una fractura vertebral nueva: valoración médica; con debilidad u hormigueo en las piernas, urgencias (Gregson 2025).',
+      antirresortivo: 'Con bifosfonato o denosumab: si aparece un dolor de muslo, ingle o cadera sin explicación, imagen del fémur antes de cargar (Gregson 2025).',
+      corticoides: 'Corticoides de 7,5 mg/día o más durante 3 meses o más sin tratamiento para el hueso: que su médico valore la protección ósea (Gregson 2025).',
+      plo: 'Osteoporosis del embarazo o la lactancia: que se movilice pronto y sin reposo en cama; actividad en carga y de fuerza razonable, sin excesos, y sin cargar objetos pesados (Kovacs y Ralston 2015). Con las fracturas consolidadas, a los 3–6 meses, más carga y fuerza (Scioscia 2023). Fisioterapia cuando el dolor lo permita (Hadji 2026; Hardcastle 2022). Al coger y cargar al bebé, la misma bisagra de cadera (extrapolado de Brooke-Wavell 2022). Si las fracturas la limitan mucho, que tenga ayuda para cuidar del bebé (Hardcastle 2022). La lactancia, los fármacos y otro embarazo los decide con su médico.',
+      ploRecurrencia: 'Tras una osteoporosis del embarazo o la lactancia pueden aparecer nuevas fracturas, más si hubo varias al principio; si hay más riesgo en otro embarazo no está claro: que lo hable con su médico (Hadji 2026; Anagnostis 2024; Kovacs y Ralston 2015; Hardcastle 2022).',
+      // Panel de tiempos de tejido, «Este paciente» (decisión 10)
+      tejidosNombre: 'fractura vertebral',
+      tejidosPLO: 'El plazo es el de la fractura osteoporótica de la persona mayor; en la osteoporosis del embarazo o la lactancia el dolor puede durar mucho más: en una serie, más de 3 años en el 59 % (Gak 2024).',
+      medico: 'Los fármacos, el calcio, la vitamina D y el corsé los indica el médico.',
+      // Lupus (decisión 9): recordatorio en su recuadro de la fase 5, sin regla.
+      lupus: 'Con corticoides mantenidos, pregunta por la osteoporosis y las fracturas por fragilidad; si las tiene, marca también la tarjeta «Osteoporosis o fragilidad ósea» (Gregson 2025; Laurent 2022).',
+    },
+  },
+};
