@@ -19,7 +19,7 @@ export const familiasPendientes = () => FAMILIAS_FARMACO.filter(f => !f.apartado
 function apartadoHTML(a, contenido) {
   const parrafos = [].concat(contenido.texto).map(p => `<p>${txt(p)}${iaParrafoHTML()}</p>`).join('');
   const detalle = contenido.detalle
-    ? `<details class="farm-mas"><summary>Más detalle</summary>${[].concat(contenido.detalle).map(p => `<p>${txt(p)}${iaParrafoHTML()}</p>`).join('')}</details>`
+    ? `<details class="farm-mas"><summary>Ampliar ▾</summary>${[].concat(contenido.detalle).map(p => `<p>${txt(p)}${iaParrafoHTML()}</p>`).join('')}</details>`
     : '';
   return `<section class="farm-apartado" data-apartado="${a.id}">
       <h4 class="farm-apartado-titulo">${esc(a.titulo)}</h4>
