@@ -99,8 +99,34 @@ export function promptIA({ contexto, texto }) {
 // y la frase de fuentes), sin forzar el enfoque fisiológico, porque la duda
 // puede ser de dosis, de técnica o de diagnóstico diferencial. `contexto` es
 // solo la región ya en minúscula («hombro», «tobillo y pie»): nada del paciente.
-export function promptPregunta({ contexto, pregunta }) {
+//
+// `tipo: 'farmacos'` (modalidad «Fármacos» del diálogo, docs/farmacologia.md,
+// paso 1): el texto son los fármacos o la duda, y se añade un guion fijo para
+// que la respuesta cubra siempre lo que el fisioterapeuta necesita vigilar,
+// sin entrar a ajustar la medicación.
+export const TIPOS_PREGUNTA = {
+  libre: { nombre: 'Pregunta libre', placeholder: 'Ej.: ¿Qué diferencia hay entre el test de Hawkins y el de Neer?' },
+  farmacos: {
+    nombre: 'Fármacos',
+    placeholder: 'Ej.: ibuprofeno 600 mg cada 8 h y omeprazol, desde hace 3 semanas',
+    guion: 'La respuesta cubrirá: dolor e inflamación · síntomas viscerales que imitan dolor musculoesquelético · ejercicio · sueño · cuándo consultar con el médico o el farmacéutico. No propone cambiar la medicación.',
+  },
+};
+export const TIPO_PREGUNTA_DEFECTO = 'libre';
+
+export const GUION_FARMACOS = 'Para cada fármaco o familia, explícame qué debo vigilar como fisioterapeuta: '
+  + '1) su efecto sobre el dolor y la inflamación, y si puede enmascarar signos o síntomas en la exploración; '
+  + '2) síntomas viscerales o secundarios que puede producir y que pueden confundirse con dolor musculoesquelético, y a qué zona se refieren; '
+  + '3) precauciones con el ejercicio terapéutico (respuesta de la frecuencia cardíaca y la presión arterial, hipoglucemia, sangrado o hematomas, hidratación, tendón o hueso); '
+  + '4) sus efectos sobre el sueño; '
+  + '5) qué signos justifican consultar con el médico o el farmacéutico. '
+  + 'No propongas cambiar, suspender ni ajustar la medicación.';
+
+export function promptPregunta({ contexto, pregunta, tipo = TIPO_PREGUNTA_DEFECTO }) {
   const ctx = contexto ? ` Contexto: valoración de ${_sinEtiquetas(contexto)}.` : '';
+  if (tipo === 'farmacos') {
+    return `Soy fisioterapeuta.${ctx} Fármacos o duda: «${recortarTextoIA(pregunta)}». ${GUION_FARMACOS} ${INSTRUCCION_FUENTES} Incluye la ficha técnica (CIMA, AEMPS) cuando sea pertinente. Cita las fuentes con enlace.`;
+  }
   return `Soy fisioterapeuta.${ctx} Mi pregunta: «${recortarTextoIA(pregunta)}». ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
 }
 
