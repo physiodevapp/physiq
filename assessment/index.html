@@ -437,10 +437,13 @@
         <button type="button" class="option-btn" data-valor="ns" onclick="selectLESFila('antifosfolipidos','ns')">No lo sabe</button>
       </div>
     </div>
-    <div class="form-group hm-subtipo les-casillas">
-      <label class="hm-casilla"><input type="checkbox" id="les_antitrombotico" onchange="toggleLESCasilla('antitrombotico')"> Toma anticoagulante o antiagregante (aspirina)</label>
-      <label class="hm-casilla"><input type="checkbox" id="les_osteonecrosis" onchange="toggleLESCasilla('osteonecrosis')"> Osteonecrosis o artropatía de Jaccoud conocidas</label>
-      <label class="hm-casilla"><input type="checkbox" id="les_raynaud" onchange="toggleLESCasilla('raynaud')"> Fenómeno de Raynaud</label>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Además (marca lo que tenga)</div>
+      <div class="option-group hm-subtipos" id="lesCasillas">
+        <button type="button" class="option-btn" data-les-casilla="antitrombotico" aria-pressed="false" onclick="toggleLESCasilla('antitrombotico')">Toma anticoagulante o antiagregante (aspirina)</button>
+        <button type="button" class="option-btn" data-les-casilla="osteonecrosis" aria-pressed="false" onclick="toggleLESCasilla('osteonecrosis')">Osteonecrosis o artropatía de Jaccoud conocidas</button>
+        <button type="button" class="option-btn" data-les-casilla="raynaud" aria-pressed="false" onclick="toggleLESCasilla('raynaud')">Fenómeno de Raynaud</button>
+      </div>
     </div>
     <div class="form-group hm-subtipo">
       <div class="form-label">Ahora mismo</div>
@@ -488,9 +491,9 @@
         <button type="button" class="option-btn" data-valor="sinReceta" onclick="selectMAFila('autoinyector','sinReceta')">No le han recetado</button>
       </div>
     </div>
-    <div class="form-group hm-subtipo les-casillas">
+    <div class="form-group hm-subtipo">
       <div class="form-label">¿Qué le ha provocado episodios?</div>
-      <div id="maDesencadenantes"></div>
+      <div class="option-group hm-subtipos" id="maDesencadenantes"></div>
       <input type="text" class="form-input" id="maOtro" maxlength="120" placeholder="Otro (escríbelo)" oninput="updateMAOtro(this.value)">
     </div>
     </div>

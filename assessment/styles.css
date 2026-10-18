@@ -2974,10 +2974,9 @@ body.disautonomia .solo-ds { display: block; }
    el bloque de los rasgos, .ds-bloque. */
 .solo-les { display: none; }
 body.lupus .solo-les { display: block; }
-.les-casillas { display: flex; flex-direction: column; gap: 2px; }
-/* Desencadenantes de la tarjeta «Trastorno mastocitario o anafilaxia» (docs/mastocitaria.md): uno por línea */
-#maDesencadenantes { display: flex; flex-direction: column; gap: 2px; }
-#maOtro { margin-top: 6px; }
+/* Casillas de lupus y desencadenantes de mastocitos: chips de selección
+   múltiple (.hm-subtipos), como las complicaciones de la cirugía */
+#maOtro { margin-top: 8px; }
 .ma-fase5 .ma-que-hacer { font-weight: 600; }
 .cir-semanas:not(:empty) { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); margin: -4px 0 12px; }
 .cir-complicaciones { flex-wrap: wrap; }

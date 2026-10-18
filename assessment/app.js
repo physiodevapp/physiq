@@ -1403,7 +1403,11 @@ function _pintarLESUI() {
   if (wrap) wrap.style.display = lesDiagnosticado(les) ? '' : 'none';
   Object.keys(FILAS_LES).forEach(k => document.querySelectorAll(`[data-les-fila="${k}"] .option-btn`)
     .forEach(b => b.classList.toggle('selected', b.dataset.valor === les[k])));
-  CASILLAS_LES.forEach(k => { const c = document.getElementById(`les_${k}`); if (c) c.checked = !!les[k]; });
+  document.querySelectorAll('#lesCasillas [data-les-casilla]').forEach(b => {
+    const on = !!les[b.dataset.lesCasilla];
+    b.classList.toggle('selected', on);
+    b.setAttribute('aria-pressed', on);
+  });
   const nat = document.getElementById('lesNotaNaturaleza');
   if (nat && !nat.innerHTML) nat.innerHTML = `🦋 ${citasEnTexto(LES.textos.naturaleza)}`;
   const brote = document.getElementById('lesNotaBrote');
@@ -1513,9 +1517,13 @@ function _pintarMAUI() {
   if (cont) {
     if (!cont.children.length) {
       cont.innerHTML = MA.desencadenantes.map(d =>
-        `<label class="hm-casilla"><input type="checkbox" id="ma_${d.id}" onchange="toggleMADesencadenante('${d.id}')"> ${d.texto}</label>`).join('');
+        `<button type="button" class="option-btn" data-ma-desenc="${d.id}" aria-pressed="false" onclick="toggleMADesencadenante('${d.id}')">${d.texto}</button>`).join('');
     }
-    DESENCADENANTES_MA.forEach(k => { const c = document.getElementById(`ma_${k}`); if (c) c.checked = !!ma.desencadenantes[k]; });
+    cont.querySelectorAll('[data-ma-desenc]').forEach(b => {
+      const on = !!ma.desencadenantes[b.dataset.maDesenc];
+      b.classList.toggle('selected', on);
+      b.setAttribute('aria-pressed', on);
+    });
   }
   const otro = document.getElementById('maOtro');
   if (otro && document.activeElement !== otro) otro.value = ma.otro || '';
