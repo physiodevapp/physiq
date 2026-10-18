@@ -995,10 +995,11 @@ function _hmBloqueHTML() {
       cuerpo = `<button type="button" class="btn btn-secondary hm-btn" onclick="hmBeightonHacer()">Hacer la escala de Beighton</button>`;
     } else {
       const r = resultadoHAG(hm, state.edadPaciente);
-      const fila = (k, txt) => `<label class="hm-casilla"><input type="checkbox"${b[k] ? ' checked' : ''} onchange="toggleHMBeighton('${k}')"> ${txt}</label>`;
+      // Chips de selección múltiple, como el resto de listas de opciones (un segundo toque desmarca)
+      const fila = (k, txt) => `<button type="button" class="option-btn${b[k] ? ' selected' : ''}" data-beighton="${k}" aria-pressed="${!!b[k]}" onclick="toggleHMBeighton('${k}')">${txt}</button>`;
       cuerpo = `${HM.beighton.map(m => `<div class="hm-maniobra">
           <div class="hm-maniobra-txt">${m.texto}</div>
-          <div class="hm-lados">${m.lados ? fila(`${m.id}_d`, 'Derecho') + fila(`${m.id}_i`, 'Izquierdo') : fila(m.id, 'Positivo')}</div>
+          <div class="option-group hm-lados">${m.lados ? fila(`${m.id}_d`, 'Derecho') + fila(`${m.id}_i`, 'Izquierdo') : fila(m.id, 'Positivo')}</div>
         </div>`).join('')}
         <div class="hm-resultado">Beighton ${r.puntos}/9${r.corte != null ? ` · corte ${r.corte} (${r.grupo})` : ''}</div>
         ${r.estado === 'sin-edad' ? `<div class="criterio-compuesto-hint">Indique la edad del paciente en la Fase 1 para aplicar el corte por edad.</div>` : ''}

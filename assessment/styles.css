@@ -3020,7 +3020,9 @@ body.lupus .solo-les { display: block; }
 .hm-btn { min-height: 44px; }
 .hm-maniobra { padding: 10px 12px; margin-bottom: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); }
 .hm-maniobra-txt { font-size: 0.85rem; line-height: 1.45; color: var(--text); margin-bottom: 6px; }
-.hm-lados { display: flex; gap: 16px; flex-wrap: wrap; }
+/* Beighton: Derecho / Izquierdo a partes iguales (o «Positivo» a todo el ancho), alto de los SÍ/NO */
+.hm-lados { display: flex; gap: 8px; flex-wrap: nowrap; }
+.hm-lados .option-btn { flex: 1 1 0; justify-content: center; text-align: center; min-height: 44px; padding: 8px 6px; }
 .hm-casilla { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; font-size: 0.85rem; color: var(--text2); cursor: pointer; }
 .hm-casilla input { width: 18px; height: 18px; accent-color: var(--accent); }
 .hm-resultado { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--accent); margin: 8px 0; }
