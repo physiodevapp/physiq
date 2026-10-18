@@ -196,7 +196,67 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Mameli 2025', 'Ghosh 2026', 'Antunes 2024', 'Kurlander 2022', 'Nochaiwong 2022', 'Muñoz 2022', 'Steffel 2021', 'Yang 2024', 'Xiang 2025', 'Salmasi 2020'],
   },
-  { id: 'opioides', nombre: 'Opioides', ejemplos: 'Tramadol, tapentadol, codeína, morfina, oxicodona, fentanilo' },
+  // Opioides (2026-10): seis fuentes en PMC, dos leídas en parte (Dowell 2022,
+  // Sampaio-Cunha y Martins 2022; ver el registro). Sin fuente leída para los
+  // signos clásicos de sobredosis (pupilas puntiformes, respiración lenta), los
+  // efectos propios del tramadol (hiponatremia, hipoglucemia, convulsiones), la
+  // retención urinaria, la curación de tejidos ni la terapia manual:
+  // docs/farmacologia.md.
+  {
+    id: 'opioides',
+    nombre: 'Opioides',
+    ejemplos: 'Tramadol, tapentadol, codeína, morfina, oxicodona, fentanilo, buprenorfina',
+    apartados: {
+      dolor: {
+        texto: [
+          'En el dolor subagudo y crónico, frente a placebo, mejoran poco el dolor a corto plazo (0,79 puntos sobre 10), y la mejoría baja con el tiempo, de 1 punto a los 1–3 meses a unos 0,5 a los 3–6 meses; no hay ensayos con placebo más allá de 6 meses. Dos sociedades médicas estadounidenses desaconsejan los opioides, también el tramadol, para el dolor agudo por lesiones musculoesqueléticas (Dowell 2022).',
+          'El ejercicio terapéutico reduce el dolor y mejora la función en la lumbalgia, la fibromialgia y la artrosis de cadera o rodilla, con beneficios que se mantienen 2–6 meses, y puede sumarse a la medicación (Dowell 2022).',
+          'Hiperalgesia inducida por opioides: más sensibilidad al dolor por la propia exposición. Se distingue de la tolerancia porque el dolor mejora al bajar la dosis y empeora al subirla, y si no se piensa en ella se siguen subiendo dosis (Sampaio-Cunha y Martins 2022).',
+        ],
+        detalle: [
+          'Parecen mejorar más la satisfacción con la atención que la intensidad del dolor, lo que la revisión relaciona con un efecto de enmascarar el dolor (Sampaio-Cunha y Martins 2022). Las fuentes leídas no dicen cuándo conviene valorar respecto a la toma.',
+          'Frente a no tomarlos, se asocian a más trastorno por uso de opioides, sobredosis, muerte, fracturas, caídas e infarto (Dowell 2022).',
+          'Las fuentes leídas no tratan su efecto sobre la curación de los tejidos.',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Estreñimiento, náuseas y dolor abdominal: frenan el tubo digestivo y producen náuseas, vómitos, dificultad para evacuar y dolor abdominal con espasmos o cólicos. El estreñimiento puede aparecer con dosis bajas y en cualquier momento, y no se reduce con el tiempo; en el dolor crónico no oncológico lo tiene un 41 %, náuseas un 32 % y somnolencia un 29 % (Camilleri 2017).',
+          'Síndrome del intestino narcótico: dolor abdominal diario durante más de 3 meses con más de 100 mg/día de morfina o equivalente, que no mejora o empeora al subir la dosis. Ante síntomas digestivos hay que pensar siempre si pueden deberse al opioide (Camilleri 2017). En mayores, el estreñimiento puede llegar a impactación fecal y perforación (Dufort y Samaan 2021).',
+          'Hormonas: hipogonadismo en un 63 % (casi todos varones) e insuficiencia suprarrenal en un 15 %, con cansancio, malestar, molestias abdominales, falta de apetito o hipotensión ortostática; revierten al reducir o retirar el opioide (De Vries 2020).',
+          'Al dejarlos o bajar la dosis, el síndrome de abstinencia da dolor muscular, náuseas, diarrea, sudor, insomnio y ansiedad; con los de acción corta empieza a las 8–12 h y cede en 3–5 días (Dufort y Samaan 2021). El dolor también puede empeorar durante la retirada (Dowell 2022).',
+        ],
+        detalle: [
+          'Síndrome serotoninérgico: el tramadol inhibe la recaptación de serotonina y noradrenalina, y el tramadol y el fentanilo son los opioides que más aparecen en los casos publicados. Da alteración mental, agitación, mioclonías, hiperreflexia, sudor, escalofríos, temblor, diarrea, falta de coordinación o fiebre, y puede ser mortal (Blyzniuk 2026).',
+          'Hueso: en un estudio, la mitad de los varones que tomaban morfina tenía osteopenia y un 21 % osteoporosis (De Vries 2020).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'Mareo, somnolencia y caídas: frente a placebo dan más mareo y somnolencia (Dowell 2022). En mayores producen sedación, falta de coordinación, mareo y caídas, con más fracturas de cadera y no vertebrales (Dufort y Samaan 2021). La guía de los CDC pide en mayores de 65 vigilar el deterioro cognitivo, valorar el riesgo de caídas y usar el ejercicio para prevenir el estreñimiento (Dowell 2022).',
+          'Subir la dosis deprisa aumenta la sedación y la depresión respiratoria. En trabajos de riesgo (conducir, maquinaria pesada, alturas), la guía pide valorar si el paciente puede hacerlos (Dowell 2022).',
+          'Mantener o aumentar la actividad física, junto con el agua y la fibra, ayuda a prevenir el estreñimiento; durante una retirada pautada, la guía pide aprovechar al máximo los tratamientos del dolor sin fármacos (Dowell 2022).',
+        ],
+        detalle: 'Las fuentes leídas no dan normas de terapia manual en estos pacientes ni sobre el ejercicio en las horas siguientes a la toma.',
+      },
+      sueno: {
+        texto: [
+          'Pueden empeorar el sueño, y dormir mal baja el umbral del dolor y lleva a subir la dosis; en el dolor crónico también pueden mejorarlo al reducir el dolor (Langstengel y Yaggi 2022).',
+          'Causan depresión respiratoria y apnea del sueño central según la dosis, y la mayoría de las muertes por opioides ocurren durante el sueño (Langstengel y Yaggi 2022). La apnea del sueño aumenta el riesgo de depresión respiratoria grave o sobredosis (Dowell 2022).',
+        ],
+        detalle: 'Tras una retirada pautada, algunos pacientes refieren insomnio, ansiedad, depresión y más dolor, sobre todo al principio (Dowell 2022).',
+      },
+      consultar: {
+        texto: [
+          'Urgente: confusión, sedación o habla arrastrada pueden anunciar una sobredosis, y la naloxona revierte la depresión respiratoria grave (Dowell 2022). Signos de síndrome serotoninérgico en quien toma tramadol con un antidepresivo (Blyzniuk 2026).',
+          'Combinaciones que hay que comentar con quien prescribe: benzodiacepinas (casi cuadruplican el riesgo de muerte por sobredosis), gabapentina o pregabalina, relajantes musculares, otros sedantes y alcohol (Dowell 2022).',
+          'Pronto: dolor abdominal nuevo o que empeora (Camilleri 2017); síntomas de abstinencia; dolor que aumenta pese a subir la dosis (Sampaio-Cunha y Martins 2022); cansancio, hipotensión al levantarse o problemas sexuales en tratamientos largos (De Vries 2020).',
+          'Nunca aconsejes dejarlos ni bajarlos por tu cuenta: no deben retirarse de golpe, y una retirada rápida puede causar abstinencia, más dolor, malestar psicológico grave e ideas de suicidio; la retirada se planifica con quien los prescribe (Dowell 2022).',
+        ],
+      },
+    },
+    fuentes: ['Dowell 2022', 'Sampaio-Cunha y Martins 2022', 'Camilleri 2017', 'Dufort y Samaan 2021', 'De Vries 2020', 'Blyzniuk 2026', 'Langstengel y Yaggi 2022'],
+  },
   { id: 'gabapentinoides', nombre: 'Gabapentinoides', ejemplos: 'Gabapentina, pregabalina' },
   { id: 'antidepresivos', nombre: 'Antidepresivos (ISRS, IRSN, tricíclicos)', ejemplos: 'Sertralina, escitalopram, duloxetina, venlafaxina, amitriptilina' },
   { id: 'sedantes', nombre: 'Benzodiacepinas y relajantes musculares', ejemplos: 'Diazepam, lorazepam, alprazolam, ciclobenzaprina, metocarbamol' },
