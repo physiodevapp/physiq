@@ -138,9 +138,10 @@ export const FAMILIAS_FARMACO = [
     fuentes: ['Pofi 2023', 'Compston 2018', 'Kaneko 2021', 'Grusky 2026', 'He 2025', 'Beuschlein 2024', 'Soura 2026'],
   },
   // Anticoagulantes y antiagregantes (2026-10): ocho fuentes leídas enteras en
-  // PMC. Sin fuente leída para el hemartros, el síndrome compartimental, los
-  // signos del hematoma del psoas, el masaje y la manipulación, los deportes de
-  // contacto, la guía de TAC tras un golpe en la cabeza ni el sueño:
+  // PMC, más Steffel 2021 (guía EHRA) y Antunes 2024 (StatPearls), PDF del
+  // usuario. Sin fuente leída para el hemartros, el síndrome compartimental,
+  // los signos del hematoma del psoas, el masaje y la manipulación, los deportes
+  // de contacto, la guía de TAC tras un golpe en la cabeza ni el sueño:
   // docs/farmacologia.md.
   {
     id: 'antitromboticos',
@@ -159,31 +160,41 @@ export const FAMILIAS_FARMACO = [
         texto: [
           'Hematoma epidural espinal: raro pero urgente. Se presenta con dolor de cuello o espalda y déficit neurológico (debilidad de un lado o de ambos, alteración de la sensibilidad, de la vejiga o del intestino); dos de cada tres fueron cervicales o cervicotorácicos, y con debilidad de un lado puede parecer un ictus (Ghosh 2026).',
           'Los hematomas retroperitoneales y del iliopsoas tienen peor pronóstico. Una masa nueva no debe atribuirse sin más al anticoagulante: si no se resuelve en 2–3 semanas, mide más de 5 cm, es profunda o el dolor persiste o empeora, hay que estudiarla, porque puede haber un tumor debajo (Mameli 2025).',
+          'Sangrado digestivo alto: vómito con sangre roja o en «posos de café», heces negras y pegajosas (melena) o sangre roja por el ano si es rápido, y síntomas de la pérdida de sangre como mareo al levantarse, síncope, cansancio o debilidad. Un abdomen doloroso a la palpación con defensa o rebote sugiere perforación. El hierro, el bismuto y el regaliz también ponen las heces negras (Antunes 2024).',
           'Digestivo: el tubo digestivo es el lugar más frecuente de sangrado grave con anticoagulantes orales, alrededor del 40 %; la aspirina y otros AINE lesionan directamente la mucosa, los anticoagulantes no (Kurlander 2022). Los antidepresivos ISRS o IRSN aumentan el riesgo de sangrado grave y digestivo en quien toma anticoagulantes o antiagregantes (OR 1,3–1,5, certeza baja) (Nochaiwong 2022).',
         ],
-        detalle: 'Con ISRS o IRSN, el riesgo de sangrado grave fue algo mayor con los anticoagulantes directos (OR 1,72) que con los antivitamina K (OR 1,28). Los autores piden vigilar más a quien ya sangró o tiene úlcera, enfermedad hepática o renal o toma además AINE (Nochaiwong 2022).',
+        detalle: [
+          'Con ISRS o IRSN, el riesgo de sangrado grave fue algo mayor con los anticoagulantes directos (OR 1,72) que con los antivitamina K (OR 1,28). Los autores piden vigilar más a quien ya sangró o tiene úlcera, enfermedad hepática o renal o toma además AINE (Nochaiwong 2022).',
+          'Tomar a la vez otro anticoagulante, antiagregantes (aspirina, clopidogrel, prasugrel, ticagrelor) o AINE aumenta el riesgo de sangrado con los anticoagulantes directos; los corticoides sistémicos figuran entre los factores que también lo aumentan (Steffel 2021). La aspirina con clopidogrel u otro antiagregante parecido multiplica por 2–3 la hemorragia digestiva alta, y en mayores de 75 años con antiagregantes y anticoagulantes llega hasta un 17 % al año (Antunes 2024).',
+        ],
       },
       ejercicio: {
         texto: [
           'Punción seca: tomar antitrombóticos no es una contraindicación absoluta, no hay pruebas para aplazarla de forma sistemática y la medicación no debe suspenderse antes. Empieza por músculos superficiales observando cómo sangra, evita al principio los profundos que no se pueden comprimir y comprime unos 10–15 s en vez de unos 5 (Muñoz 2022).',
           'Acupuntura: complicaciones en un 0,003 % con una localización y una profundidad adecuadas; los sangrados graves se debieron a una punción demasiado profunda, y las agujas más gruesas sangran más (Muñoz 2022).',
-          'Caídas y golpes en la cabeza: tras un traumatismo craneal leve, los antiagregantes se asociaron a hemorragia intracraneal (OR 1,54). Los anticoagulantes no fueron significativos en ese metaanálisis; una posible explicación es que a estos pacientes se les hace siempre un TAC, y las guías piden cautela con todos los fármacos que afectan a la coagulación (Yang 2024).',
+          'Caídas: caerse no es una contraindicación para anticoagular, pero hay que reducir el riesgo de caídas y revisar los factores de sangrado modificables, sobre todo tomar a la vez antiagregantes; la guía aconseja ofrecer a todos estos pacientes una valoración y un programa de prevención de caídas (Steffel 2021).',
+          'Golpes en la cabeza: tras un traumatismo craneal leve, los antiagregantes se asociaron a hemorragia intracraneal (OR 1,54). Los anticoagulantes no fueron significativos en ese metaanálisis; una posible explicación es que a estos pacientes se les hace siempre un TAC, y las guías piden cautela con todos los fármacos que afectan a la coagulación (Yang 2024).',
           'Embolia pulmonar: el ejercicio con el paciente anticoagulado es seguro, factible y mejora la capacidad de ejercicio y la calidad de vida, aunque faltan ensayos grandes (Xiang 2025).',
         ],
-        detalle: 'Las fuentes leídas no tratan el masaje, la manipulación vertebral ni los deportes de contacto.',
+        detalle: [
+          'Riesgo alto de caídas: caídas previas, debilidad de las piernas, mal equilibrio, deterioro cognitivo, hipotensión ortostática, psicofármacos, artritis grave o mareo; la guía propone también una puntuación con pruebas como la bipedestación en tándem, el paso alternante o levantarse de la silla (tabla 14) (Steffel 2021).',
+          'La guía EHRA clasifica la inyección intramuscular, como una vacuna, entre las intervenciones de riesgo mínimo, con aguja fina y compresión firme 2–5 min; los cambios de la toma del anticoagulante los decide quien lo prescribe (Steffel 2021). No trata la punción seca.',
+          'Las fuentes leídas no tratan el masaje, la manipulación vertebral ni los deportes de contacto.',
+        ],
       },
       sueno: {
         texto: 'Las fuentes leídas no describen efectos de los anticoagulantes ni de los antiagregantes sobre el sueño. En la embolia pulmonar, el ejercicio se asoció a mejor calidad del sueño (Xiang 2025).',
       },
       consultar: {
         texto: [
-          'Urgente: dolor de cuello o espalda con debilidad, alteración de la sensibilidad o de la vejiga o el intestino (Ghosh 2026). Tras un golpe en la cabeza, valoración médica: las guías piden cautela con todos estos fármacos (Yang 2024).',
+          'Urgente: dolor de cuello o espalda con debilidad, alteración de la sensibilidad o de la vejiga o el intestino (Ghosh 2026). Sangrado digestivo visible (vómito con sangre, melena), por urgencias (Antunes 2024). Tras un golpe en la cabeza, valoración médica: las guías piden cautela con todos estos fármacos (Yang 2024), y se han descrito hemorragias intracraneales tardías tras caídas con anticoagulantes directos (Steffel 2021).',
           'Pronto: hinchazón, dolor o un hematoma que no se resuelve, o una masa que sigue a las 2–3 semanas (Mameli 2025).',
+          'Los sangrados menores (encías, nariz, pequeños hematomas) se comentan con quien lo prescribe; la guía pide no saltarse ninguna dosis sin consultarlo antes (Steffel 2021).',
           'Nunca aconsejes dejar ni saltarse el anticoagulante: no tomarlo bien se asocia a más ictus y muerte, más aún con los anticoagulantes directos por su vida media corta (Salmasi 2020), y tampoco hay que suspenderlo antes de la punción seca (Muñoz 2022). Las dudas, al médico que lo prescribe.',
         ],
       },
     },
-    fuentes: ['Mameli 2025', 'Ghosh 2026', 'Kurlander 2022', 'Nochaiwong 2022', 'Muñoz 2022', 'Yang 2024', 'Xiang 2025', 'Salmasi 2020'],
+    fuentes: ['Mameli 2025', 'Ghosh 2026', 'Antunes 2024', 'Kurlander 2022', 'Nochaiwong 2022', 'Muñoz 2022', 'Steffel 2021', 'Yang 2024', 'Xiang 2025', 'Salmasi 2020'],
   },
   { id: 'opioides', nombre: 'Opioides', ejemplos: 'Tramadol, tapentadol, codeína, morfina, oxicodona, fentanilo' },
   { id: 'gabapentinoides', nombre: 'Gabapentinoides', ejemplos: 'Gabapentina, pregabalina' },
