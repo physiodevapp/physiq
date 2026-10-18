@@ -987,7 +987,7 @@ function _hmBloqueHTML() {
     const b = hm.beighton;
     let cuerpo;
     if (!b) {
-      cuerpo = `<button type="button" class="btn-secondary hm-btn" onclick="hmBeightonHacer()">Hacer la escala de Beighton</button>`;
+      cuerpo = `<button type="button" class="btn btn-secondary hm-btn" onclick="hmBeightonHacer()">Hacer la escala de Beighton</button>`;
     } else {
       const r = resultadoHAG(hm, state.edadPaciente);
       const fila = (k, txt) => `<label class="hm-casilla"><input type="checkbox"${b[k] ? ' checked' : ''} onchange="toggleHMBeighton('${k}')"> ${txt}</label>`;
@@ -1185,7 +1185,7 @@ function _dsBloqueHTML() {
   const b = ds.bipedestacion;
   let cuerpo;
   if (!b) {
-    cuerpo = `<button type="button" class="btn-secondary hm-btn" onclick="dsPruebaHacer()">Hacer la prueba de bipedestación</button>`;
+    cuerpo = `<button type="button" class="btn btn-secondary hm-btn" onclick="dsPruebaHacer()">Hacer la prueba de bipedestación</button>`;
   } else {
     const num = (f, c) => `<input type="number" inputmode="numeric" class="form-input" min="20" max="260" aria-label="${_ETIQ_FILA_DS(f)}: ${c.toUpperCase()}" data-ds-fila="${f}" data-ds-campo="${c}" value="${b[f]?.[c] ?? ''}" oninput="updateDsPrueba('${f}','${c}',this)">`;
     cuerpo = `<div class="ds-prep">${DS.prueba.preparacion.map(p => `<label class="hm-casilla"><input type="checkbox"${b.prep?.[p.id] ? ' checked' : ''} onchange="toggleDsPrep('${p.id}')"> ${p.texto}</label>`).join('')}</div>
@@ -1238,7 +1238,7 @@ function _dsRelojVista(e) {
 }
 
 function _dsRelojHTML(v = _dsRelojVista(estadoReloj(_dsReloj(), Date.now()))) {
-  const btn = (fn, texto, clase = 'btn-secondary') => `<button type="button" class="${clase} ds-reloj-btn" onclick="${fn}">${texto}</button>`;
+  const btn = (fn, texto, clase = 'btn-secondary') => `<button type="button" class="btn ${clase} ds-reloj-btn" onclick="${fn}">${texto}</button>`;
   if (v.modo === 'sin') {
     return `<div class="ds-reloj-botones" data-modo="sin">${btn("dsRelojEmpezar('reposo')", 'Empezar reposo tumbado (5 min)')}${btn("dsRelojEmpezar('pie')", 'Se pone de pie')}</div>`;
   }

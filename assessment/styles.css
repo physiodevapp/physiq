@@ -3576,7 +3576,7 @@ body.lupus .solo-les { display: block; }
 .ds-reloj-toca:empty, .ds-reloj-sig:empty { display: none; }
 .ds-reloj-botones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .ds-reloj-botones:first-child { margin-top: 0; }
-.ds-reloj-btn { flex: 1 1 auto; min-height: 44px; }
+.ds-reloj-btn { flex: 1 1 auto; min-height: 44px; padding: 10px 16px; }
 .ds-fila-et.ds-fila-toca { color: var(--accent); font-weight: 600; }
 .ds-tabla input.ds-fila-toca { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .ds-toma { display: block; font-size: 0.68rem; font-weight: 400; color: var(--orange); }
