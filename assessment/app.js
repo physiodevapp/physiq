@@ -3549,6 +3549,7 @@ function _showSessionState(st) {
       </div>
       <button type="button" class="session-reset-btn" id="sessionReset"${_hasAssessmentData() ? '' : ' disabled'}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Reiniciar valoración</button>
       <div class="session-io-nota">Borra los datos clínicos y conserva el nombre del paciente.</div>
+      ${_ayudaReiniciarBorrarHTML()}
       <div class="session-io">
         <button type="button" class="session-io-btn" id="sessionExport"${state.maxVisitedIdx > 0 ? '' : ' disabled'}>⬇ Exportar</button>
         <button type="button" class="session-io-btn" id="sessionImport">⬆ Importar</button>
@@ -3922,6 +3923,22 @@ function updateSessionChip(session) {
 // «Borrar sesión»: el mismo diálogo centrado que el resto de confirmaciones
 // (iconos, velo, Escape). Se cierra el panel de sesión mientras tanto; si se
 // cancela, se vuelve a abrir, que es donde estaba quien pulsó la papelera.
+// «¿Reiniciar o borrar?» del panel de sesión, plegado: los dos vuelven a la
+// fase 1 y borran lo clínico; la diferencia es el nombre y lo que queda guardado
+// en este navegador. Fuera del hub los datos solo viven aquí, y se dice.
+function _ayudaReiniciarBorrarHTML() {
+  const soloAqui = _enHub()
+    ? ''
+    : '<p>Sin el hub, la valoración solo está guardada en este navegador (24 h, y solo si tiene nombre). Para conservarla antes de borrarla, usa «⬇ Exportar».</p>';
+  return `<details class="session-ayuda">
+        <summary>¿Reiniciar o borrar?</summary>
+        <p><strong>Reiniciar valoración</strong>: el mismo paciente, desde cero. Conserva el nombre y la sesión sigue guardada con él.</p>
+        <p><strong>Borrar sesión</strong> (papelera junto al nombre): paciente nuevo, o al terminar. Borra también el nombre y no deja nada guardado; limpia la app si está abierta en otra pestaña o en el hub.</p>
+        <p>Los dos borran los datos clínicos (fases 1 a 6, cuestionarios, informe y plan con IA y el audio) y conservan el modo de consulta.</p>
+        ${soloAqui}
+      </details>`;
+}
+
 function promptClearSession() {
   const panelAbierto = document.getElementById('sessionPanelOverlay')?.classList.contains('open');
   closeSessionPanel();

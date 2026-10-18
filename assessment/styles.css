@@ -2321,6 +2321,14 @@
   .session-io-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
   .session-io-btn:disabled{opacity:0.45;cursor:default;}
   .session-io-nota{margin-top:8px;font-size:0.72rem;line-height:1.4;color:var(--text3);}
+  /* «¿Reiniciar o borrar?»: plegado bajo la nota de «Reiniciar valoración» */
+  .session-ayuda{margin-top:6px;font-size:0.72rem;line-height:1.45;color:var(--text3);}
+  .session-ayuda summary{cursor:pointer;color:var(--accent);min-height:32px;display:flex;align-items:center;list-style:none;}
+  .session-ayuda summary::-webkit-details-marker{display:none;}
+  .session-ayuda summary::after{content:'▾';margin-left:6px;}
+  .session-ayuda[open] summary::after{content:'▴';}
+  .session-ayuda p{margin:0 0 6px;}
+  .session-ayuda strong{color:var(--text2);font-weight:600;}
   .session-version{margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--text3);display:flex;align-items:center;justify-content:space-between;gap:4px;}
   .session-version-txt{flex:1;min-width:0;line-height:1.5;}
   .session-version-txt .nw{white-space:nowrap;}
@@ -2337,6 +2345,11 @@
     .session-panel-overlay.open{animation:none;}
     .session-panel-overlay.open .session-panel{animation:slideUp 0.3s cubic-bezier(0.32,0.72,0,1);}
     .session-panel{max-width:100%;width:100%;border-radius:16px 16px 0 0;border:none;border-top:1px solid var(--border2);padding:12px 1.4rem 32px;touch-action:none;}
+    /* Con «¿Reiniciar o borrar?» abierto el panel de sesión puede no caber en una
+       pantalla baja: se desplaza dentro. El arrastre para cerrar solo escucha los
+       72 px de arriba (_setupSessionPanelDrag), así que el resto puede desplazarse */
+    #sessionPanel{max-height:90vh;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;}
+    #sessionPanel .session-panel-handle{touch-action:none;}
     .session-panel-handle{display:block;}
   }
 
