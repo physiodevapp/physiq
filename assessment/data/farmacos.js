@@ -137,7 +137,54 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Pofi 2023', 'Compston 2018', 'Kaneko 2021', 'Grusky 2026', 'He 2025', 'Beuschlein 2024', 'Soura 2026'],
   },
-  { id: 'antitromboticos', nombre: 'Anticoagulantes y antiagregantes', ejemplos: 'Acenocumarol, apixabán, rivaroxabán, ácido acetilsalicílico, clopidogrel' },
+  // Anticoagulantes y antiagregantes (2026-10): ocho fuentes leídas enteras en
+  // PMC. Sin fuente leída para el hemartros, el síndrome compartimental, los
+  // signos del hematoma del psoas, el masaje y la manipulación, los deportes de
+  // contacto, la guía de TAC tras un golpe en la cabeza ni el sueño:
+  // docs/farmacologia.md.
+  {
+    id: 'antitromboticos',
+    nombre: 'Anticoagulantes y antiagregantes',
+    ejemplos: 'Acenocumarol, warfarina, apixabán, rivaroxabán, edoxabán, dabigatrán, heparinas; ácido acetilsalicílico, clopidogrel, prasugrel, ticagrelor',
+    apartados: {
+      dolor: {
+        texto: [
+          'Hematomas musculares espontáneos: aparecen en un 0,5–1,5 % de quienes toman anticoagulantes orales, sobre todo antivitamina K, con dolor muscular brusco, hinchazón y equimosis. Los sitios más frecuentes son el psoas, la vaina de los rectos y los músculos del muslo (vasto intermedio, aductores, sartorio) (Mameli 2025).',
+          'Los favorecen la edad, un INR por encima de 3, tomar a la vez un antiagregante, la insuficiencia renal, una cirugía o un traumatismo recientes y el cáncer activo, y pueden bastar esfuerzos mínimos como una contracción muscular. Los benignos suelen resolverse en 2–6 semanas (Mameli 2025).',
+          'Las fuentes leídas no dan datos sobre los tiempos de curación de los tejidos con estos fármacos.',
+        ],
+        detalle: 'Con warfarina, la actividad física regular se asoció a necesitar más dosis y a menos hemorragias (Muñoz 2022).',
+      },
+      visceral: {
+        texto: [
+          'Hematoma epidural espinal: raro pero urgente. Se presenta con dolor de cuello o espalda y déficit neurológico (debilidad de un lado o de ambos, alteración de la sensibilidad, de la vejiga o del intestino); dos de cada tres fueron cervicales o cervicotorácicos, y con debilidad de un lado puede parecer un ictus (Ghosh 2026).',
+          'Los hematomas retroperitoneales y del iliopsoas tienen peor pronóstico. Una masa nueva no debe atribuirse sin más al anticoagulante: si no se resuelve en 2–3 semanas, mide más de 5 cm, es profunda o el dolor persiste o empeora, hay que estudiarla, porque puede haber un tumor debajo (Mameli 2025).',
+          'Digestivo: el tubo digestivo es el lugar más frecuente de sangrado grave con anticoagulantes orales, alrededor del 40 %; la aspirina y otros AINE lesionan directamente la mucosa, los anticoagulantes no (Kurlander 2022). Los antidepresivos ISRS o IRSN aumentan el riesgo de sangrado grave y digestivo en quien toma anticoagulantes o antiagregantes (OR 1,3–1,5, certeza baja) (Nochaiwong 2022).',
+        ],
+        detalle: 'Con ISRS o IRSN, el riesgo de sangrado grave fue algo mayor con los anticoagulantes directos (OR 1,72) que con los antivitamina K (OR 1,28). Los autores piden vigilar más a quien ya sangró o tiene úlcera, enfermedad hepática o renal o toma además AINE (Nochaiwong 2022).',
+      },
+      ejercicio: {
+        texto: [
+          'Punción seca: tomar antitrombóticos no es una contraindicación absoluta, no hay pruebas para aplazarla de forma sistemática y la medicación no debe suspenderse antes. Empieza por músculos superficiales observando cómo sangra, evita al principio los profundos que no se pueden comprimir y comprime unos 10–15 s en vez de unos 5 (Muñoz 2022).',
+          'Acupuntura: complicaciones en un 0,003 % con una localización y una profundidad adecuadas; los sangrados graves se debieron a una punción demasiado profunda, y las agujas más gruesas sangran más (Muñoz 2022).',
+          'Caídas y golpes en la cabeza: tras un traumatismo craneal leve, los antiagregantes se asociaron a hemorragia intracraneal (OR 1,54). Los anticoagulantes no fueron significativos en ese metaanálisis; una posible explicación es que a estos pacientes se les hace siempre un TAC, y las guías piden cautela con todos los fármacos que afectan a la coagulación (Yang 2024).',
+          'Embolia pulmonar: el ejercicio con el paciente anticoagulado es seguro, factible y mejora la capacidad de ejercicio y la calidad de vida, aunque faltan ensayos grandes (Xiang 2025).',
+        ],
+        detalle: 'Las fuentes leídas no tratan el masaje, la manipulación vertebral ni los deportes de contacto.',
+      },
+      sueno: {
+        texto: 'Las fuentes leídas no describen efectos de los anticoagulantes ni de los antiagregantes sobre el sueño. En la embolia pulmonar, el ejercicio se asoció a mejor calidad del sueño (Xiang 2025).',
+      },
+      consultar: {
+        texto: [
+          'Urgente: dolor de cuello o espalda con debilidad, alteración de la sensibilidad o de la vejiga o el intestino (Ghosh 2026). Tras un golpe en la cabeza, valoración médica: las guías piden cautela con todos estos fármacos (Yang 2024).',
+          'Pronto: hinchazón, dolor o un hematoma que no se resuelve, o una masa que sigue a las 2–3 semanas (Mameli 2025).',
+          'Nunca aconsejes dejar ni saltarse el anticoagulante: no tomarlo bien se asocia a más ictus y muerte, más aún con los anticoagulantes directos por su vida media corta (Salmasi 2020), y tampoco hay que suspenderlo antes de la punción seca (Muñoz 2022). Las dudas, al médico que lo prescribe.',
+        ],
+      },
+    },
+    fuentes: ['Mameli 2025', 'Ghosh 2026', 'Kurlander 2022', 'Nochaiwong 2022', 'Muñoz 2022', 'Yang 2024', 'Xiang 2025', 'Salmasi 2020'],
+  },
   { id: 'opioides', nombre: 'Opioides', ejemplos: 'Tramadol, tapentadol, codeína, morfina, oxicodona, fentanilo' },
   { id: 'gabapentinoides', nombre: 'Gabapentinoides', ejemplos: 'Gabapentina, pregabalina' },
   { id: 'antidepresivos', nombre: 'Antidepresivos (ISRS, IRSN, tricíclicos)', ejemplos: 'Sertralina, escitalopram, duloxetina, venlafaxina, amitriptilina' },
