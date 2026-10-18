@@ -37,6 +37,7 @@ import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
 import { condicionesHTML } from './lib/condiciones.js';
+import { farmacosHTML } from './lib/farmacos.js';
 import { CONDICIONES } from './data/condiciones.js';
 import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML, filasPaciente, FILTRO_PACIENTE } from './lib/tejidos.js';
 import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
@@ -121,6 +122,7 @@ window.addEventListener('popstate', e => {
   if (_herrHistorial) { cerrarHerramientas({ desdeHistorial: true }); return; }
   if (_preguntaHistorial) { cerrarPreguntaIA({ desdeHistorial: true }); return; }
   if (_condHistorial) { cerrarCondiciones({ desdeHistorial: true }); return; }
+  if (_farmHistorial) { cerrarFarmacos({ desdeHistorial: true }); return; }
   if (_tejidosHistorial) { cerrarTiemposTejido({ desdeHistorial: true }); return; }
   if (_cuestHistorial) { cerrarCuestionarios({ desdeHistorial: true }); return; }
   if (_pendingBackNav) {
@@ -3827,6 +3829,7 @@ function _closeAllOverlays() {
   cerrarHerramientas({ sinHistorial: true });
   cerrarPreguntaIA({ sinHistorial: true });
   cerrarCondiciones({ sinHistorial: true });
+  cerrarFarmacos({ sinHistorial: true });
   cerrarTiemposTejido({ sinHistorial: true });
   cerrarCuestionarios({ sinHistorial: true });
   closePhaseSheet();
@@ -4186,7 +4189,7 @@ function cerrarHerramientas({ desdeHistorial = false, sinHistorial = false, tras
 
 function herramientaElegir(k) {
   cerrarHerramientas({ traspaso: true });
-  ({ condiciones: abrirCondiciones, tejidos: abrirTiemposTejido, cuestionarios: abrirCuestionarios, pregunta: abrirPreguntaIA })[k]?.();
+  ({ condiciones: abrirCondiciones, farmacos: abrirFarmacos, tejidos: abrirTiemposTejido, cuestionarios: abrirCuestionarios, pregunta: abrirPreguntaIA })[k]?.();
   // Si la herramienta no llegó a abrirse, la entrada del menú sobra
   if (_reusarEntrada) { _reusarEntrada = false; _popIgnorar = true; history.back(); }
 }
@@ -4237,11 +4240,13 @@ function _actualizarPreguntaIr() {
   ir.href = q.length < 3 ? '#' : urlIA(_preguntaDestino, promptPregunta({ contexto: _ctxPregunta(), pregunta: q, tipo: _preguntaTipo }));
 }
 
-function abrirPreguntaIA() {
+// `tipo`: «Preguntar a la IA sobre fármacos →» de la guía de fármacos lo abre
+// ya en esa modalidad; el botón de la cabecera, en «Pregunta libre».
+function abrirPreguntaIA({ tipo } = {}) {
   const overlay = document.getElementById('preguntaOverlay');
   if (!overlay || overlay.classList.contains('open') || _enHub()) return;
   _preguntaDestino = destinoIA();
-  _preguntaTipo = TIPO_PREGUNTA_DEFECTO;
+  _preguntaTipo = TIPOS_PREGUNTA[tipo] ? tipo : TIPO_PREGUNTA_DEFECTO;
   _pintarPreguntaIA();
   _pintarMicPregunta();
   overlay.classList.add('open');
@@ -4553,6 +4558,61 @@ function irACondicion(id) {
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('condOverlay')?.classList.contains('open')) cerrarCondiciones();
+});
+
+// ─── Guía de fármacos (cabecera, cualquier fase, también en el hub) ───
+// docs/farmacologia.md, paso 2: qué vigilar por familia de fármacos
+// (data/farmacos.js, lib/farmacos.js). No lee ni guarda datos del paciente.
+// Mismo patrón que «Condiciones especiales».
+let _farmHistorial = false;
+function abrirFarmacos() {
+  const overlay = document.getElementById('farmOverlay');
+  if (!overlay || overlay.classList.contains('open')) return;
+  document.getElementById('farmCuerpo').innerHTML = farmacosHTML();
+  overlay.classList.add('open');
+  document.getElementById('farmBtn')?.setAttribute('aria-expanded', 'true');
+  lockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  if (_esMovil()) {
+    _entradaOverlay({ phase: state.currentPhase, farmacos: true });
+    _farmHistorial = true;
+  }
+  const panel = document.getElementById('farmPanel');
+  panel.scrollTop = 0;
+  panel.focus({ preventScroll: true });
+}
+
+function cerrarFarmacos({ desdeHistorial = false, sinHistorial = false, despues = null } = {}) {
+  const overlay = document.getElementById('farmOverlay');
+  if (!overlay?.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  cerrarFicha({ sinFoco: true });
+  const panel = document.getElementById('farmPanel');
+  panel.style.transform = ''; panel.style.transition = '';
+  unlockBodyScroll();
+  window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
+  const btn = document.getElementById('farmBtn');
+  btn?.setAttribute('aria-expanded', 'false');
+  if (_farmHistorial) {
+    _farmHistorial = false;
+    if (!desdeHistorial && !sinHistorial) {
+      _popIgnorar = true; _trasPop = despues; history.back();
+      if (!despues) _botonCabecera(btn)?.focus({ preventScroll: true });
+      return;
+    }
+  }
+  if (despues) despues();
+  else if (!sinHistorial) _botonCabecera(btn)?.focus({ preventScroll: true });
+}
+
+// «Preguntar a la IA sobre fármacos →» (familias pendientes): cierra la guía y
+// abre el diálogo en la modalidad «Fármacos». No en el hub (no hay diálogo).
+function farmacosPreguntarIA() {
+  if (_enHub()) return;
+  cerrarFarmacos({ despues: () => abrirPreguntaIA({ tipo: 'farmacos' }) });
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('farmOverlay')?.classList.contains('open')) cerrarFarmacos();
 });
 
 // ─── Calculadora de cuestionarios (cabecera, cualquier fase, también en el hub) ───
@@ -5195,7 +5255,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,
@@ -5279,6 +5339,8 @@ Object.assign(window, {
   if (herr) initSwipe(herr, () => cerrarHerramientas(), _esMovil);
   const cond = document.getElementById('condPanel');
   if (cond) initSwipe(cond, () => cerrarCondiciones(), _esMovil);
+  const farm = document.getElementById('farmPanel');
+  if (farm) initSwipe(farm, () => cerrarFarmacos(), _esMovil);
   const tejidos = document.getElementById('tejidosPanel');
   if (tejidos) initSwipe(tejidos, () => cerrarTiemposTejido(), _esMovil);
   const cuest = document.getElementById('cuestPanel');

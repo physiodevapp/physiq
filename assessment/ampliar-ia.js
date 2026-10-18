@@ -79,6 +79,11 @@ export function ctxArbol(region, pregunta) {
   return `el paso del árbol de decisión clínica (modelo CIF) «${_sinEtiquetas(pregunta)}»${reg ? ` (${reg})` : ''}`;
 }
 
+// Guía de fármacos (lib/farmacos.js): solo el nombre de la familia, de data/
+export function ctxFarmaco(familia) {
+  return `la familia de fármacos «${_sinEtiquetas(familia)}» (lo que debe vigilar el fisioterapeuta)`;
+}
+
 export const attrIA = t => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export function recortarTextoIA(texto) {
@@ -348,7 +353,7 @@ export function initAmpliarIA() {
       return;
     }
     if (!t.closest('#iaMenu')) _cerrarMenu();
-  });
+  }, true);   // en captura, como las citas (ficha.js): los diálogos de la cabecera cortan la propagación en su panel
   // Escape cierra el menú antes que el panel del razonamiento.
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && _menu && !_menu.hidden) { e.stopImmediatePropagation(); _cerrarMenu(); }

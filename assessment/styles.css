@@ -3331,6 +3331,36 @@ body.lupus .solo-les { display: block; }
 .cond-pie { margin: 14px 0 0; font-size: 0.75rem; color: var(--text3); }
 @media print { .cond-btn { display: none !important; } }
 
+/* Guía de fármacos (lib/farmacos.js): el mismo diálogo que «Condiciones
+   especiales» (.cond-panel); una familia por <details>, cinco apartados */
+.farm-familia { border: 1px solid var(--border); border-radius: 10px; background: var(--surface2); }
+.farm-familia + .farm-familia { margin-top: 10px; }
+.farm-familia > summary { list-style: none; cursor: pointer; padding: 12px; display: flex; flex-direction: column; gap: 2px; min-height: 44px; }
+.farm-familia > summary::-webkit-details-marker { display: none; }
+.farm-familia > summary::after { content: '▾'; position: absolute; right: 12px; top: 12px; color: var(--text3); }
+.farm-familia > summary { position: relative; padding-right: 32px; }
+.farm-familia[open] > summary::after { content: '▴'; }
+.farm-nombre { font-size: 0.95rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+.farm-ejemplos { font-size: 0.78rem; color: var(--text2); line-height: 1.4; }
+.farm-cuerpo { padding: 0 12px; }
+.farm-apartado + .farm-apartado { margin-top: 12px; }
+.farm-apartado-titulo { margin: 0 0 4px; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); font-weight: 500; }
+.farm-apartado p { margin: 0 0 6px; font-size: 0.85rem; line-height: 1.5; color: var(--text); }
+.farm-mas { margin: 2px 0 6px; }
+.farm-mas > summary { cursor: pointer; font-size: 0.78rem; color: var(--accent); min-height: 32px; display: flex; align-items: center; }
+.farm-mas p { color: var(--text2); }
+.farm-fuentes { padding: 10px 12px 12px; font-size: 0.72rem; color: var(--text3); }
+.farm-fuentes-et { font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+.farm-grupo { margin: 18px 0 6px; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); font-weight: 500; }
+.farm-pendientes-lista { margin: 0 0 6px; font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+.farm-pendientes-nota { margin: 0 0 8px; font-size: 0.78rem; color: var(--text3); line-height: 1.45; }
+.in-hub .farm-preguntar, .in-hub .farm-pendientes-nota { display: none; }
+/* Dentro de un diálogo (guía de fármacos) la barra y el menú de «✨ IA»
+   (600/601) quedaban bajo el velo (999): por encima solo mientras hay uno abierto */
+body:has(.session-panel-overlay.open) .ia-barra { z-index: 1001; }
+body:has(.session-panel-overlay.open) .ia-menu { z-index: 1002; }
+@media print { .farm-btn { display: none !important; } }
+
 /* ─── Calculadora de cuestionarios (cabecera, lib/cuestionarios.js) ───
    Caja y velo del panel de sesión, como «Tiempos de recuperación». Dentro,
    lista de cuestionarios o el formulario de uno, con el resultado fijo arriba
@@ -3523,7 +3553,7 @@ body.lupus .solo-les { display: block; }
 .herramientas-btn { display: none; }
 @media (max-width: 768px) {
   .app-header .herramientas-btn { display: flex; }
-  .app-header .cond-btn, .app-header .tejidos-btn, .app-header .cuest-btn, .app-header .pregunta-ia-btn { display: none; }
+  .app-header .cond-btn, .app-header .farm-btn, .app-header .tejidos-btn, .app-header .cuest-btn, .app-header .pregunta-ia-btn { display: none; }
 }
 .in-hub .herr-op-ia { display: none; }
 @media print { .herramientas-btn { display: none !important; } }
