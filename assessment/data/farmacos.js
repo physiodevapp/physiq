@@ -77,7 +77,66 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Schug 2021', 'Bindu 2020', 'Lucas 2019', 'Papantoniou 2023', 'Pannone y Abbott 2024'],
   },
-  { id: 'corticoides', nombre: 'Corticoides', ejemplos: 'Prednisona, metilprednisolona, dexametasona' },
+  // Corticoides (2026-10): seis revisiones o estudios leídos enteros en PMC y
+  // la guía de Beuschlein 2024 por secciones. Sin fuente leída para que
+  // enmascaren la fiebre, la fragilidad de la piel, el reposo o la carga tras
+  // una infiltración ni el sangrado digestivo con AINE: docs/farmacologia.md.
+  {
+    id: 'corticoides',
+    nombre: 'Corticoides',
+    ejemplos: 'Prednisona, metilprednisolona, dexametasona; infiltraciones (triamcinolona, betametasona)',
+    apartados: {
+      dolor: {
+        texto: [
+          'Los efectos adversos dependen de la dosis y la duración, sobre todo con dosis altas, más de 2 semanas o más dosis por la tarde que por la mañana, aunque algunos estudios los describen tras una sola dosis o un ciclo corto (Pofi 2023). Cualquier vía puede tener efectos en todo el cuerpo, también la infiltración intraarticular (Pofi 2023).',
+          'Infiltraciones: alivian el dolor durante semanas o meses, con el mayor efecto en las 2 primeras semanas, y en las 24–72 h siguientes puede haber dolor e hinchazón en el punto de la inyección. En las tendinopatías se asocian a peores resultados a largo plazo, sobre todo en la epicondilalgia lateral; la rotura del tendón tras la inyección parece poco frecuente (0,1–10 % según los estudios) (Grusky 2026).',
+          'Hueso: la osteoporosis por glucocorticoides se debe sobre todo a una menor formación de hueso (Compston 2018).',
+        ],
+        detalle: [
+          'Cartílago: en un ensayo, la triamcinolona intraarticular repetida en la rodilla redujo más el volumen de cartílago que el suero salino, y con dolor de cadera o rodilla sin artrosis previa cada infiltración se asoció a más riesgo de prótesis a los 5 años; otro estudio, con concentraciones fisiológicas, no encontró toxicidad sobre los condrocitos (Grusky 2026).',
+          'Tras infiltraciones intraarticulares se han descrito fractura subcondral por insuficiencia (0,3 %), necrosis avascular (0,6–20,4 %) y destrucción rápida de la cadera (3–7 %). En el manguito rotador operado, una infiltración previa fue el factor de riesgo más constante de volver a operar (Grusky 2026).',
+          'Una infiltración en los 3 meses previos a una prótesis de rodilla, cadera u hombro aumenta el riesgo de infección de la prótesis (Grusky 2026).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Osteonecrosis: el primer síntoma es un dolor óseo persistente que limita el movimiento y empeora al cargar y con la actividad. Afecta sobre todo a la cabeza femoral, y también a rodilla, hombro, tobillo o mano, a menudo en varias zonas a la vez (Kaneko 2021). El riesgo sube con dosis altas, por encima de 30 mg/día de prednisona o equivalente (Pofi 2023).',
+          'Fractura vertebral: es la fractura más característica de la osteoporosis por glucocorticoides (Compston 2018). Hasta un 20 % de los pacientes tiene una fractura por fragilidad en el primer año de tratamiento, sobre todo en la columna, el fémur proximal y las costillas (Pofi 2023).',
+          'Miopatía: debilidad proximal (hombros, muslos) de inicio insidioso y sin dolor, con análisis y electromiograma habitualmente normales. En una cohorte apareció tras una mediana de 97 días; se preguntaba por dificultad para subir escaleras, salir de la bañera, levantarse del váter o mantener los brazos por encima de la cabeza (He 2025).',
+          'Al bajar la dosis, hasta la mitad de los pacientes tiene un síndrome de retirada con dolor muscular y articular, debilidad, cansancio y alteraciones del sueño y del ánimo, sobre todo por debajo de 15 mg/día de prednisona; también puede reaparecer la enfermedad de base (Beuschlein 2024).',
+        ],
+        detalle: [
+          'Infección: el riesgo sube desde el inicio. Con más de 5 mg/día durante más de 6 meses se duplica el riesgo de infección grave, que baja en los 6 meses siguientes a dejarlos; además atenúan la respuesta de los neutrófilos a los estímulos inflamatorios (Pofi 2023). La artritis séptica tras una infiltración es rara (0,03–0,08 %) (Grusky 2026).',
+          'Glucosa: una sola dosis puede subir mucho la glucosa, con o sin diabetes previa, y el mayor efecto suele darse entre la 2.ª y la 4.ª semana (Pofi 2023; Soura 2026). Las infiltraciones intraarticulares e intramusculares también se han asociado a hiperglucemia (Soura 2026).',
+          'En el lupus, las lesiones de osteonecrosis se detectaron en los primeros 5 meses de dosis altas, y más de la mitad de los pacientes estaba ya en fase avanzada cuando aparecieron los síntomas (Kaneko 2021).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'Fractura: el riesgo sube a los 3–6 meses de empezar y depende de la dosis (Compston 2018), incluso desde 2,5 mg/día; es mayor en los primeros meses, baja alrededor de un 30 % a los 6 meses de dejarlos y se normaliza a los 12 (Pofi 2023). La fractura aparece con una densidad ósea más alta que sin corticoides (Compston 2018). Las fuentes leídas no dan normas para la terapia manual ni para la carga: tenlo en cuenta al elegir técnicas de alta velocidad o carga axial intensa.',
+          'El ejercicio adaptado a cada paciente y la prevención de caídas forman parte del manejo de la osteoporosis por glucocorticoides, aunque con pocas pruebas (Compston 2018). Las caídas pasaron de 1,6 a 2,8 por 100 personas-año al empezar los corticoides orales (He 2025).',
+          'Miopatía: el ejercicio puede atenuarla según los estudios que cita una cohorte, en la que los síntomas mejoraron tras una mediana de 107 días; recomienda cribar las caídas en mayores de 50 años (He 2025).',
+          'Glucosa: la actividad física forma parte del consejo para mantener el control glucémico (Soura 2026). En un paciente con diabetes, ten presente la subida pasajera de la glucosa tras una infiltración (Grusky 2026; Soura 2026).',
+        ],
+        detalle: 'Las fuentes leídas no dan un protocolo de reposo ni de carga del tendón tras una infiltración: sigue la indicación de quien la puso.',
+      },
+      sueno: {
+        texto: [
+          'La exposición prolongada a dosis altas se asocia a alteraciones del sueño, del ánimo y cognitivas; psicosis, manía, depresión o ansiedad aparecen en un 3–60 % según los estudios (Pofi 2023). Tras una infiltración puede aparecer insomnio, en general pasajero (Grusky 2026), y al bajar la dosis, alteraciones del sueño dentro del síndrome de retirada (Beuschlein 2024).',
+        ],
+        detalle: 'Tomar más dosis por la tarde que por la mañana se asocia a más efectos adversos (Pofi 2023); las fuentes leídas no estudian su efecto concreto sobre el sueño.',
+      },
+      consultar: {
+        texto: [
+          'Urgente: con corticoides actuales o recientes, por cualquier vía (también infiltraciones, inhalados o tópicos), hipotensión, colapso o síntomas abdominales agudos pueden ser una crisis suprarrenal, que puede ocurrir si se saltan dosis o con una gastroenteritis (Beuschlein 2024).',
+          'Tras infiltraciones, sobre todo en los 2 meses siguientes o con varias en poco tiempo, hay que estar atento a síntomas de insuficiencia suprarrenal (Beuschlein 2024).',
+          'Pronto: dolor óseo persistente que empeora al cargar, sobre todo en la cadera o la rodilla (Kaneko 2021); debilidad proximal nueva (He 2025); síntomas de hiperglucemia (Soura 2026).',
+          'Nunca aconsejes bajar ni dejar los corticoides: tras un uso prolongado se retiran de forma pautada (Beuschlein 2024). Las dudas, al médico que los prescribe.',
+        ],
+      },
+    },
+    fuentes: ['Pofi 2023', 'Compston 2018', 'Kaneko 2021', 'Grusky 2026', 'He 2025', 'Beuschlein 2024', 'Soura 2026'],
+  },
   { id: 'antitromboticos', nombre: 'Anticoagulantes y antiagregantes', ejemplos: 'Acenocumarol, apixabán, rivaroxabán, ácido acetilsalicílico, clopidogrel' },
   { id: 'opioides', nombre: 'Opioides', ejemplos: 'Tramadol, tapentadol, codeína, morfina, oxicodona, fentanilo' },
   { id: 'gabapentinoides', nombre: 'Gabapentinoides', ejemplos: 'Gabapentina, pregabalina' },
