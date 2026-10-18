@@ -2992,6 +2992,13 @@ body.lupus .solo-les { display: block; }
 .hm-subtipo { margin-top: 12px; margin-bottom: 0; }
 .hm-subtipos { flex-wrap: wrap; }
 .hm-subtipos .option-btn { width: auto; flex: 0 0 auto; padding: 8px 12px; font-size: 0.8rem; min-height: 40px; }
+/* Pantalla estrecha: las filas se estiran hasta el borde, sin botón descolgado
+   (mismo criterio que .fp-opts y .sint-zonas): condiciones especiales,
+   complicaciones de la cirugía, «Calcular …» y las opciones de la fase 6 */
+@media (max-width: 520px) {
+  .hm-subtipos .option-btn, .cir-complicaciones .option-btn, #phase6 .option-group > .option-btn,
+  .cuest-calc .cuest-calc-btn { flex: 1 1 auto; justify-content: center; text-align: center; }
+}
 .hm-bloque:empty { display: none; }
 .hm-bloque { margin-bottom: 1rem; }
 .hm-btn { min-height: 44px; }
