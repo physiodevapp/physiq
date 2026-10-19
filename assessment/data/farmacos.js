@@ -580,7 +580,86 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Stroes 2015', 'CTT 2022', 'Mach 2018', 'Epelde 2026', 'Yang y Qu 2018', 'Sizar 2024', 'Rout 2025', 'McIver y Siddique 2025', 'Talreja y Cassagnol 2023', 'Mangone 2024', 'Broncel 2015'],
   },
-  { id: 'fluoroquinolonas', nombre: 'Fluoroquinolonas', ejemplos: 'Ciprofloxacino, levofloxacino, moxifloxacino' },
+  // Fluoroquinolonas (2026-10): ocho fuentes en PMC (Michalak 2017 y Kuula
+  // 2019 se leyeron y no se citan) y siete PDF del usuario (StatPearls de los
+  // tres fármacos y de la disección de aorta, Lewis y Cook 2014, EMA 2018,
+  // AEMPS 2023). Sin fuente leída para el enmascaramiento de signos, la
+  // terapia manual, la carga del tendón sin síntomas ni los signos de la
+  // hipoglucemia: docs/farmacologia.md.
+  {
+    id: 'fluoroquinolonas',
+    nombre: 'Fluoroquinolonas',
+    ejemplos: 'Ciprofloxacino, levofloxacino, moxifloxacino',
+    apartados: {
+      dolor: {
+        texto: [
+          'Tendón: aumentan de 2 a 4 veces el riesgo de tendinopatía aguda y de rotura (Baggio y Ananda-Rajah 2021). En un metaanálisis, la incidencia fue del 0,96 % con fluoroquinolonas frente al 0,15 % sin ellas, y del 0,17 % tanto con levofloxacino como con ciprofloxacino (Sangiorgio 2024). El Aquiles es el más afectado, en torno al 90 % de los casos, pero se han descrito también el rotuliano, el recto femoral, el aductor largo, el tríceps braquial, los flexores de los dedos, el supraespinoso, el subescapular y los tendones de la cadera (Lewis y Cook 2014; Barberán 2023).',
+          'Cuándo: puede empezar en las primeras horas o los 2 primeros días de tratamiento y hasta varios meses después de terminarlo (EMA 2018). En 98 casos publicados, la mediana fue de 6 días, el 85 % empezó en el primer mes y entre el 41 % y el 50 % lo hizo con el antibiótico ya terminado, hasta 6 meses después (Lewis y Cook 2014).',
+          'Cómo se presenta: dolor de comienzo brusco, a veces con hinchazón y signos de inflamación; la mitad de las roturas se han descrito sin dolor previo (Lewis y Cook 2014). Según una revisión, la tendinitis es bilateral en la mitad de los casos (Rusu 2023).',
+          'Más riesgo con más de 60 años, insuficiencia renal, trasplante de órgano y corticoides a la vez (EMA 2018; Sangiorgio 2024). Con corticoides, el riesgo de rotura llega a ser 14 veces mayor según una revisión (Baggio y Ananda-Rajah 2021), y en un estudio de casos y controles el del Aquiles fue 46 veces mayor que sin ninguno de los dos fármacos (Lewis y Cook 2014). La actividad física intensa también se suma (Lewis y Cook 2014).',
+          'Al valorar una tendinopatía, pregunta específicamente por las fluoroquinolonas (Lewis y Cook 2014). Las fuentes leídas no tratan si enmascaran signos en la exploración.',
+        ],
+        detalle: [
+          'Las agencias describen efectos muy raros pero de larga duración (meses o años), incapacitantes y quizá irreversibles en tendones, músculos, articulaciones y nervios: dolor e hinchazón de las articulaciones, dolor o debilidad muscular y dificultad para caminar (EMA 2018; AEMPS 2023).',
+          'Cada día más de tratamiento aumenta alrededor de un 6 % el riesgo de rotura, y tomarlas en los 90 días siguientes a una cirugía del tendón se asoció al doble de roturas (Duman 2025).',
+          'Recuperación: el 90 % se trata sin cirugía, con una mediana de un mes, y hasta un 10 % queda con secuelas (dificultad para caminar, menos movilidad, dolor) (Baggio y Ananda-Rajah 2021); la tendinitis tarda de unas semanas a dos meses (Rusu 2023). Puede recuperarse más despacio que otras tendinopatías (Lewis y Cook 2014).',
+          'Mecanismo propuesto: aumentan las metaloproteinasas que degradan el colágeno y reducen la síntesis de colágeno de los tenocitos (Lewis y Cook 2014; Baggio y Ananda-Rajah 2021).',
+          'No hay acuerdo sobre cuál es más dañino para el tendón: dos revisiones señalan el levofloxacino (Duman 2025; Rusu 2023), el metaanálisis da la misma incidencia con levofloxacino y con ciprofloxacino (Sangiorgio 2024), y una revisión anterior lo citaba como el menos dañino (Lewis y Cook 2014).',
+          'En niños y adolescentes se limitan por el riesgo de artropatía visto en animales jóvenes (Duman 2025; Humma y Patel 2024).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Aorta: se asocian a más disección (OR 2,38) y aneurisma de aorta (OR 1,98), sin que la relación esté probada como causal (Wee 2021); el riesgo es mayor en los 2 meses siguientes y en mayores (Humma y Patel 2024), y otra revisión considera las pruebas contradictorias (Baggio y Ananda-Rajah 2021). Más riesgo con aneurisma previo o en la familia, Marfan, Ehlers-Danlos u otras enfermedades del tejido conectivo, insuficiencia de una válvula cardíaca, tensión alta o edad avanzada (Baggio y Ananda-Rajah 2021; Rusu 2023; Podder 2024).',
+          'La disección se presenta típicamente como un dolor brusco, muy intenso y desgarrador, en el pecho o en la espalda, que puede desplazarse; el dolor torácico con dolor abdominal, desmayo o síntomas neurológicos debe hacer pensar en ella, y hay presentaciones leves: solo se diagnostica a la primera entre el 15 % y el 43 % (Levy 2024). Por eso, ante un dolor brusco y muy intenso en la espalda o el pecho en quien toma o ha tomado en los 2 últimos meses una fluoroquinolona, piensa en la aorta antes que en un origen mecánico.',
+          'Nervios: neuropatía periférica sensitiva o sensitivo-motora, con dolor, quemazón, hormigueo, pinchazos, entumecimiento o debilidad, sobre todo en piernas y brazos; puede aparecer pronto y ser irreversible (EMA 2018; Humma y Patel 2024). El riesgo aumenta hasta 1,5 veces, con un aumento absoluto pequeño, del 0,04 % al año en mayores de 60 (Baggio y Ananda-Rajah 2021).',
+          'Sistema nervioso central y ánimo: en el 1–4,4 %, desde confusión, irritabilidad, mareo, cefalea e insomnio hasta convulsiones, psicosis o depresión con ideas de suicidio, más con levofloxacino y moxifloxacino (Barberán 2023; Wierzbiński 2023). En 73 casos publicados empezaron entre 10 minutos y 3 semanas tras la primera toma, y en 52 se resolvieron en 72 horas tras interrumpir el antibiótico (Wierzbiński 2023).',
+          'Glucosa y corazón: hipoglucemia e hiperglucemia, más con moxifloxacino y en diabéticos con antidiabéticos o insulina; la hipoglucemia del levofloxacino puede ser grave (Baggio y Ananda-Rajah 2021; Rusu 2023; Podder 2024). Alargan el QT, con riesgo de arritmias, el doble con moxifloxacino que con los otros dos (Baggio y Ananda-Rajah 2021).',
+          'Empeoran la miastenia gravis y se evitan en ella (Thai 2023; Humma y Patel 2024). Náuseas, vómitos o diarrea en hasta el 20 %, y diarrea por Clostridioides difficile (Baggio y Ananda-Rajah 2021; Barberán 2023).',
+        ],
+        detalle: [
+          'Disección de aorta: sin tratamiento, la mortalidad se acerca al 50 % en 48 horas. Alrededor del 10 % no refiere dolor, sobre todo con Marfan. Una diferencia de tensión entre los brazos de más de 20 mm Hg o la falta de un pulso son signos de alarma, pero su ausencia no la descarta (Levy 2024).',
+          'Riesgo absoluto de la aorta: haría falta tratar a unas 7246 personas para un caso más de disección o de rotura de aneurisma, y a 483 en poblaciones de alto riesgo como los varones mayores (Wee 2021).',
+          'Otros efectos de larga duración que describen las agencias: cansancio intenso, problemas de memoria y cambios en la vista, el oído, el gusto y el olfato (EMA 2018; AEMPS 2023). También fotosensibilidad y lesión hepática (Rusu 2023; Podder 2024).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'Ante dolor o hinchazón de un tendón, durante el tratamiento o después, la EMA pide reposo de la zona y contacto inmediato con el médico (EMA 2018); otras revisiones piden reducir la carga del tendón y no ejercitar la zona afectada (Rusu 2023), con analgesia y fisioterapia (Baggio y Ananda-Rajah 2021).',
+          'Rehabilitación: puede responder mal a los programas excéntricos habituales, al menos al principio. Se propone en dos fases: primero soporte y protección, para que el tendón se recupere de la lesión química, y después carga progresiva (Lewis y Cook 2014). Una revisión cita proteger el tendón el primer mes (alza de talón, ortesis, muletas) y reducir la carga del Aquiles de 6 semanas a 6 meses (Rusu 2023).',
+          'Deportistas: se recomienda evitarlas si hay otra opción, no combinarlas con corticoides orales o inyectados y vigilar de cerca al deportista después de tomarlas (Lewis y Cook 2014). Las fuentes leídas no dan normas de carga ni de vuelta al deporte en quien las toma sin síntomas, ni tratan la terapia manual.',
+        ],
+        detalle: [
+          'La vigilancia del deportista dura 1 mes en la tabla de recomendaciones que recoge esa revisión y al menos 6 meses en su texto (Lewis y Cook 2014).',
+          'La carga intensa del tendón puede sumarse al efecto del fármaco: varios casos publicados eran deportistas o personas muy activas (Lewis y Cook 2014).',
+          'Con un aneurisma conocido o tras una disección se desaconsejan el esfuerzo intenso, levantar mucho peso y la maniobra de Valsalva (Levy 2024); es una norma para esas personas, no para todas las que toman fluoroquinolonas.',
+        ],
+      },
+      sueno: {
+        texto: [
+          'El insomnio figura entre sus efectos sobre el sistema nervioso central (Barberán 2023), y apareció en 14 de 73 casos publicados de esos efectos (Wierzbiński 2023). Las agencias incluyen los trastornos del sueño entre los efectos de larga duración (EMA 2018; AEMPS 2023).',
+          'Las fuentes leídas no dan su frecuencia en el conjunto de los tratados ni cuánto dura.',
+        ],
+        detalle: [
+          'El aviso de la FDA de 2016 sobre el sistema nervioso central incluye la psicosis, la ansiedad, el insomnio y la depresión (Wierzbiński 2023).',
+        ],
+      },
+      consultar: {
+        texto: [
+          'Urgente: dolor brusco y muy intenso en el pecho, la espalda o el abdomen, a menudo desgarrador, sobre todo con desmayo, síntomas de ictus o debilidad de un miembro, que puede ser una disección de aorta (Levy 2024); hinchazón de labios, cara o garganta (Humma y Patel 2024); convulsiones (Thai 2023); ideas de suicidio (Wierzbiński 2023).',
+          'Sin esperar, con su médico: el primer signo de lesión de un tendón (dolor o hinchazón); dolor, hormigueo, entumecimiento, quemazón o debilidad en brazos o piernas; dificultad para caminar, cansancio intenso, ánimo deprimido, confusión o alucinaciones (Wierzbiński 2023), problemas de memoria o de sueño, o cambios en la vista, el oído, el gusto o el olfato. En esos casos la EMA y la AEMPS piden al paciente que deje de tomarlo y contacte de inmediato con su médico, que decide si sigue o cambia de antibiótico (EMA 2018; AEMPS 2023).',
+          'Pronto: palpitaciones, cambios en el ritmo intestinal, fiebre, retortijones, pérdida de apetito, náuseas o vómitos, orina oscura o piel amarilla, y en diabéticos la glucosa descontrolada (Podder 2024).',
+          'Tu papel es reconocer estos signos y que contacte ese mismo día con su médico; no decidas tú sobre el antibiótico: si sigue o se cambia lo decide su médico (EMA 2018). Las dudas, al médico o al farmacéutico.',
+        ],
+        detalle: [
+          'Combinaciones que hay que comentar con quien prescribe: corticoides a la vez, por el tendón (EMA 2018; Lewis y Cook 2014); tizanidina con ciprofloxacino (Thai 2023); otros fármacos que alargan el QT y warfarina, por sangrado (Humma y Patel 2024; Podder 2024); antidiabéticos o insulina (Podder 2024); AINE, por más efectos sobre el sistema nervioso central y convulsiones (Wierzbiński 2023; Podder 2024).',
+          'Terminar el tratamiento no garantiza el tendón: puede doler o romperse muchos meses después (Lewis y Cook 2014).',
+          'Quien ya tuvo un efecto adverso grave con una quinolona no debe volver a tomarla, y no se usan para infecciones leves o que se curan solas, como faringitis, amigdalitis o bronquitis aguda (EMA 2018; AEMPS 2023). Las sospechas de reacción adversa se notifican en NotificaRAM (AEMPS 2023).',
+        ],
+      },
+    },
+    fuentes: ['Baggio y Ananda-Rajah 2021', 'Sangiorgio 2024', 'Wee 2021', 'Barberán 2023', 'Wierzbiński 2023', 'Rusu 2023', 'Duman 2025', 'Lewis y Cook 2014', 'EMA 2018', 'AEMPS 2023', 'Thai 2023', 'Humma y Patel 2024', 'Podder 2024', 'Levy 2024'],
+  },
   { id: 'betabloqueantes', nombre: 'Betabloqueantes', ejemplos: 'Bisoprolol, atenolol, metoprolol, propranolol' },
   { id: 'antihipertensivos', nombre: 'Diuréticos y otros antihipertensivos', ejemplos: 'Hidroclorotiazida, furosemida, enalapril, losartán, amlodipino' },
   { id: 'antidiabeticos', nombre: 'Insulina y antidiabéticos', ejemplos: 'Insulina, metformina, sulfonilureas, inhibidores de SGLT2' },
