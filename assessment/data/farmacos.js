@@ -410,7 +410,84 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Ferraro 2025', 'Welsch 2018', 'Narayan 2024', 'Moraczewski 2023', 'Biswas 2026', 'Thour 2026', 'Alam 2022', 'Nochaiwong 2022', 'Wang 2018', 'Singh y Saadabadi 2024', 'Zhang 2026', 'Filippatos 2017', 'Simon 2024', 'Blyzniuk 2026', 'Chu y Wadhwa 2023', 'Bhanu 2021', 'De Filippis 2022', 'Wichniak 2017', 'Waseem 2026', 'Horowitz 2023'],
   },
-  { id: 'sedantes', nombre: 'Benzodiacepinas y relajantes musculares', ejemplos: 'Diazepam, lorazepam, alprazolam, ciclobenzaprina, metocarbamol' },
+  // Benzodiacepinas y relajantes musculares (2026-10): nueve fuentes enteras
+  // en PMC y siete capítulos de StatPearls (PDF del usuario). Sin fuente leída
+  // para el efecto sobre la inflamación y la curación, si enmascaran signos,
+  // terapia manual ni dosificación del ejercicio: docs/farmacologia.md.
+  {
+    id: 'sedantes',
+    nombre: 'Benzodiacepinas y relajantes musculares',
+    ejemplos: 'Diazepam, lorazepam, alprazolam, ciclobenzaprina, metocarbamol, tizanidina, baclofeno',
+    apartados: {
+      dolor: {
+        texto: [
+          'Lumbalgia inespecífica: los relajantes no benzodiacepínicos (ciclobenzaprina, metocarbamol, tizanidina y otros) redujeron el dolor 7,7 puntos sobre 100 en las 2 primeras semanas, con certeza muy baja y por debajo de los 10 puntos que los autores consideran clínicamente relevantes; el efecto desaparecía al dejar fuera los ensayos con alto riesgo de sesgo, y no hubo efecto a las 3–13 semanas ni en la discapacidad. Las benzodiacepinas (diazepam) no mejoraron el dolor; un único ensayo vio menos discapacidad a las 3–13 semanas. No hay ensayos a largo plazo (Cashin 2021).',
+          'En la lumbalgia aguda, las guías ponen primero los tratamientos no farmacológicos, y por su evolución favorable los autores piden prudencia con los analgésicos (Wewege 2023). En el dolor crónico, el uso prolongado mostró beneficio sobre todo en espasmos, calambres dolorosos y dolor cervical; en lumbalgia y fibromialgia, en conjunto, no (Oldfield 2024).',
+          'La ciclobenzaprina está aprobada como complemento del reposo y la fisioterapia en el espasmo muscular agudo, solo 2–3 semanas, y no sirve para la espasticidad (Khan y Kahwaji 2023); el metocarbamol tampoco (Sibrack 2024). La tizanidina y el baclofeno se indican para la espasticidad de origen neurológico; el uso del baclofeno en la lumbalgia es limitado (Ghanavatian y Derian 2023; Ghanavatian y Derian 2024).',
+          'Las fuentes leídas no tratan su efecto sobre la inflamación ni sobre la curación de los tejidos, ni si enmascaran signos en la exploración.',
+        ],
+        detalle: [
+          'En el metaanálisis en red de la lumbalgia aguda, los relajantes no benzodiacepínicos redujeron el dolor 14,3 puntos sobre 100 frente a placebo, con confianza muy baja (Wewege 2023).',
+          'No hay pruebas de alta calidad de que el metocarbamol sea mejor que un AINE, y añadirlo al naproxeno no mejoró los resultados a la semana en un ensayo pequeño (Sibrack 2024). Tras la cirugía, el efecto analgésico de los relajantes musculares es inconstante (Farishta 2024).',
+          'En la fibromialgia, el dolor volvió a subir una semana después de dejar la tizanidina en un estudio (Oldfield 2024).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Respiración: con una benzodiacepina sola la depresión respiratoria es poco frecuente, pero el riesgo sube mucho con alcohol, opioides u otros sedantes (Kang 2023); la advertencia de la FDA dice que con opioides pueden causar sedación, depresión respiratoria grave, coma y muerte (Bounds y Patel 2024). En 2021, casi el 88 % de las muertes por sobredosis con benzodiacepinas en EE. UU. implicaban también opioides, y su sedación se suma a la de antihistamínicos, antipsicóticos y gabapentinoides (Brunner 2025). Los relajantes musculares junto con opioides también aumentan el riesgo de sobredosis (Oldfield 2024; Farishta 2024).',
+          'Cognición: dan déficits de memoria, aprendizaje y atención y empeoran el delirium en mayores (Capiau 2023), además de amnesia anterógrada y alteración psicomotora; entre el 1 y el 20 % de quienes las toman tiene conductas agresivas (Edinoff 2021). Tras la cirugía, los relajantes musculares duplicaron el delirium en mayores (Farishta 2024).',
+          'Tizanidina: hipotensión y bradicardia, a veces graves, y casos de daño hepático grave e insuficiencia hepática, por lo que se controla la función hepática; no se combina con ciprofloxacino ni fluvoxamina, por hipotensión importante y más alteración psicomotora (Ghanavatian y Derian 2023).',
+          'Ciclobenzaprina: es de la familia de los tricíclicos y da somnolencia, boca seca, mareo, confusión, taquicardia y retención de orina; con otros serotoninérgicos, como la duloxetina, se han descrito casos de síndrome serotoninérgico (Khan y Kahwaji 2023).',
+          'Baclofeno: se elimina por el riñón; con la función renal reducida se acumula, con riesgo de encefalopatía, y con un filtrado de 30 o menos se aconseja evitarlo (Ghanavatian y Derian 2024; Kershner 2026).',
+        ],
+        detalle: [
+          'Los relajantes no benzodiacepínicos aumentaron los efectos adversos (RR 1,6), sobre todo mareo, somnolencia, cefalea y náuseas (Cashin 2021).',
+          'Todos los relajantes musculares tienen efectos anticolinérgicos que favorecen la sedación, las caídas y la confusión en mayores. El metocarbamol puede cambiar el color de la orina, sin importancia clínica (Sibrack 2024).',
+          'Las benzodiacepinas se asocian a hipotensión ortostática en mayores, por una caída de la tensión más acusada en los primeros 10 segundos al ponerse de pie (Capiau 2023; Brunner 2025).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'Caídas y fracturas: las benzodiacepinas aumentan las caídas (OR 1,39–1,57) y se asocian con fuerza a la fractura de cadera; los hipnóticos Z, como el zolpidem, también aumentan las fracturas (OR 1,63). El riesgo es mayor las primeras semanas tras empezar y con el uso prolongado, por sedación, hipotensión ortostática, mareo, debilidad muscular, ataxia y problemas visuales (Capiau 2023). En mayores con insomnio, multiplicaron por 2,6 los efectos psicomotores, como caídas y accidentes de tráfico (Brunner 2025).',
+          'Equilibrio: el efecto depende de la dosis y es máximo en las primeras horas tras la toma; es mayor con dosis altas, con poco tiempo entre la toma y el despertar o con alcohol u otros sedantes, y la inestabilidad es más marcada en mayores (Capiau 2023).',
+          'Relajantes musculares en mayores: los criterios de Beers piden evitarlos por caídas, fracturas y alteración cognitiva o psicomotora (Sibrack 2024). Con baclofeno hubo más caídas que con tizanidina (SHR 1,68) y parecidas a las de la ciclobenzaprina (Hwang 2024). El baclofeno da debilidad muscular, y su intoxicación, hipotonía (Ghanavatian y Derian 2024; Kershner 2026).',
+          'Conducir: con baclofeno se pide no conducir ni manejar maquinaria por la sedación (Ghanavatian y Derian 2024), y las benzodiacepinas de acción larga se asocian a más accidentes de tráfico (Capiau 2023).',
+          'Las fuentes leídas no dan normas de terapia manual ni de dosificación del ejercicio con estos fármacos.',
+        ],
+        detalle: [
+          'En mayores hospitalizados, las dosis de más de 1 mg/día equivalente de diazepam se asociaron a caídas, y quienes tomaban diazepam, de acción larga, tenían más de tres veces más caídas en 90 días que quienes no tomaban benzodiacepinas (Capiau 2023). El aumento de caídas con lesión es significativo sobre todo por encima de los 80 años (Edinoff 2021).',
+          'Con la tizanidina se miden la tensión y la frecuencia cardíaca antes de subir la dosis, por el riesgo de hipotensión grave (Ghanavatian y Derian 2023). El metocarbamol empieza a actuar a los 30 minutos y llega a su máximo a las 2 horas (Sibrack 2024).',
+          'Durante una retirada pautada de benzodiacepinas, la guía aconseja actividad física adaptada a la capacidad (Brunner 2025).',
+        ],
+      },
+      sueno: {
+        texto: [
+          'Las benzodiacepinas mejoran poco el sueño (se duerme antes, más tiempo y con menos despertares), pero el efecto se pierde en días o semanas mientras los riesgos siguen; se aconseja no pasar de 4 semanas (Brunner 2025).',
+          'Las de acción larga dan resaca al día siguiente, confusión, mareo y torpeza motora, y la inercia al despertar puede aumentar el riesgo de caídas (Capiau 2023).',
+          'En el insomnio crónico, el tratamiento inicial recomendado es la terapia cognitivo-conductual (Capiau 2023; Bounds y Patel 2024).',
+          'Apnea del sueño: en un metaanálisis en red, las benzodiacepinas bajaron la saturación media durante el sueño, aunque no empeoraron el índice de apneas; los autores piden mucha cautela en quien tiene apnea (Kishi 2026). Tras la cirugía, los relajantes musculares también piden cautela con apnea del sueño (Farishta 2024).',
+        ],
+        detalle: [
+          'Al reducir la dosis puede empeorar el insomnio, y por eso la reducción es gradual (Capiau 2023). Quien tomaba dosis altas puede dormir menos al bajarlas sin que sea insomnio: puede ser el fin de una sedación excesiva (Brunner 2025).',
+          'La ciclobenzaprina puede ayudar al insomnio asociado a la fibromialgia (Khan y Kahwaji 2023) y mejoró los trastornos del sueño en tres estudios (Oldfield 2024).',
+        ],
+      },
+      consultar: {
+        texto: [
+          'Urgente: sedación extrema, habla arrastrada, ataxia, respiración lenta o superficial o no responder, sobre todo si ha tomado además alcohol u opioides (Bounds y Patel 2024; Kang 2023). Con baclofeno, confusión, depresión respiratoria, convulsiones o parálisis piden atención médica inmediata, igual que las ideas de autolesión o suicidio (Kershner 2026). Signos de síndrome serotoninérgico con ciclobenzaprina y otro serotoninérgico (Khan y Kahwaji 2023).',
+          'Retirada: no se dejan de golpe. Con benzodiacepinas, una reducción rápida puede dar convulsiones y delirium potencialmente mortales (Brunner 2025); otros síntomas son irritabilidad, inquietud, sudoración, cefalea, calambres musculares y molestias digestivas (Capiau 2023), y también dolor o rigidez de cabeza y cuello, sensaciones extrañas en las extremidades, debilidad, hormigueos y contracciones musculares (Edinoff 2021). Los síntomas de retirada a menudo se atribuyen a la enfermedad de base o a otra (Brunner 2025). Con baclofeno oral, la retirada brusca puede dar convulsiones y alucinaciones (Ghanavatian y Derian 2024); con tizanidina, taquicardia, tensión alta de rebote y más espasticidad (Ghanavatian y Derian 2023).',
+          'Pronto: mareo, inestabilidad, caídas o somnolencia de día nuevos, o confusión en un mayor (Capiau 2023); con tizanidina, mareo, pulso lento o tensión baja (Ghanavatian y Derian 2023); con baclofeno, somnolencia o confusión si tiene enfermedad renal, que aumenta el riesgo de intoxicación (Kershner 2026).',
+          'Nunca aconsejes dejarlos ni bajarlos por tu cuenta: la retirada es gradual (Brunner 2025; Kershner 2026), con quien los prescribe. Las dudas, al médico o al farmacéutico.',
+        ],
+        detalle: [
+          'Combinaciones que hay que comentar con quien prescribe: opioides, alcohol y otros sedantes con cualquiera de ellos (Bounds y Patel 2024; Ghanavatian y Derian 2024); tizanidina con ciprofloxacino o fluvoxamina (Ghanavatian y Derian 2023); ciclobenzaprina con otros serotoninérgicos (Khan y Kahwaji 2023). La guía de retirada recomienda ofrecer naloxona a quien toma a la vez benzodiacepinas y opioides (Brunner 2025).',
+          'La dependencia física es una consecuencia esperable del uso continuado y no equivale a un trastorno por uso, que solo cumple el 1,5 %. El riesgo de síntomas de retirada es bajo con menos de 1 mes de uso y aparece con tomas de 4 o más días por semana durante 1–3 meses o más; con el alprazolam la dependencia llega antes. Algunos síntomas pueden durar meses o años (Brunner 2025).',
+          'Al reducir la dosis se vigilan el mareo, la sedación, las caídas, la ansiedad, el insomnio y la agitación (Capiau 2023). La sobredosis de baclofeno puede dar un coma de hasta 7 días (Ghanavatian y Derian 2024).',
+        ],
+      },
+    },
+    fuentes: ['Cashin 2021', 'Wewege 2023', 'Oldfield 2024', 'Khan y Kahwaji 2023', 'Sibrack 2024', 'Ghanavatian y Derian 2023', 'Ghanavatian y Derian 2024', 'Farishta 2024', 'Kang 2023', 'Bounds y Patel 2024', 'Brunner 2025', 'Capiau 2023', 'Edinoff 2021', 'Kershner 2026', 'Hwang 2024', 'Kishi 2026'],
+  },
   { id: 'estatinas', nombre: 'Estatinas', ejemplos: 'Atorvastatina, simvastatina, rosuvastatina' },
   { id: 'fluoroquinolonas', nombre: 'Fluoroquinolonas', ejemplos: 'Ciprofloxacino, levofloxacino, moxifloxacino' },
   { id: 'betabloqueantes', nombre: 'Betabloqueantes', ejemplos: 'Bisoprolol, atenolol, metoprolol, propranolol' },
