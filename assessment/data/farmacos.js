@@ -503,7 +503,83 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Cashin 2021', 'Wewege 2023', 'Oldfield 2024', 'Khan y Kahwaji 2023', 'Sibrack 2024', 'Ghanavatian y Derian 2023', 'Ghanavatian y Derian 2024', 'Farishta 2024', 'Kang 2023', 'Bounds y Patel 2024', 'Brunner 2025', 'Capiau 2023', 'Edinoff 2021', 'Kershner 2026', 'Hwang 2024', 'Kishi 2026'],
   },
-  { id: 'estatinas', nombre: 'Estatinas', ejemplos: 'Atorvastatina, simvastatina, rosuvastatina' },
+  // Estatinas (2026-10): siete fuentes enteras en PMC y cuatro capítulos de
+  // StatPearls (PDF del usuario). Vaezi 2025 se leyó y no se cita (cifras de
+  // pacientes contradictorias). Sin fuente leída para hueso y fracturas,
+  // enmascaramiento de signos, adaptaciones al entrenamiento, caídas ni
+  // terapia manual: docs/farmacologia.md.
+  {
+    id: 'estatinas',
+    nombre: 'Estatinas',
+    ejemplos: 'Atorvastatina, simvastatina, rosuvastatina',
+    apartados: {
+      dolor: {
+        texto: [
+          'Síntomas musculares: dolor, rigidez, sensibilidad o calambres, en general simétricos y proximales, en grupos musculares grandes (muslos, glúteos, pantorrillas, espalda) y casi siempre sin subida de la CK. Suelen aparecer en las 4–6 primeras semanas, aunque pueden hacerlo tras años, y también al subir la dosis o al añadir un fármaco que interactúa (Stroes 2015).',
+          'En los ensayos ciegos, el 27,1 % con estatina y el 26,6 % con placebo refirieron dolor o debilidad muscular; el exceso se concentró en el primer año (RR 1,07) y después desapareció. En ese primer año solo 1 de cada 15 quejas musculares se debía a la estatina: en más del 90 % de quienes las refieren, la causa es otra (CTT 2022). Influye el efecto nocebo: las expectativas negativas hacen que se refieran más efectos adversos de lo esperable (Mach 2018); en un ensayo, los síntomas fueron parecidos con comprimidos de estatina y de placebo, y mucho mayores que sin comprimido (Epelde 2026).',
+          'Para distinguirlo de un dolor musculoesquelético: sugieren la estatina los síntomas que empiezan poco después de iniciarla o subir la dosis, mejoran al retirarla y vuelven al reintroducirla; sugieren otra causa los asimétricos, focales o que no cambian al retirarla. La artrosis, la polimialgia reumática, el hipotiroidismo, el déficit de vitamina D y el ejercicio intenso son causas frecuentes (Epelde 2026; Stroes 2015).',
+          'Tendón: se han asociado a tendinopatía y rotura, sobre todo del Aquiles, el cuádriceps y el bíceps distal, más en el primer año, sin que la relación esté confirmada; en el manguito rotador, los estudios observacionales sugieren menos enfermedad y menos rerroturas tras la reparación (Yang y Qu 2018). Las fuentes leídas no tratan el hueso ni las fracturas, ni si enmascaran signos en la exploración.',
+        ],
+        detalle: [
+          'Sus efectos antiinflamatorios descritos se refieren a la pared de los vasos y la placa de ateroma (Sizar 2024); las fuentes leídas no los relacionan con el dolor musculoesquelético ni con la curación de los tejidos.',
+          'Cuando se midió en los ensayos, la CK era menor de 3 veces el límite superior en el 96,7 % de las quejas musculares. El exceso de síntomas es algo mayor con pautas intensivas (RR 1,08) y, con dosis bajas o moderadas, en mujeres (CTT 2022).',
+          'Factores de riesgo de síntomas musculares: más de 80 años, ser mujer, poco peso, infección aguda, hipotiroidismo sin tratar, enfermedad renal o hepática, diabetes, déficit de vitamina D, dolor muscular, articular o tendinoso previo sin explicar, mucha actividad física, alcohol en exceso y mucho zumo de pomelo o arándano (Stroes 2015).',
+          'Decir al paciente que su dolor no es real es un error; explicarle que puede ser real pero no deberse a la estatina es exacto y terapéutico (Epelde 2026).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Rabdomiólisis: rara, alrededor de 1 caso por 100 000 personas al año (Stroes 2015). Es una destrucción muscular con dolor intenso, debilidad y orina oscura que puede dañar el riñón (Sizar 2024); la tríada completa aparece en menos de la mitad de los casos, y el dolor muscular, el síntoma más frecuente, en alrededor del 50 % (Rout 2025).',
+          'Miopatía necrotizante inmunomediada: rara, con debilidad proximal y simétrica y CK alta que persisten o empeoran meses después de retirar la estatina (Sizar 2024; Epelde 2026).',
+          'Hígado y glucosa: las transaminasas suben levemente en el 0,5–2 %, sobre todo en los 3 primeros meses; la diabetes de nueva aparición aumenta en alrededor de 1 caso por 1000 pacientes al año, más con prediabetes o síndrome metabólico. No afectan a la cognición ni a la función renal (Mach 2018).',
+          'Otros efectos frecuentes: molestias digestivas, dolor articular y en las extremidades (McIver y Siddique 2025), cefalea y estreñimiento (Talreja y Cassagnol 2023).',
+        ],
+        detalle: [
+          'La CK sube en las 2–12 horas siguientes a una lesión muscular, llega al máximo en 1–5 días y baja a partir de los 3–5 días si no hay más lesión. La ALT y la AST también salen del músculo, así que pueden subir sin daño hepático (Rout 2025).',
+          'Con la simvastatina se ha descrito síndrome compartimental en las piernas (Talreja y Cassagnol 2023).',
+          'La miopatía necrotizante se debe a anticuerpos contra la HMG-CoA reductasa y necesita tratamiento inmunosupresor (Sizar 2024).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'Los síntomas musculares parecen más frecuentes en personas físicamente activas (Stroes 2015). En ensayos con ejercicio, los tuvieron el 9 % con estatina y el 4 % con placebo, sin diferencias en el consumo máximo de oxígeno ni en la CK tras el ejercicio, que subía algo con y sin estatina; los resultados valen para personas con bajo riesgo de síntomas (Mangone 2024).',
+          'Al empezar un programa de ejercicio, las molestias pueden deberse al propio ejercicio y no a la estatina, y llevar a dejarla por error; ese pequeño aumento de riesgo no es motivo para abandonar el ejercicio ni la estatina sin valoración médica (Mangone 2024). Desaconsejar el ejercicio por tomar estatina puede aumentar el riesgo cardiovascular: el ejercicio moderado no debe desaconsejarse, mientras que el esfuerzo intenso y no habitual puede subir la CK e interactuar con la estatina (Epelde 2026).',
+          'Rabdomiólisis por esfuerzo: el ejercicio extenuante, sobre todo sin entrenamiento, levantar mucho peso o hacerlo con mucho calor, y la deshidratación pueden causarla, igual que la inmovilización prolongada (Rout 2025). La guía de la NLA, citada en un capítulo, cuenta evitar el ejercicio extenuante entre los factores modificables de intolerancia (Sizar 2024).',
+          'Mayores: por encima de 65 años la concentración de atorvastatina es mayor y el riesgo de miopatía también (McIver y Siddique 2025). Las fuentes leídas no tratan la terapia manual, las caídas ni las adaptaciones al entrenamiento.',
+        ],
+        detalle: [
+          'Varios estudios pequeños sugieren alteraciones de la función mitocondrial durante el ejercicio con estatinas, con una recuperación más lenta tras el esfuerzo incluso sin síntomas (Stroes 2015).',
+          'Tras una rabdomiólisis, muchas personas necesitan rehabilitación o fisioterapia para recuperar la masa muscular y la función; puede llevar meses, y algunas tienen dolor residual durante años (Rout 2025).',
+          'Las personas con rasgo falciforme tienen más riesgo de rabdomiólisis, y se piden precauciones en el deporte y el esfuerzo físico (Rout 2025).',
+          'El panel de la EAS no recomienda la coenzima Q10 ni la vitamina D para prevenir los síntomas musculares (Stroes 2015); un capítulo de StatPearls cita, en cambio, un metaanálisis en que la coenzima Q10 los redujo (Sizar 2024).',
+        ],
+      },
+      sueno: {
+        texto: [
+          'En un metaanálisis de ensayos con polisomnografía, las estatinas no empeoraron la duración ni la eficiencia del sueño, y redujeron algo el tiempo despierto y los despertares; los ensayos eran pocos, pequeños, de 1992–1994 y sin atorvastatina ni rosuvastatina. Los datos de farmacovigilancia que cita asocian alteraciones del sueño a la simvastatina, la rosuvastatina y la lovastatina (Broncel 2015).',
+          'El insomnio figura entre los efectos frecuentes de la atorvastatina (McIver y Siddique 2025) y entre los que estudios observacionales atribuyen a las estatinas (Stroes 2015).',
+          'La simvastatina y la pravastatina se toman por la noche, por eficacia; la atorvastatina y la rosuvastatina, a cualquier hora pero siempre a la misma (Sizar 2024). Las fuentes leídas no tratan los calambres nocturnos.',
+        ],
+        detalle: [
+          'El insomnio puede deberse a la enfermedad de base más que al fármaco (Broncel 2015).',
+        ],
+      },
+      consultar: {
+        texto: [
+          'Urgente: debilidad objetiva, orina oscura, malestar general o síntomas que empeoran tras retirar la estatina, que piden descartar una rabdomiólisis o una miopatía necrotizante (Epelde 2026), y dolor muscular intenso con debilidad (Stroes 2015), más aún tras un esfuerzo intenso, una de sus causas (Rout 2025).',
+          'Pronto: dolor o debilidad muscular nuevos sin explicación (McIver y Siddique 2025); cansancio inhabitual, pérdida de apetito, dolor abdominal, orina oscura o piel amarilla, que pueden ser lesión hepática (Mach 2018).',
+          'Ante molestias musculares leves, lo más probable es que no se deban a la estatina, y se mantiene mientras se buscan otras causas (CTT 2022). Si aparecen síntomas, el paciente debe consultar a quien la prescribe en lugar de dejarla, y la mayoría tolera después una pauta modificada (Epelde 2026).',
+          'Nunca aconsejes dejarla ni bajar la dosis por tu cuenta: la pausa, el cambio de dosis o de estatina los decide quien la prescribe (McIver y Siddique 2025; Epelde 2026). Las dudas, al médico o al farmacéutico.',
+        ],
+        detalle: [
+          'Combinaciones que hay que comentar con quien prescribe: la simvastatina y la atorvastatina con claritromicina, eritromicina, antifúngicos azólicos, diltiazem, verapamilo o amiodarona, y cualquier estatina con gemfibrozilo, ciclosporina, colchicina o zumo de pomelo aumentan el riesgo muscular (Sizar 2024; Talreja y Cassagnol 2023; McIver y Siddique 2025).',
+          'La CK no se mide de rutina (Stroes 2015). Con síntomas, una CK de más de 4 veces el límite superior indica lesión relevante, y por encima de 10 veces o si persiste pide una valoración urgente (Epelde 2026).',
+          'Si la rabdomiólisis se detecta pronto, el daño renal suele tener buen pronóstico; en hospitalizados con lesión renal, la mortalidad es del 30–50 % (Rout 2025).',
+        ],
+      },
+    },
+    fuentes: ['Stroes 2015', 'CTT 2022', 'Mach 2018', 'Epelde 2026', 'Yang y Qu 2018', 'Sizar 2024', 'Rout 2025', 'McIver y Siddique 2025', 'Talreja y Cassagnol 2023', 'Mangone 2024', 'Broncel 2015'],
+  },
   { id: 'fluoroquinolonas', nombre: 'Fluoroquinolonas', ejemplos: 'Ciprofloxacino, levofloxacino, moxifloxacino' },
   { id: 'betabloqueantes', nombre: 'Betabloqueantes', ejemplos: 'Bisoprolol, atenolol, metoprolol, propranolol' },
   { id: 'antihipertensivos', nombre: 'Diuréticos y otros antihipertensivos', ejemplos: 'Hidroclorotiazida, furosemida, enalapril, losartán, amlodipino' },
