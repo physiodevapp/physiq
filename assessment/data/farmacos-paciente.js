@@ -91,6 +91,16 @@ export const FAMILIAS_PACIENTE = {
       'Caídas: en mayores de 55 años, los no selectivos, como el propranolol, se asociaron a más caídas (HR 1,22; IC 95 % 1,01–1,48) y los selectivos no (HR 0,92; 0,83–1,01). Ese estudio miró el uso mantenido, no el comienzo, cuando otros estudios vieron más caídas por hipotensión (Ham 2017).',
     ],
   },
+  antihipertensivos: {
+    corto: 'Antihipertensivos',
+    rotulo: 'Toma diuréticos u otros antihipertensivos',
+    plan: [
+      'Caídas: en mayores con salud compleja, el riesgo de caer subió un 35–50 % en los 30 días siguientes a empezar un antihipertensivo, y otros estudios lo vieron también al añadir otro o al subir la dosis (Jödicke 2023). Los ensayos no hallaron más caídas, pero sí más hipotensión y síncope (Albasri 2021), y excluyen a los más frágiles (McEvoy 2024). En esas semanas, cuida los cambios de postura y el equilibrio.',
+      'Hipotensión ortostática: una caída de 20 mmHg de la sistólica o de 10 de la diastólica al ponerse de pie, medida al minuto y a los 3 minutos tras 5 minutos sentado o tumbado (McEvoy 2024). Los diuréticos la provocan más; los IECA, los ARA II y los dihidropiridínicos, menos, y sobre todo en las 2 primeras semanas tras empezar o subir la dosis (McEvoy 2024). Empeora al levantarse, tras el ejercicio y con calor (Ringer 2025).',
+      'Para prevenirla: levantarse por fases (tumbado, sentado, de pie), beber lo suficiente, y cruzar las piernas o tensar los músculos de piernas y caderas al ponerse de pie (Ringer 2025; McEvoy 2024). Si hay riesgo de caer, ejercicio supervisado, como la bicicleta reclinada o la natación (Ringer 2025).',
+      'Calor: en mayores, los diuréticos de asa, los IECA y los ARA II se asociaron a más ingresos por golpe de calor o deshidratación, también sin ola de calor (Layton 2020).',
+    ],
+  },
 };
 
 // Textos de la tarjeta, la guía y la fase 5 (redacción propia, decisión 18)

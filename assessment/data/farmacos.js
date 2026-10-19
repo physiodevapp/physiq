@@ -745,7 +745,95 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Mitchell 2025', 'Hansen 2022', 'Ez Eddin 2025', 'Ham 2017', 'Marko y Pawliczak 2025', 'Dos Santos 2024', 'Carnovale 2023', 'Thompson 2026', 'Dar y Jacob 2024', 'Farzam y Jan 2023', 'Awosika y Patel 2026', 'Morris 2024', 'Rehman 2024', 'Bazroon y Alrashidi 2023'],
   },
-  { id: 'antihipertensivos', nombre: 'Diuréticos y otros antihipertensivos', ejemplos: 'Hidroclorotiazida, furosemida, enalapril, losartán, amlodipino' },
+  // Diuréticos y otros antihipertensivos (2026-10): catorce fuentes en PMC
+  // (Hunter y Bailey 2019 se leyó y no se cita) y PDF del usuario: las guías
+  // ESC 2024 y ESH 2023, Hanssen 2022 y dieciséis capítulos de StatPearls
+  // (los cinco grupos, cinco fármacos y seis cuadros). Sin fuente leída para
+  // el dolor, la inflamación y la curación, el enmascaramiento de signos, la
+  // terapia manual, el golpe de calor por esfuerzo, cómo distinguir el edema
+  // del amlodipino de una trombosis y el insomnio: docs/farmacologia.md.
+  {
+    id: 'antihipertensivos',
+    nombre: 'Diuréticos y otros antihipertensivos',
+    ejemplos: 'Hidroclorotiazida, furosemida, enalapril, losartán, amlodipino',
+    apartados: {
+      dolor: {
+        texto: [
+          'Las fuentes leídas no tratan su efecto sobre el dolor, la inflamación ni la curación de los tejidos, ni si enmascaran signos en la exploración.',
+          'Sí dan síntomas que se confunden con un problema musculoesquelético: calambres, debilidad y caídas por falta de sodio, potasio o magnesio con los diuréticos; ataques de gota con los diuréticos; dolor abdominal por angioedema intestinal con los IECA, e hinchazón de piernas con el amlodipino. Están en «Síntomas viscerales o secundarios».',
+          'Grupos: tiazidas (hidroclorotiazida, clortalidona, indapamida), diuréticos de asa (furosemida, torasemida), IECA (enalapril, ramipril), ARA II (losartán, valsartán) y antagonistas del calcio, que se dividen en dihidropiridínicos (amlodipino, nifedipino) y no dihidropiridínicos (verapamilo, diltiazem) (Patel y Preuss 2025; Huxel 2023; Herman 2023; Patel y Launico 2025; McKeever 2024).',
+          'No todos los que los toman son hipertensos: los antagonistas del calcio se usan también para prevenir la migraña y en el fenómeno de Raynaud (McKeever 2024), igual que los ARA II en el Raynaud (Patel y Launico 2025). Pregunta para qué lo toma.',
+          'Si mides la tensión, hazlo con el brazo apoyado y sin ejercicio en los 30 minutos previos (McEvoy 2024). Con dolor agudo puede subir y volver a la normalidad al aliviarse (McEvoy 2024; Mancia 2023).',
+        ],
+        detalle: [
+          'Las tiazidas se asociaron a menos fracturas que el placebo u otros antihipertensivos, aunque no a menos fracturas de cadera (Patel y Preuss 2025). Los de asa hacen perder calcio y magnesio por la orina (Huxel 2023); las fuentes leídas no dicen qué supone para el hueso.',
+          'Los diuréticos podrían ocultar los síntomas de una insuficiencia cardíaca leve, y el edema de tobillos de los antagonistas del calcio puede confundirse con ella (Mancia 2023).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Tiazidas e hiponatremia (falta de sodio): es su efecto típico; en un estudio la tenía el 14 % de los tratados, y a partir de los 70 años el riesgo se multiplicaba por cuatro (Liamis 2016). Suele aparecer en las 2–3 primeras semanas (Patel y Preuss 2025), pero también tras años si se suma otra causa (Liamis 2016). Con los de asa es rara (Liamis 2016).',
+          'La hiponatremia leve ya da cansancio, debilidad, fallos de atención y de memoria, alteraciones de la marcha, caídas y fracturas, y la moderada, además, calambres (Rout y Afzal 2026). Hay que vigilar la inestabilidad, las caídas frecuentes y la falta de atención poco después de empezar la tiazida (Liamis 2016).',
+          'Hipopotasemia (falta de potasio), con tiazidas y diuréticos de asa (Patel y Preuss 2025; Huxel 2023): debilidad muscular, cansancio, calambres, palpitaciones y estreñimiento. La debilidad empieza por las piernas y sube, y no suele dar síntomas hasta que el potasio baja bastante, salvo si baja de golpe (Castro y Sharma 2025).',
+          'Hipomagnesemia (falta de magnesio), también con los dos tipos de diurético: cansancio, debilidad, temblor, espasmos y calambres musculares y tetania (Gragossian 2023).',
+          'Gota: las tiazidas y los diuréticos de asa suben el ácido úrico y pueden desencadenar un ataque (Menon y Rednam 2026; Mancia 2023); con la hidroclorotiazida el ácido úrico sube en las primeras semanas, y más a más dosis (Weber 2026). Un ataque es una monoartritis brusca, con dolor intenso, rojez e hinchazón que llegan al máximo en 12–24 horas. Casi siempre es en la pierna, la mitad de las primeras veces en la primera articulación metatarsofalángica, y también en el tobillo, la rodilla, el tarso, los tendones y las bolsas, sobre todo de noche o de madrugada (Menon y Rednam 2026).',
+          'Antagonistas del calcio dihidropiridínicos (amlodipino, nifedipino): hinchazón de las piernas que depende de la dosis (Liang 2022; Bulsara 2024), en el 10,8 % con 10 mg de amlodipino (Bulsara 2024), y que puede aparecer a las 2–3 semanas de empezar (McKeever 2024). Se debe a la dilatación de las arteriolas y no a un exceso de líquido, por eso los diuréticos apenas la mejoran (Weber 2026), y tomarla por un problema nuevo lleva a tratarla con otro fármaco (Bulsara 2024). Tenla en cuenta antes de atribuir una hinchazón de tobillo a una lesión. Las fuentes leídas no dicen cómo distinguirla de una trombosis.',
+          'IECA (enalapril, ramipril): tos seca, más en mujeres y en no fumadores, que suele empezar en el primer mes y se va de 1 a 4 semanas después de dejarlo (Hu 2023). Con los ARA II es mucho menos frecuente (Hu 2023; Patel y Launico 2025).',
+          'Angioedema: hinchazón de labios, lengua, cara o garganta sin habones, más frecuente en personas de origen africano (Memon y Tiwari 2023; Lacuesta 2024). Suele aparecer en la primera semana, pero hasta un tercio de los casos llega meses o años después, y puede repetirse hasta un mes después de dejar el IECA (Lacuesta 2024). El intestinal da dolor abdominal, náuseas, vómitos o diarrea, que imitan otros cuadros, entre 12 horas y 10 años después de empezar (Suenghataiphorn 2025). Con los ARA II es más raro, pero también ocurre (Mulla 2024).',
+          'Piel: la hidroclorotiazida aumenta la sensibilidad a la luz (Weber 2026), y la furosemida y los demás de asa también pueden darla (Huxel 2023).',
+        ],
+        detalle: [
+          'Fuentes que no coinciden. En la frecuencia de la tos con los IECA: entre el 3,9 % y el 35 % (Hu 2023), del 1 al 10 % (Herman 2023) o del 5 al 10 %, más en mujeres y en personas de origen asiático (Mancia 2023). En el cáncer de piel con la hidroclorotiazida: un metaanálisis de estudios observacionales halló un pequeño aumento del no melanoma, sobre todo el espinocelular con dosis acumuladas altas y fuera de Asia (Shao 2022), pero uno de 33 ensayos con datos de cada paciente no halló relación (Mancia 2023). La indicación es seguir el fármaco y protegerse del sol (Weber 2026).',
+          'La clortalidona da más hiponatremia que la hidroclorotiazida (Liamis 2016) y más hipopotasemia (McEvoy 2024), y las mujeres tienen más hiponatremia e hipopotasemia con los diuréticos (Mancia 2023). Los de asa bajan además el calcio (Huxel 2023).',
+          'En un metaanálisis de cohortes, tomar un diurético multiplicó por 2,4 el riesgo de gota (Evans 2018); en los ensayos el resultado no fue concluyente (Albasri 2021). La gota puede parecer una celulitis y, con fiebre, una artritis séptica, que además puede coexistir con ella (Menon y Rednam 2026). La hipomagnesemia puede dar condrocalcinosis (Gragossian 2023).',
+          'Las tiazidas y los de asa pueden subir la glucosa (Patel y Preuss 2025; Huxel 2023), y las tiazidas pueden dar una pancreatitis aguda (Patel y Preuss 2025). Los de asa pueden dañar el oído (acúfenos, vértigo, sordera), más a dosis altas o con enfermedad renal (Huxel 2023; Khan 2023).',
+          'IECA y ARA II pueden subir el potasio, más con enfermedad renal, diabetes, suplementos de potasio o diuréticos ahorradores de potasio (Herman 2023; Mulla 2024), y a menudo sin síntomas (Faruqi 2024).',
+          'Verapamilo y diltiazem dan estreñimiento, mareo, cansancio e hipotensión ortostática (McKeever 2024), y menos edema que los dihidropiridínicos: 3,1 % frente a 12,3 % (Liang 2022). El amlodipino da también rubor, dolor de cabeza, palpitaciones y crecimiento de las encías (Bulsara 2024). El losartán cuenta el dolor de espalda y la debilidad entre sus efectos (Mulla 2024).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'En la hipertensión, la guía europea recomienda al menos 150 minutos semanales de aeróbico moderado (30 minutos o más, 5–7 días) o 75 de vigoroso en 3 días, más fuerza dinámica o isométrica de intensidad baja o moderada 2–3 veces por semana (McEvoy 2024). Fuerza dinámica: 2–3 series de 10–15 repeticiones al 40–60 % de 1RM. Isométrica: 3 series de 1–2 minutos, como prensión de la mano, plancha o sentadilla en la pared (McEvoy 2024). El aeróbico moderado es al 40–60 % de la frecuencia cardíaca de reserva (Mancia 2023).',
+          'Con la tensión en reposo por encima de 200/110 mmHg, el ejercicio intenso tiene una contraindicación relativa (McEvoy 2024). Una sesión de aeróbico baja la tensión durante las horas siguientes, y por eso conviene hacer ejercicio a diario (McEvoy 2024; Mancia 2023).',
+          'Caídas: en mayores con salud compleja, el riesgo de caer subió un 35–50 % en los 30 días siguientes a empezar un antihipertensivo, y otros estudios lo vieron también al añadir otro o al subir la dosis (Jödicke 2023). Los ensayos no hallaron más caídas, pero sí más hipotensión y síncope (Albasri 2021), y excluyen a los más frágiles (McEvoy 2024). En esas semanas, cuida los cambios de postura y el equilibrio.',
+          'Hipotensión ortostática: una caída de 20 mmHg de la sistólica o de 10 de la diastólica al ponerse de pie, medida al minuto y a los 3 minutos tras 5 minutos sentado o tumbado (McEvoy 2024). Los diuréticos la provocan más; los IECA, los ARA II y los dihidropiridínicos, menos, y sobre todo en las 2 primeras semanas tras empezar o subir la dosis (McEvoy 2024). Empeora al levantarse, tras el ejercicio y con calor (Ringer 2025).',
+          'Para prevenirla: levantarse por fases (tumbado, sentado, de pie), beber lo suficiente, y cruzar las piernas o tensar los músculos de piernas y caderas al ponerse de pie (Ringer 2025; McEvoy 2024). Si hay riesgo de caer, ejercicio supervisado, como la bicicleta reclinada o la natación (Ringer 2025).',
+          'Calor: en mayores, los diuréticos de asa, los IECA y los ARA II se asociaron a más ingresos por golpe de calor o deshidratación, también sin ola de calor (Layton 2020). Si en verano la tensión baja y da mareo o cansancio, que lo hable con su médico: la guía contempla ajustar el tratamiento en ese caso, sobre todo el diurético, y esa decisión es suya (Mancia 2023). Las fuentes leídas no estudian el golpe de calor por esfuerzo en deportistas, y el estudio del calor no incluyó las tiazidas ni los antagonistas del calcio (Layton 2020).',
+          'Verapamilo y diltiazem frenan la frecuencia cardíaca (Mancia 2023) y bajan la frecuencia máxima, mientras que los dihidropiridínicos pueden acelerarla (Schweiger 2021). Las fuentes leídas no dan normas para dosificar el ejercicio por frecuencia con ellos, ni tratan la terapia manual.',
+        ],
+        detalle: [
+          'El aeróbico es la primera opción en la hipertensión, y la fuerza dinámica o isométrica de intensidad baja o moderada, la segunda; en pacientes no blancos, la fuerza dinámica es de primera elección. Bajó más la tensión con ejercicio supervisado. El documento no da frecuencia, intensidad ni progresión (Hanssen 2022).',
+          'Las fuentes no coinciden en la fuerza isométrica: la guía europea de 2024 la incluye en su recomendación, aunque dice que sus resultados son irregulares (McEvoy 2024); la de 2023 recomienda en su recuadro solo la dinámica, aunque cuenta que la isométrica también baja la tensión (Mancia 2023), y el documento europeo sobre ejercicio la pone al mismo nivel que la dinámica (Hanssen 2022).',
+          'La subida de tensión del ejercicio no impide hacerlo con regularidad, salvo con valores muy altos (hipertensión de grado 3). En el pico de una prueba en bicicleta, más de 220 mmHg en hombres o de 200 en mujeres pide valoración (Mancia 2023).',
+          'En mayores, se prefieren las actividades en grupo, como el baile, el taichí o caminar (Mancia 2023), y la hipotensión ortostática se busca de forma sistemática a partir de los 65 años, aunque no haya síntomas (Mancia 2023).',
+          'Deportistas: los diuréticos están prohibidos por la Agencia Mundial Antidopaje salvo autorización de uso terapéutico (Schweiger 2021). Los IECA y los ARA II no cambian el consumo máximo de oxígeno, y con los antagonistas del calcio no cambiaron en un estudio (Schweiger 2021). En esfuerzos muy largos, como un maratón, beber mucha agua y perder sal con el sudor puede dar hiponatremia (Rout y Afzal 2026); las fuentes leídas no lo relacionan con los diuréticos.',
+        ],
+      },
+      sueno: {
+        texto: [
+          'Nicturia: se suele indicar tomar los diuréticos por la mañana para evitarla (Weber 2026; Patel y Preuss 2025), y no se toman al acostarse (Mancia 2023). En un estudio, quien pasó el diurético de la mañana a la noche se levantó a orinar una vez más por semana, y el 15,6 % lo vivió como una carga importante (Garrison 2023). La nicturia altera el sueño y aumenta el riesgo de caídas por la noche (Garrison 2023).',
+          'Para el resto, tomarlos por la mañana o por la noche da el mismo resultado; mejor a la hora más cómoda, para no olvidarlos (McEvoy 2024; Mancia 2023).',
+          'La hipotensión ortostática puede ser peor al levantarse de la cama (Ringer 2025): si se levanta de noche a orinar, que lo haga despacio. Un ataque de gota suele empezar de noche o de madrugada y despertar (Menon y Rednam 2026).',
+          'Las fuentes leídas no tratan el insomnio con estos fármacos.',
+        ],
+      },
+      consultar: {
+        texto: [
+          'Urgente: hinchazón de labios, lengua, cara o garganta, ronquera, cambio de voz o dificultad para respirar (Memon y Tiwari 2023), que puede ser mortal si afecta a la vía aérea, aunque lleve años con el IECA (Lacuesta 2024). Confusión, somnolencia, convulsiones o debilidad intensa, que pueden ser una hiponatremia grave (Rout y Afzal 2026; Liamis 2016). Debilidad muscular intensa con palpitaciones (Castro y Sharma 2025). Un desmayo (Albasri 2021).',
+          'Pronto, con su médico: mareo, inestabilidad o caídas nuevas, más en las primeras semanas o tras subir la dosis (Jödicke 2023; Liamis 2016); calambres, debilidad o cansancio nuevos (Castro y Sharma 2025; Rout y Afzal 2026); una tos seca que no cede (Hu 2023); hinchazón de las piernas (Bulsara 2024); dolor abdominal sin explicación con un IECA (Suenghataiphorn 2025), y acúfenos o pérdida de oído con un diurético de asa (Huxel 2023).',
+          'Una articulación caliente, roja e hinchada de golpe necesita valoración médica: puede ser gota, pero también séptica (Menon y Rednam 2026).',
+          'Con vómitos, diarrea o algo que impida beber, que lo consulte: la deshidratación aumenta el riesgo de lesión renal con estos fármacos (Calvo 2025; Liamis 2016).',
+          'No se dejan de golpe: la tensión vuelve a subir, puede haber dolor de cabeza, dolor articular, palpitaciones o hinchazón, y aumenta el riesgo cardiovascular; con los antagonistas del calcio, angina, y con los diuréticos, retención de líquidos (Mancia 2023). Si dice que lo ha dejado o que se salta dosis, que lo hable pronto con su médico. Nunca aconsejes dejarlos ni bajar la dosis por tu cuenta. Las dudas, al médico o al farmacéutico.',
+        ],
+        detalle: [
+          'Combinaciones que hay que comentar con quien prescribe: un AINE con un diurético y un IECA o un ARA II duplica el riesgo de lesión renal aguda, sobre todo en los 30 primeros días (Calvo 2025); los AINE además suben la tensión (Mancia 2023) y restan efecto a los IECA y a los ARA II (Faruqi 2024; Mulla 2024). El amlodipino con dosis altas de estatinas puede dar miopatía (Bulsara 2024), y el verapamilo o el diltiazem no se combinan con un betabloqueante (McEvoy 2024).',
+          'Los IECA y los ARA II no se usan en el embarazo (Mancia 2023; Herman 2023): si la paciente está o puede estar embarazada, que lo hable pronto con su médico.',
+          'La falta de adherencia es frecuente, uno de cada tres o cuatro pacientes (Mancia 2023), y se asocia a más eventos cardiovasculares (McEvoy 2024).',
+        ],
+      },
+    },
+    fuentes: ['McEvoy 2024', 'Mancia 2023', 'Hanssen 2022', 'Albasri 2021', 'Jödicke 2023', 'Liamis 2016', 'Liang 2022', 'Hu 2023', 'Lacuesta 2024', 'Suenghataiphorn 2025', 'Evans 2018', 'Shao 2022', 'Layton 2020', 'Garrison 2023', 'Schweiger 2021', 'Calvo 2025', 'Patel y Preuss 2025', 'Huxel 2023', 'Herman 2023', 'Patel y Launico 2025', 'McKeever 2024', 'Weber 2026', 'Khan 2023', 'Faruqi 2024', 'Mulla 2024', 'Bulsara 2024', 'Castro y Sharma 2025', 'Gragossian 2023', 'Rout y Afzal 2026', 'Memon y Tiwari 2023', 'Menon y Rednam 2026', 'Ringer 2025'],
+  },
   { id: 'antidiabeticos', nombre: 'Insulina y antidiabéticos', ejemplos: 'Insulina, metformina, sulfonilureas, inhibidores de SGLT2' },
   { id: 'hueso', nombre: 'Fármacos que tocan el hueso', ejemplos: 'Alendronato, zoledronato, denosumab, inhibidores de la aromatasa' },
 ];
