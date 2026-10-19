@@ -81,6 +81,9 @@ export const FAMILIAS_FARMACO = [
   // la guía de Beuschlein 2024 por secciones. Sin fuente leída para que
   // enmascaren la fiebre, la fragilidad de la piel, el reposo o la carga tras
   // una infiltración ni el sangrado digestivo con AINE: docs/farmacologia.md.
+  // La terapia manual cita Puentedura 2015 (tabla 1), leído entero para la
+  // osteoporosis (docs/osteoporosis.md); corregido en el paso 3 de la
+  // farmacología (docs/farmacos-paciente.md, decisión 6).
   {
     id: 'corticoides',
     nombre: 'Corticoides',
@@ -113,7 +116,8 @@ export const FAMILIAS_FARMACO = [
       },
       ejercicio: {
         texto: [
-          'Fractura: el riesgo sube a los 3–6 meses de empezar y depende de la dosis (Compston 2018), incluso desde 2,5 mg/día; es mayor en los primeros meses, baja alrededor de un 30 % a los 6 meses de dejarlos y se normaliza a los 12 (Pofi 2023). La fractura aparece con una densidad ósea más alta que sin corticoides (Compston 2018). Las fuentes leídas no dan normas para la terapia manual ni para la carga: tenlo en cuenta al elegir técnicas de alta velocidad o carga axial intensa.',
+          'Fractura: el riesgo sube a los 3–6 meses de empezar y depende de la dosis (Compston 2018), incluso desde 2,5 mg/día; es mayor en los primeros meses, baja alrededor de un 30 % a los 6 meses de dejarlos y se normaliza a los 12 (Pofi 2023). La fractura aparece con una densidad ósea más alta que sin corticoides (Compston 2018).',
+          'Terapia manual: una revisión de casos de efectos adversos del thrust torácico pone la medicación con corticoides a largo plazo, sin definir la dosis ni la duración, entre las contraindicaciones absolutas del thrust en la columna torácica; su tabla sale de un trabajo de una escuela de osteopatía, no de una guía (Puentedura 2015). En el plan de tratamiento, la app quita el thrust con la tarjeta «Osteoporosis o fragilidad ósea» y cuando la tarjeta «Lupus (LES)» registra corticoides o dosis altas previas. Las fuentes leídas no dan normas para la carga ni para el resto de la terapia manual: tenlo en cuenta al elegir carga axial intensa.',
           'El ejercicio adaptado a cada paciente y la prevención de caídas forman parte del manejo de la osteoporosis por glucocorticoides, aunque con pocas pruebas (Compston 2018). Las caídas pasaron de 1,6 a 2,8 por 100 personas-año al empezar los corticoides orales (He 2025).',
           'Miopatía: el ejercicio puede atenuarla según los estudios que cita una cohorte, en la que los síntomas mejoraron tras una mediana de 107 días; recomienda cribar las caídas en mayores de 50 años (He 2025).',
           'Glucosa: la actividad física forma parte del consejo para mantener el control glucémico (Soura 2026). En un paciente con diabetes, ten presente la subida pasajera de la glucosa tras una infiltración (Grusky 2026; Soura 2026).',
@@ -135,7 +139,7 @@ export const FAMILIAS_FARMACO = [
         ],
       },
     },
-    fuentes: ['Pofi 2023', 'Compston 2018', 'Kaneko 2021', 'Grusky 2026', 'He 2025', 'Beuschlein 2024', 'Soura 2026'],
+    fuentes: ['Pofi 2023', 'Compston 2018', 'Kaneko 2021', 'Grusky 2026', 'He 2025', 'Beuschlein 2024', 'Soura 2026', 'Puentedura 2015'],
   },
   // Anticoagulantes y antiagregantes (2026-10): ocho fuentes leídas enteras en
   // PMC, más Steffel 2021 (guía EHRA) y Antunes 2024 (StatPearls), PDF del

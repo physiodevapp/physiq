@@ -47,7 +47,10 @@ import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
 import { condicionesHTML } from './lib/condiciones.js';
-import { farmacosHTML } from './lib/farmacos.js';
+import { farmacosHTML, FILTRO_PACIENTE_FARM } from './lib/farmacos.js';
+import { familiasMarcables, familiasPendientesNombres, normalizarFarmacos, farmacosVacio, derivadasDeTarjetas,
+  familiasPaciente, textoFamiliaPaciente, fmPayload, FAMILIA_AC } from './lib/farmacos-paciente.js';
+import { TEXTOS_FARMACOS_PACIENTE } from './data/farmacos-paciente.js';
 import { CONDICIONES } from './data/condiciones.js';
 import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML, filasPaciente, FILTRO_PACIENTE } from './lib/tejidos.js';
 import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
@@ -329,6 +332,7 @@ function _softResetApp() {
   state.osteoporosis = osteoporosisVacio();
   state.embarazo = embarazoVacio();
   state.anticoagulado = anticoaguladoVacio();
+  state.farmacos = farmacosVacio();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -437,6 +441,7 @@ function _softResetApp() {
   _pintarOPUI();
   _pintarEMUI();
   _pintarACUI();
+  _pintarFarmacosUI();
 }
 
 // «Reiniciar valoración» vive en el panel de sesión (antes, en la cabecera):
@@ -1441,6 +1446,7 @@ function _pintarLESUI() {
 
 function _lesCambio() {
   _pintarLESUI();
+  _pintarFarmacosUI();   // corticoides del lupus → chip (docs/farmacos-paciente.md, decisión 4)
   _invalidar4b();
   if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
   saveSession();
@@ -1637,6 +1643,7 @@ function _pintarACUI() {
 
 function _acCambio() {
   _pintarACUI();
+  _pintarFarmacosUI();
   _invalidar4b();
   if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
   saveSession();
@@ -1682,6 +1689,94 @@ function _anticoaguladoResultadosHTML(d) {
     </div>`;
 }
 
+// ─── FÁRMACOS QUE TOMA (paso 3 de la farmacología, docs/farmacos-paciente.md) ──
+// Chips de las familias con contenido de la guía (lib/farmacos-paciente.js, que
+// las saca de data/farmacos.js: las que se escriben después entran solas), sin
+// texto libre. Los antitrombóticos no tienen chip: una línea con su tarjeta.
+// Los corticoides (y el hueso, cuando llegue) registrados en el lupus o la
+// osteoporosis se ven marcados, sin duplicar el dato (decisión 4). No cambia
+// el cribado ni la 4b: lleva a la guía («Este paciente»), a los avisos de la
+// fase 6, a 📋 Notas y al informe con IA.
+const _CORTO_TARJETA = { 'Lupus (LES)': 'Lupus', 'Osteoporosis o fragilidad ósea': 'Osteoporosis' };
+function _pintarFarmacosUI() {
+  const cont = document.getElementById('fmToma');
+  if (!cont) return;
+  state.farmacos = normalizarFarmacos(state.farmacos);
+  const T = TEXTOS_FARMACOS_PACIENTE;
+  const nota = document.getElementById('fmNota');
+  if (nota && !nota.textContent) nota.textContent = `Sin marcar = no consta. ${T.nota}`;
+  const fams = familiasMarcables();
+  const clave = fams.map(f => f.id).join(',');
+  if (cont.dataset.ids !== clave) {
+    cont.innerHTML = fams.map(f =>
+      `<button type="button" class="option-btn" data-fm="${f.id}" aria-pressed="false" title="${_escapeAttr(f.ejemplos)}" onclick="toggleFarmaco('${f.id}')">${_escHTML(f.corto)}<span class="fm-origen"></span></button>`).join('');
+    cont.dataset.ids = clave;
+  }
+  const der = derivadasDeTarjetas(state);
+  cont.querySelectorAll('[data-fm]').forEach(b => {
+    const id = b.dataset.fm;
+    const manual = state.farmacos.toma.includes(id);
+    const on = manual || !!der[id];
+    b.classList.toggle('selected', on);
+    b.setAttribute('aria-pressed', on);
+    b.querySelector('.fm-origen').textContent = der[id] && !manual ? ` · tarjeta ${der[id].map(o => _CORTO_TARJETA[o] || o).join(' y ')}` : '';
+  });
+  const ac = document.getElementById('fmNotaAC');
+  if (ac) {
+    const marcada = acActivo(state.anticoagulado);
+    ac.innerHTML = `Anticoagulantes y antiagregantes: tarjeta «Paciente anticoagulado o antiagregado» (${marcada ? `marcada: ${_escHTML(datosAC(acPayload(state.anticoagulado)).join(' · '))}` : 'sin marcar'}). <button type="button" class="sint-recordatorio-ir" onclick="irATarjetaAC()">Ir a la tarjeta →</button>`;
+  }
+  const pend = document.getElementById('fmPendientes');
+  if (pend) {
+    const nombres = familiasPendientesNombres();
+    pend.hidden = !nombres.length;
+    pend.innerHTML = nombres.length
+      ? `${_escHTML(T.pendientes)} ${_escHTML(nombres.join(' · '))}.<span class="farm-pendientes-nota"> ${_escHTML(T.pendientesIA)} <button type="button" class="sint-recordatorio-ir farm-preguntar" onclick="abrirPreguntaIA({ tipo: 'farmacos' })">Preguntar a la IA →</button></span>`
+      : '';
+  }
+  const ver = document.getElementById('fmVerGuia');
+  if (ver) {
+    ver.hidden = !familiasPaciente(state).length;
+    ver.querySelector('button').textContent = T.verGuia;
+  }
+}
+
+function toggleFarmaco(id) {
+  if (!familiasMarcables().some(f => f.id === id)) return;
+  const toma = state.farmacos.toma;
+  const der = derivadasDeTarjetas(state)[id];
+  // Registrado en otra tarjeta: el dato vive allí (decisión 4)
+  if (der && !toma.includes(id)) {
+    showToast(`Registrado en la tarjeta «${der[0]}»: cámbialo allí`);
+    return;
+  }
+  state.farmacos = normalizarFarmacos({ toma: toma.includes(id) ? toma.filter(x => x !== id) : [...toma, id] });
+  _pintarFarmacosUI();
+  saveSession();
+}
+
+function getFmPayload() {
+  return fmPayload(state.farmacos);
+}
+
+// Familias del paciente para la guía («Este paciente»)
+function _pacienteFarmacos() {
+  return familiasPaciente(state).map(x => ({ id: x.id, texto: textoFamiliaPaciente(x) }));
+}
+
+// Recuadro de la fase 5 (decisión 15): la lista, la línea común y la guía; sin texto clínico.
+function _farmacosResultadosHTML(fams) {
+  const T = TEXTOS_FARMACOS_PACIENTE;
+  return `
+    <div class="alert alert-info fm-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">💊</span>
+      <div><strong>Fármacos que toma.</strong> ${_escHTML(fams.map(textoFamiliaPaciente).join(' · '))}
+        <div>${_escHTML(T.lineaComun)}</div>
+        <div><button type="button" class="sint-recordatorio-ir" onclick="abrirFarmacos({ filtro: 'paciente' })">${_escHTML(T.verGuiaFase5)}</button></div>
+      </div>
+    </div>`;
+}
+
 // ─── OSTEOPOROSIS O FRAGILIDAD ÓSEA (Fase P, docs/osteoporosis.md) ─────────
 // Tarjeta de la fase 1: No consta (nada marcado) · Diagnosticada · Sospecha.
 // Con «Diagnosticada», cuatro filas de botones (causa, fracturas vertebrales,
@@ -1717,6 +1812,7 @@ function _pintarOPUI() {
 
 function _opCambio() {
   _pintarOPUI();
+  _pintarFarmacosUI();   // corticoides y antirresortivo de la osteoporosis → chip (decisión 4)
   _invalidar4b();
   if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
   saveSession();
@@ -3626,6 +3722,11 @@ function buildResults() {
   // ── Anticoagulado o antiagregado (docs/anticoagulado.md): técnica y banderas, nunca plegados
   const ac = getAcPayload();
   if (ac) container.innerHTML += _anticoaguladoResultadosHTML(ac);
+  // ── Fármacos que toma (docs/farmacos-paciente.md, decisión 15): lista y
+  // enlace a la guía, sin texto clínico; solo con alguna familia además de los
+  // antitrombóticos, que ya tienen su recuadro
+  const fams = familiasPaciente(state);
+  if (fams.some(x => x.id !== FAMILIA_AC)) container.innerHTML += _farmacosResultadosHTML(fams);
 
   // ── Header summary
   container.innerHTML += `
@@ -4479,6 +4580,7 @@ function buildPhysiQPayload() {
     ...(getOpPayload() ? { op: getOpPayload() } : {}),
     ...(getEmPayload() ? { em: getEmPayload() } : {}),
     ...(getAcPayload() ? { ac: getAcPayload() } : {}),
+    ...(getFmPayload() ? { fm: getFmPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
@@ -5063,10 +5165,19 @@ document.addEventListener('keydown', e => {
 let _farmHistorial = false;
 // `familia` (opcional): abre la guía ya en esa familia (p. ej. desde la tarjeta
 // del anticoagulado, docs/anticoagulado.md, decisión 15).
+// Con familias del paciente se abre en «Este paciente» (como los tiempos de
+// tejido), salvo si `familia` no es una de ellas; `filtro: 'paciente'` lo pide.
+let _filtroFarmSesion = '';
+function _pintarGuiaFarmacos() {
+  document.getElementById('farmCuerpo').innerHTML = farmacosHTML({ paciente: _pacienteFarmacos(), filtro: _filtroFarmSesion });
+}
 function abrirFarmacos(opts) {
   const overlay = document.getElementById('farmOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
-  document.getElementById('farmCuerpo').innerHTML = farmacosHTML();
+  const paciente = _pacienteFarmacos();
+  const fuera = typeof opts?.familia === 'string' && !paciente.some(x => x.id === opts.familia);
+  _filtroFarmSesion = paciente.length && !fuera ? FILTRO_PACIENTE_FARM : '';
+  _pintarGuiaFarmacos();
   const familia = typeof opts?.familia === 'string' ? document.querySelector(`#farmCuerpo [data-familia="${opts.familia}"]`) : null;
   if (familia) familia.open = true;
   overlay.classList.add('open');
@@ -5115,6 +5226,15 @@ function farmacosPreguntarIA() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('farmOverlay')?.classList.contains('open')) cerrarFarmacos();
 });
+// «Este paciente»: un toque filtra, otro vuelve a todas (nunca se guarda)
+document.addEventListener('click', e => {
+  const b = e.target instanceof Element ? e.target.closest('#farmCuerpo [data-filtro-farmaco]') : null;
+  if (!b) return;
+  _filtroFarmSesion = b.dataset.filtroFarmaco === FILTRO_PACIENTE_FARM ? FILTRO_PACIENTE_FARM : '';
+  _pintarGuiaFarmacos();
+  document.getElementById('farmPanel').scrollTop = 0;
+  document.querySelector('#farmCuerpo [data-filtro-farmaco]')?.focus({ preventScroll: true });
+}, true);   // en captura: el panel corta la propagación del click (como «✨ IA»)
 
 // ─── Calculadora de cuestionarios (cabecera, cualquier fase, también en el hub) ───
 // El paciente rellena la hoja en papel; aquí se toca el valor de cada ítem y
@@ -5454,6 +5574,7 @@ function _restoreSessionDOM() {
   state.mastocitos = normalizarMastocitos(state.mastocitos);                // sesiones anteriores a la tarjeta mastocitaria
   state.osteoporosis = normalizarOsteoporosis(state.osteoporosis);          // sesiones anteriores a la osteoporosis
   state.embarazo = normalizarEmbarazo(state.embarazo);                      // sesiones anteriores al embarazo
+  state.farmacos = normalizarFarmacos(state.farmacos);                      // sesiones anteriores al paso 3 de la farmacología
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
   _pintarCirugiaUI();
@@ -5464,6 +5585,7 @@ function _restoreSessionDOM() {
   _pintarOPUI();
   _pintarEMUI();
   _pintarACUI();
+  _pintarFarmacosUI();
   _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
@@ -5598,6 +5720,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarOPUI();
   _pintarEMUI();
   _pintarACUI();
+  _pintarFarmacosUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
@@ -5768,7 +5891,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, selectACEstado, toggleACToma, irATarjetaAC, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, selectACEstado, toggleACToma, irATarjetaAC, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,

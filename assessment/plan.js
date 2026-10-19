@@ -21,6 +21,7 @@ import { maActivo } from './lib/mastocitos.js';
 import { opActivo, opDiagnosticada, impactoLimitado, opPayload, motivosSinThrust } from './lib/osteoporosis.js';
 import { emActivo } from './lib/embarazo.js';
 import { acActivo } from './lib/anticoagulado.js';
+import { familiasPaciente, FAMILIA_AC } from './lib/farmacos-paciente.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
 import {
@@ -103,6 +104,9 @@ function entrada(hs) {
     embarazo: emActivo(state.embarazo) ? { estado: state.embarazo.estado, lactancia: state.embarazo.lactancia === 'SI' } : null,
     // Anticoagulado o antiagregado (docs/anticoagulado.md): avisos y red de seguridad
     anticoagulado: acActivo(state.anticoagulado),
+    // Fármacos que toma (docs/farmacos-paciente.md): un aviso por familia revisada;
+    // los antitrombóticos salen de su tarjeta
+    farmacos: familiasPaciente(state).map(x => x.id).filter(id => id !== FAMILIA_AC),
     estabilidad: state.estabilidad, riesgoPsico: state.riesgoPsico, psico_miedo: state.psico_miedo,
     signoComparable: state.signoComparable,
     sesion: pt.sesion, gravedadManual: pt.gravedad, irritabilidadManual: pt.irritabilidad,

@@ -73,6 +73,10 @@ const state = {
   // ['vk', 'do', 'hp', 'as', 'oa', 'ns'] (antivitamina K, anticoagulante directo,
   // heparina, aspirina, otro antiagregante, no lo sabe).
   anticoagulado: { estado: '', toma: [] },
+  // Tarjeta «Fármacos que toma» (paso 3 de la farmacología, docs/farmacos-paciente.md,
+  // lib/farmacos-paciente.js): toma = ids de las familias con contenido de la guía
+  // (data/farmacos.js), sin los antitrombóticos, que van en su tarjeta.
+  farmacos: { toma: [] },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',

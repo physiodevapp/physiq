@@ -3635,3 +3635,11 @@ body:has(.session-panel-overlay.open) .ia-menu { z-index: 1002; }
 .ds-tabla input.ds-fila-toca { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .ds-toma { display: block; font-size: 0.68rem; font-weight: 400; color: var(--orange); }
 @media print { .ds-reloj { display: none; } }
+
+/* Fármacos que toma (paso 3 de la farmacología, docs/farmacos-paciente.md):
+   chips como los de las condiciones especiales (.hm-subtipos); el origen
+   («· tarjeta Lupus») cuando el dato vive en otra tarjeta */
+#cardFarmacos .fm-origen { font-weight: 400; color: var(--text3); }
+#cardFarmacos .hm-nota[hidden] { display: none; }
+.farm-filtro { margin-bottom: 8px; }
+.farm-paciente { margin-top: 0; }

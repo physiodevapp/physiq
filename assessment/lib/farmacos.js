@@ -2,10 +2,11 @@
 // PhysiQ-Assessment · lib/farmacos.js
 // Guía de fármacos para el fisioterapeuta (docs/farmacologia.md, paso 2): el
 // HTML del diálogo a partir de data/farmacos.js. Puro: no lee el estado del
-// paciente (eso será el paso 3) ni guarda nada.
+// paciente (las familias del paso 3 llegan como argumento) ni guarda nada.
 // ============================================================
 
 import { APARTADOS_FARMACO, FAMILIAS_FARMACO, TEXTOS_FARMACOS } from '../data/farmacos.js';
+import { TEXTOS_FARMACOS_PACIENTE } from '../data/farmacos-paciente.js';
 import { citasHTML, citasEnTexto } from './citas.js';
 import { iaParrafoHTML, attrIA, ctxFarmaco } from '../ampliar-ia.js';
 
@@ -27,20 +28,30 @@ function apartadoHTML(a, contenido) {
     </section>`;
 }
 
-function familiaHTML(f) {
+function familiaHTML(f, abierta = false) {
   const apartados = APARTADOS_FARMACO.map(a => apartadoHTML(a, f.apartados[a.id])).join('');
   const fuentes = `<div class="farm-fuentes"><span class="farm-fuentes-et">Fuentes</span> ${citasHTML(f.fuentes.join(' · '))}</div>`;
-  return `<details class="farm-familia" data-familia="${f.id}">
+  return `<details class="farm-familia" data-familia="${f.id}"${abierta ? ' open' : ''}>
     <summary><span class="farm-nombre">${esc(f.nombre)}</span><span class="farm-ejemplos">${esc(f.ejemplos)}</span></summary>
     <div class="farm-cuerpo" data-ia-ctx="${attrIA(ctxFarmaco(f.nombre))}">${apartados}</div>
     ${fuentes}
   </details>`;
 }
 
-export function farmacosHTML() {
+// Chip «Este paciente» (paso 3, docs/farmacos-paciente.md): `paciente` =
+// [{ id, texto }] de las familias que toma, ya calculadas por quien llama
+// (lib/farmacos-paciente.js); con `filtro: 'paciente'` solo esas, desplegadas.
+// Un segundo toque (data-filtro-farmaco="todas") vuelve a todas. Sigue sin
+// leer el estado.
+export const FILTRO_PACIENTE_FARM = 'paciente';
+
+export function farmacosHTML({ paciente = [], filtro = '' } = {}) {
   const T = TEXTOS_FARMACOS;
+  const conPaciente = paciente.length > 0;
+  const solo = conPaciente && filtro === FILTRO_PACIENTE_FARM;
+  const ids = new Set(paciente.map(x => x.id));
   const pendientes = familiasPendientes();
-  const pend = pendientes.length
+  const pend = pendientes.length && !solo
     ? `<div class="farm-pendientes">
         <h3 class="farm-grupo">${esc(T.pendientesTitulo)}</h3>
         <p class="farm-pendientes-lista">${esc(pendientes.map(f => f.nombre).join(' · '))}</p>
@@ -48,9 +59,17 @@ export function farmacosHTML() {
         <button type="button" class="cond-ir farm-preguntar" onclick="farmacosPreguntarIA()">${esc(T.preguntar)}</button>
       </div>`
     : '';
+  const chip = conPaciente
+    ? `<div class="tej-filtro farm-filtro" role="group" aria-label="Filtrar familias"><button type="button" class="tej-filtro-btn tej-filtro-paciente${solo ? ' activo' : ''}" data-filtro-farmaco="${solo ? 'todas' : FILTRO_PACIENTE_FARM}" aria-pressed="${solo}"${solo ? ' title="Ver todas las familias"' : ''}>Este paciente</button></div>`
+    : '';
+  const linea = solo
+    ? `<p class="tej-paciente farm-paciente">${esc(TEXTOS_FARMACOS_PACIENTE.guiaPaciente)} ${esc(paciente.map(x => x.texto).join(' · '))}. ${esc(TEXTOS_FARMACOS_PACIENTE.guiaVolver)}</p>`
+    : '';
+  const familias = familiasConContenido().filter(f => !solo || ids.has(f.id));
   return `<p class="cond-intro">${esc(T.intro)}</p>
     <p class="cond-intro cond-intro-diag">${esc(T.limites)}</p>
-    ${familiasConContenido().map(familiaHTML).join('')}
+    ${chip}${linea}
+    ${familias.map(f => familiaHTML(f, solo)).join('')}
     ${pend}
     <p class="cond-pie">${esc(T.pie)}</p>`;
 }

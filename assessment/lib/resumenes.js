@@ -17,6 +17,7 @@ import { lineaNotasMA, informeMA } from './mastocitos.js';
 import { lineaNotasOP, informeOP } from './osteoporosis.js';
 import { lineaNotasEM, informeEM } from './embarazo.js';
 import { lineaNotasAC, informeAC } from './anticoagulado.js';
+import { lineaNotasFM } from './farmacos-paciente.js';
 
 // Línea fija de transparencia del modo breve: fase 5, 📋 Notas y 📄 Informe.
 // Nunca se omite en breve (docs/modo-breve.md, decisión 3).
@@ -37,7 +38,7 @@ export function textoNotas(d) {
     ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
-Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}${d.op ? `\n${lineaNotasOP(d.op)}` : ''}${d.em ? `\n${lineaNotasEM(d.em)}` : ''}${d.ac ? `\n${lineaNotasAC(d.ac)}` : ''}
+Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}${d.op ? `\n${lineaNotasOP(d.op)}` : ''}${d.em ? `\n${lineaNotasEM(d.em)}` : ''}${d.ac ? `\n${lineaNotasAC(d.ac)}` : ''}${d.fm ? `\n${lineaNotasFM(d.fm)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA: ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}

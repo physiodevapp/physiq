@@ -15,6 +15,7 @@ import {
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 import { nivelMatriz } from './irritabilidad.js';
+import { avisosFarmacos } from './farmacos-paciente.js';
 
 // Mismos textos que la fase 5 (lib/posquirurgico.js), ya revisados.
 export const textoPosq = conProtocolo => conProtocolo ? TEXTO_PAUTA_COMPATIBLE : `${TEXTO_SIN_PROTOCOLO}.`;
@@ -292,6 +293,9 @@ export function construirPlan(e) {
     if (elegidas.some(h => HIP_PUNCION_SECA.includes(h.id))) avisosHip.push(AVISOS.anticoaguladoPuncion);
     if (elegidas.some(h => HIP_ONDAS_CHOQUE.includes(h.id))) avisosHip.push(AVISOS.anticoaguladoOndas);
   }
+  // Fármacos que toma (docs/farmacos-paciente.md, decisión 12): frases literales
+  // de la guía revisada, una por familia; sin topes ni reglas por combinaciones
+  avisosHip.push(...avisosFarmacos(e.farmacos || []));
   // Tope «sin thrust» (decisiones 6 y 15 de la osteoporosis, 4 del
   // anticoagulado): la osteoporosis, el lupus con corticoides mantenidos, el
   // anticoagulante. Los escalones nunca proponen grado V, así que el tope es el aviso.

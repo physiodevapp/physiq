@@ -659,6 +659,18 @@
     <div class="hm-nota">Qué vigilar con estos fármacos: <button type="button" class="sint-recordatorio-ir" onclick="abrirFarmacos({ familia: 'antitromboticos' })">Fármacos: anticoagulantes y antiagregantes →</button></div>
   </div>
 
+  <!-- Paso 3 de la farmacología (docs/farmacos-paciente.md): familias de la guía
+       que toma, sin texto libre; los chips salen de data/farmacos.js -->
+  <div class="card" id="cardFarmacos">
+    <div class="card-title">Fármacos que toma</div>
+    <div id="fpPistas_farmacos"></div>
+    <div class="plan-note-hint" id="fmNota"></div>
+    <div class="option-group hm-subtipos" id="fmToma" role="group" aria-label="Familias de fármacos que toma"></div>
+    <div class="hm-nota" id="fmNotaAC"></div>
+    <div class="hm-nota" id="fmPendientes"></div>
+    <div class="hm-nota" id="fmVerGuia" hidden><button type="button" class="sint-recordatorio-ir" onclick="abrirFarmacos({ filtro: 'paciente' })"></button></div>
+  </div>
+
   <div class="card" id="cardCronologia">
     <div class="card-title">Cronología</div>
     <div id="fpPistas_cronologia"></div>

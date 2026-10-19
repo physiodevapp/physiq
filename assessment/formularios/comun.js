@@ -34,7 +34,7 @@
 //                                   Dolor, Limitaciones, Factores personales)
 //   pistas: { <campo fase 1>: ['c:<id>'] }   respuestas que se recuerdan encima
 //                                   de esa tarjeta de la fase 1 (mecanismo,
-//                                   cronologia). Solo recuerdan; nunca la rellenan
+//                                   cronologia, farmacos). Solo recuerdan; nunca la rellenan
 // ============================================================
 const NS = 'No sabría decir';
 
@@ -105,6 +105,9 @@ export default {
   ],
   pistas: {
     mecanismo: ['c:desencadenante', 'c:inicio', 'c:operaciones'],
-    cronologia: ['c:desde_cuando', 'c:evolucion']
+    cronologia: ['c:desde_cuando', 'c:evolucion'],
+    // «Fármacos que toma» (docs/farmacos-paciente.md, decisión 10): la
+    // medicación escrita en el formulario, nunca leída para marcar chips
+    farmacos: ['c:medicacion']
   }
 };
