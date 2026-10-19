@@ -331,7 +331,85 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Giménez-Campos 2021', 'Meaadi 2023', 'Martínez 2023', 'McAnally 2020', 'Hahn 2022', 'Carvalho 2022', 'Yasaei 2024', 'Cross 2024'],
   },
-  { id: 'antidepresivos', nombre: 'Antidepresivos (ISRS, IRSN, tricíclicos)', ejemplos: 'Sertralina, escitalopram, duloxetina, venlafaxina, amitriptilina' },
+  // Antidepresivos (2026-10): nueve fuentes enteras en PMC, siete capítulos de
+  // StatPearls y dos revisiones Cochrane (PDF del usuario). Birkinshaw 2023 y
+  // Moore 2015 solo dieron el resumen y no se citan. Sin fuente leída para el
+  // efecto sobre la inflamación y la curación, si enmascaran signos, terapia
+  // manual, ejercicio con calor ni conducción: docs/farmacologia.md.
+  {
+    id: 'antidepresivos',
+    nombre: 'Antidepresivos (ISRS, IRSN, tricíclicos)',
+    ejemplos: 'Sertralina, escitalopram, duloxetina, venlafaxina, amitriptilina',
+    apartados: {
+      dolor: {
+        texto: [
+          'Lumbalgia inespecífica: los IRSN (duloxetina) probablemente tienen un efecto pequeño en el dolor (5,25 puntos menos sobre 100) y trivial en la discapacidad (0,91 puntos menos sobre 24) a corto plazo; los tricíclicos probablemente apenas cambian el dolor, con un efecto pequeño en la discapacidad (1,76 puntos menos sobre 24), y para los ISRS la evidencia es insuficiente. No hay datos de más de 12 meses, y los resultados quizá no valgan para mayores ni para quien tiene otras enfermedades importantes, porque solían excluirse de los ensayos (Ferraro 2025).',
+          'Fibromialgia: con duloxetina o milnaciprán, el 31 % logró al menos un 50 % de alivio frente al 21 % con placebo (NNT 11), una diferencia que la revisión no considera clínicamente relevante; sí lo es la del alivio de al menos un 30 % (NNT 10). De media, sus posibles daños superan a sus beneficios, aunque una minoría mejora mucho sin efectos relevantes (Welsch 2018). Los tricíclicos son de segunda línea en la fibromialgia (Moraczewski 2023).',
+          'Mayores de 65 años: en la artrosis de rodilla, la duloxetina dio un efecto muy pequeño (9,1 puntos menos sobre 100) que puede no compensar sus riesgos, y los autores no la ven adecuada como tratamiento único (Narayan 2024).',
+          'Las fuentes leídas no tratan su efecto sobre la inflamación ni sobre la curación de los tejidos, ni si enmascaran signos en la exploración.',
+        ],
+        detalle: [
+          'Las guías de fibromialgia desaconsejan tratarla solo con fármacos y piden combinarlos con ejercicio aeróbico y terapias psicológicas; el ejercicio aeróbico sirve para la fatiga, en la que estos fármacos no ayudan (Welsch 2018).',
+          'La duloxetina está aprobada para el dolor musculoesquelético crónico (lumbalgia crónica y dolor de la artrosis), la fibromialgia y el dolor neuropático diabético, con un máximo de 60 mg al día, y refuerza las vías descendentes que inhiben el dolor en la médula (Biswas 2026). La amitriptilina se usa fuera de indicación en el dolor crónico, empezando con 10–20 mg al día (Thour 2026).',
+          'Plazos: los antidepresivos suelen empezar a hacer efecto en 2–4 semanas (Thour 2026). En la lumbalgia, los efectos se vieron con tratamientos de al menos 7 semanas, en personas con síntomas de 3 meses o más (Ferraro 2025).',
+          'Ciática y dolor de pierna de origen vertebral: la evidencia viene de ensayos únicos y pequeños; el efecto de los IRSN es muy incierto y el de los tricíclicos quizá grande (un ensayo de 60 personas) (Ferraro 2025).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Sangrado: aumentan su riesgo, sobre todo junto con AINE, antiagregantes o anticoagulantes (Biswas 2026; Singh y Saadabadi 2024). Con un ISRS además de un AINE, la hemorragia digestiva alta fue más probable que con el AINE solo (OR 1,75) (Alam 2022); con un anticoagulante, el sangrado grave (OR 1,39) (Nochaiwong 2022). Los ISRS se asocian a más sangrado que los tricíclicos (Wang 2018). Señales de hemorragia digestiva: vómitos con sangre o en posos de café, heces negras o sangre en las heces (Alam 2022).',
+          'Hiponatremia (sodio bajo en sangre): en mayores que toman antidepresivos la tuvo alrededor del 8 %, más con IRSN (10 %) e ISRS (10 %) que con tricíclicos (3,5 %), y el riesgo es mayor en las 2–4 primeras semanas (Zhang 2026). También sube con diuréticos tiazídicos (Biswas 2026). La crónica da cansancio, problemas cognitivos, alteraciones de la marcha, caídas y fracturas; la aguda, náuseas, vómitos, cefalea, estupor o convulsiones (Filippatos 2017).',
+          'Síndrome serotoninérgico: suele aparecer en las 6–24 horas siguientes a empezar o subir un fármaco serotoninérgico o añadir otro, con alteración mental (agitación), inestabilidad autonómica (taquicardia, tensión alta, sudoración, pupilas dilatadas, diarrea) y signos neuromusculares, más visibles en las piernas: hiperreflexia, clonus, temblor y rigidez (Simon 2024). Pueden desencadenarlo, entre otros, el tramadol, la metadona, el fentanilo, los triptanes y otros antidepresivos (Thour 2026; Biswas 2026). Con una dosis estable y bien tolerada es poco probable que aparezca de forma espontánea (Simon 2024).',
+          'Tricíclicos (amitriptilina): boca seca, estreñimiento, visión borrosa, retención de orina, taquicardia, confusión y delirio; la amitriptilina es más sedante y anticolinérgica que otros tricíclicos (Thour 2026). Los ISRS apenas dan estos efectos (Chu y Wadhwa 2023).',
+          'Corazón y tensión: la amitriptilina puede dar arritmias y prolongar el QT (Thour 2026), y con los tricíclicos la frecuencia cardíaca en reposo es más alta (Wang 2018). La venlafaxina y la duloxetina pueden subir la tensión arterial y la frecuencia cardíaca, que se vigilan durante el tratamiento (Singh y Saadabadi 2024; Biswas 2026).',
+        ],
+        detalle: [
+          'Náuseas: el efecto más frecuente de la duloxetina, alrededor del 18 % (Biswas 2026); en la fibromialgia, el 32 % con IRSN frente al 14 % con placebo (Welsch 2018). La duloxetina y la venlafaxina también dan temblor (Biswas 2026; Singh y Saadabadi 2024).',
+          'Sudoración excesiva en alrededor del 10 % con ISRS, y en proporción parecida con venlafaxina y tricíclicos. Los que actúan sobre la serotonina o la noradrenalina dan disfunción sexual. Los ISRS e IRSN se asociaron a pérdida de peso que desaparece pasados 4 meses; la amitriptilina hace ganar peso (Wang 2018).',
+          'Hígado: la duloxetina se evita con consumo importante de alcohol o enfermedad hepática crónica (Biswas 2026).',
+          'En los casos publicados de síndrome serotoninérgico, el tramadol, el fentanilo y la trazodona fueron los fármacos que más acompañaban al desencadenante; con prescripción habitual, el 36 % ingresó en la UCI y el 5 % murió (Blyzniuk 2026).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'Mareo, ortostatismo y caídas: los tricíclicos se asociaron a mucha más hipotensión ortostática que el placebo (OR 6,30), y los ISRS no (Bhanu 2021). La amitriptilina da hipotensión ortostática, mareo y sedación (Thour 2026). La duloxetina puede dar hipotensión ortostática, caídas y síncope, sobre todo al empezar o al subir la dosis (Biswas 2026).',
+          'Mayores: los criterios de Beers piden evitar la amitriptilina por sus efectos anticolinérgicos (Thour 2026), y la duloxetina si ya hubo caídas o fracturas, por la ataxia y la hipotensión ortostática (Biswas 2026). En los tricíclicos se pide vigilar las caídas y el deterioro cognitivo (Moraczewski 2023).',
+          'Hueso: los tricíclicos aumentan el riesgo de fracturas (Thour 2026), y un metaanálisis asocia los ISRS a más fracturas de cadera, con más riesgo cuanto más largo es el uso (De Filippis 2022).',
+          'Las fuentes leídas no dan normas de terapia manual ni de ejercicio con estos fármacos. El sangrado que estudian es el grave, digestivo o intracraneal, no los hematomas de las técnicas manuales.',
+        ],
+        detalle: [
+          'La hipotensión ortostática es una bajada de al menos 20 mmHg de sistólica o 10 de diastólica en los 3 minutos siguientes a ponerse de pie, y afecta a entre el 30 y el 70 % de los mayores. Los datos de los tricíclicos son de dosis para la depresión; los autores creen que a dosis bajas también pueden perjudicar a los mayores y aconsejan medir la tensión al cambiar de postura (Bhanu 2021).',
+          'Un estudio citado en una revisión encontró más caídas con la duloxetina (HR 1,6) y algo más con los tricíclicos (HR 1,2) (Narayan 2024).',
+          'Calor: el síndrome serotoninérgico altera la regulación de la temperatura (Simon 2024) y la hiponatremia es más frecuente en verano (Filippatos 2017); las fuentes leídas no estudian el ejercicio con calor ni la conducción.',
+          'Con la venlafaxina, el alcohol y otros sedantes aumentan la sedación (Singh y Saadabadi 2024).',
+        ],
+      },
+      sueno: {
+        texto: [
+          'ISRS e IRSN pueden empeorar el sueño: en los ensayos, insomnio en el 17 % con ISRS frente al 9 % con placebo, y en el 13 % con IRSN frente al 7 %; también dan somnolencia de día (16 % y 10 %, frente a 8 % y 5 %). Retrasan y reducen el sueño REM (Wichniak 2017).',
+          'Los tricíclicos sedantes acortan el tiempo en dormirse y mejoran la eficiencia del sueño (Wichniak 2017); como la amitriptilina da sedación, se toma preferiblemente al acostarse (Thour 2026).',
+          'Estos efectos son más fuertes las primeras semanas, aunque en algunos persisten y empeoran el insomnio o dan somnolencia de día (Wichniak 2017). En la fibromialgia, duloxetina y milnaciprán no mejoraron los problemas de sueño más que el placebo (Welsch 2018).',
+        ],
+        detalle: [
+          'ISRS, IRSN y tricíclicos pueden provocar o empeorar el bruxismo del sueño, y los ISRS y la venlafaxina, el síndrome de piernas inquietas (Wichniak 2017). La venlafaxina puede dar sueños anormales (Singh y Saadabadi 2024).',
+        ],
+      },
+      consultar: {
+        texto: [
+          'Urgente: signos de síndrome serotoninérgico, sobre todo en las horas siguientes a empezar o subir un fármaco o añadir tramadol u otro serotoninérgico: agitación o confusión, sudoración, temblor, clonus, hiperreflexia, rigidez o fiebre (Simon 2024). Signos de sobredosis de tricíclicos: confusión o somnolencia, convulsiones, pulso rápido, tensión baja, boca seca y retención de orina; suelen aparecer en 2 horas y pueden empeorar muy deprisa (Waseem 2026). Ideas de suicidio o empeoramiento del ánimo, sobre todo en jóvenes de hasta 24–25 años (cada fuente da un límite) y en los primeros 1–2 meses o al cambiar la dosis (Thour 2026; Chu y Wadhwa 2023). Signos de hemorragia digestiva (Alam 2022).',
+          'Pronto: mareo, inestabilidad o caídas nuevas, sobre todo al empezar o subir la dosis (Biswas 2026); cansancio, confusión o alteraciones de la marcha en un mayor, que pueden ser hiponatremia (Filippatos 2017; Zhang 2026); tensión alta en la consulta con venlafaxina o duloxetina (Singh y Saadabadi 2024; Biswas 2026); hematomas o sangrados poco habituales (Biswas 2026); picor, dolor en el hipocondrio derecho, orina oscura o ictericia con duloxetina, que piden valoración médica (Biswas 2026).',
+          'Retirada: quizá la mitad de quienes los dejan nota síntomas, a veces graves y duraderos, como mareo, cefalea, sensaciones de descarga eléctrica que dificultan caminar y conducir, ataxia y caídas; el riesgo es mayor con duloxetina, venlafaxina y paroxetina, y pueden confundirse con otras enfermedades o con una recaída (Horowitz 2023). Tras dejar la duloxetina de golpe aparecen en cerca del 45 % (Biswas 2026).',
+          'Nunca aconsejes dejarlos ni bajarlos por tu cuenta: se retiran de forma gradual (Thour 2026; Biswas 2026), con quien los prescribe. Las dudas, al médico o al farmacéutico.',
+        ],
+        detalle: [
+          'Combinaciones que hay que comentar con quien prescribe: tramadol, metadona, fentanilo, meperidina y triptanes, por el síndrome serotoninérgico (Thour 2026; Biswas 2026), y AINE, antiagregantes o anticoagulantes, por el sangrado (Biswas 2026; Nochaiwong 2022).',
+          'En la sobredosis de tricíclicos, quien no tiene síntomas a las 6 horas es poco probable que haya tomado una cantidad importante, y las arritmias causan la mayoría de las muertes (Waseem 2026). En sobredosis, los tricíclicos son mucho más mortales que los ISRS (Wang 2018).',
+          'Tras 8 semanas de venlafaxina, el 14 % tuvo mareo al dejarla, y el 29 % tras 24 semanas. Haber tenido síntomas al olvidar dosis o en un intento anterior de dejarlos anticipa que volverán (Horowitz 2023).',
+        ],
+      },
+    },
+    fuentes: ['Ferraro 2025', 'Welsch 2018', 'Narayan 2024', 'Moraczewski 2023', 'Biswas 2026', 'Thour 2026', 'Alam 2022', 'Nochaiwong 2022', 'Wang 2018', 'Singh y Saadabadi 2024', 'Zhang 2026', 'Filippatos 2017', 'Simon 2024', 'Blyzniuk 2026', 'Chu y Wadhwa 2023', 'Bhanu 2021', 'De Filippis 2022', 'Wichniak 2017', 'Waseem 2026', 'Horowitz 2023'],
+  },
   { id: 'sedantes', nombre: 'Benzodiacepinas y relajantes musculares', ejemplos: 'Diazepam, lorazepam, alprazolam, ciclobenzaprina, metocarbamol' },
   { id: 'estatinas', nombre: 'Estatinas', ejemplos: 'Atorvastatina, simvastatina, rosuvastatina' },
   { id: 'fluoroquinolonas', nombre: 'Fluoroquinolonas', ejemplos: 'Ciprofloxacino, levofloxacino, moxifloxacino' },
