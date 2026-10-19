@@ -664,7 +664,87 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Baggio y Ananda-Rajah 2021', 'Sangiorgio 2024', 'Wee 2021', 'Barberán 2023', 'Wierzbiński 2023', 'Rusu 2023', 'Duman 2025', 'Lewis y Cook 2014', 'EMA 2018', 'AEMPS 2023', 'Thai 2023', 'Humma y Patel 2024', 'Podder 2024', 'Levy 2024'],
   },
-  { id: 'betabloqueantes', nombre: 'Betabloqueantes', ejemplos: 'Bisoprolol, atenolol, metoprolol, propranolol' },
+  // Betabloqueantes (2026-10): ocho fuentes en PMC (Joshi 2026 se leyó y no
+  // se cita) y siete PDF del usuario (StatPearls de la familia, propranolol,
+  // metoprolol, atenolol y bisoprolol; Hansen 2022, Ham 2017). Sin fuente
+  // leída para el dolor, la inflamación y la curación, la terapia manual, el
+  // calor y el enmascaramiento de la taquicardia del dolor, la fiebre o un
+  // sangrado: docs/farmacologia.md.
+  {
+    id: 'betabloqueantes',
+    nombre: 'Betabloqueantes',
+    ejemplos: 'Bisoprolol, atenolol, metoprolol, propranolol',
+    apartados: {
+      dolor: {
+        texto: [
+          'Las fuentes leídas no tratan su efecto sobre el dolor, la inflamación ni la curación de los tejidos, ni describen dolores musculares o articulares.',
+          'No todos los que los toman son cardíacos: el propranolol es de primera elección para prevenir la migraña y se usa en el temblor esencial (Awosika y Patel 2026), y el metoprolol y el atenolol también se usan para la migraña (Morris 2024; Rehman 2024). Pregunta para qué lo toma.',
+          'Enmascaran signos: frenan la taquicardia de la hipoglucemia (Farzam y Jan 2023; Bazroon y Alrashidi 2023), y con el propranolol también el rubor, el sudor y el mareo (Awosika y Patel 2026), y pueden ocultar los síntomas de la tirotoxicosis (Rehman 2024). En un diabético, la hipoglucemia puede llegar sin sus avisos habituales (Bazroon y Alrashidi 2023).',
+          'Las fuentes leídas no estudian si ocultan la taquicardia del dolor, la fiebre, la deshidratación o un sangrado.',
+        ],
+        detalle: [
+          'Las parestesias figuran entre sus efectos frecuentes (Awosika y Patel 2026; Rehman 2024): tenlas en cuenta antes de atribuir un hormigueo a un nervio.',
+          'Pueden empeorar la psoriasis y la miastenia gravis (caída del párpado, visión doble, debilidad muscular) (Bazroon y Alrashidi 2023).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Lo más frecuente: bradicardia, hipotensión, cansancio, mareo, náuseas y estreñimiento (Farzam y Jan 2023). En un metaanálisis, el mareo fue más frecuente que con placebo (RR 1,72; IC 95 % 1,39–2,14), y más aún con propranolol (Ez Eddin 2025).',
+          'Frío en manos y pies, por la vasoconstricción periférica (Awosika y Patel 2026; Morris 2024; Rehman 2024). Pueden empeorar el fenómeno de Raynaud (Farzam y Jan 2023), menos los cardioselectivos que los no selectivos (Bazroon y Alrashidi 2023), y la enfermedad arterial periférica grave contraindica el atenolol (Rehman 2024). Las fuentes leídas no tratan la claudicación.',
+          'Respiración: el propranolol, no selectivo, puede provocar broncoespasmo y empeorar el asma o la EPOC, y está contraindicado en el asma (Awosika y Patel 2026; Marko y Pawliczak 2025). Los cardioselectivos (bisoprolol, atenolol, metoprolol) también reducen la función pulmonar en el asma, aunque menos (Marko y Pawliczak 2025), y el atenolol bloquea los receptores β2 a dosis altas (Rehman 2024). Un ahogo nuevo puede ser broncoespasmo o de origen cardíaco (Awosika y Patel 2026).',
+          'Ánimo: cansancio, letargo y síntomas depresivos (Carnovale 2023), y raras veces alucinaciones o delirium, sobre todo con propranolol (Ez Eddin 2025). Su relación con la depresión está discutida (Carnovale 2023; Bazroon y Alrashidi 2023).',
+          'Corazón: en quien ya tiene una enfermedad cardíaca pueden empeorar la insuficiencia cardíaca, con hinchazón de piernas o tobillos, aumento de peso, ahogo o tos, y dar un bloqueo cardíaco, con desmayo, dolor en el pecho o palpitaciones (Morris 2024).',
+        ],
+        detalle: [
+          'Caídas: en mayores de 55 años, los no selectivos, como el propranolol, se asociaron a más caídas (HR 1,22; IC 95 % 1,01–1,48) y los selectivos no (HR 0,92; 0,83–1,01). Ese estudio miró el uso mantenido, no el comienzo, cuando otros estudios vieron más caídas por hipotensión (Ham 2017). El atenolol da síncope con frecuencia e hipotensión postural raras veces (Rehman 2024), y los mayores son más sensibles a la bradicardia, la hipotensión y el cansancio (Awosika y Patel 2026).',
+          'En la EPOC con enfermedad cardiovascular, un metaanálisis halló menos mortalidad (OR 0,50) y menos exacerbaciones (OR 0,76) con betabloqueantes, aunque los no selectivos aumentan los ingresos y reducen el FEV1 (Dos Santos 2024).',
+          'El timolol en colirio también puede reducir el FEV1 (Marko y Pawliczak 2025): pregunta también por las gotas para el glaucoma.',
+          'Otros: aumento de peso y disfunción sexual (Farzam y Jan 2023).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'La frecuencia cardíaca no sirve para dosificar el ejercicio: la bajan en todo el rango de intensidades, la frecuencia máxima ya no se puede estimar y las zonas de frecuencia dejan de corresponder al esfuerzo real; un cambio de dosis o de cumplimiento la vuelve a cambiar (Mitchell 2025). Con 100 mg de metoprolol, la frecuencia fue unos 40 latidos por minuto más baja al mismo esfuerzo percibido (Mitchell 2025).',
+          'Usa el esfuerzo percibido (escala de Borg de 6 a 20): en un ensayo, su relación con el consumo de oxígeno se mantuvo con el fármaco (Mitchell 2025), y una guía europea recoge que sirve cuando la frecuencia cardíaca no se puede usar. Como referencia, 12–13 es intensidad moderada y 14–16 alta (Hansen 2022).',
+          'Las fuentes no coinciden en cuánto fiarse del Borg: la guía europea lo quiere solo como complemento de un método objetivo, como la prueba de esfuerzo, y advierte que los betabloqueantes pueden dificultar su interpretación (Hansen 2022); el ensayo que lo apoya es de 13 jóvenes sanos con una sola dosis (Mitchell 2025). Si su cardiólogo le ha dado una intensidad a partir de una prueba de esfuerzo, esa manda.',
+          'Espera menos capacidad de ejercicio y más cansancio (Bazroon y Alrashidi 2023; Morris 2024): al mismo Borg, la carga fue algo menor con el fármaco (Mitchell 2025). Sube primero la duración y después la intensidad, un 5–10 % por semana (Hansen 2022).',
+          'Por el mareo y la hipotensión (Ez Eddin 2025; Farzam y Jan 2023), cuida los cambios de postura y el final de la sesión. Las fuentes leídas no tratan la terapia manual, el ejercicio con calor ni la sudoración en el esfuerzo.',
+        ],
+        detalle: [
+          'Escala de Borg: 6 sin esfuerzo, 9 muy ligero, 11 ligero, 13 algo duro, 15 duro, 17 muy duro, 19 extremadamente duro y 20 esfuerzo máximo. Una escala de 0 a 10 puede ser más fácil de entender para el paciente (Hansen 2022).',
+          'Si cambia la dosis, la guía europea fija de nuevo la frecuencia objetivo con la carga de las últimas sesiones y la frecuencia que provoca tras 5 minutos o más de ejercicio (Hansen 2022). La frecuencia y la tensión se miden en reposo, durante el ejercicio y antes y después de la toma (Morris 2024).',
+          'El atenolol actúa en 1 hora, alcanza su máximo a las 2–4 horas y dura al menos 24 (Rehman 2024).',
+          'Fuerza en rehabilitación cardíaca: 30–70 % de 1RM en el tren superior y 40–80 % en el inferior, 12–15 repeticiones y 2–3 series, soltando el aire al contraer para evitar la maniobra de Valsalva; solo se progresa sin arritmias, síncopes ni mareos (Hansen 2022).',
+          'En la insuficiencia cardíaca con fracción de eyección conservada se han asociado a menos capacidad de ejercicio (Dar y Jacob 2024).',
+        ],
+      },
+      sueno: {
+        texto: [
+          'Insomnio, cambios del sueño y pesadillas, más con los que atraviesan la barrera hematoencefálica; bajan la melatonina (Farzam y Jan 2023; Ez Eddin 2025). El propranolol da sueños vívidos y alteraciones del sueño (Awosika y Patel 2026), y el metoprolol, pesadillas (Morris 2024).',
+          'En un metaanálisis, frente a placebo el insomnio aumentó poco y sin significación (RR 1,12; IC 95 % 0,99–1,26), igual que las pesadillas; empezar propranolol se asoció a más insomnio en 30 días que el bisoprolol (OR 3,22) o el atenolol (OR 2,17) (Ez Eddin 2025).',
+          'Estos efectos a menudo se resuelven con el ajuste o la subida lenta de la dosis (Awosika y Patel 2026), que decide su médico. Pregunta por el sueño si empezó o cambió de dosis hace poco.',
+        ],
+        detalle: [
+          'No hay acuerdo sobre cuál afecta más al sistema nervioso: los capítulos lo atribuyen a los lipófilos, como el propranolol y el metoprolol (Awosika y Patel 2026; Morris 2024), y dicen que el atenolol, poco liposoluble, daría menos, aunque cuenta la confusión y los trastornos del sueño entre sus efectos frecuentes (Rehman 2024). En el líquido cefalorraquídeo, en cambio, el bisoprolol llega al 55 % y el propranolol al 5 % (Carnovale 2023), y la lipofilia del bisoprolol es baja para un capítulo (Bazroon y Alrashidi 2023) y media para otra fuente (Ham 2017).',
+        ],
+      },
+      consultar: {
+        texto: [
+          'Urgente: desmayo, dolor en el pecho o palpitaciones, que pueden ser un bloqueo cardíaco; hinchazón de cara, labios, lengua o garganta, dificultad para respirar o habones (Morris 2024). En una anafilaxia, la adrenalina puede funcionar peor con ellos (Awosika y Patel 2026; Bazroon y Alrashidi 2023).',
+          'Pronto, con su médico: mareo o caídas nuevas (Ham 2017; Ez Eddin 2025); hinchazón de tobillos, aumento de peso o ahogo nuevos (Morris 2024); un ahogo con pitidos (Awosika y Patel 2026); frío o cambios de color en los dedos (Farzam y Jan 2023); pesadillas, insomnio o ánimo bajo que no ceden (Ez Eddin 2025), y en un diabético, hipoglucemias sin aviso (Bazroon y Alrashidi 2023).',
+          'No se dejan de golpe: la interrupción brusca puede provocar angina, infarto, arritmias ventriculares, taquicardia y tensión alta (Awosika y Patel 2026; Morris 2024; Bazroon y Alrashidi 2023), o una tormenta tiroidea (Rehman 2024). Se hace de forma gradual, en 1 o 2 semanas según dos capítulos, y con quien los prescribe (Awosika y Patel 2026; Morris 2024); mientras dura con el atenolol, se vigila de cerca y se limita la actividad física (Rehman 2024).',
+          'Si dice que lo ha dejado de golpe o que se salta dosis, que lo hable pronto con su médico. Nunca aconsejes dejarlo ni bajar la dosis por tu cuenta. Las dudas, al médico o al farmacéutico.',
+        ],
+        detalle: [
+          'Combinaciones que hay que comentar con quien prescribe: verapamilo o diltiazem (bradicardia, hipotensión, bloqueo) y donepezilo o rivastigmina (bradicardia, caídas, síncope) (Bazroon y Alrashidi 2023; Rehman 2024); la clonidina, que dejada de golpe da tensión alta de rebote (Awosika y Patel 2026; Morris 2024; Rehman 2024); los AINE, que pueden restar efecto al propranolol sobre la tensión (Awosika y Patel 2026).',
+          'Incluso dejarlos de forma planificada tras un infarto no cambió la mortalidad (HR 1,11; IC 95 % 0,96–1,28), pero se asoció a más eventos cardiovasculares mayores (HR 1,12; 1,01–1,24) (Thompson 2026).',
+          'Una sobredosis da bradicardia intensa, hipotensión con mareo o desmayo, ahogo con pitidos, confusión o convulsiones (Awosika y Patel 2026; Morris 2024).',
+          'El aviso en recuadro sobre la interrupción brusca se quitó del propranolol en 2021, aunque la advertencia sigue (Awosika y Patel 2026); los capítulos del metoprolol y del atenolol aún lo describen (Morris 2024; Rehman 2024).',
+        ],
+      },
+    },
+    fuentes: ['Mitchell 2025', 'Hansen 2022', 'Ez Eddin 2025', 'Ham 2017', 'Marko y Pawliczak 2025', 'Dos Santos 2024', 'Carnovale 2023', 'Thompson 2026', 'Dar y Jacob 2024', 'Farzam y Jan 2023', 'Awosika y Patel 2026', 'Morris 2024', 'Rehman 2024', 'Bazroon y Alrashidi 2023'],
+  },
   { id: 'antihipertensivos', nombre: 'Diuréticos y otros antihipertensivos', ejemplos: 'Hidroclorotiazida, furosemida, enalapril, losartán, amlodipino' },
   { id: 'antidiabeticos', nombre: 'Insulina y antidiabéticos', ejemplos: 'Insulina, metformina, sulfonilureas, inhibidores de SGLT2' },
   { id: 'hueso', nombre: 'Fármacos que tocan el hueso', ejemplos: 'Alendronato, zoledronato, denosumab, inhibidores de la aromatasa' },
