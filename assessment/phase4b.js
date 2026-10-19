@@ -16,6 +16,7 @@ import { HM, hmActiva } from './lib/hipermovilidad.js';
 import { DS, dsActiva } from './lib/disautonomia.js';
 import { LES, lesDiagnosticado } from './lib/lupus.js';
 import { MA, maActivo } from './lib/mastocitos.js';
+import { AC, acActivo } from './lib/anticoagulado.js';
 import { OP, opActivo } from './lib/osteoporosis.js';
 import { emPosparto, lineaSupino, lineaGaenslen } from './lib/embarazo.js';
 
@@ -154,15 +155,15 @@ export function buildHypothesisCards() {
   // Disautonomía (Fase P, docs/pots.md): una regla de técnica para todas las
   // hipótesis; no cambia ninguna LR
   if (dsActiva(state.disautonomia)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota ds-nota-4b">🫀 ${citasEnTexto(DS.textos.tecnica4b)}</div>`);
-  // Lupus (Fase P, docs/lupus.md): hueso, piel y osteonecrosis; con
-  // anticoagulante o antiagregante, el riesgo de golpe. Tampoco cambia las LR
-  if (lesDiagnosticado(state.lupus)) {
-    const t = LES.textos;
-    container.insertAdjacentHTML('beforeend', `<div class="ds-nota les-nota-4b">🦋 ${citasEnTexto(t.tecnica4b)}${state.lupus.antitrombotico ? ` ${citasEnTexto(t.tecnica4bAntitrombotico)}` : ''}</div>`);
-  }
+  // Lupus (Fase P, docs/lupus.md): hueso, piel y osteonecrosis. Tampoco cambia
+  // las LR. El riesgo de golpe del anticoagulado va en su propia línea
+  if (lesDiagnosticado(state.lupus)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota les-nota-4b">🦋 ${citasEnTexto(LES.textos.tecnica4b)}</div>`);
   // Trastorno mastocitario o anafilaxia (Fase P, docs/mastocitaria.md): roce,
   // presión, calor, frío y vibración. Una regla de técnica; no cambia las LR
   if (maActivo(state.mastocitos)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota ma-nota-4b">💉 ${citasEnTexto(MA.textos.tecnica4b)}</div>`);
+  // Anticoagulado o antiagregado (docs/anticoagulado.md, decisión 11): una línea
+  // general, sin campo por test (ninguna fuente dice qué tests sangran). No cambia las LR
+  if (acActivo(state.anticoagulado)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota ac-nota-4b">🩸 ${citasEnTexto(AC.textos.tecnica4b)}</div>`);
   // Embarazo de 20 semanas o más (docs/embarazo-posparto.md, T1): una línea
   // para todos los tests boca arriba, encima de las hipótesis. No cambia las LR
   const supino = lineaSupino(state.embarazo);

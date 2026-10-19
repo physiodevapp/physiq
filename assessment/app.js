@@ -40,6 +40,8 @@ import { EM, ESTADOS_EM, CASILLAS_EM, SEMANAS_POSPARTO_MAX, embarazoVacio, norma
   emPosparto, semanasPosparto, elementoEMVisible, reglaTA, urgenciasEM, derivacionesEM, animoPositivo, animoRespondido,
   sueloRespondido, sueloSintomas, riesgoSuelo, lineaSupino, pendientesEM, emPayload, datosEM,
   lineasRecomendacionEM } from './lib/embarazo.js';
+import { AC, anticoaguladoVacio, normalizarAnticoagulado, acActivo, elementoACVisible, migrarCasillaLupus,
+  pendientesAC, acPayload, datosAC, lineasRecomendacionAC } from './lib/anticoagulado.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -326,6 +328,7 @@ function _softResetApp() {
   state.mastocitos = mastocitosVacio();
   state.osteoporosis = osteoporosisVacio();
   state.embarazo = embarazoVacio();
+  state.anticoagulado = anticoaguladoVacio();
   state.cronologia = '';
   state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
   state.riesgoPsico = '';
@@ -433,6 +436,7 @@ function _softResetApp() {
   _pintarMAUI();
   _pintarOPUI();
   _pintarEMUI();
+  _pintarACUI();
 }
 
 // «Reiniciar valoración» vive en el panel de sesión (antes, en la cabecera):
@@ -1424,6 +1428,8 @@ function _pintarLESUI() {
     b.classList.toggle('selected', on);
     b.setAttribute('aria-pressed', on);
   });
+  const notaAC = document.getElementById('lesNotaAC');
+  if (notaAC && !notaAC.innerHTML) notaAC.textContent = AC.textos.lupus;
   const nat = document.getElementById('lesNotaNaturaleza');
   if (nat && !nat.innerHTML) nat.innerHTML = `🦋 ${citasEnTexto(LES.textos.naturaleza)}`;
   const brote = document.getElementById('lesNotaBrote');
@@ -1467,7 +1473,7 @@ function selectLESRasgo(id, valor) {
 }
 
 function getLePayload() {
-  return lePayload(state.lupus);
+  return lePayload(state.lupus, state.anticoagulado);   // `at` sale de la tarjeta del anticoagulado (docs/anticoagulado.md, decisión 3)
 }
 
 // Bloque del sistema de la fase 2 (va dos veces: panel de escritorio y acordeón).
@@ -1597,6 +1603,81 @@ function _mastocitosResultadosHTML(d) {
       <span class="alert-icon">💉</span>
       <div><strong>Trastorno mastocitario o anafilaxia.</strong> ${datosMA(d).join(' · ')}
         ${lineasRecomendacionMA(d).map(t => `<div${t === MA.textos.queHacer ? ' class="ma-que-hacer"' : ''}>${citasEnTexto(t)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ─── PACIENTE ANTICOAGULADO O ANTIAGREGADO (Fase P, docs/anticoagulado.md) ──
+// Tarjeta de la fase 1: No consta (nada marcado) · Toma (un solo estado,
+// decisión 2). Con «Toma», chips multiselección de lo que toma; activa el
+// sistema de la fase 2 (urgencias de sangrado y la del golpe en la cabeza según
+// el fármaco), la línea de la 4b, el recuadro de la fase 5 y los avisos, el
+// tope «sin thrust» (solo con anticoagulante) y la red de la fase 6.
+function _pintarACUI() {
+  const ac = state.anticoagulado;
+  document.body.classList.toggle('anticoagulado', acActivo(ac));
+  const nota = document.getElementById('acNota');
+  if (nota && !nota.innerHTML) nota.textContent = `Sin marcar = no consta. ${AC.textos.nota}`;
+  document.querySelectorAll('#acEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === ac.estado));
+  const wrap = document.getElementById('acTomaWrap');
+  if (wrap) wrap.style.display = acActivo(ac) ? '' : 'none';
+  const cont = document.getElementById('acToma');
+  if (cont) {
+    if (!cont.children.length) {
+      cont.innerHTML = AC.tipos.map(t =>
+        `<button type="button" class="option-btn" data-ac-toma="${t.id}" aria-pressed="false" onclick="toggleACToma('${t.id}')">${t.texto}</button>`).join('');
+    }
+    cont.querySelectorAll('[data-ac-toma]').forEach(b => {
+      const on = ac.toma.includes(b.dataset.acToma);
+      b.classList.toggle('selected', on);
+      b.setAttribute('aria-pressed', on);
+    });
+  }
+}
+
+function _acCambio() {
+  _pintarACUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectACEstado(valor) {
+  state.anticoagulado.estado = state.anticoagulado.estado === valor ? '' : valor;
+  _acCambio();
+}
+
+// Chips de lo que toma. «No lo sabe» excluye a los demás y al revés.
+function toggleACToma(k) {
+  if (!AC.tipos.some(t => t.id === k)) return;
+  const t = state.anticoagulado.toma;
+  if (t.includes(k)) state.anticoagulado.toma = t.filter(x => x !== k);
+  else state.anticoagulado.toma = k === 'ns' ? ['ns'] : [...t.filter(x => x !== 'ns'), k];
+  state.anticoagulado = normalizarAnticoagulado(state.anticoagulado);   // orden de la tarjeta
+  _acCambio();
+}
+
+// «Ir a la tarjeta →» desde el lupus.
+function irATarjetaAC() {
+  const card = document.getElementById('cardAnticoagulado');
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.remove('flash-destacar');
+  void card.offsetWidth;
+  card.classList.add('flash-destacar');
+}
+
+function getAcPayload() {
+  return acPayload(state.anticoagulado);
+}
+
+// Recuadro de la fase 5 (docs/anticoagulado.md): nunca se pliega.
+function _anticoaguladoResultadosHTML(d) {
+  return `
+    <div class="alert alert-info ac-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">🩸</span>
+      <div><strong>Anticoagulado o antiagregado.</strong> ${datosAC(d).join(' · ')}
+        ${lineasRecomendacionAC(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
       </div>
     </div>`;
 }
@@ -2026,7 +2107,7 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis && !s.soloEmbarazo);   // los de las condiciones especiales no tienen embudo
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis && !s.soloEmbarazo && !s.soloAnticoagulado);   // los de las condiciones especiales no tienen embudo
     const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
     const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
@@ -2053,7 +2134,8 @@ function getPendientesBreve() {
   pendientes.push(...pendientesLES(state.lupus));   // docs/lupus.md: corticoides o rasgos sin registrar
   pendientes.push(...pendientesMA(state.mastocitos));   // docs/mastocitaria.md: autoinyector sin registrar
   pendientes.push(...pendientesOP(state.osteoporosis));
-  pendientes.push(...pendientesEM(state.embarazo));   // docs/embarazo-posparto.md: semanas o fecha del parto sin registrar   // docs/osteoporosis.md: fracturas vertebrales o factores sin registrar
+  pendientes.push(...pendientesEM(state.embarazo));
+  pendientes.push(...pendientesAC(state.anticoagulado));   // docs/anticoagulado.md: qué toma, sin registrar   // docs/embarazo-posparto.md: semanas o fecha del parto sin registrar   // docs/osteoporosis.md: fracturas vertebrales o factores sin registrar
   return pendientes;
 }
 
@@ -2284,7 +2366,7 @@ function sistemasActivos(regionId = state.region) {
   // solo las preguntas y banderas de su estado (`hm`, lib/hipermovilidad.js)
   const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId))
     && elementoHMVisible(x, state.hipermovilidad) && elementoLESVisible(x, state.lupus) && elementoOPVisible(x, state.osteoporosis)
-    && elementoEMVisible(x, state.embarazo, state.osteoporosis);
+    && elementoEMVisible(x, state.embarazo, state.osteoporosis) && elementoACVisible(x, state.anticoagulado);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
     .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
@@ -2293,6 +2375,7 @@ function sistemasActivos(regionId = state.region) {
     .filter(sis => !sis.soloMastocitos || maActivo(state.mastocitos))
     .filter(sis => !sis.soloOsteoporosis || opActivo(state.osteoporosis))
     .filter(sis => !sis.soloEmbarazo || emActivo(state.embarazo))
+    .filter(sis => !sis.soloAnticoagulado || acActivo(state.anticoagulado))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -2459,7 +2542,7 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) {
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
       <div class="hm-bloque" data-hm-bloque></div>`;
-  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo) {
+  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado) {
     // El de disautonomía (docs/pots.md) tampoco: primero las preguntas del
     // síncope y, después de ellas, la sospecha y la prueba (data-ds-bloque)
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">`;
@@ -3122,7 +3205,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -3540,6 +3623,9 @@ function buildResults() {
   // ── Embarazo o posparto (docs/embarazo-posparto.md): ejercicio y seguridad, nunca plegados
   const em = getEmPayload();
   if (em) container.innerHTML += _embarazoResultadosHTML(em);
+  // ── Anticoagulado o antiagregado (docs/anticoagulado.md): técnica y banderas, nunca plegados
+  const ac = getAcPayload();
+  if (ac) container.innerHTML += _anticoaguladoResultadosHTML(ac);
 
   // ── Header summary
   container.innerHTML += `
@@ -4392,6 +4478,7 @@ function buildPhysiQPayload() {
     ...(getMaPayload() ? { ma: getMaPayload() } : {}),
     ...(getOpPayload() ? { op: getOpPayload() } : {}),
     ...(getEmPayload() ? { em: getEmPayload() } : {}),
+    ...(getAcPayload() ? { ac: getAcPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
     nr: state.severidad ?? null,   // null = no registrado (nunca un 0 por defecto)
@@ -4974,10 +5061,14 @@ document.addEventListener('keydown', e => {
 // (data/farmacos.js, lib/farmacos.js). No lee ni guarda datos del paciente.
 // Mismo patrón que «Condiciones especiales».
 let _farmHistorial = false;
-function abrirFarmacos() {
+// `familia` (opcional): abre la guía ya en esa familia (p. ej. desde la tarjeta
+// del anticoagulado, docs/anticoagulado.md, decisión 15).
+function abrirFarmacos(opts) {
   const overlay = document.getElementById('farmOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
   document.getElementById('farmCuerpo').innerHTML = farmacosHTML();
+  const familia = typeof opts?.familia === 'string' ? document.querySelector(`#farmCuerpo [data-familia="${opts.familia}"]`) : null;
+  if (familia) familia.open = true;
   overlay.classList.add('open');
   document.getElementById('farmBtn')?.setAttribute('aria-expanded', 'true');
   lockBodyScroll();
@@ -4988,6 +5079,7 @@ function abrirFarmacos() {
   }
   const panel = document.getElementById('farmPanel');
   panel.scrollTop = 0;
+  if (familia) panel.scrollTop = familia.getBoundingClientRect().top - panel.getBoundingClientRect().top - 8;
   panel.focus({ preventScroll: true });
 }
 
@@ -5257,6 +5349,7 @@ function _hasAssessmentData() {
     || !!state.mastocitos?.estado
     || !!state.osteoporosis?.estado
     || !!state.embarazo?.estado
+    || !!state.anticoagulado?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -5356,6 +5449,7 @@ function _restoreSessionDOM() {
   state.cirugia = { ...cirugiaVacia(), ...(state.cirugia || {}) };
   state.hipermovilidad = normalizarHipermovilidad(state.hipermovilidad);   // sesiones anteriores a la Fase P
   state.disautonomia = normalizarDisautonomia(state.disautonomia);         // sesiones anteriores al POTS
+  state.anticoagulado = migrarCasillaLupus(state.lupus, state.anticoagulado); // casilla antigua del lupus → tarjeta propia (antes de normalizarLupus, que la quita)
   state.lupus = normalizarLupus(state.lupus);                               // sesiones anteriores al lupus
   state.mastocitos = normalizarMastocitos(state.mastocitos);                // sesiones anteriores a la tarjeta mastocitaria
   state.osteoporosis = normalizarOsteoporosis(state.osteoporosis);          // sesiones anteriores a la osteoporosis
@@ -5369,6 +5463,7 @@ function _restoreSessionDOM() {
   _pintarMAUI();
   _pintarOPUI();
   _pintarEMUI();
+  _pintarACUI();
   _pintarLado();
 
   Object.entries(state.banderasRojas).forEach(([brId, val]) => {
@@ -5502,6 +5597,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarMAUI();
   _pintarOPUI();
   _pintarEMUI();
+  _pintarACUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
   // Formulario previo: contador de la fase 1 (se vuelve a llamar tras restaurar sesión)
@@ -5672,7 +5768,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, selectACEstado, toggleACToma, irATarjetaAC, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,

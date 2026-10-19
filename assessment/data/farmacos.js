@@ -139,9 +139,10 @@ export const FAMILIAS_FARMACO = [
   },
   // Anticoagulantes y antiagregantes (2026-10): ocho fuentes leídas enteras en
   // PMC, más Steffel 2021 (guía EHRA) y Antunes 2024 (StatPearls), PDF del
-  // usuario. Sin fuente leída para el hemartros, el síndrome compartimental,
-  // los signos del hematoma del psoas, el masaje y la manipulación, los deportes
-  // de contacto, la guía de TAC tras un golpe en la cabeza ni el sueño:
+  // usuario. Ampliada con las fuentes de la condición especial «Paciente
+  // anticoagulado o antiagregado» (docs/anticoagulado.md): hemartros, síndrome
+  // compartimental, psoas, vaina de los rectos, golpe en la cabeza, técnicas
+  // manuales, deporte, caídas y TVP. Sigue sin fuente leída el sueño:
   // docs/farmacologia.md.
   {
     id: 'antitromboticos',
@@ -160,10 +161,16 @@ export const FAMILIAS_FARMACO = [
         texto: [
           'Hematoma epidural espinal: raro pero urgente. Se presenta con dolor de cuello o espalda y déficit neurológico (debilidad de un lado o de ambos, alteración de la sensibilidad, de la vejiga o del intestino); dos de cada tres fueron cervicales o cervicotorácicos, y con debilidad de un lado puede parecer un ictus (Ghosh 2026).',
           'Los hematomas retroperitoneales y del iliopsoas tienen peor pronóstico. Una masa nueva no debe atribuirse sin más al anticoagulante: si no se resuelve en 2–3 semanas, mide más de 5 cm, es profunda o el dolor persiste o empeora, hay que estudiarla, porque puede haber un tumor debajo (Mameli 2025).',
+          'Hematoma del psoas o retroperitoneal: da un cuadro variado (dolor abdominal, de cadera, de costado o lumbar, caída de la tensión y afectación del plexo lumbar) y por eso se diagnostica tarde (Lukies 2023); el muslo débil o adormecido por afectación del nervio femoral puede ser lo que lo delate, y solo un tercio de los sangrados abdominales tiene los síntomas clásicos (Sahu 2020).',
+          'Hematoma de la vaina de los rectos: dolor brusco en la pared del abdomen con un bulto doloroso; lo favorecen la anticoagulación, la tos, la hipertensión, la edad y una cirugía abdominal previa (Liao 2021), y un caso con apixabán empezó tras una tos intensa (Hideyama 2023).',
+          'Síndrome compartimental: un sangrado dentro de un compartimento cerrado da dolor desproporcionado, el compartimento tenso y dolor al estiramiento pasivo (Brooker 2020); el dolor al estiramiento pasivo es el signo precoz más sensible, y la parálisis, la palidez y la falta de pulso llegan tarde (Nemunaitis 2022).',
           'Sangrado digestivo alto: vómito con sangre roja o en «posos de café», heces negras y pegajosas (melena) o sangre roja por el ano si es rápido, y síntomas de la pérdida de sangre como mareo al levantarse, síncope, cansancio o debilidad. Un abdomen doloroso a la palpación con defensa o rebote sugiere perforación. El hierro, el bismuto y el regaliz también ponen las heces negras (Antunes 2024).',
           'Digestivo: el tubo digestivo es el lugar más frecuente de sangrado grave con anticoagulantes orales, alrededor del 40 %; la aspirina y otros AINE lesionan directamente la mucosa, los anticoagulantes no (Kurlander 2022). Los antidepresivos ISRS o IRSN aumentan el riesgo de sangrado grave y digestivo en quien toma anticoagulantes o antiagregantes (OR 1,3–1,5, certeza baja) (Nochaiwong 2022).',
         ],
         detalle: [
+          'Con anticoagulantes, el síndrome compartimental ha aparecido tras un traumatismo de baja energía (Brooker 2020) y sin traumatismo (Nemunaitis 2022). El psoas sangró por la anticoagulación en 56 de 77 casos de una serie de UCI, con casos graves: el 44 % llegó en shock (Llitjos 2016).',
+          'Hemartros: aparece en un 0–1,5 % de quienes toman anticoagulantes orales; no hay consenso sobre cómo manejarlo, y se aspira si el diagnóstico no está claro, para descartar una infección o una artritis por cristales (Dalrymple 2022).',
+          'Con heparina en inyección, los moratones en el punto de inyección son frecuentes (Amaniyan 2020); un dolor brusco con bulto en la pared del abdomen no lo es (Liao 2021).',
           'Con ISRS o IRSN, el riesgo de sangrado grave fue algo mayor con los anticoagulantes directos (OR 1,72) que con los antivitamina K (OR 1,28). Los autores piden vigilar más a quien ya sangró o tiene úlcera, enfermedad hepática o renal o toma además AINE (Nochaiwong 2022).',
           'Tomar a la vez otro anticoagulante, antiagregantes (aspirina, clopidogrel, prasugrel, ticagrelor) o AINE aumenta el riesgo de sangrado con los anticoagulantes directos; los corticoides sistémicos figuran entre los factores que también lo aumentan (Steffel 2021). La aspirina con clopidogrel u otro antiagregante parecido multiplica por 2–3 la hemorragia digestiva alta, y en mayores de 75 años con antiagregantes y anticoagulantes llega hasta un 17 % al año (Antunes 2024).',
         ],
@@ -173,13 +180,17 @@ export const FAMILIAS_FARMACO = [
           'Punción seca: tomar antitrombóticos no es una contraindicación absoluta, no hay pruebas para aplazarla de forma sistemática y la medicación no debe suspenderse antes. Empieza por músculos superficiales observando cómo sangra, evita al principio los profundos que no se pueden comprimir y comprime unos 10–15 s en vez de unos 5 (Muñoz 2022).',
           'Acupuntura: complicaciones en un 0,003 % con una localización y una profundidad adecuadas; los sangrados graves se debieron a una punción demasiado profunda, y las agujas más gruesas sangran más (Muñoz 2022).',
           'Caídas: caerse no es una contraindicación para anticoagular, pero hay que reducir el riesgo de caídas y revisar los factores de sangrado modificables, sobre todo tomar a la vez antiagregantes; la guía aconseja ofrecer a todos estos pacientes una valoración y un programa de prevención de caídas (Steffel 2021).',
-          'Golpes en la cabeza: tras un traumatismo craneal leve, los antiagregantes se asociaron a hemorragia intracraneal (OR 1,54). Los anticoagulantes no fueron significativos en ese metaanálisis; una posible explicación es que a estos pacientes se les hace siempre un TAC, y las guías piden cautela con todos los fármacos que afectan a la coagulación (Yang 2024).',
-          'Embolia pulmonar: el ejercicio con el paciente anticoagulado es seguro, factible y mejora la capacidad de ejercicio y la calidad de vida, aunque faltan ensayos grandes (Xiang 2025).',
+          'Golpes en la cabeza: tras un traumatismo craneal leve, los antiagregantes se asociaron a hemorragia intracraneal (OR 1,54). Los anticoagulantes no fueron significativos en ese metaanálisis; una posible explicación es que a estos pacientes se les hace siempre un TAC, y las guías piden cautela con todos los fármacos que afectan a la coagulación (Yang 2024). NICE pide derivar a urgencias a quien se golpea la cabeza y toma un anticoagulante o un antiagregante, salvo la aspirina sola, aunque no tenga otros síntomas (NICE NG232, 1.2.4); el sangrado tardío es raro, pero puede aparecer días después (Chenoweth 2018).',
+          'Terapia manual: la única tabla específica de la columna torácica pone el thrust como contraindicación absoluta con tratamiento anticoagulante (Puentedura 2015), y otra, de la terapia manual cervical, como precaución (Hutting 2018); las dos son opinión de expertos y ninguna distingue fármacos ni da un INR. Un estudio de cohorte asoció la anticoagulación crónica a más lesión cerebral o medular tras la manipulación, sin probar la causa (Whedon 2015). Del masaje, la presión profunda y los estiramientos no hay normas: solo casos de sangrado tras un masajeador, un percutor o una sesión de estiramientos (Tominaga 2023; Kwon 2024; Kim 2026).',
+          'Deporte de competición: con aspirina sola, sin límite; con doble antiagregación o anticoagulación plena, en los deportes de colisión o de impacto a alta velocidad los riesgos no compensan o se decide con el médico (Kim 2025). Fuera de la competición, las revisiones coinciden: actividades con poco riesgo de golpe, sí, y deportes de colisión, a decidir con el médico (Minardi 2024; Bavishi 2026).',
+          'Embolia pulmonar: el ejercicio con el paciente anticoagulado es seguro, factible y mejora la capacidad de ejercicio y la calidad de vida, aunque faltan ensayos grandes (Xiang 2025). Tras una TVP, caminar pronto no aumentó la embolia en los estudios, con reservas sobre su calidad (Liu 2015).',
         ],
         detalle: [
           'Riesgo alto de caídas: caídas previas, debilidad de las piernas, mal equilibrio, deterioro cognitivo, hipotensión ortostática, psicofármacos, artritis grave o mareo; la guía propone también una puntuación con pruebas como la bipedestación en tándem, el paso alternante o levantarse de la silla (tabla 14) (Steffel 2021).',
           'La guía EHRA clasifica la inyección intramuscular, como una vacuna, entre las intervenciones de riesgo mínimo, con aguja fina y compresión firme 2–5 min; los cambios de la toma del anticoagulante los decide quien lo prescribe (Steffel 2021). No trata la punción seca.',
-          'Las fuentes leídas no tratan el masaje, la manipulación vertebral ni los deportes de contacto.',
+          'El riesgo de caídas no es por sí solo motivo para no anticoagular, porque las caídas rara vez causan un sangrado mayor (NICE NG196, 1.6.8); el riesgo absoluto de hemorragia intracraneal por una caída es bajo frente al de ictus, y lo indicado es entrenar fuerza, equilibrio y marcha y revisar la medicación con su médico (Mitchell 2023).',
+          'Un consenso de expertos sobre instrumentos de tejidos blandos trata la anticoagulación como precaución (Cheatham 2025). En uno de los casos de sangrado, grave, se usó un percutor sobre el punto de inyección de la heparina (Kwon 2024).',
+          'Kim 2025 da su regla solo para deportistas de competición y no dice qué anticoagulantes cuentan como plenos.',
         ],
       },
       sueno: {
@@ -187,14 +198,18 @@ export const FAMILIAS_FARMACO = [
       },
       consultar: {
         texto: [
-          'Urgente: dolor de cuello o espalda con debilidad, alteración de la sensibilidad o de la vejiga o el intestino (Ghosh 2026). Sangrado digestivo visible (vómito con sangre, melena), por urgencias (Antunes 2024). Tras un golpe en la cabeza, valoración médica: las guías piden cautela con todos estos fármacos (Yang 2024), y se han descrito hemorragias intracraneales tardías tras caídas con anticoagulantes directos (Steffel 2021).',
-          'Pronto: hinchazón, dolor o un hematoma que no se resuelve, o una masa que sigue a las 2–3 semanas (Mameli 2025).',
+          'Urgente: dolor de cuello o espalda con debilidad, alteración de la sensibilidad o de la vejiga o el intestino (Ghosh 2026). Sangrado digestivo visible (vómito con sangre, melena), por urgencias (Antunes 2024). Golpe en la cabeza con anticoagulante o con un antiagregante que no sea la aspirina sola, a urgencias aunque se encuentre bien (NICE NG232, 1.2.4); se han descrito hemorragias intracraneales tardías tras caídas con anticoagulantes directos (Steffel 2021). Dolor fuerte de ingle, cadera o costado con el muslo débil o mareo (Lukies 2023), o una extremidad tensa con dolor desproporcionado (Brooker 2020).',
+          'Pronto: hinchazón, dolor o un hematoma que no se resuelve, o una masa que sigue a las 2–3 semanas (Mameli 2025), o una articulación hinchada tras un golpe pequeño o sin golpe (Dalrymple 2022).',
           'Los sangrados menores (encías, nariz, pequeños hematomas) se comentan con quien lo prescribe; la guía pide no saltarse ninguna dosis sin consultarlo antes (Steffel 2021).',
           'Nunca aconsejes dejar ni saltarse el anticoagulante: no tomarlo bien se asocia a más ictus y muerte, más aún con los anticoagulantes directos por su vida media corta (Salmasi 2020), y tampoco hay que suspenderlo antes de la punción seca (Muñoz 2022). Las dudas, al médico que lo prescribe.',
+          'Si el paciente toma alguno, marca la tarjeta «Paciente anticoagulado o antiagregado» en la fase 1: añade las preguntas de sangrado de la fase 2, una línea de técnica en la 4b, un recuadro en la fase 5 y los avisos y la red de seguridad del plan.',
         ],
       },
     },
-    fuentes: ['Mameli 2025', 'Ghosh 2026', 'Antunes 2024', 'Kurlander 2022', 'Nochaiwong 2022', 'Muñoz 2022', 'Steffel 2021', 'Yang 2024', 'Xiang 2025', 'Salmasi 2020'],
+    fuentes: ['Mameli 2025', 'Ghosh 2026', 'Antunes 2024', 'Kurlander 2022', 'Nochaiwong 2022', 'Muñoz 2022', 'Steffel 2021', 'Yang 2024', 'Xiang 2025', 'Salmasi 2020',
+      'Lukies 2023', 'Sahu 2020', 'Llitjos 2016', 'Liao 2021', 'Hideyama 2023', 'Amaniyan 2020', 'Brooker 2020', 'Nemunaitis 2022', 'Dalrymple 2022',
+      'NICE NG232', 'Chenoweth 2018', 'Puentedura 2015', 'Hutting 2018', 'Whedon 2015', 'Tominaga 2023', 'Kwon 2024', 'Kim 2026', 'Cheatham 2025',
+      'Kim 2025', 'Minardi 2024', 'Bavishi 2026', 'Liu 2015', 'NICE NG196', 'Mitchell 2023'],
   },
   // Opioides (2026-10): seis fuentes en PMC, dos leídas en parte (Dowell 2022,
   // Sampaio-Cunha y Martins 2022; ver el registro). Sin fuente leída para los

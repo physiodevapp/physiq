@@ -38,11 +38,11 @@ const state = {
   // estado: '' (no consta) | 'diagnosticado' | 'sospecha'; con «Diagnosticado»:
   // corticoides '' | 'no' | 'b' (≤5 mg/día) | 'm' (>5–20) | 'a' (>20) | 'ns';
   // dosisAltas e inmunosupresores '' | 'SI' | 'NO' | 'NS'; antifosfolipidos
-  // '' | 'no' | 'apl' | 'saf' | 'ns'; antitrombotico, osteonecrosis y raynaud
-  // (casillas); actividad '' | 'estable' | 'brote' | 'peor' | 'ns'; con
+  // '' | 'no' | 'apl' | 'saf' | 'ns'; osteonecrosis y raynaud (casillas; el
+  // anticoagulante o antiagregante, en la tarjeta propia); actividad '' | 'estable' | 'brote' | 'peor' | 'ns'; con
   // «Sospecha», rasgos: { lr1…lr6: 'SI'|'NO' }.
   lupus: { estado: '', corticoides: '', dosisAltas: '', inmunosupresores: '', antifosfolipidos: '',
-    antitrombotico: false, osteonecrosis: false, raynaud: false, actividad: '', rasgos: {} },
+    osteonecrosis: false, raynaud: false, actividad: '', rasgos: {} },
   // Condición especial «Trastorno mastocitario o anafilaxia» (Fase P,
   // docs/mastocitaria.md, lib/mastocitos.js). estado: '' (no consta) |
   // 'diagnosticado' (sin «Sospecha»); tipo '' | 'mastocitosis' | 'sama' | 'otro' |
@@ -68,6 +68,11 @@ const state = {
   // dos, animo { w1, w2 } y suelo { sp1…sp3 }: 'SI'|'NO' (bloques de la fase 2).
   embarazo: { estado: '', semanas: null, familiar: '', fecha: '', semanasAprox: null, parto: '',
     esfinter: false, occipitoposterior: false, lactancia: '', animo: {}, suelo: {} },
+  // Tarjeta «Paciente anticoagulado o antiagregado» (Fase P, docs/anticoagulado.md,
+  // lib/anticoagulado.js): estado '' (no consta) | 'toma'; toma: subconjunto de
+  // ['vk', 'do', 'hp', 'as', 'oa', 'ns'] (antivitamina K, anticoagulante directo,
+  // heparina, aspirina, otro antiagregante, no lo sabe).
+  anticoagulado: { estado: '', toma: [] },
   cronologia: '',
   banderasRojas: { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' },
   riesgoPsico: '',

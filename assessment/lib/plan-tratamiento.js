@@ -11,6 +11,7 @@ import {
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
   AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA, AVISOS_LUPUS, RED_LUPUS, AVISOS_MASTOCITOS, RED_MASTOCITOS,
   AVISOS_OSTEOPOROSIS, RED_OSTEOPOROSIS, AVISOS_EMBARAZO, AVISOS_POSPARTO, HIP_SACROILIACA, RED_EMBARAZO, RED_POSPARTO,
+  AVISOS_ANTICOAGULADO, HIP_PUNCION_SECA, HIP_ONDAS_CHOQUE, RED_ANTICOAGULADO,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 import { nivelMatriz } from './irritabilidad.js';
@@ -176,11 +177,12 @@ export function cantidadSesion(elegidas = [], region) {
 // la de la fractura vertebral (RED_OSTEOPOROSIS, docs/osteoporosis.md) y la
 // del embarazo o el posparto (RED_EMBARAZO / RED_POSPARTO, docs/embarazo-posparto.md).
 // Sin repetir.
-export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false, osteoporosis = false, embarazo = '' } = {}) {
+export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false, osteoporosis = false, embarazo = '', anticoagulado = false } = {}) {
   const r = RED_SEGURIDAD[region] || {};
   const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id]),
     disautonomia && RED_DISAUTONOMIA, ...(lupus ? RED_LUPUS : []), mastocitos && RED_MASTOCITOS,
-    osteoporosis && RED_OSTEOPOROSIS, embarazo === 'embarazada' && RED_EMBARAZO, embarazo === 'posparto' && RED_POSPARTO].filter(Boolean)
+    osteoporosis && RED_OSTEOPOROSIS, embarazo === 'embarazada' && RED_EMBARAZO, embarazo === 'posparto' && RED_POSPARTO,
+    anticoagulado && RED_ANTICOAGULADO].filter(Boolean)
     .filter((p, i, a) => a.findIndex(q => q.cierre === p.cierre) === i);
   return {
     cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
@@ -209,14 +211,15 @@ export function rangosBloques(duraciones = {}) {
 //   irritabilidad, irritabilidadNivel, irritabilidadDirecta, zonaP1, secundarios (`ss`
 //   del payload: [{ n, z, nr, ir, re, or }]), redNeuroZona (algún síntoma en una
 //   zona `redNeuro`: periné en lumbar), disautonomia e hipermovilidad (tarjetas
-//   de la fase 1 activas, docs/pots.md), lupus (null, o { brote, antitrombotico,
-//   raynaud } con la tarjeta en «Diagnosticado», docs/lupus.md), mastocitos (la
+//   de la fase 1 activas, docs/pots.md), lupus (null, o { brote, raynaud } con la
+//   tarjeta en «Diagnosticado», docs/lupus.md), mastocitos (la
 //   tarjeta «Trastorno mastocitario o anafilaxia» marcada, docs/mastocitaria.md),
 //   osteoporosis (null, o { diagnosticada, impactoLimitado } con la tarjeta
 //   marcada, docs/osteoporosis.md), sinThrust (motivos del tope sin thrust:
-//   'osteoporosis' | 'corticoides' | 'antitrombotico', motivosSinThrust()),
+//   'osteoporosis' | 'corticoides' | 'anticoagulante', motivosSinThrust()),
 //   embarazo (null, o { estado: 'embarazada'|'posparto', lactancia } con la tarjeta
-//   marcada, docs/embarazo-posparto.md),
+//   marcada, docs/embarazo-posparto.md), anticoagulado (la tarjeta «Paciente
+//   anticoagulado o antiagregado» marcada, docs/anticoagulado.md),
 //   estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
@@ -247,7 +250,7 @@ export function construirPlan(e) {
   // La red neurológica también con un síntoma en una zona `redNeuro` (hoy el
   // periné en lumbar: cola de caballo), aunque no haya hipótesis neurológica
   const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia, lupus: !!e.lupus, mastocitos: !!e.mastocitos,
-    osteoporosis: !!e.osteoporosis?.diagnosticada, embarazo: e.embarazo?.estado || '' });
+    osteoporosis: !!e.osteoporosis?.diagnosticada, embarazo: e.embarazo?.estado || '', anticoagulado: !!e.anticoagulado });
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
   const tabla = tablaEscalones(familia);
@@ -265,7 +268,6 @@ export function construirPlan(e) {
   if (e.lupus) {
     avisosHip.push(...AVISOS_LUPUS.map(k => AVISOS[k]));
     if (e.lupus.brote) avisosHip.push(AVISOS.lupusBrote);
-    if (e.lupus.antitrombotico) avisosHip.push(AVISOS.lupusAntitrombotico);
     if (e.lupus.raynaud) avisosHip.push(AVISOS.lupusRaynaud);
   }
   // Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): en cualquier región
@@ -283,12 +285,20 @@ export function construirPlan(e) {
     if (e.embarazo.estado === 'posparto' && e.embarazo.lactancia) avisosHip.push(AVISOS.lactancia);
     if (elegidas.some(h => HIP_SACROILIACA.includes(h.id))) avisosHip.push(AVISOS.sacroiliacaEmbarazo);
   }
-  // Tope «sin thrust» (decisiones 6 y 15): la osteoporosis, o el lupus con
-  // corticoides mantenidos o antitrombótico. Los escalones nunca proponen
-  // grado V, así que el tope es el aviso.
+  // Anticoagulado o antiagregado (docs/anticoagulado.md): en cualquier región;
+  // punción seca y ondas de choque, solo si la pauta elegida las recomienda
+  if (e.anticoagulado) {
+    avisosHip.push(...AVISOS_ANTICOAGULADO.map(k => AVISOS[k]));
+    if (elegidas.some(h => HIP_PUNCION_SECA.includes(h.id))) avisosHip.push(AVISOS.anticoaguladoPuncion);
+    if (elegidas.some(h => HIP_ONDAS_CHOQUE.includes(h.id))) avisosHip.push(AVISOS.anticoaguladoOndas);
+  }
+  // Tope «sin thrust» (decisiones 6 y 15 de la osteoporosis, 4 del
+  // anticoagulado): la osteoporosis, el lupus con corticoides mantenidos, el
+  // anticoagulante. Los escalones nunca proponen grado V, así que el tope es el aviso.
   const sinThrust = e.sinThrust || [];
   if (sinThrust.includes('osteoporosis')) avisosHip.push(AVISOS.sinThrustOsteoporosis);
-  else if (sinThrust.length) avisosHip.push(AVISOS.sinThrustLupus);
+  else if (sinThrust.includes('corticoides')) avisosHip.push(AVISOS.sinThrustLupus);
+  if (sinThrust.includes('anticoagulante')) avisosHip.push(AVISOS.sinThrustAnticoagulante);
   for (const k of new Set(elegidas.flatMap(h => AVISOS_HIP[h.id] || []))) avisosHip.push(AVISOS[k]);
   if (elegidas.length > 1) avisosHip.push(AVISOS.dosHipotesis);
   if (new Set(familias).size > 1) avisosHip.push(AVISOS.dosFamilias);

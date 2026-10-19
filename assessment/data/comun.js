@@ -1031,7 +1031,6 @@ export const SIS_LUPUS = {
       naturaleza: 'Lupus: la artritis da hinchazón y rigidez por la mañana de 30 min o más, sobre todo en manos, muñecas y rodillas, y duele y limita igual en activo que en pasivo (Goodman 2018, cap. 12, p. 456). El dolor generalizado a la palpación sin tumefacción orienta a fibromialgia, que acompaña al lupus en el 20–30 %; el diagnóstico es médico (Goodman 2018, cap. 12, p. 444). La fatiga aparece también con el lupus inactivo, así que sola no mide la actividad; si es nueva o empeora, que la valore su reumatólogo (Dures 2024, rec. 4).',
       brote3: 'Lupus en brote o peor sin valorar: los ensayos de ejercicio solo incluyeron lupus estable (Frade 2023); que su reumatólogo revalore las contraindicaciones antes de seguir (Blaess 2024, rec. 4).',
       tecnica4b: 'Lupus: con corticoides, el hueso es más frágil y la piel más fina; antes de ejercicios resistidos o movilizaciones, ten en cuenta la densidad ósea (Yasir 2023; Goodman 2018, cap. 12, p. 445). Un dolor profundo en carga de cadera, rodilla, hombro o tobillo puede ser una osteonecrosis aunque la exploración y la radiografía sean normales (Matthews 2023).',
-      tecnica4bAntitrombotico: 'Con anticoagulante o antiagregante, precaución con lo que tenga riesgo de golpe (Blaess 2024, rec. 3).',
       ejercicio: 'Con el lupus inactivo o leve, llegar poco a poco a 150–300 min por semana de intensidad moderada (esfuerzo 5–6 sobre 10) y fuerza al menos 2 días (Blaess 2024, rec. 9). Sesiones con aeróbico y fuerza, 3–5 por semana (Blaess 2024, rec. 14); fuerza en 1–3 series de 8–12 repeticiones con 1–3 min de descanso (Blaess 2024, rec. 15); aeróbico de 20–30 min hasta 50, en tramos de 4 semanas (Blaess 2024, rec. 12); con calentamiento y vuelta a la calma (Blaess 2024, rec. 13). Supervisado por un fisioterapeuta (Blaess 2024, rec. 11). Puede reducir algo la fatiga, y la actividad del lupus probablemente no cambia (Frade 2023).',
       antesEmpezar: 'Antes de empezar, su médico valora si hay contraindicaciones; antes de ejercicio vigoroso, puede hacer falta un ECG o una prueba de esfuerzo (Blaess 2024, rec. 10).',
       especialista: 'Con osteonecrosis o artropatía de Jaccoud, que lo valore un especialista antes de empezar (Blaess 2024, rec. 1).',
@@ -1509,6 +1508,159 @@ export const SIS_EMBARAZO = {
       thrustPp: 'En el posparto, el thrust no está indicado con articulaciones simétricas (Simonds 2022).',
       // Línea de la sacroilíaca (T8): tarjeta de lu8 y ca10 en la fase 5
       sacroiliaca: 'Embarazo o posparto: primero información (el dolor no es peligroso y probablemente mejorará) y ejercicio individualizado en el embarazo, o estabilización individualizada en el posparto (Vleeming 2008, nivel C); el cinturón, para probar el alivio por periodos cortos (Vleeming 2008, nivel D; NICE NG201, 1.4.15).',
+    },
+  },
+};
+
+// ─── Paciente anticoagulado o antiagregado (Fase P, docs/anticoagulado.md) ───
+// Tarjeta con un solo estado, «Toma», y los fármacos en chips (decisión 2). Cada
+// pregunta y bandera lleva `ac`, el grupo con el que sale (lib/anticoagulado.js,
+// elementoACVisible): 'anticoagulante' (antivitamina K, directo, heparina o «no
+// lo sabe»), 'cabeza' (lo anterior o un antiagregante que no sea la aspirina
+// sola: NICE NG232, 1.2.4) o 'todos'. Ninguna regla automática con otras
+// tarjetas (decisión 19). «Hoy», «ya», «ahora» y el 112 son redacción de la app:
+// las fuentes hablan de manejo hospitalario. Fuentes leídas enteras en la sesión.
+const AC_CITA = {
+  ng232: 'NICE NG232 — National Institute for Health and Care Excellence, «Head injury: assessment and early management», NICE guideline NG232, 2023 (cambios menores hasta 2025)',
+  chenoweth: 'Chenoweth 2018 — Chenoweth, Gaona, Faul, Holmes y Nishijima, «Incidence of Delayed Intracranial Hemorrhage in Older Patients After Blunt Head Trauma», JAMA Surg 2018;153(6):570–575',
+  colombo: 'Colombo 2021 — Colombo, Bonzi, Fiorelli et al., «Incidence of delayed bleeding in patients on antiplatelet therapy after mild traumatic brain injury: a systematic review and meta-analysis», Scand J Trauma Resusc Emerg Med 2021;29(1):123',
+  wiegele: 'Wiegele 2019 — Wiegele, Schöchl, Haushofer et al., «Diagnostic and therapeutic approach in adult patients with traumatic brain injury receiving oral anticoagulant therapy: an Austrian interdisciplinary consensus statement», Crit Care 2019;23:62',
+  capsoni: 'Capsoni 2025 — Capsoni, Carpani, Tarantino et al., «Incidence and risk factors for delayed intracranial hemorrhage after mild brain injury in anticoagulated patients: a multicenter retrospective study», Scand J Trauma Resusc Emerg Med 2025;33',
+  peng: 'Peng 2022 — Peng, Yan, Liu et al., «Prognostic Factors and Treatments Efficacy in Spontaneous Spinal Epidural Hematoma: A Multicenter Retrospective Study», Neurology 2022;99(8):e843–e850',
+  albrecht: 'Albrecht 2024 — Albrecht, Boeckh-Behrens, Schwarting et al., «Spontaneous spinal hematomas: A case series», Acta Neurochir (Wien) 2024;166(1):353',
+  ghosh: 'Ghosh 2026 — Ghosh, Shine y Sundaralingam, «Spontaneous Spinal Epidural Haematoma Associated With Direct Oral Anticoagulants: A Descriptive Systematic Review», Cureus 2026;18(7):e112438',
+  cooper: 'Cooper 2019 — Cooper, Battaglia y Reiter, «Spinal epidural hematoma in a patient on chronic anticoagulation therapy performing self-neck manipulation: a case report», Chiropr Man Therap 2019;27:41',
+  lukies: 'Lukies 2023 — Lukies, Gipson, Tan et al., «Spontaneous Retroperitoneal Haemorrhage: Efficacy of Conservative Management and Embolisation», Cardiovasc Intervent Radiol 2023;46(4):488–495',
+  sahu: 'Sahu 2020 — Sahu, Mishra et al., «Femoral Neuropathy: A Rare Presentation of Retroperitoneal Hematoma with Review of Literature», Indian J Hematol Blood Transfus 2020;36(1):174–177',
+  llitjos: 'Llitjos 2016 — Llitjos, Daviaud, Grimaldi et al., «Ilio-psoas hematoma in the intensive care unit: a multicentric study», Ann Intensive Care 2016;6(1):8',
+  mameli: 'Mameli 2025 — Mameli, Marongiu, Podda, Pisanu y Barcellona, «Spontaneous Muscle Bleeding During Oral Anticoagulation Therapy: When Should We Suspect an Underlying Tumor?», Hematol Rep 2025;17(5):44',
+  munoz: 'Muñoz 2022 — Muñoz, Dommerholt, Pérez-Palomares, Herrero y Calvo, «Dry Needling and Antithrombotic Drugs», Pain Res Manag 2022:1363477',
+  liao: 'Liao 2021 — Liao y Puckett, «A Proposed Algorithm on the Modern Management of Rectus Sheath Hematoma: A Literature Review», Cureus 2021;13(11):e20008',
+  hideyama: 'Hideyama 2023 — Hideyama, Watanabe, Ido et al., «Non-traumatic Rectus Sheath Hematoma During Direct Oral Anticoagulation», Cureus 2023;15(9):e45876',
+  yale: 'Yale 2020 — Yale, Tekiner y Yale, «Fothergill and Carnett signs and rectus sheath hematoma», J Rural Med 2020;15(3):130–131',
+  amaniyan: 'Amaniyan 2020 — Amaniyan, Ghobadi, Vaismoradi et al., «Cold Application on Bruising at the Subcutaneous Heparin Injection Site: A Systematic Review and Meta-Analysis», SAGE Open Nurs 2020;6:2377960820901370',
+  brooker: 'Brooker 2020 — Brooker, Brown, Thornton et al., «Emergency fasciotomy in an anticoagulated patient with low energy posterior thigh injury», BMJ Case Rep 2020;13(9)',
+  nemunaitis: 'Nemunaitis 2022 — Nemunaitis, Den Haese, Buseck et al., «A Case of Recurrent Compartment Syndrome with Concomitant Use of Eliquis», Case Rep Orthop 2022:1863538',
+  ogrodnik: 'Ogrodnik 2021 — Ogrodnik, Oliver, Cani et al., «Clinical Case of Acute Non-Traumatic Hand Compartment Syndrome and Systematic Review for the Upper Extremity», Hand (N Y) 2021;16(3):285–291',
+  kim26: 'Kim 2026 — Kim, Na, Kim, Choi, Hwang y Kim, «Acute Forearm Compartment Syndrome Following Physical Therapy in a Patient Receiving Anticoagulation Therapy: A Case Report», J Clin Med 2026;15(13):5052',
+  dalrymple: 'Dalrymple 2022 — Dalrymple, Davies, Biggs et al., «Management of Haemarthrosis in Patients On Oral Anticoagulants», Geriatr Orthop Surg Rehabil 2022;13:21514593221076966',
+  bahit: 'Bahit 2017 — Bahit, Lopes, Wojdyla et al., «Non-major bleeding with apixaban versus warfarin in patients with atrial fibrillation», Heart 2017;103(8):623–628',
+};
+
+export const SIS_ANTICOAGULADO = {
+  id: 'transversal_anticoagulado', icon: '🩸', nombre: 'Anticoagulado o antiagregado', soloAnticoagulado: true,
+  banderasRojas: [
+    { texto: 'Golpe en la cabeza, aunque parezca leve, con anticoagulante o antiagregante', ac: 'cabeza', pregunta: 'ac_u_cabeza' },
+    { texto: 'Dolor de cabeza fuerte o que va a más, vómitos, somnolencia, confusión o síntomas neurológicos nuevos tras un golpe en la cabeza', ac: 'todos', pregunta: 'ac_u_cabeza_tardia' },
+    { texto: 'Dolor brusco de cuello o espalda con debilidad, hormigueo o cambios al orinar o al hacer de vientre (hematoma epidural espinal)', ac: 'todos', pregunta: 'ac_u_espinal' },
+    { texto: 'Dolor de ingle, cadera, costado o zona lumbar baja con el muslo débil o adormecido, o con mareo y palidez (hematoma del psoas o retroperitoneal)', ac: 'anticoagulante', pregunta: 'ac_u_psoas' },
+    { texto: 'Dolor brusco en la pared del abdomen con un bulto (hematoma de la vaina de los rectos)', ac: 'anticoagulante', pregunta: 'ac_u_pared' },
+    { texto: 'Extremidad muy hinchada y tensa con dolor desproporcionado, peor al estirar pasivamente (síndrome compartimental)', ac: 'todos', pregunta: 'ac_u_compartimental' },
+  ],
+  banderasAmarillas: [
+    { texto: 'Hematoma grande o que va a más, bulto muscular nuevo o articulación hinchada tras un golpe pequeño o sin golpe', ac: 'todos', pregunta: 'ac_d_hematoma' },
+  ],
+  preguntas: [
+    { id: 'ac_u_cabeza', ac: 'cabeza', alerta: true,
+      urgencia: 'Golpe en la cabeza con anticoagulante o antiagregante: que lo valore un servicio de urgencias hoy, aunque se encuentre bien; el sangrado puede aparecer días después.',
+      text: '¿Se ha dado un golpe en la cabeza en los últimos días, aunque pareciera leve?',
+      razonamiento: {
+        porque: 'NICE pide a los servicios de la comunidad que deriven a urgencias a quien se ha golpeado la cabeza y toma un anticoagulante o un antiagregante (salvo la aspirina sola), aunque no tenga otros síntomas (NICE NG232, 1.2.4); allí se valora hacer un TAC en las 8 horas siguientes al golpe (NICE NG232, 1.5.13).',
+        peso: 'La hemorragia que aparece tarde es rara y casi siempre sin consecuencias, pero existe y puede tardar días: en una cohorte de mayores de 55 años, dos de las tres aparecieron a los 3 y a los 5 días del primer TAC (Chenoweth 2018). «Hoy» es redacción de la app: la guía dice derivar a urgencias, sin plazo.',
+        detalle: 'Con la aspirina sola, NICE no lo pone como factor de riesgo: su comité vio poco riesgo y admite el alta sin TAC tras decidirlo con la persona (NICE NG232, justificación). Por eso esta pregunta no sale con la aspirina sola. Con la doble antiagregación, el sangrado tardío fue más frecuente que con la aspirina sola (Colombo 2021).\n\nNICE no ingresa a nadie solo por estar anticoagulado si el TAC es normal; un consenso austriaco pide 24 horas de observación (Wiegele 2019). Para el fisioterapeuta no cambia nada: los dos mandan a urgencias.\n\nAl alta, NICE pide que un adulto le acompañe las primeras 24 horas y que sepa que algunas personas parecen recuperarse rápido y luego tienen complicaciones (NICE NG232, 1.10.9).',
+        fuentes: ['NICE NG232', 'Chenoweth 2018', 'Colombo 2021', 'Wiegele 2019'],
+        citas: [`${AC_CITA.ng232}, recomendaciones 1.2.4, 1.5.13 y 1.10.9, y justificación.`, `${AC_CITA.chenoweth}, resultados.`,
+          `${AC_CITA.colombo}, resultados.`, `${AC_CITA.wiegele}, recomendaciones.`]
+      } },
+    { id: 'ac_u_cabeza_tardia', ac: 'todos', alerta: true,
+      urgencia: 'Posible sangrado intracraneal tardío: urgencias ya; 112 si está muy adormilado, confuso o con debilidad.',
+      text: 'Desde un golpe en la cabeza (de hace días o semanas), ¿tiene un dolor de cabeza fuerte o que va a más, vómitos repetidos, somnolencia, confusión o cambios de conducta, o debilidad, dificultad para hablar o cambios de visión nuevos?',
+      razonamiento: {
+        porque: 'Son los signos de que una hemorragia intracraneal está creciendo: dolor de cabeza intenso o que aumenta, vómitos persistentes, agitación o conducta anormal, y síntomas neurológicos nuevos (NICE NG232, 1.9.13). El comité de NICE nombra el dolor de cabeza intenso, la somnolencia y los vómitos como los primeros signos de un sangrado tardío (NICE NG232, justificación de 1.10.6).',
+        peso: 'Puede aparecer días o semanas después del golpe, así que ningún protocolo de observación es del todo eficaz (Wiegele 2019). En anticoagulados, los vómitos tras el golpe y los síntomas nuevos durante la observación se asociaron a la hemorragia tardía (Capsoni 2025). «Ya» y el 112 son redacción de la app.',
+        fuentes: ['NICE NG232', 'Wiegele 2019', 'Capsoni 2025'],
+        citas: [`${AC_CITA.ng232}, recomendación 1.9.13 y justificación de 1.10.6.`, `${AC_CITA.wiegele}, discusión.`, `${AC_CITA.capsoni}, resultados.`]
+      } },
+    { id: 'ac_u_espinal', ac: 'todos', alerta: true,
+      urgencia: 'Posible hematoma epidural espinal: urgencias ya (112); cuanto antes se descomprime, mejor.',
+      text: '¿Le ha empezado de golpe un dolor fuerte de cuello o de espalda con debilidad, hormigueo o adormecimiento en brazos o piernas, o cambios al orinar o al hacer de vientre? (Puede empezar por la debilidad, sin dolor fuerte.)',
+      razonamiento: {
+        porque: 'Un sangrado en el canal vertebral comprime la médula o las raíces: suele empezar con un dolor brusco e intenso de cuello o espalda y luego aparecen debilidad, alteración de la sensibilidad o de la vejiga y el intestino (Peng 2022; Albrecht 2024). Los anticoagulantes y los antiagregantes son un factor de riesgo, aunque no el único: los tomaban 21 de 105 pacientes en una serie (Peng 2022) y 11 de 20 en otra (Albrecht 2024); con anticoagulantes directos, dos de cada tres fueron cervicales o cervicotorácicos (Ghosh 2026).',
+        peso: 'En el 21 % el déficit grave llegó sin dolor importante (Peng 2022), y puede haber un intervalo sin dolor de minutos a días antes del déficit (Albrecht 2024). La mayoría de los autores considera mejor operar en las primeras 12 horas (Peng 2022), pero el plazo no está claro: por eso la app dice «cuanto antes», sin horas. Con debilidad de un lado puede parecer un ictus (Ghosh 2026).',
+        detalle: 'Hay casos publicados tras manipular la columna cervical en pacientes anticoagulados, como el de un paciente con warfarina muy por encima del rango (INR 7,84) que se giraba el cuello él mismo (Cooper 2019); ninguno demuestra que la técnica fuera la causa, y también hay casos sin anticoagulante.\n\nSe cruza con la pregunta de la cola de caballo de lumbar, la de compresión medular de la tarjeta de osteoporosis y la del hematoma tras una cirugía de columna: si encaja con varias, márcalas todas.',
+        fuentes: ['Peng 2022', 'Albrecht 2024', 'Ghosh 2026', 'Cooper 2019'],
+        citas: [`${AC_CITA.peng}, resultados y discusión.`, `${AC_CITA.albrecht}, resultados y discusión.`, `${AC_CITA.ghosh}, resultados.`, `${AC_CITA.cooper}, caso.`]
+      } },
+    { id: 'ac_u_psoas', ac: 'anticoagulante', alerta: true,
+      urgencia: 'Posible hematoma profundo (del psoas o retroperitoneal): urgencias hoy; con mareo, palidez o tensión baja, 112.',
+      text: '¿Le ha empezado un dolor fuerte en la ingle, la cadera, el costado o la zona lumbar baja, con el muslo débil o adormecido, o con mareo, palidez o sudor frío? (Con un golpe pequeño o sin golpe.)',
+      razonamiento: {
+        porque: 'Un sangrado en el psoas o detrás del peritoneo da un cuadro variado (dolor abdominal, de cadera, de costado o lumbar, caída de la tensión y afectación del plexo lumbar), y por eso se diagnostica tarde (Lukies 2023). La afectación del nervio femoral (muslo débil o adormecido) puede ser lo que lo delate (Sahu 2020). La anticoagulación es uno de sus factores de riesgo, y la causa en 56 de 77 casos de una serie de UCI (Llitjos 2016), y el psoas es uno de los músculos que más sangran con ella (Mameli 2025).',
+        peso: 'Solo un tercio de los sangrados abdominales tiene los síntomas clásicos (Sahu 2020). En una serie de UCI, con casos graves, el 44 % llegó en shock y el 25 % con síntomas por compresión (Llitjos 2016). El manejo es hospitalario (Lukies 2023). «Hoy» y el 112 son redacción de la app.',
+        detalle: 'En el anticoagulado con un dolor nuevo de ingle o cadera, conviene una exploración neurológica completa (Sahu 2020).\n\nPunción seca: el psoas es uno de los músculos en los que la revisión de punción seca con antitrombóticos recomienda la ecografía Doppler (Muñoz 2022).',
+        fuentes: ['Lukies 2023', 'Sahu 2020', 'Llitjos 2016', 'Mameli 2025', 'Muñoz 2022'],
+        citas: [`${AC_CITA.lukies}, introducción y discusión.`, `${AC_CITA.sahu}, caso y discusión.`, `${AC_CITA.llitjos}, resultados.`, `${AC_CITA.mameli}, discusión.`, `${AC_CITA.munoz}, apartado 10.`]
+      } },
+    { id: 'ac_u_pared', ac: 'anticoagulante', alerta: true,
+      urgencia: 'Posible hematoma de la vaina de los rectos: valoración médica hoy; con mareo o dolor que va a más, urgencias.',
+      text: '¿Le ha salido de golpe, tras toser, un esfuerzo o una inyección de heparina, un dolor fuerte en la pared de la barriga con un bulto, que empeora al moverse o al tensar el abdomen?',
+      razonamiento: {
+        porque: 'Un sangrado dentro de la vaina del recto da un dolor brusco en la pared del abdomen con un bulto doloroso; lo favorecen la anticoagulación, la tos, la hipertensión, la edad y una cirugía abdominal previa (Liao 2021). Un caso con apixabán empezó tras una tos intensa (Hideyama 2023). El bulto que sigue palpándose fijo al tensar el abdomen (signo de Fothergill) orienta a la pared y no al interior del abdomen (Yale 2020).',
+        peso: 'Casi siempre se maneja en el hospital sin cirugía (entre el 56 y el 83 %), y lo que más pesa para necesitar algo más es la inestabilidad de la tensión, no el tamaño (Liao 2021). Los moratones en el punto de inyección de la heparina son frecuentes (Amaniyan 2020) y no son esto: lo que alarma es el dolor brusco con bulto. «Hoy» es redacción de la app.',
+        fuentes: ['Liao 2021', 'Hideyama 2023', 'Yale 2020', 'Amaniyan 2020'],
+        citas: [`${AC_CITA.liao}, revisión.`, `${AC_CITA.hideyama}, caso.`, `${AC_CITA.yale}.`, `${AC_CITA.amaniyan}, introducción.`]
+      } },
+    { id: 'ac_u_compartimental', ac: 'todos', alerta: true,
+      urgencia: 'Posible síndrome compartimental por sangrado: urgencias ahora; no hay que esperar a que falten el pulso o el movimiento.',
+      text: '¿Tiene un brazo, un antebrazo, una mano, un muslo o una pierna muy hinchados y tensos, con un dolor desproporcionado que va a más y que empeora al estirarle pasivamente los dedos de la mano o del pie? (Tras un golpe pequeño, un esfuerzo o sin causa.)',
+      razonamiento: {
+        porque: 'Un sangrado dentro de un compartimento muscular cerrado sube la presión hasta cortar el riego: dolor desproporcionado, compartimento tenso y dolor al estiramiento pasivo (Brooker 2020). El dolor al estiramiento pasivo es el signo precoz más sensible; la parálisis, la palidez y la falta de pulso llegan tarde, cuando ya hay daño (Nemunaitis 2022).',
+        peso: 'Es una urgencia quirúrgica. Con anticoagulantes ha aparecido tras un traumatismo de baja energía (Brooker 2020), sin traumatismo (Nemunaitis 2022; Ogrodnik 2021) y tras una sesión de fisioterapia con estiramientos y movilización, sin que se pudiera demostrar la causa (Kim 2026). «Ahora» es redacción de la app.',
+        detalle: 'Se cruza con la pregunta del síndrome compartimental tras una operación o un yeso del paciente posquirúrgico: si encaja con las dos, márcalas.',
+        fuentes: ['Brooker 2020', 'Nemunaitis 2022', 'Ogrodnik 2021', 'Kim 2026'],
+        citas: [`${AC_CITA.brooker}, discusión.`, `${AC_CITA.nemunaitis}, discusión.`, `${AC_CITA.ogrodnik}, resultados.`, `${AC_CITA.kim26}, caso y discusión.`]
+      } },
+    { id: 'ac_d_hematoma', ac: 'todos',
+      derivacion: 'Valoración médica pronto: un hematoma que no se resuelve en 2–3 semanas, de más de 5 cm o profundo, o con dolor que persiste, hay que estudiarlo; una articulación hinchada con anticoagulante puede ser un hemartros, y ante la duda se aspira para descartar una infección. Si hay fiebre, calor y rojez, ya hay otra pregunta urgente.',
+      text: '¿Tiene un hematoma grande o que va a más, un bulto nuevo en un músculo, o una articulación hinchada tras un golpe pequeño o sin golpe?',
+      razonamiento: {
+        porque: 'Con anticoagulantes orales aparecen hematomas musculares espontáneos, sobre todo en el psoas, la vaina de los rectos y el muslo; los benignos se resuelven en 2–6 semanas, y una masa que no lo hace en 2–3 semanas, mide más de 5 cm, es profunda o duele cada vez más hay que estudiarla, porque puede haber un tumor debajo (Mameli 2025). El hemartros con anticoagulantes orales aparece en un 0–1,5 % (Dalrymple 2022).',
+        peso: 'No hay consenso sobre cómo manejar el hemartros con anticoagulantes; se aspira si el diagnóstico no está claro, para descartar una infección o una artritis por cristales (Dalrymple 2022). Un sangrado que no es mayor no es siempre menor: en un ensayo con apixabán y warfarina, el sangrado clínicamente relevante no mayor se asoció después a más sangrado mayor y a más muertes (Bahit 2017). Que lo valore su médico; nunca le digas que deje el fármaco.',
+        fuentes: ['Mameli 2025', 'Dalrymple 2022', 'Bahit 2017'],
+        citas: [`${AC_CITA.mameli}, discusión.`, `${AC_CITA.dalrymple}, introducción y discusión.`, `${AC_CITA.bahit}, resultados.`]
+      } },
+  ],
+  // Tarjeta y textos. Las citas cuentan en docs/referencias.md como menciones del cribado.
+  anticoagulado: {
+    // Qué toma (chips multiselección; decisión 2). Grupos derivados en lib/anticoagulado.js.
+    tipos: [
+      { id: 'vk', texto: 'Antivitamina K (acenocumarol, warfarina)' },
+      { id: 'do', texto: 'Anticoagulante directo (apixabán, rivaroxabán, edoxabán, dabigatrán)' },
+      { id: 'hp', texto: 'Heparina (en inyección)' },
+      { id: 'as', texto: 'Aspirina' },
+      { id: 'oa', texto: 'Otro antiagregante (clopidogrel, prasugrel, ticagrelor…)' },
+      { id: 'ns', texto: 'No lo sabe' },
+    ],
+    textos: {
+      nota: 'Márcala si toma anticoagulantes o antiagregantes, también si es solo por una operación o por una trombosis reciente. No le digas que lo deje ni que se salte una dosis: las dudas, a quien se lo receta.',
+      lupus: 'El anticoagulante o el antiagregante se marcan en la tarjeta «Paciente anticoagulado o antiagregado».',
+      // Fase 4b (decisión 11): la última frase es redacción propia, apoyada en Brooker 2020.
+      tecnica4b: 'Anticoagulado o antiagregado: precaución con lo que tenga riesgo de golpe (lo recomiendan para el lupus: Blaess 2024, rec. 3); un esfuerzo mecánico pequeño puede dar un sangrado importante (Kim 2026, un caso). Si durante la exploración aparece un dolor desproporcionado, una hinchazón tensa o un hematoma que crece, para y deriva.',
+      // Fase 5
+      medico: 'No sugieras dejar el anticoagulante ni saltarse una dosis: no tomarlo bien se asocia a más ictus y muerte (Salmasi 2020), y la guía EHRA pide no saltarse ninguna sin consultarlo antes (Steffel 2021). Las dudas, al médico que lo receta.',
+      cabeza: 'Golpe en la cabeza con anticoagulante o con un antiagregante que no sea la aspirina sola: a urgencias, aunque se encuentre bien (NICE NG232, 1.2.4); que un adulto le acompañe las primeras 24 horas y sepa que puede empeorar después de parecer recuperado (NICE NG232, 1.10.9). El sangrado tardío es raro, pero puede aparecer días después (Chenoweth 2018).',
+      cabezaAspirina: 'Con la aspirina sola, el golpe en la cabeza no es por sí solo motivo de derivar (NICE NG232, 1.2.4); los síntomas tras el golpe sí lo son.',
+      thrust: 'Thrust: la única tabla específica de la columna torácica lo pone como contraindicación absoluta con tratamiento anticoagulante (Puentedura 2015, tabla 1), y otra, de la terapia manual cervical, como precaución (Hutting 2018, opinión de los autores); las dos son opinión de expertos, y ninguna distingue fármacos ni da un INR. Un estudio de cohorte asoció la anticoagulación crónica a más lesión cerebral o medular tras la manipulación, sin probar la causa (Whedon 2015).',
+      antiagregante: 'Con antiagregante solo, ninguna fuente de manipulación lo trata como contraindicación; precaución con lo que tenga riesgo de golpe (lo recomiendan para el lupus: Blaess 2024, rec. 3).',
+      tejidosBlandos: 'De la movilización, el masaje, la presión profunda y los estiramientos no hay ninguna norma con anticoagulantes: solo casos de sangrado tras un masajeador, un percutor o una sesión de estiramientos (Tominaga 2023; Kwon 2024; Kim 2026), y un consenso de expertos sobre instrumentos de tejidos blandos que los trata como precaución (Cheatham 2025). En uno de esos casos, grave, se usó un percutor sobre el punto de inyección de la heparina (Kwon 2024).',
+      puncion: 'Punción seca: no existe ningún estudio con antitrombóticos. Una revisión narrativa y un consenso de expertos que se apoya en ella dicen que no es una contraindicación absoluta (Muñoz 2022; Waterway 2026); según otra revisión, la guía suiza sí la trata así con la anticoagulación (Malfait 2024). Práctica de los autores de la primera: empezar por músculos superficiales viendo cómo sangra, evitar al principio los profundos que no se pueden comprimir y comprimir 10–15 s (Muñoz 2022). Sin INR límite.',
+      ondas: 'Ondas de choque: sin consenso entre expertos sobre aplicarlas con anticoagulantes, y el hematoma es un efecto posible (Rhim 2025); se consideran un factor importante a valorar, sin datos con anticoagulados (Tenforde 2022).',
+      ejercicio: 'Ejercicio: ninguna fuente da intensidad ni carga con anticoagulantes. Tras una embolia pulmonar, el ejercicio es seguro y factible (Xiang 2025); tras una TVP, caminar pronto no aumentó la embolia en los estudios (Liu 2015, con reservas de calidad).',
+      deporte: 'Deporte de competición: con aspirina sola, sin límite; con doble antiagregación o anticoagulación plena, en los deportes de colisión o de impacto a alta velocidad los riesgos no compensan o se decide con el médico (Kim 2025). Es solo para deportistas de competición y no dice qué anticoagulantes cuentan como plenos. Fuera de la competición, las revisiones coinciden en actividades con poco riesgo de golpe, sí, y deportes de colisión, a decidir con el médico (Minardi 2024; Bavishi 2026).',
+      caidas: 'Caídas: el anticoagulante no se retira solo por el riesgo de caídas, que rara vez causan un sangrado mayor (NICE NG196, 1.6.8); el riesgo absoluto de hemorragia intracraneal por una caída es bajo frente al de ictus (Mitchell 2023). Entrenar fuerza, equilibrio y marcha, y revisar la medicación con su médico (Mitchell 2023). No hay datos de que el ejercicio de equilibrio reduzca el sangrado por caídas.',
+      banderas: 'Banderas de sangrado (fase 2): dolor brusco de cuello o espalda con debilidad, dolor de ingle o costado con el muslo débil o mareo, dolor brusco con bulto en la pared del abdomen, una extremidad tensa con dolor desproporcionado, y un hematoma que no se resuelve.',
+      heparina: 'Con heparina en inyección, los moratones en el punto de inyección son frecuentes (Amaniyan 2020); un dolor brusco con bulto en la pared del abdomen no lo es (Liao 2021).',
+      otrosFarmacos: 'Los AINE, los antidepresivos ISRS o IRSN y otros antiagregantes aumentan el riesgo de sangrado con estos fármacos (NICE NG196, 1.2.3; Nochaiwong 2022): coméntalo con quien los receta.',
     },
   },
 };

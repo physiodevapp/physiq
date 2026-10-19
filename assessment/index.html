@@ -459,11 +459,11 @@
     <div class="form-group hm-subtipo">
       <div class="form-label">Además (marca lo que tenga)</div>
       <div class="option-group hm-subtipos" id="lesCasillas">
-        <button type="button" class="option-btn" data-les-casilla="antitrombotico" aria-pressed="false" onclick="toggleLESCasilla('antitrombotico')">Toma anticoagulante o antiagregante (aspirina)</button>
         <button type="button" class="option-btn" data-les-casilla="osteonecrosis" aria-pressed="false" onclick="toggleLESCasilla('osteonecrosis')">Osteonecrosis o artropatía de Jaccoud conocidas</button>
         <button type="button" class="option-btn" data-les-casilla="raynaud" aria-pressed="false" onclick="toggleLESCasilla('raynaud')">Fenómeno de Raynaud</button>
       </div>
     </div>
+    <div class="hm-nota"><span id="lesNotaAC"></span> <button type="button" class="sint-recordatorio-ir" onclick="irATarjetaAC()">Ir a la tarjeta →</button></div>
     <div class="form-group hm-subtipo">
       <div class="form-label">Ahora mismo</div>
       <div class="option-group hm-subtipos" data-les-fila="actividad">
@@ -641,6 +641,22 @@
     <div class="cir-semanas" id="emSinSemanas"></div>
     <div id="emTA"></div>
     </div>
+  </div>
+
+  <!-- Condición especial (docs/anticoagulado.md): sin marcar = no consta; un solo estado, «Toma» -->
+  <div class="card" id="cardAnticoagulado">
+    <div class="card-title">Paciente anticoagulado o antiagregado</div>
+    <div class="plan-note-hint" id="acNota"></div>
+    <div class="option-group option-group-full" id="acEstado">
+      <button type="button" class="option-btn" data-valor="toma" onclick="selectACEstado('toma')">Toma anticoagulante o antiagregante</button>
+    </div>
+    <div id="acTomaWrap" style="display:none">
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Qué toma? (marca todo lo que tome)</div>
+      <div class="option-group hm-subtipos" id="acToma"></div>
+    </div>
+    </div>
+    <div class="hm-nota">Qué vigilar con estos fármacos: <button type="button" class="sint-recordatorio-ir" onclick="abrirFarmacos({ familia: 'antitromboticos' })">Fármacos: anticoagulantes y antiagregantes →</button></div>
   </div>
 
   <div class="card" id="cardCronologia">

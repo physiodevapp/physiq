@@ -27,12 +27,14 @@ export const FILAS_LES = {
   corticoides: CORTICOIDES_LES, dosisAltas: SINO_LES, inmunosupresores: SINO_LES,
   antifosfolipidos: ANTIFOSFOLIPIDOS_LES, actividad: ACTIVIDAD_LES,
 };
-export const CASILLAS_LES = ['antitrombotico', 'osteonecrosis', 'raynaud'];
+// El anticoagulante o antiagregante ya no es una casilla del lupus: se marca en la
+// tarjeta «Paciente anticoagulado o antiagregado» (docs/anticoagulado.md, decisión 3).
+export const CASILLAS_LES = ['osteonecrosis', 'raynaud'];
 
 // `rasgos`: { lr1…lr6: 'SI'|'NO' } (solo con «Sospecha»).
 export const lupusVacio = () => ({
   estado: '', corticoides: '', dosisAltas: '', inmunosupresores: '', antifosfolipidos: '',
-  antitrombotico: false, osteonecrosis: false, raynaud: false, actividad: '', rasgos: {},
+  osteonecrosis: false, raynaud: false, actividad: '', rasgos: {},
 });
 
 export const lesActivo = les => !!les?.estado;
@@ -46,6 +48,7 @@ export function normalizarLupus(les) {
   for (const [k, opciones] of Object.entries(FILAS_LES)) if (!opciones[v[k]]) v[k] = '';
   for (const k of CASILLAS_LES) v[k] = v[k] === true;
   if (!v.rasgos || typeof v.rasgos !== 'object') v.rasgos = {};
+  delete v.antitrombotico;   // casilla antigua: la migra migrarCasillaLupus() (lib/anticoagulado.js) antes de normalizar
   return v;
 }
 
@@ -78,17 +81,18 @@ export function pendientesLES(les) {
 // informes con IA anteriores no cambian). es: estado; con «Diagnosticado»,
 // gc: corticoides ahora ('no'|'b'|'m'|'a'|'ns'|null), ga: dosis altas previas,
 // is: inmunosupresores ('si'|'no'|'ns'|null), af: antifosfolípidos
-// ('no'|'apl'|'saf'|'ns'|null), at: anticoagulante o antiagregante,
+// ('no'|'apl'|'saf'|'ns'|null), at: anticoagulante o antiagregante (de la tarjeta
+// «Paciente anticoagulado o antiagregado», `ac`; el campo se conserva para physiq-report),
 // on: osteonecrosis o Jaccoud conocidos, ry: Raynaud, av: actividad
 // ('estable'|'brote'|'peor'|'ns'|null); con «Sospecha», rs: «sí» de los rasgos
 // (null = sin preguntar) y fd: empezó tras un fármaco nuevo.
 const _sino = v => (v ? v.toLowerCase() : null);
-export function lePayload(les) {
+export function lePayload(les, ac = null) {
   if (!lesActivo(les)) return null;
   if (lesDiagnosticado(les)) {
     return {
       es: 'diagnosticado', gc: les.corticoides || null, ga: _sino(les.dosisAltas), is: _sino(les.inmunosupresores),
-      af: les.antifosfolipidos || null, at: !!les.antitrombotico, on: !!les.osteonecrosis, ry: !!les.raynaud,
+      af: les.antifosfolipidos || null, at: ac?.estado === 'toma', on: !!les.osteonecrosis, ry: !!les.raynaud,
       av: les.actividad || null,
     };
   }

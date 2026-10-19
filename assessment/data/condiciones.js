@@ -124,6 +124,21 @@ export const CONDICIONES = [
     fuentes: ['NICE NG201', 'NICE NG194', 'Mottola 2018'],
   },
   {
+    id: 'anticoagulado',
+    nombre: 'Paciente anticoagulado o antiagregado',
+    que: 'Quien toma fármacos para que la sangre no coagule o las plaquetas no se peguen: sangra con más facilidad, y un golpe o una técnica pueden dar un hematoma que no se ve.',
+    piensa: 'Márcala si:',
+    pistas: [
+      { texto: 'toma acenocumarol, warfarina, apixabán, rivaroxabán, edoxabán, dabigatrán o heparina;', de: ['ac_u_cabeza', 'ac_u_psoas'] },
+      { texto: 'toma aspirina, clopidogrel, prasugrel o ticagrelor;', de: ['ac_u_cabeza_tardia', 'ac_u_espinal'] },
+      { texto: 'le han puesto inyecciones de heparina tras una operación o una trombosis.', de: ['ac_u_pared'] },
+    ],
+    anade: 'la pregunta del golpe en la cabeza y las de los hematomas en la fase 2, una línea de técnica en la 4b, un recuadro en la fase 5, y los avisos, el tope sin thrust (solo con anticoagulante) y la red de seguridad del plan.',
+    destino: { tarjeta: 'cardAnticoagulado' },
+    boton: 'Ir a la tarjeta →',
+    fuentes: ['NICE NG232', 'Peng 2022', 'Muñoz 2022'],
+  },
+  {
     id: 'tarlov',
     region: 'lumbar',
     nombre: 'Quiste de Tarlov',

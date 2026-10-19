@@ -14,7 +14,7 @@
 // en su criterio o en su panel «Ampliar». La tarjeta no da dosis («Dosis y
 // progresión no están en la guía»): dosis '' en todas.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, SIS_LUPUS, SIS_MASTOCITOS, SIS_OSTEOPOROSIS, SIS_EMBARAZO, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, SIS_LUPUS, SIS_MASTOCITOS, SIS_OSTEOPOROSIS, SIS_EMBARAZO, SIS_ANTICOAGULADO, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.tobillo_pie — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -74,6 +74,7 @@ export const screening = {
     SIS_MASTOCITOS,      // solo con la tarjeta «Trastorno mastocitario o anafilaxia» activa (docs/mastocitaria.md)
     SIS_OSTEOPOROSIS,    // solo con la tarjeta «Osteoporosis o fragilidad ósea» activa (docs/osteoporosis.md)
     SIS_EMBARAZO,        // solo con la tarjeta «Embarazo o posparto» activa (docs/embarazo-posparto.md)
+    SIS_ANTICOAGULADO,   // solo con la tarjeta «Paciente anticoagulado o antiagregado» activa (docs/anticoagulado.md)
     {
       // Tarjeta tobillo y pie (guía de consulta): URGENCIA (compartimental y neurovascular,
       // rotura del Aquiles, Ottawa) y BANDERAS «Lisfranc», «Fractura de calcáneo»,

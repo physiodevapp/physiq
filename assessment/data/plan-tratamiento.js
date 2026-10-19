@@ -130,8 +130,15 @@ export const AVISOS = {
   osteoporosisImpactoLimitado: 'Osteoporosis con fractura vertebral o varias fracturas por fragilidad: impacto solo hasta caminar a paso ligero, por precaución (Brooke-Wavell 2022, consenso; Giangregorio 2014).',
   osteoporosisMoverse: 'Osteoporosis: enseñar a moverse con seguridad, sin prohibir: bisagra de cadera al agacharse y levantar; la torsión, suave y mejor girando con pasos; no levantar ni dejar cosas en el suelo (Brooke-Wavell 2022, recuadro 3; Giangregorio 2015). Cuidado al pasar de tumbado a sentado o al darse la vuelta: en un ensayo, ejercicios en prono y darse la vuelta de boca arriba a boca abajo rompieron una costilla y un cartílago costal (Gibbs 2019). Con lluvia o hielo, el ejercicio mejor dentro de casa (Giangregorio 2014).',
   sinThrustOsteoporosis: 'Osteoporosis: sin manipulación con thrust en la columna ni en las costillas; la movilización suave puede ser adecuada (Maitland 2005, cap. 9, p. 223; Puentedura 2015, tabla 1). Los escalones no proponen grado V; si la pauta de una hipótesis incluye manipulación, aquí no se aplica.',
-  sinThrustLupus: 'Lupus con corticoides mantenidos o con anticoagulante o antiagregante: sin manipulación con thrust en la columna torácica (Puentedura 2015, tabla 1: corticoides a largo plazo y tratamiento anticoagulante, contraindicaciones absolutas). Si la pauta de una hipótesis incluye manipulación, aquí no se aplica.',
-  lupusAntitrombotico: 'Lupus con anticoagulante o antiagregante: precaución con lo que tenga riesgo de golpe (Blaess 2024, rec. 3).',
+  sinThrustLupus: 'Lupus con corticoides mantenidos: sin manipulación con thrust en la columna torácica (Puentedura 2015, tabla 1: corticoides a largo plazo, contraindicación absoluta). Si la pauta de una hipótesis incluye manipulación, aquí no se aplica.',
+  // Anticoagulado o antiagregado (Fase P, docs/anticoagulado.md): `anticoagulado`
+  // con la tarjeta marcada, en cualquier región; el tope «sin thrust» solo con
+  // anticoagulante (decisión 4); punción seca y ondas de choque solo en las
+  // hipótesis cuya pauta las recomienda (HIP_PUNCION_SECA, HIP_ONDAS_CHOQUE).
+  anticoagulado: 'Anticoagulado o antiagregado: precaución con lo que tenga riesgo de golpe (lo recomiendan para el lupus: Blaess 2024, rec. 3); un esfuerzo mecánico pequeño puede dar un sangrado importante (Kim 2026, un caso). De la movilización, el masaje, la presión profunda y los estiramientos no hay ninguna norma con anticoagulantes, solo casos de sangrado (Tominaga 2023; Kwon 2024; Kim 2026). Antes de cada técnica, pregunta si desde la última sesión se ha dado un golpe o ha notado un hematoma o un dolor nuevos. No le digas que deje el fármaco ni que se salte una dosis (Steffel 2021).',
+  sinThrustAnticoagulante: 'Anticoagulante: sin manipulación con thrust en la columna torácica (Puentedura 2015, tabla 1: contraindicación absoluta); en la cervical, otra tabla lo trata como precaución (Hutting 2018, opinión de los autores). Las dos son opinión de expertos y ninguna distingue fármacos ni da un INR. Los escalones no proponen grado V; si la pauta de una hipótesis incluye manipulación, aquí no se aplica.',
+  anticoaguladoPuncion: 'Anticoagulado o antiagregado, y la pauta incluye punción seca: no existe ningún estudio con antitrombóticos; una revisión narrativa y un consenso que se apoya en ella dicen que no es una contraindicación absoluta (Muñoz 2022; Waterway 2026), y según otra revisión la guía suiza sí la trata así con la anticoagulación (Malfait 2024). Práctica de los autores de la primera: empezar por músculos superficiales viendo cómo sangra, evitar al principio los profundos que no se pueden comprimir y comprimir 10–15 s (Muñoz 2022). Sin INR límite.',
+  anticoaguladoOndas: 'Anticoagulado o antiagregado, y la pauta incluye ondas de choque: sin consenso entre expertos sobre aplicarlas con anticoagulantes, y el hematoma es un efecto posible (Rhim 2025); se consideran un factor importante a valorar, sin datos con anticoagulados (Tenforde 2022).',
   lupusRaynaud: 'Lupus con Raynaud: al aire libre, guantes o ropa contra el frío; evitar tocar superficies frías y secar bien la piel durante y después del ejercicio (Blaess 2024, rec. 2). Por lo mismo, cuidado con el frío local en manos y pies (inferencia, sin fuente propia).',
   disautonomiaHM: 'Disautonomía con hipermovilidad: adaptar además el ejercicio a la hipermovilidad, la inestabilidad y las lesiones (Hakim 2017, p. 172).',
   orientativo: 'Nivel orientativo: el juicio de irritabilidad varía entre fisioterapeutas (acuerdo del 71 %, kappa 0,39–0,44; Barakatt 2009). Puedes cambiar la gravedad y la irritabilidad.',
@@ -282,8 +289,8 @@ export const RED_DISAUTONOMIA = { cierre: 'cierreSincope', casa: 'alarmaSincope'
 // misma de rodilla) y el ictus, este también sin antifosfolípidos (en el lupus
 // es el riesgo que menos recogen las escalas generales, Drosos 2022, p. 773).
 // Avisos: `lupus` siempre; `lupusBrote` en brote o peor sin valorar;
-// `lupusAntitrombotico` con anticoagulante o antiagregante; `lupusRaynaud`
-// con Raynaud.
+// `lupusRaynaud` con Raynaud. El anticoagulante o antiagregante, en la tarjeta
+// propia (AVISOS_ANTICOAGULADO).
 export const AVISOS_LUPUS = ['lupus'];
 export const RED_LUPUS = [
   { cierre: 'cierreFiebreLupus', casa: 'alarmaFiebreLupus' },
@@ -300,8 +307,8 @@ export const RED_MASTOCITOS = { cierre: 'cierreAnafilaxia', casa: 'alarmaAnafila
 // marcada, en cualquier región, los avisos de ejercicio y de moverse, el del
 // impacto según las fracturas (con «Diagnosticada») y el del thrust; con
 // «Diagnosticada», la red de la fractura vertebral nueva. El tope «sin thrust»
-// también sale con el lupus con corticoides o antitrombótico (decisión 15,
-// motivosSinThrust() en lib/osteoporosis.js).
+// también sale con el lupus con corticoides (decisión 15) y con anticoagulante
+// (docs/anticoagulado.md, decisión 4; motivosSinThrust() en lib/osteoporosis.js).
 export const AVISOS_OSTEOPOROSIS = ['osteoporosis', 'osteoporosisMoverse'];
 export const RED_OSTEOPOROSIS = { cierre: 'cierreFracturaVertebral', casa: 'alarmaFracturaVertebral' };
 
@@ -314,6 +321,16 @@ export const AVISOS_POSPARTO = ['posparto', 'terapiaManualEmbarazo'];
 export const HIP_SACROILIACA = ['lu8', 'ca10'];
 export const RED_EMBARAZO = { cierre: 'cierreEmbarazo', casa: 'alarmaEmbarazo' };
 export const RED_POSPARTO = { cierre: 'cierrePosparto', casa: 'alarmaPosparto' };
+
+// Anticoagulado o antiagregado (docs/anticoagulado.md): con la tarjeta marcada,
+// en cualquier región, el aviso `anticoagulado` y la red del sangrado; los de
+// punción seca y ondas de choque, solo con las hipótesis cuya pauta las
+// recomienda (listas a mano: varias pautas solo las nombran para desaconsejarlas;
+// una prueba unitaria las fija).
+export const AVISOS_ANTICOAGULADO = ['anticoagulado'];
+export const HIP_PUNCION_SECA = ['h6', 'ce1', 'ce7', 'ce14', 'lu9', 'co1', 'ca1', 'ca15', 'tp26'];
+export const HIP_ONDAS_CHOQUE = ['h2', 'ca9', 'ca19', 'ro6'];
+export const RED_ANTICOAGULADO = { cierre: 'cierreAnticoagulado', casa: 'alarmaAnticoagulado' };
 
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
@@ -341,6 +358,7 @@ export const TEXTOS_SESION = {
   cierreFracturaVertebral: 'Red de seguridad (osteoporosis): explicar que un dolor de espalda fuerte que empieza de golpe tras un esfuerzo pequeño pide parar y que le vea el médico, y que si además nota debilidad u hormigueo en las piernas, o cambios al orinar, debe ir a urgencias (Gregson 2025; Finucane 2020, sección 3).',
   cierreEmbarazo: 'Red de seguridad (embarazo): explicar que el dolor de cabeza fuerte, la visión borrosa, el dolor fuerte bajo las costillas o la hinchazón brusca de la cara o las manos piden que la vea un profesional hoy; que si nota que el bebé se mueve menos llame a su maternidad a cualquier hora, y que si sangra, pierde líquido o tiene contracciones regulares y dolorosas, pare y llame (NICE NG133, 1.1.1; NICE NG201, 1.2.34; Mottola 2018, recuadro 2).',
   cierrePosparto: 'Red de seguridad (posparto): explicar que un sangrado brusco o muy abundante, la fiebre o los escalofríos, el flujo maloliente, la pierna hinchada y dolorosa, la falta de aire, el dolor en el pecho o un dolor de cabeza fuerte piden consulta médica sin demora, y comprobar que lo ha entendido (NICE NG194, 1.2.4).',
+  cierreAnticoagulado: 'Red de seguridad (anticoagulado o antiagregado): explicar que un golpe en la cabeza, aunque se encuentre bien, pide ir a urgencias, y que un dolor de cabeza fuerte, vómitos, somnolencia o confusión en los días siguientes piden llamar al 112; que un dolor fuerte de cuello o espalda con debilidad u hormigueo, un dolor muy fuerte en la ingle, la cadera o la barriga con mareo, o un brazo o una pierna muy hinchados y tensos con un dolor desproporcionado piden urgencias; y que no deje ni se salte el fármaco sin hablarlo con su médico (NICE NG232, 1.2.4 y 1.10.9; Peng 2022; Lukies 2023; Brooker 2020; Steffel 2021).',
   cierreSincope: 'Red de seguridad (disautonomía): explicar que, si se desmaya mientras hace ejercicio, debe parar y no volver a hacer ejercicio hasta que le vea el médico, y comprobar que lo ha entendido (NICE CG109, 1.3.2.2 y 1.5.4.3; Brignole 2018, p. 1911).',
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
   reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3; Hengeveld y Banks 2005, cap. 9, p. 246).',
@@ -603,6 +621,9 @@ export const TEXTOS_CASA = {
   // Embarazo o posparto (RED_EMBARAZO, RED_POSPARTO)
   alarmaEmbarazo: { texto: 'Si tienes un dolor de cabeza fuerte, ves borroso, te duele mucho bajo las costillas o se te hinchan de golpe la cara o las manos, que te vea hoy tu matrona o tu médico. Si notas que el bebé se mueve menos, llama a tu maternidad a cualquier hora. Si sangras, pierdes líquido por la vagina o tienes contracciones regulares y dolorosas, para y llama a tu maternidad.', fuente: 'NICE NG133, 1.1.1 (síntomas de preeclampsia); NICE NG201, 1.2.34 (movimientos fetales); Mottola 2018, recuadro 2 (motivos para parar y consultar) (docs/embarazo-posparto.md)' },
   alarmaPosparto: { texto: 'Si sangras de golpe o mucho, tienes fiebre o escalofríos, un flujo que huele mal, una pierna hinchada y dolorosa, te falta el aire, te duele el pecho o tienes un dolor de cabeza fuerte, pide que te vea un médico hoy.', fuente: 'NICE NG194, 1.2.4 (síntomas que piden consulta médica sin demora tras el parto) (docs/embarazo-posparto.md)' },
+  // Anticoagulado o antiagregado (RED_ANTICOAGULADO): redacción propia sobre las
+  // fuentes de las urgencias del sistema de la fase 2.
+  alarmaAnticoagulado: { texto: 'Si te das un golpe en la cabeza, aunque te encuentres bien, ve hoy a urgencias; si en los días siguientes tienes un dolor de cabeza fuerte que va a más, vómitos, somnolencia o confusión, llama al 112. Si te empieza de golpe un dolor fuerte de cuello o espalda con debilidad, hormigueo o cambios al orinar, ve a urgencias ya. Un dolor muy fuerte en la ingle, la cadera o la barriga con mareo, o un brazo o una pierna muy hinchados, tensos y con un dolor desproporcionado, también. No dejes ni te saltes tu anticoagulante sin hablarlo antes con tu médico.', fuente: 'Redacción propia sobre NICE NG232, 1.2.4 y 1.10.9 (golpe en la cabeza); Peng 2022 (hematoma epidural espinal); Lukies 2023 (hematoma del psoas); Brooker 2020 (síndrome compartimental); Steffel 2021 (no saltarse dosis) (docs/anticoagulado.md)' },
   alarmaSincope: { texto: 'Si te desmayas mientras haces ejercicio, para y no vuelvas a hacer ejercicio hasta que te vea el médico.', fuente: 'NICE CG109, recomendaciones 1.3.2.2 y 1.5.4.3: con un síncope durante el ejercicio, no hacer ejercicio hasta la valoración; Brignole 2018, p. 1911 (docs/pots.md)' },
   queHacer: { texto: 'Qué hacer:', tipo: 'etiqueta' },
   cuandoHacerlo: { texto: 'Cuándo hacerlo:', tipo: 'etiqueta' },

@@ -10,6 +10,7 @@
 // ============================================================
 
 import { SIS_OSTEOPOROSIS } from '../data/comun.js';
+import { esAnticoagulante } from './anticoagulado.js';
 
 export const OP = SIS_OSTEOPOROSIS.osteoporosis;
 
@@ -97,18 +98,17 @@ export function derivacionesOP(op) {
   return derivacionCorticoides(op) ? [OP.textos.corticoides] : [];
 }
 
-// ── Tope «sin thrust» de la fase 6 (decisiones 6 y 15) ──────
+// ── Tope «sin thrust» de la fase 6 (decisiones 6 y 15; docs/anticoagulado.md, decisión 4) ──
 // Con la tarjeta marcada (Maitland 2005, cap. 9, p. 223; Puentedura 2015) y,
-// sin marcarla, con la tarjeta del lupus con corticoides o dosis altas previas,
-// o con su casilla del antitrombótico (Puentedura 2015, tabla 1: corticoides a
-// largo plazo y tratamiento anticoagulante). Devuelve los motivos (vacío = sin tope).
-export function motivosSinThrust(op, lupus) {
+// sin marcarla, con la tarjeta del lupus con corticoides o dosis altas previas
+// (Puentedura 2015, tabla 1: corticoides a largo plazo), o con un anticoagulante
+// en la tarjeta «Paciente anticoagulado o antiagregado» (tabla 1: tratamiento
+// anticoagulante; el antiagregante solo no está en la tabla). Devuelve los motivos (vacío = sin tope).
+export function motivosSinThrust(op, lupus, ac = null) {
   const m = [];
   if (opActivo(op)) m.push('osteoporosis');
-  if (lupus?.estado === 'diagnosticado') {
-    if (['b', 'm', 'a'].includes(lupus.corticoides) || lupus.dosisAltas === 'SI') m.push('corticoides');
-    if (lupus.antitrombotico) m.push('antitrombotico');
-  }
+  if (lupus?.estado === 'diagnosticado' && (['b', 'm', 'a'].includes(lupus.corticoides) || lupus.dosisAltas === 'SI')) m.push('corticoides');
+  if (esAnticoagulante(ac)) m.push('anticoagulante');
   return m;
 }
 

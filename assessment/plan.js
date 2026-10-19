@@ -20,6 +20,7 @@ import { lesDiagnosticado } from './lib/lupus.js';
 import { maActivo } from './lib/mastocitos.js';
 import { opActivo, opDiagnosticada, impactoLimitado, opPayload, motivosSinThrust } from './lib/osteoporosis.js';
 import { emActivo } from './lib/embarazo.js';
+import { acActivo } from './lib/anticoagulado.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
 import {
@@ -90,16 +91,18 @@ function entrada(hs) {
     disautonomia: dsActiva(state.disautonomia), hipermovilidad: hmActiva(state.hipermovilidad),
     // Lupus diagnosticado (docs/lupus.md): avisos y red de seguridad
     lupus: lesDiagnosticado(state.lupus) ? { brote: ['brote', 'peor'].includes(state.lupus.actividad),
-      antitrombotico: !!state.lupus.antitrombotico, raynaud: !!state.lupus.raynaud } : null,
+      raynaud: !!state.lupus.raynaud } : null,
     // Trastorno mastocitario o anafilaxia (docs/mastocitaria.md): aviso y red de seguridad
     mastocitos: maActivo(state.mastocitos),
     // Osteoporosis (docs/osteoporosis.md): avisos, red y tope sin thrust (este,
-    // también con el lupus con corticoides o antitrombótico, decisión 15)
+    // también con el lupus con corticoides, decisión 15, y con anticoagulante)
     osteoporosis: opActivo(state.osteoporosis) ? { diagnosticada: opDiagnosticada(state.osteoporosis),
       impactoLimitado: impactoLimitado(opPayload(state.osteoporosis, state.edadPaciente)) } : null,
-    sinThrust: motivosSinThrust(state.osteoporosis, state.lupus),
+    sinThrust: motivosSinThrust(state.osteoporosis, state.lupus, state.anticoagulado),
     // Embarazo o posparto (docs/embarazo-posparto.md): avisos y red de seguridad
     embarazo: emActivo(state.embarazo) ? { estado: state.embarazo.estado, lactancia: state.embarazo.lactancia === 'SI' } : null,
+    // Anticoagulado o antiagregado (docs/anticoagulado.md): avisos y red de seguridad
+    anticoagulado: acActivo(state.anticoagulado),
     estabilidad: state.estabilidad, riesgoPsico: state.riesgoPsico, psico_miedo: state.psico_miedo,
     signoComparable: state.signoComparable,
     sesion: pt.sesion, gravedadManual: pt.gravedad, irritabilidadManual: pt.irritabilidad,
