@@ -47,7 +47,8 @@ import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
 import { condicionesHTML } from './lib/condiciones.js';
-import { farmacosHTML, FILTRO_PACIENTE_FARM } from './lib/farmacos.js';
+import { farmacosHTML, FILTRO_PACIENTE_FARM, textoCima } from './lib/farmacos.js';
+import { TEXTOS_FARMACOS } from './data/farmacos.js';
 import { familiasMarcables, familiasPendientesNombres, normalizarFarmacos, farmacosVacio, derivadasDeTarjetas,
   familiasPaciente, textoFamiliaPaciente, fmPayload, FAMILIA_AC } from './lib/farmacos-paciente.js';
 import { TEXTOS_FARMACOS_PACIENTE } from './data/farmacos-paciente.js';
@@ -5235,6 +5236,17 @@ document.addEventListener('click', e => {
   document.getElementById('farmPanel').scrollTop = 0;
   document.querySelector('#farmCuerpo [data-filtro-farmaco]')?.focus({ preventScroll: true });
 }, true);   // en captura: el panel corta la propagación del click (como «✨ IA»)
+// «Ficha técnica (CIMA)»: el enlace abre el buscador de CIMA (vacío: no admite
+// enlazar a una búsqueda) y aquí se copia el nombre para pegarlo. El enlace
+// sigue su curso; si el portapapeles falla (iframe del hub), el aviso lo dice.
+document.addEventListener('click', e => {
+  const a = e.target instanceof Element ? e.target.closest('#farmCuerpo a[data-cima]') : null;
+  if (!a) return;
+  const n = a.dataset.cima;
+  const fallo = () => showToast(textoCima(TEXTOS_FARMACOS.cimaSinCopiar, n), 'warning');
+  try { navigator.clipboard.writeText(n).then(() => showToast(textoCima(TEXTOS_FARMACOS.cimaCopiado, n), 'success'), fallo); }
+  catch { fallo(); }
+}, true);
 
 // ─── Calculadora de cuestionarios (cabecera, cualquier fase, también en el hub) ───
 // El paciente rellena la hoja en papel; aquí se toca el valor de cada ítem y

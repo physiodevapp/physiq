@@ -14,6 +14,22 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 // Texto de data/ con las citas de dentro de la frase como botones (lib/citas.js)
 const txt = s => citasEnTexto(esc(s));
 
+// Ficha técnica en CIMA (AEMPS), como los enlaces de Kenhub: un enlace por
+// principio activo de `cima` (data/farmacos.js), nunca un iframe ni el
+// contenido de la ficha. CIMA no admite enlazar a una búsqueda (`?pa=` vuelve
+// a la portada, comprobado por el usuario, 2026-10): el enlace abre su
+// buscador, vacío, y la app copia el nombre para pegarlo (app.js, click en
+// `[data-cima]`). En la URL no va nada, ni siquiera el nombre.
+export const CIMA_BUSCADOR = 'https://cima.aemps.es/cima/publico/buscadoravanzado.html';
+export const textoCima = (plantilla, nombre) => plantilla.replace('{n}', nombre);
+
+function cimaHTML(f) {
+  if (!f.cima?.length) return '';
+  const T = TEXTOS_FARMACOS;
+  const enlaces = f.cima.map(n => `<a class="anat-enlace farm-cima-enlace" href="${CIMA_BUSCADOR}" target="_blank" rel="noopener noreferrer" data-cima="${esc(n)}" title="${esc(textoCima(T.cimaTitulo, n))}">${esc(n)} ↗</a>`);
+  return `<div class="test-anat farm-cima"><span class="test-anat-etq">${esc(T.cima)}</span> ${enlaces.join('<span class="test-anat-sep"> · </span>')}</div>`;
+}
+
 export const familiasConContenido = () => FAMILIAS_FARMACO.filter(f => f.apartados);
 export const familiasPendientes = () => FAMILIAS_FARMACO.filter(f => !f.apartados);
 
@@ -33,6 +49,7 @@ function familiaHTML(f, abierta = false) {
   const fuentes = `<div class="farm-fuentes"><span class="farm-fuentes-et">Fuentes</span> ${citasHTML(f.fuentes.join(' · '))}</div>`;
   return `<details class="farm-familia" data-familia="${f.id}"${abierta ? ' open' : ''}>
     <summary><span class="farm-nombre">${esc(f.nombre)}</span><span class="farm-ejemplos">${esc(f.ejemplos)}</span></summary>
+    ${cimaHTML(f)}
     <div class="farm-cuerpo" data-ia-ctx="${attrIA(ctxFarmaco(f.nombre))}">${apartados}</div>
     ${fuentes}
   </details>`;
@@ -68,6 +85,7 @@ export function farmacosHTML({ paciente = [], filtro = '' } = {}) {
   const familias = familiasConContenido().filter(f => !solo || ids.has(f.id));
   return `<p class="cond-intro">${esc(T.intro)}</p>
     <p class="cond-intro cond-intro-diag">${esc(T.limites)}</p>
+    <p class="cond-intro farm-cima-nota">${esc(T.cimaNota)}</p>
     ${chip}${linea}
     ${familias.map(f => familiaHTML(f, solo)).join('')}
     ${pend}

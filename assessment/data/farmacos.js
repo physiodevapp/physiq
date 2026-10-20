@@ -11,6 +11,8 @@
 //
 // Esquema de una familia con contenido:
 //   { id, nombre, ejemplos,
+//     cima: ['<principio activo>', …]   // enlaces «Ficha técnica (CIMA)»: solo
+//       // principios activos que nombra `ejemplos`, nunca grupos («heparinas»)
 //     apartados: { dolor, visceral, ejercicio, sueno, consultar }
 //       // cada uno: { texto: string | string[], detalle?: string | string[] }
 //       // las citas dentro de la frase («(Schug 2021)») se pintan como botones
@@ -34,6 +36,7 @@ export const FAMILIAS_FARMACO = [
     id: 'aine',
     nombre: 'AINE (antiinflamatorios no esteroideos)',
     ejemplos: 'Ibuprofeno, naproxeno, diclofenaco, dexketoprofeno, celecoxib, etoricoxib',
+    cima: ['ibuprofeno', 'naproxeno', 'diclofenaco', 'dexketoprofeno', 'celecoxib', 'etoricoxib'],
     apartados: {
       dolor: {
         texto: [
@@ -88,6 +91,7 @@ export const FAMILIAS_FARMACO = [
     id: 'corticoides',
     nombre: 'Corticoides',
     ejemplos: 'Prednisona, metilprednisolona, dexametasona; infiltraciones (triamcinolona, betametasona)',
+    cima: ['prednisona', 'metilprednisolona', 'dexametasona', 'triamcinolona', 'betametasona'],
     apartados: {
       dolor: {
         texto: [
@@ -152,6 +156,7 @@ export const FAMILIAS_FARMACO = [
     id: 'antitromboticos',
     nombre: 'Anticoagulantes y antiagregantes',
     ejemplos: 'Acenocumarol, warfarina, apixabán, rivaroxabán, edoxabán, dabigatrán, heparinas; ácido acetilsalicílico, clopidogrel, prasugrel, ticagrelor',
+    cima: ['acenocumarol', 'warfarina', 'apixabán', 'rivaroxabán', 'edoxabán', 'dabigatrán', 'ácido acetilsalicílico', 'clopidogrel', 'prasugrel', 'ticagrelor'],
     apartados: {
       dolor: {
         texto: [
@@ -225,6 +230,7 @@ export const FAMILIAS_FARMACO = [
     id: 'opioides',
     nombre: 'Opioides',
     ejemplos: 'Tramadol, tapentadol, codeína, morfina, oxicodona, fentanilo, buprenorfina',
+    cima: ['tramadol', 'tapentadol', 'codeína', 'morfina', 'oxicodona', 'fentanilo', 'buprenorfina'],
     apartados: {
       dolor: {
         texto: [
@@ -286,6 +292,7 @@ export const FAMILIAS_FARMACO = [
     id: 'gabapentinoides',
     nombre: 'Gabapentinoides',
     ejemplos: 'Gabapentina, pregabalina',
+    cima: ['gabapentina', 'pregabalina'],
     apartados: {
       dolor: {
         texto: [
@@ -359,6 +366,7 @@ export const FAMILIAS_FARMACO = [
     id: 'antidepresivos',
     nombre: 'Antidepresivos (ISRS, IRSN, tricíclicos)',
     ejemplos: 'Sertralina, escitalopram, duloxetina, venlafaxina, amitriptilina',
+    cima: ['sertralina', 'escitalopram', 'duloxetina', 'venlafaxina', 'amitriptilina'],
     apartados: {
       dolor: {
         texto: [
@@ -437,6 +445,7 @@ export const FAMILIAS_FARMACO = [
     id: 'sedantes',
     nombre: 'Benzodiacepinas y relajantes musculares',
     ejemplos: 'Diazepam, lorazepam, alprazolam, ciclobenzaprina, metocarbamol, tizanidina, baclofeno',
+    cima: ['diazepam', 'lorazepam', 'alprazolam', 'ciclobenzaprina', 'metocarbamol', 'tizanidina', 'baclofeno'],
     apartados: {
       dolor: {
         texto: [
@@ -516,6 +525,7 @@ export const FAMILIAS_FARMACO = [
     id: 'estatinas',
     nombre: 'Estatinas',
     ejemplos: 'Atorvastatina, simvastatina, rosuvastatina',
+    cima: ['atorvastatina', 'simvastatina', 'rosuvastatina'],
     apartados: {
       dolor: {
         texto: [
@@ -594,6 +604,7 @@ export const FAMILIAS_FARMACO = [
     id: 'fluoroquinolonas',
     nombre: 'Fluoroquinolonas',
     ejemplos: 'Ciprofloxacino, levofloxacino, moxifloxacino',
+    cima: ['ciprofloxacino', 'levofloxacino', 'moxifloxacino'],
     apartados: {
       dolor: {
         texto: [
@@ -674,6 +685,7 @@ export const FAMILIAS_FARMACO = [
     id: 'betabloqueantes',
     nombre: 'Betabloqueantes',
     ejemplos: 'Bisoprolol, atenolol, metoprolol, propranolol',
+    cima: ['bisoprolol', 'atenolol', 'metoprolol', 'propranolol'],
     apartados: {
       dolor: {
         texto: [
@@ -756,6 +768,7 @@ export const FAMILIAS_FARMACO = [
     id: 'antihipertensivos',
     nombre: 'Diuréticos y otros antihipertensivos',
     ejemplos: 'Hidroclorotiazida, furosemida, enalapril, losartán, amlodipino',
+    cima: ['hidroclorotiazida', 'furosemida', 'enalapril', 'losartán', 'amlodipino'],
     apartados: {
       dolor: {
         texto: [
@@ -847,6 +860,7 @@ export const FAMILIAS_FARMACO = [
     id: 'antidiabeticos',
     nombre: 'Insulina y antidiabéticos',
     ejemplos: 'Insulina, metformina, sulfonilureas, gliflozinas (SGLT2), agonistas de GLP-1, gliptinas (DPP-4), pioglitazona',
+    cima: ['metformina', 'pioglitazona'],
     apartados: {
       dolor: {
         texto: [
@@ -952,6 +966,7 @@ export const FAMILIAS_FARMACO = [
     id: 'hueso',
     nombre: 'Fármacos que tocan el hueso',
     ejemplos: 'Alendronato, risedronato, ibandronato, zoledronato, denosumab; inhibidores de la aromatasa (anastrozol, letrozol, exemestano)',
+    cima: ['alendronato', 'risedronato', 'ibandronato', 'zoledronato', 'denosumab', 'anastrozol', 'letrozol', 'exemestano'],
     apartados: {
       dolor: {
         texto: [
@@ -1034,5 +1049,10 @@ export const TEXTOS_FARMACOS = {
   pendientesTitulo: 'Pendientes de fuentes revisadas',
   pendientesNota: 'Mientras tanto puedes preguntar a la IA con un guion para fisioterapeutas (sin datos del paciente; PhysiQ no revisa la respuesta).',
   preguntar: 'Preguntar a la IA sobre fármacos →',
+  cima: 'Ficha técnica (CIMA)',
+  cimaTitulo: 'Abre el buscador de CIMA (AEMPS) en otra pestaña y copia «{n}»',
+  cimaNota: 'Ficha técnica: al tocar un principio activo se abre el buscador de CIMA (AEMPS) y el nombre queda copiado. Pégalo en «Escribe el nombre del principio activo» y pulsa Buscar.',
+  cimaCopiado: '«{n}» copiado: pégalo en «Escribe el nombre del principio activo» y pulsa Buscar.',
+  cimaSinCopiar: 'Busca «{n}» en CIMA, en «Escribe el nombre del principio activo».',
   pie: 'Cada familia se escribe con fuentes leídas y revisadas antes de publicarse. Toca una cita para ver la referencia.',
 };
