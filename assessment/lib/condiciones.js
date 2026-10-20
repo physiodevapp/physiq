@@ -61,20 +61,30 @@ export function estadoCondicion(c, st) {
   }
 }
 
-// Con otra región elegida, el botón de una fila de región no navega
-// (decisión 3): la pregunta solo existe en el cribado de esa región.
+// La pregunta de una fila de región solo existe en el cribado de esa región:
+// sin ella elegida, el botón la elige antes de navegar (decisión 9).
 export const destinoDisponible = (c, st) => !c.region || st.region === c.region;
 
 const conRegion = (texto, region) => texto.replace('{region}', nombreRegion(region).toLowerCase());
+
+// Diálogo antes de cambiar a la región de la fila; null si no hay región que
+// cambiar (sin región elegida, o ya es la suya)
+export function avisoCambioRegion(c, st) {
+  if (!c.region || !st.region || st.region === c.region) return null;
+  const T = TEXTOS_CONDICIONES;
+  const texto = conRegion(T.avisoTexto, c.region).replace('{actual}', nombreRegion(st.region).toLowerCase())
+    + (st.maxVisitedIdx >= 2 ? T.avisoFases : '');
+  return { titulo: T.avisoTitulo, texto };
+}
 
 function filaHTML(c, st) {
   const estado = estadoCondicion(c, st);
   const disponible = destinoDisponible(c, st);
   const etiqueta = estado ? `<span class="cond-estado${estado.marcada ? ' cond-estado-on' : ''}">${esc(estado.texto)}</span>` : '';
   const pistas = c.pistas.map(p => `<li>${esc(p.texto)}</li>`).join('');
-  const boton = disponible
-    ? `<button type="button" class="cond-ir" data-cond="${c.id}" onclick="irACondicion('${c.id}')">${esc(c.boton)}</button>`
-    : `<button type="button" class="cond-ir" data-cond="${c.id}" disabled>${esc(conRegion(TEXTOS_CONDICIONES.sinRegion, c.region))}</button>`;
+  const rotulo = disponible ? c.boton
+    : conRegion(st.region ? TEXTOS_CONDICIONES.otraRegion : TEXTOS_CONDICIONES.sinRegion, c.region);
+  const boton = `<button type="button" class="cond-ir${disponible ? '' : ' cond-ir-region'}" data-cond="${c.id}" onclick="irACondicion('${c.id}')">${esc(rotulo)}</button>`;
   const fuentes = c.fuentes.length ? `<div class="cond-fuentes">${citasHTML(c.fuentes.join(' · '))}</div>` : '';
   return `<section class="cond-fila" data-condicion="${c.id}">
     <div class="cond-cabecera"><h3 class="cond-nombre">${esc(c.nombre)}</h3>${etiqueta}</div>

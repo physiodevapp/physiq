@@ -5,7 +5,8 @@
 // marca, y a dónde ir para marcarla. Nada clínico nuevo: cada pista resume una
 // pregunta que la app ya tiene (`de`: sus ids) con las fuentes que esa
 // pregunta cita; «que» es redacción propia, sin cifras ni criterios
-// (decisión 8). Nunca marca nada, ni va al payload, los resúmenes o el prompt.
+// (decisión 8). Nunca marca nada (solo elige la región de una fila de región,
+// decisión 9), ni va al payload, los resúmenes o el prompt.
 // ============================================================
 
 export const TEXTOS_CONDICIONES = {
@@ -14,7 +15,14 @@ export const TEXTOS_CONDICIONES = {
   diagnostico: 'Si el paciente ya tiene el diagnóstico, márcala siempre.',
   // Apartado y botón de las filas de una región ({region}: su nombre en minúscula)
   grupoRegion: 'Solo en {region}',
-  sinRegion: 'Elige {region} en la fase 2',
+  // Sin región elegida, el botón la elige y lleva a la pregunta; con otra
+  // región, la cambia tras confirmar (borra el cribado y, si ya se pasó de la
+  // fase 2, las fases 3 a 4b, como el cambio desde la fase 2)
+  sinRegion: 'Elegir {region} e ir a la pregunta →',
+  otraRegion: 'Cambiar a {region} e ir →',
+  avisoTitulo: 'Cambiar región de valoración',
+  avisoTexto: 'Ahora valoras {actual}. Esta pregunta solo está en el cribado de {region}: al cambiar se borran las respuestas del cribado sistémico.',
+  avisoFases: ' También se perderá el progreso de las fases SINSS, Algoritmo CIF y Confirmación de Hipótesis.',
   pie: 'Esta lista orienta: no diagnostica ni marca nada por ti.',
 };
 

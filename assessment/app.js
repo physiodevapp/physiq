@@ -46,7 +46,7 @@ import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
-import { condicionesHTML } from './lib/condiciones.js';
+import { condicionesHTML, avisoCambioRegion } from './lib/condiciones.js';
 import { farmacosHTML, FILTRO_PACIENTE_FARM, textoCima } from './lib/farmacos.js';
 import { TEXTOS_FARMACOS } from './data/farmacos.js';
 import { familiasMarcables, familiasPendientesNombres, normalizarFarmacos, farmacosVacio, derivadasDeTarjetas,
@@ -5140,7 +5140,6 @@ function cerrarCondiciones({ desdeHistorial = false, sinHistorial = false, despu
 function irACondicion(id) {
   const c = CONDICIONES.find(x => x.id === id);
   if (!c) return;
-  if (c.region && state.region !== c.region) return;
   const ir = c.destino.pregunta
     ? () => irAPreguntaCribado(c.destino.pregunta)
     : () => {
@@ -5154,6 +5153,22 @@ function irACondicion(id) {
         card.classList.add('flash-destacar');
       }, 150);
     };
+  // Fila de una región que no es la elegida (decisión 9): sin región, la
+  // elige y navega; con otra, pregunta antes (borra el cribado), siempre,
+  // aunque no se haya pasado de la fase 2. Cancelar vuelve a la guía.
+  if (c.region && state.region !== c.region) {
+    const cambiar = () => {
+      applyRegionChange(c.region, document.querySelector(`.region-card[data-region="${c.region}"]`));
+      ir();
+    };
+    const aviso = avisoCambioRegion(c, state);
+    cerrarCondiciones({
+      despues: aviso
+        ? () => showConfirmBanner(aviso.titulo, aviso.texto, 'Cambiar región', cambiar, { onCancel: abrirCondiciones })
+        : cambiar,
+    });
+    return;
+  }
   cerrarCondiciones({ despues: ir });
 }
 document.addEventListener('keydown', e => {
