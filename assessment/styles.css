@@ -1480,6 +1480,15 @@
   /* ── OPTION GROUP FULL WIDTH (fila, flex:1 por botón) ─── */
   .option-group-full { display: flex; gap: 6px; }
   .option-group-full .option-btn { flex: 1; text-align: center; }
+  /* Mecanismo, Cronología, Naturaleza, Estabilidad: en escritorio, como los demás
+     grupos de opciones excluyentes, a partes iguales llenando la fila (en móvil manda
+     la rejilla medida de .option-group-col, más abajo) */
+  .option-group-col .option-btn { flex: 1; text-align: center; }
+  /* Un único botón de marcar/desmarcar (Anticoagulado, Mastocitos): en escritorio,
+     ancho según su texto, para que no parezca la acción principal de la tarjeta */
+  @media (min-width: 769px) {
+    .option-group-full.option-group-solo .option-btn { flex: 0 1 auto; padding-left: 24px; padding-right: 24px; }
+  }
   /* ── MOBILE PHASE INDICATOR BAR ─────────────────────────── */
   .mobile-phase-bar {
     display: none;
