@@ -36,7 +36,7 @@ export function normalizarFarmacos(fm) {
 
 // Vistas de un dato que vive en otra tarjeta (decisión 4): no es una regla
 // clínica, solo se muestra donde está registrado. Una familia solo cuenta si
-// tiene contenido (el hueso, cuando llegue).
+// tiene contenido.
 const ORIGEN_LUPUS = 'Lupus (LES)';
 const ORIGEN_OP = 'Osteoporosis o fragilidad ósea';
 const ORIGEN_AC = 'Paciente anticoagulado o antiagregado';
