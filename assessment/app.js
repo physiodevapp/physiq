@@ -4409,7 +4409,8 @@ function toggleSessionPanel() {
 
 // Closes every open sheet/dialog. Called when the hub hides this satellite
 // (e.g. navigating back to hub home) so a stale open dialog isn't still
-// showing when the user returns.
+// showing when the user returns. Never on a plain tab/app switch
+// (visibilitychange), where everything stays open.
 function _closeAllOverlays() {
   cerrarFicha({ sinFoco: true });
   cerrarRazonamiento({ sinHistorial: true });
@@ -5741,11 +5742,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Seed history so the first back press steps through phases
   history.replaceState({ phase: 1 }, '');
 
-  // Autosave when app is backgrounded (covers swipe-away on Android PWA)
+  // Autosave when app is backgrounded (covers swipe-away on Android PWA).
+  // Los diálogos y paneles abiertos se quedan como estaban: al consultar
+  // varios enlaces (CIMA, Kenhub, «✨ IA») y volver, la guía sigue abierta
+  // con su scroll (decisión del usuario, 2026-10). Solo se cierra la tarjeta
+  // de una cita, colocada junto a su botón. Cuando el hub oculta la app
+  // (PHYSIQ_SAT_HIDDEN, abajo) sí se cierra todo.
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
       saveSession();
-      _closeAllOverlays();
+      cerrarFicha({ sinFoco: true });
     }
     else comprobarVersion();
   });
