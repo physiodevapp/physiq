@@ -80,6 +80,19 @@ export const FAMILIAS_PACIENTE = {
       'Mayores: por encima de 65 años la concentración de atorvastatina es mayor y el riesgo de miopatía también (McIver y Siddique 2025). Las fuentes leídas no tratan la terapia manual, las caídas ni las adaptaciones al entrenamiento.',
     ],
   },
+  // Solo lo que cambia la sesión: el tendón (cuándo, qué hacer ante el dolor,
+  // cómo rehabilitarlo). Se dejan en la guía la aorta, los nervios, el ánimo,
+  // el sueño, «cuándo consultar» y el deportista («evitarlas si hay otra
+  // opción» se leería como consejo sobre el antibiótico).
+  fluoroquinolonas: {
+    corto: 'Fluoroquinolonas',
+    rotulo: 'Toma o ha tomado fluoroquinolonas',
+    plan: [
+      'Cuándo: puede empezar en las primeras horas o los 2 primeros días de tratamiento y hasta varios meses después de terminarlo (EMA 2018).',
+      'Ante dolor o hinchazón de un tendón, durante el tratamiento o después, la EMA pide reposo de la zona y contacto inmediato con el médico (EMA 2018); otras revisiones piden reducir la carga del tendón y no ejercitar la zona afectada (Rusu 2023), con analgesia y fisioterapia (Baggio y Ananda-Rajah 2021).',
+      'Rehabilitación: puede responder mal a los programas excéntricos habituales, al menos al principio. Se propone en dos fases: primero soporte y protección, para que el tendón se recupere de la lesión química, y después carga progresiva (Lewis y Cook 2014). Una revisión cita proteger el tendón el primer mes (alza de talón, ortesis, muletas) y reducir la carga del Aquiles de 6 semanas a 6 meses (Rusu 2023).',
+    ],
+  },
   betabloqueantes: {
     corto: 'Betabloqueantes',
     rotulo: 'Toma betabloqueantes',
