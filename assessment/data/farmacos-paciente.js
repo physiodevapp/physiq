@@ -113,6 +113,19 @@ export const FAMILIAS_PACIENTE = {
       'Hipoglucemia en la sesión: para el ejercicio y que se mida la glucosa (Moser 2020; Costello 2023). Con 70 mg/dL (3,9 mmol/L) o menos, 15 g de hidratos de absorción rápida, mejor glucosa (tabletas, zumo, refresco), sin grasa ni proteína; volver a medir a los 15 minutos y repetir si sigue baja, la regla «15-15»; cuando se recupere, que coma algo, porque con insulina o sulfonilureas puede repetirse (ADA 2025; Costello 2023). Si bajó de 54 mg/dL, no se reanuda el ejercicio (Moser 2020).',
     ],
   },
+  // Sin repetir los avisos de la osteoporosis de la fase 6 (fuerza, impacto,
+  // moverse con seguridad, sin thrust, red de la fractura vertebral): solo lo
+  // propio del fármaco. Con la tarjeta de osteoporosis y un bifosfonato o
+  // denosumab, sale solo (derivadasDeTarjetas()).
+  hueso: {
+    corto: 'Fármacos del hueso',
+    rotulo: 'Toma fármacos que tocan el hueso',
+    plan: [
+      'Pronto, con imagen del fémur: un dolor de muslo, ingle o cadera sin explicación con bifosfonato o denosumab. La guía británica pide imagen del fémur (radiografía del fémur entero, gammagrafía o resonancia) y, si hay fractura atípica, también del otro (Gregson 2025). Hasta entonces, sin impacto ni carga de esa pierna.',
+      'Tras una infusión de zoledronato, los 3 primeros días pueden traer fiebre y dolor muscular (Alaranji y Reilly 2025): si la sesión cae en esos días, tenlo en cuenta al dosificar y al interpretar los síntomas.',
+      'Inhibidores de la aromatasa: en un ensayo con 121 mujeres inactivas con dolor articular, fuerza supervisada 2 días por semana (6 ejercicios, 3 series de 8–12 repeticiones, subiendo el peso tras dos sesiones haciendo 12 repeticiones en cada serie) y 150 minutos semanales de aeróbico, del 50 % al 60–80 % de la frecuencia cardíaca máxima en el primer mes, durante 12 meses, bajaron el peor dolor 1,6 puntos (29 %), frente a una subida del 3 % con los cuidados habituales, sin efectos adversos (Irwin 2015). El beneficio más claro llegó a los 12 meses (Irwin 2015).',
+    ],
+  },
 };
 
 // Textos de la tarjeta, la guía y la fase 5 (redacción propia, decisión 18)

@@ -935,7 +935,97 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['ADA 2025', 'Colberg 2016', 'Kanaley 2022', 'Riddell 2017', 'Moser 2020', 'Adolfsson 2022', 'Nakhleh y Shehadeh 2021', 'Sklepinski 2026', 'Rangraze 2026', 'Alvarez 2025', 'Tentolouris 2019', 'Confederat 2026', 'Azmi 2025', 'Tobaiqy y Alqutub 2026', 'Lebovitz 2019', 'Men 2017', 'Park 2021', 'Bus 2024', 'Thota y Akbar 2023', 'Corcoran y Jacobs 2023', 'Costello 2023', 'Padda 2025', 'Collins y Costello 2024', 'Kasina y Baradhi 2023', 'Can y Correa 2023', 'Plewa 2023', 'Mathew y Thoppil 2022', 'Leslie y Foreman 2025', 'Srinivas-Shankar 2026'],
   },
-  { id: 'hueso', nombre: 'Fármacos que tocan el hueso', ejemplos: 'Alendronato, zoledronato, denosumab, inhibidores de la aromatasa' },
+  // Fármacos que tocan el hueso (2026-10): Gregson 2025 y Kanis 2019,
+  // releídas; Adler 2016, Black 2020, Anastasilakis 2021, Gehrke 2023,
+  // Zeng 2024, Wang 2025, Jin 2021, Hyder 2021, Tenti 2020, Lu 2020,
+  // Shin 2022 y Hadji 2025, enteras en PMC; PDF del usuario: Irwin 2015
+  // (HOPE), Tsourdi 2021 (ECTS), Shane 2014 (ASBMR), Ruggiero 2022 (AAOMS) y
+  // los StatPearls de toxicidad de los bifosfonatos, hipocalcemia, esofagitis
+  // por fármacos, denosumab, zoledronato, inhibidores de la aromatasa y
+  // osteonecrosis de mandíbula. El ejercicio, la carga y la terapia manual de
+  // la osteoporosis están en su tarjeta (docs/osteoporosis.md), no aquí. Sin
+  // fuente leída para distinguir la fractura atípica de una tendinopatía o un
+  // dolor de cadera, la evolución del dolor intenso de los bifosfonatos, el
+  // momento de la sesión respecto a la toma, la terapia manual y el sueño
+  // fuera de los sofocos: docs/farmacologia.md.
+  {
+    id: 'hueso',
+    nombre: 'Fármacos que tocan el hueso',
+    ejemplos: 'Alendronato, risedronato, ibandronato, zoledronato, denosumab; inhibidores de la aromatasa (anastrozol, letrozol, exemestano)',
+    apartados: {
+      dolor: {
+        texto: [
+          'Grupos: bifosfonatos orales (alendronato, risedronato, ibandronato), bifosfonatos intravenosos (zoledronato) y denosumab, que frenan la pérdida de hueso en la osteoporosis (Gregson 2025), e inhibidores de la aromatasa (anastrozol, letrozol, exemestano), que se toman 5–10 años tras un cáncer de mama y hacen perder hueso (Fong y Patel 2026). Lo que hay que vigilar cambia mucho de un grupo a otro. Si tiene osteoporosis, marca la tarjeta «Osteoporosis o fragilidad ósea» de la fase 1: el ejercicio, la carga y la terapia manual están allí.',
+          'Fractura atípica de fémur (bifosfonatos y denosumab): es rara; se rompe la diáfisis del fémur con un traumatismo mínimo o sin él, y a menudo en los dos lados (Gregson 2025; Shane 2014). Alrededor del 70 % tuvo antes un dolor sordo en la ingle o el muslo (Shane 2014), durante días, semanas o meses (Gregson 2025). El riesgo sube con los años de tratamiento, sobre todo a partir de 3 (mediana de 7) (Shane 2014), y baja deprisa al dejarlo (Black 2020). Tienen más riesgo las personas de origen asiático, con el fémur arqueado o que toman corticoides (Gregson 2025).',
+          'Cómo distinguirla: las fuentes leídas no la comparan con una tendinopatía ni con un dolor de cadera o lumbar referido. Lo que la sugiere es un dolor sordo de muslo o ingle sin causa clara, en uno o los dos lados, en quien lleva años con el fármaco (Shane 2014). La fractura de estrés por ejercicio suele empezar en la cara interna del tercio proximal del fémur; la atípica, en la cara externa, entre el trocánter menor y los cóndilos (Shane 2014). Ante ese dolor, imagen del fémur antes de cargar: ver «Cuándo consultar».',
+          'Bifosfonatos y dolor: el dolor musculoesquelético es un efecto frecuente del alendronato y el risedronato (Gregson 2025). Rara vez es intenso, y puede aparecer en cualquier momento del tratamiento, oral o intravenoso (Gehrke 2023); con el zoledronato, desde días hasta años después (Greear 2024). Las fuentes leídas no dicen si se resuelve al dejarlo ni cuánto tarda.',
+          'Consolidación: en un metaanálisis, empezar un bifosfonato en torno a la cirugía de una fractura por fragilidad no retrasó la consolidación (Zeng 2024). La fractura atípica, en cambio, consolida mal (Gregson 2025).',
+          'Inhibidores de la aromatasa y articulaciones: dolor articular simétrico y rigidez, sobre todo en manos, muñecas y rodillas, a veces en la zona lumbar, caderas, hombros y pies, con rigidez matinal, mialgias y menos fuerza de prensión (Tenti 2020; Hyder 2021). Lo tiene casi la mitad (20–74 %, 46 % en conjunto) (Hyder 2021). Suele empezar en los 2–3 primeros meses, con una mediana de unas 6 semanas, y llega a su máximo hacia el sexto mes (Tenti 2020; Hyder 2021). Es la causa más frecuente de abandono del tratamiento (Fong y Patel 2026).',
+          'Túnel carpiano y dedo en resorte: en una cohorte, con inhibidores de la aromatasa el túnel carpiano apareció en el 1,3 % (0,4 % sin hormonoterapia) y la tenosinovitis (dedo en resorte, De Quervain) en el 2,3 % (0,5 %); más de la mitad, en el primer año; el túnel carpiano fue casi siempre en las dos manos, a menudo grave, y se operó el 41 % (Shin 2022). Tenlos en cuenta antes de atribuir unas parestesias de la mano o un dedo en resorte solo a la sobrecarga.',
+          'Inhibidores de la aromatasa y hueso: la pérdida de densidad es 2–4 veces mayor que la de la menopausia (Hadji 2025) y se ve ya en los 6 primeros meses (Fong y Patel 2026); aumentan las fracturas, sobre todo las vertebrales (riesgo relativo 1,84) (Hadji 2025).',
+        ],
+        detalle: [
+          'Criterios propuestos para el dolor articular de los inhibidores de la aromatasa: empezó o empeoró con el fármaco, mejora en 2 semanas al dejarlo y vuelve al retomarlo; además, dolor simétrico, en manos o muñecas, túnel carpiano, menos fuerza de prensión, rigidez matinal o mejoría con el uso o el ejercicio (Hyder 2021). Lo favorecen llevar menos de 5 años de menopausia, la terapia hormonal previa, la quimioterapia con taxanos, la obesidad y el dolor articular o la artrosis previos (Tenti 2020). No hay estudios que comparen los tres fármacos (Hyder 2021).',
+          'Fractura atípica, cifras: entre 3,2 y 50 casos por 100.000 personas-año con bifosfonatos (Gregson 2025; Shane 2014), en torno a 100 o más con el uso prolongado (Shane 2014); en una cohorte, de 1,74 por 10.000 pacientes-año en conjunto a 13,10 con 8 años o más (Black 2020). Con el denosumab también se ha descrito, y no se sabe si es por el fármaco o por la propia osteoporosis (Hildebrand 2024).',
+          'En la radiografía, la atípica es transversal, empieza en la cortical externa y tiene un engrosamiento local de la cortical («pico»); para el diagnóstico hacen falta al menos 4 de sus 5 rasgos principales, y entre los secundarios están el dolor de muslo o ingle previo y la fractura de los dos lados (Shane 2014).',
+          'Denosumab: dolor de espalda (15 %), artralgias (11 %), dolor en las extremidades (11 %) y mialgias (4 %) en su capítulo de StatPearls, que no separa las dosis de la osteoporosis de las del cáncer (Hildebrand 2024).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Reacción de fase aguda (zoledronato y otros bifosfonatos intravenosos): fiebre, dolor muscular y articular, dolor óseo, escalofríos y cansancio, que empiezan a las 24–72 horas de la infusión y ceden en 48–72 horas (Alaranji y Reilly 2025; Greear 2024). Es sobre todo tras la primera dosis: del 30 % baja a menos del 7 % en las siguientes (Alaranji y Reilly 2025), y el paracetamol la alivia (Gregson 2025). Si hay fiebre, hay que descartar una infección (Alaranji y Reilly 2025). Pregunta cuándo fue la última infusión antes de atribuir unas mialgias o un dolor óseo de esos días a un problema mecánico.',
+          'Hipocalcemia (denosumab y zoledronato): hormigueo alrededor de la boca o en manos y pies, calambres, espasmos y tetania; en los casos graves, convulsiones, espasmo de la laringe y arritmias (Anastasopoulou y Goyal 2026). Con el zoledronato aparece en los días siguientes (Greear 2024); con el denosumab es grave en menos del 1–3 % y más probable con enfermedad renal (Hildebrand 2024). La favorecen la falta de vitamina D, la enfermedad renal y el hipoparatiroidismo (Greear 2024). La guía británica pide que quien toma denosumab comunique estos síntomas (Gregson 2025).',
+          'Bifosfonatos orales y esófago: pueden dar esofagitis (Kanis 2019), sobre todo tomados con poca agua o tumbado (Sharma 2026). Da dolor detrás del esternón o ardor, dolor o dificultad al tragar, de comienzo brusco, desde horas hasta 10 días después de la toma (Sharma 2026). Ese dolor torácico entra en el diagnóstico diferencial del dolor cardíaco (Sharma 2026).',
+          'Cómo se toman: en ayunas, con un vaso de agua del grifo, sentado o de pie, y sin tumbarse en los 30 minutos siguientes (alendronato, risedronato) o en 1 hora (ibandronato oral) (Gregson 2025). Si la sesión es esa mañana, no le pidas que se tumbe en ese tiempo.',
+          'Osteonecrosis de mandíbula (bifosfonatos y denosumab): hueso expuesto en la boca durante más de 8 semanas (Ruggiero 2022). Antes de que se vea puede dar dolor de muelas sin causa dental, un dolor sordo de la mandíbula que puede irradiar a la articulación temporomandibular, dolor sinusal, cambios de sensibilidad, dientes que se mueven o hinchazón, y los trastornos de la articulación temporomandibular están entre lo que se confunde con ella (Ruggiero 2022). Con las dosis de la osteoporosis es rara (por debajo del 0,05 % con bifosfonatos, 0,04–0,3 % con denosumab), y con las del cáncer es mucho más frecuente (por debajo del 5 %) (Ruggiero 2022). La favorecen las extracciones, la enfermedad dental, la mala higiene de la boca, el tabaco, el cáncer y los corticoides (Gregson 2025).',
+          'Osteonecrosis del conducto auditivo externo: muy rara; dolor de oído, supuración, pérdida de audición o infecciones de oído que no curan, a veces en los dos oídos (Gregson 2025; Wang 2025).',
+          'Inhibidores de la aromatasa: sofocos, sudores nocturnos y cansancio, y ansiedad o depresión leve en alrededor del 37 % (Tenti 2020); también tensión alta, colesterol alto y trombosis o problemas cardiovasculares (Fong y Patel 2026).',
+        ],
+        detalle: [
+          'Zoledronato y ojo: dolor, enrojecimiento o visión borrosa por una uveítis, de media a los 3 días de la infusión (Jin 2021); se valora en oftalmología (Greear 2024). Zoledronato y corazón: en su ensayo principal aumentó la fibrilación auricular sintomática (Gregson 2025).',
+          'Denosumab: infecciones de la piel, sobre todo celulitis, y eccema (Gregson 2025).',
+          'La osteonecrosis de mandíbula puede no doler: un tercio de los casos no duele (Alaranji y Reilly 2025), y el adormecimiento del labio inferior se ha descrito como síntoma precoz (Nischal y Gupta 2023).',
+          'Fuentes que no coinciden en la frecuencia de la osteonecrosis de mandíbula con dosis de osteoporosis: del orden de 1 por 100.000 pacientes-año (Kanis 2019), de 1 por 10.000 a 1 por 100.000 años de tratamiento (Adler 2016), 10–100 por 100.000 personas-año (Gregson 2025), o en porcentaje acumulado (Ruggiero 2022). Fuentes que no coinciden en la reacción de fase aguda: el 10–30 % tras la primera infusión (Gehrke 2023) o el 30 % (Alaranji y Reilly 2025), y cede en 48 horas (Alaranji y Reilly 2025) o en 72 (Greear 2024).',
+          'Esofagitis: los síntomas suelen mejorar en 1–2 semanas, pero pueden durar semanas o meses; con vómito de sangre, heces negras, dolor abdominal o síntomas que siguen a la semana, la indicación es una endoscopia (Sharma 2026).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'Con bifosfonatos o denosumab por osteoporosis, el ejercicio, la carga y la terapia manual siguen las normas de la osteoporosis: tarjeta «Osteoporosis o fragilidad ósea» de la fase 1 y su recuadro en la fase 5. Las fuentes leídas no dan normas propias para quien toma estos fármacos.',
+          'Lo que sí cambia la carga: con una fractura atípica diagnosticada se restringe la carga (Gregson 2025), y con un engrosamiento de la cortical o una fractura incompleta sin dolor, carga limitada y sin actividad vigorosa hasta que la imagen se normalice (Shane 2014). Por eso, un dolor de muslo o ingle sin explicación pide imagen del fémur antes de seguir con impacto o carga de esa pierna (Gregson 2025).',
+          'Tras una infusión de zoledronato, los 3 primeros días pueden traer fiebre y dolor muscular (Alaranji y Reilly 2025): si la sesión cae en esos días, tenlo en cuenta al dosificar y al interpretar los síntomas.',
+          'Inhibidores de la aromatasa: en un ensayo con 121 mujeres inactivas con dolor articular, fuerza supervisada 2 días por semana (6 ejercicios, 3 series de 8–12 repeticiones, subiendo el peso tras dos sesiones haciendo 12 repeticiones en cada serie) y 150 minutos semanales de aeróbico, del 50 % al 60–80 % de la frecuencia cardíaca máxima en el primer mes, durante 12 meses, bajaron el peor dolor 1,6 puntos (29 %), frente a una subida del 3 % con los cuidados habituales, sin efectos adversos (Irwin 2015). El beneficio más claro llegó a los 12 meses (Irwin 2015).',
+          'Fuentes que no coinciden: un metaanálisis halla menos dolor y rigidez con el ejercicio (Lu 2020), y una revisión Cochrane, según otra revisión, no halla pruebas claras (Tenti 2020). Los estudios no dieron efectos adversos importantes (Lu 2020), y las recomendaciones que recoge otra revisión proponen aeróbico y fuerza unos 30 minutos 3 veces por semana (Tenti 2020).',
+          'Hueso con inhibidores de la aromatasa: ejercicio, calcio y vitamina D para todas, sea cual sea su riesgo de fractura (Hadji 2025), con ejercicio en carga (Fong y Patel 2026). Las fuentes leídas no dan una dosis propia para el hueso ni tratan la terapia manual en estas pacientes; si tiene osteoporosis, sigue la tarjeta.',
+        ],
+        detalle: [
+          'El metaanálisis reunió 9 estudios con 743 participantes, siempre con aeróbico y en 5 también fuerza, de 6 semanas a 12 meses, al menos 120 minutos por semana y al 60–80 % de la frecuencia cardíaca máxima; en un estudio hubo dolor articular y muscular por sobrecarga que cedió en 1–2 semanas (Lu 2020). Cuenta como estudios distintos varios artículos del mismo ensayo, lo que puede inflar el efecto.',
+          'En el ensayo, el índice WOMAC de las piernas bajó un 37 % y el DASH del brazo un 33 %, no hubo relación entre dosis y efecto, y los resultados valen sobre todo para mujeres inactivas que siguen con el fármaco pese al dolor (Irwin 2015).',
+        ],
+      },
+      sueno: {
+        texto: [
+          'Inhibidores de la aromatasa: los sofocos y los sudores nocturnos alteran el sueño (Tenti 2020), y el insomnio está entre sus efectos frecuentes (Fong y Patel 2026). Las fuentes leídas no tratan el sueño como resultado propio.',
+          'Bifosfonatos y denosumab: las fuentes leídas no tratan el sueño. Tomar un comprimido justo antes de acostarse favorece la esofagitis (Sharma 2026).',
+        ],
+      },
+      consultar: {
+        texto: [
+          'Pronto, con imagen del fémur: un dolor de muslo, ingle o cadera sin explicación con bifosfonato o denosumab. La guía británica pide imagen del fémur (radiografía del fémur entero, gammagrafía o resonancia) y, si hay fractura atípica, también del otro (Gregson 2025). Hasta entonces, sin impacto ni carga de esa pierna. Con la tarjeta de osteoporosis marcada, la pregunta está en el cribado de la fase 2.',
+          'Urgente: convulsiones, espasmo de la garganta con dificultad para respirar, palpitaciones o desmayo con hormigueos o espasmos, con denosumab o zoledronato (Anastasopoulou y Goyal 2026); vómito con sangre o heces negras con un bifosfonato oral (Sharma 2026); hinchazón de cara, labios o garganta con un inhibidor de la aromatasa (Fong y Patel 2026).',
+          'Pronto, con su médico: hormigueos alrededor de la boca o en manos y pies, calambres o espasmos con denosumab o zoledronato (Gregson 2025; Anastasopoulou y Goyal 2026); dolor detrás del esternón o al tragar con un bifosfonato oral (Sharma 2026); ojo rojo y doloroso o visión borrosa tras el zoledronato, en oftalmología (Greear 2024); fiebre tras la infusión, para descartar una infección (Alaranji y Reilly 2025); dolor de oído, supuración o infecciones de oído que no curan (Gregson 2025). Al dentista: dolor de muelas o de mandíbula, dientes que se mueven, hinchazón o hueso a la vista en la boca (Gregson 2025; Ruggiero 2022).',
+          'Denosumab, no se deja ni se retrasa: si no se pone a tiempo su efecto se pierde (Hildebrand 2024), y al dejarlo aumentan las fracturas vertebrales, a menudo varias a la vez (Gregson 2025; Tsourdi 2021). Aparecen sobre todo entre 6 y 18 meses tras la última inyección (mediana de 10–11) (Anastasilakis 2021; Tsourdi 2021), y 4 meses de retraso ya aumentan el riesgo (Anastasilakis 2021). Si se le ha pasado la inyección o la ha dejado, que lo hable pronto con su médico: dejarlo exige pasar a otro fármaco, y eso lo decide él (Gregson 2025; Tsourdi 2021). Un dolor de espalda brusco en quien ha dejado el denosumab hace pensar en una fractura vertebral.',
+          'Bifosfonatos, pausas pautadas: como se quedan en el hueso, su médico puede pautar una pausa tras 3–5 años si el riesgo es bajo (Adler 2016; Alaranji y Reilly 2025); no es lo mismo que dejar el denosumab (Tsourdi 2021). La guía británica no apoya las pausas sistemáticas, sino revisar el tratamiento (Gregson 2025).',
+          'Inhibidores de la aromatasa: abandonarlos se asocia a más recaídas del cáncer (Hyder 2021). Si dice que lo ha dejado o que se lo salta por el dolor, que lo hable con su oncólogo. Nunca aconsejes dejar ninguno de estos fármacos ni cambiar la dosis por tu cuenta. Las dudas, al médico o al farmacéutico.',
+        ],
+        detalle: [
+          'Fuentes que no coinciden en la urgencia del dolor de muslo: la guía británica pide imagen, con recomendación fuerte y sin plazo (Gregson 2025); una revisión la pide urgente y de los dos fémures (Gehrke 2023). Y en el momento de las fracturas tras dejar el denosumab: 3–6 meses después de la dosis que tocaba (Gregson 2025), o 6–18 meses tras la última (Anastasilakis 2021). Al dejarlo, el riesgo anual de fractura vertebral fue parecido al del placebo; lo que aumentó fue la proporción de fracturas múltiples (60,7 % frente a 38,7 %) (Tsourdi 2021).',
+          'Combinaciones que hay que comentar con quien prescribe: los corticoides aumentan el riesgo de fractura atípica y de osteonecrosis de mandíbula (Gregson 2025); con un inhibidor de la aromatasa, dejar el denosumab podría agravar el rebote (Anastasilakis 2021).',
+        ],
+      },
+    },
+    fuentes: ['Gregson 2025', 'Kanis 2019', 'Shane 2014', 'Black 2020', 'Adler 2016', 'Tsourdi 2021', 'Anastasilakis 2021', 'Ruggiero 2022', 'Gehrke 2023', 'Zeng 2024', 'Wang 2025', 'Jin 2021', 'Alaranji y Reilly 2025', 'Anastasopoulou y Goyal 2026', 'Sharma 2026', 'Hildebrand 2024', 'Greear 2024', 'Nischal y Gupta 2023', 'Fong y Patel 2026', 'Hyder 2021', 'Tenti 2020', 'Shin 2022', 'Hadji 2025', 'Irwin 2015', 'Lu 2020'],
+  },
 ];
 
 export const TEXTOS_FARMACOS = {
