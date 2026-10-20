@@ -101,6 +101,18 @@ export const FAMILIAS_PACIENTE = {
       'Calor: en mayores, los diuréticos de asa, los IECA y los ARA II se asociaron a más ingresos por golpe de calor o deshidratación, también sin ola de calor (Layton 2020).',
     ],
   },
+  antidiabeticos: {
+    corto: 'Antidiabéticos',
+    rotulo: 'Toma insulina u otros antidiabéticos',
+    plan: [
+      'Riesgo de hipoglucemia con el ejercicio: lo tiene quien usa insulina o sulfonilureas. Con metformina, gliptinas, GLP-1, gliflozinas o pioglitazona solos no hace falta tomar hidratos por el ejercicio; combinados con insulina o sulfonilureas, sí hay riesgo (Kanaley 2022; Colberg 2016). Con insulina o sulfonilureas, que traiga hidratos de absorción rápida y su medidor de glucosa, y glucagón si tiende a hipoglucemias graves (Kanaley 2022; Riddell 2017).',
+      'Glucemia antes de empezar: el objetivo es 90–250 mg/dL (5,0–13,9 mmol/L) (Colberg 2016). Por debajo de 90 mg/dL, hidratos antes de empezar (Colberg 2016; Riddell 2017). Por encima de 250 mg/dL hay que mirar las cetonas: con cetonas moderadas o altas no se hace ejercicio; sin ellas, ejercicio ligero o moderado si se encuentra bien e hidratado, y el intenso cuando baje de 250 (Colberg 2016; Kanaley 2022). Una hipoglucemia grave en las 24 horas previas contraindica el ejercicio (Riddell 2017).',
+      'Durante: en la diabetes tipo 1, la hipoglucemia aparece en la mayoría dentro de los 45 minutos de ejercicio aeróbico (Riddell 2017). Después: aparece sobre todo 6–15 horas más tarde, aunque el riesgo dura hasta 48 horas (Colberg 2016), y el ejercicio largo e intenso lo aumenta con insulina o sulfonilureas (Kanaley 2022).',
+      'Lugar de inyección: la insulina se pone en una zona que no vaya a trabajar, porque el ejercicio acelera su absorción, y el calor ambiente también (Adolfsson 2022). Las fuentes leídas no tratan el masaje, el calor local ni la terapia manual sobre una zona recién inyectada.',
+      'Gliflozinas: el ejercicio, solo si se encuentra bien, aunque la glucosa no esté muy alta, por la cetoacidosis con glucosa normal (Kanaley 2022); por la pérdida de volumen y el mareo (Tentolouris 2019), cuida la hidratación y los cambios de postura.',
+      'Hipoglucemia en la sesión: para el ejercicio y que se mida la glucosa (Moser 2020; Costello 2023). Con 70 mg/dL (3,9 mmol/L) o menos, 15 g de hidratos de absorción rápida, mejor glucosa (tabletas, zumo, refresco), sin grasa ni proteína; volver a medir a los 15 minutos y repetir si sigue baja, la regla «15-15»; cuando se recupere, que coma algo, porque con insulina o sulfonilureas puede repetirse (ADA 2025; Costello 2023). Si bajó de 54 mg/dL, no se reanuda el ejercicio (Moser 2020).',
+    ],
+  },
 };
 
 // Textos de la tarjeta, la guía y la fase 5 (redacción propia, decisión 18)
