@@ -320,10 +320,11 @@ export const FAMILIAS_FARMACO = [
   },
   // Gabapentinoides (2026-10): siete fuentes (cinco enteras en PMC, Carvalho 2022
   // leída en parte, y los capítulos de StatPearls de gabapentina y pregabalina,
-  // PDF del usuario). Enke 2018 solo dio el resumen y no se cita. Sin fuente
-  // leída para caídas y fracturas en mayores, inflamación y curación de los
-  // tejidos, terapia manual, mioclonías ni sueño en pacientes con dolor
-  // musculoesquelético: docs/farmacologia.md.
+  // PDF del usuario). Huecos cerrados (2026-10) con Enke 2018, Yuen 2026 y
+  // Akin 2022 (PDF del usuario) y Leung 2024, Scott 2024, Moon 2026, Rissardo
+  // 2023 y 2025 y Pathak 2025 (PMC): caídas y fracturas, mioclonías, lumbalgia,
+  // hueso y sueño en la fibromialgia. Sin fuente leída para la curación de los
+  // tejidos ni la terapia manual: docs/farmacologia.md.
   {
     id: 'gabapentinoides',
     nombre: 'Gabapentinoides',
@@ -333,13 +334,15 @@ export const FAMILIAS_FARMACO = [
       dolor: {
         texto: [
           'En la ciática, la pregabalina no alivió más el dolor ni mejoró más la discapacidad que el placebo en seguimientos de hasta 52 semanas, y la gabapentina tampoco a las 8 semanas; una diferencia a los 3–4 meses no llegó a ser clínicamente relevante (menos de 2 puntos sobre 10). La revisión concluye que no hay evidencia que apoye su uso sistemático en la ciática ni en la lumbalgia (Giménez-Campos 2021). Un capítulo de StatPearls afirma que la pregabalina no debería prescribirse para el dolor musculoesquelético (Cross 2024).',
+          'En la lumbalgia crónica, un metaanálisis de 9 ensayos no encontró efecto sobre el dolor a corto plazo (diferencia de 0,0 puntos sobre 10) ni sobre la discapacidad, y tampoco en el dolor radicular lumbar en ningún plazo, con evidencia de calidad moderada o alta; sí aumentaron los efectos adversos (RR 1,4), sobre todo la somnolencia, el mareo y las náuseas (Enke 2018).',
           'En el dolor neuropático sí superan al placebo: el número necesario a tratar es de 8 y 10 para la pregabalina (reducción del dolor de al menos 30 % y 50 %) y de 7 y 8 para la gabapentina (Meaadi 2023). Las indicaciones aprobadas de la gabapentina son la neuralgia posherpética y, como complemento, las crisis parciales (Yasaei 2024); las de la pregabalina, el dolor neuropático de la neuropatía diabética, la lesión medular y la neuralgia posherpética, y la fibromialgia (Cross 2024).',
         ],
         detalle: [
           'En la estenosis lumbar, a corto plazo no redujeron el dolor más que los AINE, el limaprost o la difenhidramina; a medio plazo parecieron algo más eficaces, sin ventaja en discapacidad (ODI) y con más efectos adversos. Son seis estudios con 392 pacientes y controles distintos entre sí (Martínez 2023).',
           'Una revisión narrativa que defiende el fármaco señala que no beneficia a todos los pacientes y que tiene sentido elegirlo según la fisiopatología y el perfil de síntomas (McAnally 2020).',
           'El efecto de la gabapentina suele notarse en la primera semana, aunque la mejoría importante puede tardar hasta un mes (Yasaei 2024). En el dolor tras una lesión medular, la pregabalina puede mejorar el dolor desde la primera semana y se pide probarla 4–6 semanas si se tolera (Cross 2024).',
-          'Las fuentes leídas no tratan su efecto sobre la inflamación ni sobre la curación de los tejidos.',
+          'Hueso: en un estudio transversal con 40 adultos de 18 a 50 años que tomaban pregabalina desde hacía al menos 6 meses, la densidad ósea lumbar y del cuello del fémur y los marcadores óseos no fueron distintos de los de 40 controles; no incluye a mayores ni a mujeres posmenopáusicas (Akin 2022).',
+          'Las fuentes leídas no tratan su efecto sobre la inflamación ni sobre la curación de los tejidos en humanos.',
         ],
       },
       visceral: {
@@ -347,18 +350,22 @@ export const FAMILIAS_FARMACO = [
           'Edema periférico y aumento de peso: con gabapentina, frente a placebo, el aumento de peso (RR 5,6) y el edema periférico (RR 3,1) estuvieron entre los efectos con mayor riesgo relativo, y con pregabalina el aumento de peso (RR 5,0) (Meaadi 2023). El aumento de peso de la pregabalina depende de la dosis y llega hasta el 14 % con 600 mg al día (Cross 2024). Se ha descrito una cascada de prescripción: tras empezar uno de los dos, aumenta el uso posterior de diuréticos de asa (Cross 2024).',
           'Dolor o debilidad muscular sin explicar: se han descrito casos de rabdomiólisis con la gabapentina (Yasaei 2024) y, en el registro de acontecimientos adversos de la FDA, con la pregabalina, por lo que se pide comunicar enseguida cualquier síntoma muscular sin explicar (Cross 2024).',
           'Entre las reacciones frecuentes de la gabapentina figuran náuseas, vómitos, diarrea, estreñimiento, boca seca, fatiga, visión doble, temblor y dolor de espalda (Yasaei 2024). En la ciática, el mareo y las náuseas o vómitos fueron más frecuentes con pregabalina que con placebo (Giménez-Campos 2021).',
+          'Mioclonías: sacudidas musculares bruscas, sobre todo en manos y pies, que con la gabapentina aparecieron con una mediana de 1 semana; la mayoría se recuperó por completo al retirarla. Pasan desapercibidas si no se pregunta por ellas y pueden dar caídas sin explicación. El riesgo es mayor con dosis altas o con la función renal alterada, aunque también se han visto en personas sanas (Rissardo 2023). También puede aparecer asterixis, una pérdida breve del tono muscular (Rissardo 2025).',
           'Depresión e ideas de suicidio: ambos fármacos pueden provocarlas o empeorarlas, y se vigilan durante el tratamiento (Yasaei 2024). Los antiepilépticos como la pregabalina pueden aumentar el riesgo de pensamientos o conductas suicidas (Cross 2024).',
           'Reacciones de hipersensibilidad graves con la gabapentina: síndrome de Stevens-Johnson, angioedema, anafilaxia y DRESS (hipersensibilidad multiorgánica), esta última a veces mortal (Yasaei 2024).',
           'Retirada brusca: con la pregabalina, insomnio, náuseas, cefalea, ansiedad, nerviosismo, irritabilidad, sudoración y diarrea (Cross 2024); con la gabapentina, crisis de retirada (Yasaei 2024). Pueden dar dependencia física con dosis moderadas o altas y uso prolongado (McAnally 2020).',
         ],
         detalle: [
+          'La misma revisión da una mediana de 1 semana hasta la mioclonía en los resultados y describe el caso típico a las 4 semanas; con la pregabalina no encuentra factores de riesgo claros (Rissardo 2023). La edad avanzada, la epilepsia, la función renal alterada y tomar muchos fármacos también aumentan el riesgo (Rissardo 2025).',
           'La pregabalina produjo euforia a dosis terapéuticas y la gabapentina no; ningún ensayo evaluó el abuso ni el trastorno por uso indebido (Meaadi 2023). Entre quienes tienen un trastorno por uso de sustancias, sobre todo de opioides, el uso indebido llega hasta el 20 % (McAnally 2020).',
         ],
       },
       ejercicio: {
         texto: [
           'Mareo, somnolencia y marcha: son las reacciones más frecuentes y las que más llevaron a abandonar la pregabalina; la mayoría fueron leves o moderadas, dependientes de la dosis y aparecieron en las 2 primeras semanas (Cross 2024). Con pregabalina fueron mucho más frecuentes que con placebo la incoordinación (RR 7,2), la marcha anormal (RR 6,7) y la ataxia (RR 6,0); con gabapentina, el mareo (RR 3,3) y la somnolencia (RR 2,9) (Meaadi 2023). Otra revisión añade sedación e inestabilidad de la marcha, y que una de cada tres personas notó mareo o somnolencia a dosis terapéuticas (Martínez 2023).',
-          'Mayores y función renal: ambos fármacos se eliminan por vía renal y el aclaramiento baja en los mayores y con disfunción renal, con más riesgo de reacciones adversas (Yasaei 2024; Cross 2024). Las fuentes leídas no cuantifican caídas ni fracturas.',
+          'Mayores y función renal: ambos fármacos se eliminan por vía renal y el aclaramiento baja en los mayores y con disfunción renal, con más riesgo de reacciones adversas (Yasaei 2024; Cross 2024).',
+          'Caídas y fracturas: en mayores, la fractura de cadera fue un 30 % más probable en los 60 días siguientes a dispensarlos, y más en personas frágiles o con enfermedad renal crónica (Leung 2024). En pacientes ingresados, las caídas fueron más frecuentes con ellos (OR 1,88) (Moon 2026).',
+          'Las fuentes no coinciden en si la causa es el fármaco: en personas con artritis inflamatoria, el riesgo de fractura subió un 36 %, sin relación con la dosis, y siguió alto años después de empezar (Scott 2024); en un estudio de dos países con mayores de 60 años, el riesgo fue más alto en los 90 días antes de empezar que en los primeros 60 días de tratamiento y volvió a lo normal después, y los autores lo atribuyen sobre todo al motivo por el que se recetan, sin descartar el mareo y la somnolencia del principio (Yuen 2026). Ese estudio pide valorar el riesgo de caídas y fracturas al empezarlos y vigilar de cerca las primeras semanas (Yuen 2026).',
           'Conducir: se pide cautela hasta saber cuánto afecta la gabapentina (Yasaei 2024); otro capítulo aconseja no conducir mientras se toma la pregabalina (Cross 2024).',
         ],
         detalle: [
@@ -375,14 +382,14 @@ export const FAMILIAS_FARMACO = [
         ],
         detalle: [
           'La pregabalina se usa fuera de indicación para el insomnio, con controversia sobre su eficacia (Cross 2024). La guía EULAR de fibromialgia, citada en ese capítulo, la considera más adecuada cuando coinciden dolor intenso y trastorno del sueño (Cross 2024).',
-          'La Academia Americana de Medicina del Sueño sugiere la gabapentina para el síndrome de piernas inquietas moderado o grave (Yasaei 2024). Las fuentes leídas no estudian su efecto sobre el sueño en el dolor musculoesquelético.',
+          'La Academia Americana de Medicina del Sueño sugiere la gabapentina para el síndrome de piernas inquietas moderado o grave (Yasaei 2024). En la fibromialgia, un metaanálisis de 8 estudios vio que la pregabalina mejora algo la calidad del sueño (diferencia estandarizada −0,35), y concluye que los fármacos no deberían ser la primera opción para dormir mejor en la fibromialgia (Pathak 2025). Las fuentes leídas no estudian su efecto sobre el sueño en otros dolores musculoesqueléticos.',
         ],
       },
       consultar: {
         texto: [
           'Urgente: angioedema, anafilaxia, erupción grave (síndrome de Stevens-Johnson) o hipersensibilidad multiorgánica, que exigen valoración médica inmediata (Yasaei 2024). Confusión, agitación o disminución de la conciencia pueden ser signos de sobredosis, más con otros depresores del sistema nervioso (Cross 2024). Respiración lenta o dificultad para respirar con opioides (Yasaei 2024). Depresión nueva o que empeora, o ideas de suicidio (Cross 2024). Temblor, alteración mental o dificultad respiratoria en quien tiene enfermedad renal o está en diálisis (Yasaei 2024).',
           'Combinaciones que hay que comentar con quien prescribe: opioides (depresión respiratoria y sedación, a veces mortales; Yasaei 2024), benzodiacepinas y alcohol (efecto sinérgico; Cross 2024) y gabapentina con pregabalina a la vez, que está contraindicada (Yasaei 2024). Los criterios de Beers de 2019 recomiendan evitar la combinación con opioides por el riesgo de depresión respiratoria (Hahn 2022).',
-          'Pronto: mareo, somnolencia o inestabilidad al caminar nuevos o que empeoran; en la estenosis lumbar, la mayoría de quienes los tuvieron abandonó el tratamiento (Martínez 2023). Dolor o debilidad muscular sin explicar, edema o aumento de peso nuevos (Cross 2024). Síntomas de retirada (Cross 2024).',
+          'Pronto: mareo, somnolencia o inestabilidad al caminar nuevos o que empeoran; en la estenosis lumbar, la mayoría de quienes los tuvieron abandonó el tratamiento (Martínez 2023). Dolor o debilidad muscular sin explicar, edema o aumento de peso nuevos (Cross 2024). Síntomas de retirada (Cross 2024). Sacudidas musculares bruscas nuevas o caídas sin explicación (Rissardo 2023).',
           'El uso indebido es más probable en personas con trastorno por uso de opioides o antecedentes de abuso de sustancias (McAnally 2020; Cross 2024): coméntalo con quien los prescribe.',
           'Nunca aconsejes dejarlos ni bajarlos por tu cuenta: la retirada brusca puede dar síntomas y crisis de retirada, y se hace de forma gradual con quien los prescribe (Yasaei 2024; Cross 2024). Las dudas, al médico o al farmacéutico.',
         ],
@@ -391,7 +398,7 @@ export const FAMILIAS_FARMACO = [
         ],
       },
     },
-    fuentes: ['Giménez-Campos 2021', 'Meaadi 2023', 'Martínez 2023', 'McAnally 2020', 'Hahn 2022', 'Carvalho 2022', 'Yasaei 2024', 'Cross 2024'],
+    fuentes: ['Giménez-Campos 2021', 'Meaadi 2023', 'Martínez 2023', 'McAnally 2020', 'Hahn 2022', 'Carvalho 2022', 'Yasaei 2024', 'Cross 2024', 'Enke 2018', 'Akin 2022', 'Rissardo 2023', 'Rissardo 2025', 'Leung 2024', 'Moon 2026', 'Scott 2024', 'Yuen 2026', 'Pathak 2025'],
   },
   // Antidepresivos (2026-10): nueve fuentes enteras en PMC, siete capítulos de
   // StatPearls y dos revisiones Cochrane (PDF del usuario). Birkinshaw 2023 y

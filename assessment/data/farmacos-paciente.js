@@ -53,6 +53,7 @@ export const FAMILIAS_PACIENTE = {
     plan: [
       'Mareo, somnolencia y marcha: son las reacciones más frecuentes y las que más llevaron a abandonar la pregabalina; la mayoría fueron leves o moderadas, dependientes de la dosis y aparecieron en las 2 primeras semanas (Cross 2024).',
       'Mayores y función renal: ambos fármacos se eliminan por vía renal y el aclaramiento baja en los mayores y con disfunción renal, con más riesgo de reacciones adversas (Yasaei 2024; Cross 2024).',
+      'Caídas y fracturas: en mayores, la fractura de cadera fue un 30 % más probable en los 60 días siguientes a dispensarlos, y más en personas frágiles o con enfermedad renal crónica (Leung 2024). En pacientes ingresados, las caídas fueron más frecuentes con ellos (OR 1,88) (Moon 2026).',
       'Las fuentes leídas no dan normas de terapia manual en estos pacientes ni sobre el ejercicio en las horas siguientes a la toma.',
     ],
   },
