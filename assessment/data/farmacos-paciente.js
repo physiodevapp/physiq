@@ -62,6 +62,7 @@ export const FAMILIAS_PACIENTE = {
     rotulo: 'Toma antidepresivos',
     plan: [
       'Mareo, ortostatismo y caídas: los tricíclicos se asociaron a mucha más hipotensión ortostática que el placebo (OR 6,30), y los ISRS no (Bhanu 2021). La amitriptilina da hipotensión ortostática, mareo y sedación (Thour 2026). La duloxetina puede dar hipotensión ortostática, caídas y síncope, sobre todo al empezar o al subir la dosis (Biswas 2026).',
+      'Con venlafaxina, uno de cada cinco mayores sin hipotensión ortostática al empezar la tuvo durante el tratamiento, y quienes la tuvieron se cayeron más (Wathra 2020). En mayores de 60 años, la hipotensión al ponerse de pie fue más frecuente en los 28 primeros días tras empezar un antidepresivo (ISRS, IRR 4,22; duloxetina, venlafaxina o mirtazapina, 2,17; tricíclicos, 2,12), y con duloxetina, venlafaxina o mirtazapina no siguió elevada después (Bhanu 2025).',
       'Las fuentes leídas no dan normas de terapia manual ni de ejercicio con estos fármacos. El sangrado que estudian es el grave, digestivo o intracraneal, no los hematomas de las técnicas manuales.',
     ],
   },

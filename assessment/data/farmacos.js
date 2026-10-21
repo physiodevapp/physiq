@@ -401,10 +401,12 @@ export const FAMILIAS_FARMACO = [
     fuentes: ['Giménez-Campos 2021', 'Meaadi 2023', 'Martínez 2023', 'McAnally 2020', 'Hahn 2022', 'Carvalho 2022', 'Yasaei 2024', 'Cross 2024', 'Enke 2018', 'Akin 2022', 'Rissardo 2023', 'Rissardo 2025', 'Leung 2024', 'Moon 2026', 'Scott 2024', 'Yuen 2026', 'Pathak 2025'],
   },
   // Antidepresivos (2026-10): nueve fuentes enteras en PMC, siete capítulos de
-  // StatPearls y dos revisiones Cochrane (PDF del usuario). Birkinshaw 2023 y
-  // Moore 2015 solo dieron el resumen y no se citan. Sin fuente leída para el
-  // efecto sobre la inflamación y la curación, si enmascaran signos, terapia
-  // manual, ejercicio con calor ni conducción: docs/farmacologia.md.
+  // StatPearls y dos revisiones Cochrane (PDF del usuario). Huecos cerrados
+  // (2026-10) con diez fuentes de PMC (Ferreira 2023, Birkinshaw 2023, Moore
+  // 2019 y otras): comparación entre dolores, amitriptilina en la fibromialgia,
+  // caídas y ortostatismo con IRSN, calor, conducción, hueso y sangrado
+  // quirúrgico. Sin fuente leída para la inflamación y la curación de partes
+  // blandas, si enmascaran signos ni la terapia manual: docs/farmacologia.md.
   {
     id: 'antidepresivos',
     nombre: 'Antidepresivos (ISRS, IRSN, tricíclicos)',
@@ -416,11 +418,15 @@ export const FAMILIAS_FARMACO = [
           'Lumbalgia inespecífica: los IRSN (duloxetina) probablemente tienen un efecto pequeño en el dolor (5,25 puntos menos sobre 100) y trivial en la discapacidad (0,91 puntos menos sobre 24) a corto plazo; los tricíclicos probablemente apenas cambian el dolor, con un efecto pequeño en la discapacidad (1,76 puntos menos sobre 24), y para los ISRS la evidencia es insuficiente. No hay datos de más de 12 meses, y los resultados quizá no valgan para mayores ni para quien tiene otras enfermedades importantes, porque solían excluirse de los ensayos (Ferraro 2025).',
           'Fibromialgia: con duloxetina o milnaciprán, el 31 % logró al menos un 50 % de alivio frente al 21 % con placebo (NNT 11), una diferencia que la revisión no considera clínicamente relevante; sí lo es la del alivio de al menos un 30 % (NNT 10). De media, sus posibles daños superan a sus beneficios, aunque una minoría mejora mucho sin efectos relevantes (Welsch 2018). Los tricíclicos son de segunda línea en la fibromialgia (Moraczewski 2023).',
           'Mayores de 65 años: en la artrosis de rodilla, la duloxetina dio un efecto muy pequeño (9,1 puntos menos sobre 100) que puede no compensar sus riesgos, y los autores no la ven adecuada como tratamiento único (Narayan 2024).',
-          'Las fuentes leídas no tratan su efecto sobre la inflamación ni sobre la curación de los tejidos, ni si enmascaran signos en la exploración.',
+          'Comparando entre dolores, una revisión de revisiones da evidencia de certeza moderada a los IRSN en la lumbalgia crónica, el dolor posoperatorio, la fibromialgia y el dolor neuropático, aunque el alivio frente al placebo fue menor de 10 puntos sobre 100; los ISRS no fueron eficaces en la lumbalgia ni en la fibromialgia, y los tricíclicos sí en el dolor neuropático y la cefalea tensional crónica, con certeza baja (Ferreira 2023).',
+          'Las fuentes leídas no tratan su efecto sobre la inflamación ni sobre la curación del tendón o de las partes blandas, ni si enmascaran signos en la exploración.',
         ],
         detalle: [
           'Las guías de fibromialgia desaconsejan tratarla solo con fármacos y piden combinarlos con ejercicio aeróbico y terapias psicológicas; el ejercicio aeróbico sirve para la fatiga, en la que estos fármacos no ayudan (Welsch 2018).',
           'La duloxetina está aprobada para el dolor musculoesquelético crónico (lumbalgia crónica y dolor de la artrosis), la fibromialgia y el dolor neuropático diabético, con un máximo de 60 mg al día, y refuerza las vías descendentes que inhiben el dolor en la médula (Biswas 2026). La amitriptilina se usa fuera de indicación en el dolor crónico, empezando con 10–20 mg al día (Thour 2026).',
+          'En un metaanálisis en red de 176 ensayos en dolor crónico, solo la duloxetina tuvo evidencia de certeza moderada: alivio de al menos un 50 % en el 44 % frente al 29 % con placebo; para la amitriptilina, la venlafaxina y otros no hubo evidencia de calidad alta, y la certeza sobre los daños fue muy baja para todos (Birkinshaw 2023).',
+          'Amitriptilina en la fibromialgia: con 25–50 mg al día, el 36 % logró al menos un 50 % de alivio frente al 11 % con placebo, pero con evidencia de muy baja calidad que probablemente sobrestima el efecto; tuvo efectos adversos el 77 % frente al 47 %, sobre todo boca seca y somnolencia, que suelen ceder en 2–3 semanas (Moore 2019).',
+          'Hueso: en una cohorte retrospectiva, quien tomaba ISRS tuvo algo más de seudoartrosis tras fijar con placa una fractura de húmero (7,1 % frente a 4,7 %), sin diferencias en fémur, tibia, clavícula ni en el húmero con clavo; los autores lo atribuyen probablemente a factores de confusión y no al fármaco (Ponna 2026).',
           'Plazos: los antidepresivos suelen empezar a hacer efecto en 2–4 semanas (Thour 2026). En la lumbalgia, los efectos se vieron con tratamientos de al menos 7 semanas, en personas con síntomas de 3 meses o más (Ferraro 2025).',
           'Ciática y dolor de pierna de origen vertebral: la evidencia viene de ensayos únicos y pequeños; el efecto de los IRSN es muy incierto y el de los tricíclicos quizá grande (un ensayo de 60 personas) (Ferraro 2025).',
         ],
@@ -436,6 +442,7 @@ export const FAMILIAS_FARMACO = [
         detalle: [
           'Náuseas: el efecto más frecuente de la duloxetina, alrededor del 18 % (Biswas 2026); en la fibromialgia, el 32 % con IRSN frente al 14 % con placebo (Welsch 2018). La duloxetina y la venlafaxina también dan temblor (Biswas 2026; Singh y Saadabadi 2024).',
           'Sudoración excesiva en alrededor del 10 % con ISRS, y en proporción parecida con venlafaxina y tricíclicos. Los que actúan sobre la serotonina o la noradrenalina dan disfunción sexual. Los ISRS e IRSN se asociaron a pérdida de peso que desaparece pasados 4 meses; la amitriptilina hace ganar peso (Wang 2018).',
+          'En la cirugía de artrodesis lumbar, quien tomaba ISRS perdió de media un 34 % más de sangre y necesitó más transfusiones; con IRSN no se vio (Schadler 2017).',
           'Hígado: la duloxetina se evita con consumo importante de alcohol o enfermedad hepática crónica (Biswas 2026).',
           'En los casos publicados de síndrome serotoninérgico, el tramadol, el fentanilo y la trazodona fueron los fármacos que más acompañaban al desencadenante; con prescripción habitual, el 36 % ingresó en la UCI y el 5 % murió (Blyzniuk 2026).',
         ],
@@ -443,14 +450,17 @@ export const FAMILIAS_FARMACO = [
       ejercicio: {
         texto: [
           'Mareo, ortostatismo y caídas: los tricíclicos se asociaron a mucha más hipotensión ortostática que el placebo (OR 6,30), y los ISRS no (Bhanu 2021). La amitriptilina da hipotensión ortostática, mareo y sedación (Thour 2026). La duloxetina puede dar hipotensión ortostática, caídas y síncope, sobre todo al empezar o al subir la dosis (Biswas 2026).',
+          'Con venlafaxina, uno de cada cinco mayores sin hipotensión ortostática al empezar la tuvo durante el tratamiento, y quienes la tuvieron se cayeron más (Wathra 2020). En mayores de 60 años, la hipotensión al ponerse de pie fue más frecuente en los 28 primeros días tras empezar un antidepresivo (ISRS, IRR 4,22; duloxetina, venlafaxina o mirtazapina, 2,17; tricíclicos, 2,12), y con duloxetina, venlafaxina o mirtazapina no siguió elevada después (Bhanu 2025).',
           'Mayores: los criterios de Beers piden evitar la amitriptilina por sus efectos anticolinérgicos (Thour 2026), y la duloxetina si ya hubo caídas o fracturas, por la ataxia y la hipotensión ortostática (Biswas 2026). En los tricíclicos se pide vigilar las caídas y el deterioro cognitivo (Moraczewski 2023).',
           'Hueso: los tricíclicos aumentan el riesgo de fracturas (Thour 2026), y un metaanálisis asocia los ISRS a más fracturas de cadera, con más riesgo cuanto más largo es el uso (De Filippis 2022).',
           'Las fuentes leídas no dan normas de terapia manual ni de ejercicio con estos fármacos. El sangrado que estudian es el grave, digestivo o intracraneal, no los hematomas de las técnicas manuales.',
         ],
         detalle: [
           'La hipotensión ortostática es una bajada de al menos 20 mmHg de sistólica o 10 de diastólica en los 3 minutos siguientes a ponerse de pie, y afecta a entre el 30 y el 70 % de los mayores. Los datos de los tricíclicos son de dosis para la depresión; los autores creen que a dosis bajas también pueden perjudicar a los mayores y aconsejan medir la tensión al cambiar de postura (Bhanu 2021).',
+          'Las fuentes no coinciden en las caídas: en mayores con depresión, tratarla con duloxetina o venlafaxina se asoció a menos caídas con lesión que no tratarla, lo que los autores relacionan con la propia depresión (Wang 2024). En los ensayos, con una edad media de 57 años, los ISRS no dieron más hipotensión ortostática (Bhanu 2021), y un estudio en mayores de 60 años lo explica por la edad (Bhanu 2025).',
           'Un estudio citado en una revisión encontró más caídas con la duloxetina (HR 1,6) y algo más con los tricíclicos (HR 1,2) (Narayan 2024).',
-          'Calor: el síndrome serotoninérgico altera la regulación de la temperatura (Simon 2024) y la hiponatremia es más frecuente en verano (Filippatos 2017); las fuentes leídas no estudian el ejercicio con calor ni la conducción.',
+          'Calor: el síndrome serotoninérgico altera la regulación de la temperatura (Simon 2024) y la hiponatremia es más frecuente en verano (Filippatos 2017). En un metaanálisis, los antidepresivos estudiados (citalopram, paroxetina, bupropión, reboxetina) no cambiaron la temperatura central, sin datos de sudoración ni de la amitriptilina (Hospers 2024).',
+          'Conducir: tomar antidepresivos se asoció a más accidentes de tráfico (OR 1,40), menos que la propia depresión (OR 1,90), y más en los 3–4 primeros meses de tratamiento (Hill 2017).',
           'Con la venlafaxina, el alcohol y otros sedantes aumentan la sedación (Singh y Saadabadi 2024).',
         ],
       },
@@ -478,7 +488,7 @@ export const FAMILIAS_FARMACO = [
         ],
       },
     },
-    fuentes: ['Ferraro 2025', 'Welsch 2018', 'Narayan 2024', 'Moraczewski 2023', 'Biswas 2026', 'Thour 2026', 'Alam 2022', 'Nochaiwong 2022', 'Wang 2018', 'Singh y Saadabadi 2024', 'Zhang 2026', 'Filippatos 2017', 'Simon 2024', 'Blyzniuk 2026', 'Chu y Wadhwa 2023', 'Bhanu 2021', 'De Filippis 2022', 'Wichniak 2017', 'Waseem 2026', 'Horowitz 2023'],
+    fuentes: ['Ferraro 2025', 'Welsch 2018', 'Narayan 2024', 'Moraczewski 2023', 'Biswas 2026', 'Thour 2026', 'Alam 2022', 'Nochaiwong 2022', 'Wang 2018', 'Singh y Saadabadi 2024', 'Zhang 2026', 'Filippatos 2017', 'Simon 2024', 'Blyzniuk 2026', 'Chu y Wadhwa 2023', 'Bhanu 2021', 'De Filippis 2022', 'Wichniak 2017', 'Waseem 2026', 'Horowitz 2023', 'Ferreira 2023', 'Birkinshaw 2023', 'Moore 2019', 'Ponna 2026', 'Schadler 2017', 'Wathra 2020', 'Bhanu 2025', 'Wang 2024', 'Hospers 2024', 'Hill 2017'],
   },
   // Benzodiacepinas y relajantes musculares (2026-10): nueve fuentes enteras
   // en PMC y siete capítulos de StatPearls (PDF del usuario). Sin fuente leída
