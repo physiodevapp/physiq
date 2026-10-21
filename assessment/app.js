@@ -47,6 +47,8 @@ import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
 import { condicionesHTML, avisoCambioRegion } from './lib/condiciones.js';
+import { nombreAuto, aplicarTecla } from './lib/modo-guia.js';
+import { VERBALES, TEXTOS_GUIA } from './data/guia.js';
 import { farmacosHTML, FILTRO_PACIENTE_FARM, textoCima } from './lib/farmacos.js';
 import { TEXTOS_FARMACOS } from './data/farmacos.js';
 import { familiasMarcables, familiasPendientesNombres, normalizarFarmacos, farmacosVacio, derivadasDeTarjetas,
@@ -335,7 +337,7 @@ function _softResetApp() {
   state.anticoagulado = anticoaguladoVacio();
   state.farmacos = farmacosVacio();
   state.cronologia = '';
-  state.banderasRojas = { br1: 'NO', br2: 'NO', br3: 'NO', br4: 'NO' };
+  state.banderasRojas = banderasRojasIniciales();
   state.riesgoPsico = '';
   state.psico_miedo = '';
   state.psico_autoef = '';
@@ -383,6 +385,7 @@ function _softResetApp() {
   updateImcDisplay();
   updateImcColor(); // updateImcDisplay only sets the value now (color/flag deferred to blur — see updateVitalColor), so reset needs both
   document.querySelectorAll('#phase1 .option-btn').forEach(b => b.classList.remove('selected'));
+  _pintarBanderasRojas();
   ['banderaAlert', 'psicoToolSuggest', 'psicoAltoQuestions', 'psicoRecomendacion'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
@@ -434,6 +437,8 @@ function _softResetApp() {
     history.replaceState({ phase: 1 }, '');
   }
   _pintarModoUI();   // el modo se conserva, pero el bucle de .option-btn de arriba quitó su selección
+  state.preguntado = {};
+  _pintarRegistroUI();   // ídem el registro
   _pintarCirugiaUI();
   _pintarHMUI();
   _pintarDsUI();
@@ -789,6 +794,268 @@ function selectSQ(btn, id, value) {
 function checkBanderasRojas() {
   const hasRed = Object.values(state.banderasRojas).includes('SI');
   document.getElementById('banderaAlert').style.display = hasRed ? 'block' : 'none';
+}
+
+// ─── REGISTRO EN MODO GUÍA (docs/modo-guia.md, decisión 3) ──────────
+// Con grabadora externa, el fisio pregunta de palabra y toca solo lo que mueve
+// la lógica: una pregunta sin tocar es «no preguntada», nunca «NO». Por eso en
+// modo guía el cribado y las banderas rojas empiezan sin respuesta ('' o sin
+// clave). Todo lo que cuenta positivos ya lee solo 'SI', así que una pregunta
+// sin respuesta nunca salta como positiva ni se toma por negativa: el cierre
+// la lista (getNoPreguntadas) y los resúmenes no dicen «Negativo» sin más.
+function esGuia() {
+  return state.registro === 'guia';
+}
+
+function banderasRojasIniciales() {
+  const v = esGuia() ? '' : 'NO';
+  return { br1: v, br2: v, br3: v, br4: v };
+}
+
+// Marca en la fase 1 lo que dice state.banderasRojas ('' = ninguno marcado).
+// También tras «Reiniciar», que antes dejaba marcado el botón de la sesión anterior.
+function _pintarBanderasRojas() {
+  document.querySelectorAll('#banderasRojas .sq-btn').forEach(btn => {
+    const m = (btn.getAttribute('onclick') || '').match(/'(br\d)','(SI|NO)'\)/);
+    if (m) btn.classList.toggle('selected', state.banderasRojas[m[1]] === m[2]);
+  });
+  checkBanderasRojas();
+}
+
+// Lo que quedó sin preguntar: banderas rojas de la fase 1 y preguntas del
+// cribado que se ven ahora sin respuesta. En modo teclado no hay ninguna (todo
+// empieza en NO), salvo en sesiones que cambiaron de registro. En breve, las
+// preguntas no urgentes de un sistema sin embudo en SÍ ya salen en sus
+// pendientes («solo por embudo», «sin cribar»): aquí no se repiten. Las de
+// urgencia se listan siempre. → { urgentes: [texto], banderas: [texto],
+// sistemas: [{ nombre, n }] }. Las `privada` (ánimo y psicosis del embarazo)
+// nunca dan su texto, igual que en `sq`.
+function getNoPreguntadas() {
+  const banderas = Object.entries(state.banderasRojas || {})
+    .filter(([, v]) => v !== 'SI' && v !== 'NO')
+    .map(([k]) => BR_LABELS[k]).filter(Boolean);
+  const urgentes = [];
+  const sistemas = [];
+  if (state.region && SYSTEMIC_SCREENING[state.region]) {
+    const breve = state.modo === 'breve';
+    sistemasActivos().forEach(sis => {
+      const conEmbudo = !(sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado);
+      const cubiertoPorBreve = breve && conEmbudo && state.sistemicoBreve?.[sis.id] !== 'SI';
+      let n = 0;
+      sis.preguntas.forEach(q => {
+        const v = state.sistemicoAnswers[q.id];
+        if (v === 'SI' || v === 'NO') return;
+        if (q.urgencia) urgentes.push(q.privada ? `una pregunta de urgencia de «${sis.nombre}»` : q.text);
+        else if (!cubiertoPorBreve) n++;
+      });
+      if (n) sistemas.push({ nombre: sis.nombre, n });
+    });
+  }
+  return { urgentes, banderas, sistemas };
+}
+
+// Las mismas, como líneas de texto: payload `np`, 📋 Notas y prompt del informe.
+function lineasNoPreguntadas(np = getNoPreguntadas()) {
+  return [
+    ...np.urgentes.map(t => `Urgencia sin preguntar: ${t}`),
+    ...np.banderas.map(t => `Bandera roja sin preguntar: ${t}`),
+    ...np.sistemas.map(s => `${s.nombre}: ${s.n} pregunta${s.n > 1 ? 's' : ''} sin hacer`)
+  ];
+}
+
+// Fase 5: lo no preguntado, lo primero. Las urgencias y banderas rojas en rojo
+// y nunca plegadas; el resto de sistemas, en el recuadro de pendientes.
+function _noPreguntadasHTML() {
+  const np = getNoPreguntadas();
+  const graves = [...np.urgentes, ...np.banderas];
+  const lista = l => `<ul>${l.map(t => `<li>${_escapeAttr(t)}</li>`).join('')}</ul>`;
+  return (graves.length ? `<div class="alert alert-danger no-preguntadas-urg" style="margin-bottom:1rem;">
+      <span class="alert-icon">❔</span>
+      <div><strong>Sin preguntar: ${graves.length} pregunta${graves.length > 1 ? 's' : ''} de urgencia o bandera roja.</strong>
+        Sin respuesta no cuentan como «No».${lista(graves)}</div>
+    </div>` : '')
+    + (np.sistemas.length ? `<div class="breve-pendientes no-preguntadas">
+      <div class="breve-pendientes-title">❔ Cribado sin completar</div>
+      ${lista(np.sistemas.map(s => `${s.nombre}: ${s.n} pregunta${s.n > 1 ? 's' : ''} sin hacer`))}
+    </div>` : '');
+}
+
+// ─── Selector «Cómo se registra» (docs/modo-guia.md) ───────────
+// Solo fuera del hub. Pasar a «Guía» deja sin responder lo que estaba en NO por
+// defecto (no se sabe si se preguntó) y conserva los SÍ; volver a «Teclado»
+// devuelve el NO por defecto a lo que quedó sin responder.
+function selectRegistro(r) {
+  if (_enHub() || (r !== 'guia' && r !== 'teclado') || r === state.registro) return;
+  const hayNO = Object.values(state.banderasRojas).includes('NO') || Object.values(state.sistemicoAnswers).includes('NO');
+  const haySinResp = r === 'teclado' && getNoPreguntadas().urgentes.length + getNoPreguntadas().banderas.length + getNoPreguntadas().sistemas.length > 0;
+  if (state.maxVisitedIdx >= 1 && ((r === 'guia' && hayNO) || haySinResp)) {
+    showConfirmBanner(
+      r === 'guia' ? 'Registrar con la app como guía' : 'Registrar con el teclado',
+      r === 'guia' ? TEXTOS_GUIA.cambioAGuia : TEXTOS_GUIA.cambioATeclado,
+      'Cambiar',
+      () => _aplicarRegistro(r),
+      { borra: false }
+    );
+    return;
+  }
+  _aplicarRegistro(r);
+}
+
+function _aplicarRegistro(r) {
+  state.registro = r;
+  if (r === 'guia') {
+    Object.keys(state.banderasRojas).forEach(k => { if (state.banderasRojas[k] !== 'SI') state.banderasRojas[k] = ''; });
+    Object.keys(state.sistemicoAnswers).forEach(k => { if (state.sistemicoAnswers[k] !== 'SI') delete state.sistemicoAnswers[k]; });
+    if (!state.patient) _ponerNombreAuto();
+  } else {
+    Object.keys(state.banderasRojas).forEach(k => { if (state.banderasRojas[k] !== 'SI') state.banderasRojas[k] = 'NO'; });
+    // las preguntas del cribado sin responder vuelven a NO al repintarlo (buildSistemicoQuestions)
+  }
+  _pintarRegistroUI();
+  _pintarBanderasRojas();
+  _invalidar4b();   // las tarjetas de tests llevan (o no) las frases ancla
+  if (state.region) _repintarCribado();
+  if (document.getElementById('resultsContent')?.children.length) buildResults();
+  saveSession();
+}
+
+// Sesión sin nombre en modo guía (decisión 1): sin teclear, se guardaría igual
+function _ponerNombreAuto() {
+  state.patient = nombreAuto();
+  const el = document.getElementById('patientName');
+  if (el) el.value = state.patient;
+}
+
+// Refleja state.registro en el DOM: clase del body, selector, textos para decir
+// en voz alta y teclado numérico. Al cambiar de registro y al restaurar sesión.
+function _pintarRegistroUI() {
+  const guia = esGuia();
+  document.body.classList.toggle('modo-guia', guia);
+  document.querySelectorAll('#registroConsulta .option-btn').forEach(b => {
+    const m = (b.getAttribute('onclick') || '').match(/selectRegistro\('(\w+)'\)/);
+    b.classList.toggle('selected', !!(m && m[1] === state.registro));
+  });
+  // El teclado del sistema no se abre en los números de la fase 1 (lo hace el propio)
+  document.querySelectorAll('#phase1 input[type="number"]').forEach(el => {
+    if (guia) el.setAttribute('inputmode', 'none'); else el.removeAttribute('inputmode');
+  });
+  if (!guia) cerrarTecladoNumerico({ sinHistorial: true });
+  _pintarVerbales();
+  precargarFormularioPrevio();   // los `texto` del formulario cambian de caja a frase
+}
+
+// Campos de texto de las fases 1 y 3: en modo guía, si están vacíos, la caja se
+// sustituye por la frase para decir en voz alta (decisión 4). Con texto ya
+// escrito la caja se queda (nunca se esconde un dato).
+function _pintarVerbales() {
+  const guia = esGuia();
+  Object.entries(VERBALES).forEach(([id, v]) => {
+    const campo = document.getElementById(id);
+    const grupo = campo?.closest('.form-group');
+    if (!grupo) return;
+    let bloque = document.querySelector(`[data-verbal="${id}"]`);
+    if (!bloque) {
+      bloque = document.createElement('div');
+      bloque.className = 'verbal';
+      bloque.dataset.verbal = id;
+      grupo.before(bloque);
+    }
+    const verbal = guia && campo.value.trim() === '';
+    grupo.classList.toggle('guia-oculto', verbal);
+    bloque.classList.toggle('guia-oculto', !verbal);
+    if (verbal) bloque.innerHTML = verbalHTML(id, v.frase, { ancla: v.ancla, check: v.check });
+  });
+}
+
+// Bloque «para decir en voz alta»: la frase, una ayuda opcional y el check
+// «Preguntado» (no da la respuesta; solo ayuda a no olvidarla). También lo usa
+// formulario.js para sus preguntas de texto.
+export function verbalHTML(id, frase, { ancla = '', check = '' } = {}) {
+  const marcado = !!state.preguntado?.[id];
+  const idAttr = String(id).replace(/'/g, '');
+  return `<div class="verbal-frase">🎙 ${_escapeAttr(frase)}</div>
+    ${ancla ? `<div class="verbal-ancla">${_escapeAttr(ancla)}</div>` : ''}
+    <button type="button" class="option-btn verbal-check${marcado ? ' selected' : ''}" aria-pressed="${marcado}" onclick="togglePreguntado('${idAttr}', this)">✓ ${_escapeAttr(check || TEXTOS_GUIA.preguntado)}</button>`;
+}
+
+function togglePreguntado(id, btn) {
+  if (!state.preguntado) state.preguntado = {};
+  if (state.preguntado[id]) delete state.preguntado[id]; else state.preguntado[id] = true;
+  const marcado = !!state.preguntado[id];
+  btn?.classList.toggle('selected', marcado);
+  btn?.setAttribute('aria-pressed', String(marcado));
+  saveSession();
+}
+
+// ─── Teclado numérico propio (modo guía, decisión 2) ───────────
+// Edad, constantes y semanas de la fase 1 son toques, no escritura. Escribe en
+// el <input> y dispara `input`/`blur` para que corran sus manejadores de
+// siempre (updateEdadPaciente, updateVital…).
+let _tecladoEl = null;
+function abrirTecladoNumerico(input) {
+  const overlay = document.getElementById('tecladoOverlay');
+  if (!overlay || !input || !esGuia()) return;
+  _tecladoEl = input;
+  const etiqueta = (document.querySelector(`label[for="${input.id}"]`) || input.closest('.form-group')?.querySelector('.form-label'))?.textContent.trim() || 'Número';
+  document.getElementById('tecladoTitulo').textContent = etiqueta;
+  const decimal = input.step && Number(input.step) % 1 !== 0;
+  document.getElementById('tecladoTeclas').innerHTML = ['1', '2', '3', '4', '5', '6', '7', '8', '9', decimal ? '.' : '', '0', 'borrar']
+    .map(t => t === '' ? '<span></span>'
+      : `<button type="button" class="teclado-tecla" data-tecla="${t}" aria-label="${t === 'borrar' ? 'Quitar la última cifra' : t === '.' ? 'Punto decimal' : t}">${t === 'borrar' ? '⌫' : t === '.' ? ',' : t}</button>`).join('');
+  _pintarTecladoValor();
+  overlay.classList.add('open');
+  lockBodyScroll();
+  document.getElementById('tecladoPanel').focus({ preventScroll: true });
+}
+
+function _pintarTecladoValor() {
+  const v = _tecladoEl?.value ?? '';
+  document.getElementById('tecladoValor').textContent = v === '' ? '—' : v.replace('.', ',');
+}
+
+function _teclaNumerica(tecla) {
+  if (!_tecladoEl) return;
+  const max = _tecladoEl.max !== '' ? Number(_tecladoEl.max) : null;
+  const decimal = !!_tecladoEl.step && Number(_tecladoEl.step) % 1 !== 0;
+  const nuevo = aplicarTecla(_tecladoEl.value, tecla, { decimal, max });
+  if (nuevo === _tecladoEl.value) return;
+  _tecladoEl.value = nuevo;
+  _tecladoEl.dispatchEvent(new Event('input', { bubbles: true }));
+  _pintarTecladoValor();
+}
+
+function cerrarTecladoNumerico() {
+  const overlay = document.getElementById('tecladoOverlay');
+  if (!overlay?.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  unlockBodyScroll();
+  const el = _tecladoEl;
+  _tecladoEl = null;
+  el?.dispatchEvent(new Event('change', { bubbles: true }));
+  el?.dispatchEvent(new Event('blur'));   // updateVitalColor y compañía
+}
+
+function _initTecladoNumerico() {
+  // Al tocar un número de la fase 1 en modo guía: el teclado propio, no el del sistema
+  document.addEventListener('click', e => {
+    if (!esGuia()) return;
+    const el = e.target.closest?.('#phase1 input[type="number"]');
+    if (!el) return;
+    e.preventDefault();
+    el.blur();
+    abrirTecladoNumerico(el);
+  }, true);
+  // en el panel, no en el velo: el panel corta la propagación para que tocarlo no cierre
+  document.getElementById('tecladoPanel')?.addEventListener('click', e => {
+    const b = e.target.closest?.('[data-tecla]');
+    if (b) _teclaNumerica(b.dataset.tecla);
+  });
+  document.addEventListener('keydown', e => {
+    if (!_tecladoEl) return;
+    if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); e.stopImmediatePropagation(); cerrarTecladoNumerico(); }
+    else if (/^[0-9.,]$/.test(e.key)) { e.preventDefault(); _teclaNumerica(e.key === ',' ? '.' : e.key); }
+    else if (e.key === 'Backspace') { e.preventDefault(); _teclaNumerica('borrar'); }
+  }, true);
 }
 
 function selectPsico(btn, value) {
@@ -2486,7 +2753,8 @@ function _respuestasActivas() {
 }
 
 // Repinta el cribado conservando las respuestas (restaurar sesión, cambiar el
-// mecanismo con la región ya elegida); las preguntas nuevas empiezan en NO.
+// mecanismo con la región ya elegida); las preguntas nuevas empiezan en NO
+// (sin respuesta en modo guía).
 function _repintarCribado() {
   if (!state.region) return;
   const savedAnswers = { ...state.sistemicoAnswers };
@@ -2528,8 +2796,8 @@ function buildSistemicoQuestions(regionId) {
   state.sistemicoAnswers = {};
   state.sistemicoBreve = {};
 
-  // Initialize all answers to NO
-  sistemas.forEach(sis => {
+  // Modo teclado: todas empiezan en NO. Modo guía: sin respuesta («no preguntada»)
+  if (!esGuia()) sistemas.forEach(sis => {
     sis.preguntas.forEach(q => { state.sistemicoAnswers[q.id] = 'NO'; });
   });
 
@@ -2663,7 +2931,7 @@ function buildSistemaHTML(sis) {
         <div class="sq2-text">${q.text}${urgBadge}${q.urgencia ? `<span class="sq2-urg-msg">🚨 ${q.urgencia}</span>` : ''}${q.derivacion ? `<span class="sq2-deriv-msg">🩺 ${q.derivacion}</span>` : ''}${q.notaPosquirurgica ? `<div class="nota-posq solo-posq">🏥 ${TEXTO_NOTA_TRAUMA}</div>` : ''}${razonamientoInlineHTML(sis, q)}</div>
         <div class="sq-btns">
           <button class="sq-btn si" onclick="selectSistQ(this,'${q.id}','SI',${q.alerta},'${sis.id}')">SÍ</button>
-          <button class="sq-btn no selected" onclick="selectSistQ(this,'${q.id}','NO',${q.alerta},'${sis.id}')">NO</button>
+          <button class="sq-btn no${esGuia() ? '' : ' selected'}" onclick="selectSistQ(this,'${q.id}','NO',${q.alerta},'${sis.id}')">NO</button>
         </div>
       </div>`;
   });
@@ -2973,6 +3241,12 @@ function evaluarCriterioCompuesto(sis) {
       </div>`;
   } else if (!edadConocida) {
     html = `<div class="criterio-compuesto-hint">Indique la edad del paciente en la Fase 1 para poder aplicar este criterio.</div>`;
+  } else if (cumpleFiltro) {
+    // Modo guía: con preguntas del criterio sin responder, «no se cumple» aún no se sabe
+    const sinResp = criterio.ids.filter(id => !['SI', 'NO'].includes(state.sistemicoAnswers[id])).length;
+    if (sinResp && positivas + sinResp >= criterio.minPositivas) {
+      html = `<div class="criterio-compuesto-hint">${criterio.etiqueta}: ${sinResp} de sus ${criterio.ids.length} preguntas sin responder; con ${positivas} positiva${positivas === 1 ? '' : 's'} aún no se puede aplicar.</div>`;
+    }
   }
   contenedores.forEach(c => { c.innerHTML = html; });
 }
@@ -3679,7 +3953,10 @@ function buildResults() {
   const pendientesBreve = getPendientesBreve();
   const sinConfirmar = state.modo === 'breve' && pendientesBreve.some(p => p.fase === '4b');
 
-  // ── Modo breve: transparencia y pendientes, antes que nada
+  // ── Lo que quedó sin preguntar (modo guía), antes que nada
+  container.innerHTML += _noPreguntadasHTML();
+
+  // ── Modo breve: transparencia y pendientes
   if (state.modo === 'breve') {
     container.innerHTML += `
     <div class="breve-pendientes">
@@ -4421,6 +4698,7 @@ function _closeAllOverlays() {
   cerrarFarmacos({ sinHistorial: true });
   cerrarTiemposTejido({ sinHistorial: true });
   cerrarCuestionarios({ sinHistorial: true });
+  cerrarTecladoNumerico();
   closePhaseSheet();
   closeSessionPanel();
   const banner = document.getElementById('confirmBanner');
@@ -4609,6 +4887,10 @@ function buildPhysiQPayload() {
     ...(getCuestionariosPayload().length ? { cu: getCuestionariosPayload() } : {}),
     md: state.modo === 'breve' ? 'breve' : 'completo',
     ...(state.modo === 'breve' ? { pe: getPendientesBreve().map(p => p.texto) } : {}),
+    // Sin preguntar (modo guía, docs/modo-guia.md): solo si hay algo, para no
+    // cambiar la huella de los informes ya generados
+    ...(lineasNoPreguntadas().length ? { np: lineasNoPreguntadas() } : {}),
+    ...(esGuia() ? { rg: 'guia' } : {}),   // registro con grabadora externa: el texto libre está en el audio
     ...(state.rom ? { rom: state.rom } : {})
   };
 }
@@ -5515,6 +5797,9 @@ function saveSession() {
   if (motivoEl) state.motivoConsulta = motivoEl.value;
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) state.signoComparable = signoEl.value;
+  // Modo guía: sin teclear no hay nombre, y sin nombre no se guardaría nada (con la
+  // valoración en marcha; «Borrar sesión» deja maxVisitedIdx en 0 y no se rehace sola)
+  if (esGuia() && !state.patient && state.maxVisitedIdx > 0) _ponerNombreAuto();
   _updateSessionPanelTitle();
   // Aviso de pendientes del modo breve: el formulario previo se rellena en la fase 1
   if (state.currentPhase === 1 && state.modo === 'breve') renderBrevePendientes();
@@ -5571,6 +5856,7 @@ function repintarP1Fase3() {
 
 function _restoreSessionDOM() {
   _pintarModoUI();
+  _pintarRegistroUI();
   const patientEl = document.getElementById('patientName');
   if (patientEl) patientEl.value = state.patient || '';
   const motivoEl = document.getElementById('motivoConsulta');
@@ -5616,15 +5902,7 @@ function _restoreSessionDOM() {
   _pintarFarmacosUI();
   _pintarLado();
 
-  Object.entries(state.banderasRojas).forEach(([brId, val]) => {
-    document.querySelectorAll('#banderasRojas .sq-btn').forEach(btn => {
-      const onclick = btn.getAttribute('onclick') || '';
-      if (!onclick.includes(`'${brId}'`)) return;
-      const m = onclick.match(/'(SI|NO)'\s*\)/);
-      if (m) btn.classList.toggle('selected', m[1] === val);
-    });
-  });
-  checkBanderasRojas();
+  _pintarBanderasRojas();
 
   if (state.riesgoPsico) {
     const suggest = document.getElementById('psicoToolSuggest');
@@ -5739,6 +6017,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _setupSessionPanelDrag();
   // Init quick-input chips + dictation for static text fields
   initQuickInputBars();
+  _initTecladoNumerico();
   // Tarjeta «Cirugía»: chips de complicaciones (se repinta al restaurar sesión)
   _pintarCirugiaUI();
   _pintarHMUI();
@@ -5779,6 +6058,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSessionChip(session);
     if (session.assessmentState?.maxVisitedIdx > 0) {
       Object.assign(state, session.assessmentState);
+      // sesiones de antes del modo guía; y en el hub nunca hay modo guía (solo standalone)
+      if (state.registro !== 'guia' || _enHub()) state.registro = 'teclado';
       _restoreSessionDOM();
       const targetPhase = state.currentPhase;
       if (targetPhase === 5 || targetPhase === 6) buildResults();
@@ -5798,6 +6079,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       // Modo elegido en la fase 1 antes de salir de ella (maxVisitedIdx 0)
       if (session.assessmentState?.modo === 'breve') { state.modo = 'breve'; _pintarModoUI(); }
+      if (session.assessmentState?.registro === 'guia' && !_enHub()) {
+        state.registro = 'guia';
+        state.banderasRojas = banderasRojasIniciales();
+        _pintarBanderasRojas();
+        _pintarRegistroUI();
+      }
     }
     if (session.rom && !state.rom) state.rom = session.rom;
     _updateSessionPanelTitle();
@@ -5915,7 +6202,7 @@ initAmpliarIA();
 // Named exports for phase4.js / phase4b.js (which import these directly) and
 // for tests/unit.js.
 export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenciasActivas, getCirugiaPayload, cerrarMenuCompartir, resumenFormularioIA, buildInformeFisioterapiaText, getSistemicoAffirmativeTexts,
-  buildContextSummaryText, getPendientesBreve, buildSistemaHTML, sistemasActivos, textoBandera, razonBanderaHTML,
+  buildContextSummaryText, getPendientesBreve, getNoPreguntadas, lineasNoPreguntadas, buildSistemaHTML, sistemasActivos, textoBandera, razonBanderaHTML,
   precargarFormularioPrevio, nombreRegion, showToast,
   injectQuickInputBar, repintarP1Fase3, lockBodyScroll, unlockBodyScroll, partirPrimeraFrase, abrirPanelRazon, razonCitaHTML, cerrarRazonamiento };
 
@@ -5929,7 +6216,7 @@ Object.assign(window, {
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
-  cycleThemePref, selectModo, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
+  cycleThemePref, selectModo, selectRegistro, togglePreguntado, cerrarTecladoNumerico, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor,
   updateCirugia, selectCirProtocolo, toggleCirComplicacion, toggleDiagnosticoTratado,
   selectHMEstado, selectHMSubtipo, selectHMCuest, toggleHMBeighton, hmBeightonHacer, hmBeightonQuitar,

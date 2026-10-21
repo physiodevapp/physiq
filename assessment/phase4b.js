@@ -19,6 +19,8 @@ import { MA, maActivo } from './lib/mastocitos.js';
 import { AC, acActivo } from './lib/anticoagulado.js';
 import { OP, opActivo } from './lib/osteoporosis.js';
 import { emPosparto, lineaSupino, lineaGaenslen } from './lib/embarazo.js';
+import { fraseAncla } from './lib/modo-guia.js';
+import { TEXTOS_GUIA } from './data/guia.js';
 
 // Hipótesis por id, incluida la posquirúrgica genérica (`pq1`), que no está en
 // HYPOTHESES: su nombre lleva la intervención y su PROM es el de la región.
@@ -372,6 +374,7 @@ export function buildTestItem(hId, test, idx) {
     ${porque}
     ${fuente}
     ${anatomiaLineaHTML(test)}
+    ${state.registro === 'guia' ? `<div class="test-ancla">🎙 ${TEXTOS_GUIA.anclaTest}: ${fraseAncla(test.name, state.lado)}</div>` : ''}
     <div class="test-result-btns">
       <button class="test-result-btn pos ${savedResult==='pos'?'selected':''}" onclick="setTestResult('${hId}',${idx},'pos',this)">✓ Positivo</button>
       <button class="test-result-btn neg ${savedResult==='neg'?'selected':''}" onclick="setTestResult('${hId}',${idx},'neg',this)">✗ Negativo</button>

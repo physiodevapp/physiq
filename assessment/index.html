@@ -287,6 +287,23 @@
   </div>
 </div>
 
+<!-- TECLADO NUMÉRICO (modo guía): edad, constantes y semanas sin el teclado del
+     sistema. Lo abre abrirTecladoNumerico() (app.js) al tocar un número de la fase 1. -->
+<div class="session-panel-overlay" id="tecladoOverlay" onclick="cerrarTecladoNumerico()">
+  <div class="session-panel teclado-panel" id="tecladoPanel" role="dialog" aria-modal="true" aria-labelledby="tecladoTitulo" tabindex="-1" onclick="event.stopPropagation()">
+    <div class="session-panel-handle"></div>
+    <div class="teclado-cabecera">
+      <div class="session-panel-title" id="tecladoTitulo"></div>
+      <div class="teclado-valor" id="tecladoValor" aria-live="polite"></div>
+    </div>
+    <div class="teclado-teclas" id="tecladoTeclas"></div>
+    <div class="teclado-acciones">
+      <button type="button" class="btn btn-secondary" data-tecla="limpiar">Borrar</button>
+      <button type="button" class="btn btn-primary" id="tecladoListo" onclick="cerrarTecladoNumerico()">Listo</button>
+    </div>
+  </div>
+</div>
+
 <main class="main">
 
 <!-- ==================== FASE 1: TRIAGE ==================== -->
@@ -303,6 +320,14 @@
     <div class="option-group option-group-full" id="modoConsulta">
       <button class="option-btn selected" onclick="selectModo('completo')">Completa</button>
       <button class="option-btn" onclick="selectModo('breve')">⏱ Breve (10')</button>
+    </div>
+    <div class="registro-bloque" id="registroBloque">
+      <div class="form-label">Cómo se registra</div>
+      <div class="option-group option-group-full" id="registroConsulta">
+        <button class="option-btn selected" onclick="selectRegistro('teclado')">Teclado</button>
+        <button class="option-btn" onclick="selectRegistro('guia')">🎙 Guía (grabadora)</button>
+      </div>
+      <div class="plan-note-hint solo-guia">Con «Guía» grabas la consulta con una grabadora externa y la app solo recoge lo que mueve la lógica: sin cajas de texto, con un teclado numérico propio. Lo que no marques cuenta como «no preguntado», nunca como «NO».</div>
     </div>
     <div class="plan-note-hint breve-only">Consulta breve: se mantienen las banderas rojas, las urgencias y el árbol completo. El cribado por sistemas y la confirmación con tests no son exhaustivos, quedan como pendientes y así consta en las notas y en el informe.</div>
     <button type="button" class="breve-toggle breve-only" onclick="toggleBreveVerTodo()"><span class="breve-toggle-mas">+ Mostrar campos opcionales (signos vitales, antropometría y, con riesgo psicosocial alto, sus preguntas)</span><span class="breve-toggle-menos">− Ocultar campos opcionales</span></button>

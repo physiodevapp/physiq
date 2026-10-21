@@ -3656,3 +3656,29 @@ body:has(.session-panel-overlay.open) .ia-menu { z-index: 1002; }
 #cardFarmacos .hm-nota[hidden] { display: none; }
 .farm-filtro { margin-bottom: 8px; }
 .farm-paciente { margin-top: 0; }
+
+/* ── Modo guía con grabadora externa (docs/modo-guia.md) ─────────────────── */
+.solo-guia { display: none; }
+.modo-guia .solo-guia { display: block; }
+.guia-oculto { display: none !important; }
+.in-hub .registro-bloque { display: none; }
+.registro-bloque { margin-top: 14px; }
+.registro-bloque .form-label { margin-bottom: 6px; }
+/* La frase para decir en voz alta: sin borde discontinuo, que es de «Refiere el paciente» */
+.verbal { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 12px; margin-bottom: 1rem; }
+.verbal-frase { font-size: 0.95rem; line-height: 1.45; color: var(--text); }
+.verbal-ancla { margin-top: 6px; font-size: 0.8rem; line-height: 1.4; color: var(--text2); }
+.verbal-check { margin-top: 10px; min-height: 44px; }
+.fp-item .verbal { margin-bottom: 0; }
+.test-ancla { margin-top: 8px; font-size: 0.78rem; line-height: 1.4; color: var(--text2); }
+/* Teclado numérico */
+.teclado-panel:focus { outline: none; }
+.teclado-cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.teclado-cabecera .session-panel-title { margin-bottom: 0; min-width: 0; }
+.teclado-valor { font-family: 'DM Mono', monospace; font-size: 1.8rem; color: var(--accent); min-width: 3ch; text-align: right; }
+.teclado-teclas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.teclado-tecla { min-height: 56px; font-size: 1.4rem; font-family: inherit; background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; }
+.teclado-tecla:active { background: var(--surface3); }
+.teclado-acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.teclado-acciones .btn { min-height: 48px; }
+@media print { .registro-bloque, .verbal, .test-ancla, .teclado-panel, #tecladoOverlay { display: none !important; } }

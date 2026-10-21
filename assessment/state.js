@@ -8,6 +8,14 @@ const state = {
   // Tipo de consulta: 'completo' (por defecto) | 'breve' (aseguradora, 10 min).
   // Sobrevive a «Reiniciar» igual que el nombre del paciente. Ver docs/modo-breve.md.
   modo: 'completo',
+  // Cómo se registra: 'teclado' (por defecto) | 'guia' (grabadora externa, la app
+  // como guía; docs/modo-guia.md). En 'guia' el cribado y las banderas rojas
+  // empiezan sin respuesta: sin marcar = «no preguntado», nunca «NO» (decisión 3).
+  // Independiente de `modo`; sobrevive a «Reiniciar» como él.
+  registro: 'teclado',
+  // Frases del modo guía marcadas como «preguntadas» ({ [id]: true }): ayuda a
+  // no olvidarlas; no son respuestas (la respuesta sale solo del audio)
+  preguntado: {},
   // Navegación
   maxVisitedIdx: 0,       // índice más alto visitado en la sesión
   regionChanged: false,   // región cambiada sin haber rehecho el árbol

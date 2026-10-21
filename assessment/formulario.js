@@ -9,7 +9,7 @@
 // de la app.
 // ============================================================
 import { state } from './state.js';
-import { saveSession, injectQuickInputBar, _actualizarBandas } from './app.js';
+import { saveSession, injectQuickInputBar, _actualizarBandas, verbalHTML } from './app.js';
 import { pistasHTML } from './lib/pistas.js';
 import COMUN from './formularios/comun.js';
 
@@ -184,6 +184,12 @@ function renderItem(scope, it, resp) {
         <span class="fp-fila-opts">${it.opciones.map((o, oi) => btn(m[f.id] === o, o, `fpMatriz('${scope}','${it.id}',${fi},${oi})`)).join('')}</span>
       </div>`).join('')}</div>`;
   } else if (it.tipo === 'texto') {
+    // Modo guía: sin teclear, la pregunta queda como frase para decir en voz alta
+    // (`verbal` si el esquema la tiene corta; si no, el enunciado). Con texto ya
+    // escrito la caja se queda: nunca se esconde un dato.
+    if (state.registro === 'guia' && !(resp[it.id] || '').trim()) {
+      return `<div class="fp-item"><div class="verbal">${verbalHTML(`fp:${scope}:${it.id}`, it.verbal || it.texto, { ancla: it.ayuda })}</div></div>`;
+    }
     return `<div class="fp-item">${textarea(scope, it.id, it.texto, it.lineas || 1, resp, it.ayuda)}</div>`;
   }
   return `<div class="fp-item">${cab}${cuerpo}</div>`;

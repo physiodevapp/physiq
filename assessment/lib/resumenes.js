@@ -39,7 +39,7 @@ export function textoNotas(d) {
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
 Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}${d.op ? `\n${lineaNotasOP(d.op)}` : ''}${d.em ? `\n${lineaNotasEM(d.em)}` : ''}${d.ac ? `\n${lineaNotasAC(d.ac)}` : ''}${d.fm ? `\n${lineaNotasFM(d.fm)}` : ''}
-Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : 'Negativo'}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA: ${d.dv.join(' · ')}` : ''}
+Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : d.np?.length ? 'sin positivos en lo preguntado (incompleto)' : 'Negativo'}${d.np?.length ? `\n❔ SIN PREGUNTAR: ${d.np.join(' · ')}` : ''}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA: ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
 Variable control: ${d.pn?.variableControl || '—'}
@@ -63,7 +63,9 @@ export function textoInformePaciente(d, fpInf = { historia: [], antecedentes: []
 
   const seguridad = d.br.length
     ? `Se han detectado los siguientes signos que recomendamos comentar con su médico de cabecera:\n${d.br.map(b => `  · ${b}`).join('\n')}`
-    : 'No se han detectado signos de alarma (banderas rojas) en el cribado realizado.';
+    : d.np?.length
+      ? 'No se han detectado signos de alarma (banderas rojas) en las preguntas realizadas; el cribado no se completó en esta sesión.'
+      : 'No se han detectado signos de alarma (banderas rojas) en el cribado realizado.';
   const sistemico = d.sq.length
     ? `\n\nAdemás, durante el cribado el paciente refirió:\n${d.sq.map(s => `  · ${s}`).join('\n')}`
     : '';

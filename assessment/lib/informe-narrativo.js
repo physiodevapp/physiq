@@ -272,9 +272,12 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
       ? ' (la cirugía es la condición de salud, no una hipótesis por confirmar)'
       : h.dt ? ' (diagnóstico ya confirmado y tratado por el médico: es un antecedente)' : ''}`)
     .join('\n');
+  // Modo guía (docs/modo-guia.md, decisión 3): lo no preguntado no es negativo
+  const np = data.np || [];
+  const brSinPreguntar = np.some(s => s.startsWith('Bandera roja sin preguntar'));
   const brText = data.br?.length > 0
     ? data.br.map(s => `  ⚠️ ${s}`).join('\n')
-    : '  Negativas';
+    : brSinPreguntar ? '  Negativas en lo preguntado; alguna sin preguntar (ver «Sin preguntar»)' : '  Negativas';
   const sqText = data.sq?.length > 0
     ? `\nAlertas sistémicas positivas (${AVISO_SQ}):\n` + data.sq.map(s => `  · ${s}`).join('\n')
     : '';
@@ -319,6 +322,10 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
       + ' Dilo UNA vez en el informe, en una frase, junto con lo que queda pendiente de completar en la próxima sesión (la lista de abajo, en lenguaje clínico); lo pendiente se dice solo en esa frase, sin repetirlo en otras secciones («no se realizaron tests…»); no presentes como completo lo que está pendiente (p. ej., si el cribado sistémico fue abreviado, no escribas que el cribado sistémico fue negativo sin más).'
       + (pe.length ? `\nPendiente de completar:\n${pe.map(s => `  · ${s}`).join('\n')}` : ''));
   }
+  if (np.length) {
+    extra.push('Sin preguntar en la consulta (registro con la app como guía: lo que no se marcó no se preguntó o no se registró). No lo presentes como negativo ni escribas que el cribado fue negativo sin más; si la transcripción no lo aclara, di en una frase que quedó pendiente de preguntar:\n'
+      + np.map(s => `  · ${s}`).join('\n'));
+  }
   // 8: el cribado solo por embudo no es un «Negativo» sin más
   const embudo = data.md === 'breve' && (data.pe || []).some(s => /embudo/i.test(s));
 
@@ -332,7 +339,7 @@ Irritabilidad: ${data.ir || 'no registrada'} · Naturaleza: ${data.na || '—'}
 ${bloqueSintomasIA(data) ? `${bloqueSintomasIA(data)}\n` : ''}Riesgo psicosocial: ${data.rp || '—'}
 Banderas rojas:
 ${brText}
-Cribado sistémico: ${data.si ? '⚠️ Positivo' : embudo ? 'sin hallazgos en el embudo (cribado abreviado)' : 'Negativo'}${sqText}
+Cribado sistémico: ${data.si ? '⚠️ Positivo' : np.length ? 'sin positivos en lo preguntado; incompleto (ver «Sin preguntar»)' : embudo ? 'sin hallazgos en el embudo (cribado abreviado)' : 'Negativo'}${sqText}
 
 Hipótesis de trabajo del fisioterapeuta (de mayor a menor apoyo):
 ${hyps || '  (sin hipótesis registradas)'}${extra.length ? '\n\n' + extra.join('\n\n') : ''}
