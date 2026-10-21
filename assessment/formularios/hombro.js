@@ -63,7 +63,7 @@ export default {
           opciones: ['No', 'Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio', NS] },
         { id: 'veces', tipo: 'unica', ia: 'historia', informe: 'Número de veces', texto: 'Si se le ha salido: ¿cuántas veces?', opciones: ['Una', 'Varias', NS],
           mostrarSi: { id: 'salido', valores: ['Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio'] } },
-        { id: 'ultima', tipo: 'texto', ia: 'historia', informe: 'Última vez', texto: '¿Cuándo fue la última?', lineas: 1,
+        { id: 'ultima', tipo: 'texto', ia: 'historia', informe: 'Última vez', texto: '¿Cuándo fue la última?', verbal: '¿Cuándo fue la última vez que se te salió?', lineas: 1,
           mostrarSi: { id: 'salido', valores: ['Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio'] } }
       ]
     },
@@ -84,7 +84,7 @@ export default {
       items: [
         { id: 'actividades', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
           opciones: ['Trabajar con los brazos por encima de la cabeza', 'Levantar pesas', 'Nadar', 'Lanzar', 'Gimnasia', 'Ninguna', NS] },
-        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?',
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?', verbal: '¿Qué deporte o ejercicio haces? ¿Cuántos días a la semana?',
           ayuda: 'Si NO hace deporte ni ejercicio de forma habitual, deje en blanco esta pregunta y las dos siguientes', lineas: 1,
           chips: ['Natación', 'Gimnasio', 'Pádel', 'Tenis', 'Balonmano', 'Voleibol'] },
         { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',

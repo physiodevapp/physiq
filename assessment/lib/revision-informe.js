@@ -167,6 +167,9 @@ const clavesHipotesis = nombre => sinAcentos(limpiarEtiqueta(nombre)).replace(/[
 // orinar?», que es el fisio preguntando) y lo negado justo antes («no he notado
 // que se me escape la orina»). → [{ id, tema, respuesta, cita }]
 const RE_NEGADO = /\b(?:no (?:tengo|tiene|he notado|ha notado|noto|nota|hay|he tenido|ha tenido|me ha pasado)|nada de|ningun\w*|sin|tampoco|ni)\b[^.?!]{0,20}$/;
+// …o justo después, al responder a la palabra suelta: «¿Fiebre? No» va dentro de
+// una pregunta, pero «Fiebre, no. Escalofríos, tampoco» no
+const RE_NEGADO_DESPUES = /^\s*[,:]?\s*(?:no|tampoco|ninguna?|nada|nunca)\b/;
 export function urgenciasEnTranscripcion(transcripcion, cribado = []) {
   const tr = sinAcentos(transcripcion);
   if (!tr.trim()) return [];
@@ -182,7 +185,7 @@ export function urgenciasEnTranscripcion(transcripcion, cribado = []) {
         const finP = tr.slice(m.index).search(/[.?!\n]/);
         const fin = finP < 0 ? tr.length : m.index + finP;
         const enPregunta = tr[fin] === '?' || tr.slice(ini, m.index).includes('¿');
-        if (enPregunta || RE_NEGADO.test(tr.slice(ini, m.index))) continue;
+        if (enPregunta || RE_NEGADO.test(tr.slice(ini, m.index)) || RE_NEGADO_DESPUES.test(tr.slice(m.index + m[0].length))) continue;
         hallado = m;
         break;
       }

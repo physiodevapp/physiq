@@ -52,7 +52,7 @@ export default {
         // «Duration of immobilisation and any prior therapy» (p. 90); rigidez tras una
         // inmovilización prolongada (pp. 82 y 89). Sin corte de semanas: el capítulo no lo da.
         { id: 'inmovilizado', tipo: 'unica', ia: 'historia', informe: 'Inmovilización tras la lesión', texto: 'Después de esa lesión, ¿le inmovilizaron el brazo (escayola, férula, cabestrillo)?',
-          opciones: ['No', 'Sí', NS], detalle: { opcion: 'Sí', etiqueta: '¿Cuánto tiempo?' },
+          opciones: ['No', 'Sí', NS], detalle: { opcion: 'Sí', etiqueta: '¿Cuánto tiempo?', verbal: '¿Cuánto tiempo te lo inmovilizaron?' },
           mostrarSi: { id: 'que_paso', valores: MECANISMOS } }
       ]
     },
@@ -125,7 +125,7 @@ export default {
         { id: 'actividades', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
           opciones: ['Trabajo manual: agarrar, cargar o usar herramientas con fuerza', 'Usar herramientas que vibran', 'Deportes de raqueta', 'Golf',
             LANZAR, 'Pesas o culturismo', 'Bici de montaña o gimnasia', 'Remo o esquí acuático', 'Ninguna', NS] },
-        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?',
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?', verbal: '¿Qué deporte o ejercicio haces? ¿Cuántos días a la semana?',
           ayuda: 'Si NO hace deporte ni ejercicio de forma habitual, deje en blanco esta pregunta y la siguiente', lineas: 1,
           chips: ['Pádel', 'Tenis', 'Golf', 'Gimnasio', 'Balonmano', 'Escalada'] },
         // Cambios de material (raqueta, cordaje) o de trabajo manual (herramientas, horas)

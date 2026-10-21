@@ -50,14 +50,14 @@ export default {
       titulo: 'De pequeño',
       items: [
         { id: 'infancia', tipo: 'unica', ia: 'contexto', texto: 'De niño o adolescente, ¿tuvo algún problema en las caderas? (le trataron, llevó férula o arnés, cojeaba, le operaron)',
-          opciones: ['No', NS, 'Sí'], detalle: { opcion: 'Sí', etiqueta: '¿Cuál?' } }
+          opciones: ['No', NS, 'Sí'], detalle: { opcion: 'Sí', etiqueta: '¿Cuál?', verbal: '¿Qué problema de cadera tuviste de pequeño?' } }
       ]
     },
     {
       titulo: 'Deporte y ejercicio',
       intro: 'Si NO hace deporte ni ejercicio de forma habitual, salte este apartado: ha terminado.',
       items: [
-        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?', lineas: 1,
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?', verbal: '¿Qué deporte o ejercicio haces? ¿Cuántos días a la semana?', lineas: 1,
           chips: ['Correr', 'Fútbol', 'Gimnasio', 'Pádel', 'Ciclismo', 'Baile'] },
         { id: 'dias', tipo: 'unica', ia: 'contexto', texto: '¿Cuántos días a la semana?', opciones: ['1 o 2', '3 o 4', '5 o más', NS] },
         { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
