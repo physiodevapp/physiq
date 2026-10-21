@@ -889,21 +889,35 @@
     text-overflow: ellipsis;
     color: var(--text2);
   }
-  /* Shared back button style for both context banners */
+  /* Las tres bandas son un <button> (como .mobile-phase-bar): toda la banda vuelve
+     a la cabecera; «↑ volver» es un rótulo sin recuadro, como el «≡» de la barra */
+  .context-banner {
+    width: 100%;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s;
+  }
+  .context-banner:active { background: var(--surface2); }
+  .context-banner:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  @media (hover: hover) {
+    .context-banner:hover { background: var(--surface); }
+    .context-banner:hover .context-banner-back { color: var(--text2); }
+  }
   .context-banner-back {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-family: 'DM Mono', monospace;
     color: var(--text3);
-    cursor: pointer;
     flex-shrink: 0;
-    padding: 4px 10px;
-    border: 1px solid var(--border2);
-    border-radius: 6px;
-    background: var(--surface2);
+    padding: 4px 0;
     white-space: nowrap;
-    transition: all 0.15s;
+    transition: color 0.15s;
   }
-  .context-banner-back:hover { color: var(--text2); border-color: var(--text3); background: var(--surface3); }
 
   /* Color coding */
   .hyp-green { background: var(--surface); border-color: rgba(56,217,169,0.3); }

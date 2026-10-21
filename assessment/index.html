@@ -111,26 +111,31 @@
 </nav>
 
 <!-- SISTEMA CONTEXT BANNER — Fase 2 acordeón -->
-<div class="sis-context-banner" id="sisContextBanner">
-  <span class="sis-banner-icon" id="sisBannerIcon"></span>
+<!-- Las tres bandas de contexto son un solo botón, como la barra de fase: toda la
+     banda vuelve a la cabecera de su bloque; «↑ volver» es solo el rótulo -->
+<button type="button" class="sis-context-banner context-banner" id="sisContextBanner" onclick="scrollToActiveSisHeader()">
+  <span class="sr-only">Volver a </span>
+  <span class="sis-banner-icon" id="sisBannerIcon" aria-hidden="true"></span>
   <span class="sis-banner-name" id="sisBannerName"></span>
-  <button class="context-banner-back" onclick="scrollToActiveSisHeader()">↑ volver</button>
-</div>
+  <span class="context-banner-back" aria-hidden="true">↑ volver</span>
+</button>
 
 <!-- FORMULARIO PREVIO CONTEXT BANNER — fases 1 y 2, mismo patrón que el de los sistemas -->
-<div class="sis-context-banner fp-context-banner" id="fpContextBanner">
-  <span class="sis-banner-icon">📝</span>
+<button type="button" class="sis-context-banner fp-context-banner context-banner" id="fpContextBanner" onclick="scrollToFormularioPrevio()">
+  <span class="sr-only">Volver a </span>
+  <span class="sis-banner-icon" aria-hidden="true">📝</span>
   <span class="sis-banner-name" id="fpBannerName"></span>
   <span class="fp-banner-cont" id="fpBannerCont"></span>
-  <button class="context-banner-back" onclick="scrollToFormularioPrevio()">↑ volver</button>
-</div>
+  <span class="context-banner-back" aria-hidden="true">↑ volver</span>
+</button>
 
 <!-- HYPOTHESIS CONTEXT BANNER — appears when header scrolls out of view -->
-<div class="hyp-context-banner" id="hypContextBanner">
-  <span class="hyp-banner-dot" id="hypBannerDot"></span>
+<button type="button" class="hyp-context-banner context-banner" id="hypContextBanner" onclick="scrollToActiveHypHeader()">
+  <span class="sr-only">Volver a </span>
+  <span class="hyp-banner-dot" id="hypBannerDot" aria-hidden="true"></span>
   <span class="hyp-banner-name" id="hypBannerName"></span>
-  <button class="context-banner-back" onclick="scrollToActiveHypHeader()">↑ volver</button>
-</div>
+  <span class="context-banner-back" aria-hidden="true">↑ volver</span>
+</button>
 <!-- Barra de fase (móvil): toda ella es el botón que abre la hoja de fases. El chip
      «Breve» va aquí en móvil (en escritorio sigue en la cabecera); no es pulsable aparte. -->
 <button type="button" class="mobile-phase-bar" id="mobilePhaseBar" onclick="togglePhaseSheet()" aria-haspopup="dialog" aria-controls="phaseSheet" aria-expanded="false">
