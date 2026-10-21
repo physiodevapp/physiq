@@ -82,7 +82,8 @@ export const FAMILIAS_PACIENTE = {
     plan: [
       'Al empezar un programa de ejercicio, las molestias pueden deberse al propio ejercicio y no a la estatina, y llevar a dejarla por error; ese pequeño aumento de riesgo no es motivo para abandonar el ejercicio ni la estatina sin valoración médica (Mangone 2024). Desaconsejar el ejercicio por tomar estatina puede aumentar el riesgo cardiovascular: el ejercicio moderado no debe desaconsejarse, mientras que el esfuerzo intenso y no habitual puede subir la CK e interactuar con la estatina (Epelde 2026).',
       'Rabdomiólisis por esfuerzo: el ejercicio extenuante, sobre todo sin entrenamiento, levantar mucho peso o hacerlo con mucho calor, y la deshidratación pueden causarla, igual que la inmovilización prolongada (Rout 2025).',
-      'Mayores: por encima de 65 años la concentración de atorvastatina es mayor y el riesgo de miopatía también (McIver y Siddique 2025). Las fuentes leídas no tratan la terapia manual ni las caídas.',
+      'Mayores: por encima de 65 años la concentración de atorvastatina es mayor y el riesgo de miopatía también (McIver y Siddique 2025). Las fuentes leídas no tratan la terapia manual.',
+      'Caídas: en una cohorte de 12 156 mayores de 60 años tras un infarto, las estatinas se asociaron a más caídas con ingreso en los 2 primeros años (subHR 1,36), solo a partir de los 80 años (1,82); es un estudio observacional (Ble 2017).',
       'Entrenamiento: una revisión sistemática no encontró pruebas consistentes de que las estatinas frenen la mejora con el entrenamiento, aunque solo dos estudios lo midieron (Noyes 2017). En uno, con simvastatina, el consumo máximo de oxígeno subió un 10 % con el ejercicio solo y un 1,5 % con la estatina (Noyes 2017); en otro, en mayores, la mejora del consumo pico tras 12 semanas de caminar en cinta fue parecida con y sin estatina (Slade 2021).',
     ],
   },
