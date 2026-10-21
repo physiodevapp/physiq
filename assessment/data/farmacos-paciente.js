@@ -72,6 +72,7 @@ export const FAMILIAS_PACIENTE = {
     plan: [
       'Caídas y fracturas: las benzodiacepinas aumentan las caídas (OR 1,39–1,57) y se asocian con fuerza a la fractura de cadera; los hipnóticos Z, como el zolpidem, también aumentan las fracturas (OR 1,63). El riesgo es mayor las primeras semanas tras empezar y con el uso prolongado, por sedación, hipotensión ortostática, mareo, debilidad muscular, ataxia y problemas visuales (Capiau 2023).',
       'Equilibrio: el efecto depende de la dosis y es máximo en las primeras horas tras la toma; es mayor con dosis altas, con poco tiempo entre la toma y el despertar o con alcohol u otros sedantes, y la inestabilidad es más marcada en mayores (Capiau 2023).',
+      'Rendimiento: en adultos sanos y activos, las benzodiacepinas no cambiaron la fuerza ni la resistencia, y una dosis de lorazepam solo bajó la potencia máxima de un esfuerzo anaeróbico breve; son 10 estudios pequeños, con las pruebas hechas entre 3 y 16 h después de la toma y sin medir el equilibrio (Holgado 2022). En un análisis secundario de un ensayo con mayores con peor función física, el programa de actividad física protegió de la pérdida de movilidad a quienes no tomaban benzodiacepinas, pero no a quienes las tomaban; en el conjunto de participantes la diferencia no fue significativa (Levati 2026).',
       'Las fuentes leídas no dan normas de terapia manual ni de dosificación del ejercicio con estos fármacos.',
     ],
   },
