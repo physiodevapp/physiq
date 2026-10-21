@@ -12,6 +12,7 @@
 // algún falso positivo — por eso son «puntos a revisar», no una nota.
 // ============================================================
 import { CODIGOS_CIF, PLANTILLAS, contextoValoracion, limpiarEtiqueta } from './informe-narrativo.js';
+import { CONTRASTE_URGENCIAS } from '../data/guia.js';
 
 // nivel: 'alto' = seguridad o un dato que contradice la valoración;
 //        'medio' = una regla del informe que no se ha cumplido.
@@ -158,11 +159,45 @@ const GENERICAS_FILA = new Set(['movimiento', 'movimientos', 'esperarlo', 'cuand
 const clavesHipotesis = nombre => sinAcentos(limpiarEtiqueta(nombre)).replace(/[()]/g, ' ')
   .split(/[^a-z0-9ñ]+/).filter(w => w.length >= 4 && !VACIAS.has(w));
 
+// ── Urgencias contra la transcripción (docs/modo-guia.md, decisión 6) ──────
+// Una pregunta de urgencia en NO (en modo teclado, la respuesta por defecto) o
+// sin responder (modo guía), y en la consulta se habla de lo que pregunta: el
+// fallo que más importa (un SÍ que nadie marcó), y ningún dato del informe lo
+// ve. Se salta lo que va dentro de una pregunta («¿Has notado algo raro al
+// orinar?», que es el fisio preguntando) y lo negado justo antes («no he notado
+// que se me escape la orina»). → [{ id, tema, respuesta, cita }]
+const RE_NEGADO = /\b(?:no (?:tengo|tiene|he notado|ha notado|noto|nota|hay|he tenido|ha tenido|me ha pasado)|nada de|ningun\w*|sin|tampoco|ni)\b[^.?!]{0,20}$/;
+export function urgenciasEnTranscripcion(transcripcion, cribado = []) {
+  const tr = sinAcentos(transcripcion);
+  if (!tr.trim()) return [];
+  const out = [];
+  for (const q of cribado) {
+    const c = CONTRASTE_URGENCIAS[q.id];
+    if (!c || q.respuesta === 'SI') continue;
+    for (const p of c.patrones) {
+      const re = new RegExp(p, 'g');
+      let m, hallado = null;
+      while ((m = re.exec(tr))) {
+        const ini = Math.max(tr.lastIndexOf('.', m.index), tr.lastIndexOf('?', m.index), tr.lastIndexOf('!', m.index), tr.lastIndexOf('\n', m.index)) + 1;
+        const finP = tr.slice(m.index).search(/[.?!\n]/);
+        const fin = finP < 0 ? tr.length : m.index + finP;
+        const enPregunta = tr[fin] === '?' || tr.slice(ini, m.index).includes('¿');
+        if (enPregunta || RE_NEGADO.test(tr.slice(ini, m.index))) continue;
+        hallado = m;
+        break;
+      }
+      if (hallado) { out.push({ id: q.id, tema: c.tema, respuesta: q.respuesta || '', cita: fraseEn(String(transcripcion), hallado.index) }); break; }
+    }
+  }
+  return out;
+}
+
 // texto: el informe (markdown). datos: buildPhysiQPayload(). ampliado:
 // construirAmpliado(). plantilla: 'narrativo' | 'breve'. transcripcion: la del
 // audio, si la hubo (lo que el paciente dijo en consulta también es fuente).
+// cribado: respuestasUrgentes() (app.js), para urgenciasEnTranscripcion().
 // → [{ id, nivel, mensaje, cita? }], primero los de nivel alto.
-export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla = 'narrativo', transcripcion = '', nombreRegion = r => r } = {}) {
+export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla = 'narrativo', transcripcion = '', nombreRegion = r => r, cribado = [] } = {}) {
   const t = String(texto || '');
   const tn = sinAcentos(t);
   const fuente = contextoValoracion(datos, nombreRegion, ampliado) + '\n' + (transcripcion || '');
@@ -178,6 +213,9 @@ export function revisarInforme(texto, { datos = {}, ampliado = null, plantilla =
   const derivar = (ampliado?.pautas || []).filter(p => p.derivar && !p.tratada);
   if (derivar.length && !/deriv/.test(tn))
     out.push(punto('derivar-hipotesis', 'alto', `La pauta de ${derivar.map(p => `«${limpiarEtiqueta(p.hipotesis)}»`).join(', ')} es derivar y el informe no habla de derivación.`));
+  for (const u of urgenciasEnTranscripcion(transcripcion, cribado)) {
+    out.push(punto('urgencia-transcripcion', 'alto', `En la consulta se habla de ${u.tema} y su pregunta de urgencia está ${u.respuesta === 'NO' ? 'en NO' : 'sin responder'}: compruébala en la fase 2 antes de compartir el informe.`, u.cita));
+  }
 
   // ── Datos personales que contradicen la valoración o no constan ──
   const la = datos.la || '';

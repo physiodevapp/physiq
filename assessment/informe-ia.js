@@ -19,12 +19,13 @@
 import { ramaPauta } from './lib/pauta.js';
 import { state } from './state.js';
 import { CIF_TREES, HYPOTHESES, SYSTEMIC_SCREENING, DOSIS_DERIVAR } from './data.js';
-import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA, compartirTexto, registrarValoracionCompleta } from './app.js';
+import { saveSession, showConfirmBanner, buildPhysiQPayload, nombreRegion, showToast, resumenFormularioIA, compartirTexto, registrarValoracionCompleta, preguntasVerbales, respuestasUrgentes } from './app.js';
 import { esTratada, hipotesis, hipotesisActivas } from './phase4b.js';
 import { esPosquirurgico, cirugiaPayload, pautaHipPosq } from './lib/posquirurgico.js';
 import { dsActiva, medidasPruebaTexto } from './lib/disautonomia.js';
 import { revisarInforme, comprobacionesManuales, clavePunto, claveComprobacion, resumenRevisados } from './lib/revision-informe.js';
 import { VERSION_SHA } from './lib/version.js';
+import { TEXTOS_GUIA } from './data/guia.js';
 import {
   ORCHESTRATOR_URL, MAX_AUDIO_BYTES, PLANTILLAS, plantillaPorDefecto, MODOS_AUDIO,
   getWhisperPrompt, huellaPayload, parseSSEBuffer, parseSSEBlock,
@@ -87,6 +88,7 @@ function esqueleto() {
     <details id="iaGenerador" class="ia-generador" open>
       <summary id="iaGenSummary">Generar un informe nuevo</summary>
       <div id="iaPlantilla" class="ia-plantilla"></div>
+      <div id="iaGuia"></div>
       <div id="iaAudio"></div>
       <div id="iaModoAudio" class="ia-plantilla"></div>
       <div id="iaConsent"></div>
@@ -223,6 +225,7 @@ function puntosRevision(inf) {
   return revisarInforme(inf.texto, {
     datos: buildPhysiQPayload(), ampliado: construirAmpliado(), plantilla: inf.plantilla || 'narrativo',
     transcripcion: inf.conAudio ? inf.transcripcion : '', nombreRegion,
+    cribado: respuestasUrgentes(),
   });
 }
 
@@ -490,6 +493,9 @@ export function construirAmpliado() {
     // Formulario previo agrupado por sección del informe y sin «No sé»
     // (sustituye en el prompt al `fp` del payload)
     formulario: resumenFormularioIA(),
+    // Modo guía (docs/modo-guia.md, decisión 9): las preguntas hechas de palabra,
+    // cuya respuesta solo está en el audio. Solo en guía: fuera, la huella no cambia
+    ...(preguntasVerbales().length ? { guia: preguntasVerbales() } : {}),
     // Disautonomía (docs/pots.md): las cifras de cada medida de la prueba de
     // bipedestación, solo si se hizo (sin ella la huella no cambia)
     ...(dsActiva(state.disautonomia) && medidasPruebaTexto(state.disautonomia.bipedestacion)
@@ -677,11 +683,24 @@ function pintarGenerador() {
   if (!hayInforme || audioActual() || estadoGrabacion().fase !== 'parado') det.open = true;
   if (!activo) return;
   pintarPlantilla();
+  pintarAvisoGuia();
   pintarAudio();
   pintarModoAudio();
   pintarConsent();
   pintarBoton();
   pintarError();
+}
+
+// Modo guía (docs/modo-guia.md): los textos libres no se escribieron, están en el
+// audio. Sin audio se avisa más fuerte: el informe se quedaría sin el relato.
+function pintarAvisoGuia() {
+  const el = $('iaGuia');
+  if (!el) return;
+  if (state.registro !== 'guia') { el.innerHTML = ''; return; }
+  const conAudio = !!audioActual() || estadoGrabacion().fase !== 'parado';
+  el.innerHTML = conAudio
+    ? `<div class="alert alert-info ia-guia"><span class="alert-icon">🎙</span><div>${esc(TEXTOS_GUIA.informeConAudio)}</div></div>`
+    : `<div class="alert alert-warning ia-guia"><span class="alert-icon">⚠️</span><div>${esc(TEXTOS_GUIA.informeSinAudio)}</div></div>`;
 }
 
 // Narrativo o ficha breve; por defecto, la que encaja con el tipo de consulta

@@ -332,6 +332,31 @@ function resumenIADe(scope) {
   return out;
 }
 
+// Modo guía (docs/modo-guia.md, decisión 9): las preguntas de texto que se
+// hicieron de palabra porque su caja estaba vacía (las que ya tienen texto van
+// con sus respuestas en resumenFormularioIA). Las mismas que se ven en
+// pantalla: solo las visibles y el `detalle` de una opción marcada.
+// → [{ id, g, q }] (id = la clave de state.preguntado)
+export function preguntasVerbalesFormulario() {
+  const out = [];
+  for (const scope of ['comun', ...(state.region ? [state.region] : [])]) {
+    const esquema = esquemaDe(scope);
+    if (!esquema) continue;
+    const resp = scope === 'comun' ? fp().comun : (fp().regiones[scope] || {});
+    esquema.secciones.forEach(s => s.items.forEach(it => {
+      if (!visible(it, resp)) return;
+      if (it.tipo === 'texto' && !(resp[it.id] || '').trim()) out.push({ id: `fp:${scope}:${it.id}`, g: it.ia, q: it.verbal || it.texto });
+      if (it.detalle) {
+        const v = resp[it.id];
+        const marcada = Array.isArray(v) ? v.includes(it.detalle.opcion) : v === it.detalle.opcion;
+        const clave = `${it.id}__detalle`;
+        if (marcada && !(resp[clave] || '').trim()) out.push({ id: `fp:${scope}:${clave}`, g: it.ia, q: it.detalle.verbal || it.detalle.etiqueta });
+      }
+    }));
+  }
+  return out;
+}
+
 export function resumenFormularioIA() {
   return [...resumenIADe('comun'), ...(state.region ? resumenIADe(state.region) : [])];
 }

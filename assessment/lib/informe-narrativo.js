@@ -312,7 +312,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
   const notas = [['Para dosificar la carga', data.pn?.variableControl], ['Recuperación entre sesiones', data.pn?.ventanaRecuperacion], ['Cuándo hacer los ejercicios', data.pn?.anclajeHabito]]
     .filter(([, v]) => (v || '').trim());
   if (notas.length) extra.push(`Indicaciones del fisioterapeuta para el plan:\n${notas.map(([k, v]) => `  · ${k}: ${v.trim()}`).join('\n')}`);
-  extra.push(...bloquesAmpliados(ampliado, { urgente: !!data.ur?.length }));
+  extra.push(...bloquesAmpliados(ampliado, { urgente: !!data.ur?.length, conAudio }));
   if (data.md === 'breve') {
     // Con cirugía, «restricciones pendientes de confirmar con el cirujano» ya
     // tiene su sitio (al principio del plan, regla del paciente operado): en la
@@ -386,6 +386,7 @@ export function bloqueFormulario(items, { conAudio = false } = {}) {
 //     arbol: [{ pregunta, respuesta, tratada? }],   tratada: lo que orienta ya está diagnosticado y tratado
 //     tests: [{ hipotesis, items: [{ test, resultado, cluster?, pronostico? }] }],
 //     formulario: [{ g, q, a }] (g = grupo de GRUPOS_FORMULARIO),
+//     guia: [{ g, q, preguntado? }] (modo guía: preguntas hechas de palabra, g de GRUPOS_GUIA),
 //     pautas: [{ hipotesis, derivar, tratada?, operada?, posquirurgica?, pauta, fuente, pronostico?, prom }] }
 // Cada bloque solo aparece si tiene datos.
 // urgente: hay una derivación urgente (payload `ur`): el plan es la derivación,
@@ -435,9 +436,30 @@ export const AVISO_NO_CUMPLE = 'Lo que el fisioterapeuta dice en la consulta que
 // «escasas posibilidades de modificación postural» en el trabajo. Las dos
 // secciones dicen ahora «si constan» (ver la estructura de buildNarrativePrompt)
 export const AVISO_HALLAZGOS = 'Cada línea es la conclusión del fisioterapeuta: los signos, síntomas o criterios que nombran la pregunta o la opción describen un patrón, no hallazgos de este paciente; no los afirmes si no constan en otro dato o en la consulta.';
-export function bloquesAmpliados(a, { urgente = false } = {}) {
+// ── Modo guía con grabadora externa (docs/modo-guia.md, decisión 9) ─────────
+// Las preguntas de texto se hicieron de palabra: su respuesta solo está en el
+// audio. Sin la lista, el informe no sabe qué buscar; con ella, el riesgo es que
+// rellene una respuesta plausible. Por eso la regla: lo que no esté en la
+// transcripción se omite, sin «no refiere» (ronda 33: «No refiere episodios
+// previos» sin que nadie lo preguntara). Aún sin informes reales en modo guía:
+// cuando los haya, revisar con ellos.
+export const GRUPOS_GUIA = [...GRUPOS_FORMULARIO,
+  ['exploracion', 'Exploración (va en Movilidad o en Pruebas Clínicas)']];
+export const REGLA_GUIA_AUDIO = 'Registro con la app como guía (grabadora externa): estas preguntas no se escribieron, se hicieron de palabra en la consulta. Busca la respuesta de cada una en la transcripción y escríbela en la sección que se indica. Si la transcripción no la recoge, omítela: no la deduzcas de los demás datos ni de lo habitual, y no escribas «no refiere», «niega» ni «no consta» por ella. Que el fisioterapeuta la marcara como preguntada solo dice que se preguntó, no cuál fue la respuesta.';
+export const REGLA_GUIA_SIN_AUDIO = 'Registro con la app como guía y sin audio de la consulta: estas preguntas se hicieron de palabra y su respuesta no consta en ningún dato. No las respondas ni las deduzcas, y no escribas «no refiere» ni «niega» por ellas: omítelas.';
+export function bloqueGuia(preguntas, { conAudio = false } = {}) {
+  if (!preguntas?.length) return '';
+  const grupos = GRUPOS_GUIA
+    .map(([g, titulo]) => [titulo, preguntas.filter(p => p.g === g)])
+    .filter(([, ps]) => ps.length)
+    .map(([titulo, ps]) => `  ${titulo}:\n${ps.map(p => `    · ${p.q}${p.preguntado ? ' (marcada como preguntada)' : ''}`).join('\n')}`);
+  return `${conAudio ? REGLA_GUIA_AUDIO : REGLA_GUIA_SIN_AUDIO}\n${grupos.join('\n')}`;
+}
+
+export function bloquesAmpliados(a, { urgente = false, conAudio = false } = {}) {
   if (!a) return [];
   const b = [];
+  if (a.guia?.length) b.push(bloqueGuia(a.guia, { conAudio }));
   const fase3 = [];
   if (a.signoComparable) fase3.push(`Signo comparable (movimiento que reproduce los síntomas): ${a.signoComparable}`);
   if (a.estabilidad) fase3.push(`Evolución reciente del cuadro: ${a.estabilidad}`);
