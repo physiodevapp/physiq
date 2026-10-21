@@ -3682,3 +3682,5 @@ body:has(.session-panel-overlay.open) .ia-menu { z-index: 1002; }
 .teclado-acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
 .teclado-acciones .btn { min-height: 48px; }
 @media print { .registro-bloque, .verbal, .test-ancla, .teclado-panel, #tecladoOverlay { display: none !important; } }
+/* Un botón solo no deja hueco al lado en pantalla estrecha: ocupa todo el ancho */
+@media (max-width: 520px) { .verbal-check { width: 100%; } }
