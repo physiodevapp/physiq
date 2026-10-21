@@ -168,7 +168,7 @@ function renderItem(scope, it, resp) {
     const fn = it.tipo === 'unica' ? 'fpUnica' : 'fpMulti';
     const sel = o => it.tipo === 'unica' ? v === o : (v || []).includes(o);
     cuerpo = `<div class="fp-opts">${it.opciones.map((o, i) => btn(sel(o), o, `${fn}('${scope}','${it.id}',${i})`)).join('')}</div>`;
-    if (it.detalle && sel(it.detalle.opcion)) cuerpo += textarea(scope, `${it.id}__detalle`, it.detalle.etiqueta, 1, resp);
+    if (it.detalle && sel(it.detalle.opcion)) cuerpo += textareaOVerbal(scope, `${it.id}__detalle`, it.detalle.etiqueta, 1, resp, undefined, it.detalle.verbal);
   } else if (it.tipo === 'escala' && it.estiloSeveridad) {
     cuerpo = renderEscalaSeveridad(scope, it, v);
   } else if (it.tipo === 'escala') {
@@ -184,15 +184,20 @@ function renderItem(scope, it, resp) {
         <span class="fp-fila-opts">${it.opciones.map((o, oi) => btn(m[f.id] === o, o, `fpMatriz('${scope}','${it.id}',${fi},${oi})`)).join('')}</span>
       </div>`).join('')}</div>`;
   } else if (it.tipo === 'texto') {
-    // Modo guía: sin teclear, la pregunta queda como frase para decir en voz alta
-    // (`verbal` si el esquema la tiene corta; si no, el enunciado). Con texto ya
-    // escrito la caja se queda: nunca se esconde un dato.
-    if (state.registro === 'guia' && !(resp[it.id] || '').trim()) {
-      return `<div class="fp-item"><div class="verbal">${verbalHTML(`fp:${scope}:${it.id}`, it.verbal || it.texto, { ancla: it.ayuda })}</div></div>`;
-    }
-    return `<div class="fp-item">${textarea(scope, it.id, it.texto, it.lineas || 1, resp, it.ayuda)}</div>`;
+    return `<div class="fp-item">${textareaOVerbal(scope, it.id, it.texto, it.lineas || 1, resp, it.ayuda, it.verbal)}</div>`;
   }
   return `<div class="fp-item">${cab}${cuerpo}</div>`;
+}
+
+// Modo guía: sin teclear, la pregunta queda como frase para decir en voz alta
+// (`verbal` si el esquema la tiene corta; si no, el enunciado). Con texto ya
+// escrito la caja se queda: nunca se esconde un dato. Sirve a las preguntas
+// `texto` y al `detalle` de una opción.
+function textareaOVerbal(scope, key, etiqueta, lineas, resp, ayuda, verbal) {
+  if (state.registro === 'guia' && !(resp[key] || '').trim()) {
+    return `<div class="verbal">${verbalHTML(`fp:${scope}:${key}`, verbal || etiqueta, { ancla: ayuda })}</div>`;
+  }
+  return textarea(scope, key, etiqueta, lineas, resp, ayuda);
 }
 
 function textarea(scope, key, etiqueta, lineas, resp, ayuda) {

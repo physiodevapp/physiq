@@ -20,7 +20,10 @@
 //   matriz { filas: [{id, texto, iaTexto?}], opciones }   una respuesta por fila;
 //                                   `iaTexto`: nombre clínico de la fila solo para el
 //                                   informe con IA, cuando el texto del papel es ambiguo
-//   texto  { lineas?, chips? }      texto libre (teclado o micro)
+//   texto  { lineas?, chips?, verbal } texto libre (teclado o micro). `verbal`: la pregunta
+//                                   corta y natural para decirla en voz alta en el modo guía
+//                                   (docs/modo-guia.md), donde no hay caja de texto; en `detalle`
+//                                   de una opción va dentro: `detalle: { opcion, etiqueta, verbal }`
 //   mostrarSi: { id, valores }      solo se muestra si la pregunta `id`
 //                                   (de este mismo formulario) tiene uno de esos valores
 //   informe: 'Etiqueta'             la respuesta sale en el 📄 Informe (paciente/médico)
@@ -46,12 +49,12 @@ export default {
     {
       titulo: '1 · Cómo empezó',
       items: [
-        { id: 'desde_cuando', tipo: 'texto', ia: 'historia', informe: 'Inicio de los síntomas', texto: '¿Desde cuándo le pasa?', ayuda: 'Fecha aproximada, o «hace X semanas»', lineas: 1 },
+        { id: 'desde_cuando', tipo: 'texto', ia: 'historia', informe: 'Inicio de los síntomas', texto: '¿Desde cuándo le pasa?', verbal: '¿Desde cuándo te pasa?', ayuda: 'Fecha aproximada, o «hace X semanas»', lineas: 1 },
         { id: 'desencadenante', tipo: 'unica', ia: 'historia', texto: '¿Hubo algo concreto que lo desencadenara? — un golpe, una caída, un esfuerzo, un gesto',
-          opciones: ['Sí', 'No, empezó poco a poco sin causa clara', NS], detalle: { opcion: 'Sí', etiqueta: 'Y fue…' } },
+          opciones: ['Sí', 'No, empezó poco a poco sin causa clara', NS], detalle: { opcion: 'Sí', etiqueta: 'Y fue…', verbal: '¿Qué fue lo que lo desencadenó?' } },
         { id: 'inicio', tipo: 'unica', ia: 'historia', texto: '¿Apareció de golpe o poco a poco?', opciones: ['De golpe', 'Poco a poco', NS] },
         { id: 'primera_vez', tipo: 'unica', ia: 'historia', informe: 'Primer episodio', texto: '¿Es la primera vez que le pasa?', opciones: ['Sí', 'No, ya me había pasado antes', NS] },
-        { id: 'episodio_previo', tipo: 'texto', ia: 'historia', informe: 'Episodio previo', texto: 'Si ya le había pasado: ¿cuándo fue la última vez y cuánto le duró?', lineas: 1,
+        { id: 'episodio_previo', tipo: 'texto', ia: 'historia', informe: 'Episodio previo', texto: 'Si ya le había pasado: ¿cuándo fue la última vez y cuánto le duró?', verbal: '¿Cuándo fue la última vez que te pasó y cuánto te duró?', lineas: 1,
           mostrarSi: { id: 'primera_vez', valores: ['No, ya me había pasado antes'] } }
       ]
     },
@@ -80,10 +83,10 @@ export default {
       titulo: '4 · Qué le cuesta hacer',
       intro: 'Su trabajo, un deporte, dormir, conducir, jugar con sus hijos: lo que sea importante para usted. Serán las tres cosas que mediremos en cada revisión.',
       items: [
-        { id: 'actividad_1', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 1ª cosa', lineas: 1,
+        { id: 'actividad_1', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 1ª cosa', verbal: '¿Qué es lo que más has dejado de hacer, o haces peor, por esto?', lineas: 1,
           chips: ['Dormir', 'Trabajar', 'Conducir', 'Caminar', 'Estar sentado', 'Hacer deporte'] },
-        { id: 'actividad_2', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 2ª cosa', lineas: 1 },
-        { id: 'actividad_3', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 3ª cosa', lineas: 1 }
+        { id: 'actividad_2', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 2ª cosa', verbal: '¿Qué otra cosa te cuesta?', lineas: 1 },
+        { id: 'actividad_3', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 3ª cosa', verbal: '¿Y una tercera cosa que te cueste?', lineas: 1 }
       ]
     },
     {
@@ -91,15 +94,15 @@ export default {
       items: [
         { id: 'probado', tipo: 'multi', ia: 'historia', informe: 'Tratamientos ya probados', texto: '¿Qué ha probado ya?',
           opciones: ['Nada todavía', 'Reposo', 'Calor o frío', 'Medicación', 'Fisioterapia', 'Ejercicio', 'Otros'] },
-        { id: 'probado_sirvio', tipo: 'texto', ia: 'historia', informe: 'Resultado de lo probado', texto: '¿Le sirvió de algo?', lineas: 1 }
+        { id: 'probado_sirvio', tipo: 'texto', ia: 'historia', informe: 'Resultado de lo probado', texto: '¿Le sirvió de algo?', verbal: '¿Te sirvió de algo lo que has probado?', lineas: 1 }
       ]
     },
     {
       titulo: '6 · Su salud en general',
       items: [
-        { id: 'enfermedades', tipo: 'texto', ia: 'contexto', informe: 'Enfermedades', antecedente: true, texto: 'Enfermedades importantes que tenga o haya tenido', ayuda: 'Todas, aunque le parezca que no tienen relación con esto', lineas: 2 },
-        { id: 'operaciones', tipo: 'texto', ia: 'contexto', informe: 'Operaciones', antecedente: true, texto: 'Operaciones', ayuda: 'Y aproximadamente cuándo', lineas: 1 },
-        { id: 'medicacion', tipo: 'texto', ia: 'contexto', informe: 'Medicación actual', antecedente: true, texto: 'Medicación que toma ahora', ayuda: 'Incluidos parches, inyecciones y lo que compra sin receta', lineas: 2 }
+        { id: 'enfermedades', tipo: 'texto', ia: 'contexto', informe: 'Enfermedades', antecedente: true, texto: 'Enfermedades importantes que tenga o haya tenido', verbal: '¿Qué enfermedades importantes tienes o has tenido?', ayuda: 'Todas, aunque le parezca que no tienen relación con esto', lineas: 2 },
+        { id: 'operaciones', tipo: 'texto', ia: 'contexto', informe: 'Operaciones', antecedente: true, texto: 'Operaciones', verbal: '¿Te han operado alguna vez? ¿Cuándo?', ayuda: 'Y aproximadamente cuándo', lineas: 1 },
+        { id: 'medicacion', tipo: 'texto', ia: 'contexto', informe: 'Medicación actual', antecedente: true, texto: 'Medicación que toma ahora', verbal: '¿Qué medicación tomas ahora?', ayuda: 'Incluidos parches, inyecciones y lo que compra sin receta', lineas: 2 }
       ]
     }
   ],

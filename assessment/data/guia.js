@@ -6,15 +6,15 @@
 // Campos de texto de la fase 1 y 3 que en modo guía no se teclean: en su lugar
 // va la frase para decir en voz alta (decisión 4). `id` = el <textarea>; la
 // respuesta sale solo del audio. `ancla`: además se sugiere decir el resultado
-// en voz alta (decisión 5). Las frases las revisa el fisio (paso 3 del plan).
+// en voz alta (decisión 5). Las frases las revisa el fisio (paso 3 del plan) y se dicen de «tú» al paciente (decisión del fisio, 2026-10).
 export const VERBALES = {
-  motivoConsulta: { frase: '¿Qué le trae por aquí? ¿Qué le pasa y desde cuándo?' },
+  motivoConsulta: { frase: '¿Qué te trae por aquí? ¿Qué te pasa y desde cuándo?' },
   signoComparable: {
     frase: 'Dilo en voz alta cuando lo encuentres: el movimiento que reproduce sus síntomas.',
     ancla: 'Ej.: «Flexión de hombro a 100º con dolor 6 sobre 10»'
   },
-  cirIntervencion: { frase: '¿Qué operación le hicieron y cuándo?' },
-  cirRestricciones: { frase: '¿Qué restricciones o protocolo le ha dado el cirujano?' }
+  cirIntervencion: { frase: '¿Qué operación te hicieron y cuándo?' },
+  cirRestricciones: { frase: '¿Qué restricciones o protocolo te ha dado el cirujano?' }
 };
 
 export const TEXTOS_GUIA = {

@@ -44,7 +44,7 @@ export default {
           opciones: ['Sentarme', 'Inclinarme hacia delante o apoyarme en el carro de la compra', 'Basta con pararme quieto de pie', 'No se me pasa', 'No me pasa esto', NS] },
         { id: 'bici_carro', tipo: 'unica', ia: 'sintomas', texto: '¿Aguanta más rato en bicicleta o empujando un carro que caminando normal?', opciones: ['Sí', 'No', 'No lo he probado'] },
         { id: 'postura_alivio', tipo: 'unica', ia: 'sintomas', texto: '¿Hay alguna postura o movimiento que se lo alivie de verdad?',
-          opciones: ['Sí', 'No, nada se lo quita', NS], detalle: { opcion: 'Sí', etiqueta: '¿Cuál?' } }
+          opciones: ['Sí', 'No, nada se lo quita', NS], detalle: { opcion: 'Sí', etiqueta: '¿Cuál?', verbal: '¿Qué postura o movimiento te lo alivia?' } }
       ]
     },
     {
@@ -53,10 +53,10 @@ export default {
         { id: 'cadera', tipo: 'unica', ia: 'sintomas', texto: '¿Tiene también dolor en la ingle o en la cadera, o le cuesta cruzar las piernas o ponerse los calcetines?', opciones: ['Sí', 'No', NS] },
         { id: 'embarazo', tipo: 'unica', ia: 'contexto', texto: '¿Está embarazada, o ha dado a luz en el último año?', opciones: ['Sí', 'No', 'No procede'] },
         { id: 'traumatismo', tipo: 'unica', ia: 'historia', texto: '¿Ha tenido alguna vez un golpe fuerte en la pelvis, la espalda o el coxis — una caída, un accidente — o le han operado de la columna?',
-          opciones: ['Sí', 'No', NS], detalle: { opcion: 'Sí', etiqueta: '¿Qué pasó?' } },
-        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Hace algún deporte o actividad repetitiva?', ayuda: 'Cuál, cuántos días por semana, y si ha cambiado algo últimamente', lineas: 1,
+          opciones: ['Sí', 'No', NS], detalle: { opcion: 'Sí', etiqueta: '¿Qué pasó?', verbal: '¿Qué golpe, caída u operación de columna tuviste?' } },
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Hace algún deporte o actividad repetitiva?', verbal: '¿Haces algún deporte o actividad repetitiva? ¿Cuál y cuántos días?', ayuda: 'Cuál, cuántos días por semana, y si ha cambiado algo últimamente', lineas: 1,
           chips: ['Correr', 'Caminar', 'Gimnasio', 'Pádel', 'Natación', 'Ciclismo'] },
-        { id: 'algo_mas', tipo: 'texto', ia: 'contexto', texto: '¿Hay algo más que quiera contarme, o algo que le preocupe de este problema?', lineas: 2 }
+        { id: 'algo_mas', tipo: 'texto', ia: 'contexto', texto: '¿Hay algo más que quiera contarme, o algo que le preocupe de este problema?', verbal: '¿Algo más que quieras contarme o que te preocupe?', lineas: 2 }
       ]
     }
   ],
