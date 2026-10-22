@@ -57,6 +57,8 @@
     <button id="condBtn" class="session-btn cond-btn" onclick="abrirCondiciones()" type="button" aria-haspopup="dialog" aria-controls="condOverlay" aria-label="Condiciones especiales" title="Condiciones especiales"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></button>
     <!-- Guía de fármacos (cápsula): cualquier fase, también en el hub; en móvil va en «Herramientas» -->
     <button id="farmBtn" class="session-btn farm-btn" onclick="abrirFarmacos()" type="button" aria-haspopup="dialog" aria-controls="farmOverlay" aria-label="Fármacos" title="Fármacos: qué vigilar"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 20.5a4.95 4.95 0 0 1-7-7l10-10a4.95 4.95 0 0 1 7 7z"/><path d="M8.5 8.5l7 7"/></svg></button>
+    <!-- Guía «Efectos del ejercicio» (docs/efectos-ejercicio.md): cualquier fase, también en el hub; en móvil va en «Herramientas». Icono de pulso -->
+    <button id="ejercicioBtn" class="session-btn ejercicio-btn" onclick="abrirEjercicio()" type="button" aria-haspopup="dialog" aria-controls="ejercicioOverlay" aria-label="Efectos del ejercicio" title="Efectos del ejercicio"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2.5-6 5 12L17 12h4"/></svg></button>
     <!-- «Tiempos de recuperación» de tejidos (consulta, cualquier fase, también en el hub): icono de cronograma, no de reloj, para no confundirlo con el chip «Breve» -->
     <button id="tejidosBtn" class="session-btn tejidos-btn" onclick="abrirTiemposTejido()" type="button" aria-haspopup="dialog" aria-controls="tejidosOverlay" aria-label="Tiempos de recuperación de tejidos" title="Tiempos de recuperación de tejidos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4v16h18"/><path d="M7 8h5"/><path d="M10 12h7"/><path d="M13 16h6"/></svg></button>
     <!-- Calculadora de cuestionarios (cualquier fase, también en el hub; lib/cuestionarios.js): puntuar la hoja que ha rellenado el paciente -->
@@ -211,6 +213,10 @@
         <span class="compartir-op-nombre">Fármacos</span>
         <span class="compartir-op-sub">Qué vigilar: dolor, síntomas viscerales, ejercicio y sueño</span>
       </button>
+      <button type="button" class="compartir-op" data-herramienta="ejercicio" onclick="herramientaElegir('ejercicio')">
+        <span class="compartir-op-nombre">Efectos del ejercicio</span>
+        <span class="compartir-op-sub">Qué hace el ejercicio en el cuerpo y hasta dónde llega la evidencia</span>
+      </button>
       <button type="button" class="compartir-op" data-herramienta="tejidos" onclick="herramientaElegir('tejidos')">
         <span class="compartir-op-nombre">Tiempos de recuperación</span>
         <span class="compartir-op-sub">Plazos de curación por tejido y lesión</span>
@@ -246,6 +252,17 @@
     <div class="session-panel-handle"></div>
     <div class="session-panel-title" id="farmTitulo">Fármacos: qué vigilar</div>
     <div class="cond-cuerpo" id="farmCuerpo"></div>
+  </div>
+</div>
+
+<!-- EFECTOS DEL EJERCICIO (cabecera, pulso): hoja inferior en móvil, diálogo
+     centrado en escritorio. Lo rellena abrirEjercicio() (app.js) con
+     ejercicioHTML() (lib/ejercicio.js); no lee ni guarda datos del paciente -->
+<div class="session-panel-overlay" id="ejercicioOverlay" onclick="cerrarEjercicio()">
+  <div class="session-panel cond-panel" id="ejercicioPanel" role="dialog" aria-modal="true" aria-labelledby="ejercicioTitulo" tabindex="-1" onclick="event.stopPropagation()">
+    <div class="session-panel-handle"></div>
+    <div class="session-panel-title" id="ejercicioTitulo">Efectos del ejercicio</div>
+    <div class="cond-cuerpo" id="ejercicioCuerpo"></div>
   </div>
 </div>
 

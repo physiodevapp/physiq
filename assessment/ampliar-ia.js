@@ -84,6 +84,10 @@ export function ctxFarmaco(familia) {
   return `la familia de fármacos «${_sinEtiquetas(familia)}» (lo que debe vigilar el fisioterapeuta)`;
 }
 
+export function ctxEjercicio(bloque) {
+  return `los efectos fisiológicos del ejercicio: «${_sinEtiquetas(bloque)}» (hasta dónde llega la evidencia)`;
+}
+
 export const attrIA = t => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export function recortarTextoIA(texto) {

@@ -1,0 +1,108 @@
+// ============================================================
+// PhysiQ-Assessment · data/ejercicio.js
+// Contenido de la guía «Efectos del ejercicio» de la cabecera
+// (docs/efectos-ejercicio.md). Un bloque por tema, no por molécula. Solo lleva
+// `apartados` un bloque escrito con fuentes leídas en la sesión y revisado por
+// el usuario; los demás se listan como pendientes.
+//
+// Límites (docs/efectos-ejercicio.md): solo lectura; nunca una regla de
+// dosificación automática; nunca sustituye a un tratamiento médico; nada de
+// esto llega al payload, los resúmenes ni el prompt del informe con IA.
+//
+// Esquema de un bloque con contenido:
+//   { id, titulo, resumen,
+//     apartados: {
+//       que:       [{ t, nivel }],   // qué ocurre
+//       evidencia: [{ t, nivel }],   // hasta dónde llega lo demostrado
+//       consulta:  [{ t, nivel }],   // qué cambia en la dosis o la decisión (solo si una fuente leída lo dice)
+//       paciente:  [{ t, apoya: [i, …] }],   // para explicárselo; `apoya` = índices de `evidencia`
+//       detalle?:  string | string[] },      // «Ampliar ▾»
+//     fuentes: ['<clave de data/referencias.js>', …] }
+// `nivel` es una clave de NIVELES_EJERCICIO. Una frase de `paciente` solo se
+// apoya en afirmaciones de `evidencia` con nivel 'clinico' (decisión 4);
+// `problemasBloque()` (lib/ejercicio.js) lo comprueba y un test lo exige.
+// Las citas dentro de la frase («(Naugle 2012)») se pintan como botones.
+// ============================================================
+
+// Tres niveles (decisión 3 de docs/efectos-ejercicio.md). Lo visto solo en
+// animales o in vitro es 'mecanismo' y la frase lo dice.
+export const NIVELES_EJERCICIO = {
+  clinico: {
+    corto: 'Clínico',
+    explicacion: 'Efecto medido en personas sobre un resultado que importa (dolor, función).',
+  },
+  mecanismo: {
+    corto: 'Mecanismo',
+    explicacion: 'Solo el mecanismo (una molécula en sangre, un cambio en el tejido), sin efecto clínico demostrado. Si solo se ha visto en animales o in vitro, la frase lo dice.',
+  },
+  discutido: {
+    corto: 'Discutido',
+    explicacion: 'Fuentes leídas que se contradicen: se dicen las dos.',
+  },
+};
+
+export const APARTADOS_EJERCICIO = [
+  { id: 'que', titulo: 'Qué ocurre' },
+  { id: 'evidencia', titulo: 'Hasta dónde llega lo demostrado' },
+  { id: 'consulta', titulo: 'Qué cambia en la consulta' },
+  { id: 'paciente', titulo: 'Para explicárselo al paciente' },
+];
+
+// Los cinco bloques, en orden de trabajo. `resumen` es solo la pista de qué
+// cubrirá; no es contenido (cada frase saldrá de una fuente leída).
+export const BLOQUES_EJERCICIO = [
+  // Hipoalgesia (2026-10): cuatro fuentes leídas enteras en PMC y dos PDF del
+  // usuario (Rice 2019, Wewege y Jones 2021); niveles en docs/efectos-ejercicio.md.
+  { id: 'hipoalgesia', titulo: 'Hipoalgesia inducida por el ejercicio',
+    resumen: 'Ejercicio local y a distancia, qué pasa en el dolor crónico y con la sensibilización central, y qué implica para la dosis y los brotes',
+    apartados: {
+      que: [
+        { t: 'Una sola sesión de ejercicio reduce durante un rato la sensibilidad al dolor: en el laboratorio, el umbral de dolor a la presión sube un 15–20 % frente al reposo, y el efecto dura de 5 a 30 minutos (Vaegter y Jones 2020). Se mide sobre dolor provocado en el laboratorio, no sobre el dolor del paciente.', nivel: 'mecanismo' },
+        { t: 'En personas sanas, una revisión con estudios sin grupo control dio efectos de moderados a grandes con el ejercicio aeróbico, el isométrico y el de fuerza dinámica (Naugle 2012). Al quedarse solo con ensayos aleatorizados con reposo como control, el aeróbico mantiene un efecto grande, la fuerza dinámica uno pequeño y el isométrico no tiene efecto, con evidencia de calidad muy baja (Wewege y Jones 2021).', nivel: 'discutido' },
+        { t: 'Se atribuye sobre todo a la inhibición descendente del dolor. Con los opioides, los resultados en humanos son equívocos: los antagonistas la aumentan, la reducen o no la cambian, y el apoyo más constante viene de animales (Naugle 2012; Vaegter y Jones 2020). Con los endocannabinoides hay más acuerdo: suben en sangre tras el ejercicio en humanos y, en animales, bloquearlos impide la hipoalgesia (Rice 2019).', nivel: 'discutido' },
+      ],
+      evidencia: [
+        { t: 'Ejercicio regular en dolor crónico: mejora algo la intensidad del dolor y la función física, con efectos de pequeños a moderados que no se repiten en todas las revisiones; la calidad de la evidencia es baja (Geneen 2017, 21 revisiones Cochrane, 381 estudios).', nivel: 'clinico' },
+        { t: 'En esas revisiones el ejercicio no empeoró el dolor. Los efectos adversos más comunes fueron agujetas o dolor muscular, que cedieron en unas semanas; solo una cuarta parte de los estudios los registró, así que pueden estar infravalorados (Geneen 2017).', nivel: 'clinico' },
+        { t: 'En dolor crónico, la respuesta a una sesión es variable: hipoalgesia, ninguna o incluso hiperalgesia, más en el dolor generalizado (fibromialgia, latigazo cervical) (Vaegter y Jones 2020; Rice 2019). Con solo ensayos aleatorizados, el isométrico no redujo el dolor experimental en dolor musculoesquelético crónico, y no hay ensayos con ejercicio aeróbico (Wewege y Jones 2021).', nivel: 'mecanismo' },
+        { t: 'La hipoalgesia falla más en quien tiene mucha sensibilidad al dolor en todo el cuerpo o una modulación condicionada del dolor deficiente, lo que apunta a un procesamiento central del dolor aumentado; los autores lo dan como preliminar (Rice 2019; Vaegter y Jones 2020).', nivel: 'mecanismo' },
+        { t: 'Ejercitar una zona que no duele puede dar hipoalgesia donde la zona dolorosa no la da: en la mialgia de hombro, el ejercicio con la pierna la produjo y con el hombro doloroso no; en la artrosis de rodilla, la fuerza del tren superior subió el umbral de dolor y la del inferior no (Vaegter y Jones 2020; Rice 2019).', nivel: 'mecanismo' },
+      ],
+      consulta: [
+        { t: 'Si ejercitar la zona dolorosa aumenta el dolor, se puede empezar por zonas que no duelen y por ejercicio de baja intensidad, como caminar. Los autores lo proponen como algo que «puede merecer la pena considerar», no como resultado de ensayos (Vaegter y Jones 2020; Rice 2019).', nivel: 'mecanismo' },
+        { t: 'Intensidad elegida por el paciente o prescrita: en un estudio de fibromialgia, la elegida dio más hipoalgesia que la prescrita al 60–75 % de la frecuencia cardiaca máxima (Vaegter y Jones 2020; Naugle 2012), pero los estudios que comparan ambas casi no encuentran diferencia, aunque la elegida sea bastante más suave (Rice 2019).', nivel: 'discutido' },
+        { t: 'No hay una dosis óptima demostrada: un reanálisis de 75 ensayos no encontró una relación clara entre la dosis de ejercicio y el alivio del dolor (Polaski 2019), y la revisión Cochrane no puede orientar el contenido del programa (Geneen 2017).', nivel: 'clinico' },
+        { t: 'Un aumento del dolor tras el ejercicio puede frenar la adherencia. Los autores proponen explicar, dentro de la educación en neurociencia del dolor, que al principio puede doler más y que eso pasa; en dolor crónico no está demostrado que esa explicación cambie la hipoalgesia (Rice 2019).', nivel: 'mecanismo' },
+        { t: 'Muchos pacientes con dolor crónico esperan más dolor tras el ejercicio (Vaegter y Jones 2020). En sanos, las expectativas negativas, el catastrofismo y el miedo al dolor se asociaron a menos hipoalgesia; en dolor crónico, la ansiedad, la depresión, el catastrofismo y la kinesiofobia no se asociaron (Rice 2019).', nivel: 'mecanismo' },
+      ],
+      paciente: [
+        { t: 'Hacer ejercicio con regularidad suele ayudar algo con el dolor y a moverse mejor. No es un efecto grande ni igual para todo el mundo.', apoya: [0] },
+        { t: 'Al empezar es normal notar agujetas o algo más de dolor muscular. Suele pasar en unas semanas, y en los estudios el ejercicio no empeoró el dolor.', apoya: [1] },
+      ],
+      detalle: [
+        'Casi todos los estudios de la hipoalgesia son pequeños (50 personas o menos) y muchos no tienen grupo control, así que probablemente sobrestiman el efecto (Vaegter y Jones 2020). Los diseños antes y después sin control no descartan la regresión a la media, la habituación al estímulo doloroso ni las expectativas; por eso los efectos grandes de revisiones previas, sobre todo con el isométrico, se reducen al exigir un control (Wewege y Jones 2021).',
+        'La respuesta de una misma persona cambia de un día a otro: la fiabilidad entre sesiones de la hipoalgesia medida con el umbral de dolor a la presión fue solo regular (CCI 0,45), aunque el umbral por sí solo es muy fiable (Rice 2019).',
+        'Muchos protocolos no se parecen al ejercicio que se prescribe: aeróbico de menos de 15 minutos, o una sola contracción isométrica al 10–30 % de la máxima mantenida varios minutos (Rice 2019).',
+        'No está claro si la hipoalgesia tras una sesión predice cómo le irá al paciente con el ejercicio regular; hay datos preliminares (Rice 2019), y no se sabe cómo reduce el dolor el entrenamiento (Vaegter y Jones 2020).',
+        'Un modelo estadístico predice más alivio con más sesiones por semana, pero los propios autores lo presentan como una predicción para diseñar ensayos, no como un resultado (Polaski 2019).',
+      ],
+    },
+    fuentes: ['Naugle 2012', 'Wewege y Jones 2021', 'Vaegter y Jones 2020', 'Rice 2019', 'Geneen 2017', 'Polaski 2019'] },
+  { id: 'mecanotransduccion', titulo: 'Carga y adaptación del tejido (mecanotransducción)',
+    resumen: 'Tendón, hueso, cartílago y músculo: cómo la carga se convierte en adaptación y por qué el reposo absoluto no repara' },
+  { id: 'antiinflamatorio', titulo: 'Efecto antiinflamatorio sistémico',
+    resumen: 'La IL-6 que libera el músculo al contraerse, su diferencia con la de la inflamación, y qué se sabe en dolor musculoesquelético' },
+  { id: 'mioquinas', titulo: 'El músculo como órgano endocrino: otras mioquinas',
+    resumen: 'Concepto y estado real de cada mioquina; puede quedar como párrafo del bloque anterior si sus fuentes dan casi solo mecanismo' },
+  { id: 'centrales', titulo: 'Efectos centrales',
+    resumen: 'Sueño, estado de ánimo y autoeficacia' },
+];
+
+export const TEXTOS_EJERCICIO = {
+  intro: 'Qué hace el ejercicio en el cuerpo y hasta dónde llega lo que se sabe. Sirve para decidir la dosis y para explicárselo al paciente sin prometer más de lo demostrado.',
+  limites: 'Es una guía de lectura: no dosifica por ti, no cambia el plan y no sustituye a un tratamiento médico. Cada afirmación lleva su nivel de evidencia.',
+  nivelesTitulo: 'Nivel de cada afirmación',
+  pendientesTitulo: 'Pendientes de fuentes revisadas',
+  pendientesNota: 'Se escriben de uno en uno, solo con fuentes leídas por completo.',
+  pie: 'Contenido de apoyo para el fisioterapeuta. No se guarda ni se comparte con el informe.',
+};
