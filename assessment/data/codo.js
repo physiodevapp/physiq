@@ -563,7 +563,7 @@ export const hypotheses = {
     dosisFuente: 'Wistow 2025, JSES Int 9(6):2146–2155 (revisión sistemática, 9 estudios y 312 participantes, sin metaanálisis) · Siemensma 2023, EFORT Open Rev 8(5):351–360 (revisión narrativa)',
     // Criterios de cirugía: fuera de la pauta (el informe con IA los copiaba al plan), como ro2, h2 y ce3
     pronostico: {
-      derivacion: 'Si no mejora más tras 3–6 meses de tratamiento adecuado, valorar la cirugía. Si lo que limita es el hueso (consolidación viciosa, pinzamiento óseo, osificación heterotópica), el tratamiento conservador está contraindicado y se recomienda la cirugía precoz (Siemensma).',
+      derivacion: 'no mejora más tras 3–6 meses de tratamiento adecuado: valorar la cirugía. Si lo que limita es el hueso (consolidación viciosa, pinzamiento óseo, osificación heterotópica), el tratamiento conservador está contraindicado y se recomienda la cirugía precoz (Siemensma).',
       fuente: 'Siemensma 2023, EFORT Open Rev 8(5):351–360 (revisión narrativa)'
     },
     tests: [
