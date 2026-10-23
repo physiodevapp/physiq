@@ -8,6 +8,8 @@
 import { NIVELES_EJERCICIO, APARTADOS_EJERCICIO, BLOQUES_EJERCICIO, TEXTOS_EJERCICIO } from '../data/ejercicio.js';
 import { citasHTML, citasEnTexto } from './citas.js';
 import { iaParrafoHTML, attrIA, ctxEjercicio } from '../ampliar-ia.js';
+import { CUESTIONARIOS } from '../data/cuestionarios.js';
+import { puntuar } from './cuestionarios.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // Texto de data/ con las citas de dentro de la frase como botones (lib/citas.js)
@@ -61,17 +63,45 @@ export function bloqueEjercicioAlternativo(irritabilidad) {
   return bloquesConContenido().find(x => x.id === id) || null;
 }
 
+// Cuestionarios de la calculadora que cuentan como «ánimo» para el enlace a
+// «Efectos centrales»
+export const CUESTIONARIOS_ANIMO = ['phq2', 'phq9', 'gad7'];
+
+// Qué bloques más enlaza la fase 6, además de los dos de la irritabilidad
+// (docs/efectos-ejercicio.md, «Enlace de la fase 6»): «Efectos centrales» con
+// riesgo psicosocial medio o alto, o un PHQ-2, PHQ-9 o GAD-7 completo con
+// síntomas; «antiinflamatorio» solo con lupus diagnosticado, porque sus frases
+// para el paciente solo valen en las enfermedades reumáticas inflamatorias.
+// Una regla de lectura, no clínica: nunca cambia el plan.
+export function motivosEjercicio({ riesgoPsico, cuestionarios, lupusDiagnosticado } = {}) {
+  const psico = riesgoPsico === 'Medio' || riesgoPsico === 'Alto';
+  const cuest = CUESTIONARIOS.filter(d => CUESTIONARIOS_ANIMO.includes(d.id) && cuestionarios?.[d.id]).some(d => {
+    const p = puntuar(d, cuestionarios[d.id].r || {});
+    return p.completo && p.interpretacion && p.interpretacion.nivel !== 'ok';
+  });
+  return { animo: psico || cuest, reumatica: !!lupusDiagnosticado };
+}
+
+const EXTRAS_EJERCICIO = [
+  { motivo: 'animo', id: 'centrales', ayuda: 'enlaceMotivoAnimo' },
+  { motivo: 'reumatica', id: 'antiinflamatorio', ayuda: 'enlaceMotivoReumatica' },
+];
+
 // El enlace pintado en el bloque «Educación» de la fase 6 ('' si no hay bloque)
-export function enlaceEjercicioHTML(irritabilidad) {
+export function enlaceEjercicioHTML(irritabilidad, motivos = {}) {
   const b = bloqueEjercicioParaIrritabilidad(irritabilidad);
   if (!b) return '';
   const T = TEXTOS_EJERCICIO;
   const otro = bloqueEjercicioAlternativo(irritabilidad);
   const otroHTML = otro
     ? `\n      <button type="button" class="plan-enlace plan-enlace-otro" data-bloque-alternativo="${esc(otro.id)}" onclick="abrirEjercicio({ bloque: '${esc(otro.id)}' })">${esc(T.enlaceEducacionOtro.replace('{titulo}', otro.titulo))}</button>` : '';
+  const extrasHTML = EXTRAS_EJERCICIO.filter(x => motivos[x.motivo])
+    .map(x => ({ x, bloque: bloquesConContenido().find(k => k.id === x.id) })).filter(e => e.bloque)
+    .map(({ x, bloque }) => `\n      <button type="button" class="plan-enlace plan-enlace-otro" data-bloque-extra="${esc(bloque.id)}" onclick="abrirEjercicio({ bloque: '${esc(bloque.id)}' })">${esc(T.enlaceEducacionOtro.replace('{titulo}', bloque.titulo))}</button>
+      <span class="plan-ayuda plan-ayuda-otro">${esc(T[x.ayuda])}</span>`).join('');
   return `<div class="plan-ejercicio" data-bloque-ejercicio="${esc(b.id)}">
       <button type="button" class="plan-enlace" onclick="abrirEjercicio({ bloque: '${esc(b.id)}' })">${esc(T.enlaceEducacion)}</button>
-      <span class="plan-ayuda">${esc(T.enlaceEducacionAyuda.replace('{titulo}', b.titulo))}</span>${otroHTML}
+      <span class="plan-ayuda">${esc(T.enlaceEducacionAyuda.replace('{titulo}', b.titulo))}</span>${otroHTML}${extrasHTML}
     </div>`;
 }
 

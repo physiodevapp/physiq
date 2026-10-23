@@ -245,5 +245,7 @@ export const TEXTOS_EJERCICIO = {
   // Enlace del bloque «Educación» de la fase 6 (docs/efectos-ejercicio.md, decisión 5)
   enlaceEducacion: 'Para explicárselo al paciente →',
   enlaceEducacionOtro: 'También: «{titulo}» →',
+  enlaceMotivoAnimo: 'Por el riesgo psicosocial o un cuestionario de ánimo con síntomas.',
+  enlaceMotivoReumatica: 'Por el lupus: sus frases para el paciente son para las enfermedades reumáticas inflamatorias.',
   enlaceEducacionAyuda: 'Abre «{titulo}», el bloque que corresponde a la irritabilidad elegida.',
 };
