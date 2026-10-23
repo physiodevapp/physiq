@@ -760,8 +760,7 @@ export const hypotheses = {
     dosis: 'Ejercicio terapéutico adaptado a la persona (por ejemplo, fortalecimiento local y forma física aeróbica general), para todos: recomendación firme (rec. 1.3.1). Valorar sesiones supervisadas (1.3.2) y combinarlo con educación o cambio de conducta en un paquete estructurado (1.3.4). Avisar de que el dolor puede aumentar al empezar y de que es la constancia a largo plazo la que reduce el dolor y mejora la función (1.3.3). Con sobrepeso, cualquier pérdida de peso ayuda, y el 10 % más que el 5 % (1.3.5). Terapia manual solo junto al ejercicio (1.3.6). No ofrecer acupuntura ni punción seca (1.3.8), ni TENS, ultrasonido, interferenciales, láser, onda corta pulsada o electroestimulación neuromuscular (1.3.9). Valorar ayudas para la marcha, como un bastón (1.3.10); plantillas, ortesis o vendajes solo si hay inestabilidad o carga anómala y el ejercicio solo no basta (1.3.11). La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico.',
     dosisFuente: 'NICE NG226 (2022; recomendaciones 1.3.1–1.3.11, leídas en nice.org.uk en 2026-10; NICE marca la fuerza con el verbo: «offer» = recomendación firme, «consider» = más débil, «do not offer» = no hacer)',
     pronostico: {
-      horizonte: 'Kellgren-Lawrence u OARSI. La imagen sola engaña: en adultos de 40 años o más sin síntomas ni lesiones, la RM muestra defectos de cartílago en el 43 % y roturas de menisco en el 19 %. Criterios clínicos + imagen → S 0,91 · E 0,86 · LR+ 6,5 · LR− 0,10.',
-      derivacion: 'Los criterios del ACR identifican mejor la artrosis avanzada: con criterios negativos en un cuadro incipiente, no descartes. La debilidad del cuádriceps es el factor modificable más potente.',
+      notas: 'La gravedad en la radiografía se clasifica con la escala de Kellgren-Lawrence o la de OARSI. La imagen sola engaña: en adultos de 40 años o más sin síntomas ni lesiones, la RM muestra defectos de cartílago en el 43 % y roturas de menisco en el 19 %. Los criterios clínicos junto con la imagen tienen una sensibilidad de 0,91 y una especificidad de 0,86 (LR+ 6,5; LR− 0,10). Los criterios del ACR identifican mejor la artrosis avanzada: si son negativos en un cuadro incipiente, no descartan la artrosis. La debilidad del cuádriceps es el factor modificable más potente.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 210–211; Culvenor 2019 (Br J Sports Med 53:1268–78; revisión sistemática con metaanálisis, 63 estudios, 5397 rodillas sin síntomas ni lesiones)'
     },
     tests: [
@@ -797,8 +796,9 @@ export const hypotheses = {
     dosisComun: 'Ninguna de las dos fuentes fija series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Prill 2025, Knee Surg Sports Traumatol Arthrosc 33(8):3014–3024 (consenso formal EU-US de rehabilitación del menisco, ESSKA-AOSSM-AASPT, parte II: tratamiento sin cirugía; grados A a D, de más respaldo científico a opinión de expertos); Logerstedt 2018, J Orthop Sports Phys Ther 48(2):A1–A50 (guía de práctica clínica APTA, lesiones de menisco y de cartílago articular: tras la meniscectomía; deja el tratamiento sin cirugía para su próxima revisión; letra = grado de la recomendación, tal como la da la guía); AAOS 2024 (guía de práctica clínica de patología meniscal aislada aguda, opciones «Physical Therapy» e «Indications for Acute Surgical Intervention»)',
     pronostico: {
-      horizonte: 'RM o artroscopia. En roturas degenerativas, la meniscectomía parcial NO ha demostrado más beneficio que la fisioterapia.',
-      derivacion: 'Tras una meniscectomía parcial por rotura degenerativa, el riesgo de artrosis radiográfica con síntomas a los 16 años es 7 veces el de controles emparejados (por rotura traumática, 2,7, sin significación). Solo el 30 % periférico está vascularizado, y disminuye con la edad. Jóvenes: mejores candidatos a reparación. Derivar al traumatólogo si persisten el dolor, la rigidez o el derrame recurrentes, la inestabilidad funcional, los síntomas mecánicos o aparecen síntomas neurológicos inesperados (Prill 2025, grado C).',
+      horizonte: 'En las roturas degenerativas, la meniscectomía parcial no ha demostrado más beneficio que la fisioterapia. Tras una meniscectomía parcial por rotura degenerativa, el riesgo de artrosis radiográfica con síntomas a los 16 años es 7 veces el de controles emparejados (por rotura traumática, 2,7 veces, sin significación estadística).',
+      notas: 'El diagnóstico se confirma con RM o artroscopia. Solo el 30 % periférico del menisco está vascularizado, y esa parte disminuye con la edad. Los pacientes jóvenes son mejores candidatos a la reparación.',
+      derivacion: 'persisten el dolor, la rigidez o el derrame recurrentes, la inestabilidad funcional o los síntomas mecánicos, o aparecen síntomas neurológicos inesperados: derivar al traumatólogo (Prill 2025, grado C).',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 209–210; Englund 2003 (Arthritis Rheum 48:2178–87; 155 meniscectomías frente a 68 controles, 16 años; RR 7,0, IC 95 %: 2,1–23,5)'
     },
     tests: [
@@ -818,8 +818,7 @@ export const hypotheses = {
     dosis: 'Ejercicio centrado en el cuádriceps y/o la cadera durante al menos 6 a 12 semanas, mejor con supervisión de fisioterapia al menos en parte, en un programa estructurado cuyo volumen e intensidad se ajustan al dolor (certeza baja); prioridad a la educación. Reevaluar dolor (EVA) y función (Kujala) a las 6 y a las 12 semanas. Vendaje, rodillera u ortesis plantar solo como añadido al ejercicio si a las 6–12 semanas no hay un cambio clínicamente relevante (certeza muy baja), informando al paciente de la falta de pruebas. Sin infiltraciones y con prudencia con los analgésicos. Si a las 12 semanas no mejora, reconsiderar el diagnóstico. La guía JOSPT de 2019 coincide en lo esencial: ejercicio combinado de cadera (musculatura posterolateral) y rodilla, en carga o sin carga, empezando si acaso por la cadera (A), y combinar intervenciones con el ejercicio como eje (A). Añade que no se usen punción seca ni terapia manual aislada (A), ni agentes físicos como ultrasonido, crioterapia, electroestimulación o láser (B), ni biofeedback (B); la reeducación de la carrera es opcional (C) y la educación sobre la carga, recomendable (F). Discrepan en los añadidos: la JOSPT admite vendaje rotuliano con el ejercicio a corto plazo (4 semanas, B) y ortesis plantares prefabricadas hasta 6 semanas si hay más pronación de lo normal (A), y desaconseja rodilleras y cintas (B); la holandesa, más reciente, los deja para cuando el ejercicio no basta tras 6–12 semanas, y es la que se sigue. Ninguna fija series ni repeticiones (la JOSPT dice que la dosis óptima no se conoce): el volumen queda a criterio del clínico.',
     dosisFuente: 'Ophey 2025, Knee Surg Sports Traumatol Arthrosc 33:457–469 (guía multidisciplinar holandesa, módulos 1–3; certeza GRADE como la da la guía) · Willy 2019, J Orthop Sports Phys Ther 49(9):CPG1–CPG95 (guía de práctica clínica APTA, resumen de recomendaciones, pp. CPG2–CPG3; letra = grado de la recomendación)',
     pronostico: {
-      horizonte: 'Diagnóstico clínico: la imagen solo sirve para descartar otras condiciones.',
-      derivacion: 'Patogenia multifactorial. Se han descrito hiperalgesia generalizada y peor modulación del dolor: el modelo mecánico no lo explica todo.',
+      notas: 'El diagnóstico es clínico: la imagen solo sirve para descartar otras condiciones. La patogenia es multifactorial: se han descrito hiperalgesia generalizada y peor modulación del dolor, así que el modelo mecánico no lo explica todo.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 194–195'
     },
     tests: [
@@ -837,8 +836,8 @@ export const hypotheses = {
     dosis: 'En la lesión ligamentosa de rodilla, reeducación neuromuscular junto con el fortalecimiento (A); con insuficiencia del LCA puede usarse una ortesis funcional (C). Las demás recomendaciones son tras la reconstrucción: movilización inmediata, dentro de la primera semana (B); carga precoz según tolerancia (C); crioterapia en el posoperatorio inmediato (B); ejercicio supervisado en consulta más un programa en casa (B); ejercicios concéntricos y excéntricos, en carga y sin carga, desde las 4–6 semanas, 2 o 3 veces por semana durante 6 a 10 meses (A), y electroestimulación neuromuscular 6 a 8 semanas junto al fortalecimiento (A). Fuera del posoperatorio, la guía no fija volumen: queda a criterio del clínico.',
     dosisFuente: 'Logerstedt 2017, J Orthop Sports Phys Ther 47(11):A1–A47 (guía de práctica clínica APTA, esguince de ligamentos de rodilla; letra = grado de la recomendación, tal como la da la guía: A evidencia fuerte, C débil, F opinión de expertos)',
     pronostico: {
-      horizonte: 'RM o artroscopia como patrón de referencia. El tratamiento no quirúrgico obtiene buenos resultados, pero casi el 75 % opta por la reconstrucción.',
-      derivacion: 'Riesgo alto de nueva lesión los dos primeros años tras la reconstrucción, y mayor en quienes vuelven al deporte con déficits.',
+      horizonte: 'El tratamiento sin cirugía obtiene buenos resultados. Tras la reconstrucción, el riesgo de una nueva lesión es alto los dos primeros años, y mayor en quienes vuelven al deporte con déficits.',
+      notas: 'La RM o la artroscopia son el patrón de referencia para el diagnóstico. Casi el 75 % de los pacientes opta por la reconstrucción.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 206–207'
     },
     tests: [
@@ -859,8 +858,8 @@ export const hypotheses = {
     dosis: 'Plan en cuatro fases. 1) Control del dolor: educación y consejos de carga. 2) Progresión de fuerza: ejercicio de resistencia progresivo de cuádriceps durante al menos 12 semanas, ajustando la intensidad a cada paciente; de preferencia, resistencia pesada y lenta, aunque pueden usarse otras formas (por ejemplo, isométricos) para reducir la respuesta dolorosa del tendón. 3) Almacenamiento de energía: según el deporte, empezar con pliometría. 4) Mantenimiento de la fuerza. Si a las 12 semanas no hay un cambio clínicamente relevante, valorar una cinta infrarrotuliana. Sin infiltraciones y con prudencia con los analgésicos. Certeza muy baja en la guía; una revisión Cochrane posterior no puede asegurar que el ejercicio de fuerza alivie el dolor frente a no tratar (certeza muy baja; solo deportistas). Ninguna de las dos fija series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Ophey 2025, Knee Surg Sports Traumatol Arthrosc 33:457–469 (guía multidisciplinar holandesa, módulos 5–7; certeza GRADE muy baja) · Lopes 2025, Cochrane Database Syst Rev 5:CD013078 (revisión sistemática, 7 ensayos, 211 deportistas)',
     pronostico: {
-      horizonte: 'Ecografía o RM. La alteración del tendón en imagen NO se correlaciona de forma constante con el dolor ni con la pérdida de función.',
-      derivacion: 'Si los síntomas aparecen antes y tardan más en irse, ser más prudente al progresar. VISA-P como cuestionario, aparte de los tres números.',
+      seguimiento: 'Si los síntomas aparecen antes y tardan más en irse, progresar el tratamiento con más prudencia. Cuestionario específico: VISA-P.',
+      notas: 'Pruebas de imagen: ecografía o RM. La alteración del tendón en imagen no se correlaciona de forma constante con el dolor ni con la pérdida de función.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 192–193'
     },
     tests: [
@@ -877,8 +876,7 @@ export const hypotheses = {
     dosis: 'El fortalecimiento de los abductores de cadera es el elemento común de los tratamientos que funcionan, mejor junto a terapia manual u ondas de choque; en un ensayo pequeño, el fortalecimiento multiplanar superó al convencional y a los estiramientos. La revisión sugiere 4 a 8 semanas de progresión gradual. Los estiramientos tienen poco respaldo, y la reeducación de la carrera es prometedora pero sin ensayos sólidos. Evidencia baja (13 estudios pequeños, solo corredores, sin metaanálisis) y sin guía de práctica clínica. No fija series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Sanchez-Alvarado 2024, Front Sports Act Living 6:1386456 (revisión sistemática; 13 estudios, 5 de ellos ensayos aleatorizados, 201 corredores)',
     pronostico: {
-      horizonte: 'Diagnóstico clínico: la entrevista y la exploración completas suelen bastar. Las pruebas complementarias sirven para confirmar o descartar otras condiciones.',
-      derivacion: 'La explicación clásica (fricción de la cintilla sobre el epicóndilo lateral) ha sido cuestionada: los estudios anatómicos apuntan a compresión contra el cuerpo graso muy inervado que hay debajo.',
+      notas: 'El diagnóstico es clínico: la entrevista y la exploración completas suelen bastar, y las pruebas complementarias sirven para confirmar o descartar otras condiciones. La explicación clásica (fricción de la cintilla sobre el epicóndilo lateral) ha sido cuestionada: los estudios anatómicos apuntan a una compresión contra el cuerpo graso muy inervado que hay debajo.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 215–216'
     },
     tests: [
@@ -912,8 +910,8 @@ export const hypotheses = {
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión grave del LCM puede usarse una ortesis adecuada (F). La guía no fija volumen: queda a criterio del clínico.',
     dosisFuente: 'Logerstedt 2017, J Orthop Sports Phys Ther 47(11):A1–A47 (guía de práctica clínica APTA, esguince de ligamentos de rodilla; letra = grado de la recomendación, tal como la da la guía: A evidencia fuerte, C débil, F opinión de expertos)',
     pronostico: {
-      horizonte: 'RM como patrón de referencia.',
-      derivacion: 'La lesión aislada se maneja sin cirugía, con vuelta a la actividad en 2–5 semanas.',
+      horizonte: 'La lesión aislada se trata sin cirugía, con vuelta a la actividad en 2–5 semanas.',
+      notas: 'La RM es el patrón de referencia para el diagnóstico.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), p. 208'
     },
     tests: [
@@ -928,8 +926,7 @@ export const hypotheses = {
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión aguda del LCP puede usarse una ortesis adecuada (F). La guía no fija volumen: queda a criterio del clínico.',
     dosisFuente: 'Logerstedt 2017, J Orthop Sports Phys Ther 47(11):A1–A47 (guía de práctica clínica APTA, esguince de ligamentos de rodilla; letra = grado de la recomendación, tal como la da la guía: A evidencia fuerte, C débil, F opinión de expertos)',
     pronostico: {
-      horizonte: 'RM de elección. En urgencias, el 95 % de las lesiones del LCP son combinadas.',
-      derivacion: 'Las lesiones de LCP grado III se asocian a lesión de la EPL. Siempre que se sospeche LLE, explorar la EPL.',
+      notas: 'La RM es el patrón de referencia para el diagnóstico. En urgencias, el 95 % de las lesiones del LCP se combinan con lesiones de otros ligamentos. Las lesiones de grado III del LCP se asocian a lesión de la esquina posterolateral (EPL).',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 216 y 221–222'
     },
     tests: [
@@ -946,8 +943,7 @@ export const hypotheses = {
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión de la esquina posterolateral puede usarse una ortesis adecuada (F). La guía no trata cuándo operar las lesiones de grado III o combinadas, ni fija volumen: el volumen queda a criterio del clínico.',
     dosisFuente: 'Logerstedt 2017, J Orthop Sports Phys Ther 47(11):A1–A47 (guía de práctica clínica APTA, esguince de ligamentos de rodilla; letra = grado de la recomendación, tal como la da la guía: A evidencia fuerte, C débil, F opinión de expertos)',
     pronostico: {
-      horizonte: 'RM de elección. En urgencias, el 95 % de las lesiones del LCP son combinadas.',
-      derivacion: 'Las lesiones de LCP grado III se asocian a lesión de la EPL. Siempre que se sospeche LLE, explorar la EPL. NO usar el varo forzado como prueba de descarte: S 25 %, sin E publicada. Un test negativo no descarta la lesión de LLE/EPL.',
+      notas: 'La RM es la prueba de imagen de elección. La lesión aislada del LLE es rara: otras estructuras de la esquina posterolateral suelen lesionarse a la vez. Las lesiones de grado III del LCP se asocian a lesión de la esquina posterolateral (EPL): siempre que se sospeche una lesión del LLE, explorar la EPL. No usar el varo forzado como prueba de descarte: su sensibilidad es del 25 % y no tiene especificidad publicada, así que un test negativo no descarta la lesión del LLE o de la EPL.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 216 y 221–222'
     },
     tests: [
@@ -966,8 +962,7 @@ export const hypotheses = {
     prom: 'KOOS',
     dosis: DOSIS_DERIVAR,
     pronostico: {
-      horizonte: 'Rótula: radiografía AP y lateral; TC en conminutas. Meseta: radiografía primero, TC para clasificar, RM si se sospecha lesión meniscal o ligamentosa.',
-      derivacion: 'Valorar siempre la función neurovascular (pulsos, índice tobillo-brazo y cribado neurológico), sobre todo si refiere cambios de temperatura, adormecimiento, parestesias o debilidad.',
+      notas: 'Rótula: radiografía anteroposterior y lateral, y TC en las fracturas conminutas. Meseta tibial: radiografía primero, TC para clasificar la fractura y RM si se sospecha una lesión meniscal o ligamentosa. Valorar siempre la función neurovascular (pulsos, índice tobillo-brazo y cribado neurológico), sobre todo si refiere cambios de temperatura, adormecimiento, parestesias o debilidad.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 197–198'
     },
     tests: [
@@ -984,8 +979,7 @@ export const hypotheses = {
     dosis: 'Primera luxación: tratamiento conservador solo si el riesgo de recidiva es bajo y no hay lesión condral u osteocondral (C); con el esqueleto inmaduro, hablar siempre de la cirugía con el paciente y la familia (C). Ninguna ortesis ha demostrado ser mejor que no llevarla; como mucho, una sin limitar el rango y muy poco tiempo en la fase aguda (B). Ejercicio guiado por fisioterapia como complemento necesario, con o sin cirugía (C): fuerza de cuádriceps y glúteos, movilidad, reeducación de la marcha, control neuromuscular funcional y entrenamiento específico del deporte. Tras el tratamiento conservador, al menos un 25 % vuelve a luxarse (hasta un 70 % en niños y adolescentes) (B). El consenso no fija volumen: queda a criterio del clínico.',
     dosisFuente: 'Balcarek 2025, Knee Surg Sports Traumatol Arthrosc 33(12):4197–4206 (consenso formal de la ESSKA, publicado en 2025, sobre la primera luxación de rótula, parte 2; letra = grado: B presunción científica, C bajo nivel científico)',
     pronostico: {
-      horizonte: 'La entrevista y la exploración completas bastan para el diagnóstico. La imagen sirve para identificar factores predisponentes (ángulo Q aumentado, rótula alta, tróclea displásica) o para descartar fracturas y lesiones osteocondrales; el ligamento femororrotuliano medial se ve en RM.',
-      derivacion: 'La displasia troclear dificulta la contención de la rótula; laxitud ligamentosa y desequilibrio de tejidos blandos alteran la línea de tracción. Con el ligamento femororrotuliano medial dañado, la cintilla iliotibial tiende a llevar la rótula hacia lateral en la flexión.',
+      notas: 'La entrevista y la exploración completas bastan para el diagnóstico. La imagen sirve para identificar factores predisponentes (ángulo Q aumentado, rótula alta, tróclea displásica) o para descartar fracturas y lesiones osteocondrales; el ligamento femororrotuliano medial se ve en la RM. La displasia troclear dificulta la contención de la rótula, y la laxitud ligamentosa y el desequilibrio de los tejidos blandos alteran su línea de tracción. Con el ligamento femororrotuliano medial dañado, la cintilla iliotibial tiende a llevar la rótula hacia lateral en la flexión.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 195–196'
     },
     tests: [
@@ -1001,7 +995,7 @@ export const hypotheses = {
     prom: 'KOOS',
     dosis: '',
     pronostico: {
-      horizonte: 'RM: edema, sangrado y fibrosis en el cuerpo graso en fases iniciales; en casos avanzados, metaplasia osteocondral en radiografía o TC.',
+      notas: 'RM: edema, sangrado y fibrosis en el cuerpo graso en las fases iniciales; en los casos avanzados, metaplasia osteocondral en la radiografía o la TC.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 202–203'
     },
     tests: [
@@ -1016,7 +1010,7 @@ export const hypotheses = {
     prom: 'KOOS',
     dosis: '',
     pronostico: {
-      horizonte: 'El diagnóstico clínico suele bastar. Para diferenciar séptica de aséptica o descartar otras condiciones: la analítica y la aspiración del líquido muestran leucocitos, PCR y VSG elevados en la séptica; la ecografía permite ver la bursa y los tejidos blandos de alrededor.',
+      notas: 'El diagnóstico clínico suele bastar. Para diferenciar una bursitis séptica de una aséptica o descartar otras condiciones: la analítica y la aspiración del líquido muestran leucocitos, PCR y VSG elevados en la séptica; la ecografía permite ver la bursa y los tejidos blandos de alrededor.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 203–205'
     },
     tests: [
@@ -1032,8 +1026,8 @@ export const hypotheses = {
     dosis: 'Solo Osgood-Schlatter: el estudio excluyó el Sinding-Larsen-Johansson. Semanas 0–4: dejar el deporte y las actividades que reproducen el dolor; isométrico de cuádriceps contra la pared 10 × 30 s al día con cada pierna, y puente con los dos pies 3 × 10 cada 2 días. Desde la semana 5, cada 2 días: (1) sentadilla apoyado en la pared, 5 repeticiones manteniendo hasta 20 s, y una repetición más por sesión hasta 10; (2) sentadilla de 3 s bajando, 10 s mantenida y 3 s subiendo, añadiendo series hasta 4 × 10; (3) añadir zancadas. En paralelo, escalera de 11 escalones de actividad (caminar o bici suave → caminar rápido o bici media → carrera lenta → escaleras → carrera media → skipping → saltos → carrera rápida, giros y saltos → calentamiento + media sesión → calentamiento + sesión → partido): subir un escalón solo con dolor ≤2/10 durante la actividad y a la mañana siguiente, y bajar uno si empeora; la sentadilla (nivel 2) sin pasar de 2/10 antes del escalón 3; vuelta completa tras 2 semanas de entrenamiento completo sin dolor. 4 visitas en 12 semanas, con los padres. Resultados: 80 % con éxito a las 12 semanas y 90 % al año; vuelta al deporte del 16 % a las 12 semanas y del 69 % al año.',
     dosisFuente: 'Rathleff 2020, Orthop J Sports Med 8(4):2325967120911106 (serie de casos, n = 51, 10–14 años, sin grupo control: nivel de evidencia 4; pauta de su apéndice 1)',
     pronostico: {
-      horizonte: 'La exploración suele bastar; radiografía si hace falta, y ayuda a descartar fractura aguda y tumor.',
-      derivacion: 'El Sinding-Larsen-Johansson es generalmente autolimitado. Entrenar en otras modalidades o en piscina reduce intensidad y duración.',
+      horizonte: 'En el Osgood-Schlatter, entrenar en otras modalidades o en piscina reduce la intensidad y la duración de los síntomas. El Sinding-Larsen-Johansson suele ser autolimitado.',
+      notas: 'La exploración suele bastar; la radiografía, si hace falta, ayuda a descartar una fractura aguda o un tumor.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 200–201'
     },
     tests: [
@@ -1071,8 +1065,7 @@ export const hypotheses = {
     prom: 'KOOS',
     dosis: '',
     pronostico: {
-      horizonte: 'Radiografía de rodilla en AP y lateral para valorar la patología articular. TC si la radiografía no aclara el diagnóstico.',
-      derivacion: 'La articulación puede ser continua con la tibiofemoral: una presión elevada afecta a las dos. Entre sus causas, además de artrosis e inestabilidad, hay otras condiciones patológicas graves.',
+      notas: 'Radiografía de rodilla anteroposterior y lateral para valorar la patología articular, y TC si la radiografía no aclara el diagnóstico. La articulación puede ser continua con la tibiofemoral: una presión elevada afecta a las dos. Entre sus causas, además de la artrosis y la inestabilidad, hay otras condiciones patológicas graves.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 216–217'
     },
     tests: [
@@ -1088,8 +1081,8 @@ export const hypotheses = {
     prom: 'KOOS',
     dosis: '',
     pronostico: {
-      horizonte: 'Conducción nerviosa y EMG confirman el diagnóstico y ayudan a establecer el pronóstico. Ecografía útil por lo superficial del nervio.',
-      derivacion: 'Neurapraxia: pronóstico excelente. Axonotmesis: recuperación parcial o completa. Neurotmesis: mínima. A partir de 4 semanas de compresión aparecen inflamación y cicatriz que enlentecen más la conducción.',
+      horizonte: 'Neurapraxia: pronóstico excelente. Axonotmesis: recuperación parcial o completa. Neurotmesis: recuperación mínima. A partir de 4 semanas de compresión aparecen inflamación y cicatriz, que enlentecen aún más la conducción.',
+      notas: 'La conducción nerviosa y el EMG confirman el diagnóstico y ayudan a establecer el pronóstico. La ecografía es útil porque el nervio es superficial.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), p. 218'
     },
     tests: [
@@ -1107,8 +1100,8 @@ export const hypotheses = {
     prom: 'KOOS',
     dosis: '',
     pronostico: {
-      horizonte: 'RM de referencia; ecografía como primera opción, sobre todo para diferenciarlo de una TVP. Se encuentra en el 38 % de las RM de rodillas sintomáticas.',
-      derivacion: 'El 94 % en adultos se asocia a un trastorno intraarticular: no es un diagnóstico de exclusión. Ante duda con tromboflebitis, derivar.',
+      notas: 'La RM es la prueba de referencia; la ecografía, la primera opción, sobre todo para diferenciarlo de una TVP. Se encuentra en el 38 % de las RM de rodillas con síntomas. En adultos, el 94 % se asocia a un trastorno intraarticular: no es un diagnóstico de exclusión.',
+      derivacion: 'hay duda con una tromboflebitis.',
       fuente: 'Lluch 2020, cap. 4.2 (Courtney, Grindstaff, Hensley y Jayaseelan), pp. 223–224'
     },
     tests: [
