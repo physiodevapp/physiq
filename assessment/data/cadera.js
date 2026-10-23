@@ -1044,8 +1044,7 @@ export const hypotheses = {
     dosis: 'Educación junto con ejercicio o terapia manual: modificar la actividad, hacer ejercicio, apoyar la pérdida de peso si hay sobrepeso, enseñar formas de descargar la articulación y entrenamiento del afrontamiento del dolor por internet (B). Ejercicio individualizado, que puede incluir ejercicio acuático, para mejorar movilidad, fuerza, función y dolor: de 1 a 5 sesiones por semana de 30–120 min durante 5–16 semanas (A); NICE: ofrecer a todos ejercicio terapéutico adaptado (fuerza local y forma aeróbica general) y considerar sesiones supervisadas. Avisar de que al empezar el dolor puede aumentar y de que la constancia es lo que trae el beneficio. Entrenamiento funcional, de marcha y de equilibrio, con bastón u otra ayuda si hace falta (C). Con sobrepeso, colaborar con medicina o nutrición (B): cualquier pérdida ayuda, y un 10 % es mejor que un 5 %. Terapia manual con movilización articular o de tejidos blandos, incluidas la distracción longitudinal de cadera con fuerza alta o baja y la movilización con movimiento, en la artrosis leve o moderada con déficit de movilidad, flexibilidad o dolor (A), adaptando la técnica y la fuerza a la morfología de la cadera y a la irritabilidad (F); 1–3 veces por semana durante 6–12 semanas y siempre junto al ejercicio: NICE solo pide considerarla junto al ejercicio y nunca sola. Ortesis, no como primera opción (F). Punción seca: la guía APTA de 2025 la recomienda en los puntos gatillo de psoas ilíaco, recto femoral, tensor de la fascia lata y glúteos medio y menor en la artrosis de grados II–III, con mejoría a corto plazo (una sesión semanal durante 3 semanas) (A); NICE no la ofrece, igual que la acupuntura. No ofrecer electroterapia (TENS, ultrasonidos, interferenciales, láser, onda corta, electroestimulación), según NICE; la guía APTA deja el ultrasonido solo como opción en decisión compartida, avisando de que la evidencia es contradictoria (D).',
     dosisFuente: 'Koc 2025, J Orthop Sports Phys Ther 55(11):CPG1–CPG31 (guía de práctica clínica APTA, revisión de 2025; letra = grado de la recomendación, tal como la da la guía) · NICE NG226 (rec. 1.3.1–1.3.11; donde chocan, se dan las dos posturas)',
     pronostico: {
-      horizonte: 'Radiografía: pinzamiento del espacio articular u osteofitos.',
-      derivacion: 'Considerarla siempre en mayores de 50, también en deportistas. La sensibilización central se ha estudiado sobre todo aquí y hace los síntomas vagos.',
+      notas: 'En la radiografía se ve pinzamiento del espacio articular u osteofitos. En deportistas mayores, sobre todo de más de 50 años, hay que considerarla siempre. La sensibilización central se ha estudiado sobre todo en la artrosis de cadera, y hace que los síntomas sean vagos.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 135 y 138; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 164'
     },
     tests: [
@@ -1066,8 +1065,7 @@ export const hypotheses = {
     dosis: 'Abordaje multimodal (B): modificar la actividad y fortalecer la musculatura propia de la cadera (psoas ilíaco, glúteo medio y mayor, rotadores internos y externos), el tronco (abdominales y paravertebrales) y el resto del miembro inferior, junto con terapia manual, corrección postural y del movimiento, estiramientos y equilibrio. Evitar los ejercicios que provoquen síntomas o que lleven a rangos que reproduzcan el pinzamiento. Educación para modificar los factores agravantes y manejar el dolor (C); entrenamiento del patrón de movimiento en las actividades que duelen (C); movilización articular si el dolor o la cápsula limitan la movilidad, y de tejidos blandos si lo hacen músculo y fascia (F); reeducación neuromuscular progresiva (F). La ortesis sola no se recomienda (D, evidencia contradictoria). Duración de al menos 3 meses; recomendar actividad física, incluido el deporte, y hablar de expectativas, decidir juntos y educar (consenso de Zúrich). En el ensayo FASHIoN, 6–10 contactos en 12–24 semanas; la artroscopia mejoró algo más a los 12 meses (6,8 puntos de iHOT-33). En el ensayo PhysioFIRST (n = 154, de 18 a 50 años), 6 meses de fisioterapia (los 3 primeros, 6 consultas quincenales y 12 sesiones de ejercicio supervisadas semanales, más 2 sesiones semanales por su cuenta; después, 3 consultas mensuales y gimnasio por su cuenta) mejoraron la calidad de vida de forma clínicamente relevante tanto con fortalecimiento dirigido como con estiramientos estandarizados (unos 20 puntos de iHOT-33, sin diferencia entre ellos); con el fortalecimiento mejoraron más la fuerza y el dolor percibido (72 % frente a 52 %). Ninguna fuente fija series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Enseki 2023, J Orthop Sports Phys Ther 53(7):CPG1–CPG70 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía) · consenso de Zúrich del IHiPRN (Kemp, Risberg, Mosler et al., Br J Sports Med 54:504–511) · Griffin 2018, Lancet 391:2225–2235 (ensayo aleatorizado UK FASHIoN, n = 348) · Kemp 2026, Br J Sports Med 60:951–961 (ensayo aleatorizado PhysioFIRST, n = 154, fortalecimiento dirigido frente a estiramientos)',
     pronostico: {
-      horizonte: 'Radiografía AP de pelvis + axial. CAM: ángulo alfa >55°. PINCER: sobrecobertura, signo del cruce. Artro-RM para labrum y cartílago.',
-      derivacion: 'CAM en asintomáticos: 54,8 % de deportistas y 23,1 % de población general. Sin dolor relacionado con el movimiento NO hay FAIS. CAM tiende a lesionar el cartílago; PINCER, el labrum.',
+      notas: 'Pruebas de imagen: radiografía anteroposterior de pelvis y proyección axial. CAM: ángulo alfa mayor de 55°. PINCER: sobrecobertura y signo del cruce. La artro-RM muestra el labrum y el cartílago. La morfología CAM aparece en personas sin síntomas: en el 54,8 % de los deportistas y en el 23,1 % de la población general. Sin dolor relacionado con el movimiento no hay FAIS. La CAM tiende a lesionar el cartílago, y la PINCER, el labrum.',
       fuente: 'Lluch 2020, cap. 4.1.1 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 125; cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 136; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 175–176'
     },
     tests: [
@@ -1086,8 +1084,8 @@ export const hypotheses = {
     dosis: 'El mismo abordaje multimodal que en el SIFA, que la guía recomienda en particular para el SIFA y las lesiones del labrum (B): modificar la actividad y fortalecer cadera (psoas ilíaco, glúteos, rotadores), tronco y miembro inferior, junto con terapia manual, corrección postural y del movimiento, estiramientos y equilibrio, evitando los ejercicios y rangos que provoquen síntomas. Educación sobre los factores agravantes y el dolor (C) y entrenamiento del patrón de movimiento (C). Al menos 3 meses (consenso de Zúrich). En adolescentes con rotura labral en la RM, el 73 % de los tratados solo con fisioterapia y modificación de la actividad alcanzó la mejoría mínima importante a los 3 años, igual que con infiltración o artroscopia (serie de casos). Ninguna fuente fija series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Enseki 2023, J Orthop Sports Phys Ther 53(7):CPG1–CPG70 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía; serie de Murtha citada en ella) · consenso de Zúrich del IHiPRN (Kemp, Risberg, Mosler et al., Br J Sports Med 54:504–511) · Kemp 2020, Br J Sports Med 54:1382–1394 (revisión sistemática)',
     pronostico: {
-      horizonte: 'Artro-RM (contraste necesario). Mayoría anterosuperiores. Diferenciar del surco sublabral, variante normal.',
-      derivacion: 'Más de dos tercios de los asintomáticos tienen hallazgos sugestivos, más aún los deportistas. La sinovitis mantenida puede favorecer la condropatía.',
+      horizonte: 'La sinovitis mantenida puede favorecer la condropatía.',
+      notas: 'Prueba de imagen: artro-RM (el contraste es necesario). La mayoría de los desgarros son anterosuperiores. Hay que diferenciarlos del surco sublabral, que es una variante normal. Más de dos tercios de las personas sin síntomas tienen hallazgos sugestivos en la imagen, y más aún los deportistas.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 137; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 176–177'
     },
     tests: [
@@ -1108,8 +1106,8 @@ export const hypotheses = {
     dosis: 'Educación sobre la carga del tendón más ejercicio, 14 sesiones individuales en 8 semanas (la primera de 60 min, las demás de 30). Educación: evitar posturas y movimientos que comprimen los tendones contra el trocánter (aducción mantenida; no estirar piriforme ni cintilla iliotibial, que la fuerzan) y progresar la carga poco a poco. En casa, 4–6 ejercicios diarios de 15–20 min. Semana 1: isométricos de abducción en supino y de pie (5–15 s), puente y sentadilla bilaterales (10 rep) y pasos laterales (10 por lado). Semana 2: se añaden puente y sentadilla cargando más una pierna (5 rep). Semanas 3–8: ejercicios a una pierna de algo duro a duro (5–10 rep, 2 series) y deslizamientos laterales con goma; en consulta, 2 veces por semana, abducción contra resistencia, lenta y pesada. Dolor: en el ejercicio funcional, que no aumente en el trocánter; en la fuerza lenta y pesada, hasta 5/10 si cede después y no empeora esa noche ni a la mañana siguiente. Éxito (mejoría moderada o mayor): 77 % a las 8 semanas, frente al 58 % con infiltración y el 29 % esperando; a las 52 semanas, 79 % frente a 58 % y 52 %.',
     dosisFuente: 'Mellor 2018, BMJ 361:k1662 (ensayo aleatorizado LEAP, n = 204, frente a infiltración de corticoide y a esperar) · Mellor 2016, BMC Musculoskelet Disord 17:196 (protocolo del ensayo, tabla 3: ejercicios y progresión)',
     pronostico: {
-      horizonte: 'RM: tendinopatía y roturas del glúteo menor al medio, líquido en las bolsas. Atrofia grasa (grados I–III): factor pronóstico importante.',
-      derivacion: 'Diferencial: cadera en resorte externa, labrum (dolor lateral en el 59 %), meralgia y neuropatía iliohipogástrica.',
+      horizonte: 'La atrofia grasa (grados I–III) es un factor pronóstico importante.',
+      notas: 'En la RM, el espectro va de la tendinopatía a distintos grados de rotura: los desgarros suelen empezar en el glúteo menor y extenderse hacia atrás al glúteo medio, con líquido en las bolsas. Diagnóstico diferencial: cadera en resorte externa, desgarro del labrum (dolor lateral en el 59 %), meralgia parestésica y neuropatía del iliohipogástrico.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 134, 137 y 142; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 179'
     },
     tests: [
@@ -1198,8 +1196,8 @@ export const hypotheses = {
     dosis: 'Lesión aguda de aductores en deportistas: rehabilitación activa por criterios. Nueve ejercicios de ingle 3 veces por semana en días alternos (balanceos de pierna en abducción-aducción y en flexión-extensión, círculos de cadera de pie; aducción y flexión de cadera, rotación de tronco y arco de tensión con goma; coordinación a una pierna y aducción de Copenhague) y, en paralelo, carrera, sprint y cambios de dirección progresivos. Pasa al entrenamiento controlado en el campo cuando no duelen la palpación, la aducción isométrica máxima con la cadera abducida, el estiramiento pasivo máximo, la aducción con goma a 10 RM ni 10 repeticiones de Copenhague, y el sprint y las pruebas de agilidad al 100 %. Plazos (mediana): RM grado 0–2, sin dolor a los 13 días y entrenamiento completo a los 18; grado 3, a los 55 y 78 días. Recaídas al año: 5 % si se alcanzó el criterio sin dolor, frente al 21 %. Series y cargas, en un apéndice no consultado. Cohorte sin grupo control, solo varones y solo aductor: para los flexores no hay pauta.',
     dosisFuente: 'Serner 2020, Orthop J Sports Med 8(1):2325967119897247 (cohorte prospectiva, n = 81 varones de 18 a 40 años, sin grupo control)',
     pronostico: {
-      horizonte: 'Ecografía o RM. En los aductores la exploración localiza la lesión con exactitud >90 %; en los flexores (psoas ilíaco, recto femoral, sartorio), poco mejor que lanzar una moneda, y la imagen puede infradiagnosticar.',
-      derivacion: 'Alrededor del 40 % de las lesiones de ingle en el fútbol. Las de aductores, sobre todo el aductor largo, son unos 2/3; siguen recto femoral, psoas ilíaco, sartorio y abdominales. El aductor largo y el recto femoral pueden llegar a la rotura tendinosa proximal o a la avulsión. Vuelta al deporte con déficit de fuerza <10–20 %.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo.',
+      notas: 'Pruebas de imagen: ecografía o RM. En los aductores, la exploración localiza la lesión con una exactitud mayor del 90 %; en los flexores (psoas ilíaco, recto femoral, sartorio), poco mejor que lanzar una moneda, y la imagen puede infradiagnosticarla. Las lesiones agudas son alrededor del 40 % de las lesiones de ingle en el fútbol. Las de los aductores, sobre todo del aductor largo, son unas dos terceras partes; les siguen las del recto femoral, el psoas ilíaco, el sartorio y los abdominales. El aductor largo y el recto femoral pueden llegar a la rotura tendinosa proximal o a la avulsión.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 140; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 168, 170 y 173'
     },
     tests: [
@@ -1215,8 +1213,8 @@ export const hypotheses = {
     dosis: 'Precaución principal: evitar los ejercicios y actividades que provoquen síntomas o que carguen en exceso las estructuras capsuloligamentosas (al revés que en el SIFA, donde lo que se evita son los rangos de pinzamiento). No hay evidencia de tratamiento conservador específico: en la displasia, la guía pide basar el tratamiento en la exploración y los déficits funcionales. Por extrapolación del abordaje multimodal que la guía recomienda para el SIFA y el labrum (B): modificar la actividad, fortalecer cadera, tronco y miembro inferior, reeducación neuromuscular progresiva (F), entrenamiento del patrón de movimiento (C) y educación. Ninguna fuente fija series ni repeticiones: el volumen queda a criterio del clínico.',
     dosisFuente: 'Enseki 2023, J Orthop Sports Phys Ther 53(7):CPG1–CPG70 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía; la precaución está en su descripción de la intervención multimodal)',
     pronostico: {
-      horizonte: 'Artro-RM. Los test de confirmación se basan en estudios únicos.',
-      derivacion: 'La inestabilidad puede conducir a degeneración condral.',
+      horizonte: 'La inestabilidad puede llevar a una degeneración del cartílago.',
+      notas: 'Prueba de imagen: artro-RM. Los tests de confirmación se basan en estudios únicos.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 137; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 163; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 175'
     },
     tests: [
@@ -1231,8 +1229,8 @@ export const hypotheses = {
     prom: 'HOS o iHOT-12',
     dosis: '',
     pronostico: {
-      horizonte: 'Difícil de ver: cartílago fino y profundo. La artro-TC lo muestra mejor. Delaminación asociada a FAIS.',
-      derivacion: 'Posible estadio inicial de la artrosis precoz.',
+      horizonte: 'Puede ser el estadio inicial de una artrosis precoz.',
+      notas: 'Es difícil de ver en la imagen, porque el cartílago de la cadera es fino y profundo; la artro-TC lo muestra mejor. La delaminación del cartílago se asocia al FAIS.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 137; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 175 y 177'
     },
     tests: [
@@ -1248,8 +1246,7 @@ export const hypotheses = {
     prom: 'HOS o iHOT-12',
     dosis: '',
     pronostico: {
-      horizonte: 'EMG y conducción nerviosa: baja S y E en esta región. Alivio con bloqueo diagnóstico.',
-      derivacion: 'Sospecha por patrón clínico, exploración neurológica y neurodinámicos. Considerar siempre atrapamientos lumbares.',
+      notas: 'En esta región, la EMG y los estudios de conducción nerviosa tienen baja sensibilidad y especificidad. La sospecha se basa en el patrón clínico, la exploración neurológica, los tests neurodinámicos y el alivio del dolor con un bloqueo nervioso diagnóstico. Considerar siempre los atrapamientos nerviosos de origen lumbar.',
       fuente: 'Lluch 2020, cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 172'
     },
     tests: [
@@ -1281,8 +1278,9 @@ export const hypotheses = {
     dosis: 'Deportistas con dolor inguinal de larga evolución relacionado con el aductor. Entrenamiento activo 3 veces por semana (unos 90 min, en grupos de 2–4) durante 8–12 semanas, sin deporte mientras dure (bici si no duele; trote en llano pasadas las 6 primeras semanas si no provoca dolor); se termina cuando ni el tratamiento ni el trote duelen. Los días intermedios, el módulo I en casa. Módulo I (semanas 1–2): aducción isométrica en supino contra un balón entre los pies y entre las rodillas, 10 × 30 s cada una; abdominales rectos y oblicuos 5 × 10; abdominal con flexión de cadera y balón entre las rodillas («navaja») 5 × 10; plato de equilibrio 5 min; tabla de deslizamiento a una pierna, pies paralelos y a 90°, 5 × 1 min por pierna y posición. Módulo II (desde la 3.ª semana, dos vueltas por sesión): abducción y aducción en decúbito lateral 5 × 10; extensión lumbar en prono 5 × 10; abducción y aducción de pie a una pierna con peso o polea 5 × 10; abdominales 5 × 10; «esquí de fondo» a una pierna 5 × 10; desplazamiento lateral en tabla basculante 5 min; plato de equilibrio 5 min; patinaje en tabla de deslizamiento 5 × 1 min. Sin estirar los aductores. Resultado: 23 de 34 volvieron al deporte sin dolor frente a 4 con tratamiento pasivo (OR 12,7; IC 95 % 3,4–47,2).',
     dosisFuente: 'Hölmich 1999, Lancet 353:439–443 (ensayo aleatorizado, n = 68 varones de 18 a 50 años, frente a fisioterapia pasiva)',
     pronostico: {
-      horizonte: 'Ecografía o RM (planos axiales oblicuos para la inserción): edema óseo en la sínfisis, signo de la hendidura secundaria.',
-      derivacion: 'AINE y reposo reducen el dolor, pero suele volver al retomar el deporte. La debilidad de cadera aumenta el riesgo: vuelta al deporte con déficit de fuerza <10–20 %.',
+      horizonte: 'Con AINE y reposo el dolor se reduce, pero suele volver al retomar el deporte.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo, porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
+      notas: 'Pruebas de imagen: ecografía o RM. En la RM, con cortes axiales oblicuos para ver la inserción del aductor, suele haber edema óseo en la sínfisis y puede verse el signo de la hendidura secundaria.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 138–139; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 173; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 177'
     },
     tests: [
@@ -1297,8 +1295,9 @@ export const hypotheses = {
     dosis: 'Sin cirugía previa (deportistas y casos idiopáticos): fisioterapia con estiramiento del psoas ilíaco, fortalecimiento de rotadores de cadera y musculatura pélvica, control motor y modificación de la actividad, con éxito del 77–100 % en series pequeñas. Tras una prótesis de cadera funciona bastante menos (16–50 %) y el resultado depende sobre todo de la posición del implante. Sin ensayos aleatorizados ni volumen definido: queda a criterio del clínico.',
     dosisFuente: 'Vandeputte 2026, J Clin Med 15(15):5912 (revisión sistemática; tratamiento conservador solo en series de casos y cohortes, calidad baja a moderada)',
     pronostico: {
-      horizonte: 'Ecografía. La vaina sinovial del tendón del psoas comunica con la articulación en el 5 % de la población y puede inflamarse: líquido alrededor del tendón en ecografía o RM.',
-      derivacion: 'AINE y reposo reducen el dolor, pero suele volver al retomar el deporte. La debilidad de cadera aumenta el riesgo: vuelta al deporte con déficit de fuerza <10–20 %.',
+      horizonte: 'Con AINE y reposo el dolor se reduce, pero suele volver al retomar el deporte.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo, porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
+      notas: 'Prueba de imagen: ecografía. La vaina sinovial del tendón del psoas comunica con la articulación de la cadera en el 5 % de la población y puede inflamarse: se ve líquido alrededor del tendón en la ecografía o la RM.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 138–139; cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 145; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 173; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 177'
     },
     tests: [
@@ -1313,8 +1312,9 @@ export const hypotheses = {
     prom: 'HOS o iHOT-12',
     dosis: '',
     pronostico: {
-      horizonte: 'Ecografía. Explorar de pie y con tos: una hernia palpable excluye este diagnóstico.',
-      derivacion: 'AINE y reposo reducen el dolor, pero suele volver al retomar el deporte. La debilidad de cadera aumenta el riesgo: vuelta al deporte con déficit de fuerza <10–20 %.',
+      horizonte: 'Con AINE y reposo el dolor se reduce, pero suele volver al retomar el deporte.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo, porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
+      notas: 'Prueba de imagen: ecografía. Explorar de pie y con tos: una hernia inguinal palpable excluye este diagnóstico.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 138–139; cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 145; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 164 y 173'
     },
     tests: [
@@ -1331,8 +1331,9 @@ export const hypotheses = {
     dosis: 'Programa en 3 fases (osteítis de pubis en futbolistas). Días 1–28: sin deporte; fisioterapia de 90 min al menos 3 veces por semana (activación linfática, liberación lumbar y de cadera, puntos gatillo, técnicas miofasciales, relajación de aductores y abdomen, movilización de pelvis, cadera, columna lumbar y sacro). Días 29–56: bicicleta, natación, patinaje y estiramientos suaves, sin arrancadas ni frenadas. Desde el día 56: propiocepción, cambios de ritmo suaves, excéntricos de tronco, estiramientos y entrenamiento específico progresivo, y vuelta al equipo solo sin dolor; la fisioterapia sigue en paralelo durante 1 año. Nada de abdominales con máquinas. Con dolor: un día sin actividad, dos días a menor intensidad y al cuarto, la intensidad de antes. Con el programa, 42 de 44 volvieron a jugar antes de 4 meses; solo con reposo tardaron 240 días y la mitad recayó, aunque ese grupo no se asignó al azar. Las ondas de choque (3 sesiones semanales de 1500 impulsos sobre la sínfisis) adelantaron el regreso (73 frente a 103 días). Es un solo estudio, en varones futbolistas aficionados con osteítis de pubis en la RM.',
     dosisFuente: 'Schöberl 2017, Knee Surg Sports Traumatol Arthrosc 25(6):1958–66 (ensayo aleatorizado de ondas de choque frente a simuladas, n = 44, ambos con el programa; grupo de solo reposo no aleatorizado, n = 51; leído entero: programa p. 3, fig. 3, resultados pp. 4–5)',
     pronostico: {
-      horizonte: 'Ecografía o RM (planos axiales oblicuos para la inserción): edema óseo en la sínfisis, signo de la hendidura secundaria.',
-      derivacion: 'AINE y reposo reducen el dolor, pero suele volver al retomar el deporte. La debilidad de cadera aumenta el riesgo: vuelta al deporte con déficit de fuerza <10–20 %.',
+      horizonte: 'Con AINE y reposo el dolor se reduce, pero suele volver al retomar el deporte.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo, porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
+      notas: 'Pruebas de imagen: ecografía o RM. En la RM, edema óseo en la sínfisis.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 138–139; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 173; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 177'
     },
     tests: [
