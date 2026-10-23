@@ -513,7 +513,10 @@ export function bloquesAmpliados(a, { urgente = false, conAudio = false } = {}) 
       // El horizonte del pronóstico ya no se envía: aun marcado como contexto,
       // el informe lo convertía en plan («ecografía para descartar bursitis»,
       // «para valorar líquido alrededor del tendón del psoas»). «Cuándo
-      // reconsiderar» sí, marcado (vuelta al deporte con déficit <10–20 %).
+      // reconsiderar» sí, marcado (vuelta al deporte con déficit <10–20 %), y el
+      // seguimiento (qué medir y cada cuánto: va al SEGUIMIENTO del informe).
+      // «A tener en cuenta» (notas) no, como el horizonte.
+      p.pronostico?.seguimiento ? `    · Seguimiento sugerido (contexto para el fisioterapeuta): ${p.pronostico.seguimiento}` : '',
       p.pronostico?.derivacion ? `    · Cuándo reconsiderar o derivar (contexto para el fisioterapeuta: no es plan ni explicación al paciente): ${p.pronostico.derivacion}` : '',
       p.prom ? `    · Escala recomendada para el seguimiento: ${p.prom}` : '',
     ].filter(Boolean).join('\n')).join('\n')}`);

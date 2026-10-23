@@ -423,6 +423,7 @@ export function textoPlanMes(plan, e, frecuencia = 'A') {
     out.push('', 'PRONÓSTICO Y CUÁNDO RECONSIDERAR');
     plan.mes.pronostico.forEach(pr => {
       if (pr.horizonte) out.push(linea(`${pr.name}: ${pr.horizonte}`));
+      if (pr.seguimiento) out.push(linea(`Seguimiento: ${pr.seguimiento}`));
       if (pr.derivacion) out.push(linea(`Reconsiderar o derivar si: ${pr.derivacion}`));
     });
   }

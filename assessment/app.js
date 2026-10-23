@@ -4154,7 +4154,9 @@ function buildResults() {
         ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;" data-ia-ctx="${attrIA(ctxPronostico(hyp.region, hyp.name))}" data-ia-tipo="practica">
           <summary style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase;">🧭 Pronóstico y derivación</summary>
           ${hyp.pronostico.horizonte ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${citasEnTexto(hyp.pronostico.horizonte)}${iaParrafoHTML()}</div>` : ''}
-          ${hyp.pronostico.derivacion ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${citasEnTexto(hyp.pronostico.derivacion)}${iaParrafoHTML()}</div>` : ''}
+          ${hyp.pronostico.seguimiento ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Seguimiento:</strong> ${citasEnTexto(hyp.pronostico.seguimiento)}${iaParrafoHTML()}</div>` : ''}
+          ${hyp.pronostico.notas ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>A tener en cuenta:</strong> ${citasEnTexto(hyp.pronostico.notas)}${iaParrafoHTML()}</div>` : ''}
+          ${hyp.pronostico.derivacion ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Reconsiderar o derivar si:</strong> ${citasEnTexto(hyp.pronostico.derivacion)}${iaParrafoHTML()}</div>` : ''}
           ${hyp.pronostico.fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(hyp.pronostico.fuente)}</div>` : ''}
         </details>` : ''}
       </div>`;

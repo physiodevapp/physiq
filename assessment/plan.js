@@ -308,7 +308,7 @@ function pintarPlan() {
     <div class="plan-sub">Progresión</div>${lista(plan.mes.progresion, 'progresión')}
     <div class="plan-sub">Seguir o cambiar</div>${lista(plan.mes.reglas, 'seguir o cambiar el tratamiento')}
     ${plan.mes.pronostico.length ? `<div class="plan-sub">Pronóstico y cuándo reconsiderar</div>${lista(plan.mes.pronostico.flatMap(p => [
-      p.horizonte ? `${p.name}: ${p.horizonte}` : '', p.derivacion ? `Reconsiderar o derivar si: ${p.derivacion}` : '',
+      p.horizonte ? `${p.name}: ${p.horizonte}` : '', p.seguimiento ? `Seguimiento: ${p.seguimiento}` : '', p.derivacion ? `Reconsiderar o derivar si: ${p.derivacion}` : '',
     ].filter(Boolean)), 'pronóstico y cuándo reconsiderar')}` : ''}
     <details class="plan-registro"><summary>Hoja de registro de cada sesión</summary>${lista(plan.registro, 'hoja de registro de cada sesión')}
       <div class="test-source">${citasHTML(plan.fuenteRegistro)}</div></details>

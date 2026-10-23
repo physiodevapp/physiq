@@ -935,8 +935,9 @@ export const hypotheses = {
     dosis: 'Ejercicio de carga del tendón (excéntrico, concéntrico, isométrico, isotónico o pliométrico), con la carga más alta que se tolere, como primera línea si no se presume fragilidad estructural del tendón (A); al menos 3 veces por semana a la intensidad más alta tolerada (E). Educación (enfoque de ciencia del dolor o patoanatómico) junto al ejercicio, presencial o por telesalud (B). No indicar reposo completo: seguir con las actividades dentro de la tolerancia al dolor (B). No usar láser de baja intensidad (C) ni ultrasonido como tratamiento aislado (C). El tipo de carga, la frecuencia (de 1 al día a 3 por semana), el número de sesiones y la duración (6 semanas a 6 meses) no parecen cambiar el resultado; mejoría esperable de 18–21 puntos en el VISA-A a las 12 semanas.',
     dosisFuente: 'Chimenti 2024, J Orthop Sports Phys Ther 54(12):CPG1–CPG32 (guía de práctica clínica APTA; letra = grado de la recomendación)',
     pronostico: {
-      horizonte: 'Diagnóstico clínico: la patología en imagen es frecuente sin síntomas; neovasos y calcificación no son diagnósticos.',
-      derivacion: 'VISA-A mes a mes; entre medias, dolor y rigidez matutinos y EVA en saltos. La bursa retrocalcánea no se trata aislada de la insercional. Dolor nocturno → otro diagnóstico.',
+      seguimiento: 'VISA-A una vez al mes. Entre medias, en cada sesión: dolor y rigidez al levantarse por la mañana y dolor (EVA) al hacer saltos.',
+      notas: 'El diagnóstico es clínico: los cambios del tendón en imagen son frecuentes en personas sin síntomas, y ni los neovasos ni la calcificación confirman el diagnóstico.',
+      derivacion: 'hay dolor nocturno, que apunta a otro diagnóstico.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 242 y 244'
     },
     tests: [
@@ -952,8 +953,9 @@ export const hypotheses = {
     dosis: 'Excéntrico de gemelo sin dorsiflexión: de pie y con la rodilla extendida, subir de puntillas con la pierna sana, pasar todo el peso a la afectada y bajar despacio el talón solo hasta el nivel del suelo, nunca por debajo (sin carga en dorsiflexión). 3 × 15, dos veces al día, 7 días por semana, 12 semanas. El ejercicio debe doler algo: si deja de doler, añadir peso en una mochila. Si es bilateral, volver a la posición de inicio empujándose con las dos piernas de pie sobre un cajón o un escalón, para evitar la fase concéntrica. Avisar de que las 2 primeras semanas pueden doler más el gemelo y la inserción. Desde la 6.ª semana, vuelta lenta a la actividad previa. Resultado: 18 de 27 pacientes (67 %) satisfechos y de vuelta a su actividad (seguimiento medio de 4 meses); en ellos, el dolor en carga bajó de 70 a 21 (EVA 0–100). Los otros 9 bajaron solo de 78 a 58 y no volvieron a su actividad. Un ensayo posterior respalda el principio de no cargar en dorsiflexión: en 42 deportistas con tendinopatía insercional, la rehabilitación que limita la dorsiflexión (ejercicios sin llegar a la flexión dorsal máxima, masaje del gemelo en lugar de estiramiento y alzas de 12 mm) mejoró el VISA-A 12,9 puntos más (IC 95 % 6,2–19,6) a las 12 semanas y 10,4 (3,7–17,1) a las 24 que el mismo programa en dorsiflexión completa con estiramientos (Pringels 2025).',
     dosisFuente: 'Jonsson 2008, Br J Sports Med 42:746–749 (estudio piloto sin grupo control, n = 27, 34 tendones, edad media 53 años; diagnóstico clínico con alteración en la ecografía) · Pringels 2025, Br J Sports Med 59(9):640–50 (ensayo aleatorizado, n = 42)',
     pronostico: {
-      horizonte: 'Diagnóstico clínico: la patología en imagen es frecuente sin síntomas; neovasos y calcificación no son diagnósticos.',
-      derivacion: 'VISA-A mes a mes; entre medias, dolor y rigidez matutinos y EVA en saltos. La bursa retrocalcánea no se trata aislada de la insercional. Dolor nocturno → otro diagnóstico.',
+      seguimiento: 'VISA-A una vez al mes. Entre medias, en cada sesión: dolor y rigidez al levantarse por la mañana y dolor (EVA) al hacer saltos.',
+      notas: 'El diagnóstico es clínico: los cambios del tendón en imagen son frecuentes en personas sin síntomas, y ni los neovasos ni la calcificación confirman el diagnóstico. La bursa retrocalcánea no se trata por separado de la tendinopatía insercional.',
+      derivacion: 'hay dolor nocturno, que apunta a otro diagnóstico.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 242 y 244'
     },
     tests: [
@@ -969,8 +971,9 @@ export const hypotheses = {
     prom: 'VISA-A',
     dosis: '',
     pronostico: {
-      horizonte: 'Diagnóstico clínico: la patología en imagen es frecuente sin síntomas; neovasos y calcificación no son diagnósticos.',
-      derivacion: 'VISA-A mes a mes; entre medias, dolor y rigidez matutinos y EVA en saltos. La bursa retrocalcánea no se trata aislada de la insercional. Dolor nocturno → otro diagnóstico.',
+      seguimiento: 'VISA-A una vez al mes. Entre medias, en cada sesión: dolor y rigidez al levantarse por la mañana y dolor (EVA) al hacer saltos.',
+      notas: 'El diagnóstico es clínico: los cambios del tendón en imagen son frecuentes en personas sin síntomas, y ni los neovasos ni la calcificación confirman el diagnóstico.',
+      derivacion: 'hay dolor nocturno, que apunta a otro diagnóstico.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 242 y 244'
     },
     tests: [
@@ -985,8 +988,9 @@ export const hypotheses = {
     prom: 'VISA-A',
     dosis: '',
     pronostico: {
-      horizonte: 'Diagnóstico clínico: la patología en imagen es frecuente sin síntomas; neovasos y calcificación no son diagnósticos.',
-      derivacion: 'VISA-A mes a mes; entre medias, dolor y rigidez matutinos y EVA en saltos. La bursa retrocalcánea no se trata aislada de la insercional. Dolor nocturno → otro diagnóstico.',
+      seguimiento: 'VISA-A una vez al mes. Entre medias, en cada sesión: dolor y rigidez al levantarse por la mañana y dolor (EVA) al hacer saltos.',
+      notas: 'El diagnóstico es clínico: los cambios del tendón en imagen son frecuentes en personas sin síntomas, y ni los neovasos ni la calcificación confirman el diagnóstico.',
+      derivacion: 'hay dolor nocturno, que apunta a otro diagnóstico.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 242 y 244'
     },
     tests: [
