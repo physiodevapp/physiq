@@ -43,6 +43,38 @@ export function problemasBloque(b) {
   return p;
 }
 
+// Bloque de la guía que enlaza el bloque «Educación» de la fase 6 (decisión 5
+// de docs/efectos-ejercicio.md): irritabilidad alta → hipoalgesia (ejercicio a
+// distancia, brotes); baja o moderada → carga y adaptación del tejido. Sin nivel
+// se toma el mismo que usa el plan (alta, la opción prudente). Solo devuelve un
+// bloque ya escrito: si no lo está, no hay enlace. Solo lectura: nunca cambia el plan.
+export function bloqueEjercicioParaIrritabilidad(irritabilidad) {
+  const id = irritabilidad === 'baja' || irritabilidad === 'moderada' ? 'mecanotransduccion' : 'hipoalgesia';
+  return bloquesConContenido().find(b => b.id === id) || null;
+}
+
+// El otro bloque de los dos que enlaza la fase 6: la regla ordena, no esconde contenido
+// (con irritabilidad alta la carga sigue importando, p. ej. en una tendinopatía).
+export function bloqueEjercicioAlternativo(irritabilidad) {
+  const b = bloqueEjercicioParaIrritabilidad(irritabilidad);
+  const id = b?.id === 'mecanotransduccion' ? 'hipoalgesia' : 'mecanotransduccion';
+  return bloquesConContenido().find(x => x.id === id) || null;
+}
+
+// El enlace pintado en el bloque «Educación» de la fase 6 ('' si no hay bloque)
+export function enlaceEjercicioHTML(irritabilidad) {
+  const b = bloqueEjercicioParaIrritabilidad(irritabilidad);
+  if (!b) return '';
+  const T = TEXTOS_EJERCICIO;
+  const otro = bloqueEjercicioAlternativo(irritabilidad);
+  const otroHTML = otro
+    ? `\n      <button type="button" class="plan-enlace plan-enlace-otro" data-bloque-alternativo="${esc(otro.id)}" onclick="abrirEjercicio({ bloque: '${esc(otro.id)}' })">${esc(T.enlaceEducacionOtro.replace('{titulo}', otro.titulo))}</button>` : '';
+  return `<div class="plan-ejercicio" data-bloque-ejercicio="${esc(b.id)}">
+      <button type="button" class="plan-enlace" onclick="abrirEjercicio({ bloque: '${esc(b.id)}' })">${esc(T.enlaceEducacion)}</button>
+      <span class="plan-ayuda">${esc(T.enlaceEducacionAyuda.replace('{titulo}', b.titulo))}</span>${otroHTML}
+    </div>`;
+}
+
 export function nivelHTML(nivel) {
   const n = NIVELES_EJERCICIO[nivel];
   return n ? ` <button type="button" class="ej-nivel ej-nivel-${nivel}" data-nivel="${nivel}" aria-expanded="false">${esc(n.corto)}</button>` : '';

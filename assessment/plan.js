@@ -24,6 +24,7 @@ import { acActivo } from './lib/anticoagulado.js';
 import { familiasPaciente, FAMILIA_AC } from './lib/farmacos-paciente.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
+import { enlaceEjercicioHTML } from './lib/ejercicio.js';
 import { iaParrafoHTML, atributosIA, ctxPlan, ctxPauta } from './ampliar-ia.js';
 import {
   saveSession, showConfirmBanner, getUrgenciasActivas, getCirugiaPayload, compartirTexto, cerrarMenuCompartir, partirPrimeraFrase,
@@ -278,7 +279,7 @@ function pintarPlan() {
         <div class="plan-bloque-cab"><span class="plan-bloque-min">${b.minutos} min</span> ${esc(b.titulo)}
           <label class="plan-duracion"><input type="number" inputmode="numeric" min="0" max="${MINUTOS_SESION}" value="${b.duracion}" aria-label="Minutos de ${esc(b.titulo)}" onchange="planDuracion('${b.id}', this.value)"> min</label></div>
         ${b.id === 'reevaluacion' ? lista(s.reevaluacion.map(conSignoAparte), b.titulo) : ''}
-        ${b.id === 'educacion' ? lista(s.educacion, b.titulo) : ''}
+        ${b.id === 'educacion' ? lista(s.educacion, b.titulo) + enlaceEjercicioHTML(plan.irritabilidad) : ''}
         ${b.id === 'intervencion' ? s.intervencion.map(h => `<div class="plan-int-hip">${esc(h.name)}</div>${h.sinPauta
           ? '<div class="exercise-box"><em>Pauta a criterio del fisioterapeuta: no hay una pauta con fuente para esta hipótesis.</em></div>'
           : pautaHTML(h.pauta, h.pautaFuente, h.posq ? null : ctxPauta(state.region, h.name))}`).join('') + lista([{ texto: `Terapia manual: nivel ${nivel} (arriba).`, sinIA: true }, ...s.cantidad], b.titulo) : ''}

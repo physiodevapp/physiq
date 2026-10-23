@@ -149,4 +149,8 @@ export const TEXTOS_EJERCICIO = {
   pendientesTitulo: 'Pendientes de fuentes revisadas',
   pendientesNota: 'Se escriben de uno en uno, solo con fuentes leídas por completo.',
   pie: 'Contenido de apoyo para el fisioterapeuta. No se guarda ni se comparte con el informe.',
+  // Enlace del bloque «Educación» de la fase 6 (docs/efectos-ejercicio.md, decisión 5)
+  enlaceEducacion: 'Para explicárselo al paciente →',
+  enlaceEducacionOtro: 'También: «{titulo}» →',
+  enlaceEducacionAyuda: 'Abre «{titulo}», el bloque que corresponde a la irritabilidad elegida.',
 };

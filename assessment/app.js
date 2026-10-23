@@ -5594,10 +5594,16 @@ document.addEventListener('click', e => {
 // llega la evidencia (data/ejercicio.js, lib/ejercicio.js). No lee ni guarda
 // datos del paciente. Mismo patrón que la guía de fármacos.
 let _ejercicioHistorial = false;
-function abrirEjercicio() {
+// `bloque` (opcional): abre la guía ya en ese bloque (el enlace «Para explicárselo
+// al paciente →» de la fase 6, docs/efectos-ejercicio.md); una clave que no es
+// de un bloque escrito no hace nada.
+function abrirEjercicio(opts) {
   const overlay = document.getElementById('ejercicioOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
   document.getElementById('ejercicioCuerpo').innerHTML = ejercicioHTML();
+  const bloque = typeof opts?.bloque === 'string'
+    ? [...document.querySelectorAll('#ejercicioCuerpo [data-bloque]')].find(d => d.dataset.bloque === opts.bloque) : null;
+  if (bloque) bloque.open = true;
   overlay.classList.add('open');
   document.getElementById('ejercicioBtn')?.setAttribute('aria-expanded', 'true');
   lockBodyScroll();
@@ -5608,6 +5614,7 @@ function abrirEjercicio() {
   }
   const panel = document.getElementById('ejercicioPanel');
   panel.scrollTop = 0;
+  if (bloque) panel.scrollTop = bloque.getBoundingClientRect().top - panel.getBoundingClientRect().top - 8;
   panel.focus({ preventScroll: true });
 }
 
