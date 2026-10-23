@@ -1,6 +1,6 @@
-// ─── AMPLIAR CON IA (fases 2, 4 y 4b) ───────────────────────────
-// Desde el texto de un «¿Por qué?» (fase 2: preguntas de cribado; 4: pasos del árbol CIF; 4b: tests)
-// o del panel «Ampliar →», el clínico abre una conversación en una IA de
+// ─── AMPLIAR CON IA (fases 2, 4, 4b y 5) ────────────────────────
+// Desde el texto de un «¿Por qué?» (fase 2: preguntas de cribado; 4: pasos del árbol CIF; 4b: tests),
+// del panel «Ampliar →» o de la pauta y el pronóstico de la fase 5, el clínico abre una conversación en una IA de
 // búsqueda (Perplexity o Google en modo IA, gratis y sin cuenta; o Claude, con
 // cuenta gratuita) para que le explique ese fragmento con más detalle. Dos entradas:
 //   · seleccionar texto → botón flotante «✨ Ampliar en … ↗» bajo la selección
@@ -11,10 +11,11 @@
 // uno; la elección se recuerda en localStorage (preferencia de pantalla por
 // dispositivo, como el tema; no es un dato clínico).
 //
-// Solo sale el texto del razonamiento (contenido genérico de data/) y el
-// contexto de dónde está (pregunta o test, región): nunca datos del paciente.
-// Solo se activa dentro de un contenedor con `data-ia-ctx`, que solo llevan
-// los bloques de razonamiento. Consulta externa: PhysiQ no revisa la
+// Solo sale el texto del razonamiento, la pauta o el pronóstico (contenido
+// genérico de data/) y el contexto de dónde está (pregunta, test o hipótesis,
+// región): nunca datos del paciente. Solo se activa dentro de un contenedor
+// con `data-ia-ctx`, que solo llevan esos bloques (en la fase 5, nunca la
+// hipótesis posquirúrgica ni las notas del paciente). Consulta externa: PhysiQ no revisa la
 // respuesta. No se usa dentro del hub (initAmpliarIA() no hace nada en un
 // iframe y CSS oculta los enlaces).
 //
@@ -84,6 +85,18 @@ export function ctxFarmaco(familia) {
   return `la familia de fármacos «${_sinEtiquetas(familia)}» (lo que debe vigilar el fisioterapeuta)`;
 }
 
+// Fase 5: la pauta y el pronóstico de una hipótesis del árbol (de data/).
+// `situacion`: el título de la rama de una pauta partida (lib/pauta.js).
+export function ctxPauta(region, hipotesis, situacion) {
+  const reg = _region(region);
+  const sit = situacion ? `, situación «${_sinEtiquetas(situacion)}»` : '';
+  return `la pauta de tratamiento para la hipótesis «${_sinEtiquetas(hipotesis)}»${sit}${reg ? ` (${reg})` : ''}`;
+}
+export function ctxPronostico(region, hipotesis) {
+  const reg = _region(region);
+  return `el pronóstico y los criterios de derivación de la hipótesis «${_sinEtiquetas(hipotesis)}»${reg ? ` (${reg})` : ''}`;
+}
+
 export function ctxEjercicio(bloque) {
   return `los efectos fisiológicos del ejercicio: «${_sinEtiquetas(bloque)}» (hasta dónde llega la evidencia)`;
 }
@@ -98,8 +111,13 @@ export function recortarTextoIA(texto) {
   return `${(esp > MAX_TEXTO_IA * 0.6 ? corte.slice(0, esp) : corte).replace(/[\s,;:.]+$/, '')}…`;
 }
 
-export function promptIA({ contexto, texto }) {
+// `tipo: 'plan'` (pauta y pronóstico de la fase 5, `data-ia-tipo="plan"`): la
+// duda suele ser qué quiere decir en la práctica, no solo la fisiología.
+export function promptIA({ contexto, texto, tipo }) {
   const sobre = contexto ? ` sobre ${contexto}` : '';
+  if (tipo === 'plan') {
+    return `Soy fisioterapeuta. Explícame con más detalle este fragmento${sobre}: «${recortarTextoIA(texto)}». Qué quiere decir en la práctica clínica, cómo se aplica y en qué evidencia y fisiología se apoya. ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
+  }
   return `Soy fisioterapeuta. Explícame con más detalle, desde la fisiología y la fisiopatología, este fragmento${sobre}: «${recortarTextoIA(texto)}». ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
 }
 
@@ -144,14 +162,16 @@ export function urlIA(destino, prompt) {
 }
 
 // Enlace al final de un párrafo de razonamiento (el párrafo entero). Su texto
-// sale del <p> que lo contiene, o del bloque .razon-fisio (pasos numerados).
+// sale del <p> que lo contiene, del bloque .razon-fisio (pasos numerados) o
+// del elemento con `data-ia-parrafo` (fase 5: la pauta entera, también la
+// primera frase que queda en el <summary> al plegarla).
 export function iaParrafoHTML() {
   return ` <span class="ia-parrafo"><a class="ia-parrafo-ir" href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer">✨ IA ↗</a><button type="button" class="ia-elegir" aria-haspopup="menu" aria-label="Elegir la IA">▾</button></span>`;
 }
 
 // Texto legible de un nodo o fragmento: sin las etiquetas («Por qué»), los
 // enlaces ni la metáfora divulgativa; un espacio entre párrafos y pasos.
-const EXCLUIR = '.razon-etq, .ia-parrafo, .razon-ampliar, .razon-enlace, .razon-metafora';
+const EXCLUIR = '.razon-etq, .ia-parrafo, .razon-ampliar, .razon-enlace, .razon-metafora, .pauta-det-mas, .pauta-det-menos, .ia-excluir';
 export function textoDe(nodo) {
   const c = nodo.cloneNode(true);
   c.querySelectorAll?.(EXCLUIR).forEach(e => e.remove());
@@ -170,10 +190,10 @@ const _el = n => (n?.nodeType === 1 ? n : n?.parentElement) || null;
 const _contenedor = n => _el(n)?.closest('[data-ia-ctx]') || null;
 
 function _objetivoParrafo(enlace) {
-  const fuente = enlace.closest('p, .razon-fisio');
+  const fuente = enlace.closest('p, .razon-fisio, [data-ia-parrafo]');
   const cont = _contenedor(enlace);
   if (!fuente || !cont) return null;
-  return { contexto: cont.dataset.iaCtx, texto: textoDe(fuente) };
+  return { contexto: cont.dataset.iaCtx, tipo: cont.dataset.iaTipo, texto: textoDe(fuente) };
 }
 
 function _pintarBarra() {
@@ -254,7 +274,7 @@ function _evaluarSeleccion() {
   const texto = cont ? textoDe(rango.cloneContents()) : '';
   if (!cont || texto.length < 3) { _ocultarBarra(); return; }
   clearTimeout(_tOcultar);
-  _objetivo = { contexto: cont.dataset.iaCtx, texto };
+  _objetivo = { contexto: cont.dataset.iaCtx, tipo: cont.dataset.iaTipo, texto };
   // Selección fuera de la franja visible (scroll): la barra se esconde sin
   // perder la selección y vuelve al volver a verla. Antes se quedaba clavada
   // arriba, encima de la cabecera, lejos del texto.
@@ -301,7 +321,7 @@ const _HTML_MENU = () => `
     <span class="ia-menu-nombre">${d.nombre}<span class="ia-menu-check" aria-hidden="true">✓</span></span>
     <span class="ia-menu-desc">${d.ventaja}</span>
   </a>`).join('')}
-  <div class="ia-menu-nota">${NOTA_CUENTAS} Solo se envía el texto del «¿Por qué?», nunca datos del paciente. Consulta externa: PhysiQ no revisa la respuesta.</div>`;
+  <div class="ia-menu-nota">${NOTA_CUENTAS} Solo se envía el texto del «¿Por qué?», la pauta o el pronóstico, nunca datos del paciente. Consulta externa: PhysiQ no revisa la respuesta.</div>`;
 
 export function initAmpliarIA() {
   if (window.self !== window.top || _barra || !document.body) return;

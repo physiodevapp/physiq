@@ -58,7 +58,7 @@ import { TEXTOS_FARMACOS_PACIENTE } from './data/farmacos-paciente.js';
 import { CONDICIONES } from './data/condiciones.js';
 import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML, filasPaciente, FILTRO_PACIENTE } from './lib/tejidos.js';
 import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
-import { initAmpliarIA, iaParrafoHTML, ctxCribado, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, TIPOS_PREGUNTA, TIPO_PREGUNTA_DEFECTO, urlIA } from './ampliar-ia.js';
+import { initAmpliarIA, iaParrafoHTML, ctxCribado, ctxPauta, ctxPronostico, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, TIPOS_PREGUNTA, TIPO_PREGUNTA_DEFECTO, urlIA } from './ampliar-ia.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
 // Reference-counted: several overlays (confirm-banner, session panel,
@@ -3854,13 +3854,18 @@ function partirPrimeraFrase(texto) {
   return { primera: t, resto: '' };
 }
 
-function _pautaPlegableHTML(dosis, fuente) {
+// `ctx`: contexto de «✨ IA» (ampliar-ia.js, ctxPauta): la pauta es texto de
+// data/, así que puede salir entera, también la primera frase del <summary>.
+// El «✨ IA» va al final del texto desplegado (un enlace dentro del <summary>
+// competiría con abrir y cerrar).
+function _pautaPlegableHTML(dosis, fuente, ctx) {
   const { primera, resto } = partirPrimeraFrase(dosis);
-  const fuenteHTML = fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
-  if (!resto) return `<div class="exercise-box">${citasEnTexto(dosis)}</div>${fuenteHTML}`;
-  return `<details class="pauta-det">
+  const ia = `data-ia-ctx="${attrIA(ctx)}" data-ia-tipo="plan" data-ia-parrafo`;
+  const fuenteHTML = fuente ? `<div class="test-source ia-excluir" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
+  if (!resto) return `<div class="exercise-box" ${ia}>${citasEnTexto(dosis)}${iaParrafoHTML()}</div>${fuenteHTML}`;
+  return `<details class="pauta-det" ${ia}>
     <summary class="exercise-box"><span class="pauta-det-primera">${citasEnTexto(primera)}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
-    <div class="pauta-det-resto">${citasEnTexto(resto)}</div>
+    <div class="pauta-det-resto">${citasEnTexto(resto)}${iaParrafoHTML()}</div>
     ${fuenteHTML}
     <button type="button" class="pauta-det-menos" onclick="const d=this.closest('details'); d.open=false; d.scrollIntoView({block:'nearest'})">Ocultar pauta ▴</button>
   </details>`;
@@ -3871,13 +3876,13 @@ function _pautaPlegableHTML(dosis, fuente) {
 // que encaje (o sin ramas), la pauta entera como siempre.
 function _pautaConRamasHTML(hyp) {
   const r = ramaPauta(hyp, state);
-  if (!r) return _pautaPlegableHTML(hyp.dosis, hyp.dosisFuente);
+  if (!r) return _pautaPlegableHTML(hyp.dosis, hyp.dosisFuente, ctxPauta(hyp.region, hyp.name));
   const otras = r.otras.length
     ? `<details class="pauta-otras"><summary>Otras situaciones (${r.otras.length})</summary>
-        ${r.otras.map(o => `<div class="pauta-otra"><div class="pauta-rama-tit">${o.titulo}</div>${citasEnTexto(o.texto)}</div>`).join('')}
+        ${r.otras.map(o => `<div class="pauta-otra" data-ia-ctx="${attrIA(ctxPauta(hyp.region, hyp.name, o.titulo))}" data-ia-tipo="plan"><div class="pauta-rama-tit">${o.titulo}</div><div data-ia-parrafo>${citasEnTexto(o.texto)}${iaParrafoHTML()}</div></div>`).join('')}
       </details>`
     : '';
-  return `<div class="pauta-rama-tit">Para este caso: ${r.rama.titulo}</div>${_pautaPlegableHTML(r.texto, hyp.dosisFuente)}${otras}`;
+  return `<div class="pauta-rama-tit">Para este caso: ${r.rama.titulo}</div>${_pautaPlegableHTML(r.texto, hyp.dosisFuente, ctxPauta(hyp.region, hyp.name, r.rama.titulo))}${otras}`;
 }
 
 // Cabecera de una tarjeta de hipótesis de la fase 5, en dos filas: punto +
@@ -4138,10 +4143,10 @@ function buildResults() {
           ${cq && !tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR ? `<div class="nota-posq" style="margin-top:6px;">🏥 ${TEXTO_PAUTA_COMPATIBLE}</div>` : ''}
           ${SACROILIACAS_EM.includes(hyp.id) && emActivo(state.embarazo) && !tratada ? `<div class="nota-posq em-sacroiliaca" style="margin-top:6px;">${state.embarazo.estado === 'embarazada' ? '🤰' : '🤱'} ${citasEnTexto(EM.textos.sacroiliaca)}</div>` : ''}
         </div>
-        ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;">
+        ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;" data-ia-ctx="${attrIA(ctxPronostico(hyp.region, hyp.name))}" data-ia-tipo="plan">
           <summary style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase;">🧭 Pronóstico y derivación</summary>
-          ${hyp.pronostico.horizonte ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${citasEnTexto(hyp.pronostico.horizonte)}</div>` : ''}
-          ${hyp.pronostico.derivacion ? `<div style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${citasEnTexto(hyp.pronostico.derivacion)}</div>` : ''}
+          ${hyp.pronostico.horizonte ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${citasEnTexto(hyp.pronostico.horizonte)}${iaParrafoHTML()}</div>` : ''}
+          ${hyp.pronostico.derivacion ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${citasEnTexto(hyp.pronostico.derivacion)}${iaParrafoHTML()}</div>` : ''}
           ${hyp.pronostico.fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(hyp.pronostico.fuente)}</div>` : ''}
         </details>` : ''}
       </div>`;
