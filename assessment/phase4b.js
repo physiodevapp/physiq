@@ -9,7 +9,7 @@ import {
   ETIQUETA_TRATADA, ETIQUETA_HIP_POSQ, ID_HIP_POSQ, esPosquirurgico, hipotesisConPosq,
   nombreHipPosq, cirugiaPayload, pautaHipPosq,
 } from './lib/posquirurgico.js';
-import { iaParrafoHTML, ctxTest, attrIA } from './ampliar-ia.js';
+import { iaParrafoHTML, ctxTest, attrIA, atributosIA } from './ampliar-ia.js';
 import { ESTRUCTURAS, KENHUB_BASE, KENHUB_BASE_ES } from './data/anatomia.js';
 import { citasHTML, citasEnTexto, partirCitas, registroReferencias, enlaceCita } from './lib/citas.js';
 import { HM, hmActiva } from './lib/hipermovilidad.js';
@@ -370,7 +370,7 @@ export function buildTestItem(hId, test, idx) {
     ${test.laxitud && hmActiva(state.hipermovilidad) ? `<div class="hm-aviso-test">🧬 ${HM.textos.laxitud}</div>` : ''}
     ${test.cargaOsea && opActivo(state.osteoporosis) ? avisoCargaOseaHTML(test) : ''}
     ${test.gaenslen && emPosparto(state.embarazo) ? `<div class="hm-aviso-test em-aviso-test">🤱 ${citasEnTexto(lineaGaenslen(state.embarazo))}</div>` : ''}
-    <div class="test-criterion">${citasEnTexto(test.criterio)}</div>
+    ${test.criterio ? `<div class="test-criterion" ${atributosIA(ctxTest(hyp?.region, test.name, hyp?.name))} data-ia-parrafo>${citasEnTexto(test.criterio)}${iaParrafoHTML()}</div>` : ''}
     ${porque}
     ${fuente}
     ${anatomiaLineaHTML(test)}

@@ -58,7 +58,7 @@ import { TEXTOS_FARMACOS_PACIENTE } from './data/farmacos-paciente.js';
 import { CONDICIONES } from './data/condiciones.js';
 import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML, filasPaciente, FILTRO_PACIENTE } from './lib/tejidos.js';
 import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
-import { initAmpliarIA, iaParrafoHTML, ctxCribado, ctxPauta, ctxPronostico, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, TIPOS_PREGUNTA, TIPO_PREGUNTA_DEFECTO, urlIA } from './ampliar-ia.js';
+import { initAmpliarIA, iaParrafoHTML, ctxCribado, ctxPauta, ctxPronostico, ctxCondicion, ctxIrritabilidad, atributosIA, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, TIPOS_PREGUNTA, TIPO_PREGUNTA_DEFECTO, urlIA } from './ampliar-ia.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
 // Reference-counted: several overlays (confirm-banner, session panel,
@@ -1352,6 +1352,15 @@ function _pintarHMBloques() {
 }
 
 // Recuadro de la fase 5 (docs/hipermovilidad.md): nunca se pliega.
+// Líneas de recomendación de un recuadro de condición especial de la fase 5,
+// cada una con su «✨ IA» (ampliar-ia.js). Son texto de data/; la cabecera
+// del recuadro, con los datos de este paciente, queda fuera del contenedor.
+function _lineasCondicionHTML(lineas, condicion, clase = () => '') {
+  return `<div ${atributosIA(ctxCondicion(state.region, condicion))}>${lineas.map(t =>
+    `<div data-ia-parrafo${clase(t) ? ` class="${clase(t)}"` : ''}>${citasEnTexto(t)}${iaParrafoHTML()}</div>`).join('')}</div>`;
+}
+const _sospechaDe = (d, nombre) => `${d.es === 'sospecha' ? 'sospecha de ' : ''}${nombre}`;
+
 function _hipermovilidadResultadosHTML(d) {
   const estado = d.es === 'diagnosticada'
     ? `Diagnosticada${d.st && d.st !== 'ns' ? ` · subtipo ${SUBTIPOS_HM[d.st].toLowerCase()}` : ''}`
@@ -1362,7 +1371,7 @@ function _hipermovilidadResultadosHTML(d) {
     <div class="alert alert-info hm-fase5" style="margin-bottom:1rem;">
       <span class="alert-icon">🧬</span>
       <div><strong>Hipermovilidad.</strong> ${estado}${datos ? ` · ${datos}` : ''}
-        ${lineasRecomendacionHM(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+        ${_lineasCondicionHTML(lineasRecomendacionHM(d), _sospechaDe(d, 'hipermovilidad articular'))}
       </div>
     </div>`;
 }
@@ -1705,7 +1714,7 @@ function _disautonomiaResultadosHTML(d) {
     <div class="alert alert-info ds-fase5" style="margin-bottom:1rem;">
       <span class="alert-icon">🫀</span>
       <div><strong>Disautonomía.</strong> ${estado}${prueba ? ` · ${prueba.replace(/^\S/, c => c.toUpperCase())}` : ''}
-        ${lineasRecomendacionDs(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+        ${_lineasCondicionHTML(lineasRecomendacionDs(d), _sospechaDe(d, 'disautonomía (POTS o hipotensión ortostática)'))}
       </div>
     </div>`;
 }
@@ -1814,8 +1823,7 @@ function _lupusResultadosHTML(d) {
     <div class="alert alert-info les-fase5" style="margin-bottom:1rem;">
       <span class="alert-icon">🦋</span>
       <div><strong>Lupus.</strong> ${ESTADOS_LES[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
-        ${lineasRecomendacionLES(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
-        ${_recordatorioOPLupus(d) ? `<div>${citasEnTexto(OP.textos.lupus)}</div>` : ''}
+        ${_lineasCondicionHTML([...lineasRecomendacionLES(d), ...(_recordatorioOPLupus(d) ? [OP.textos.lupus] : [])], _sospechaDe(d, 'lupus eritematoso sistémico'))}
       </div>
     </div>`;
 }
@@ -1905,7 +1913,7 @@ function _mastocitosResultadosHTML(d) {
     <div class="alert alert-info ma-fase5" style="margin-bottom:1rem;">
       <span class="alert-icon">💉</span>
       <div><strong>Trastorno mastocitario o anafilaxia.</strong> ${datosMA(d).join(' · ')}
-        ${lineasRecomendacionMA(d).map(t => `<div${t === MA.textos.queHacer ? ' class="ma-que-hacer"' : ''}>${citasEnTexto(t)}</div>`).join('')}
+        ${_lineasCondicionHTML(lineasRecomendacionMA(d), 'trastorno mastocitario o antecedente de anafilaxia', t => t === MA.textos.queHacer ? 'ma-que-hacer' : '')}
       </div>
     </div>`;
 }
@@ -1981,7 +1989,7 @@ function _anticoaguladoResultadosHTML(d) {
     <div class="alert alert-info ac-fase5" style="margin-bottom:1rem;">
       <span class="alert-icon">🩸</span>
       <div><strong>Anticoagulado o antiagregado.</strong> ${datosAC(d).join(' · ')}
-        ${lineasRecomendacionAC(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+        ${_lineasCondicionHTML(lineasRecomendacionAC(d), 'tratamiento anticoagulante o antiagregante')}
       </div>
     </div>`;
 }
@@ -2222,7 +2230,7 @@ function _osteoporosisResultadosHTML(d) {
     <div class="alert alert-info op-fase5" style="margin-bottom:1rem;">
       <span class="alert-icon">🦴</span>
       <div><strong>Osteoporosis o fragilidad ósea.</strong> ${ESTADOS_OP[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
-        ${lineasRecomendacionOP(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+        ${_lineasCondicionHTML(lineasRecomendacionOP(d), _sospechaDe(d, 'osteoporosis o fragilidad ósea'))}
       </div>
     </div>`;
 }
@@ -2418,7 +2426,7 @@ function _embarazoResultadosHTML(d) {
     <div class="alert alert-info em-fase5" style="margin-bottom:1rem;">
       <span class="alert-icon">${d.es === 'embarazada' ? '🤰' : '🤱'}</span>
       <div><strong>${d.es === 'embarazada' ? 'Embarazo' : 'Posparto'}.</strong>${datos.length ? ` ${datos.join(' · ')}` : ''}
-        ${lineasRecomendacionEM(d).map(t => `<div>${citasEnTexto(t)}</div>`).join('')}
+        ${_lineasCondicionHTML(lineasRecomendacionEM(d), d.es === 'embarazada' ? 'embarazo' : 'posparto')}
       </div>
     </div>`;
 }
@@ -3798,7 +3806,7 @@ function renderIrritabResumen(nivel, matriz = null) {
   const falta = !state.irritabilidadDirecta && matriz?.incompleta ? (matriz.sinCalma ? T.sinCalma : T.incompleta) : '';
   div.innerHTML = `<div class="alert alert-info" style="border-color:${color}33; background:${color}11;">
     <span class="alert-icon">${emoji}</span>
-    <span><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — ${citasEnTexto(textos.join(' '))}${falta ? `<br><em>${citasEnTexto(falta)}</em>` : ''}<br><span class="irritab-ayuda">${citasEnTexto(T.margen)}</span></span>
+    <span ${atributosIA(ctxIrritabilidad(state.region, nivel))}><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — <span data-ia-parrafo>${citasEnTexto(textos.join(' '))}${iaParrafoHTML()}</span>${falta ? `<br><em>${citasEnTexto(falta)}</em>` : ''}<br><span class="irritab-ayuda" data-ia-parrafo>${citasEnTexto(T.margen)}${iaParrafoHTML()}</span></span>
   </div>`;
 }
 
@@ -3860,7 +3868,7 @@ function partirPrimeraFrase(texto) {
 // competiría con abrir y cerrar).
 function _pautaPlegableHTML(dosis, fuente, ctx) {
   const { primera, resto } = partirPrimeraFrase(dosis);
-  const ia = `data-ia-ctx="${attrIA(ctx)}" data-ia-tipo="plan" data-ia-parrafo`;
+  const ia = `data-ia-ctx="${attrIA(ctx)}" data-ia-tipo="practica" data-ia-parrafo`;
   const fuenteHTML = fuente ? `<div class="test-source ia-excluir" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
   if (!resto) return `<div class="exercise-box" ${ia}>${citasEnTexto(dosis)}${iaParrafoHTML()}</div>${fuenteHTML}`;
   return `<details class="pauta-det" ${ia}>
@@ -3879,7 +3887,7 @@ function _pautaConRamasHTML(hyp) {
   if (!r) return _pautaPlegableHTML(hyp.dosis, hyp.dosisFuente, ctxPauta(hyp.region, hyp.name));
   const otras = r.otras.length
     ? `<details class="pauta-otras"><summary>Otras situaciones (${r.otras.length})</summary>
-        ${r.otras.map(o => `<div class="pauta-otra" data-ia-ctx="${attrIA(ctxPauta(hyp.region, hyp.name, o.titulo))}" data-ia-tipo="plan"><div class="pauta-rama-tit">${o.titulo}</div><div data-ia-parrafo>${citasEnTexto(o.texto)}${iaParrafoHTML()}</div></div>`).join('')}
+        ${r.otras.map(o => `<div class="pauta-otra" data-ia-ctx="${attrIA(ctxPauta(hyp.region, hyp.name, o.titulo))}" data-ia-tipo="practica"><div class="pauta-rama-tit">${o.titulo}</div><div data-ia-parrafo>${citasEnTexto(o.texto)}${iaParrafoHTML()}</div></div>`).join('')}
       </details>`
     : '';
   return `<div class="pauta-rama-tit">Para este caso: ${r.rama.titulo}</div>${_pautaPlegableHTML(r.texto, hyp.dosisFuente, ctxPauta(hyp.region, hyp.name, r.rama.titulo))}${otras}`;
@@ -4143,7 +4151,7 @@ function buildResults() {
           ${cq && !tratada && hyp.dosis && hyp.dosis !== DOSIS_DERIVAR ? `<div class="nota-posq" style="margin-top:6px;">🏥 ${TEXTO_PAUTA_COMPATIBLE}</div>` : ''}
           ${SACROILIACAS_EM.includes(hyp.id) && emActivo(state.embarazo) && !tratada ? `<div class="nota-posq em-sacroiliaca" style="margin-top:6px;">${state.embarazo.estado === 'embarazada' ? '🤰' : '🤱'} ${citasEnTexto(EM.textos.sacroiliaca)}</div>` : ''}
         </div>
-        ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;" data-ia-ctx="${attrIA(ctxPronostico(hyp.region, hyp.name))}" data-ia-tipo="plan">
+        ${hyp.pronostico ? `<details class="pronostico-det" style="margin-top:1rem;" data-ia-ctx="${attrIA(ctxPronostico(hyp.region, hyp.name))}" data-ia-tipo="practica">
           <summary style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:2px; text-transform:uppercase;">🧭 Pronóstico y derivación</summary>
           ${hyp.pronostico.horizonte ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6;">${citasEnTexto(hyp.pronostico.horizonte)}${iaParrafoHTML()}</div>` : ''}
           ${hyp.pronostico.derivacion ? `<div data-ia-parrafo style="font-size:0.8rem; color:var(--text2); line-height:1.6; margin-top:4px;"><strong>Derivar si:</strong> ${citasEnTexto(hyp.pronostico.derivacion)}${iaParrafoHTML()}</div>` : ''}

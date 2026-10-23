@@ -4,7 +4,7 @@
 // Nunca toca buildPhysiQPayload(), 📋 Notas ni 📄 Informe (decisión 9).
 import { state } from './state.js';
 import { DOSIS_DERIVAR, ZONAS_SINTOMA } from './data.js';
-import { REGIONES_PLAN, AVISOS, MINUTOS_SESION, TEXTO_NIVELES } from './data/plan-tratamiento.js';
+import { REGIONES_PLAN, AVISOS, MINUTOS_SESION, TEXTO_NIVELES, TEXTOS_SESION } from './data/plan-tratamiento.js';
 import {
   construirPlan, elegible, nivelEfectivo, hipotesisPorDefecto, frecuenciaPorDefecto, textoPlanSesion, textoPlanMes, textoDomiciliario, faltaEnCasa, textoPosq,
   NIVELES_GRAVEDAD, NIVELES_IRRITABILIDAD, NOMBRE_GRAVEDAD, NOMBRE_IRRITABILIDAD,
@@ -24,6 +24,7 @@ import { acActivo } from './lib/anticoagulado.js';
 import { familiasPaciente, FAMILIA_AC } from './lib/farmacos-paciente.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
+import { iaParrafoHTML, atributosIA, ctxPlan, ctxPauta } from './ampliar-ia.js';
 import {
   saveSession, showConfirmBanner, getUrgenciasActivas, getCirugiaPayload, compartirTexto, cerrarMenuCompartir, partirPrimeraFrase,
 } from './app.js';
@@ -156,17 +157,35 @@ function opcion(grupo, valor, texto, seleccionado, { deshabilitado = false, titu
     onclick="planElegir('${grupo}','${valor}')">${texto}</button>`;
 }
 
-function pautaHTML(texto, fuente) {
+// «✨ IA» (ampliar-ia.js) en los textos de data/ que se leen para entenderlos,
+// como en la fase 5. `ctx` null (la pauta de la hipótesis posquirúrgica, que
+// lleva las restricciones del paciente): sin «✨ IA».
+function pautaHTML(texto, fuente, ctx = null) {
   const { primera, resto } = partirPrimeraFrase(texto);
-  const f = fuente ? `<div class="test-source" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
-  if (!resto) return `<div class="exercise-box">${escC(texto)}</div>${f}`;
-  return `<details class="pauta-det">
+  const ia = ctx ? `${atributosIA(ctx)} data-ia-parrafo` : '';
+  const enlace = ctx ? iaParrafoHTML() : '';
+  const f = fuente ? `<div class="test-source ia-excluir" style="margin:4px 0 0;">${citasHTML(fuente)}</div>` : '';
+  if (!resto) return `<div class="exercise-box" ${ia}>${escC(texto)}${enlace}</div>${f}`;
+  return `<details class="pauta-det" ${ia}>
     <summary class="exercise-box"><span class="pauta-det-primera">${escC(primera)}</span><span class="pauta-det-mas">Ver pauta completa</span></summary>
-    <div class="pauta-det-resto">${escC(resto)}</div>${f}
+    <div class="pauta-det-resto">${escC(resto)}${enlace}</div>${f}
   </details>`;
 }
 
-const lista = items => `<ul class="plan-lista">${items.map(t => `<li>${escC(t)}</li>`).join('')}</ul>`;
+// `apartado` (título de data/): cada punto con su «✨ IA». Un punto puede ser
+// { texto, sinIA } (una indicación de pantalla, no texto clínico) o
+// { texto, paciente } (lo que sale de la valoración, en .ia-excluir).
+const lista = (items, apartado = '') => `<ul class="plan-lista"${apartado ? ` ${atributosIA(ctxPlan(state.region, apartado))}` : ''}>${items.map(it => {
+  const { texto, sinIA = false, paciente = '' } = typeof it === 'string' ? { texto: it } : it;
+  if (!apartado || sinIA) return `<li>${escC(texto)}</li>`;
+  return `<li data-ia-parrafo>${escC(texto)}${paciente ? ` <span class="ia-excluir">${esc(paciente)}</span>` : ''}${iaParrafoHTML()}</li>`;
+}).join('')}</ul>`;
+
+// La reevaluación lleva el signo comparable que escribió el fisioterapeuta
+// (lib/plan-tratamiento.js): fuera de lo que se envía a la IA.
+const conSignoAparte = t => t.startsWith(TEXTOS_SESION.reevaluacionBase) && t !== TEXTOS_SESION.reevaluacionBase
+  ? { texto: TEXTOS_SESION.reevaluacionBase, paciente: t.slice(TEXTOS_SESION.reevaluacionBase.length).trim() }
+  : t;
 
 // Tras cada repintado, la tarjeta de la IA se muestra u oculta y revisa si su
 // plan detallado sigue al día (plan-ia.js)
@@ -236,7 +255,7 @@ function pintarPlan() {
 
   <div class="card" id="planSesion">
     <div class="card-title">Sesión de 50 minutos <span class="plan-chip">Minutos orientativos</span></div>
-    ${plan.avisosHip.map(a => `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${escC(a)}</div></div>`).join('')}
+    ${plan.avisosHip.map(a => `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div ${atributosIA(ctxPlan(state.region, 'avisos para la sesión'))} data-ia-parrafo>${escC(a)}${iaParrafoHTML()}</div></div>`).join('')}
     <div class="option-group plan-niveles">
       ${['A', 'B', 'C'].map(k => {
         // A igual que B no se ofrece: elegirla no cambiaría nada
@@ -249,7 +268,7 @@ function pintarPlan() {
     ${nv.aIgual ? `<div class="plan-ayuda">${escC(TEXTO_NIVELES.aIgual)}</div>` : ''}
     <div class="plan-escalon">
       <div class="plan-escalon-tit">Nivel ${nivel} · ${esc(esc_.nombre)} <span class="plan-calc">(${esc(esc_.modo)})</span></div>
-      <div>${escC(esc_.texto)}</div>
+      <div ${atributosIA(ctxPlan(state.region, `terapia manual, ${esc_.nombre}`))} data-ia-parrafo>${escC(esc_.texto)}${iaParrafoHTML()}</div>
       <div class="test-source" style="margin:6px 0 0;">${citasHTML(esc_.citas)}</div>
       <div class="plan-ayuda" style="margin-top:6px;">${escC(AVISOS.soloTerapiaManual)}</div>
     </div>
@@ -258,13 +277,13 @@ function pintarPlan() {
       ${s.bloques.map(b => `<div class="plan-bloque">
         <div class="plan-bloque-cab"><span class="plan-bloque-min">${b.minutos} min</span> ${esc(b.titulo)}
           <label class="plan-duracion"><input type="number" inputmode="numeric" min="0" max="${MINUTOS_SESION}" value="${b.duracion}" aria-label="Minutos de ${esc(b.titulo)}" onchange="planDuracion('${b.id}', this.value)"> min</label></div>
-        ${b.id === 'reevaluacion' ? lista(s.reevaluacion) : ''}
-        ${b.id === 'educacion' ? lista(s.educacion) : ''}
+        ${b.id === 'reevaluacion' ? lista(s.reevaluacion.map(conSignoAparte), b.titulo) : ''}
+        ${b.id === 'educacion' ? lista(s.educacion, b.titulo) : ''}
         ${b.id === 'intervencion' ? s.intervencion.map(h => `<div class="plan-int-hip">${esc(h.name)}</div>${h.sinPauta
           ? '<div class="exercise-box"><em>Pauta a criterio del fisioterapeuta: no hay una pauta con fuente para esta hipótesis.</em></div>'
-          : pautaHTML(h.pauta, h.pautaFuente)}`).join('') + lista([`Terapia manual: nivel ${nivel} (arriba).`, ...s.cantidad]) : ''}
-        ${b.id === 'domiciliario' ? lista([s.domiciliario]) : ''}
-        ${b.id === 'cierre' ? lista(s.cierre) : ''}
+          : pautaHTML(h.pauta, h.pautaFuente, h.posq ? null : ctxPauta(state.region, h.name))}`).join('') + lista([{ texto: `Terapia manual: nivel ${nivel} (arriba).`, sinIA: true }, ...s.cantidad], b.titulo) : ''}
+        ${b.id === 'domiciliario' ? lista([s.domiciliario], b.titulo) : ''}
+        ${b.id === 'cierre' ? lista(s.cierre, b.titulo) : ''}
       </div>`).join('')}
     </div>
     <div class="plan-ayuda${s.cuadra ? '' : ' plan-ayuda-aviso'}" id="planTotalMin">${s.cuadra
@@ -281,16 +300,16 @@ function pintarPlan() {
     <div class="summary-row"><span class="summary-label">Reevaluación intermedia</span><span class="summary-value">${escC(mes.intermedia)}</span></div>
     <div class="summary-row"><span class="summary-label">Reevaluación final</span><span class="summary-value">${escC(mes.final)}${plan.mes.prom.length ? `, con ${esc(plan.mes.prom.join(' / '))}` : ''}</span></div>
     <div class="summary-row"><span class="summary-label">Programa domiciliario</span><span class="summary-value">${escC(mes.domiciliario)}</span></div>
-    <details class="plan-registro"><summary>Qué comparar en las reevaluaciones intermedia y final</summary>${lista(plan.mes.retrospectiva)}
+    <details class="plan-registro"><summary>Qué comparar en las reevaluaciones intermedia y final</summary>${lista(plan.mes.retrospectiva, 'qué comparar en las reevaluaciones intermedia y final')}
       <div class="test-source">${citasHTML(plan.mes.fuenteRetrospectiva)}</div></details>
-    ${lista([...mes.notas, ...plan.mes.notasPauta])}
+    ${lista([...mes.notas, ...plan.mes.notasPauta], `plan de un mes, ${mes.nombre || 'frecuencia elegida'}`)}
     ${plan.mes.posq ? `<div class="nota-posq">🏥 ${plan.mes.posq.semanas != null ? `Semana ${plan.mes.posq.semanas} tras la cirugía. ` : ''}${escC(textoPosq(plan.mes.posq.conProtocolo))}</div>` : ''}
-    <div class="plan-sub">Progresión</div>${lista(plan.mes.progresion)}
-    <div class="plan-sub">Seguir o cambiar</div>${lista(plan.mes.reglas)}
+    <div class="plan-sub">Progresión</div>${lista(plan.mes.progresion, 'progresión')}
+    <div class="plan-sub">Seguir o cambiar</div>${lista(plan.mes.reglas, 'seguir o cambiar el tratamiento')}
     ${plan.mes.pronostico.length ? `<div class="plan-sub">Pronóstico y cuándo reconsiderar</div>${lista(plan.mes.pronostico.flatMap(p => [
       p.horizonte ? `${p.name}: ${p.horizonte}` : '', p.derivacion ? `Reconsiderar o derivar si: ${p.derivacion}` : '',
-    ].filter(Boolean)))}` : ''}
-    <details class="plan-registro"><summary>Hoja de registro de cada sesión</summary>${lista(plan.registro)}
+    ].filter(Boolean)), 'pronóstico y cuándo reconsiderar')}` : ''}
+    <details class="plan-registro"><summary>Hoja de registro de cada sesión</summary>${lista(plan.registro, 'hoja de registro de cada sesión')}
       <div class="test-source">${citasHTML(plan.fuenteRegistro)}</div></details>
     <label class="plan-campo-et" for="planNotasMes">Tus notas para el mes</label>
     <textarea class="plan-note-input" id="planNotasMes" rows="3" oninput="planNota('mes', this.value)">${esc(pt.notas.mes)}</textarea>

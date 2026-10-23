@@ -1,6 +1,9 @@
-// ─── AMPLIAR CON IA (fases 2, 4, 4b y 5) ────────────────────────
+// ─── AMPLIAR CON IA (fases 2 a 6) ───────────────────────────────
 // Desde el texto de un «¿Por qué?» (fase 2: preguntas de cribado; 4: pasos del árbol CIF; 4b: tests),
-// del panel «Ampliar →» o de la pauta y el pronóstico de la fase 5, el clínico abre una conversación en una IA de
+// del panel «Ampliar →» o de los textos clínicos de data/ que se leen para
+// entenderlos (resumen de irritabilidad de la fase 3, criterio de los tests de
+// la 4b, pauta, pronóstico y recuadros de condiciones especiales de la fase 5,
+// plan de tratamiento de la fase 6), el clínico abre una conversación en una IA de
 // búsqueda (Perplexity o Google en modo IA, gratis y sin cuenta; o Claude, con
 // cuenta gratuita) para que le explique ese fragmento con más detalle. Dos entradas:
 //   · seleccionar texto → botón flotante «✨ Ampliar en … ↗» bajo la selección
@@ -11,11 +14,13 @@
 // uno; la elección se recuerda en localStorage (preferencia de pantalla por
 // dispositivo, como el tema; no es un dato clínico).
 //
-// Solo sale el texto del razonamiento, la pauta o el pronóstico (contenido
-// genérico de data/) y el contexto de dónde está (pregunta, test o hipótesis,
-// región): nunca datos del paciente. Solo se activa dentro de un contenedor
-// con `data-ia-ctx`, que solo llevan esos bloques (en la fase 5, nunca la
-// hipótesis posquirúrgica ni las notas del paciente). Consulta externa: PhysiQ no revisa la
+// Solo sale ese texto (contenido genérico de data/) y el contexto de dónde
+// está (pregunta, test, hipótesis o condición, región): nunca datos del
+// paciente. Solo se activa dentro de un contenedor con `data-ia-ctx`, que solo
+// llevan esos bloques (nunca la hipótesis posquirúrgica, las notas ni los
+// datos de la valoración). Lo que se pinta dentro de un contenedor pero sale
+// del paciente (el signo comparable en la fase 6) va en `.ia-excluir`: no
+// entra en el texto enviado y seleccionarlo no muestra la barra. Consulta externa: PhysiQ no revisa la
 // respuesta. No se usa dentro del hub (initAmpliarIA() no hace nada en un
 // iframe y CSS oculta los enlaces).
 //
@@ -97,11 +102,32 @@ export function ctxPronostico(region, hipotesis) {
   return `el pronóstico y los criterios de derivación de la hipótesis «${_sinEtiquetas(hipotesis)}»${reg ? ` (${reg})` : ''}`;
 }
 
+// Fase 6: un apartado del plan de tratamiento (título de data/)
+export function ctxPlan(region, apartado) {
+  const reg = _region(region);
+  return `el plan de tratamiento de fisioterapia, apartado «${_sinEtiquetas(apartado)}»${reg ? ` (${reg})` : ''}`;
+}
+
+// Fase 5: recomendaciones de una condición especial (nombre de data/)
+export function ctxCondicion(region, condicion) {
+  const reg = _region(region);
+  return `las recomendaciones de fisioterapia para un paciente con «${_sinEtiquetas(condicion)}»${reg ? ` (${reg})` : ''}`;
+}
+
+// Fase 3: el resumen del nivel de irritabilidad (Baja, Moderada, Alta)
+export function ctxIrritabilidad(region, nivel) {
+  const reg = _region(region);
+  return `la irritabilidad ${_sinEtiquetas(nivel).toLowerCase()} (modelo SINSS de Maitland) y cómo condiciona la dosis del tratamiento${reg ? ` (${reg})` : ''}`;
+}
+
 export function ctxEjercicio(bloque) {
   return `los efectos fisiológicos del ejercicio: «${_sinEtiquetas(bloque)}» (hasta dónde llega la evidencia)`;
 }
 
 export const attrIA = t => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+// Atributos de un contenedor de la fases 3 a 6 (enfoque práctico del prompt)
+export const atributosIA = ctx => `data-ia-ctx="${attrIA(ctx)}" data-ia-tipo="practica"`;
 
 export function recortarTextoIA(texto) {
   const t = String(texto ?? '').replace(/\s+/g, ' ').trim();
@@ -111,11 +137,11 @@ export function recortarTextoIA(texto) {
   return `${(esp > MAX_TEXTO_IA * 0.6 ? corte.slice(0, esp) : corte).replace(/[\s,;:.]+$/, '')}…`;
 }
 
-// `tipo: 'plan'` (pauta y pronóstico de la fase 5, `data-ia-tipo="plan"`): la
-// duda suele ser qué quiere decir en la práctica, no solo la fisiología.
+// `tipo: 'practica'` (`data-ia-tipo="practica"`: fases 3, 4b —el criterio—, 5
+// y 6): la duda suele ser qué quiere decir en la práctica, no solo la fisiología.
 export function promptIA({ contexto, texto, tipo }) {
   const sobre = contexto ? ` sobre ${contexto}` : '';
-  if (tipo === 'plan') {
+  if (tipo === 'practica') {
     return `Soy fisioterapeuta. Explícame con más detalle este fragmento${sobre}: «${recortarTextoIA(texto)}». Qué quiere decir en la práctica clínica, cómo se aplica y en qué evidencia y fisiología se apoya. ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
   }
   return `Soy fisioterapeuta. Explícame con más detalle, desde la fisiología y la fisiopatología, este fragmento${sobre}: «${recortarTextoIA(texto)}». ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
@@ -271,7 +297,10 @@ function _evaluarSeleccion() {
   }
   const rango = sel.getRangeAt(0);
   const cont = _contenedor(rango.commonAncestorContainer);
-  const texto = cont ? textoDe(rango.cloneContents()) : '';
+  // Toda la selección dentro de un .ia-excluir: el fragmento clonado ya no
+  // lleva la clase que lo quitaría, así que no se ofrece
+  const excluida = !!_el(rango.commonAncestorContainer)?.closest('.ia-excluir');
+  const texto = cont && !excluida ? textoDe(rango.cloneContents()) : '';
   if (!cont || texto.length < 3) { _ocultarBarra(); return; }
   clearTimeout(_tOcultar);
   _objetivo = { contexto: cont.dataset.iaCtx, tipo: cont.dataset.iaTipo, texto };
@@ -321,7 +350,7 @@ const _HTML_MENU = () => `
     <span class="ia-menu-nombre">${d.nombre}<span class="ia-menu-check" aria-hidden="true">✓</span></span>
     <span class="ia-menu-desc">${d.ventaja}</span>
   </a>`).join('')}
-  <div class="ia-menu-nota">${NOTA_CUENTAS} Solo se envía el texto del «¿Por qué?», la pauta o el pronóstico, nunca datos del paciente. Consulta externa: PhysiQ no revisa la respuesta.</div>`;
+  <div class="ia-menu-nota">${NOTA_CUENTAS} Solo se envía el texto clínico de PhysiQ (el «¿Por qué?», la pauta, el plan…), nunca datos del paciente. Consulta externa: PhysiQ no revisa la respuesta.</div>`;
 
 export function initAmpliarIA() {
   if (window.self !== window.top || _barra || !document.body) return;
