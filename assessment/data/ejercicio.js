@@ -48,7 +48,8 @@ export const APARTADOS_EJERCICIO = [
   { id: 'paciente', titulo: 'Para explicárselo al paciente' },
 ];
 
-// Los cinco bloques, en orden de trabajo. `resumen` es solo la pista de qué
+// Los bloques, en orden de trabajo (las mioquinas, previstas como bloque 4, van
+// dentro del antiinflamatorio: decisión 2 de docs/efectos-ejercicio.md). `resumen` es solo la pista de qué
 // cubrirá; no es contenido (cada frase saldrá de una fuente leída).
 export const BLOQUES_EJERCICIO = [
   // Hipoalgesia (2026-10): cuatro fuentes leídas enteras en PMC y dos PDF del
@@ -139,13 +140,17 @@ export const BLOQUES_EJERCICIO = [
   // 2011, Benatti y Pedersen 2015, Ho 2013); niveles en docs/efectos-ejercicio.md.
   // Ninguna fuente mide el efecto antiinflamatorio en el dolor musculoesquelético
   // común: la frase para el paciente se limita a las enfermedades reumáticas.
-  { id: 'antiinflamatorio', titulo: 'Efecto antiinflamatorio sistémico',
-    resumen: 'La IL-6 que libera el músculo al contraerse, su diferencia con la de la inflamación, y qué se sabe en dolor musculoesquelético',
+  // Mioquinas (2026-10): cinco fuentes más leídas enteras en PMC; todo es
+  // mecanismo o discutido, así que van aquí y no como bloque propio (decisión 2).
+  { id: 'antiinflamatorio', titulo: 'Efecto antiinflamatorio y mioquinas',
+    resumen: 'La IL-6 que libera el músculo al contraerse, la mioquina más estudiada; las demás mioquinas, con la irisina en discusión; y qué se sabe en dolor musculoesquelético',
     apartados: {
       que: [
-        { t: 'Al contraerse, el músculo libera interleucina 6 (IL-6) a la sangre. Sube de forma exponencial con la duración del ejercicio, su intensidad y la masa muscular que trabaja, hasta 100 veces con ejercicio prolongado, aunque lo habitual son subidas menores; sube más con poco glucógeno en el músculo y vuelve al nivel de reposo en torno a una hora después (Petersen y Pedersen 2005; Pedersen y Febbraio 2012; Gleeson 2011). Con ejercicio corto de intensidad baja o moderada apenas sube (Gleeson 2011).', nivel: 'mecanismo' },
+        { t: 'Al contraerse, el músculo libera a la sangre sustancias que actúan sobre otros órganos, las mioquinas. Se han descrito más de 650, pero solo se conoce la función de un 5 % aproximadamente, y la más estudiada es con diferencia la interleucina 6 (IL-6): casi todo lo demostrado en humanos sobre mioquinas es de la IL-6 (Severinsen y Pedersen 2020; Pedersen y Febbraio 2012).', nivel: 'mecanismo' },
+        { t: 'La IL-6 sube en sangre de forma exponencial con la duración del ejercicio, su intensidad y la masa muscular que trabaja, hasta 100 veces con ejercicio prolongado, aunque lo habitual son subidas menores; sube más con poco glucógeno en el músculo y vuelve al nivel de reposo en torno a una hora después (Petersen y Pedersen 2005; Pedersen y Febbraio 2012; Gleeson 2011). Con ejercicio corto de intensidad baja o moderada apenas sube (Gleeson 2011).', nivel: 'mecanismo' },
         { t: 'Esa IL-6 aparece sin daño muscular y sin que suba antes el TNF-α, y le siguen en sangre dos citocinas antiinflamatorias, la IL-1ra y la IL-10 (Pedersen y Febbraio 2012; Petersen y Pedersen 2005). En voluntarios sanos, tanto infundir IL-6 como 3 horas de bicicleta impidieron la subida de TNF-α que provoca una dosis baja de endotoxina; otra parte del mecanismo se ha visto solo en células y en ratones (Benatti y Pedersen 2015; Gleeson 2011).', nivel: 'mecanismo' },
         { t: 'Es la misma molécula que en otros contextos inflama: en la artritis reumatoide, una IL-6 alta de forma crónica contribuye a la enfermedad, y bloquearla mejora los síntomas (Benatti y Pedersen 2015). Por qué la IL-6 del músculo actúa de otra forma no está aclarado; se especula que depende de su vía de señalización (Nara y Watanabe 2021).', nivel: 'mecanismo' },
+        { t: 'De las demás mioquinas, lo que se sabe viene sobre todo de animales o de células: la IL-15, la miostatina o el LIF en el crecimiento del músculo, y otras en el hueso, la grasa o el cerebro (Severinsen y Pedersen 2020).', nivel: 'mecanismo' },
         { t: 'Para el ejercicio regular se proponen dos vías: menos grasa visceral, y por tanto menos citocinas del tejido adiposo, y un efecto antiinflamatorio en cada sesión. No se sabe cuánto pesa cada una; con ejercicio suave, como caminar rápido, lo más probable es que pese sobre todo el control de la grasa corporal (Gleeson 2011).', nivel: 'mecanismo' },
       ],
       evidencia: [
@@ -155,11 +160,15 @@ export const BLOQUES_EJERCICIO = [
         { t: 'Enfermedades reumáticas inflamatorias (artritis reumatoide, lupus, espondilitis anquilosante, esclerosis sistémica): los programas de ejercicio aeróbico y de fuerza mejoran la capacidad aeróbica, la fuerza y la función referida, sin brotes ni subida de la proteína C reactiva o de la velocidad de sedimentación. Los autores llaman a estos datos todavía preliminares (Benatti y Pedersen 2015).', nivel: 'clinico' },
         { t: 'En la artritis reumatoide, una sesión de ejercicio aeróbico, de fuerza o combinado no pareció empeorar el dolor; la IL-6 sube justo después y vuelve a su nivel a las 24 horas. Son 11 estudios pequeños y distintos entre sí, y los autores no sacan una conclusión firme (Balchin 2022).', nivel: 'clinico' },
         { t: 'Dolor musculoesquelético común (lumbalgia, tendinopatía, hombro doloroso): ninguna fuente leída mide si el ejercicio reduce la inflamación ni si eso explica su efecto sobre el dolor. Aquí solo hay mecanismo.', nivel: 'mecanismo' },
+        { t: 'Otras mioquinas tras una sesión, en adultos sanos: la irisina sube un poco a los 60 minutos y la SPARC justo después; la IL-15, la oncostatina M y la decorina no cambian de forma significativa, y todo vuelve a su nivel entre 3 y 24 horas. Por la variabilidad entre estudios, los autores no sacan conclusiones precisas (Bettariga 2024, 62 estudios).', nivel: 'mecanismo' },
+        { t: 'Irisina: un estudio la mide en la sangre de personas con espectrometría de masas, a unos 3,6 ng/ml, algo más en quien entrena (Jedrychowski 2015); otro muestra que los anticuerpos de los kits comerciales reaccionan con otras proteínas, que dos kits dan cifras 18 veces distintas y sin relación entre sí, y la llama «un mito» (Albrecht 2015). Un metaanálisis del entrenamiento de fuerza no encontró un aumento significativo y pide leer con cautela todo lo medido con esos kits (Cosio 2021).', nivel: 'discutido' },
+        { t: 'Ninguna fuente leída mide un efecto sobre el dolor, la función, la fuerza o la cognición atribuido a una mioquina concreta en personas (Severinsen y Pedersen 2020; Bettariga 2024).', nivel: 'mecanismo' },
       ],
       consulta: [
         { t: 'En un paciente con una enfermedad reumática inflamatoria, el miedo a que el ejercicio aeróbico o de fuerza agrave la inflamación no se sostiene. La excepción que señalan los autores: con daño articular extenso al empezar, un programa de fuerza de alta intensidad puede aumentar el daño articular (Benatti y Pedersen 2015).', nivel: 'clinico' },
         { t: 'La subida de IL-6 tras una sesión es la respuesta normal del músculo que trabaja, no un signo de inflamación ni de lesión: aparece sin daño muscular y se normaliza pronto (Pedersen y Febbraio 2012; Gleeson 2011). En la artritis reumatoide, los autores de la revisión creen que tampoco debe leerse como una respuesta inflamatoria desfavorable (Balchin 2022).', nivel: 'mecanismo' },
         { t: 'Explicar el alivio del dolor musculoesquelético con «el ejercicio es antiinflamatorio» va más allá de lo medido: no hay estudios que lo muestren en esos pacientes, y con ejercicio suave el efecto antiinflamatorio vendría sobre todo de la grasa corporal (Gleeson 2011).', nivel: 'mecanismo' },
+        { t: 'Ninguna mioquina tiene hoy un efecto clínico medido que permita elegir un tipo de ejercicio por ella, y explicarle al paciente que el ejercicio «libera hormonas que…» va más allá de lo demostrado (Severinsen y Pedersen 2020; Bettariga 2024).', nivel: 'mecanismo' },
         { t: 'En deportistas de élite, cargas de entrenamiento muy altas se asocian a más infecciones respiratorias leves, que los autores atribuyen en parte a ese estado antiinflamatorio, junto al estrés, el mal sueño y el balance energético negativo; el ejercicio moderado regular se asocia a menos infecciones que el sedentarismo (Gleeson 2011).', nivel: 'mecanismo' },
       ],
       paciente: [
@@ -172,12 +181,13 @@ export const BLOQUES_EJERCICIO = [
         'Buena parte del mecanismo de la IL-6 muscular viene de ratones y de células musculares en cultivo, y su papel principal parece metabólico (movilizar grasa y glucosa) más que inflamatorio (Nara y Watanabe 2021; Pedersen y Febbraio 2012).',
         'En el metaanálisis de Silva 2024 la IL-6 tuvo una heterogeneidad muy alta (I² 87 %); de 24 ensayos, 3 tenían riesgo de sesgo bajo, 18 algunas dudas y 3 alto, y pocos dijeron cuánto tiempo pasó entre la última sesión y la extracción de sangre, algo que cambia las citocinas (Silva 2024).',
         'En el ensayo de Ho 2013 casi todos tenían marcadores normales al empezar, lo que deja poco margen de mejora; 64 de 97 terminaron (Ho 2013).',
+        'El BDNF que sube con el ejercicio sale del cerebro, no del músculo: el del músculo no se ha visto pasar a la sangre. La catepsina B sube en sangre en humanos tras meses de carrera, pero no se sabe si media algún efecto sobre la cognición (Severinsen y Pedersen 2020).',
+        'En personas con obesidad abdominal, bloquear el receptor de la IL-6 con tocilizumab anuló la pérdida de grasa visceral que daba un entrenamiento de 12 semanas: es el dato en humanos más directo de que una mioquina media un efecto del ejercicio (Severinsen y Pedersen 2020).',
+        'Las mioquinas medidas tras una sesión cambian con la hora del día y las horas de ayuno, y no hay acuerdo sobre cómo diseñar estos estudios (Bettariga 2024). La medida de la irisina por espectrometría de masas se hizo en 10 voluntarios (Jedrychowski 2015), y el metaanálisis de fuerza tuvo una heterogeneidad muy alta (I² 90 %) y sesgo de publicación (Cosio 2021).',
         'En el ensayo IDEA, a los 18 meses solo el 54 % del grupo de ejercicio seguía haciéndolo, y el estudio no tenía potencia para las diferencias que encontró en la IL-6 (Messier 2013).',
       ],
     },
-    fuentes: ['Petersen y Pedersen 2005', 'Pedersen y Febbraio 2012', 'Gleeson 2011', 'Nara y Watanabe 2021', 'Silva 2024', 'Ho 2013', 'Messier 2013', 'Benatti y Pedersen 2015', 'Balchin 2022'] },
-  { id: 'mioquinas', titulo: 'El músculo como órgano endocrino: otras mioquinas',
-    resumen: 'Concepto y estado real de cada mioquina; puede quedar como párrafo del bloque anterior si sus fuentes dan casi solo mecanismo' },
+    fuentes: ['Petersen y Pedersen 2005', 'Pedersen y Febbraio 2012', 'Gleeson 2011', 'Nara y Watanabe 2021', 'Silva 2024', 'Ho 2013', 'Messier 2013', 'Benatti y Pedersen 2015', 'Balchin 2022', 'Severinsen y Pedersen 2020', 'Bettariga 2024', 'Jedrychowski 2015', 'Albrecht 2015', 'Cosio 2021'] },
   { id: 'centrales', titulo: 'Efectos centrales',
     resumen: 'Sueño, estado de ánimo y autoeficacia' },
 ];
