@@ -822,8 +822,9 @@ export const hypotheses = {
     dosis: 'Carga progresiva del miembro afectado con soporte externo (tobillera o vendaje) elegido según gravedad, fase de curación, protección necesaria, dolor y preferencia del paciente (A). En los esguinces más graves puede estar indicada una inmovilización (de tobillera semirrígida a yeso por debajo de la rodilla) de 10 días como máximo (A). Programa estructurado de ejercicio terapéutico, en clínica y en casa: movilidad activa protegida, estiramientos, entrenamiento neuromuscular, reeducación postural y equilibrio (A). Terapia manual dentro del movimiento sin dolor y junto al ejercicio —drenaje linfático, movilización activa y pasiva de tejidos blandos y articular, movilización anteroposterior del astrágalo— para reducir la hinchazón, ganar movilidad sin dolor y normalizar la marcha (A). No usar ultrasonido (A). Vuelta al trabajo o al deporte con un calendario progresivo, tobillera al principio y entrenamiento específico de la actividad (B). Para prevenir la recidiva: tobillera profiláctica y ejercicio propioceptivo y de equilibrio dirigido a las deficiencias halladas en la exploración (A). La guía no fija series ni semanas: los programas estudiados son demasiado diversos para recomendar modalidad o volumen.',
     dosisFuente: 'Martin 2021, J Orthop Sports Phys Ther 51(4):CPG1–CPG80 (guía de práctica clínica APTA; letra = grado de la recomendación)',
     pronostico: {
-      horizonte: 'Ottawa decide la radiografía. Cajón anterior con mejor S y E a los 4–6 días; sin signo del surco, el LPAA no está roto del todo.',
-      derivacion: 'Una proporción alta evoluciona a inestabilidad crónica. Si no se recupera: coalición, osteocondritis disecante, sinovitis, pinzamiento posterior secundario, peroneos.',
+      horizonte: 'Una proporción alta evoluciona a inestabilidad crónica del tobillo.',
+      notas: 'La regla de Ottawa decide si hace falta radiografía. El cajón anterior tiene mejor sensibilidad y especificidad si se hace a los 4–6 días de la lesión; si no aparece el signo del surco, el LPAA no está roto del todo.',
+      derivacion: 'no se recupera como se espera: pensar en una coalición tarsiana, una osteocondritis disecante, una sinovitis, un pinzamiento posterior secundario o una lesión de los peroneos.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 238, 254–258, 260, 263 y 285'
     },
     tests: [
@@ -841,7 +842,7 @@ export const hypotheses = {
     dosis: 'Solo la lesión aguda y aislada estable: ligamento tibioperoneo anterior inferior roto, con o sin el interóseo, y deltoideo íntegro. Con el deltoideo roto es inestable: derivar, porque el consenso indica cirugía. Tratamiento conservador: 3 semanas sin carga, al principio con reposo y hielo; después, bota de marcha 3 semanas, con ejercicios propioceptivos desde que termina la descarga. Vuelta a las actividades normales según tolerancia. El consenso no da un protocolo de rehabilitación ni un plazo de vuelta al deporte, y no se pronuncia a favor ni en contra de AINE o corticoides. Se apoya en 4 estudios (143 tobillos, todos de deportistas de competición, profesionales o universitarios), con 23 días de media fuera del deporte (7–42).',
     dosisFuente: 'van Dijk 2016, Knee Surg Sports Traumatol Arthrosc 24(4):1217–27 (consenso ESSKA-AFAS tras una revisión sistemática; nivel de evidencia IV)',
     pronostico: {
-      horizonte: 'Si LTPAI y squeeze son positivos, hace falta imagen: la RM tiene una precisión de hasta el 95 %.',
+      derivacion: 'la palpación del ligamento tibioperoneo anteroinferior y el squeeze test son positivos los dos: hace falta imagen (la RM tiene una precisión de hasta el 95 %).',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 263'
     },
     tests: [
@@ -856,9 +857,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: DOSIS_DERIVAR,
     pronostico: {
-      horizonte: 'Aquiles: imagen solo para decidir quirúrgico o conservador. Lisfranc: radiografía en carga con los dos pies en la misma placa, S y E bajas → TC o RM. Calcáneo: TC. 5.º MT: radiografía.',
-      derivacion: 'Fractura de Jones: riesgo de pseudoartrosis sin fijación quirúrgica.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 245, 268, 273 y 280'
+      notas: 'No suele hacer falta imagen para el diagnóstico; ayuda a decidir entre el tratamiento quirúrgico y el conservador.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 245'
     },
     tests: [
       { name: 'Thompson (Simmonds)', anatomia: ['aquiles', 'gastrocnemio', 'soleo'], sn: '96%', sp: '93%', lr_pos: '13.71', lr_neg: '0.04', criterio: 'Thompson: prono, pie fuera de la camilla; al comprimir la pantorrilla el tobillo no se mueve → S 96 % · E 93 % → derivación preferente.', razonamiento: { porque: 'Al comprimir la pantorrilla en su tercio medio se deforma el sóleo y, si el tendón de Aquiles sigue en continuidad, esa tracción llega al calcáneo y el pie se va a flexión plantar pasiva. En cadáver, el pie respondía siempre salvo cuando el sóleo se separaba del tendón: con el 90 % del tendón cortado respondía menos, y con el tendón cortado del todo se quedaba quieto. Según los autores, la respuesta depende de que el sóleo siga unido al tendón: en un paciente con el sóleo arrancado del tendón y los gemelos íntegros, el pie tampoco se movió.', detalle: 'Maffulli 1998: 133 roturas confirmadas en cirugía y 28 controles con lesión posterior sin rotura (26 negativos; 2 dudosos contados como falsos positivos). LR de Reiman 2014 con esos datos: LR+ 13,71 (IC 95 % 3,54–51,24), LR− 0,04 (0,02–0,10). Es el único estudio. Límites: diseño de casos y controles (los casos entraron por diagnóstico clínico y los controles los descartó clínicamente el mismo autor antes de la ecografía o la RM), así que la precisión probablemente está sobrestimada; la especificidad sale de solo 28 controles. Aun así, el IC de la LR+ no baja de 3,5.\n\nTécnica original (Thompson y Doherty 1962): prono, con los pies fuera de la camilla, o de rodillas sobre una silla; se comprime la pantorrilla en el tercio medio, por debajo de su parte más ancha. Normal: el pie hace una flexión plantar pasiva. Positivo: el pie no se mueve. Los autores lo usaban junto a los demás hallazgos de la rotura: el hueco sobre el tendón, la pérdida de fuerza de flexión plantar y la pérdida del despegue en la marcha. En Maffulli 1998 se comprime con la palma de la mano, y cuenta como positivo que el tobillo no se mueva o apenas haga flexión plantar, siempre comparando con el lado sano. Se describió antes en el Reino Unido, de ahí su otro nombre, test de Simmonds (Maffulli 1998).\n\nFalsos negativos: en una rotura de 4 meses, el sóleo cicatrizado y adherido a un plantar delgado hipertrofiado transmitía la compresión al calcáneo, y el pie respondió débilmente (Thompson y Doherty 1962). Pasadas 4 semanas, el hematoma organizado puede devolver cierta continuidad al tendón y el test puede indicar que no hay rotura; la serie de Maffulli 1998 solo incluía pacientes vistos en las 4 primeras semanas. Al principio el paciente puede seguir haciendo flexión plantar, e incluso ponerse de puntillas, con el tibial posterior y los peroneos (Maffulli 1998). Según Lluch 2020 (p. 245), con los flexores largos de los dedos y el plantar delgado; por eso muchos caminan sorprendentemente bien, aunque cojeen.', fuentes: ['Thompson y Doherty 1962', 'Maffulli 1998', 'Lluch 2020'], citas: ['Thompson y Doherty 1962 (J Trauma 2:126–129), pp. 126–129', 'Maffulli 1998 (Am J Sports Med 26:266–270), pp. 266–267 y 270', 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 245'] }, fuente: 'Maffulli 1998 (Am J Sports Med 26:266–70); LR: Reiman 2014 (J Athl Train 49:820–9)' },
@@ -872,9 +872,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: DOSIS_DERIVAR,
     pronostico: {
-      horizonte: 'Aquiles: imagen solo para decidir quirúrgico o conservador. Lisfranc: radiografía en carga con los dos pies en la misma placa, S y E bajas → TC o RM. Calcáneo: TC. 5.º MT: radiografía.',
-      derivacion: 'Fractura de Jones: riesgo de pseudoartrosis sin fijación quirúrgica.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 245, 268, 273 y 280'
+      notas: 'La prueba inicial es la radiografía en carga anteroposterior, lateral y oblicua, con los dos pies en la misma placa, pero su sensibilidad y su especificidad son bajas: hace falta TC o RM para confirmar o descartar el diagnóstico.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 273'
     },
     tests: [
       { name: 'Neurovascular y cinco P', anatomia: ['arteria_pedia', 'fascias_pierna_pie'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Neurovascular y cinco P. Cinco P: palidez · dolor desproporcionado · parestesias · sin pulso · frialdad.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 272' },
@@ -890,9 +889,9 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: DOSIS_DERIVAR,
     pronostico: {
-      horizonte: 'Aquiles: imagen solo para decidir quirúrgico o conservador. Lisfranc: radiografía en carga con los dos pies en la misma placa, S y E bajas → TC o RM. Calcáneo: TC. 5.º MT: radiografía.',
-      derivacion: 'Fractura de Jones: riesgo de pseudoartrosis sin fijación quirúrgica.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 245, 268, 273 y 280'
+      horizonte: 'La fractura de Jones (diáfisis proximal del 5.º metatarsiano) a menudo no consolida sin fijación quirúrgica.',
+      notas: 'En el calcáneo la radiografía es poco sensible y la prueba de elección es la TC. En el 5.º metatarsiano basta la radiografía.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 268 y 280'
     },
     tests: [
       { name: 'Reglas de Ottawa de tobillo y de pie', anatomia: ['perone', 'tibia', 'navicular', 'metatarsianos'], sn: null, sp: null, lr_pos: null, lr_neg: '0.082', criterio: 'TOBILLO → radiografía si dolor en la zona maleolar Y alguno: dolor óseo en los 6 cm distales del borde posterior de la tibia o punta del maléolo medial · ídem del peroné o punta del maléolo lateral · no carga cuatro pasos, ni justo tras la lesión ni en consulta. PIE → radiografía si dolor en el mediopié Y alguno: dolor óseo en la base del 5.º MT · en el navicular · no carga cuatro pasos, ni justo tras la lesión ni en consulta. Solo descarta, y no explora el calcáneo: la regla del pie solo mira la base del 5.º MT y el navicular. Con cautela si hay varias lesiones dolorosas, alteración de la conciencia, intoxicación, paraplejia o enfermedad ósea; en niños, solo a partir de los 6 años.', razonamiento: { porque: 'La regla busca las fracturas que cambian el tratamiento, y sus criterios se eligieron para detectarlas todas: de 32 datos clínicos, los que más se asociaban a fractura y en los que dos médicos coincidían. En el maléolo lateral se palpan el borde posterior y la punta, y no el borde anterior, para no confundir el dolor óseo con el del ligamento peroneoastragalino anterior, que se lesiona en tantos esguinces. La carga cuenta si falla justo tras la lesión y también en la consulta, porque muchos esguinces caminan al principio y no pueden hacerlo después, cuando aumenta la hinchazón. En el pie, la mayoría de las fracturas eran de la base del 5.º MT. La zona que explora la regla no incluye el cuerpo ni las tuberosidades del calcáneo.', detalle: 'Beckenkamp 2017 (66 estudios, modelo bivariante), en los estudios que aplican las dos reglas juntas, como aquí: LR− 0,09 (IC 95 % 0,06–0,13) con todos (31 estudios) y 0,08 (0,04–0,16) en los 22 en que se radiografió a todos los pacientes, que es la que se usa (evita el sesgo de verificar solo a los positivos); en adultos, 0,12 (0,07–0,19). Bachmann 2003 (univariante, niños y adultos) daba 0,17 (0,10–0,30) para la evaluación conjunta. Las dos revisiones incluyen los estudios de los creadores de la regla. El positivo es un hallazgo: LR+ 1,48 (1,30–1,68; Beckenkamp 2017).\n\nDerivación (Stiell 1992): 750 adultos con un traumatismo cerrado agudo del tobillo en dos urgencias universitarias; los médicos recogieron 32 variables clínicas antes de la radiografía, y en 100 pacientes un segundo médico repitió la exploración sin conocer la primera. Solo entraron en el modelo las variables asociadas a fractura en las que los dos coincidían bien (kappa > 0,6). Fractura significativa: un fragmento de más de 3 mm, porque las avulsiones menores no se inmovilizaban. La hinchazón se asociaba a fractura, pero se dejó fuera porque depende del tiempo desde la lesión y los médicos coincidían menos en ella. El dolor óseo del maléolo medial es poco frecuente, pero cuando está indica un riesgo alto de fractura.\n\nLa regla original incluía también la edad de 55 años o más (el 34 % de las fracturas maleolares en el 13 % de los pacientes, probablemente por osteoporosis según los autores) y el dolor óseo del cuboides. Al refinarla (Stiell 1993, 1032 pacientes), los dos criterios resultaron innecesarios para detectar todas las fracturas y se quitaron, y la regla del pie pasó a incluir el mismo criterio de carga que la del tobillo. La regla refinada detectó, en 453 pacientes nuevos, las 50 fracturas maleolares y las 19 del mediopié.\n\nCómo se valora la carga (Stiell 1993): poder pasar el peso dos veces a cada pierna (cuatro pasos), aunque cojee; se valora después de palpar los huesos y sin forzar al paciente. Ante una deformidad o una fractura evidente no hace falta la regla. Cautela con varias lesiones dolorosas, alteración de la conciencia, intoxicación, paraplejia o enfermedad ósea; la regla no se desarrolló ni se probó en menores de 18 años, y se excluyó a las embarazadas. En niños de más de 6 años, varios estudios respaldan su uso, con una sensibilidad del 98,5 % (Lluch 2020, p. 257). Si el dolor y la marcha no mejoran en unos días, hay que volver a valorar.', fuentes: ['Stiell 1992', 'Stiell 1993'], citas: ['Stiell 1992 (Ann Emerg Med 21(4):384–390), pp. 385–389', 'Stiell 1993 (JAMA 269(9):1127–1132), pp. 1127–1131'] }, fuente: 'Beckenkamp 2017 (Br J Sports Med 51:504–10), tabla 1; Bachmann 2003 (BMJ 326:417), tabla 4' },
@@ -918,8 +917,9 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Radiografía en flexión plantar en carga y RM; ningún hallazgo se correlaciona con los síntomas. La infiltración con anestésico confirma.',
-      derivacion: 'Responde bien a conservador, técnica y retorno graduado. Si no responde a la infiltración o la recuperación se complica → replantear el diagnóstico.',
+      horizonte: 'Suele responder bien al tratamiento conservador, a corregir la técnica y a una vuelta gradual a la actividad.',
+      notas: 'La radiografía lateral en flexión plantar en carga y la RM muestran hallazgos, pero ninguno se ha relacionado con los síntomas. La infiltración de anestésico local confirma el diagnóstico si reduce el dolor conocido en el test de pinzamiento posterior.',
+      derivacion: 'no responde a la infiltración de anestésico y corticoide, o la recuperación se alarga o se complica: replantear el diagnóstico.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 240–241'
     },
     tests: [
@@ -1005,9 +1005,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Sural: diagnóstico clínico; la neurodinámica reproduce el dolor y la carga del tendón rara vez lo aumenta; una provocación del dolor aleatoria obliga a pensar en otro diagnóstico. Túnel: la conducción no siempre es positiva (diagnóstico clínico). Talón: infiltración diagnóstica ecoguiada; conducción si se plantea cirugía.',
-      derivacion: 'Sural: puede ir solo o con dolor del Aquiles o de su vaina, y un tendón hinchado lo irrita. Túnel del tarso: tratar la causa de la hinchazón (FHL, sinovitis subastragalina, esguince).',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 243–244, 251–252 y 268'
+      notas: 'El diagnóstico es clínico: la neurodinámica reproduce los síntomas, el dolor rara vez aumenta al cargar el tendón y su provocación durante la exploración es mucho más aleatoria, lo que lleva a considerar el diagnóstico diferencial. Puede ir solo o junto a un dolor del Aquiles o una irritación de su vaina, y un tendón hinchado lo irrita.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 243–244'
     },
     tests: [
       { name: 'Tinel a lo largo del sural', anatomia: ['nervio_sural'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Tinel a lo largo del sural.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 237' },
@@ -1032,8 +1031,9 @@ export const hypotheses = {
     dosis: 'Estadios I–II. Plantillas a medida durante el 90 % de las horas de vigilia y estiramiento de gemelo (rodilla extendida) y sóleo (rodilla algo flexionada) sobre una cuña, 3 × 30 s cada uno, 2 veces al día. Además, ejercicio resistido del tibial posterior con plantillas y calzado puestos: aducción horizontal del pie con flexión plantar, excéntrico o concéntrico, 5 s por repetición, 3 × 15 dos veces al día, con 1–2 min de descanso entre series; empezar con 0,9 kg y subir de 0,9 kg en 0,9 kg cuando las 45 repeticiones salgan con facilidad, buen control y mínimos o ningún síntoma. 12 semanas, con una revisión semanal de 30 min durante 10 semanas; el ejercicio se hizo sin dolor en el tendón. Los tres grupos mejoraron en dolor y discapacidad (FFI), y hubo diferencias entre los tres grupos (P = 0,036–0,048, sin comparación por pares): el excéntrico tuvo los cambios mayores, pero los autores no pueden concluir que supere al concéntrico, y los dos acabaron en el mismo nivel. El estudio usó un aparato de resistencia constante específico: con otra resistencia (p. ej., goma elástica) la pauta no está comprobada. En contraste, en estadio II, un programa en casa de intensidad moderada con banda elástica y elevaciones de talón no añadió beneficio en dolor ni en fuerza a la ortesis con estiramiento (Houck 2015, ensayo aleatorizado, 36 analizados).',
     dosisFuente: 'Kulig 2009, Phys Ther 89(1):26–37 (ensayo aleatorizado, 40 incluidos y 36 analizados: plantillas + estiramiento, con o sin ejercicio concéntrico o excéntrico) · Houck 2015, Foot Ankle Int 36(9):1006–16 (ensayo aleatorizado, n = 39)',
     pronostico: {
-      horizonte: 'Ecografía (tendón frente a peritendón); RM para complicaciones. La imagen no se correlaciona necesariamente con los síntomas.',
-      derivacion: 'Puede progresar a rotura y pie plano adquirido: no hace ETM + «demasiados dedos» → derivar.',
+      horizonte: 'Puede progresar, con un alargamiento gradual del tendón, hasta la rotura y un pie plano adquirido.',
+      notas: 'La ecografía distingue la afectación del tendón de la del peritendón; la RM, las complicaciones. Los hallazgos de imagen no se relacionan necesariamente con los síntomas.',
+      derivacion: 'no puede hacer una elevación del talón a una pierna y aparece el signo de «demasiados dedos» (sospecha de rotura): derivar.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 248–249; Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5 y 6)'
     },
     tests: [
@@ -1050,8 +1050,9 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Ecografía dinámica de elección; sus hallazgos son frecuentes sin síntomas.',
-      derivacion: 'Crónico: tenosinovitis estenosante. No flexiona la interfalángica → rotura: derivar.',
+      horizonte: 'En los casos crónicos puede aparecer una tenosinovitis estenosante.',
+      notas: 'La ecografía dinámica es la prueba de elección, pero sus hallazgos son frecuentes en personas sin síntomas y hay que relacionarlos con la clínica.',
+      derivacion: 'no puede flexionar activamente la interfalángica del primer dedo (sospecha de rotura): derivar.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 247 y 250–251; Tarjeta de consulta tobillo y pie (guía clínica de tobillo y pie, ap. 5 y 6)'
     },
     tests: [
@@ -1066,9 +1067,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Sural: diagnóstico clínico; la neurodinámica reproduce el dolor y la carga del tendón rara vez lo aumenta; una provocación del dolor aleatoria obliga a pensar en otro diagnóstico. Túnel: la conducción no siempre es positiva (diagnóstico clínico). Talón: infiltración diagnóstica ecoguiada; conducción si se plantea cirugía.',
-      derivacion: 'Sural: puede ir solo o con dolor del Aquiles o de su vaina, y un tendón hinchado lo irrita. Túnel del tarso: tratar la causa de la hinchazón (FHL, sinovitis subastragalina, esguince).',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 243–244, 251–252 y 268'
+      notas: 'El diagnóstico es sobre todo clínico: pueden plantearse estudios de conducción nerviosa, pero no siempre son positivos. Hay que tratar la causa de la hinchazón del túnel: un esguince, una tenosinovitis del flexor largo del primer dedo o una sinovitis subastragalina posterior.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 251–252'
     },
     tests: [
       { name: 'Tinel a lo largo del túnel', anatomia: ['nervio_tibial'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Tinel a lo largo del túnel.', razonamiento: { porque: 'El nervio tibial posterior y el tendón del flexor largo del primer dedo van juntos por el túnel del tarso, de la parte posterior del astrágalo a debajo del sustentaculum tali. Si se acumula líquido en el túnel (tras un esguince, o por una tenosinovitis del flexor o una sinovitis subastragalina), irrita el nervio. Un golpeteo seco y repetido sobre el nervio a lo largo del túnel reproduce sus síntomas; por eso hay que buscar también la causa de la hinchazón.', detalle: 'Es un diagnóstico clínico: los estudios de conducción nerviosa no siempre salen alterados (p. 252).', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 251–252'] }, fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 247 y 252' },
@@ -1083,8 +1083,9 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: DOSIS_DERIVAR,
     pronostico: {
-      horizonte: 'Radiografía poco sensible al principio; RM de elección; TC para caracterizar.',
-      derivacion: '3–4 meses hasta el deporte tras una no complicada; complicada si no se resuelve con reposo relativo. Varias → causas sistémicas (RED-S, endocrinas, densidad ósea).',
+      horizonte: 'Tras una fractura de estrés no complicada, se considera normal volver al deporte en 3–4 meses.',
+      notas: 'La radiografía es poco sensible al principio; la RM es la prueba de elección y la TC sirve para caracterizar la fractura.',
+      derivacion: 'la fractura no se resuelve con reposo relativo y una vuelta gradual a la actividad (fractura complicada), o hay varias fracturas de estrés: investigar causas sistémicas (déficit energético relativo, causas endocrinas, baja densidad mineral ósea).',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 252–253'
     },
     tests: [
@@ -1100,9 +1101,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'La infiltración con anestésico local en la zona confirma si alivia el dolor conocido. Pinzamiento anterior: radiografía para osteofitos; TC si se sospecha navicular u osteocondral.',
-      derivacion: 'La sinovitis postraumática suele resolverse con reposo relativo y rehabilitación. En el pinzamiento anterior, las partes blandas duelen más a menudo que los osteofitos.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 257–259 y 263'
+      notas: 'La infiltración de anestésico local en el seno del tarso confirma el diagnóstico si alivia el dolor conocido.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 257'
     },
     tests: [
       { name: 'Palpación del seno del tarso', anatomia: ['art_subastragalina'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor conocido a la palpación del seno del tarso', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 257' },
@@ -1116,8 +1116,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Diagnóstico sobre todo clínico; RM o ecografía si hace falta.',
-      derivacion: 'Tras esguince grave o fractura, una rotura aguda puede pasar desapercibida porque la función se conserva: con sospecha alta, imagen.',
+      notas: 'El diagnóstico es sobre todo clínico; si hace falta imagen, RM o ecografía.',
+      derivacion: 'hubo un esguince grave o una fractura y se sospecha una rotura aguda de un peroneo, que puede pasar desapercibida porque la función se conserva: explorar con más cuidado y pedir imagen.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 258'
     },
     tests: [
@@ -1133,9 +1133,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'La infiltración con anestésico local en la zona confirma si alivia el dolor conocido. Pinzamiento anterior: radiografía para osteofitos; TC si se sospecha navicular u osteocondral.',
-      derivacion: 'La sinovitis postraumática suele resolverse con reposo relativo y rehabilitación. En el pinzamiento anterior, las partes blandas duelen más a menudo que los osteofitos.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 257–259 y 263'
+      notas: 'La radiografía muestra el grado de pinzamiento óseo y los osteofitos; la TC, si se sospecha una fractura de estrés del navicular o una lesión osteocondral. La infiltración de anestésico local en la zona del dolor confirma el diagnóstico si lo alivia. Las partes blandas son más a menudo la fuente del dolor que los osteofitos.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 258–259'
     },
     tests: [
       { name: 'KTW (rodilla a la pared)', anatomia: ['art_tobillo'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'El KTW reproduce el dolor y muestra limitación.', razonamiento: { porque: 'Con la flexión dorsal máxima repetida, las partes blandas se pinzan entre el borde anterior de la tibia y el cuello del astrágalo, y con el tiempo pueden aparecer osteofitos. El KTW lleva el tobillo a flexión dorsal en carga: reproduce el dolor y muestra la limitación (lo deseable son al menos 8 cm entre el primer dedo y la pared). La flexión dorsal también puede limitarse por otras causas, como la hipomovilidad de otras articulaciones o la rigidez de la pantorrilla.', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 239 y 258–259'] }, fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 259' },
@@ -1152,8 +1151,7 @@ export const hypotheses = {
     dosis: 'Ejercicio propioceptivo y neuromuscular para la estabilidad postural dinámica y la estabilidad percibida (A). Terapia manual —movilizaciones graduadas, manipulación y movilización con movimiento en carga y sin carga— para la dorsiflexión en carga y el equilibrio dinámico a corto plazo (A); puede añadirse, junto con otro ejercicio, como complemento del entrenamiento del equilibrio (B). La tobillera o el vendaje no deben usarse como tratamiento único para mejorar el equilibrio y la estabilidad postural (B); sí se recomiendan para prevenir la recidiva. La guía no fija dosis. Frente a no tratar, el ejercicio mejora la función autorreferida (metaanálisis de 26 ensayos: CAIT +4,6 y FAAM de actividades diarias +7,7 puntos, certeza moderada); sus análisis de dosis son subgrupos separados (tipo, frecuencia y duración, nunca combinados) y no permiten fijar una. Protocolo concreto con ensayo (McKeon 2008, 31 adultos jóvenes activos, 16 entrenados frente a 15 sin intervención): 12 sesiones supervisadas de unos 20 min, 3 por semana durante 4 semanas: saltos a estabilización monopodal en 4 direcciones (10 por dirección), salto con alcance (5 por dirección), saltos no anticipados siguiendo una secuencia en una rejilla (3 secuencias) y equilibrio monopodal con ojos abiertos y cerrados (3 repeticiones). 7 niveles por tarea; en los saltos, de 46, 69 y 91 cm, primero con ayuda de los brazos y luego con las manos en la cadera, y al final desde una plataforma de 15 cm. Se sube de nivel tras 10 repeticiones sin error (5 en el salto con alcance, 3 en el equilibrio, la secuencia completa en los no anticipados). Frente a no entrenar mejoraron la FADI y la FADI Sport, el equilibrio con ojos cerrados y el alcance posteromedial y posterolateral del SEBT; no cambiaron el equilibrio con ojos abiertos ni el alcance anterior. No midió recidivas ni hubo seguimiento después de las 4 semanas.',
     dosisFuente: 'Martin 2021, J Orthop Sports Phys Ther 51(4):CPG1–CPG80 (guía de práctica clínica APTA; letra = grado de la recomendación) · Liu 2025, BMC Sports Sci Med Rehabil 17:335 (metaanálisis de 26 ensayos) · McKeon 2008, Med Sci Sports Exerc 40(10):1810–1819 (ensayo aleatorizado, n = 31)',
     pronostico: {
-      horizonte: 'CAIT menos de 24, o IdFAI más de 11: indican inestabilidad crónica (cuestionarios aparte de los tres números).',
-      derivacion: 'Valorar deficiencias mecánicas y sensoriomotoras: guían el tratamiento.',
+      notas: 'Un CAIT por debajo de 24 o un IdFAI por encima de 11 indican inestabilidad crónica. Hay que valorar las deficiencias mecánicas y sensoriomotoras, porque guían el tratamiento.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 261'
     },
     tests: [
@@ -1169,9 +1167,9 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'La infiltración con anestésico local en la zona confirma si alivia el dolor conocido. Pinzamiento anterior: radiografía para osteofitos; TC si se sospecha navicular u osteocondral.',
-      derivacion: 'La sinovitis postraumática suele resolverse con reposo relativo y rehabilitación. En el pinzamiento anterior, las partes blandas duelen más a menudo que los osteofitos.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 257–259 y 263'
+      horizonte: 'Suele resolverse con reposo relativo y rehabilitación.',
+      notas: 'Una infiltración de anestésico local, con o sin corticoide, en el seno del tarso o en el tobillo es diagnóstica y terapéutica si alivia el dolor conocido.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 263'
     },
     tests: [
       { name: 'Hinchazón y dolor a la palpación', anatomia: ['art_tobillo'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Hinchazón y dolor a la palpación.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 260' },
@@ -1185,9 +1183,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Coalición: radiografía oblicua a 45°; la TC es poco sensible a las no óseas. Osteocondritis: hasta un tercio de las radiografías son normales al principio → RM.',
-      derivacion: 'La coalición suele ser asintomática hasta una lesión (12,7 % en disección, relevancia incierta).',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 263 y 285'
+      notas: 'La radiografía oblicua a 45° puede mostrarla; si es normal y la sospecha sigue, TC o RM, sabiendo que la TC es poco sensible a las coaliciones no óseas. Suele ser asintomática hasta una lesión; en un estudio de disección se encontró en el 12,7 %, con relevancia clínica incierta.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 263'
     },
     tests: [
       { name: 'Movilidad subastragalina y mediotarsiana', anatomia: ['art_subastragalina', 'art_mediotarsiana'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Restricción de la movilidad subastragalina, a menudo también mediotarsiana.', razonamiento: { porque: 'En la coalición tarsiana, una barra ósea o cartilaginosa une dos huesos del tarso, lo más a menudo el calcáneo y el navicular, y con menos frecuencia el calcáneo con el astrágalo o con el cuboides. Por eso la subastragalina, y a menudo la mediotarsiana, se mueven menos. Suele pasar desapercibida hasta una lesión, a menudo un esguince que se repite o no se recupera.', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 263'] }, fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 263' },
@@ -1201,8 +1198,8 @@ export const hypotheses = {
     dosis: 'Ejercicio terapéutico adaptado a la persona (por ejemplo, fortalecimiento local y forma física aeróbica general), para todos: recomendación firme (rec. 1.3.1). Valorar sesiones supervisadas (1.3.2) y combinarlo con educación o cambio de conducta en un paquete estructurado (1.3.4). Avisar de que el dolor puede aumentar al empezar y de que es la constancia a largo plazo la que reduce el dolor y mejora la función (1.3.3). Con sobrepeso, cualquier pérdida de peso ayuda, y el 10 % más que el 5 % (1.3.5). NICE solo considera la terapia manual en la artrosis de cadera o rodilla (1.3.6), no en la de tobillo o pie. No ofrecer acupuntura ni punción seca (1.3.8), ni TENS, ultrasonido, interferenciales, láser, onda corta pulsada o electroestimulación neuromuscular (1.3.9). Valorar ayudas para la marcha, como un bastón (1.3.10); plantillas, ortesis o vendajes solo si hay inestabilidad o carga anómala y el ejercicio solo no basta (1.3.11). La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico.',
     dosisFuente: 'NICE NG226 (2022; recomendaciones 1.3.1–1.3.11, leídas en nice.org.uk en 2026-10; vale para la artrosis de cualquier articulación salvo donde nombra la cadera o la rodilla; NICE marca la fuerza con el verbo: «offer» = recomendación firme, «consider» = más débil, «do not offer» = no hacer)',
     pronostico: {
-      horizonte: 'Diagnóstico clínico: más de 45 años, dolor con el uso, rigidez de menos de 30 min. La radiografía no se correlaciona de forma fiable.',
-      derivacion: 'En jóvenes o con rasgos inflamatorios, progresión rápida o síntomas constitucionales → más pruebas; VSG y PCR deben ser normales.',
+      notas: 'El diagnóstico es clínico: más de 45 años, dolor persistente con el uso y rigidez matutina de menos de 30 minutos. Los cambios de la radiografía no se relacionan de forma fiable con los síntomas.',
+      derivacion: 'es una persona joven o hay rasgos atípicos, como una presentación más inflamatoria, una progresión rápida o síntomas constitucionales: hacer más pruebas. La VSG y la PCR deben ser normales en la artrosis; si no lo son, investigar una artritis inflamatoria.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 264'
     },
     tests: [
@@ -1217,9 +1214,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Coalición: radiografía oblicua a 45°; la TC es poco sensible a las no óseas. Osteocondritis: hasta un tercio de las radiografías son normales al principio → RM.',
-      derivacion: 'La coalición suele ser asintomática hasta una lesión (12,7 % en disección, relevancia incierta).',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 263 y 285'
+      notas: 'Hasta un tercio de las radiografías son normales al principio: si la sospecha es alta, la RM es la prueba de elección.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 285'
     },
     tests: [
       { name: 'Palpación de la cúpula astragalina en flexión plantar', anatomia: ['astragalo'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor a la palpación de la cara anterior de la cúpula astragalina con el pie en flexión plantar completa.', razonamiento: { porque: 'La osteocondritis disecante es una osteonecrosis del hueso subcondral de causa desconocida; se cree que un traumatismo con un componente de compresión, como una inversión al caer de una altura, deja una zona mal irrigada. Con el pie en flexión plantar completa, la parte anterior de la cúpula del astrágalo queda expuesta y se puede palpar.', detalle: 'Hasta un tercio de los casos tienen una radiografía normal al principio; si la sospecha es alta, RM (p. 285).', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 284–285'] }, fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 285' },
@@ -1234,8 +1230,8 @@ export const hypotheses = {
     dosis: 'Núcleo (A): estiramiento específico de la fascia plantar y del gastrocnemio-sóleo; terapia manual articular (sobre todo la dorsiflexión talocrural) y de tejidos blandos (fascia plantar, gastrocnemio y sóleo); vendaje rígido o elástico con otros tratamientos, efecto a corto plazo (1 a 6 semanas); férula nocturna durante 1–3 meses si hay dolor de forma sistemática con los primeros pasos de la mañana. Además: ejercicio de fuerza de la musculatura del pie y el tobillo (B); punción seca de puntos gatillo en gastrocnemio, sóleo y musculatura plantar, 1–6 sesiones (B); láser de baja intensidad en 2–3 puntos, mínimo 2 J/punto a 904 nm o 4 J/punto a 780–860 nm (B); plantillas combinadas con otros tratamientos (C), nunca como tratamiento aislado para aliviar el dolor a corto plazo (B). No usar ultrasonido para potenciar el estiramiento (A). La dosis del estiramiento no está establecida (estudios de 10 s a 60 min en el gemelo-sóleo y de 10 a 30 s en la fascia plantar, de 4 días a 8 semanas).',
     dosisFuente: 'Koc 2023, J Orthop Sports Phys Ther 53(12):CPG1–CPG39 (guía de práctica clínica APTA; letra = grado de la recomendación)',
     pronostico: {
-      horizonte: 'Imagen innecesaria si la clínica encaja; ecografía para la fasciopatía. El espolón no se relaciona con el dolor.',
-      derivacion: 'Atrapamiento nervioso coexistente en el 20–52 %: valorar el componente neural si no mejora.',
+      notas: 'La imagen no hace falta si la historia y la exploración encajan; la ecografía puede diagnosticar la fasciopatía. El espolón calcáneo no se relaciona con el dolor.',
+      derivacion: 'no mejora: valorar un componente neural, porque un atrapamiento nervioso coexiste en el 20–52 %.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 266–267'
     },
     tests: [
@@ -1249,9 +1245,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Imagen innecesaria si la clínica encaja; ecografía para la fasciopatía. El espolón no se relaciona con el dolor.',
-      derivacion: 'Atrapamiento nervioso coexistente en el 20–52 %: valorar el componente neural si no mejora.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 266–267'
+      notas: 'La imagen no suele hacer falta.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 266'
     },
     tests: [
       { name: 'Palpación posterolateral del talón', anatomia: ['calcaneo'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor a la palpación de la región posterolateral del talón.', razonamiento: { porque: 'La almohadilla grasa del talón, de tabiques fibrosos elásticos llenos de grasa, protege el calcáneo. Se contusiona con un aterrizaje fuerte o, más a menudo, con la actividad repetida sin buena amortiguación o con arrancadas y frenadas, y el dolor suele notarse en la parte lateral del talón por cómo apoya el talón al caminar.', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 266'] }, fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 265–266' },
@@ -1264,9 +1259,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Sural: diagnóstico clínico; la neurodinámica reproduce el dolor y la carga del tendón rara vez lo aumenta; una provocación del dolor aleatoria obliga a pensar en otro diagnóstico. Túnel: la conducción no siempre es positiva (diagnóstico clínico). Talón: infiltración diagnóstica ecoguiada; conducción si se plantea cirugía.',
-      derivacion: 'Sural: puede ir solo o con dolor del Aquiles o de su vaina, y un tendón hinchado lo irrita. Túnel del tarso: tratar la causa de la hinchazón (FHL, sinovitis subastragalina, esguince).',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 243–244, 251–252 y 268'
+      notas: 'Una infiltración diagnóstica con anestésico local, mejor guiada por ecografía, apoya el diagnóstico. Si se plantea la cirugía, los estudios de conducción nerviosa ayudan a localizar la compresión.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 268'
     },
     tests: [
       { name: 'Tinel sobre el nervio calcáneo medial', anatomia: ['nervio_tibial'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Tinel justo proximal al origen de la fascia en la tuberosidad medial, o a lo largo del nervio calcáneo medial.', razonamiento: { porque: 'El nervio tibial posterior se divide por debajo del túnel del tarso. La primera rama del nervio plantar lateral pasa bajo el calcáneo, justo proximal a la tuberosidad medial, y puede quedar atrapada entre la fascia profunda del abductor del primer dedo y el cuadrado plantar; el nervio calcáneo medial, sobre todo sensitivo, baja por la cara medial del calcáneo. Por eso el Tinel se busca justo proximal al origen de la fascia o a lo largo del nervio calcáneo medial.', detalle: 'El atrapamiento nervioso puede coexistir con la fasciopatía plantar (en el 20–52 % de los pacientes, según los estudios que cita el capítulo), y su dolor puede ser indistinguible (p. 267).', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 267'] }, fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 265 y 267' },
@@ -1279,9 +1273,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Calcaneocuboidea: diagnóstico clínico, la imagen ayuda poco. 1.ª MTF: radiografía si fractura o artrosis; sesamoideos bipartitos frecuentes. Morton: ecografía.',
-      derivacion: '1.ª MTF caliente e hinchada sin cambio de carga → gota o artritis inflamatoria.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 271, 276–278 y 281'
+      notas: 'El diagnóstico es clínico; la imagen ayuda poco, porque la anatomía normal varía mucho.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 271'
     },
     tests: [
       { name: 'Aguda: palpación calcaneocuboidea', anatomia: ['art_mediotarsiana', 'cuboides'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Aguda: dolor en calcaneocuboidea dorsal, ligamento bifurcado, apófisis anterior del calcáneo o ligamentos cubometatarsianos.', razonamiento: { porque: 'Los esguinces agudos calcaneocuboideos y cubometatarsianos se producen por inversión, a menudo en inversión y flexión plantar extremas, o con el tobillo plantígrado sobre un terreno irregular o en un cambio de dirección. Por eso duele la palpación de la calcaneocuboidea dorsal, el ligamento bifurcado, la apófisis anterior del calcáneo o los ligamentos cubometatarsianos.', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 269–270'] }, fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 270' },
@@ -1296,8 +1289,9 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: DOSIS_DERIVAR,
     pronostico: {
-      horizonte: 'Radiografía poco sensible al principio; RM de elección; TC para caracterizar.',
-      derivacion: '3–4 meses hasta el deporte tras una no complicada; complicada si no se resuelve con reposo relativo. Varias → causas sistémicas (RED-S, endocrinas, densidad ósea).',
+      horizonte: 'Tras una fractura de estrés no complicada, se considera normal volver al deporte en 3–4 meses.',
+      notas: 'La radiografía es poco sensible al principio; la RM es la prueba de elección y la TC sirve para caracterizar la fractura.',
+      derivacion: 'la fractura no se resuelve con reposo relativo y una vuelta gradual a la actividad (fractura complicada), o hay varias fracturas de estrés: investigar causas sistémicas (déficit energético relativo, causas endocrinas, baja densidad mineral ósea).',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 252–253 y 271–272'
     },
     tests: [
@@ -1313,9 +1307,9 @@ export const hypotheses = {
     dosis: 'Si es artrosis de la 1.ª MTF (hallux rigidus; en los estudios, dolor de más de 12 semanas y artrosis en la radiografía): plantillas que rigidizan el calzado de fibra de carbono, que redujeron el dolor más que unas simuladas, aunque menos que la diferencia mínima importante, mejoraron a más pacientes (61 % frente a 34 %) y dieron más dolor en otra parte del pie al principio (Munteanu 2021). Programa en casa: flexor largo del dedo gordo en isométrico, 3 × 10–20; distracción de la MTF 1 min y deslizamiento distal 1 min; masaje plantar con pelota 5 min, 2 veces al día, con plantilla prefabricada con escotadura bajo el primer radio y 3 visitas en 5 semanas (Paterson 2021); o calor, automovilización de la MTF, fuerza de los flexores de los dedos y frío, unos 30 min al día durante 12 semanas (Munteanu 2021). Calzado con profundidad y anchura suficientes, actividad física 30 min casi todos los días y control del peso (Paterson 2021). El programa en casa no se ha probado solo: en los dos estudios iba junto a plantillas. Con sesamoideos o placa plantar, estas fuentes no se aplican.',
     dosisFuente: 'Munteanu 2021, Osteoarthritis Cartilage 29(4):480–90 (ensayo aleatorizado con control simulado, n = 100; leído entero: rehabilitación p. 482, resultados pp. 484–6, limitaciones p. 488) · Paterson 2021, Arthritis Care Res 73(2):250–8 (ensayo piloto de viabilidad, n = 30, sin contraste estadístico entre grupos; leído entero en la versión aceptada)',
     pronostico: {
-      horizonte: 'Calcaneocuboidea: diagnóstico clínico, la imagen ayuda poco. 1.ª MTF: radiografía si fractura o artrosis; sesamoideos bipartitos frecuentes. Morton: ecografía.',
-      derivacion: '1.ª MTF caliente e hinchada sin cambio de carga → gota o artritis inflamatoria.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 271, 276–278 y 281'
+      notas: 'La radiografía, si se sospecha una fractura o para valorar la artrosis; los sesamoideos bipartitos son frecuentes y hay que diferenciarlos de una fractura.',
+      derivacion: 'la articulación está caliente e hinchada sin un cambio en la carga: pensar en una gota o una artritis inflamatoria.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 276–278'
     },
     tests: [
       { name: 'Equimosis e hinchazón en la interlínea', anatomia: ['art_mtf'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dirigida por la historia. Equimosis tras esguince o fractura; hinchazón en la interlínea.', fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 276' },
@@ -1330,8 +1324,9 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Si se sospecha una fractura de estrés, la radiografía es muy poco sensible; la RM es la prueba de elección.',
-      derivacion: 'Si es una fractura de estrés, la base del 2.º metatarsiano es una localización de alto riesgo: tiende a retrasar o no consolidar y a completarse, y la vuelta a la carrera es más larga sea cual sea su grado. Derivar para confirmarla con imagen; la pauta de vuelta a la carrera de la fractura de marcha (bajo riesgo) no se le aplica.',
+      horizonte: 'Si es una fractura de estrés, la base del 2.º metatarsiano es una localización de alto riesgo: tiende a retrasar la consolidación o a no consolidar y a completarse, y la vuelta a la carrera es más larga sea cual sea su grado.',
+      notas: 'Si se sospecha una fractura de estrés, la radiografía es muy poco sensible; la RM es la prueba de elección. La pauta de vuelta a la carrera de la fractura de marcha (bajo riesgo) no se le aplica.',
+      derivacion: 'se sospecha una fractura de estrés: derivar para confirmarla con imagen.',
       fuente: 'Warden 2014, J Orthop Sports Phys Ther 44(10):749–65, p. 755 y tabla 1'
     },
     tests: [
@@ -1347,8 +1342,9 @@ export const hypotheses = {
     dosis: 'Fractura de estrés de bajo riesgo: la diáfisis del 2.º al 4.º metatarsiano lo es (la base del 2.º y la diáfisis proximal del 5.º son de alto riesgo). Fase 1: dejar de correr y modificar la actividad guiándose por el dolor, hasta no tener dolor durante ni después de las actividades diarias. En el antepié puede ayudar un calzado de suela rígida. Caminar solo lo imprescindible y con marcha normal; si duele, descarga parcial con muletas, y si no se consigue una marcha sin dolor, un periodo corto con bota o sin carga. Desde el principio, buscar los factores de riesgo (cambios de entrenamiento, superficie o calzado, fracturas de estrés previas, IMC menor de 19, ingesta de energía, calcio y vitamina D, historia menstrual) y fortalecer la musculatura intrínseca del pie. Mantener la forma con bici, natación o carrera en piscina sin dolor. AINE solo unos días, porque enmascaran el dolor que guía la progresión. Fase 2: tras 5 días seguidos sin dolor en las actividades diarias, programa graduado de carrera en días alternos: de caminar 30 minutos a alternar caminar y trotar, después aumentar el ritmo hasta 30 minutos a ritmo normal, y por último días seguidos. Se sube de nivel solo si no hay síntomas durante ni después de la sesión; si aparecen, se para y se vuelve al último nivel superado. Es opinión de expertos: no hay un protocolo validado.',
     dosisFuente: 'Warden 2014, J Orthop Sports Phys Ther 44(10):749–65 (comentario clínico; nivel de evidencia 5; programa de carrera de su tabla 3)',
     pronostico: {
-      horizonte: 'Radiografía poco sensible al principio; RM de elección; TC para caracterizar.',
-      derivacion: '3–4 meses hasta el deporte tras una no complicada; complicada si no se resuelve con reposo relativo. Varias → causas sistémicas (RED-S, endocrinas, densidad ósea).',
+      horizonte: 'Tras una fractura de estrés no complicada, se considera normal volver al deporte en 3–4 meses.',
+      notas: 'La radiografía es poco sensible al principio; la RM es la prueba de elección y la TC sirve para caracterizar la fractura.',
+      derivacion: 'la fractura no se resuelve con reposo relativo y una vuelta gradual a la actividad (fractura complicada), o hay varias fracturas de estrés: investigar causas sistémicas (déficit energético relativo, causas endocrinas, baja densidad mineral ósea).',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 252 y 279'
     },
     tests: [
@@ -1363,9 +1359,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: '',
     pronostico: {
-      horizonte: 'Calcaneocuboidea: diagnóstico clínico, la imagen ayuda poco. 1.ª MTF: radiografía si fractura o artrosis; sesamoideos bipartitos frecuentes. Morton: ecografía.',
-      derivacion: '1.ª MTF caliente e hinchada sin cambio de carga → gota o artritis inflamatoria.',
-      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 271, 276–278 y 281'
+      notas: 'La ecografía es la prueba de elección y distingue el neuroma de una bursitis o una sinovitis vecina.',
+      fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 281'
     },
     tests: [
       { name: 'Palpación del espacio con compresión de los metatarsianos', anatomia: ['metatarsianos'], sn: null, sp: null, lr_pos: null, lr_neg: null, criterio: 'Dolor a la palpación directa del espacio (sobre todo 3.º–4.º); posible chasquido al palpar mientras se comprimen los metatarsianos.', razonamiento: { porque: 'El neuroma de Morton no es un verdadero neuroma, sino una bursitis y fibrosis intermetatarsiana; se cree que el colapso del arco transverso aumenta la presión sobre el nervio digital. Por eso duele la palpación directa del espacio, y al palparlo mientras se comprimen los metatarsianos puede notarse un chasquido.', detalle: 'La compresión pulgar-índice del espacio (Mahadevan 2015) tiene S 96 %, pero su especificidad sale de un solo pie sin Morton; el chasquido de Mulder da LR+ 2,19 (IC 0,45–10,60; Dando, en Pitcher 2024).', fuentes: ['Lluch 2020'], citas: ['Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), p. 281'] }, fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 275 y 281; Mahadevan 2015 (J Foot Ankle Surg 54:549–53); Pitcher 2024 (Foot Ankle Orthop 9(4))' },
@@ -1391,8 +1386,8 @@ export const hypotheses = {
     dosis: 'Solo las apofisitis (Sever, Iselin y la del tibial posterior); Köhler y Freiberg son osteocondrosis y esta pauta no se les aplica. No hay estudios de tratamiento de estas apofisitis: la pauta es por analogía con la de Osgood-Schlatter, otra apofisitis por tracción. Reducir temporalmente el deporte y las actividades que provocan dolor, y volver de forma gradual con una escalera de actividad guiada por el dolor: subir un escalón solo con dolor de 2/10 o menos durante la actividad y a la mañana siguiente, y bajar uno si empeora. Fortalecimiento progresivo y educación sobre la carga al niño y a los padres. Los ejercicios del estudio son de rodilla: para el pie no hay un equivalente probado. En la Osgood-Schlatter, el 80 % mejoró a las 12 semanas y el 90 % al año.',
     dosisFuente: 'Rathleff 2020, Orthop J Sports Med 8(4):2325967120911106 (Osgood-Schlatter, aplicado por analogía: no hay estudios en Sever ni Iselin; serie de casos, n = 51, 10–14 años, nivel de evidencia 4)',
     pronostico: {
-      horizonte: 'Apofisitis: imagen rara vez necesaria. Köhler y Freiberg: radiografía característica (mirar el otro pie en Köhler).',
-      derivacion: 'Las apofisitis suelen resolverse en 6–12 meses, a veces hasta 2 años. Osteoma osteoide sin alivio por AINE → otras causas.',
+      horizonte: 'Las apofisitis suelen resolverse en 6–12 meses, a veces hasta en 2 años.',
+      notas: 'En las apofisitis la imagen rara vez hace falta. En Köhler y Freiberg la radiografía es característica; en Köhler hay que mirar también el otro pie. Si se sospecha un osteoma osteoide y los AINE no alivian el dolor, considerar otras causas.',
       fuente: 'Lluch 2020, cap. 4.3 (Lam, Mayes, Rio, Delahunt y Cook), pp. 284–287'
     },
     tests: [
@@ -1408,8 +1403,8 @@ export const hypotheses = {
     prom: 'FAAM o LEFS',
     dosis: DOSIS_DERIVAR,
     pronostico: {
-      horizonte: 'Radiografía si la regla de Ottawa de tobillo es positiva. El 70 % son unimaleolares; van desde una torsión banal en personas frágiles hasta traumatismos de alta energía en jóvenes.',
-      derivacion: 'Valorar el riesgo de TVP en toda fractura de tobillo. Alta energía → vigilar síndrome compartimental de la pierna. Con diabetes o neuropatía, una fractura de tobillo puede evolucionar a pie de Charcot.',
+      horizonte: 'Con diabetes o neuropatía, una fractura de tobillo puede evolucionar a un pie de Charcot.',
+      notas: 'Radiografía si la regla de Ottawa de tobillo es positiva. El 70 % son unimaleolares; van desde una torsión banal en personas frágiles hasta traumatismos de alta energía en jóvenes. Hay que valorar el riesgo de TVP en toda fractura de tobillo, y tras un traumatismo de alta energía, vigilar un síndrome compartimental de la pierna.',
       fuente: 'Hermena y Slane 2025 (StatPearls, «Ankle Fracture»); NICE NG19, rec. 1.7.1'
     },
     tests: [
