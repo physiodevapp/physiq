@@ -88,8 +88,52 @@ export const BLOQUES_EJERCICIO = [
       ],
     },
     fuentes: ['Naugle 2012', 'Wewege y Jones 2021', 'Vaegter y Jones 2020', 'Rice 2019', 'Geneen 2017', 'Polaski 2019'] },
+  // Mecanotransducción (2026-10): fuentes leídas enteras en PMC y tres PDF del
+  // usuario (Magnusson y Kjaer 2019, Howe 2011 en dos partes); niveles y
+  // fuentes descartadas en docs/efectos-ejercicio.md. La densidad ósea es un
+  // resultado del tejido (`mecanismo`); fracturas, fuerza y función, `clinico`.
   { id: 'mecanotransduccion', titulo: 'Carga y adaptación del tejido (mecanotransducción)',
-    resumen: 'Tendón, hueso, cartílago y músculo: cómo la carga se convierte en adaptación y por qué el reposo absoluto no repara' },
+    resumen: 'Tendón, hueso, cartílago y músculo: cómo la carga se convierte en adaptación y qué pasa cuando se deja de cargar',
+    apartados: {
+      que: [
+        { t: 'Las células del tendón, el hueso, el músculo y el cartílago detectan la deformación mecánica y la convierten en señales que regulan la síntesis y la degradación del tejido (mecanotransducción); en el hueso, los sensores principales son los osteocitos (Khan y Scott 2009; Hart 2020). Los pasos están bastante resueltos en el hueso, pero en el músculo, el tendón y el cartílago quedan elementos desconocidos (Khan y Scott 2009).', nivel: 'mecanismo' },
+        { t: 'Tendón: en adultos sanos, los programas de fuerza aumentan sobre todo la rigidez y el módulo del tendón, y poco su grosor (Lazarczuk 2022, 61 estudios). El núcleo del tendón de Aquiles apenas renueva su colágeno después de los 17 años, según la datación con carbono 14; la adaptación ocurriría sobre todo en la periferia, idea que se apoya en estudios en animales (Magnusson y Kjaer 2019).', nivel: 'mecanismo' },
+        { t: 'Músculo: la tensión mecánica se considera el estímulo principal de la hipertrofia (Franchi 2017). En humanos, ni los cambios hormonales tras el ejercicio, ni los metabolitos, ni el daño muscular explican el crecimiento del músculo (Lim 2022).', nivel: 'mecanismo' },
+        { t: 'Hueso: responde a cargas dinámicas, rápidas, variadas y mayores que las habituales, con pocos ciclos y pausas entre ellos; estos parámetros salen sobre todo de modelos animales (Harding y Beck 2017).', nivel: 'mecanismo' },
+      ],
+      evidencia: [
+        { t: 'Diez días de reposo estricto en cama en personas mayores sanas redujeron la fuerza de extensión de rodilla un 13 % y la potencia al subir escaleras un 14 %; la función cae antes y más que la masa muscular (Reyes 2026).', nivel: 'clinico' },
+        { t: 'Hacer ejercicio de fuerza durante un reposo en cama prolongado mantuvo el volumen y la fuerza muscular, con evidencia de calidad alta, aunque en voluntarios sanos y jóvenes, casi todos varones (Chen 2025, 18 estudios).', nivel: 'clinico' },
+        { t: 'Tendinopatía: el tratamiento con carga es eficaz clínicamente, y el excéntrico aislado no ha demostrado ser mejor que otras pautas, como la fuerza pesada y lenta o el trabajo concéntrico (Magnusson y Kjaer 2019).', nivel: 'clinico' },
+        { t: 'Las personas mayores ganan fuerza con el entrenamiento de fuerza casi siempre, aunque su músculo crece menos que el de los jóvenes (Lim 2022).', nivel: 'clinico' },
+        { t: 'En mujeres posmenopáusicas, no está demostrado que el ejercicio reduzca las fracturas: hubo 17 fracturas con ejercicio frente a 24 sin él en 4 ensayos, una diferencia no significativa. Con ejercicio combinado hubo menos fracturas, pero ese dato depende casi entero de un solo ensayo (Howe 2011).', nivel: 'clinico' },
+        { t: 'En esas mujeres, el ejercicio frena algo la pérdida de densidad ósea en la columna (0,85 %, 24 ensayos) y el trocánter (1,03 %), pero no en el cuello femoral ni en la cadera total en conjunto; es un efecto pequeño sobre la densidad, no sobre las fracturas (Howe 2011).', nivel: 'mecanismo' },
+        { t: 'Tendón sano: una revisión encontró más adaptación con intensidades altas, por encima del 70 % de la contracción máxima (Bohm 2015), y otra posterior no encontró diferencias entre intensidades, sino con una deformación alta del tendón, dato que sale de solo tres estudios (Lazarczuk 2022).', nivel: 'discutido' },
+        { t: 'Desuso: dos o tres semanas de inmovilizar la pierna reducen un 80 % la síntesis de colágeno del tendón, en jóvenes y mayores, y una o dos semanas sin cargar parecen bastar para que pierda rigidez sin cambiar de grosor (Magnusson y Kjaer 2019). El hueso pierde en torno a un 2 % de densidad al mes inmovilizado, y se recupera más despacio de lo que se pierde (Hart 2020).', nivel: 'mecanismo' },
+        { t: 'Cartílago: caminar, saltar o hacer flexiones de rodilla reducen su grosor o volumen entre un 0 y un 5 % de forma pasajera, y se recupera en 15 a 90 minutos; la certeza es muy baja y no se mide la adaptación a largo plazo (Coburn 2023).', nivel: 'mecanismo' },
+      ],
+      consulta: [
+        { t: 'En la tendinopatía, la carga es la base del tratamiento y se puede elegir entre varias pautas que han funcionado; no hace falta que sea solo excéntrica (Magnusson y Kjaer 2019).', nivel: 'clinico' },
+        { t: 'Para que un tendón sano se adapte hacen falta cargas altas durante 8 a 12 semanas o más: la fuerza es lo que más cambia sus propiedades, los saltos menos y el ejercicio aeróbico solo, nada. Son datos de tendón sano; no se sabe si valen igual para uno con tendinopatía (Bohm 2015; Lazarczuk 2022).', nivel: 'mecanismo' },
+        { t: 'Hueso: la fuerza progresiva fue el ejercicio que frenó la pérdida en el cuello femoral (1,03 %); la fuerza con poca carga y muchas repeticiones no cambió ninguna medida, y caminar solo ayudó algo en la columna (Howe 2011). Un cambio de densidad necesita al menos 6 a 12 meses para verse en una densitometría (Hart 2020).', nivel: 'mecanismo' },
+        { t: 'Cuando un tejido tiene que descargarse, la pérdida empieza en días: mantener cargado lo que se pueda y empezar pronto con carga progresiva es la propuesta de los autores, con movilización temprana de baja intensidad, no un resultado de ensayos en pacientes (Reyes 2026).', nivel: 'mecanismo' },
+      ],
+      paciente: [
+        { t: 'Si se deja de usar una pierna unos días, la fuerza se pierde muy rápido, incluso antes de que se note en el músculo. Moverse y cargar lo que se pueda ayuda a no perderla.', apoya: [0, 1] },
+        { t: 'En un tendón que duele, el ejercicio con carga es el tratamiento principal, y hay varias formas de hacerlo que funcionan.', apoya: [2] },
+        { t: 'El entrenamiento de fuerza sigue funcionando con la edad: se gana fuerza aunque el músculo crezca menos.', apoya: [3] },
+      ],
+      detalle: [
+        'Casi todo lo que se sabe del tendón viene de adultos sanos, sobre todo varones, con muestras pequeñas (de 6 a 15 personas por grupo) y midiendo rigidez, módulo y grosor, no dolor ni función (Bohm 2015; Lazarczuk 2022). La adaptación es menor en las personas mayores (Lazarczuk 2022).',
+        'Tras una rotura del tendón de Aquiles, la respuesta del tendón a la carga es lenta y no se normaliza hasta los 6 a 12 meses (Magnusson y Kjaer 2019).',
+        'Con la misma carga o el mismo trabajo, el ejercicio excéntrico y el concéntrico producen una hipertrofia muy parecida (Franchi 2017).',
+        'En el hueso, la densidad no lo explica todo: una densidad más baja se asocia a más riesgo de fractura, pero no lo predice en cada persona, y la densitometría no mide la forma ni la estructura del hueso (Hart 2020; Harding y Beck 2017).',
+        'Tras 56 días de reposo en cama, el hueso siguió perdiéndose después de volver a cargar, y a los 12 meses aún no se había recuperado del todo (Reyes 2026).',
+        'En el cartílago se ha propuesto una respuesta «en U», en la que tanto el exceso de carga como su falta lo perjudican, pero se apoya sobre todo en estudios en animales e in vitro (Gardashli 2024).',
+        'En los ensayos de Howe 2011, los efectos adversos fueron sobre todo dolor muscular o articular, registrados casi solo en los grupos de ejercicio; las caídas se contaron mal, como número de caídas y no de personas que se caen (Howe 2011).',
+      ],
+    },
+    fuentes: ['Khan y Scott 2009', 'Hart 2020', 'Lazarczuk 2022', 'Magnusson y Kjaer 2019', 'Franchi 2017', 'Lim 2022', 'Harding y Beck 2017', 'Reyes 2026', 'Chen 2025', 'Howe 2011', 'Bohm 2015', 'Coburn 2023', 'Gardashli 2024'] },
   { id: 'antiinflamatorio', titulo: 'Efecto antiinflamatorio sistémico',
     resumen: 'La IL-6 que libera el músculo al contraerse, su diferencia con la de la inflamación, y qué se sabe en dolor musculoesquelético' },
   { id: 'mioquinas', titulo: 'El músculo como órgano endocrino: otras mioquinas',
