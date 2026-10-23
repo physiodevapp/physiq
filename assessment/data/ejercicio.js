@@ -134,8 +134,48 @@ export const BLOQUES_EJERCICIO = [
       ],
     },
     fuentes: ['Khan y Scott 2009', 'Hart 2020', 'Lazarczuk 2022', 'Magnusson y Kjaer 2019', 'Franchi 2017', 'Lim 2022', 'Harding y Beck 2017', 'Reyes 2026', 'Chen 2025', 'Howe 2011', 'Bohm 2015', 'Coburn 2023', 'Gardashli 2024'] },
+  // Antiinflamatorio (2026-10): cinco fuentes leídas enteras en PMC y cinco PDF
+  // del usuario (Petersen y Pedersen 2005, Pedersen y Febbraio 2012, Gleeson
+  // 2011, Benatti y Pedersen 2015, Ho 2013); niveles en docs/efectos-ejercicio.md.
+  // Ninguna fuente mide el efecto antiinflamatorio en el dolor musculoesquelético
+  // común: la frase para el paciente se limita a las enfermedades reumáticas.
   { id: 'antiinflamatorio', titulo: 'Efecto antiinflamatorio sistémico',
-    resumen: 'La IL-6 que libera el músculo al contraerse, su diferencia con la de la inflamación, y qué se sabe en dolor musculoesquelético' },
+    resumen: 'La IL-6 que libera el músculo al contraerse, su diferencia con la de la inflamación, y qué se sabe en dolor musculoesquelético',
+    apartados: {
+      que: [
+        { t: 'Al contraerse, el músculo libera interleucina 6 (IL-6) a la sangre. Sube de forma exponencial con la duración del ejercicio, su intensidad y la masa muscular que trabaja, hasta 100 veces con ejercicio prolongado, aunque lo habitual son subidas menores; sube más con poco glucógeno en el músculo y vuelve al nivel de reposo en torno a una hora después (Petersen y Pedersen 2005; Pedersen y Febbraio 2012; Gleeson 2011). Con ejercicio corto de intensidad baja o moderada apenas sube (Gleeson 2011).', nivel: 'mecanismo' },
+        { t: 'Esa IL-6 aparece sin daño muscular y sin que suba antes el TNF-α, y le siguen en sangre dos citocinas antiinflamatorias, la IL-1ra y la IL-10 (Pedersen y Febbraio 2012; Petersen y Pedersen 2005). En voluntarios sanos, tanto infundir IL-6 como 3 horas de bicicleta impidieron la subida de TNF-α que provoca una dosis baja de endotoxina; otra parte del mecanismo se ha visto solo en células y en ratones (Benatti y Pedersen 2015; Gleeson 2011).', nivel: 'mecanismo' },
+        { t: 'Es la misma molécula que en otros contextos inflama: en la artritis reumatoide, una IL-6 alta de forma crónica contribuye a la enfermedad, y bloquearla mejora los síntomas (Benatti y Pedersen 2015). Por qué la IL-6 del músculo actúa de otra forma no está aclarado; se especula que depende de su vía de señalización (Nara y Watanabe 2021).', nivel: 'mecanismo' },
+        { t: 'Para el ejercicio regular se proponen dos vías: menos grasa visceral, y por tanto menos citocinas del tejido adiposo, y un efecto antiinflamatorio en cada sesión. No se sabe cuánto pesa cada una; con ejercicio suave, como caminar rápido, lo más probable es que pese sobre todo el control de la grasa corporal (Gleeson 2011).', nivel: 'mecanismo' },
+      ],
+      evidencia: [
+        { t: 'Marcadores en reposo con el ejercicio regular: las revisiones narrativas dicen que el entrenamiento de resistencia aeróbica baja la IL-6 basal (Pedersen y Febbraio 2012). En los ensayos leídos no baja: en adultos sedentarios sin diabetes, el entrenamiento combinado redujo el TNF-α y la proteína C reactiva, pero no la IL-6, con pocos estudios (Silva 2024, 24 ensayos); en sobrepeso, 12 semanas de ejercicio moderado no cambiaron la IL-6 y solo el combinado bajó el TNF-α frente al control (Ho 2013). Son marcadores en sangre, no síntomas.', nivel: 'discutido' },
+        { t: 'Que el efecto de cada sesión sea lo que protege a largo plazo es una hipótesis: los mismos autores que la proponen dicen que ese vínculo no está demostrado (Petersen y Pedersen 2005), y no se sabe cuánto pesa cada mecanismo (Gleeson 2011).', nivel: 'mecanismo' },
+        { t: 'Artrosis de rodilla con sobrepeso: a los 18 meses, la IL-6 bajó más con la pérdida de peso (dieta sola o con ejercicio) que con el ejercicio solo, y el dolor mejoró más con dieta y ejercicio que con cada uno por separado, una diferencia de importancia clínica incierta según los autores. No había grupo sin intervención (Messier 2013). No permite atribuir el alivio del dolor a una menor inflamación.', nivel: 'mecanismo' },
+        { t: 'Enfermedades reumáticas inflamatorias (artritis reumatoide, lupus, espondilitis anquilosante, esclerosis sistémica): los programas de ejercicio aeróbico y de fuerza mejoran la capacidad aeróbica, la fuerza y la función referida, sin brotes ni subida de la proteína C reactiva o de la velocidad de sedimentación. Los autores llaman a estos datos todavía preliminares (Benatti y Pedersen 2015).', nivel: 'clinico' },
+        { t: 'En la artritis reumatoide, una sesión de ejercicio aeróbico, de fuerza o combinado no pareció empeorar el dolor; la IL-6 sube justo después y vuelve a su nivel a las 24 horas. Son 11 estudios pequeños y distintos entre sí, y los autores no sacan una conclusión firme (Balchin 2022).', nivel: 'clinico' },
+        { t: 'Dolor musculoesquelético común (lumbalgia, tendinopatía, hombro doloroso): ninguna fuente leída mide si el ejercicio reduce la inflamación ni si eso explica su efecto sobre el dolor. Aquí solo hay mecanismo.', nivel: 'mecanismo' },
+      ],
+      consulta: [
+        { t: 'En un paciente con una enfermedad reumática inflamatoria, el miedo a que el ejercicio aeróbico o de fuerza agrave la inflamación no se sostiene. La excepción que señalan los autores: con daño articular extenso al empezar, un programa de fuerza de alta intensidad puede aumentar el daño articular (Benatti y Pedersen 2015).', nivel: 'clinico' },
+        { t: 'La subida de IL-6 tras una sesión es la respuesta normal del músculo que trabaja, no un signo de inflamación ni de lesión: aparece sin daño muscular y se normaliza pronto (Pedersen y Febbraio 2012; Gleeson 2011). En la artritis reumatoide, los autores de la revisión creen que tampoco debe leerse como una respuesta inflamatoria desfavorable (Balchin 2022).', nivel: 'mecanismo' },
+        { t: 'Explicar el alivio del dolor musculoesquelético con «el ejercicio es antiinflamatorio» va más allá de lo medido: no hay estudios que lo muestren en esos pacientes, y con ejercicio suave el efecto antiinflamatorio vendría sobre todo de la grasa corporal (Gleeson 2011).', nivel: 'mecanismo' },
+        { t: 'En deportistas de élite, cargas de entrenamiento muy altas se asocian a más infecciones respiratorias leves, que los autores atribuyen en parte a ese estado antiinflamatorio, junto al estrés, el mal sueño y el balance energético negativo; el ejercicio moderado regular se asocia a menos infecciones que el sedentarismo (Gleeson 2011).', nivel: 'mecanismo' },
+      ],
+      paciente: [
+        { t: 'Si tiene una enfermedad reumática inflamatoria, como artritis reumatoide o lupus, el ejercicio pautado no empeora la inflamación y le ayuda a ganar fuerza y a moverse mejor. Aún hay pocos estudios.', apoya: [3] },
+        { t: 'En la artritis reumatoide, una sesión de ejercicio no empeoró el dolor en los estudios.', apoya: [4] },
+      ],
+      detalle: [
+        'No hay frase para el paciente con dolor musculoesquelético común: ninguna afirmación de este bloque sobre él llega al nivel clínico, y decirle que el ejercicio «desinflama» prometería más de lo demostrado.',
+        'Un ejemplo en humanos: 3 horas de extensión de rodilla al 50 % multiplicaron por 20 la IL-6 en plasma, y en personas mayores no entrenadas el músculo liberó aún más (Petersen y Pedersen 2005). Con el entrenamiento aeróbico, la subida de IL-6 en cada sesión se hace menor (Pedersen y Febbraio 2012).',
+        'Buena parte del mecanismo de la IL-6 muscular viene de ratones y de células musculares en cultivo, y su papel principal parece metabólico (movilizar grasa y glucosa) más que inflamatorio (Nara y Watanabe 2021; Pedersen y Febbraio 2012).',
+        'En el metaanálisis de Silva 2024 la IL-6 tuvo una heterogeneidad muy alta (I² 87 %); de 24 ensayos, 3 tenían riesgo de sesgo bajo, 18 algunas dudas y 3 alto, y pocos dijeron cuánto tiempo pasó entre la última sesión y la extracción de sangre, algo que cambia las citocinas (Silva 2024).',
+        'En el ensayo de Ho 2013 casi todos tenían marcadores normales al empezar, lo que deja poco margen de mejora; 64 de 97 terminaron (Ho 2013).',
+        'En el ensayo IDEA, a los 18 meses solo el 54 % del grupo de ejercicio seguía haciéndolo, y el estudio no tenía potencia para las diferencias que encontró en la IL-6 (Messier 2013).',
+      ],
+    },
+    fuentes: ['Petersen y Pedersen 2005', 'Pedersen y Febbraio 2012', 'Gleeson 2011', 'Nara y Watanabe 2021', 'Silva 2024', 'Ho 2013', 'Messier 2013', 'Benatti y Pedersen 2015', 'Balchin 2022'] },
   { id: 'mioquinas', titulo: 'El músculo como órgano endocrino: otras mioquinas',
     resumen: 'Concepto y estado real de cada mioquina; puede quedar como párrafo del bloque anterior si sus fuentes dan casi solo mecanismo' },
   { id: 'centrales', titulo: 'Efectos centrales',
