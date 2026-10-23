@@ -1030,7 +1030,8 @@ export const hypotheses = {
   // LR: ver «Phase 4b scoring» en CLAUDE.md. `fuente` cita el estudio de cada
   // cifra; sin fuente no hay LR (el test cuenta como hallazgo clínico).
   // `pronostico`: texto de la tarjeta lumbar de la guía de consulta, comprobado
-  // contra su origen, el capítulo lumbar de Lluch 2020 (cap. 5.1, Fondevila Suárez).
+  // contra su origen, el capítulo lumbar de Lluch 2020 (cap. 5.1, Fondevila Suárez),
+  // y repartido por apartados (Fase Q) sin añadir afirmaciones.
   lu1: {
     id: 'lu1', region: 'lumbar', num: '①',
     name: 'Disfunción Segmentaria Lumbosacra (Déficit de Movilidad)',
@@ -1061,8 +1062,9 @@ export const hypotheses = {
     dosis: 'Ejercicios repetidos en la dirección que centralice o reduzca el dolor (método McKenzie, MDT: C en la aguda, B en la crónica; más eficaz cuando se ajusta a la preferencia direccional). Con dolor en la pierna: aguda, fuerza y resistencia del tronco y activación específica de su musculatura (B); crónica, activación específica del tronco y control del movimiento (B), y movilización neural junto a otros tratamientos, a corto plazo (B). Terapia manual solo dentro de un programa con ejercicio (NICE). No usar tracción (D; NICE: no ofrecer). Ninguna fuente fija repeticiones, frecuencia ni amplitud: el volumen queda a criterio del clínico.',
     dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C, «should not» D) · NICE NG59 (rec. 1.2.6 y 1.2.7; actualizada en julio de 2026)',
     pronostico: {
-      horizonte: 'Agudo hasta 3 semanas, subagudo hasta 3 meses. Mejora a los 6 meses en el 88 %, recuperación completa en el 65 %. Hernia reabsorbida en al menos dos tercios. Recurrencia 20 %.',
-      derivacion: 'RM si sospecha de patología grave, dolor radicular persistente, déficit grave o progresivo, o más de 1 mes sin remisión con conservador.',
+      horizonte: 'Suele ser autolimitado, aunque la recuperación puede tardar. A los 6 meses ha mejorado el 88 %, y el 65 % se ha recuperado por completo en seguimientos a 1, 4 y 10 años. La hernia se reabsorbe sola en al menos dos tercios de los casos. Un episodio único suele tener buen pronóstico; la situación cambia si recurre, lo que pasa en el 20 % de los casos.',
+      notas: 'Se considera agudo hasta las 3 semanas y subagudo hasta los 3 meses.',
+      derivacion: 'hay sospecha de patología grave, el dolor radicular persiste, hay un déficit neurológico grave y progresivo, o pasa más de 1 mes sin remisión con el tratamiento conservador o la historia natural: está indicada la RM.',
       fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), pp. 308–309'
     },
     tests: [
@@ -1079,8 +1081,9 @@ export const hypotheses = {
     dosis: 'Ejercicio general (A en mayores con lumbalgia crónica), con progresión de volumen e intensidad: en los ensayos con estenosis, un programa multimodal de ejercicio general y aeróbico mejoró dolor y discapacidad a los 6 meses, y el ejercicio general individualizado con terapia manual superó al ejercicio en grupo y a la atención médica habitual a los 2 meses. Estiramiento, fortalecimiento y ejercicio aeróbico; evitar caminar cuesta abajo y la extensión lumbar excesiva (Munakomi 2023). La revisión sistemática más reciente del tratamiento no quirúrgico (Ammendolia 2022) halla evidencia de calidad moderada de que un programa multimodal de terapia manual y ejercicio, con o sin educación, es eficaz y seguro, y de que las infiltraciones epidurales de corticoides no aportan mejoría clínicamente importante. Ninguna fuente fija repeticiones ni tiempos: el volumen queda a criterio del clínico.',
     dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C, «should not» D) · Munakomi 2023, StatPearls, «Spinal Stenosis and Neurogenic Claudication» (tratamiento conservador) · Ammendolia 2022, BMJ Open 12:e057724 (revisión sistemática, actualización de la Cochrane de 2013; GRADE)',
     pronostico: {
-      horizonte: 'Historia natural poco conocida. 15 % mejora solo; hasta 20 % controla los síntomas evitando la extensión. Conservador antes que cirugía.',
-      derivacion: 'Progresión neurológica rápida o deterioro de la calidad de vida. La cirugía no garantiza recuperar los déficits. NICE: no usar infiltraciones epidurales en la claudicación neurógena por estenosis de canal central.',
+      horizonte: 'La historia natural es poco conocida. El 15 % mejora sin tratamiento, y hasta el 20 % controla los síntomas evitando las posturas de extensión del tronco.',
+      notas: 'El tratamiento conservador va antes que la cirugía, y la cirugía no garantiza recuperar los déficits. NICE recomienda no usar infiltraciones epidurales en la claudicación neurógena por estenosis de canal central.',
+      derivacion: 'los síntomas neurológicos progresan rápido y empeora la calidad de vida: puede estar indicada la cirugía.',
       fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), pp. 313–314 · NICE NG59 (rec. 1.3.6)'
     },
     clusters: {
@@ -1106,8 +1109,8 @@ export const hypotheses = {
     dosis: 'Ejercicio activo como base. Lumbalgia aguda con dolor irradiado: fuerza y resistencia del tronco y activación específica de su musculatura (B). Crónica: activación específica del tronco y control del movimiento (B). Terapia manual solo dentro de un programa con ejercicio (NICE): movilización articular con o sin thrust (B) y movilización neural junto a otros tratamientos, para mejorar a corto plazo (B). No usar tracción (D; NICE: no ofrecer). Información para el autocuidado y animar a mantener la actividad normal (NICE). Las guías hablan de lumbalgia con dolor en la pierna, no específicamente del déficit neurológico, y no fijan series, repeticiones ni semanas: el volumen queda a criterio del clínico.',
     dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C, «should not» D) · NICE NG59 (rec. 1.2.1, 1.2.6 y 1.2.7; actualizada en julio de 2026)',
     pronostico: {
-      horizonte: 'RM de elección. EMG muy específica, poco sensible; útil si clínica e imagen no casan.',
-      derivacion: 'Cirugía: déficit significativo en abductores de cadera, flexores plantares o dorsales del pie, o déficit que progresa pese al conservador.',
+      notas: 'La RM es la prueba de imagen de elección. El electromiograma es muy específico pero poco sensible: es útil cuando la clínica y la imagen no coinciden.',
+      derivacion: 'hay un déficit significativo de los abductores de cadera, de los flexores plantares o de los flexores dorsales del pie, o un déficit que progresa pese al tratamiento conservador: es una indicación absoluta de cirugía.',
       fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), p. 311'
     },
     tests: [
@@ -1123,8 +1126,8 @@ export const hypotheses = {
     dosis: 'Las guías no tienen una pauta específica para el origen discogénico: estas son sus recomendaciones para la lumbalgia en general. Aguda: movilización articular con o sin thrust (A); ejercicio con activación específica del tronco (C); método McKenzie (MDT) (C). Crónica: ejercicio (A) —fuerza y resistencia del tronco, multimodal, activación específica, aeróbico, acuático o general—; movilización articular con o sin thrust (A), siempre dentro de un programa con ejercicio (NICE); MDT (B); educación en neurociencia del dolor junto al ejercicio o la terapia manual (A). Sin series, repeticiones ni semanas fijadas: el volumen queda a criterio del clínico.',
     dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C) · NICE NG59 (rec. 1.2.7; actualizada en julio de 2026)',
     pronostico: {
-      horizonte: 'A 4 años: 13 % mejoró, 7,6 % alivio leve, 12,2 % empeoró, 67,2 % sin cambios. La preferencia direccional predice buen pronóstico.',
-      derivacion: 'Componente neuropático o disfuncional → más cronicidad. Con dolor en pierna, diferenciar de dolor radicular.',
+      horizonte: 'A los 4 años, el 13 % había mejorado, el 7,6 % tenía un alivio leve, el 12,2 % había empeorado y el 67,2 % seguía sin cambios. La preferencia direccional predice un buen pronóstico, y un componente de dolor neuropático o disfuncional central, más cronicidad y peor pronóstico.',
+      notas: 'Si hay dolor en la pierna, hay que diferenciarlo del dolor radicular.',
       fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), pp. 317–318'
     },
     tests: [
@@ -1140,8 +1143,9 @@ export const hypotheses = {
     dosis: 'Las guías no tienen una pauta específica para el dolor facetario: estas son sus recomendaciones para la lumbalgia en general. Aguda: movilización articular con o sin thrust (A); masaje o movilización de partes blandas para aliviar el dolor a corto plazo (B); ejercicio con activación específica del tronco (C). Crónica: ejercicio (A) —fuerza y resistencia del tronco, multimodal, activación específica, aeróbico, acuático o general—; movilización articular con o sin thrust (A); movilización de partes blandas o masaje junto a otros tratamientos, a corto plazo (B); educación en neurociencia del dolor junto al ejercicio o la terapia manual (A). La terapia manual, siempre dentro de un programa con ejercicio (NICE). Sin series, repeticiones ni semanas fijadas: el volumen queda a criterio del clínico.',
     dosisFuente: 'George 2021, J Orthop Sports Phys Ther 51(11):CPG1–CPG60 (guía de práctica clínica APTA; letra = grado de la recomendación, deducido del verbo según la tabla de la guía: «should» A, «may» B, «can» C) · NICE NG59 (rec. 1.2.7; actualizada en julio de 2026)',
     pronostico: {
-      horizonte: 'No se puede establecer pronóstico: la degeneración aumenta con la edad sin relación causal demostrada con el dolor. La radiología no es criterio diagnóstico; un bloqueo simple alivia definitivamente a menos del 10 %.',
-      derivacion: 'NICE: considerar derivar para valorar denervación por radiofrecuencia si el tratamiento no quirúrgico no ha funcionado, se piensa que el dolor viene principalmente de estructuras inervadas por la rama medial y el dolor lumbar localizado es moderado o intenso (≥ 5/10) al derivar; la radiofrecuencia solo tras una respuesta positiva a un bloqueo diagnóstico de la rama medial. No ofrecer infiltraciones raquídeas para la lumbalgia.',
+      horizonte: 'No se puede establecer un pronóstico: la degeneración aumenta con la edad sin una relación causal demostrada con el dolor.',
+      notas: 'La radiología no es criterio diagnóstico, y un bloqueo simple alivia definitivamente a menos del 10 %. NICE recomienda no ofrecer infiltraciones raquídeas para la lumbalgia.',
+      derivacion: 'el tratamiento no quirúrgico no ha funcionado, se piensa que el dolor viene principalmente de estructuras inervadas por la rama medial y el dolor lumbar localizado es moderado o intenso (≥ 5/10) en el momento de derivar: NICE recomienda considerar derivar para valorar una denervación por radiofrecuencia, que solo se hace tras una respuesta positiva a un bloqueo diagnóstico de la rama medial.',
       fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), pp. 319–320 · NICE NG59 (rec. 1.3.1–1.3.3, derivación)'
     },
     tests: [
@@ -1157,8 +1161,8 @@ export const hypotheses = {
     dosis: 'Terapia manual de la sacroilíaca (manipulación con thrust de alta velocidad y baja amplitud, movilización o técnicas de energía muscular), siempre junto a ejercicio (NICE: terapia manual solo dentro de un programa con ejercicio). En la revisión más reciente (16 ensayos, seguimiento mediano de 4 semanas) mejoró la discapacidad frente a ejercicio solo o placebo (efecto moderado, certeza baja), sin efecto demostrado sobre el dolor (certeza muy baja), y ninguna técnica superó a las demás. Ejercicio de estabilización lumbopélvica, como en los estudios incluidos: activar y controlar el transverso del abdomen y el multífido, puentes, y abducción y rotación de cadera en decúbito lateral, integrados en las actividades diarias. Los programas duraron de un día a 4 semanas (hasta 8 semanas el de ejercicio). El vendaje neuromuscular no superó al placebo en el ensayo de más calidad. Evidencia de calidad baja o media y sin un volumen reproducible: series y repeticiones a criterio del clínico.',
     dosisFuente: 'Al-Subahi 2017, J Phys Ther Sci 29(9):1689–1694 (revisión sistemática, 9 estudios de 2004–2014 de calidad baja o media: manipulación, ejercicio y vendaje neuromuscular) · Trager 2024, J Man Manip Ther 32(6):561–572 (revisión sistemática con metaanálisis, 16 ensayos; GRADE) · NICE NG59 (rec. 1.2.7; actualizada en julio de 2026)',
     pronostico: {
-      horizonte: 'PRPPP: >54 % en el último trimestre, 25 % posparto; la mayoría se recupera, 7–20 % persiste. Recaída del 85 % en el siguiente embarazo.',
-      derivacion: 'Predicen persistencia: edad, carga de trabajo alta, lumbalgia previa, mala función muscular. Cribar depresión posparto (×3).',
+      horizonte: 'En el dolor pélvico posterior relacionado con el embarazo (PRPPP), la mayoría se recupera a corto y medio plazo, pero el 7–20 % desarrolla un dolor persistente. Tras un dolor pélvico posparto, el riesgo de recaída en el siguiente embarazo es del 85 %.',
+      notas: 'El PRPPP afecta a más del 54 % durante el embarazo y al 25 % en el posparto. Lo predicen la edad, una carga de trabajo alta, la lumbalgia previa y una mala función muscular. La depresión posparto es tres veces más frecuente con PRPPP: conviene cribarla y, sobre todo, prevenirla.',
       fuente: 'Lluch 2020, cap. 5.1 (Fondevila Suárez), p. 322'
     },
     clusters: {
