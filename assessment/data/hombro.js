@@ -852,8 +852,9 @@ export const hypotheses = {
     dosis: 'Por fases, ajustando la intensidad a la irritabilidad del tejido. Siempre: educar sobre la evolución natural, adaptar la actividad para mover sin dolor y ajustar la intensidad del estiramiento a la irritabilidad (B); estiramientos (B). Irritabilidad alta (dolor ≥7/10, dolor nocturno o en reposo constante, dolor antes del final del rango, activa claramente menor que pasiva): ejercicios de movilidad pasiva y activo-asistida sin dolor. La guía añade movilización glenohumeral de baja intensidad en rangos sin dolor (C); un consenso de expertos posterior (2025) no considera eficaz la terapia manual en la fase precoz dolorosa (93 %) y sí la información y tranquilizar (100 %) y la infiltración de corticoide (79 %). Irritabilidad moderada: movilización de intensidad moderada y estiramientos suaves a moderados hacia la resistencia del tejido, sin dolor ni inflamación después, e integrar la movilidad ganada en gestos de alcance. Irritabilidad baja (fase rígida): movilización al final del rango, de amplitud y duración altas, y estiramientos de duración progresiva; aquí el consenso sí considera eficaz la terapia manual (85 %). La infiltración intraarticular de corticoide junto con ejercicios de movilidad y estiramiento alivia más a corto plazo (4–6 semanas) que el ejercicio solo (A; la indica el médico). La guía admite añadir al ejercicio onda corta, ultrasonido o electroestimulación (C); el consenso no considera eficaces el masaje, la inmovilización, el frío, la electroestimulación ni el ultrasonido (tampoco el calor en la fase precoz). Ninguna fuente fija series, repeticiones ni frecuencia, y estirar más allá del dolor puede empeorar el resultado.',
     dosisFuente: 'Kelley 2013, J Orthop Sports Phys Ther 43(5):A1–A31 (guía de práctica clínica APTA; letra = grado de la recomendación, tal como la da la guía) · Salamh 2025, J Man Manip Ther 33(4):309–320 (consenso Delphi de 14 expertos; % = acuerdo del panel; es opinión de expertos, no evidencia de eficacia)',
     pronostico: {
-      horizonte: 'Se suele decir que se resuelve en 2–3 años, pero un 41 % sigue con síntomas a los 4 años y la mitad a los 7. No hay evidencia de que avance por estadios hasta curarse sin tratamiento. Rx normal salvo osteopenia o calcificación; RM no necesaria.',
-      derivacion: 'Ejercicio en grupo supervisado: mejores resultados que el individual y que el ejercicio en casa. Derivar a psicología si los factores psicosociales superan tu competencia. Baja autoeficacia predice peor evolución. Contralateral en el 6–34 %. Más frecuente con diabetes (hasta un 30 %) y quizá con hipotiroidismo y Dupuytren.',
+      horizonte: 'Se suele decir que se resuelve en 2–3 años, pero un 41 % sigue con síntomas a los 4 años y la mitad a los 7. No hay evidencia de que avance por estadios hasta curarse sin tratamiento. En el dolor de hombro, una autoeficacia baja frente al dolor predice una peor evolución.',
+      notas: 'La radiografía es normal salvo osteopenia de la cabeza humeral o una posible tendinopatía calcificante; la RM no es necesaria para el diagnóstico. El ejercicio en grupo supervisado por un fisioterapeuta da mejores resultados que la fisioterapia individual y que el ejercicio en casa. Es raro que vuelva en el mismo hombro, pero se han documentado casos en el otro (6–34 %). Es bastante más frecuente con diabetes, con cifras descritas de hasta el 30 %; quizá se asocia también al hipotiroidismo, y la enfermedad de Dupuytren parece frecuente en quienes la tienen.',
+      derivacion: 'no te ves con confianza o competencia para abordar los aspectos psicosociales del dolor: derivar a tiempo a otro profesional del equipo, como psicología.',
       fuente: 'Lluch 2020, cap. 3.1.1 (Powell y Lewis), pp. 69–73'
     },
     tests: [
@@ -873,8 +874,8 @@ export const hypotheses = {
     dosis: 'Educación individualizada y centrada en el paciente sobre su problema, las opciones para manejar el dolor, la modificación de la actividad y el automanejo (C). Tratamiento inicial: programa de ejercicio activo, de control motor o de fuerza con cargas variadas (A); la carga alta no ha demostrado ser mejor que la baja, y el ejercicio supervisado no supera al de casa. Puede añadirse terapia manual vertebral o del miembro superior (partes blandas, movilización o manipulación) para aliviar el dolor a corto plazo (B) y vendaje como complemento del ejercicio (D). No usar ultrasonido terapéutico (B; C en la tendinopatía calcificada, donde pueden usarse ondas de choque o láser, C). Adaptaciones ergonómicas si el dolor es laboral (C). La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico.',
     dosisFuente: 'Desmeules 2025, J Orthop Sports Phys Ther 55(4):235–274 (guía de práctica clínica; incluye el síndrome de dolor subacromial dentro de la tendinopatía del manguito; letra = grado de la recomendación, tal como la da la guía)',
     pronostico: {
-      horizonte: 'Una rotura completa del supraespinoso en ecografía aumenta la probabilidad, pero la imagen no mejora la capacidad de descartarlo.',
-      derivacion: 'Dolor en reposo: puede indicar bursitis o proceso inflamatorio que tolere mal el movimiento vigoroso → dosificar. La idea de «espacio subacromial estrecho» es controvertida. Si no mejora en un máximo de 12 semanas de tratamiento conservador adecuado, puede pedirse imagen y derivar al médico especialista si el dolor o la discapacidad siguen siendo intensos (Desmeules 2025, grado F).',
+      notas: 'Una rotura completa del supraespinoso en la ecografía aumenta la probabilidad, pero la imagen no mejora la capacidad de descartarlo. Un dolor en reposo, aunque sea mínimo, puede indicar una bursitis o un proceso inflamatorio que tolere mal el movimiento vigoroso. La idea de un «espacio subacromial estrecho» es controvertida.',
+      derivacion: 'no mejora en un máximo de 12 semanas de tratamiento conservador adecuado: puede pedirse imagen y derivar al médico especialista si el dolor o la discapacidad siguen siendo intensos (Desmeules 2025, grado F).',
       fuente: 'Lluch 2020, cap. 3.1 (Struyf), pp. 53–54'
     },
     tests: [
@@ -893,8 +894,8 @@ export const hypotheses = {
     dosis: 'Rotura parcial: la misma pauta que la tendinopatía del manguito, que la guía incluye: educación (C), programa de ejercicio activo de control motor o de fuerza como tratamiento inicial (A), terapia manual para el dolor a corto plazo (B) y sin ultrasonido terapéutico (B); imagen y derivación al especialista si no mejora en un máximo de 12 semanas (F). Rotura completa: la guía la excluye y no se ha leído ninguna fuente con pauta, así que queda a criterio del clínico; si es consecuencia de una luxación anterior, el consenso ESSKA-ESA la considera indicación de reparación quirúrgica (B). Ninguna fuente fija series, repeticiones ni semanas.',
     dosisFuente: 'Desmeules 2025, J Orthop Sports Phys Ther 55(4):235–274 (guía de práctica clínica; incluye la rotura parcial y excluye la completa; letra = grado de la recomendación, tal como la da la guía) · Alentorn-Geli 2026, Knee Surg Sports Traumatol Arthrosc 34:3040–3051 (consenso formal de la ESSKA-ESA, parte 2: tratamiento y vuelta al deporte; letra = grado de la recomendación, tal como la da el consenso; ninguna llega a A)',
     pronostico: {
-      horizonte: 'RM como referencia: rotura completa S 90 %, E 100 %; parcial S 100 %, E 87 %. No se observa curación espontánea y el tamaño puede aumentar en unos 2 años, también en asintomáticas.',
-      derivacion: 'Alrededor del 40 % de la población tiene roturas asintomáticas: la rotura no explica por sí sola el dolor. La degeneración crece desde los 50–55 años mientras el dolor no traumático baja a partir de los 60–65.',
+      horizonte: 'No se observa curación espontánea, y el tamaño de la rotura puede aumentar en unos 2 años, también en las roturas sin síntomas.',
+      notas: 'La RM es la prueba de imagen de referencia: en la rotura completa tiene S 90 % y E 100 %, y en la parcial, S 100 % y E 87 %. Alrededor del 40 % de la población tiene roturas sin síntomas: la rotura no explica por sí sola el dolor. La degeneración del manguito aumenta desde los 50–55 años, mientras que el dolor no traumático disminuye a partir de los 60–65.',
       fuente: 'Lluch 2020, cap. 3.1 (Struyf), pp. 66–67'
     },
     tests: [
@@ -919,8 +920,8 @@ export const hypotheses = {
     dosis: 'Inestabilidad anterior traumática (el consenso no trata la posterior ni la multidireccional, que quedan a criterio del clínico). Primer episodio: cabestrillo para el dolor, preferiblemente en rotación interna; movilizar pronto, dentro de la primera semana, puede dar resultados parecidos a 3 semanas de cabestrillo (C). En mayores, inmovilizar para el dolor hasta descartar lesiones asociadas (C). Rehabilitación siempre, se opere o no (D): tras la inmovilización, movilidad pasiva controlada por el dolor que progresa a activo-asistida y, cuando el dolor lo permita, fuerza periescapular y del manguito, habiendo descartado antes lesiones asociadas. Recidiva: en general se recomienda cirugía, y en deportes de contacto o colisión la rehabilitación difícilmente basta; como preparación, ejercicios pasivos y activo-asistidos en cuanto se toleren y después propiocepción y fuerza del manguito, el deltoides y los periescapulares (C); cabestrillo solo 1–2 semanas para el dolor (C). Vuelta al deporte sin cirugía cuando haya rango completo sin dolor, hombro estable con aprensión negativa y fuerza y resistencia suficientes, por lo general a las 6–16 semanas (C). El consenso no fija series ni repeticiones.',
     dosisFuente: 'Alentorn-Geli 2026, Knee Surg Sports Traumatol Arthrosc 34:3040–3051 (consenso formal de la ESSKA-ESA, parte 2: tratamiento y vuelta al deporte; letra = grado de la recomendación, tal como la da el consenso; ninguna llega a A)',
     pronostico: {
-      horizonte: 'Diagnóstico sobre todo clínico; la Rx simple puede identificar Bankart y Hill-Sachs. A las 3–4 semanas del episodio agudo hay poco dolor y recuperan movilidad y fuerza.',
-      derivacion: 'La MDI se confunde con inestabilidad unidireccional, SAPS, patología discal cervical, plexitis braquial y desfiladero torácico. Tener presente Ehlers-Danlos o Marfan.',
+      horizonte: 'A las 3–4 semanas del episodio agudo queda poco dolor y se recuperan la movilidad y la fuerza.',
+      notas: 'El diagnóstico es sobre todo clínico; la radiografía simple puede identificar lesiones de Bankart y de Hill-Sachs. La inestabilidad multidireccional se confunde con la inestabilidad unidireccional, el síndrome de dolor subacromial, la patología discal cervical, la plexitis braquial y el síndrome del desfiladero torácico. Hay que tener presente que la laxitud ligamentosa generalizada puede deberse a enfermedades como el síndrome de Ehlers-Danlos o el de Marfan.',
       fuente: 'Lluch 2020, cap. 3.1 (Struyf), pp. 58–59'
     },
     tests: [
@@ -941,8 +942,7 @@ export const hypotheses = {
     prom: 'DASH (MCID: 10.8 pts)',
     dosis: '',
     pronostico: {
-      horizonte: 'La artro-RM es más precisa que la RM sin contraste.',
-      derivacion: 'El SLAP aislado es raro y es frecuente en asintomáticos: tratarlo solo tiene sentido si explica los síntomas. Suele acompañar a rotura del MR, inestabilidad, rotura del bíceps o bursitis.',
+      notas: 'La artro-RM es más precisa que la RM sin contraste. La lesión SLAP aislada es rara y es frecuente en personas sin síntomas: tratarla solo tiene sentido si explica los síntomas. Suele acompañar a una rotura del manguito rotador, una inestabilidad, una rotura del bíceps o una bursitis.',
       fuente: 'Lluch 2020, cap. 3.1 (Struyf), pp. 63–64'
     },
     tests: [
@@ -970,8 +970,7 @@ export const hypotheses = {
     prom: 'SPADI (MCID: 14.9–25.4 pts)',
     dosis: '',
     pronostico: {
-      horizonte: 'Rx y RM muestran patología AC, pero muchos cambios aparecen en personas sin síntomas.',
-      derivacion: 'La infiltración ecoguiada tiene efecto diagnóstico y terapéutico: decisión médica.',
+      notas: 'La radiografía y la RM muestran patología acromioclavicular, pero muchos de esos cambios aparecen en personas sin síntomas. La infiltración ecoguiada tiene efecto diagnóstico y terapéutico; la decide el médico.',
       fuente: 'Lluch 2020, cap. 3.1 (Struyf), p. 61 · Lluch 2020, cap. 3.1.1 (Powell y Lewis), tabla 2, p. 75'
     },
     tests: [
@@ -1026,8 +1025,8 @@ export const hypotheses = {
     prom: 'DASH (MCID: 10.8 pts)',
     dosis: DOSIS_DERIVAR,
     pronostico: {
-      horizonte: 'Luxación bloqueada: traumatismo previo, cualquier edad, rigidez activa y pasiva similar al congelado; imagen: Rx simple. Fractura: traumatismo previo, osteoporosis; imagen: Rx, y RM si es una fractura no desplazada del troquíter.',
-      derivacion: 'Traumatismo previo + rigidez activa y pasiva → luxación bloqueada o fractura → Rx. No explorar más hasta tenerla.',
+      notas: 'En la luxación bloqueada suele haber un traumatismo previo, puede darse a cualquier edad y la rigidez activa y pasiva se parece a la del hombro congelado; la radiografía simple la detecta. En la fractura hay un traumatismo previo y antecedentes de osteoporosis; puede hacer falta una radiografía, o una RM si es una fractura no desplazada del troquíter.',
+      derivacion: 'hay un traumatismo previo y rigidez activa y pasiva: puede ser una luxación bloqueada o una fractura, y hace falta una radiografía. No explorar más hasta tenerla.',
       fuente: 'Lluch 2020, cap. 3.1.1 (Powell y Lewis), tabla 2, p. 75; Tarjeta de consulta hombro (guía clínica de hombro, ap. 5)'
     },
     tests: [
