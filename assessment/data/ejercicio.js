@@ -188,8 +188,51 @@ export const BLOQUES_EJERCICIO = [
       ],
     },
     fuentes: ['Petersen y Pedersen 2005', 'Pedersen y Febbraio 2012', 'Gleeson 2011', 'Nara y Watanabe 2021', 'Silva 2024', 'Ho 2013', 'Messier 2013', 'Benatti y Pedersen 2015', 'Balchin 2022', 'Severinsen y Pedersen 2020', 'Bettariga 2024', 'Jedrychowski 2015', 'Albrecht 2015', 'Cosio 2021'] },
+  // Bloque 5 (2026-10): ocho fuentes leídas enteras en PMC (Noetel 2024, Singh
+  // 2023, Haller 2026, Pérez-Romero 2026, Xie 2021, Hudson 2025, Lima 2023 y las
+  // partes psicológicas de Geneen 2017); niveles en docs/efectos-ejercicio.md.
+  // Lo clínico es el ánimo y el sueño referido, sobre todo fuera del dolor
+  // musculoesquelético; en él, discutido. La autoeficacia, solo mecanismo.
   { id: 'centrales', titulo: 'Efectos centrales',
-    resumen: 'Sueño, estado de ánimo y autoeficacia' },
+    resumen: 'Sueño, estado de ánimo y autoeficacia',
+    apartados: {
+      que: [
+        { t: 'El ejercicio regular mejora los síntomas depresivos y de ansiedad y cómo dice dormir la persona, en población general, con depresión y con enfermedades crónicas (Singh 2023; Noetel 2024; Xie 2021). Por qué ocurre no está aclarado: se proponen factores neurotróficos, más serotonina y noradrenalina, cambios en el eje hipotálamo-hipófiso-suprarrenal, menos inflamación y efectos psicológicos y sociales, pero ninguna de las revisiones leídas los mide (Singh 2023; Noetel 2024).', nivel: 'mecanismo' },
+        { t: 'La autoeficacia es la confianza en la propia capacidad para hacer algo, como subir escaleras o caminar un rato. Se propone que parte del efecto del ejercicio pase por ella, pero en la artrosis de rodilla solo dos ensayos lo han analizado, y midiendo a la vez la autoeficacia y el resultado, lo que no permite saber cuál cambia primero (Lima 2023).', nivel: 'mecanismo' },
+        { t: 'Ánimo, sueño y dolor se influyen entre sí: en la lumbalgia crónica con síntomas depresivos, los autores no pueden separar si el ánimo mejora por el tratamiento o por tener menos dolor, ni al revés (Haller 2026).', nivel: 'mecanismo' },
+      ],
+      evidencia: [
+        { t: 'Depresión mayor: frente a un control activo (atención habitual, pastilla placebo, estiramientos), caminar o correr, el yoga, la fuerza, el aeróbico mixto y el tai chi redujeron los síntomas con un efecto moderado. La confianza en esos resultados es baja para caminar o correr y muy baja para el resto, porque casi ningún estudio cegó a participantes ni terapeutas (Noetel 2024, 218 estudios).', nivel: 'clinico' },
+        { t: 'Síntomas depresivos y de ansiedad en adultos sanos, con trastornos mentales o con enfermedades crónicas: la actividad física los reduce con un efecto moderado, también en la artritis; la mayoría de las revisiones reunidas tienen una calidad metodológica críticamente baja (Singh 2023, 97 revisiones).', nivel: 'clinico' },
+        { t: 'Intensidad: en la depresión, el efecto aumenta con la intensidad del ejercicio, pero la actividad ligera también tuvo un efecto relevante (Noetel 2024; Singh 2023). Programas más largos no dieron más efecto (Singh 2023).', nivel: 'clinico' },
+        { t: 'Sueño en adultos sin enfermedad: con 2 meses o más de ejercicio regular, físico o de mente-cuerpo, mejoran la calidad del sueño referida, el insomnio y la somnolencia de día. Medido con actígrafo solo mejora un poco la eficiencia del sueño, no las horas ni lo que tarda en dormirse. Todos los ensayos tienen riesgo de sesgo alto por falta de cegamiento (Xie 2021, 22 ensayos).', nivel: 'clinico' },
+        { t: 'Ánimo en el dolor musculoesquelético crónico: en las revisiones Cochrane de dolor crónico, solo 5 de 21 midieron la función psicológica y los resultados fueron variables, con efectos favorables o sin diferencias (Geneen 2017); en la fibromialgia, la mayoría de las revisiones encuentran menos depresión y ansiedad, en una síntesis descriptiva y de calidad desigual (Pérez-Romero 2026); en la lumbalgia crónica con síntomas depresivos hay 5 ensayos, con certeza baja o muy baja (Haller 2026).', nivel: 'discutido' },
+        { t: 'Sueño en la fibromialgia: el ejercicio aeróbico en el agua y el aeróbico en tierra con flexibilidad mejoraron el sueño frente a placebo, con certeza baja; la fuerza, el aeróbico solo y el mente-cuerpo en tierra no fueron concluyentes, y casi todos los estudios tenían riesgo de sesgo alto (Hudson 2025). Las revisiones Cochrane de dolor crónico no dan datos de sueño (Geneen 2017).', nivel: 'discutido' },
+        { t: 'Autoeficacia como mediador: en la artrosis de rodilla, la autoeficacia para caminar explicó parte del efecto de un programa de dieta y ejercicio sobre el dolor y la función, y en un ensayo de ejercicio solo el texto lo afirma para subir escaleras pero la tabla no lo confirma. Son estudios únicos y la autoeficacia se midió a la vez que el resultado (Lima 2023). En la depresión, en un estudio la autoeficacia no medió el efecto (Noetel 2024).', nivel: 'mecanismo' },
+      ],
+      consulta: [
+        { t: 'Si el paciente tiene síntomas depresivos, el ejercicio tiene un efecto propio sobre ellos. En la depresión, los autores proponen considerarlo junto a la psicoterapia y los antidepresivos, no en su lugar, y piden leer la comparación con cautela, porque en parte es indirecta (Noetel 2024).', nivel: 'clinico' },
+        { t: 'Con un paciente que tolera poco, la actividad ligera ya tuvo un efecto relevante sobre la depresión; no hace falta llegar a intensidades altas para empezar (Noetel 2024).', nivel: 'clinico' },
+        { t: 'La fuerza y el yoga tuvieron menos abandonos que el control en los ensayos de depresión (Noetel 2024).', nivel: 'clinico' },
+        { t: 'No le prometas dormir más horas: lo que mejora es cómo dice dormir, mientras que medido con actígrafo las horas de sueño no cambian (Xie 2021).', nivel: 'clinico' },
+        { t: 'Explicar la mejoría del dolor con «ganará confianza y por eso le dolerá menos» como un hecho va más allá de lo medido: que el ejercicio actúe a través de la autoeficacia es una hipótesis con datos débiles (Lima 2023).', nivel: 'mecanismo' },
+      ],
+      paciente: [
+        { t: 'Si además se siente bajo de ánimo, moverse con regularidad (caminar, fuerza, yoga) mejora esos síntomas en los estudios, incluso a intensidad suave. No sustituye al tratamiento que le indique su médico.', apoya: [0, 1, 2] },
+        { t: 'El ejercicio regular suele mejorar cómo siente que duerme, aunque no necesariamente le hará dormir más horas.', apoya: [3] },
+      ],
+      detalle: [
+        'No hay frase para el paciente sobre ánimo o sueño en su dolor musculoesquelético en concreto: ahí la evidencia está discutida, y las frases se apoyan en lo medido en depresión y en adultos sin enfermedad.',
+        'En la red de la depresión, el propio control activo mejoró mucho (g −0,95), y el efecto del ejercicio se suma a esa mejora. La danza tuvo el efecto mayor, pero con 5 estudios, casi todo mujeres de unos 31 años. Los programas que dejaban más autonomía al participante tuvieron menos efecto, al contrario de lo esperado (Noetel 2024).',
+        'Frente a la psicoterapia o los antidepresivos, los tamaños de efecto del ejercicio fueron parecidos o algo mayores, pero comparando revisiones distintas, y los autores piden confirmarlo (Singh 2023; Noetel 2024).',
+        'Que los programas más cortos o con menos minutos semanales dieran más efecto lo llaman los autores contraintuitivo; proponen menor adherencia con el tiempo o expectativas que se diluyen sin cegamiento (Singh 2023).',
+        'En la lumbalgia con síntomas depresivos, el mejor resultado (yoga con educación) viene de un solo estudio cuyo control era un folleto, lo que según los autores probablemente infla el efecto (Haller 2026).',
+        'En el sueño de la fibromialgia, el mente-cuerpo en el agua salió peor que el placebo, y los tamaños de efecto mayores de 2 desviaciones estándar, con intervalos muy amplios, no son creíbles como magnitud; los autores no confían en la clasificación de tratamientos por sí sola (Hudson 2025).',
+        'En los adultos sin enfermedad, la mejoría del sueño fue igual con ejercicio físico que con mente-cuerpo, y no hubo diferencias claras por edad o sexo; el «3 a 5 veces por semana» es una recomendación de los autores, no un resultado (Xie 2021).',
+        'Además de la autoeficacia, en la artrosis de rodilla la fuerza del cuádriceps explicó parte del efecto del ejercicio sobre el dolor; en total, 18 de los mediadores estudiados no mediaron, y los autores dicen que los mecanismos del ejercicio siguen sin estar claros (Lima 2023).',
+      ],
+    },
+    fuentes: ['Noetel 2024', 'Singh 2023', 'Xie 2021', 'Geneen 2017', 'Pérez-Romero 2026', 'Haller 2026', 'Hudson 2025', 'Lima 2023'] },
 ];
 
 export const TEXTOS_EJERCICIO = {
