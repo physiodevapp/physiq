@@ -11,8 +11,6 @@ const SNN = ['Sí', 'No', 'No sé'];
 
 export default {
   id: 'lumbar',
-  titulo: 'Sobre su espalda en concreto',
-  intro: 'Marque lo que mejor describa lo que le pasa. Si duda, marque «No sabría decir».',
   secciones: [
     {
       titulo: 'Dónde nota los síntomas',

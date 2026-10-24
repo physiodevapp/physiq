@@ -11,8 +11,6 @@ const SNN = ['Sí', 'No', 'No sé'];
 
 export default {
   id: 'cadera',
-  titulo: 'Sobre su cadera o ingle en concreto',
-  intro: 'Marque lo que mejor describa lo que le pasa. Si duda, marque «No sabría decir».',
   secciones: [
     {
       titulo: 'Qué le provoca el dolor',
@@ -54,8 +52,7 @@ export default {
       ]
     },
     {
-      titulo: 'Deporte y ejercicio',
-      intro: 'Si NO hace deporte ni ejercicio de forma habitual, salte este apartado: ha terminado.',
+      titulo: 'Si hace deporte o ejercicio',
       items: [
         { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?', verbal: '¿Qué deporte o ejercicio haces? ¿Cuántos días a la semana?', lineas: 1,
           chips: ['Correr', 'Fútbol', 'Gimnasio', 'Pádel', 'Ciclismo', 'Baile'] },

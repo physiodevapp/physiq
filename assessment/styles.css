@@ -2390,7 +2390,6 @@
 .fp-inline { margin-top: 4px; }
 .fp-contador { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); }
 
-.fp-titulo { font-weight: 600; color: var(--text); margin-bottom: 4px; }
 .fp-seccion { margin-top: 18px; }
 .fp-seccion-titulo { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 10px; }
 .fp-item { margin-bottom: 14px; }

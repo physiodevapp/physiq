@@ -32,12 +32,9 @@ const LANZAR = 'Lanzar (béisbol, balonmano, jabalina, voleibol…)';
 
 export default {
   id: 'codo',
-  titulo: 'Sobre su codo en concreto',
-  intro: 'Marque lo que mejor describa lo que le pasa. Si duda, marque «No sabría decir».',
   secciones: [
     {
       titulo: 'Si empezó con una caída, un golpe o un esfuerzo',
-      intro: 'Si en la hoja 1 contestó que NO hubo nada concreto que lo desencadenara, salte este apartado.',
       items: [
         // Caída sobre la mano: fracturas, luxaciones (p. 81, 93) e IRPL con el antebrazo en
         // supinación (p. 87). Golpe: «knock to the elbow» (p. 82), «direct blow» (p. 84).

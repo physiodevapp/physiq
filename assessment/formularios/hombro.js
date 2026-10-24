@@ -13,8 +13,6 @@ const SNN = ['Sí', 'No', 'No sé'];
 
 export default {
   id: 'hombro',
-  titulo: 'Sobre su hombro en concreto',
-  intro: 'Marque lo que mejor describa lo que le pasa. Si duda, marque «No sabría decir».',
   secciones: [
     {
       titulo: 'Qué le provoca el dolor',

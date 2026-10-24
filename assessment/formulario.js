@@ -225,8 +225,7 @@ function _pintarScope(scope) {
   const y = window.scrollY;
   const resp = respuestas(scope);
   body.innerHTML = `
-    <div class="fp-titulo">${esc(esquema.titulo)}</div>
-    ${esquema.intro ? `<div class="fp-hint">${esc(esquema.intro)}</div>` : ''}
+    <div class="fp-hint">Si el paciente no lo sabe, marque «No sabría decir» o «No sé»: también es una respuesta.</div>
     <div class="fp-literal-nota">✍️ Anote las respuestas de texto con las palabras del paciente: se muestran luego como cita.</div>
     ${esquema.secciones.map(s => `
       <div class="fp-seccion">

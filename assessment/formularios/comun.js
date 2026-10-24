@@ -7,6 +7,10 @@
 // comentarle en persona»: aquí el fisio rellena el formulario siempre con el
 // paciente delante, así que esa conversación ya está ocurriendo (y marcada
 // acababa en las notas y en physiq-report como una confidencia sin contenido).
+// Ni el título y la introducción de la hoja («Antes de su primera visita»,
+// «Si algo no lo sabe, marque…»): hablaban al paciente antes de la visita y
+// repetían el título del desplegable; formulario.js pinta una sola nota para el
+// fisio, común a las dos caras (decisión del usuario, 2026-10).
 //
 // Tipos de pregunta:
 //   unica  { opciones, detalle? }   una sola opción; `detalle: { opcion, etiqueta }`
@@ -43,8 +47,6 @@ const NS = 'No sabría decir';
 
 export default {
   id: 'comun',
-  titulo: 'Antes de su primera visita',
-  intro: 'Si algo no lo sabe, marque «No sabría decir»: esa respuesta también sirve.',
   secciones: [
     {
       titulo: '1 · Cómo empezó',
