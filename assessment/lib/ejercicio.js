@@ -109,6 +109,8 @@ const CONDICION_EJERCICIO = {
     enlaza: ({ estado, subtipo, vs }) => !!estado && !(estado === 'diagnosticada' && subtipo === 'vascular') && !vs },
   osteoporosis: { id: 'mecanotransduccion', ayuda: 'enlaceCondicionOsteoporosis',
     enlaza: ({ estado }) => !!estado },
+  embarazo: { id: 'embarazo', ayuda: 'enlaceCondicionEmbarazo', motivo: 'embarazo', ayudaPlan: 'enlaceMotivoEmbarazo',
+    enlaza: ({ estado }) => !!estado },
 };
 
 export function condicionEnlazaEjercicio(condicion, datos = {}) {
@@ -129,7 +131,7 @@ export function datosCondicionEjercicio(condicion, tarjeta, respuestas = {}) {
 // riesgo psicosocial medio o alto, o un PHQ-2, PHQ-9 o GAD-7 completo con
 // síntomas; y el bloque de cada condición especial con `motivo`, con la misma
 // regla de estados que su recuadro de la fase 5 (CONDICION_EJERCICIO).
-// `tarjetas`: { lupus, disautonomia, hipermovilidad } de state; `respuestas`:
+// `tarjetas`: { lupus, disautonomia, hipermovilidad, embarazo } de state; `respuestas`:
 // state.sistemicoAnswers (regla vascular). Una regla de lectura, no clínica.
 export function motivosEjercicio({ riesgoPsico, cuestionarios, tarjetas = {}, respuestas = {} } = {}) {
   const psico = riesgoPsico === 'Medio' || riesgoPsico === 'Alto';

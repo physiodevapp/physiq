@@ -315,6 +315,57 @@ export const BLOQUES_EJERCICIO = [
       ],
     },
     fuentes: ['Coussens 2022', 'Smith 2013', 'Liaghat 2022', 'Liaghat 2024', 'Liaghat 2025', 'Christensen 2026', 'Spanhove 2022', 'Lindholm 2024', 'Reychler 2021', 'Engelbert 2017', 'Bale 2019', 'Buryk-Iggers 2022', 'Brittain 2023', 'Byers 2017'] },
+  // Embarazo y posparto (2026-10): para la tarjeta «Embarazo o posparto». Nueve
+  // fuentes en PMC y ocho PDF del usuario; niveles en docs/efectos-ejercicio.md.
+  // La dosis, las contraindicaciones, los signos para parar, el supino y la
+  // vuelta a correr no están aquí: son del recuadro de la fase 5 y de los avisos
+  // de la fase 6. El dolor lumbopélvico del embarazo, discutido (dos revisiones
+  // enfrentadas); la seguridad, clínico con certeza muy baja y sin frase para el
+  // paciente; la diástasis, mecanismo.
+  { id: 'embarazo', titulo: 'Ejercicio en el embarazo y el posparto',
+    resumen: 'Qué hace el ejercicio en el dolor lumbopélvico, el ánimo y los escapes de orina, qué pasa con la diástasis y el supino, y hasta dónde llega lo demostrado',
+    apartados: {
+      que: [
+        { t: 'Boca arriba, desde la semana 20, el útero puede reducir el retorno de la sangre al corazón durante el ejercicio (ACOG 2020). En los pocos estudios que lo midieron, de una sola sesión y con 12 a 27 mujeres, el ejercicio en supino subió la tensión y la frecuencia cardiaca de la madre y, en uno de 14 mujeres, bajó algo el flujo del útero; los autores concluyen que no hay evidencia suficiente para decir si es seguro o si hay que evitarlo (Mottola 2019).', nivel: 'mecanismo' },
+        { t: 'La separación de los rectos del abdomen es frecuente tras el parto, casi siempre leve, y se reduce sola durante el primer año: en un estudio de 300 primíparas, del 60 % a las 6 semanas al 33 % a los 12 meses (Sperstad 2016; Gluppe 2021).', nivel: 'mecanismo' },
+      ],
+      evidencia: [
+        { t: 'Dolor lumbar y pélvico en el embarazo: una revisión Cochrane vio que 8 a 12 semanas de ejercicio reducen cuántas mujeres lo tienen (certeza moderada), aunque el dolor pélvico solo no mejoró con ejercicio en grupo (Liddle y Pennick 2015). Otra revisión no vio que redujera cuántas lo tienen, pero sí cuánto duele, con certeza muy baja y estudios muy distintos entre sí (Davenport 2019 (dolor lumbopélvico)).', nivel: 'discutido' },
+        { t: 'Tras el parto, en mujeres que ya tienen dolor lumbar o pélvico, el ejercicio solo, sobre todo el fortalecimiento del tronco, bajó el dolor unos 2 puntos sobre 10 (4 ensayos, certeza moderada) y mejoró la discapacidad (certeza baja); contando también los ensayos con otros tratamientos añadidos, la mejoría del dolor fue menor (1,4 puntos, certeza baja). Los grupos control también mejoraron: el ejercicio acelera una mejoría que suele llegar sola (Ruchat 2025).', nivel: 'clinico' },
+        { t: 'Ánimo en el embarazo: el ejercicio solo, en programas supervisados, redujo algo los síntomas depresivos y cuántas mujeres superaban el corte de depresión de los cuestionarios (certeza moderada); unido a dieta u otras intervenciones, no. No cambió el ánimo después del parto ni la ansiedad (Davenport 2018 (ánimo)).', nivel: 'clinico' },
+        { t: 'Ánimo tras el parto: el ejercicio solo redujo de forma moderada los síntomas depresivos y la probabilidad de depresión (certeza moderada), y algo los de ansiedad (2 ensayos, certeza baja); el suelo pélvico solo no mejoró el ánimo. Ningún ensayo lo comparó con antidepresivos ni con psicoterapia (Deprato 2025).', nivel: 'clinico' },
+        { t: 'Escapes de orina: entrenar el suelo pélvico durante el embarazo, en mujeres sin escapes, los hace menos probables al final del embarazo (certeza moderada) y a los 3–6 meses del parto (certeza alta) (Woodley 2020); otra revisión llega a lo mismo, en el embarazo (certeza baja) y después del parto (certeza moderada) (Davenport 2018 (incontinencia)). Como tratamiento de quien ya tiene escapes, el efecto es incierto: casi no hay ensayos (Woodley 2020; Davenport 2018 (incontinencia)).', nivel: 'clinico' },
+        { t: 'Ofrecer el suelo pélvico a todas las mujeres después del parto: una revisión no vio un efecto claro sobre los escapes a los 6–12 meses (Woodley 2020, certeza moderada); otra, más reciente, vio menos incontinencia al terminar el programa (Beamish 2025, certeza moderada). La guía NICE lo ofrece supervisado solo a las que tienen factores de riesgo (NICE NG210).', nivel: 'discutido' },
+        { t: 'Diástasis: el ejercicio abdominal tras el parto reduce la distancia entre los rectos alrededor de medio centímetro (certeza baja), y en una sola sesión el curl-up la reduce y la contracción del transverso la aumenta (Beamish 2025). Ninguna revisión ha medido si eso cambia el dolor o la función; en los pocos estudios que miraron el dolor lumbar y la disfunción del suelo pélvico, sin efecto (Beamish 2025; Gluppe 2021).', nivel: 'mecanismo' },
+        { t: 'Que la diástasis cause dolor no está demostrado: en una cohorte de 178 mujeres, al año tenían dolor lumbopélvico el 46 % con diástasis y el 33 % sin ella, una diferencia que no llegó a ser significativa en un estudio pequeño (Sperstad 2016).', nivel: 'mecanismo' },
+        { t: 'Seguridad: en los estudios, el ejercicio de mujeres sin contraindicaciones no aumentó el aborto ni la muerte perinatal, con certeza muy baja y con resultados que no descartan un aumento; todos los ensayos empezaron después de la semana 8 y casi todos eran de ejercicio aeróbico moderado (Davenport 2019 (mortalidad fetal)).', nivel: 'clinico' },
+        { t: 'Cuánto pesa lo del posparto: las guías nacionales se apoyan en evidencia escasa (Evenson 2024); las revisiones posteriores con GRADE dan certeza moderada para el ánimo y el dolor, pero solo con el ejercicio sin otras intervenciones y con pocos ensayos (Deprato 2025; Ruchat 2025).', nivel: 'discutido' },
+      ],
+      consulta: [
+        { t: 'Los ensayos solo incluyen embarazos sin contraindicaciones para el ejercicio; con una, manda el recuadro de la fase 5 y su equipo obstétrico (Davenport 2018 (ánimo); Davenport 2019 (mortalidad fetal)).', nivel: 'clinico' },
+        { t: 'El efecto sobre el ánimo y el dolor sale del ejercicio en sí: cuando iba junto a dieta, educación u otros tratamientos, desaparecía o era menor (Davenport 2018 (ánimo); Deprato 2025; Ruchat 2025). Para el ánimo es un complemento: ningún ensayo lo compara con el tratamiento de una depresión (Deprato 2025).', nivel: 'clinico' },
+        { t: 'El efecto sobre los escapes es del entrenamiento del suelo pélvico: ningún estudio mide el ejercicio general sin él (Davenport 2018 (incontinencia)).', nivel: 'clinico' },
+        { t: 'La diástasis no es un motivo para no hacer ejercicio ni para dejar el suelo pélvico: los autores de una revisión lo recomiendan así, con certeza baja (Gluppe 2021), y el consenso de expertos no la cuenta como contraindicación (Davenport 2025).', nivel: 'mecanismo' },
+        { t: 'Las reglas de vuelta a la actividad y a correr tras el parto del recuadro son consenso de expertos, no resultados de ensayos (Davenport 2025; Christopher 2024; Deering 2024).', nivel: 'mecanismo' },
+        { t: 'Con el supino, cambiar de posición si se marea o se encuentra mal es una recomendación débil, y la revisión en que se apoya no permite prohibirlo ni darlo por seguro (Mottola 2018; Mottola 2019).', nivel: 'mecanismo' },
+      ],
+      paciente: [
+        { t: 'Hacer ejercicio durante el embarazo o después del parto suele ayudar algo al estado de ánimo. Es un apoyo: si hay una depresión, no sustituye a su tratamiento.', apoya: [2, 3] },
+        { t: 'Entrenar el suelo pélvico durante el embarazo, antes de tener escapes de orina, hace menos probable tenerlos al final del embarazo y después del parto.', apoya: [4] },
+        { t: 'Si después del parto le duele la espalda o la pelvis, el ejercicio, sobre todo de fuerza del tronco, ayuda a que mejore antes. Suele mejorar también con el tiempo.', apoya: [1] },
+      ],
+      detalle: [
+        'Dolor del embarazo: en la revisión de 2019, un estudio con un efecto enorme pesa mucho en la intensidad del dolor y no hay análisis sin él, y algunas mujeres cuentan dos veces en las figuras; sus autores lo llaman «effective treatment» con certeza muy baja (Davenport 2019 (dolor lumbopélvico)).',
+        'Dolor tras el parto: la mejoría con el ejercicio solo (−2,2 puntos) tiene un intervalo que cruza el umbral de 2 puntos que los propios autores usan para la relevancia clínica, y algunos grupos control cuentan dos veces (Ruchat 2025).',
+        'Ánimo tras el parto: el efecto parece mayor si el ejercicio empieza en las 12 primeras semanas, pero es una comparación entre estudios distintos, con más mujeres deprimidas al empezar en esos estudios. Los autores lo presentan además como alternativa a los tratamientos habituales sin haberlo comparado con ellos (Deprato 2025).',
+        'Una cohorte de 10 098 mujeres vio más escapes después del parto con ejercicio casi diario que con ejercicio ocasional; es una asociación, de certeza muy baja, que el resumen de la revisión no recoge (Davenport 2018 (incontinencia)).',
+        'Tras el parto, que el suelo pélvico reduzca los escapes al terminar el programa no se acompaña de un cambio en su gravedad (certeza muy baja) ni en la incontinencia anal o el prolapso (Beamish 2025).',
+        'Parto: el ejercicio solo se asoció a menos partos instrumentales (certeza moderada); la menor tasa de cesáreas salió de los ensayos con dieta y otras intervenciones (certeza baja), aunque el resumen de la revisión dice que no cambia. De lesiones o caídas de la madre no da cifras en el texto principal (Davenport 2019 (daños maternos)).',
+        'Siete de nueve guías nacionales desaconsejan el supino desde la semana 16, sobre todo por opinión de expertos; España y Francia, no (Mottola 2019).',
+        'Abdominales tipo curl: en el embarazo, la guía canadiense aconseja evitarlos con diástasis, por opinión de expertos (Mottola 2018); tras el parto, los datos dicen que reducen la distancia entre los rectos (Beamish 2025). Son periodos distintos, no una contradicción.',
+      ],
+    },
+    fuentes: ['Liddle y Pennick 2015', 'Davenport 2019 (dolor lumbopélvico)', 'Ruchat 2025', 'Davenport 2018 (ánimo)', 'Deprato 2025', 'Woodley 2020', 'Davenport 2018 (incontinencia)', 'Beamish 2025', 'NICE NG210', 'Gluppe 2021', 'Sperstad 2016', 'Davenport 2019 (mortalidad fetal)', 'Davenport 2019 (daños maternos)', 'ACOG 2020', 'Mottola 2019', 'Mottola 2018', 'Evenson 2024', 'Davenport 2025', 'Christopher 2024', 'Deering 2024'] },
 ];
 
 // Bloque que enlaza la fase 6 por hipótesis (docs/efectos-ejercicio.md,
@@ -365,6 +416,7 @@ export const TEXTOS_EJERCICIO = {
   enlaceMotivoReumatica: 'Por el lupus: sus frases para el paciente son para las enfermedades reumáticas inflamatorias.',
   enlaceMotivoOrtostatica: 'Por la disautonomía: su frase para el paciente habla de tolerar estar de pie, sin prometer que mejoren todos los síntomas; la dosis es la del aviso de este plan.',
   enlaceMotivoHipermovilidad: 'Por la hipermovilidad: sus frases para el paciente dicen que la fuerza graduada no suele aumentar el dolor y que no hay un ejercicio «especial»; vienen de ensayos sin el subtipo vascular.',
+  enlaceMotivoEmbarazo: 'Por el embarazo o el posparto: sus frases para el paciente hablan del ánimo, de los escapes y del dolor de espalda o pelvis tras el parto, sin prometer más; la dosis es la del aviso de este plan.',
   enlaceEducacionAyuda: 'Abre «{titulo}», el bloque que corresponde a la irritabilidad elegida.',
   enlaceEducacionAyudaHip: 'Abre «{titulo}», el bloque que corresponde a {hipotesis}.',
   // Enlaces de los recuadros de la fase 5 (estados: CONDICION_EJERCICIO, lib/ejercicio.js)
@@ -372,5 +424,6 @@ export const TEXTOS_EJERCICIO = {
   enlaceCondicionLupus: 'Sus frases para el paciente son para las enfermedades reumáticas inflamatorias, lupus incluido.',
   enlaceCondicionHipermovilidad: 'Si se puede cargar con fuerza y cuánto dolor provoca, según los ensayos en SEDh y TEH; no vale para el subtipo vascular.',
   enlaceCondicionDisautonomia: 'Por qué los programas empiezan tumbado y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
+  enlaceCondicionEmbarazo: 'Por qué se recomienda moverse y hasta dónde llega lo demostrado en el dolor de espalda y pelvis, el ánimo y los escapes; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionOsteoporosis: 'Lectura para ti: en el hueso el bloque solo llega a mecanismo (la densidad mejora algo); no está demostrado que el ejercicio reduzca las fracturas.',
 };

@@ -2433,6 +2433,7 @@ function _embarazoResultadosHTML(d) {
       <span class="alert-icon">${d.es === 'embarazada' ? '🤰' : '🤱'}</span>
       <div><strong>${d.es === 'embarazada' ? 'Embarazo' : 'Posparto'}.</strong>${datos.length ? ` ${datos.join(' · ')}` : ''}
         ${_lineasCondicionHTML(lineasRecomendacionEM(d), d.es === 'embarazada' ? 'embarazo' : 'posparto')}
+        ${enlaceCondicionEjercicioHTML('embarazo', { estado: d.es })}
       </div>
     </div>`;
 }
