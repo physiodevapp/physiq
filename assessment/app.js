@@ -162,6 +162,19 @@ window.addEventListener('popstate', e => {
     _historyDepth = i;
     return;
   }
+  // Guarda de salida (fase 1, sin nada abierto): preguntar antes de salir. Si
+  // se llega a ella desde otra fase (tras «Salir» sin poder salir, la guarda
+  // hacía de fase 1), es volver a la fase 1
+  if (e.state?.guarda) {
+    if (_salidaElegida && String(state.currentPhase) === '1') { history.back(); return; }
+    if (String(state.currentPhase) !== '1') {
+      _historyDepth = 0;
+      _handlingPopState = true; goToPhase(1); _handlingPopState = false;
+      return;
+    }
+    _avisarSalida();
+    return;
+  }
   if (!e.state || e.state.phase === undefined) return;
   // Swipe-back nativo: sincronizar _historyDepth con la posición real del stack
   const naturalIdx = _idxFase(e.state.phase);
@@ -219,6 +232,8 @@ function showNavTooltip(el, msg) {
 
 function goToPhase(n) {
   const phases = _FASES.map(f => `phase${f}`);
+  // Navegar es seguir en la app: el atrás de la fase 1 vuelve a preguntar
+  _salidaElegida = false;
 
   // El panel del razonamiento es de la fase en la que se abrió (2 o 4b)
   if (String(n) !== String(state.currentPhase)) cerrarRazonamiento({ sinHistorial: true });
@@ -3100,6 +3115,62 @@ function _modalAbrir(cerrar) {
   return m;
 }
 
+// ─── Atrás que cerraría la app (móvil, fuera del hub) ──────────
+// Decisión del usuario (2026-10): en la fase 1, sin nada abierto, el atrás
+// sale de la app; si eso pierde algo (se está grabando la consulta, o hay datos
+// sin nombre de paciente, que no se guardan) se pregunta antes. Ni Safari ni la
+// app instalada muestran el aviso de `beforeunload`, así que se usa una entrada
+// de guarda debajo de la de la fase 1: el atrás cae en ella y sale el diálogo.
+// Chrome salta las entradas puestas sin un gesto del usuario, así que la guarda
+// se pone en un clic o al escribir (_ponerGuardaSalida), y solo con algo que perder.
+let _guardaSalida = false;    // la entrada de abajo es la guarda
+let _salidaElegida = false;   // se eligió «Salir»: no volver a ponerla, y una guarda más
+                              // abajo (de una recarga) se atraviesa sin preguntar otra vez
+
+function _riesgoSalida() {
+  const grabando = document.body.classList.contains('grab-activa');
+  const motivo = document.getElementById('motivoConsulta')?.value;
+  const nombre = (document.getElementById('patientName')?.value ?? state.patient ?? '').trim();
+  const sinGuardar = !nombre && (!!motivo || _hasAssessmentData());
+  return grabando || sinGuardar ? { grabando, sinGuardar } : null;
+}
+
+function _ponerGuardaSalida() {
+  if (_enHub() || !_esMovil() || _salidaElegida || _historyDepth !== 0) return;
+  const st = history.state;
+  // De vuelta en la guarda (se quedó tras el diálogo): se repone la fase 1 encima
+  if (st?.guarda) { history.pushState({ phase: state.currentPhase }, ''); return; }
+  if (_guardaSalida || st?.phase === undefined || Object.keys(st).length !== 1) return;
+  if (!_riesgoSalida()) return;
+  history.replaceState({ guarda: true }, '');
+  history.pushState({ phase: state.currentPhase }, '');
+  _guardaSalida = true;
+}
+['click', 'input'].forEach(t => document.addEventListener(t, e => {
+  // Los botones del propio diálogo deciden ellos qué hacer con el historial
+  if (e.target instanceof Element && e.target.closest('#confirmBanner.salida-app')) return;
+  _ponerGuardaSalida();
+}));
+
+function _avisarSalida() {
+  const r = _riesgoSalida();
+  if (!r) { _salirDeVerdad(); return; }
+  const frases = [];
+  if (r.grabando) frases.push('Se está grabando la consulta. Si sales, la grabación se detiene; lo grabado hasta ahora se conserva.');
+  if (r.sinGuardar) frases.push('La valoración no está guardada porque no tiene nombre de paciente. Si sales, se pierde.');
+  showConfirmBanner('¿Salir de la app?', frases.join('<br><br>'), 'Salir', _salirDeVerdad,
+    { borra: false, cancelLabel: 'Seguir aquí', sinEntrada: true, clase: 'salida-app',
+      onCancel: () => history.pushState({ phase: state.currentPhase }, '') });
+}
+
+// Desde la guarda, atrás sale de la página; en la app instalada no hay nada
+// detrás y history.back() no hace nada: entonces lo hace el atrás del sistema
+function _salirDeVerdad() {
+  _salidaElegida = true;
+  history.back();
+  setTimeout(() => { if (history.state?.guarda) showToast('Para salir, vuelve a hacer Atrás.'); }, 400);
+}
+
 // `despues`: lo que debe ocurrir cuando la entrada ya no está (navegar, la acción
 // de un diálogo); sin entrada, se ejecuta ya
 function _modalSoltar(m, despues = null) {
@@ -4453,7 +4524,7 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
   const existing = document.getElementById('confirmBanner');
   if (existing) { existing.remove(); unlockBodyScroll(); }
   const overlay = document.createElement('div');
-  overlay.className = 'confirm-banner' + (_veloRelevo || existing ? ' relevo' : '');
+  overlay.className = 'confirm-banner' + (_veloRelevo || existing ? ' relevo' : '') + (opts.clase ? ' ' + opts.clase : '');
   overlay.id = 'confirmBanner';
   overlay.innerHTML = `
     <div class="confirm-box">
@@ -4468,7 +4539,8 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
   // Móvil: el atrás = cancelar (nunca la acción) y no cambia de fase
-  const modal = _modalAbrir(() => cancelar());
+  // (`sinEntrada`: el aviso de salida, que ya está en la guarda)
+  const modal = opts.sinEntrada ? null : _modalAbrir(() => cancelar());
   // Tocar el velo o pulsar Escape = el botón de cerrar: nunca la acción. Solo
   // cuenta un toque que empieza y acaba en el velo (no seleccionar texto del
   // recuadro y soltar fuera). Se quita el listener de teclado al cerrar, también
