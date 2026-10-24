@@ -134,6 +134,9 @@ window.addEventListener('popstate', e => {
     const f = _trasPop; _trasPop = null; f?.();
     return;
   }
+  // Ventana sin entrada propia (diálogo, panel de sesión, hoja de fases,
+  // teclado): el atrás ya quitó su entrada; se cierra como al cancelar
+  if (_modal) { const m = _modal; _modal = null; m.cerrar(); return; }
   if (_razonHistorial) { cerrarRazonamiento({ desdeHistorial: true }); return; }
   if (_compartirHistorial) { cerrarMenuCompartir({ desdeHistorial: true }); return; }
   if (_herrHistorial) { cerrarHerramientas({ desdeHistorial: true }); return; }
@@ -1042,8 +1045,10 @@ function abrirTecladoNumerico(input) {
   _pintarTecladoValor();
   overlay.classList.add('open');
   lockBodyScroll();
+  _modalTeclado = _modalAbrir(() => cerrarTecladoNumerico());
   document.getElementById('tecladoPanel').focus({ preventScroll: true });
 }
+let _modalTeclado = null;
 
 function _pintarTecladoValor() {
   const v = _tecladoEl?.value ?? '';
@@ -1066,6 +1071,8 @@ function cerrarTecladoNumerico() {
   if (!overlay?.classList.contains('open')) return;
   overlay.classList.remove('open');
   unlockBodyScroll();
+  const m = _modalTeclado; _modalTeclado = null;
+  _modalSoltar(m);
   const el = _tecladoEl;
   _tecladoEl = null;
   el?.dispatchEvent(new Event('change', { bubbles: true }));
@@ -3054,6 +3061,59 @@ function buildSistemaHTML(sis) {
 // lateral sin velo en escritorio (se sigue contestando con él abierto) y
 // bottom sheet con velo en móvil. Una pregunta sin `razonamiento` no pinta nada.
 const _esMovil = () => window.matchMedia ? window.matchMedia('(max-width: 768px)').matches : false;
+
+// ─── Atrás con una ventana abierta (móvil) ─────────────────────
+// Decisión del usuario (2026-10): si hay algo abierto encima, el atrás (botón o
+// gesto) lo cierra y nunca cambia de fase. Las hojas de herramientas, el
+// razonamiento y «Compartir» llevan su propia entrada (sus *_Historial); los
+// diálogos de confirmación, el panel de sesión, la hoja de fases y el teclado
+// numérico usan esta: al abrirse ponen una entrada encima y al cerrarse de
+// cualquier otra forma la quitan, así que el historial queda como estaba. Si
+// otra ventana se abre en el mismo tick (panel de sesión → «Borrar sesión», y
+// de vuelta al cancelar), hereda la entrada en vez de quitarla y poner otra.
+// El atrás de un diálogo es «Cancelar», nunca la acción; la acción y lo que
+// navega después de cerrar (hoja de fases) esperan a que se vaya la entrada.
+let _modal = null;           // { cerrar, empujada } de la ventana que tiene la entrada
+let _modalLibre = false;     // entrada recién soltada, se quita al acabar el tick si nadie la hereda
+
+// Toda ventana que pone entrada pasa por aquí, para heredar la que se acaba de soltar
+function _empujarEntrada(st) {
+  if (_modalLibre) { _modalLibre = false; history.replaceState(st, ''); }
+  else history.pushState(st, '');
+}
+
+function _modalAbrir(cerrar) {
+  if (!_esMovil()) return null;
+  // Un diálogo que sustituye a otro se queda con su entrada
+  if (_modal) { _modal.cerrar = cerrar; return _modal; }
+  const m = { cerrar, empujada: false };
+  _modal = m;
+  const empujar = () => {
+    if (_modal !== m) return;
+    _empujarEntrada({ phase: state.currentPhase, modal: true });
+    m.empujada = true;
+  };
+  // Si aún va de camino un history.back() nuestro (una hoja que se acaba de
+  // cerrar), la entrada se pone cuando llegue; si no, la quitaría él
+  if (_popIgnorar) { const antes = _trasPop; _trasPop = () => { antes?.(); empujar(); }; }
+  else empujar();
+  return m;
+}
+
+// `despues`: lo que debe ocurrir cuando la entrada ya no está (navegar, la acción
+// de un diálogo); sin entrada, se ejecuta ya
+function _modalSoltar(m, despues = null) {
+  if (!m || _modal !== m) { despues?.(); return; }
+  _modal = null;
+  if (!m.empujada) { despues?.(); return; }
+  if (despues) { _popIgnorar = true; _trasPop = despues; history.back(); return; }
+  _modalLibre = true;
+  queueMicrotask(() => {
+    if (!_modalLibre) return;
+    _modalLibre = false;
+    _popIgnorar = true; history.back();
+  });
+}
 let _razonOrigen = null;       // botón «Ampliar» que abrió el panel (para devolverle el foco)
 let _razonHistorial = false;   // el sheet móvil empujó una entrada al historial
 let _trasPop = null;          // a ejecutar tras ese history.back() (irACondicion)
@@ -3230,7 +3290,7 @@ function abrirPanelRazon({ btn, kicker, titulo, html, ia }) {
       lockBodyScroll();
       window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
       // El botón atrás del móvil cierra el sheet en vez de cambiar de fase.
-      history.pushState({ phase: state.currentPhase, razon: true }, '');
+      _empujarEntrada({ phase: state.currentPhase, razon: true });
       _razonHistorial = true;
     }
   }
@@ -4290,21 +4350,26 @@ function togglePhaseSheet() {
   buildPhaseSheetList();
   const sheet = document.getElementById('phaseSheet');
   const overlay = document.getElementById('phaseSheetOverlay');
-  const isOpen = sheet.classList.contains('open');
-  sheet.classList.toggle('open');
-  overlay.classList.toggle('open');
-  document.getElementById('mobilePhaseBar')?.setAttribute('aria-expanded', String(!isOpen));
-  if (isOpen) unlockBodyScroll(); else lockBodyScroll();
+  if (sheet.classList.contains('open')) { closePhaseSheet(); return; }
+  sheet.classList.add('open');
+  overlay.classList.add('open');
+  document.getElementById('mobilePhaseBar')?.setAttribute('aria-expanded', 'true');
+  lockBodyScroll();
+  _modalHojaFases = _modalAbrir(() => closePhaseSheet());
 }
 
-function closePhaseSheet() {
+// `despues`: navegar a la fase elegida cuando la entrada de la hoja ya no está
+let _modalHojaFases = null;
+function closePhaseSheet({ despues = null } = {}) {
   const sheet = document.getElementById('phaseSheet');
   const overlay = document.getElementById('phaseSheetOverlay');
-  if (!sheet.classList.contains('open')) return;
+  if (!sheet.classList.contains('open')) { despues?.(); return; }
   sheet.classList.remove('open');
   overlay.classList.remove('open');
   document.getElementById('mobilePhaseBar')?.setAttribute('aria-expanded', 'false');
   unlockBodyScroll();
+  const m = _modalHojaFases; _modalHojaFases = null;
+  _modalSoltar(m, despues);
 }
 
 
@@ -4351,7 +4416,7 @@ function buildPhaseSheetList() {
       </div>`;
 
     if (!isBlocked && !isActive) {
-      item.onclick = () => { closePhaseSheet(); navStepClick(def.n); };
+      item.onclick = () => closePhaseSheet({ despues: () => navStepClick(def.n) });
     } else if (isInvalidated) {
       item.onclick = () => {
         closePhaseSheet();
@@ -4402,6 +4467,8 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
   document.body.appendChild(overlay);
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  // Móvil: el atrás = cancelar (nunca la acción) y no cambia de fase
+  const modal = _modalAbrir(() => cancelar());
   // Tocar el velo o pulsar Escape = el botón de cerrar: nunca la acción. Solo
   // cuenta un toque que empieza y acaba en el velo (no seleccionar texto del
   // recuadro y soltar fuera). Se quita el listener de teclado al cerrar, también
@@ -4410,11 +4477,14 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
     if (!overlay.isConnected) { document.removeEventListener('keydown', alTeclado); return; }
     if (e.key === 'Escape') { e.preventDefault(); cancelar(); }
   };
-  const dismiss = () => {
+  // `despues` (la acción): cuando la entrada del historial ya no está, para que
+  // lo que navegue no se cruce con ese atrás
+  const dismiss = (despues = null) => {
     document.removeEventListener('keydown', alTeclado);
     if (!overlay.isConnected) return;
     overlay.remove(); unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
     _marcarRelevoVelo();
+    _modalSoltar(modal, despues);
   };
   // Cancelar a mano (botón, velo o Escape) llama a opts.onCancel; el dismiss()
   // devuelto, para cerrarlo desde el código, no.
@@ -4424,8 +4494,8 @@ function showConfirmBanner(title, text, actionLabel, onConfirm, opts = {}) {
   overlay.addEventListener('click', e => { if (e.target === overlay && empiezaEnVelo) cancelar(); });
   document.addEventListener('keydown', alTeclado);
   document.getElementById('confirmCancel').onclick = cancelar;
-  document.getElementById('confirmAction').onclick = () => { dismiss(); onConfirm(); };
-  return dismiss;
+  document.getElementById('confirmAction').onclick = () => dismiss(onConfirm);
+  return () => dismiss();
 }
 
 
@@ -4456,7 +4526,10 @@ function closeSessionPanel() {
   overlay?.classList.remove('open');
   if (wasOpen) { unlockBodyScroll(); window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*'); _marcarRelevoVelo(); }
   if (panel) { panel.style.transition = ''; panel.style.transform = ''; }
+  const m = _modalSesion; _modalSesion = null;
+  if (wasOpen) _modalSoltar(m);
 }
+let _modalSesion = null;
 
 function _showSessionState(st) {
   const panel = document.getElementById('sessionPanel');
@@ -4747,6 +4820,7 @@ function toggleSessionPanel() {
   overlay.classList.add('open');
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
+  _modalSesion = _modalAbrir(() => closeSessionPanel());
 }
 
 // Closes every open sheet/dialog. Called when the hub hides this satellite
@@ -4755,6 +4829,8 @@ function toggleSessionPanel() {
 // (visibilitychange), where everything stays open.
 function _closeAllOverlays() {
   cerrarFicha({ sinFoco: true });
+  // Sin tocar el historial, como las hojas con sinHistorial
+  _modal = null; _modalLibre = false;
   cerrarRazonamiento({ sinHistorial: true });
   cerrarMenuCompartir({ sinHistorial: true });
   cerrarHerramientas({ sinHistorial: true });
@@ -5045,7 +5121,7 @@ function _abrirOverlayCompartir(btnId) {
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
   if (_esMovil()) {
-    history.pushState({ phase: state.currentPhase, compartir: true }, '');
+    _empujarEntrada({ phase: state.currentPhase, compartir: true });
     _compartirHistorial = true;
   }
   document.getElementById('compartirPanel').focus({ preventScroll: true });
@@ -5095,7 +5171,7 @@ function _marcarOrigenHerr(v) {
   document.body.classList.toggle('herr-volver', v);
 }
 function _entradaOverlay(st) {
-  history.pushState(st, '');
+  _empujarEntrada(st);
   if (_herrPendiente) { _herrPendiente = false; _marcarOrigenHerr(true); }
 }
 // Cierre de una hoja de herramienta que no viene del atrás: quita su entrada
@@ -5124,7 +5200,7 @@ function abrirHerramientas({ enHistorial = false } = {}) {
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
   if (enHistorial) _herrHistorial = true;
   else if (_esMovil()) {
-    history.pushState({ phase: state.currentPhase, herramientas: true }, '');
+    _empujarEntrada({ phase: state.currentPhase, herramientas: true });
     _herrHistorial = true;
   }
   document.getElementById('herramientasPanel').focus({ preventScroll: true });
