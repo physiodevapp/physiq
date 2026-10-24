@@ -2971,6 +2971,11 @@ body.grab-activa:not(.in-hub) .grab-wrap { display: flex; }
 .pregunta-cabecera .session-panel-title { margin-bottom: 0; min-width: 0; }
 .pregunta-tipos { margin-bottom: 10px; flex-wrap: nowrap; }
 .pregunta-tipos .option-btn { flex: 1 1 0; min-width: 0; min-height: 40px; padding: 8px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pregunta-tipos .btn-text-short { display: none; }
+@media (max-width: 480px) {
+  .pregunta-tipos .btn-text-full { display: none; }
+  .pregunta-tipos .btn-text-short { display: inline; }
+}
 .pregunta-guion { margin-top: 8px; font-size: 0.76rem; line-height: 1.4; color: var(--text2); }
 .pregunta-texto { width: 100%; resize: vertical; min-height: 84px; line-height: 1.45; touch-action: pan-y; }
 .pregunta-aviso { margin-top: 8px; font-size: 0.76rem; line-height: 1.4; color: var(--alert-warning-text); }

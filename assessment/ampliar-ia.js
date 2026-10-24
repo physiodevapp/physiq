@@ -157,12 +157,23 @@ export function promptIA({ contexto, texto, tipo }) {
 // paso 1): el texto son los fármacos o la duda, y se añade un guion fijo para
 // que la respuesta cubra siempre lo que el fisioterapeuta necesita vigilar,
 // sin entrar a ajustar la medicación.
+//
+// `tipo: 'ejercicio'` (modalidad «Ejercicio», decisión del usuario 2026-10):
+// dudas generales de prescripción de ejercicio, no el plan de un paciente (eso
+// es la fase 6). El guion pide la dosis con todas sus variables y de dónde sale,
+// y que diga cuándo ninguna fuente fija el volumen, como las pautas de la app.
+// `corto`: etiqueta del botón en pantallas estrechas (tres botones a 320 px).
 export const TIPOS_PREGUNTA = {
-  libre: { nombre: 'Pregunta libre', placeholder: 'Ej.: ¿Qué diferencia hay entre el test de Hawkins y el de Neer?' },
+  libre: { nombre: 'Pregunta libre', corto: 'Libre', placeholder: 'Ej.: ¿Qué diferencia hay entre el test de Hawkins y el de Neer?' },
   farmacos: {
     nombre: 'Fármacos',
     placeholder: 'Ej.: ibuprofeno 600 mg cada 8 h y omeprazol, desde hace 3 semanas',
     guion: 'La respuesta cubrirá: dolor e inflamación · síntomas viscerales que imitan dolor musculoesquelético · ejercicio · sueño · cuándo consultar con el médico o el farmacéutico. No propone cambiar la medicación.',
+  },
+  ejercicio: {
+    nombre: 'Ejercicio',
+    placeholder: 'Ej.: dosis de ejercicio excéntrico en la tendinopatía rotuliana',
+    guion: 'La respuesta cubrirá: dosis con todas sus variables · de qué ensayo o guía sale (o si es opinión de expertos) · dolor durante el ejercicio y en las 24 h siguientes · cuándo progresar y retroceder · precauciones y cuándo parar o derivar. Es para dudas generales: el plan de este paciente está en la fase 6.',
   },
 };
 export const TIPO_PREGUNTA_DEFECTO = 'libre';
@@ -175,10 +186,20 @@ export const GUION_FARMACOS = 'Para cada fármaco o familia, explícame qué deb
   + '5) qué signos justifican consultar con el médico o el farmacéutico. '
   + 'No propongas cambiar, suspender ni ajustar la medicación.';
 
+export const GUION_EJERCICIO = 'Explícame cómo prescribir ese ejercicio como fisioterapeuta: '
+  + '1) la dosis con todas sus variables: tipo de ejercicio, intensidad (%1RM, RPE o repeticiones en reserva), series y repeticiones, descanso, frecuencia semanal y duración del programa; '
+  + '2) si esa dosis procede de un ensayo clínico o de una guía (di cuál) o es opinión de expertos, y si ninguna fuente fija el volumen, dilo en lugar de proponer uno; '
+  + '3) cómo vigilar el dolor durante el ejercicio y en las 24 h siguientes: cuánto dolor es aceptable y qué hacer si no se calma; '
+  + '4) criterios para progresar y para retroceder; '
+  + '5) precauciones y cuándo parar o derivar al médico.';
+
 export function promptPregunta({ contexto, pregunta, tipo = TIPO_PREGUNTA_DEFECTO }) {
   const ctx = contexto ? ` Contexto: valoración de ${_sinEtiquetas(contexto)}.` : '';
   if (tipo === 'farmacos') {
     return `Soy fisioterapeuta.${ctx} Fármacos o duda: «${recortarTextoIA(pregunta)}». ${GUION_FARMACOS} ${INSTRUCCION_FUENTES} Incluye la ficha técnica (CIMA, AEMPS) cuando sea pertinente. Cita las fuentes con enlace.`;
+  }
+  if (tipo === 'ejercicio') {
+    return `Soy fisioterapeuta.${ctx} Duda de prescripción de ejercicio: «${recortarTextoIA(pregunta)}». ${GUION_EJERCICIO} ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
   }
   return `Soy fisioterapeuta.${ctx} Mi pregunta: «${recortarTextoIA(pregunta)}». ${INSTRUCCION_FUENTES} Cita las fuentes con enlace.`;
 }

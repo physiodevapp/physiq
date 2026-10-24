@@ -5130,8 +5130,8 @@ document.addEventListener('keydown', e => {
 // elegido es el mismo que el de «Ampliar con IA» (localStorage).
 let _preguntaHistorial = false;
 let _preguntaDestino = null;
-// «Pregunta libre» o «Fármacos» (docs/farmacologia.md, paso 1): siempre una de
-// las dos; vuelve a «Pregunta libre» cada vez que se abre el diálogo.
+// «Pregunta libre», «Fármacos» (docs/farmacologia.md, paso 1) o «Ejercicio»:
+// siempre una de ellas; vuelve a «Pregunta libre» cada vez que se abre el diálogo.
 let _preguntaTipo = TIPO_PREGUNTA_DEFECTO;
 const _ctxPregunta = () => (state.region ? nombreRegion(state.region).toLowerCase() : '');
 
@@ -5139,9 +5139,9 @@ function _pintarPreguntaIA() {
   const d = _preguntaDestino;
   const t = _preguntaTipo;
   document.getElementById('preguntaTipos').innerHTML = Object.entries(TIPOS_PREGUNTA).map(([k, x]) =>
-    `<button type="button" class="option-btn${k === t ? ' selected' : ''}" role="radio" aria-checked="${k === t}" data-tipo="${k}">${x.nombre}</button>`).join('');
+    `<button type="button" class="option-btn${k === t ? ' selected' : ''}" role="radio" aria-checked="${k === t}" data-tipo="${k}">${x.corto ? `<span class="btn-text-full">${x.nombre}</span><span class="btn-text-short">${x.corto}</span>` : x.nombre}</button>`).join('');
   document.getElementById('preguntaTexto').placeholder = TIPOS_PREGUNTA[t].placeholder;
-  document.getElementById('preguntaTexto').setAttribute('aria-label', t === 'farmacos' ? 'Fármacos o duda' : 'Tu pregunta');
+  document.getElementById('preguntaTexto').setAttribute('aria-label', { farmacos: 'Fármacos o duda', ejercicio: 'Duda de prescripción de ejercicio' }[t] || 'Tu pregunta');
   const guion = document.getElementById('preguntaGuion');
   guion.textContent = TIPOS_PREGUNTA[t].guion || '';
   guion.hidden = !TIPOS_PREGUNTA[t].guion;
@@ -5152,7 +5152,7 @@ function _pintarPreguntaIA() {
   ir.textContent = `Preguntar en ${DESTINOS_IA[d].nombre.replace(/ \(.*\)$/, '')} ↗`;
   const ctx = _ctxPregunta();
   document.getElementById('preguntaNota').textContent =
-    `Se envía ${t === 'farmacos' ? 'lo que escribas, un guion de lo que debe cubrir' : 'tu pregunta'}${ctx ? ` y la región («valoración de ${ctx}»)` : ''}, y se pide que use fuentes científicas y las enlace. ${NOTA_CUENTAS}`;
+    `Se envía ${TIPOS_PREGUNTA[t].guion ? 'lo que escribas, un guion de lo que debe cubrir' : 'tu pregunta'}${ctx ? ` y la región («valoración de ${ctx}»)` : ''}, y se pide que use fuentes científicas y las enlace. ${NOTA_CUENTAS}`;
   _actualizarPreguntaIr();
 }
 
