@@ -199,7 +199,8 @@
 
 <!-- HERRAMIENTAS (cabecera, solo ≤768 px): hoja inferior con las herramientas
      que en escritorio son iconos sueltos. Cada opción cierra esta hoja y abre la
-     suya en la misma entrada del historial (herramientaElegir, app.js) -->
+     suya encima en el historial: el atrás o su «‹ Herramientas» vuelven aquí
+     (herramientaElegir, volverAHerramientas, app.js) -->
 <div class="session-panel-overlay" id="herramientasOverlay" onclick="cerrarHerramientas()">
   <div class="session-panel compartir-panel" id="herramientasPanel" role="dialog" aria-modal="true" aria-labelledby="herramientasTitulo" tabindex="-1" onclick="event.stopPropagation()">
     <div class="session-panel-handle"></div>
@@ -239,6 +240,7 @@
 <div class="session-panel-overlay" id="condOverlay" onclick="cerrarCondiciones()">
   <div class="session-panel cond-panel" id="condPanel" role="dialog" aria-modal="true" aria-labelledby="condTitulo" tabindex="-1" onclick="event.stopPropagation()">
     <div class="session-panel-handle"></div>
+    <button type="button" class="herr-volver-btn" onclick="volverAHerramientas()"><span aria-hidden="true">‹</span> Herramientas</button>
     <div class="session-panel-title" id="condTitulo">Condiciones especiales</div>
     <div class="cond-cuerpo" id="condCuerpo"></div>
   </div>
@@ -250,6 +252,7 @@
 <div class="session-panel-overlay" id="farmOverlay" onclick="cerrarFarmacos()">
   <div class="session-panel cond-panel" id="farmPanel" role="dialog" aria-modal="true" aria-labelledby="farmTitulo" tabindex="-1" onclick="event.stopPropagation()">
     <div class="session-panel-handle"></div>
+    <button type="button" class="herr-volver-btn" onclick="volverAHerramientas()"><span aria-hidden="true">‹</span> Herramientas</button>
     <div class="session-panel-title" id="farmTitulo">Fármacos: qué vigilar</div>
     <div class="cond-cuerpo" id="farmCuerpo"></div>
   </div>
@@ -261,6 +264,7 @@
 <div class="session-panel-overlay" id="ejercicioOverlay" onclick="cerrarEjercicio()">
   <div class="session-panel cond-panel" id="ejercicioPanel" role="dialog" aria-modal="true" aria-labelledby="ejercicioTitulo" tabindex="-1" onclick="event.stopPropagation()">
     <div class="session-panel-handle"></div>
+    <button type="button" class="herr-volver-btn" onclick="volverAHerramientas()"><span aria-hidden="true">‹</span> Herramientas</button>
     <div class="session-panel-title" id="ejercicioTitulo">Efectos del ejercicio</div>
     <div class="cond-cuerpo" id="ejercicioCuerpo"></div>
   </div>
@@ -272,6 +276,7 @@
 <div class="session-panel-overlay" id="tejidosOverlay" onclick="cerrarTiemposTejido()">
   <div class="session-panel tejidos-panel" id="tejidosPanel" role="dialog" aria-modal="true" aria-labelledby="tejidosTitulo" tabindex="-1" onclick="event.stopPropagation()">
     <div class="session-panel-handle"></div>
+    <button type="button" class="herr-volver-btn" onclick="volverAHerramientas()"><span aria-hidden="true">‹</span> Herramientas</button>
     <div class="session-panel-title" id="tejidosTitulo">Tiempos de recuperación de tejidos</div>
     <div class="tejidos-cuerpo" id="tejidosCuerpo"></div>
   </div>
@@ -283,6 +288,7 @@
 <div class="session-panel-overlay" id="cuestOverlay" onclick="cerrarCuestionarios()">
   <div class="session-panel cuest-panel" id="cuestPanel" role="dialog" aria-modal="true" aria-labelledby="cuestTitulo" tabindex="-1" onclick="event.stopPropagation()">
     <div class="session-panel-handle"></div>
+    <button type="button" class="herr-volver-btn" onclick="volverAHerramientas()"><span aria-hidden="true">‹</span> Herramientas</button>
     <div class="session-panel-title" id="cuestTitulo">Cuestionarios</div>
     <div class="cuest-cuerpo" id="cuestCuerpo"></div>
   </div>
@@ -294,6 +300,7 @@
 <div class="session-panel-overlay" id="preguntaOverlay" onclick="cerrarPreguntaIA()">
   <div class="session-panel pregunta-panel" id="preguntaPanel" role="dialog" aria-modal="true" aria-labelledby="preguntaTitulo" tabindex="-1" onclick="event.stopPropagation()">
     <div class="session-panel-handle"></div>
+    <button type="button" class="herr-volver-btn" onclick="volverAHerramientas()"><span aria-hidden="true">‹</span> Herramientas</button>
     <div class="pregunta-cabecera" id="preguntaCabecera">
       <div class="session-panel-title" id="preguntaTitulo">✨ Preguntar a la IA</div>
     </div>

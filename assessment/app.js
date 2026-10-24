@@ -137,12 +137,20 @@ window.addEventListener('popstate', e => {
   if (_razonHistorial) { cerrarRazonamiento({ desdeHistorial: true }); return; }
   if (_compartirHistorial) { cerrarMenuCompartir({ desdeHistorial: true }); return; }
   if (_herrHistorial) { cerrarHerramientas({ desdeHistorial: true }); return; }
-  if (_preguntaHistorial) { cerrarPreguntaIA({ desdeHistorial: true }); return; }
-  if (_condHistorial) { cerrarCondiciones({ desdeHistorial: true }); return; }
-  if (_farmHistorial) { cerrarFarmacos({ desdeHistorial: true }); return; }
-  if (_ejercicioHistorial) { cerrarEjercicio({ desdeHistorial: true }); return; }
-  if (_tejidosHistorial) { cerrarTiemposTejido({ desdeHistorial: true }); return; }
-  if (_cuestHistorial) { cerrarCuestionarios({ desdeHistorial: true }); return; }
+  // Hojas de herramienta: abiertas desde el menú «Herramientas» (móvil), el
+  // atrás vuelve a él, cuya entrada es ahora la actual
+  if (_preguntaHistorial || _condHistorial || _farmHistorial || _ejercicioHistorial || _tejidosHistorial || _cuestHistorial) {
+    const alMenu = _herrOrigen;
+    _marcarOrigenHerr(false);
+    if (_preguntaHistorial) cerrarPreguntaIA({ desdeHistorial: true });
+    else if (_condHistorial) cerrarCondiciones({ desdeHistorial: true });
+    else if (_farmHistorial) cerrarFarmacos({ desdeHistorial: true });
+    else if (_ejercicioHistorial) cerrarEjercicio({ desdeHistorial: true });
+    else if (_tejidosHistorial) cerrarTiemposTejido({ desdeHistorial: true });
+    else cerrarCuestionarios({ desdeHistorial: true });
+    if (alMenu) abrirHerramientas({ enHistorial: true });
+    return;
+  }
   if (_pendingBackNav) {
     // history.go() de limpieza de stack aterrizó; reemplazar y actualizar profundidad
     const { phase: p, idx: i } = _pendingBackNav;
@@ -4756,6 +4764,7 @@ function _closeAllOverlays() {
   cerrarEjercicio({ sinHistorial: true });
   cerrarTiemposTejido({ sinHistorial: true });
   cerrarCuestionarios({ sinHistorial: true });
+  _marcarOrigenHerr(false);
   cerrarTecladoNumerico();
   closePhaseSheet();
   closeSessionPanel();
@@ -5073,35 +5082,56 @@ document.addEventListener('keydown', e => {
 // ─── HERRAMIENTAS (cabecera, solo ≤768 px) ──────────────────────
 // En móvil no caben como iconos sueltos los tiempos de tejido, los
 // cuestionarios y «Preguntar a la IA» (decisión del usuario, 2026-10): un solo
-// botón abre esta hoja y cada opción abre la suya. La hoja de la herramienta
-// reutiliza la entrada del historial de esta (replaceState), así que un atrás
-// cierra la herramienta y vuelve a la fase, sin pasar otra vez por el menú.
+// botón abre esta hoja y cada opción abre la suya. El menú conserva su entrada
+// del historial y la herramienta pone la suya encima (decisión del usuario,
+// 2026-10, para consultar varias seguidas): el atrás, o «‹ Herramientas» en la
+// hoja (iOS instalada no tiene atrás), vuelve al menú; deslizar, tocar fuera o
+// Escape cierra las dos y deja la fase (history.go(-2), _atrasHoja).
 let _herrHistorial = false;
-let _reusarEntrada = false;
+let _herrPendiente = false;  // herramientaElegir: la próxima entrada va encima de la del menú
+let _herrOrigen = false;     // la hoja abierta tiene debajo la entrada del menú
+function _marcarOrigenHerr(v) {
+  _herrOrigen = v;
+  document.body.classList.toggle('herr-volver', v);
+}
 function _entradaOverlay(st) {
-  if (_reusarEntrada) { _reusarEntrada = false; history.replaceState(st, ''); }
-  else history.pushState(st, '');
+  history.pushState(st, '');
+  if (_herrPendiente) { _herrPendiente = false; _marcarOrigenHerr(true); }
+}
+// Cierre de una hoja de herramienta que no viene del atrás: quita su entrada
+// y, si se abrió desde el menú, también la de este
+function _atrasHoja(despues = null) {
+  _popIgnorar = true; _trasPop = despues;
+  if (_herrOrigen) { _marcarOrigenHerr(false); history.go(-2); }
+  else history.back();
+}
+// «‹ Herramientas»: lo mismo que el atrás del sistema (popstate)
+function volverAHerramientas() {
+  if (_herrOrigen) history.back();
 }
 // Botón de cabecera al que vuelve el foco: el de la herramienta si se ve
 // (escritorio), si no el de «Herramientas»
 const _botonCabecera = btn => (btn?.offsetParent ? btn : document.getElementById('herramientasBtn'));
 
-function abrirHerramientas() {
+// `enHistorial`: se vuelve desde una herramienta y la entrada del menú ya es
+// la actual
+function abrirHerramientas({ enHistorial = false } = {}) {
   const overlay = document.getElementById('herramientasOverlay');
   if (!overlay || overlay.classList.contains('open')) return;
   overlay.classList.add('open');
   document.getElementById('herramientasBtn')?.setAttribute('aria-expanded', 'true');
   lockBodyScroll();
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_HIDE' }, '*');
-  if (_esMovil()) {
+  if (enHistorial) _herrHistorial = true;
+  else if (_esMovil()) {
     history.pushState({ phase: state.currentPhase, herramientas: true }, '');
     _herrHistorial = true;
   }
   document.getElementById('herramientasPanel').focus({ preventScroll: true });
 }
 
-// `traspaso`: se cierra para abrir una herramienta, que se queda con la
-// entrada del historial y con el foco
+// `traspaso`: se cierra para abrir una herramienta, que pone su entrada encima
+// de la del menú y se queda con el foco
 function cerrarHerramientas({ desdeHistorial = false, sinHistorial = false, traspaso = false } = {}) {
   const overlay = document.getElementById('herramientasOverlay');
   if (!overlay?.classList.contains('open')) return;
@@ -5112,7 +5142,7 @@ function cerrarHerramientas({ desdeHistorial = false, sinHistorial = false, tras
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
   if (_herrHistorial) {
     _herrHistorial = false;
-    if (traspaso) _reusarEntrada = true;
+    if (traspaso) _herrPendiente = true;
     else if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
   }
   const btn = document.getElementById('herramientasBtn');
@@ -5124,7 +5154,7 @@ function herramientaElegir(k) {
   cerrarHerramientas({ traspaso: true });
   ({ condiciones: abrirCondiciones, farmacos: abrirFarmacos, ejercicio: abrirEjercicio, tejidos: abrirTiemposTejido, cuestionarios: abrirCuestionarios, pregunta: abrirPreguntaIA })[k]?.();
   // Si la herramienta no llegó a abrirse, la entrada del menú sobra
-  if (_reusarEntrada) { _reusarEntrada = false; _popIgnorar = true; history.back(); }
+  if (_herrPendiente) { _herrPendiente = false; _popIgnorar = true; history.back(); }
 }
 
 document.addEventListener('keydown', e => {
@@ -5237,7 +5267,7 @@ function cerrarPreguntaIA({ desdeHistorial = false, sinHistorial = false } = {})
   unlockBodyScroll();
   if (_preguntaHistorial) {
     _preguntaHistorial = false;
-    if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
+    if (!desdeHistorial && !sinHistorial) _atrasHoja();
   }
   const btn = document.getElementById('preguntaIABtn');
   btn?.setAttribute('aria-expanded', 'false');
@@ -5417,7 +5447,7 @@ function cerrarTiemposTejido({ desdeHistorial = false, sinHistorial = false } = 
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
   if (_tejidosHistorial) {
     _tejidosHistorial = false;
-    if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
+    if (!desdeHistorial && !sinHistorial) _atrasHoja();
   }
   const btn = document.getElementById('tejidosBtn');
   btn?.setAttribute('aria-expanded', 'false');
@@ -5466,7 +5496,7 @@ function cerrarCondiciones({ desdeHistorial = false, sinHistorial = false, despu
   if (_condHistorial) {
     _condHistorial = false;
     if (!desdeHistorial && !sinHistorial) {
-      _popIgnorar = true; _trasPop = despues; history.back();
+      _atrasHoja(despues);
       if (!despues) _botonCabecera(btn)?.focus({ preventScroll: true });
       return;
     }
@@ -5565,7 +5595,7 @@ function cerrarFarmacos({ desdeHistorial = false, sinHistorial = false, despues 
   if (_farmHistorial) {
     _farmHistorial = false;
     if (!desdeHistorial && !sinHistorial) {
-      _popIgnorar = true; _trasPop = despues; history.back();
+      _atrasHoja(despues);
       if (!despues) _botonCabecera(btn)?.focus({ preventScroll: true });
       return;
     }
@@ -5647,7 +5677,7 @@ function cerrarEjercicio({ desdeHistorial = false, sinHistorial = false, despues
   if (_ejercicioHistorial) {
     _ejercicioHistorial = false;
     if (!desdeHistorial && !sinHistorial) {
-      _popIgnorar = true; _trasPop = despues; history.back();
+      _atrasHoja(despues);
       if (!despues) _botonCabecera(btn)?.focus({ preventScroll: true });
       return;
     }
@@ -5804,7 +5834,7 @@ function cerrarCuestionarios({ desdeHistorial = false, sinHistorial = false, sin
   window.parent.postMessage({ type: 'PHYSIQ_WIDGET_SHOW' }, '*');
   if (_cuestHistorial) {
     _cuestHistorial = false;
-    if (!desdeHistorial && !sinHistorial) { _popIgnorar = true; history.back(); }
+    if (!desdeHistorial && !sinHistorial) _atrasHoja();
   }
   const btn = document.getElementById('cuestBtn');
   btn?.setAttribute('aria-expanded', 'false');
@@ -6331,7 +6361,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, volverAHerramientas, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,

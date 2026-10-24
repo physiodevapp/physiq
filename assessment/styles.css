@@ -3591,6 +3591,16 @@ body:has(.session-panel-overlay.open) .ia-menu { z-index: 1002; }
 }
 .in-hub .herr-op-ia { display: none; }
 @media print { .herramientas-btn { display: none !important; } }
+/* «‹ Herramientas»: solo en la hoja abierta desde ese menú (body.herr-volver,
+   app.js), para volver a él sin el atrás del sistema (iOS instalada no lo tiene) */
+.herr-volver-btn { display: none; }
+body.herr-volver .herr-volver-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin: -6px 0 4px -6px; padding: 0 8px;
+  background: none; border: none; border-radius: 8px; color: var(--accent); font: inherit; font-size: 0.85rem; cursor: pointer;
+}
+body.herr-volver .herr-volver-btn span { font-size: 1.2rem; line-height: 1; }
+@media (hover: hover) { body.herr-volver .herr-volver-btn:hover { background: var(--hover-tint); } }
+@media print { .herr-volver-btn { display: none !important; } }
 
 /* Una sola X en toda la app (decisión del usuario, 2026-10): el mismo icono SVG
    (.icono-x). Sin borde cuando cierra algo flotante (aviso de versión, panel del
