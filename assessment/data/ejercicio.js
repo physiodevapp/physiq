@@ -288,15 +288,26 @@ export const BLOQUES_EJERCICIO = [
 //     misma guía excluye la rotura completa, y h3 agrupa parcial y completa.
 //   · hipoalgesia: el dolor crónico inespecífico, el latigazo y la
 //     sensibilización central («el ejercicio regular ayuda algo con el dolor»;
-//     la respuesta variable en el dolor generalizado y el latigazo).
-// Fuera, a propósito: la artrosis (encaja en los dos bloques), las roturas,
-// fracturas y luxaciones (se derivan) y el resto, sin frase propia.
+//     la respuesta variable en el dolor generalizado y el latigazo), y lo que
+//     cubren las revisiones Cochrane de Geneen 2017, la fuente de esa frase:
+//     la artrosis de cadera y de rodilla, el dolor patelofemoral, y la
+//     lumbalgia y la cervicalgia mecánicas, estas solo con cronología
+//     «Crónico (>3 meses)», porque la frase habla de dolor crónico.
+// Una entrada es la clave del bloque o { bloque, cronologia } (el texto exacto
+// del botón de la fase 1). Fuera, a propósito: la artrosis de hombro y de
+// tobillo o pie (Geneen no las cubre), las radiculares y la estenosis, las
+// lesiones agudas (la frase del desuso viene del reposo en cama en sanos), las
+// roturas, fracturas y luxaciones (se derivan) y el resto, sin frase propia.
+const CRONICA = { bloque: 'hipoalgesia', cronologia: 'Crónico (>3 meses)' };
 export const BLOQUE_POR_HIPOTESIS = {
   h2: 'mecanotransduccion', ca4: 'mecanotransduccion', ca9: 'mecanotransduccion', ro5: 'mecanotransduccion',
   co1: 'mecanotransduccion', co2: 'mecanotransduccion', co10: 'mecanotransduccion',
   tp8: 'mecanotransduccion', tp9: 'mecanotransduccion', tp11: 'mecanotransduccion',
   tp14: 'mecanotransduccion', tp15: 'mecanotransduccion', tp19: 'mecanotransduccion',
   ce5: 'hipoalgesia', ce7: 'hipoalgesia', ce14: 'hipoalgesia', ca15: 'hipoalgesia',
+  ca1: 'hipoalgesia', ro1: 'hipoalgesia', ro3: 'hipoalgesia',
+  lu1: CRONICA, lu2: CRONICA, lu6: CRONICA, lu7: CRONICA, lu9: CRONICA,
+  ce1: CRONICA, ce2: CRONICA, ce6: CRONICA, ce9: CRONICA, ce11: CRONICA,
 };
 
 export const TEXTOS_EJERCICIO = {

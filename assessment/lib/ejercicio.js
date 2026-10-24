@@ -65,10 +65,18 @@ export function bloqueEjercicioAlternativo(irritabilidad, principal = bloqueEjer
 // Bloque principal del plan: el de sus hipótesis (BLOQUE_POR_HIPOTESIS) cuando
 // todas las que están en la tabla apuntan al mismo bloque escrito; si no hay
 // ninguna en la tabla o apuntan a bloques distintos, el de la irritabilidad.
-// `hipotesis`: las elegidas del plan, [{ id, name }].
-export function bloqueEjercicioParaPlan(irritabilidad, hipotesis = []) {
-  const enTabla = hipotesis.filter(h => BLOQUE_POR_HIPOTESIS[h.id]);
-  const ids = [...new Set(enTabla.map(h => BLOQUE_POR_HIPOTESIS[h.id]))];
+// `hipotesis`: las elegidas del plan, [{ id, name }]; `cronologia`: la de la
+// fase 1, para las entradas que solo valen en dolor crónico.
+export function bloqueDeHipotesis(id, { cronologia = '' } = {}) {
+  const e = BLOQUE_POR_HIPOTESIS[id];
+  if (!e) return null;
+  if (typeof e === 'string') return e;
+  return !e.cronologia || e.cronologia === cronologia ? e.bloque : null;
+}
+
+export function bloqueEjercicioParaPlan(irritabilidad, hipotesis = [], { cronologia = '' } = {}) {
+  const enTabla = hipotesis.filter(h => bloqueDeHipotesis(h.id, { cronologia }));
+  const ids = [...new Set(enTabla.map(h => bloqueDeHipotesis(h.id, { cronologia })))];
   const b = ids.length === 1 ? bloquesConContenido().find(x => x.id === ids[0]) : null;
   if (b) return { bloque: b, hipotesis: enTabla.map(h => h.name) };
   return { bloque: bloqueEjercicioParaIrritabilidad(irritabilidad), hipotesis: [] };
@@ -102,7 +110,7 @@ const EXTRAS_EJERCICIO = [
 const listaY = xs => xs.length > 1 ? `${xs.slice(0, -1).join(', ')} y ${xs[xs.length - 1]}` : xs[0];
 
 export function enlaceEjercicioHTML(irritabilidad, motivos = {}) {
-  const { bloque: b, hipotesis: porHip } = bloqueEjercicioParaPlan(irritabilidad, motivos.hipotesis || []);
+  const { bloque: b, hipotesis: porHip } = bloqueEjercicioParaPlan(irritabilidad, motivos.hipotesis || [], { cronologia: motivos.cronologia || '' });
   if (!b) return '';
   const T = TEXTOS_EJERCICIO;
   const ayuda = porHip.length
