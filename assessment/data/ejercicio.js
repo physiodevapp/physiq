@@ -274,6 +274,47 @@ export const BLOQUES_EJERCICIO = [
       ],
     },
     fuentes: ['Fu y Levine 2015', 'Cortez 2025', 'Hogwood 2025', 'Ziaks 2024', 'Yanagimoto 2025', 'Kwok 2025', 'George 2016'] },
+  // Hipermovilidad (2026-10): añadido para enlazar el recuadro de hipermovilidad
+  // de la fase 5 (sin el subtipo vascular). Siete fuentes leídas enteras en PMC
+  // y cinco en PDF del usuario (Liaghat 2025, Smith 2013, Reychler 2021,
+  // Spanhove 2022, Brittain 2023); niveles en docs/efectos-ejercicio.md.
+  { id: 'hipermovilidad', titulo: 'Ejercicio en la hipermovilidad (SEDh / TEH)',
+    resumen: 'Si se puede cargar con fuerza a una persona hiperlaxa, cuánto dolor provoca el ejercicio y hasta dónde llega lo demostrado',
+    apartados: {
+      que: [
+        { t: 'En el SEDh y el TEH la fuerza máxima y la resistencia muscular son más bajas que en controles de la misma edad, con la misma masa muscular. Los autores lo atribuyen, como hipótesis, a más grasa en el músculo, al dolor, a la propiocepción o a menos actividad física (Coussens 2022, estudio transversal solo en mujeres).', nivel: 'mecanismo' },
+        { t: 'La propiocepción de la rodilla es peor que en personas sin hipermovilidad; en el hombro no se ha demostrado diferencia. Son estudios de casos y controles sin evaluador ciego, y no muestran que ese déficit cause los síntomas ni que el ejercicio lo corrija (Smith 2013).', nivel: 'mecanismo' },
+        { t: 'La idea detrás de la fuerza con carga es que el músculo aporte la estabilidad que la articulación laxa no tiene. Es la justificación de los ensayos, no algo medido: en el de hombro, la fuerza no cambió de forma significativa entre grupos, y ganar fuerza explica poco de la mejoría (Liaghat 2022; Christensen 2026).', nivel: 'mecanismo' },
+      ],
+      evidencia: [
+        { t: 'Hombro con TEH, 16 semanas: la fuerza con carga alta, supervisada dos veces por semana, mejoró la función algo más que el ejercicio suave en casa (WOSI −174,5 puntos), pero por debajo de la diferencia mínima importante. Al año ya no había diferencia, y en los dos grupos la mayoría había mejorado de forma clínicamente importante (Liaghat 2022; Liaghat 2024).', nivel: 'clinico' },
+        { t: 'En ese ensayo, el dolor que provocaba cada sesión fue bajo con carga alta y con carga baja, sin diferencia entre ellas (Liaghat 2025, con 64 de los 100 pacientes). La carga alta dio más agujetas y cefaleas pasajeras, y no hubo efectos adversos graves (Liaghat 2022).', nivel: 'clinico' },
+        { t: 'Ningún tipo de ejercicio ha demostrado ser mejor que otro: dos programas de hombro en casa mejoraron igual (Spanhove 2022, 21 mujeres); en la muñeca, el ejercicio de estabilización dio lo mismo que la órtesis (Lindholm 2024); y en un ensayo en niños, ejercitar la rodilla dentro de su rango hipermóvil o solo hasta la extensión neutra dio el mismo dolor (Reychler 2021). La guía de fisioterapia llega a lo mismo: no hay evidencia convincente a favor de un tipo concreto (Engelbert 2017).', nivel: 'clinico' },
+        { t: 'En niños con hipermovilidad sintomática, un programa multidisciplinar de 8 semanas no añadió nada a la atención habitual con educación y consejo: los dos grupos mejoraron el dolor al año (Bale 2019, 119 niños).', nivel: 'clinico' },
+        { t: 'Los efectos adversos atribuibles al ejercicio fueron raros, menos del 1 % de los participantes, una estimación imprecisa por los pocos estudios (Buryk-Iggers 2022).', nivel: 'clinico' },
+        { t: 'Cuánto pesa todo esto: una revisión habla de beneficio sobre el dolor y la propiocepción sea cual sea la intervención (Reychler 2021) y otra de evidencia que apoya el ejercicio terapéutico (Brittain 2023), pero sus propios datos son ensayos pequeños, de 4 a 16 semanas, sin diferencia cuando se comparan dos programas; la tercera concluye que no se puede afirmar nada definitivo sobre eficacia, dosis ni seguridad (Buryk-Iggers 2022).', nivel: 'discutido' },
+      ],
+      consulta: [
+        { t: 'La carga alta no está contraindicada en el hombro con TEH: el ensayo progresó del 50 % de 10 RM a 4 series de 8 RM, con mancuernas que subían de 50 en 50 g y supervisión en 2 de las 3 sesiones semanales (Liaghat 2022; Liaghat 2025). Los autores no saben si vale sin esa supervisión, en el SEDh o con más dolor de partida (Liaghat 2025).', nivel: 'clinico' },
+        { t: 'La regla de dolor de los dos ensayos de hombro: hasta 5 sobre 10 durante el ejercicio es aceptable; por encima, se bajan repeticiones, carga o recorrido, o se cambia el ejercicio. Ningún ensayo la compara con otra regla (Liaghat 2025; Spanhove 2022).', nivel: 'mecanismo' },
+        { t: 'Para empezar en casa, los pacientes eligieron casi siempre ejercicios en cadena cerrada con poca carga (deslizar el brazo sobre una mesa o una pared), que dan sensación de estabilidad. Es lo que eligieron, no una comparación (Spanhove 2022).', nivel: 'mecanismo' },
+        { t: 'Ninguno de estos ensayos incluye el subtipo vascular, y sus resultados no se pueden generalizar a otros subtipos (Buryk-Iggers 2022). En el vascular, la pauta es la del recuadro de la fase 5: cargas ligeras, sin isométricos y a una intensidad que permita conversar (Byers 2017).', nivel: 'clinico' },
+      ],
+      paciente: [
+        { t: 'El ejercicio de fuerza, subiendo la carga poco a poco, no suele aumentar el dolor y suele ayudar a que la articulación funcione mejor. La mejoría suele ser moderada, y al principio puede dejar agujetas que pasan.', apoya: [0, 1] },
+        { t: 'No hay un ejercicio «especial» para la hipermovilidad: los distintos programas que se han probado han dado resultados parecidos.', apoya: [2] },
+      ],
+      detalle: [
+        'El ensayo de hombro no incluyó a ningún paciente con SEDh, solo TEH de atención primaria. Analizando solo a quienes cumplieron el programa, la carga alta sí llegó a la diferencia mínima importante a las 16 semanas (WOSI −250,7) (Liaghat 2022).',
+        'La carga alta tenía 32 sesiones supervisadas y la baja 3: parte de la diferencia puede deberse a la atención, como dicen los propios autores (Liaghat 2024).',
+        'Para llegar a la diferencia mínima importante en función habría hecho falta subir alrededor de un 80 % la fuerza de rotación externa; casi nadie lo consiguió (Christensen 2026).',
+        'En el análisis del dolor se perdió un tercio de los cuadernos de registro, y el dolor de partida era bajo: puede no representar a pacientes con más dolor (Liaghat 2025).',
+        'El resumen de una revisión dice que la calidad de vida mejoró «sistemáticamente»; en su texto, solo un estudio la compara entre grupos, y solo en el componente físico (Reychler 2021).',
+        'La «evidencia fuerte» para el entrenamiento de la función motora de otra revisión es una etiqueta por niveles de estudio, no una certeza GRADE, y se apoya sobre todo en un ensayo en niños sin diferencia entre grupos (Brittain 2023).',
+        'El programa de hombro en casa terminó antes por la COVID-19, no tenía grupo sin ejercicio y su Beighton medio (3,6–4,1) queda por debajo de los cortes de 2017 (Spanhove 2022). El de la muñeca usó un código diagnóstico que no distingue subtipos y no se devolvió el 40 % de los diarios (Lindholm 2024).',
+      ],
+    },
+    fuentes: ['Coussens 2022', 'Smith 2013', 'Liaghat 2022', 'Liaghat 2024', 'Liaghat 2025', 'Christensen 2026', 'Spanhove 2022', 'Lindholm 2024', 'Reychler 2021', 'Engelbert 2017', 'Bale 2019', 'Buryk-Iggers 2022', 'Brittain 2023', 'Byers 2017'] },
 ];
 
 // Bloque que enlaza la fase 6 por hipótesis (docs/efectos-ejercicio.md,
@@ -327,6 +368,7 @@ export const TEXTOS_EJERCICIO = {
   // Enlaces de los recuadros de la fase 5 (lupus diagnosticado, osteoporosis)
   enlaceCondicion: 'Efectos del ejercicio: «{titulo}» →',
   enlaceCondicionLupus: 'Sus frases para el paciente son para las enfermedades reumáticas inflamatorias, lupus incluido.',
-  enlaceCondicionDisautonomia: 'Por qué los programas empiezan tumbado y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
+  enlaceCondicionHipermovilidad: 'Si se puede cargar con fuerza y cuánto dolor provoca, según los ensayos en SEDh y TEH; no vale para el subtipo vascular.',
+  enlaceCondicionDisautonomia:'Por qué los programas empiezan tumbado y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionOsteoporosis: 'Lectura para ti: en el hueso el bloque solo llega a mecanismo (la densidad mejora algo); no está demostrado que el ejercicio reduzca las fracturas.',
 };

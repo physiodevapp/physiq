@@ -136,6 +136,7 @@ export function enlaceEjercicioHTML(irritabilidad, motivos = {}) {
 const CONDICION_EJERCICIO = {
   lupus: { id: 'antiinflamatorio', ayuda: 'enlaceCondicionLupus' },
   disautonomia: { id: 'ortostatica', ayuda: 'enlaceCondicionDisautonomia' },
+  hipermovilidad: { id: 'hipermovilidad', ayuda: 'enlaceCondicionHipermovilidad' },
   osteoporosis: { id: 'mecanotransduccion', ayuda: 'enlaceCondicionOsteoporosis' },
 };
 

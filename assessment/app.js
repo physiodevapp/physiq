@@ -1372,6 +1372,7 @@ function _hipermovilidadResultadosHTML(d) {
       <span class="alert-icon">🧬</span>
       <div><strong>Hipermovilidad.</strong> ${estado}${datos ? ` · ${datos}` : ''}
         ${_lineasCondicionHTML(lineasRecomendacionHM(d), _sospechaDe(d, 'hipermovilidad articular'))}
+        ${d.st === 'vascular' ? '' : enlaceCondicionEjercicioHTML('hipermovilidad')}
       </div>
     </div>`;
 }
