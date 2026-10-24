@@ -140,6 +140,10 @@ export const AVISOS = {
   anticoaguladoPuncion: 'Anticoagulado o antiagregado, y la pauta incluye punción seca: no existe ningún estudio con antitrombóticos; una revisión narrativa y un consenso que se apoya en ella dicen que no es una contraindicación absoluta (Muñoz 2022; Waterway 2026), y según otra revisión la guía suiza sí la trata así con la anticoagulación (Malfait 2024). Práctica de los autores de la primera: empezar por músculos superficiales viendo cómo sangra, evitar al principio los profundos que no se pueden comprimir y comprimir 10–15 s (Muñoz 2022). Sin INR límite.',
   anticoaguladoOndas: 'Anticoagulado o antiagregado, y la pauta incluye ondas de choque: sin consenso entre expertos sobre aplicarlas con anticoagulantes, y el hematoma es un efecto posible (Rhim 2025); se consideran un factor importante a valorar, sin datos con anticoagulados (Tenforde 2022).',
   lupusRaynaud: 'Lupus con Raynaud: al aire libre, guantes o ropa contra el frío; evitar tocar superficies frías y secar bien la piel durante y después del ejercicio (Blaess 2024, rec. 2). Por lo mismo, cuidado con el frío local en manos y pies (inferencia, sin fuente propia).',
+  // Hipermovilidad, subtipo vascular diagnosticado (Fase P, docs/hipermovilidad.md):
+  // en cualquier región, nunca con la sospecha; el mismo texto que el recuadro de
+  // la fase 5 (HM.textos.vascular, data/comun.js). Sin tope ni red propios.
+  hipermovilidadVascular: 'Ehlers-Danlos vascular (diagnosticado): evitar deportes de colisión, ejercicio isométrico y aceleraciones bruscas; intensidad que permita conversar, control de la respiración al levantar peso y cargas ligeras (Byers 2017, p. 42).',
   disautonomiaHM: 'Disautonomía con hipermovilidad: adaptar además el ejercicio a la hipermovilidad, la inestabilidad y las lesiones (Hakim 2017, p. 172).',
   orientativo: 'Nivel orientativo: el juicio de irritabilidad varía entre fisioterapeutas (acuerdo del 71 %, kappa 0,39–0,44; Barakatt 2009). Puedes cambiar la gravedad y la irritabilidad.',
   propuesta: 'Es una propuesta, no una prescripción: la decide y la firma el fisioterapeuta.',

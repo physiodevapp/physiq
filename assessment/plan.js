@@ -92,6 +92,8 @@ function entrada(hs) {
     redNeuroZona: zonaConRedNeuro(state, ZONAS_SINTOMA[state.region] || []),
     // Tarjetas de la fase 1 (Fase P, docs/pots.md): aviso y red de la disautonomía
     disautonomia: dsActiva(state.disautonomia), hipermovilidad: hmActiva(state.hipermovilidad),
+    // Hipermovilidad «Diagnosticada · vascular» (docs/hipermovilidad.md): aviso de actividad
+    hmVascular: state.hipermovilidad?.estado === 'diagnosticada' && state.hipermovilidad.subtipo === 'vascular',
     // Lupus diagnosticado (docs/lupus.md): avisos y red de seguridad
     lupus: lesDiagnosticado(state.lupus) ? { brote: ['brote', 'peor'].includes(state.lupus.actividad),
       raynaud: !!state.lupus.raynaud } : null,

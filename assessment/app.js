@@ -2770,7 +2770,7 @@ function sistemasActivos(regionId = state.region) {
   // Fase P: el sistema de hipermovilidad solo con la tarjeta activa, y de él
   // solo las preguntas y banderas de su estado (`hm`, lib/hipermovilidad.js)
   const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId))
-    && elementoHMVisible(x, state.hipermovilidad) && elementoLESVisible(x, state.lupus) && elementoOPVisible(x, state.osteoporosis)
+    && elementoHMVisible(x, state.hipermovilidad, state.sistemicoAnswers) && elementoLESVisible(x, state.lupus) && elementoOPVisible(x, state.osteoporosis)
     && elementoEMVisible(x, state.embarazo, state.osteoporosis) && elementoACVisible(x, state.anticoagulado);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
@@ -3568,6 +3568,7 @@ function _marcarRespuestaSist(id, value) {
 }
 
 function selectSistQ(btn, id, value, isAlerta, sisId) {
+  const derivabaVascular = !!reglaVascular(state.hipermovilidad, state.sistemicoAnswers)?.derivar;
   state.sistemicoAnswers[id] = value;
   _marcarRespuestaSist(id, value);
   // Un SÍ contradice un embudo en NO: el sistema pasa a tener hallazgos
@@ -3587,6 +3588,11 @@ function selectSistQ(btn, id, value, isAlerta, sisId) {
     _pintarEmbudo(sisId);
   }
 
+  // Fase P: cumplir o dejar de cumplir la regla de sospecha vascular cambia si
+  // se ven las urgencias arteriales (urgenciasVisibles); una ya marcada SÍ
+  // sigue a la vista. Solo al responder una de sospecha: contestar NO a una
+  // urgencia no la quita de debajo del dedo.
+  if (derivabaVascular !== !!reglaVascular(state.hipermovilidad, state.sistemicoAnswers)?.derivar) _repintarCribado();
   updateSistemicoAlert();
   const q = SYSTEMIC_SCREENING[state.region]?.sistemas.flatMap(x => x.preguntas).find(x => x.id === id);
   if (q?.urgencia && value === 'SI') showToast(`🚨 ${q.urgencia}`, 'warning');

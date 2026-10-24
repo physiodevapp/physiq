@@ -212,7 +212,8 @@ export function rangosBloques(duraciones = {}) {
 //   irritabilidad, irritabilidadNivel, irritabilidadDirecta, zonaP1, secundarios (`ss`
 //   del payload: [{ n, z, nr, ir, re, or }]), redNeuroZona (algún síntoma en una
 //   zona `redNeuro`: periné en lumbar), disautonomia e hipermovilidad (tarjetas
-//   de la fase 1 activas, docs/pots.md), lupus (null, o { brote, raynaud } con la
+//   de la fase 1 activas, docs/pots.md), hmVascular (hipermovilidad
+//   «Diagnosticada · vascular», docs/hipermovilidad.md), lupus (null, o { brote, raynaud } con la
 //   tarjeta en «Diagnosticado», docs/lupus.md), mastocitos (la
 //   tarjeta «Trastorno mastocitario o anafilaxia» marcada, docs/mastocitaria.md),
 //   osteoporosis (null, o { diagnosticada, impactoLimitado } con la tarjeta
@@ -265,6 +266,9 @@ export function construirPlan(e) {
   // además la adaptación a la inestabilidad (Hakim 2017)
   if (e.disautonomia) avisosHip.push(...AVISOS_DISAUTONOMIA.map(k => AVISOS[k]));
   if (e.disautonomia && e.hipermovilidad) avisosHip.push(AVISOS.disautonomiaHM);
+  // Hipermovilidad, subtipo vascular diagnosticado (docs/hipermovilidad.md): en
+  // cualquier región, la pauta de actividad de Byers 2017; nunca con la sospecha
+  if (e.hmVascular) avisosHip.push(AVISOS.hipermovilidadVascular);
   // Lupus (docs/lupus.md): en cualquier región, más los de su tarjeta
   if (e.lupus) {
     avisosHip.push(...AVISOS_LUPUS.map(k => AVISOS[k]));

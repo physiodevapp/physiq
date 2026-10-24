@@ -37,20 +37,29 @@ export function normalizarHipermovilidad(hm) {
 }
 
 // ── Qué se ve ────────────────────────────────────────────────
-// Urgencias del subtipo vascular: con el subtipo vascular diagnosticado o con
-// sospecha. Sospecha del subtipo vascular: con sospecha, o diagnosticada sin
-// saber el subtipo (otro, no lo sabe o sin marcar). Diagnosticada vascular no
-// pregunta la sospecha (ya está diagnosticada); hipermóvil, ninguna de las dos.
-export function urgenciasVisibles(hm) {
-  return hm?.estado === 'sospecha' || (hm?.estado === 'diagnosticada' && hm.subtipo === 'vascular');
+// Urgencias del subtipo vascular: con el subtipo vascular diagnosticado, con
+// sospecha, o con la regla de sospecha vascular cumplida (diagnosticada con
+// subtipo otro, no lo sabe o sin marcar: si ya se deriva a genética por
+// sospecha, se pregunta también por el cuadro agudo). Sospecha del subtipo
+// vascular: con sospecha, o diagnosticada sin saber el subtipo. Diagnosticada
+// vascular no pregunta la sospecha (ya está diagnosticada); hipermóvil, ninguna
+// de las dos. `respuestas` = state.sistemicoAnswers.
+export function urgenciasVisibles(hm, respuestas = {}) {
+  return hm?.estado === 'sospecha' || (hm?.estado === 'diagnosticada' && hm.subtipo === 'vascular')
+    || !!reglaVascular(hm, respuestas)?.derivar;
 }
 export function sospechaVascularVisible(hm) {
   return hm?.estado === 'sospecha' || (hm?.estado === 'diagnosticada' && ['otro', 'ns', ''].includes(hm.subtipo));
 }
 // Pregunta o bandera del sistema (`hm` en data/comun.js); sin `hm`, siempre.
-export function elementoHMVisible(x, hm) {
+// Una urgencia ya marcada SÍ no se oculta al cambiar el subtipo, el estado o
+// las respuestas de sospecha (dejaría de contar en `ur`); la bandera sigue a su
+// pregunta (`pregunta`). Solo desaparece si se pasa a NO o se desmarca la
+// tarjeta entera (el sistema deja de verse, como en las demás tarjetas).
+export function elementoHMVisible(x, hm, respuestas = {}) {
   if (!x || typeof x === 'string' || !x.hm) return true;
-  return x.hm === 'urgencia' ? urgenciasVisibles(hm) : sospechaVascularVisible(hm);
+  if (x.hm !== 'urgencia') return sospechaVascularVisible(hm);
+  return urgenciasVisibles(hm, respuestas) || respuestas[x.id || x.pregunta] === 'SI';
 }
 export const cuestionarioVisible = hm => hm?.estado === 'sospecha';
 export const beightonVisible = hm => hmActiva(hm);
