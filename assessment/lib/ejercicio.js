@@ -10,6 +10,7 @@ import { citasHTML, citasEnTexto } from './citas.js';
 import { iaParrafoHTML, attrIA, ctxEjercicio } from '../ampliar-ia.js';
 import { CUESTIONARIOS } from '../data/cuestionarios.js';
 import { puntuar } from './cuestionarios.js';
+import { reglaVascular } from './hipermovilidad.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // Texto de data/ con las citas de dentro de la frase como botones (lib/citas.js)
@@ -86,24 +87,66 @@ export function bloqueEjercicioParaPlan(irritabilidad, hipotesis = [], { cronolo
 // «Efectos centrales»
 export const CUESTIONARIOS_ANIMO = ['phq2', 'phq9', 'gad7'];
 
+// Condiciones especiales que enlazan un bloque (docs/efectos-ejercicio.md,
+// «Desde los recuadros de la fase 5» y «Enlace de la fase 6»): la única regla
+// de estados, para el recuadro de la fase 5 y el bloque «Educación» de la fase
+// 6. Una regla de lectura, no clínica: nunca cambia el plan. `enlaza` recibe
+// { estado, subtipo, vs } (vs: regla de sospecha del subtipo vascular cumplida).
+// - Lupus, solo diagnosticado: sus frases para el paciente solo valen en las
+//   enfermedades reumáticas inflamatorias.
+// - Disautonomía y osteoporosis, en los dos estados.
+// - Hipermovilidad, en los dos estados, salvo con el subtipo vascular
+//   diagnosticado o sospechado (regla cumplida): sus ensayos no lo incluyen y su
+//   pauta es la de Byers 2017.
+// `motivo` / `ayudaPlan`: la línea «También» de la fase 6. Osteoporosis no la
+// tiene: «Carga y adaptación» ya sale siempre allí, principal o «También».
+const CONDICION_EJERCICIO = {
+  lupus: { id: 'antiinflamatorio', ayuda: 'enlaceCondicionLupus', motivo: 'reumatica', ayudaPlan: 'enlaceMotivoReumatica',
+    enlaza: ({ estado }) => estado === 'diagnosticado' },
+  disautonomia: { id: 'ortostatica', ayuda: 'enlaceCondicionDisautonomia', motivo: 'ortostatica', ayudaPlan: 'enlaceMotivoOrtostatica',
+    enlaza: ({ estado }) => !!estado },
+  hipermovilidad: { id: 'hipermovilidad', ayuda: 'enlaceCondicionHipermovilidad', motivo: 'hipermovilidad', ayudaPlan: 'enlaceMotivoHipermovilidad',
+    enlaza: ({ estado, subtipo, vs }) => !!estado && !(estado === 'diagnosticada' && subtipo === 'vascular') && !vs },
+  osteoporosis: { id: 'mecanotransduccion', ayuda: 'enlaceCondicionOsteoporosis',
+    enlaza: ({ estado }) => !!estado },
+};
+
+export function condicionEnlazaEjercicio(condicion, datos = {}) {
+  const c = CONDICION_EJERCICIO[condicion];
+  return !!c && c.enlaza(datos || {});
+}
+
+// La tarjeta de la fase 1 (state) en la forma que lee la regla; la fase 5 pasa
+// los mismos datos desde su payload (es, st, vs).
+export function datosCondicionEjercicio(condicion, tarjeta, respuestas = {}) {
+  const datos = { estado: tarjeta?.estado || '', subtipo: tarjeta?.subtipo || '' };
+  if (condicion === 'hipermovilidad') datos.vs = !!reglaVascular(tarjeta, respuestas)?.derivar;
+  return datos;
+}
+
 // Qué bloques más enlaza la fase 6, además de los dos de la irritabilidad
 // (docs/efectos-ejercicio.md, «Enlace de la fase 6»): «Efectos centrales» con
 // riesgo psicosocial medio o alto, o un PHQ-2, PHQ-9 o GAD-7 completo con
-// síntomas; «antiinflamatorio» solo con lupus diagnosticado, porque sus frases
-// para el paciente solo valen en las enfermedades reumáticas inflamatorias.
-// Una regla de lectura, no clínica: nunca cambia el plan.
-export function motivosEjercicio({ riesgoPsico, cuestionarios, lupusDiagnosticado } = {}) {
+// síntomas; y el bloque de cada condición especial con `motivo`, con la misma
+// regla de estados que su recuadro de la fase 5 (CONDICION_EJERCICIO).
+// `tarjetas`: { lupus, disautonomia, hipermovilidad } de state; `respuestas`:
+// state.sistemicoAnswers (regla vascular). Una regla de lectura, no clínica.
+export function motivosEjercicio({ riesgoPsico, cuestionarios, tarjetas = {}, respuestas = {} } = {}) {
   const psico = riesgoPsico === 'Medio' || riesgoPsico === 'Alto';
   const cuest = CUESTIONARIOS.filter(d => CUESTIONARIOS_ANIMO.includes(d.id) && cuestionarios?.[d.id]).some(d => {
     const p = puntuar(d, cuestionarios[d.id].r || {});
     return p.completo && p.interpretacion && p.interpretacion.nivel !== 'ok';
   });
-  return { animo: psico || cuest, reumatica: !!lupusDiagnosticado };
+  const m = { animo: psico || cuest };
+  for (const [k, c] of Object.entries(CONDICION_EJERCICIO)) {
+    if (c.motivo) m[c.motivo] = condicionEnlazaEjercicio(k, datosCondicionEjercicio(k, tarjetas[k], respuestas));
+  }
+  return m;
 }
 
 const EXTRAS_EJERCICIO = [
   { motivo: 'animo', id: 'centrales', ayuda: 'enlaceMotivoAnimo' },
-  { motivo: 'reumatica', id: 'antiinflamatorio', ayuda: 'enlaceMotivoReumatica' },
+  ...Object.values(CONDICION_EJERCICIO).filter(c => c.motivo).map(c => ({ motivo: c.motivo, id: c.id, ayuda: c.ayudaPlan })),
 ];
 
 // El enlace pintado en el bloque «Educación» de la fase 6 ('' si no hay bloque)
@@ -129,20 +172,13 @@ export function enlaceEjercicioHTML(irritabilidad, motivos = {}) {
     </div>`;
 }
 
-// Enlace de los recuadros de la fase 5 (docs/efectos-ejercicio.md, «Enlace
-// desde las condiciones especiales»): una regla de lectura, no clínica.
-// Lupus solo diagnosticado; osteoporosis y disautonomía en los dos estados. ''
-// si el bloque no está escrito o la condición no tiene bloque.
-const CONDICION_EJERCICIO = {
-  lupus: { id: 'antiinflamatorio', ayuda: 'enlaceCondicionLupus' },
-  disautonomia: { id: 'ortostatica', ayuda: 'enlaceCondicionDisautonomia' },
-  hipermovilidad: { id: 'hipermovilidad', ayuda: 'enlaceCondicionHipermovilidad' },
-  osteoporosis: { id: 'mecanotransduccion', ayuda: 'enlaceCondicionOsteoporosis' },
-};
-
-export function enlaceCondicionEjercicioHTML(condicion) {
+// Enlace de los recuadros de la fase 5: '' si la regla de CONDICION_EJERCICIO
+// no enlaza en ese estado, si la condición no tiene bloque o si no está escrito.
+// `datos`: { estado, subtipo, vs } del payload de la condición.
+export function enlaceCondicionEjercicioHTML(condicion, datos = {}) {
+  if (!condicionEnlazaEjercicio(condicion, datos)) return '';
   const c = CONDICION_EJERCICIO[condicion];
-  const b = c && bloquesConContenido().find(k => k.id === c.id);
+  const b = bloquesConContenido().find(k => k.id === c.id);
   if (!b) return '';
   const T = TEXTOS_EJERCICIO;
   return `<div class="cond-ejercicio" data-bloque-condicion="${esc(b.id)}">

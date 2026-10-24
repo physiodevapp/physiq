@@ -363,12 +363,14 @@ export const TEXTOS_EJERCICIO = {
   enlaceEducacionOtro: 'También: «{titulo}» →',
   enlaceMotivoAnimo: 'Por el riesgo psicosocial o un cuestionario de ánimo con síntomas.',
   enlaceMotivoReumatica: 'Por el lupus: sus frases para el paciente son para las enfermedades reumáticas inflamatorias.',
+  enlaceMotivoOrtostatica: 'Por la disautonomía: su frase para el paciente habla de tolerar estar de pie, sin prometer que mejoren todos los síntomas; la dosis es la del aviso de este plan.',
+  enlaceMotivoHipermovilidad: 'Por la hipermovilidad: sus frases para el paciente dicen que la fuerza graduada no suele aumentar el dolor y que no hay un ejercicio «especial»; vienen de ensayos sin el subtipo vascular.',
   enlaceEducacionAyuda: 'Abre «{titulo}», el bloque que corresponde a la irritabilidad elegida.',
   enlaceEducacionAyudaHip: 'Abre «{titulo}», el bloque que corresponde a {hipotesis}.',
-  // Enlaces de los recuadros de la fase 5 (lupus diagnosticado, osteoporosis)
+  // Enlaces de los recuadros de la fase 5 (estados: CONDICION_EJERCICIO, lib/ejercicio.js)
   enlaceCondicion: 'Efectos del ejercicio: «{titulo}» →',
   enlaceCondicionLupus: 'Sus frases para el paciente son para las enfermedades reumáticas inflamatorias, lupus incluido.',
   enlaceCondicionHipermovilidad: 'Si se puede cargar con fuerza y cuánto dolor provoca, según los ensayos en SEDh y TEH; no vale para el subtipo vascular.',
-  enlaceCondicionDisautonomia:'Por qué los programas empiezan tumbado y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
+  enlaceCondicionDisautonomia: 'Por qué los programas empiezan tumbado y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionOsteoporosis: 'Lectura para ti: en el hueso el bloque solo llega a mecanismo (la densidad mejora algo); no está demostrado que el ejercicio reduzca las fracturas.',
 };

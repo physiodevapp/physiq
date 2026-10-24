@@ -1372,7 +1372,7 @@ function _hipermovilidadResultadosHTML(d) {
       <span class="alert-icon">🧬</span>
       <div><strong>Hipermovilidad.</strong> ${estado}${datos ? ` · ${datos}` : ''}
         ${_lineasCondicionHTML(lineasRecomendacionHM(d), _sospechaDe(d, 'hipermovilidad articular'))}
-        ${d.st === 'vascular' ? '' : enlaceCondicionEjercicioHTML('hipermovilidad')}
+        ${enlaceCondicionEjercicioHTML('hipermovilidad', { estado: d.es, subtipo: d.st, vs: d.vs })}
       </div>
     </div>`;
 }
@@ -1716,7 +1716,7 @@ function _disautonomiaResultadosHTML(d) {
       <span class="alert-icon">🫀</span>
       <div><strong>Disautonomía.</strong> ${estado}${prueba ? ` · ${prueba.replace(/^\S/, c => c.toUpperCase())}` : ''}
         ${_lineasCondicionHTML(lineasRecomendacionDs(d), _sospechaDe(d, 'disautonomía (POTS o hipotensión ortostática)'))}
-        ${enlaceCondicionEjercicioHTML('disautonomia')}
+        ${enlaceCondicionEjercicioHTML('disautonomia', { estado: d.es })}
       </div>
     </div>`;
 }
@@ -1826,7 +1826,7 @@ function _lupusResultadosHTML(d) {
       <span class="alert-icon">🦋</span>
       <div><strong>Lupus.</strong> ${ESTADOS_LES[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
         ${_lineasCondicionHTML([...lineasRecomendacionLES(d), ...(_recordatorioOPLupus(d) ? [OP.textos.lupus] : [])], _sospechaDe(d, 'lupus eritematoso sistémico'))}
-        ${d.es === 'diagnosticado' ? enlaceCondicionEjercicioHTML('lupus') : ''}
+        ${enlaceCondicionEjercicioHTML('lupus', { estado: d.es })}
       </div>
     </div>`;
 }
@@ -2234,7 +2234,7 @@ function _osteoporosisResultadosHTML(d) {
       <span class="alert-icon">🦴</span>
       <div><strong>Osteoporosis o fragilidad ósea.</strong> ${ESTADOS_OP[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
         ${_lineasCondicionHTML(lineasRecomendacionOP(d), _sospechaDe(d, 'osteoporosis o fragilidad ósea'))}
-        ${enlaceCondicionEjercicioHTML('osteoporosis')}
+        ${enlaceCondicionEjercicioHTML('osteoporosis', { estado: d.es })}
       </div>
     </div>`;
 }
