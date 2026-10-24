@@ -5,7 +5,7 @@
 // ni guarda nada.
 // ============================================================
 
-import { NIVELES_EJERCICIO, APARTADOS_EJERCICIO, BLOQUES_EJERCICIO, TEXTOS_EJERCICIO } from '../data/ejercicio.js';
+import { NIVELES_EJERCICIO, APARTADOS_EJERCICIO, BLOQUES_EJERCICIO, TEXTOS_EJERCICIO, BLOQUE_POR_HIPOTESIS } from '../data/ejercicio.js';
 import { citasHTML, citasEnTexto } from './citas.js';
 import { iaParrafoHTML, attrIA, ctxEjercicio } from '../ampliar-ia.js';
 import { CUESTIONARIOS } from '../data/cuestionarios.js';
@@ -57,10 +57,21 @@ export function bloqueEjercicioParaIrritabilidad(irritabilidad) {
 
 // El otro bloque de los dos que enlaza la fase 6: la regla ordena, no esconde contenido
 // (con irritabilidad alta la carga sigue importando, p. ej. en una tendinopatía).
-export function bloqueEjercicioAlternativo(irritabilidad) {
-  const b = bloqueEjercicioParaIrritabilidad(irritabilidad);
-  const id = b?.id === 'mecanotransduccion' ? 'hipoalgesia' : 'mecanotransduccion';
+export function bloqueEjercicioAlternativo(irritabilidad, principal = bloqueEjercicioParaIrritabilidad(irritabilidad)) {
+  const id = principal?.id === 'mecanotransduccion' ? 'hipoalgesia' : 'mecanotransduccion';
   return bloquesConContenido().find(x => x.id === id) || null;
+}
+
+// Bloque principal del plan: el de sus hipótesis (BLOQUE_POR_HIPOTESIS) cuando
+// todas las que están en la tabla apuntan al mismo bloque escrito; si no hay
+// ninguna en la tabla o apuntan a bloques distintos, el de la irritabilidad.
+// `hipotesis`: las elegidas del plan, [{ id, name }].
+export function bloqueEjercicioParaPlan(irritabilidad, hipotesis = []) {
+  const enTabla = hipotesis.filter(h => BLOQUE_POR_HIPOTESIS[h.id]);
+  const ids = [...new Set(enTabla.map(h => BLOQUE_POR_HIPOTESIS[h.id]))];
+  const b = ids.length === 1 ? bloquesConContenido().find(x => x.id === ids[0]) : null;
+  if (b) return { bloque: b, hipotesis: enTabla.map(h => h.name) };
+  return { bloque: bloqueEjercicioParaIrritabilidad(irritabilidad), hipotesis: [] };
 }
 
 // Cuestionarios de la calculadora que cuentan como «ánimo» para el enlace a
@@ -88,20 +99,25 @@ const EXTRAS_EJERCICIO = [
 ];
 
 // El enlace pintado en el bloque «Educación» de la fase 6 ('' si no hay bloque)
+const listaY = xs => xs.length > 1 ? `${xs.slice(0, -1).join(', ')} y ${xs[xs.length - 1]}` : xs[0];
+
 export function enlaceEjercicioHTML(irritabilidad, motivos = {}) {
-  const b = bloqueEjercicioParaIrritabilidad(irritabilidad);
+  const { bloque: b, hipotesis: porHip } = bloqueEjercicioParaPlan(irritabilidad, motivos.hipotesis || []);
   if (!b) return '';
   const T = TEXTOS_EJERCICIO;
-  const otro = bloqueEjercicioAlternativo(irritabilidad);
+  const ayuda = porHip.length
+    ? T.enlaceEducacionAyudaHip.replace('{titulo}', b.titulo).replace('{hipotesis}', listaY(porHip.map(n => `«${n}»`)))
+    : T.enlaceEducacionAyuda.replace('{titulo}', b.titulo);
+  const otro = bloqueEjercicioAlternativo(irritabilidad, b);
   const otroHTML = otro
     ? `\n      <button type="button" class="plan-enlace plan-enlace-otro" data-bloque-alternativo="${esc(otro.id)}" onclick="abrirEjercicio({ bloque: '${esc(otro.id)}' })">${esc(T.enlaceEducacionOtro.replace('{titulo}', otro.titulo))}</button>` : '';
   const extrasHTML = EXTRAS_EJERCICIO.filter(x => motivos[x.motivo])
     .map(x => ({ x, bloque: bloquesConContenido().find(k => k.id === x.id) })).filter(e => e.bloque)
     .map(({ x, bloque }) => `\n      <button type="button" class="plan-enlace plan-enlace-otro" data-bloque-extra="${esc(bloque.id)}" onclick="abrirEjercicio({ bloque: '${esc(bloque.id)}' })">${esc(T.enlaceEducacionOtro.replace('{titulo}', bloque.titulo))}</button>
       <span class="plan-ayuda plan-ayuda-otro">${esc(T[x.ayuda])}</span>`).join('');
-  return `<div class="plan-ejercicio" data-bloque-ejercicio="${esc(b.id)}">
+  return `<div class="plan-ejercicio" data-bloque-ejercicio="${esc(b.id)}"${porHip.length ? ' data-por-hipotesis' : ''}>
       <button type="button" class="plan-enlace" onclick="abrirEjercicio({ bloque: '${esc(b.id)}' })">${esc(T.enlaceEducacion)}</button>
-      <span class="plan-ayuda">${esc(T.enlaceEducacionAyuda.replace('{titulo}', b.titulo))}</span>${otroHTML}${extrasHTML}
+      <span class="plan-ayuda">${esc(ayuda)}</span>${otroHTML}${extrasHTML}
     </div>`;
 }
 

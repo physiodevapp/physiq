@@ -235,6 +235,29 @@ export const BLOQUES_EJERCICIO = [
     fuentes: ['Noetel 2024', 'Singh 2023', 'Xie 2021', 'Geneen 2017', 'Pérez-Romero 2026', 'Haller 2026', 'Hudson 2025', 'Lima 2023'] },
 ];
 
+// Bloque que enlaza la fase 6 por hipótesis (docs/efectos-ejercicio.md,
+// «Enlace de la fase 6»): solo donde las frases para el paciente de ese bloque
+// hablan justo de esa hipótesis. Escrita a mano, como HIP_PUNCION_SECA; una
+// hipótesis que no está aquí sigue la regla de la irritabilidad.
+//   · mecanotransduccion: las tendinopatías («en un tendón que duele, el
+//     ejercicio con carga es el tratamiento principal»), y el pinzamiento
+//     subacromial (h2): su guía (Desmeules 2025, la fuente de su pauta) lo
+//     incluye en la tendinopatía del manguito y pone como tratamiento inicial
+//     el ejercicio activo o de fuerza (A). No la rotura del manguito (h3): la
+//     misma guía excluye la rotura completa, y h3 agrupa parcial y completa.
+//   · hipoalgesia: el dolor crónico inespecífico, el latigazo y la
+//     sensibilización central («el ejercicio regular ayuda algo con el dolor»;
+//     la respuesta variable en el dolor generalizado y el latigazo).
+// Fuera, a propósito: la artrosis (encaja en los dos bloques), las roturas,
+// fracturas y luxaciones (se derivan) y el resto, sin frase propia.
+export const BLOQUE_POR_HIPOTESIS = {
+  h2: 'mecanotransduccion', ca4: 'mecanotransduccion', ca9: 'mecanotransduccion', ro5: 'mecanotransduccion',
+  co1: 'mecanotransduccion', co2: 'mecanotransduccion', co10: 'mecanotransduccion',
+  tp8: 'mecanotransduccion', tp9: 'mecanotransduccion', tp11: 'mecanotransduccion',
+  tp14: 'mecanotransduccion', tp15: 'mecanotransduccion', tp19: 'mecanotransduccion',
+  ce5: 'hipoalgesia', ce7: 'hipoalgesia', ce14: 'hipoalgesia', ca15: 'hipoalgesia',
+};
+
 export const TEXTOS_EJERCICIO = {
   intro: 'Qué hace el ejercicio en el cuerpo y hasta dónde llega lo que se sabe. Sirve para decidir la dosis y para explicárselo al paciente sin prometer más de lo demostrado.',
   limites: 'Es una guía de lectura: no dosifica por ti, no cambia el plan y no sustituye a un tratamiento médico. Cada afirmación lleva su nivel de evidencia.',
@@ -248,4 +271,5 @@ export const TEXTOS_EJERCICIO = {
   enlaceMotivoAnimo: 'Por el riesgo psicosocial o un cuestionario de ánimo con síntomas.',
   enlaceMotivoReumatica: 'Por el lupus: sus frases para el paciente son para las enfermedades reumáticas inflamatorias.',
   enlaceEducacionAyuda: 'Abre «{titulo}», el bloque que corresponde a la irritabilidad elegida.',
+  enlaceEducacionAyudaHip: 'Abre «{titulo}», el bloque que corresponde a {hipotesis}.',
 };
