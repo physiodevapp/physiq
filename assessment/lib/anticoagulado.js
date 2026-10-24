@@ -110,6 +110,7 @@ export function lineasRecomendacionAC(d) {
     t.puncion,
     t.ondas,
     t.ejercicio,
+    t.trasTVP,
     t.deporte,
     t.caidas,
     t.banderas,
