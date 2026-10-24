@@ -84,7 +84,9 @@ export function elementoEMVisible(x, em, op, hoy = new Date()) {
 // ── Regla de la tensión arterial (decisión 5; NICE NG201) ────
 // ≥ 160/110 en el embarazo → el mismo día (1.2.27, sin límite de semanas);
 // primera ≥ 140/90 desde la semana 20 → en 24 h (1.2.26). Lee las constantes
-// de la fase 1. 'grave' | 'alta' | 'sinSemanas' (≥ 140/90 sin semanas) | null.
+// de la fase 1. Antes de la semana 20, ≥ 140/90 es hipertensión crónica (1.2.25,
+// solo una línea en la tarjeta). 'grave' | 'alta' | 'cronica' | 'sinSemanas'
+// (≥ 140/90 sin semanas) | null.
 export function reglaTA(em, sv) {
   if (!emEmbarazada(em)) return null;
   const tas = Number(sv?.tas), tad = Number(sv?.tad);
@@ -93,7 +95,7 @@ export function reglaTA(em, sv) {
   if ((ok(tas) && tas >= 160) || (ok(tad) && tad >= 110)) return 'grave';
   if ((ok(tas) && tas >= 140) || (ok(tad) && tad >= 90)) {
     if (em.semanas == null) return 'sinSemanas';
-    return em.semanas >= 20 ? 'alta' : null;
+    return em.semanas >= 20 ? 'alta' : 'cronica';
   }
   return null;
 }

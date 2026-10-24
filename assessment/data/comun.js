@@ -1284,12 +1284,13 @@ const EM_CITA = {
 export const SIS_EMBARAZO = {
   id: 'transversal_embarazo', icon: '🤰', nombre: 'Embarazo y posparto', soloEmbarazo: true,
   banderasRojas: [
-    { texto: 'Cefalea intensa, visión borrosa o destellos, dolor fuerte bajo las costillas, vómitos o hinchazón brusca de cara, manos o pies (preeclampsia)', em: { embarazo: { desde: 20 }, posparto: {} }, pregunta: 'em_u_preeclampsia' },
+    { texto: 'Cefalea intensa o que no se pasa, visión borrosa o destellos, dolor fuerte bajo las costillas, vómitos o hinchazón brusca de cara, manos o pies (preeclampsia)', em: { embarazo: { desde: 20 }, posparto: {} }, pregunta: 'em_u_preeclampsia' },
     { texto: 'Sangrado vaginal sin explicación en el embarazo', em: { embarazo: { desde: 13 } }, pregunta: 'em_u_sangrado' },
     { texto: 'Menos movimientos del bebé', em: { embarazo: { desde: 24 } }, pregunta: 'em_u_movimientos' },
     { texto: 'Contracciones regulares y dolorosas o pérdida de líquido por la vagina', em: { embarazo: {} }, pregunta: 'em_u_parto' },
+    { texto: 'Fiebre, escalofríos o encontrarse muy mal en el embarazo (infección)', em: { embarazo: {} }, pregunta: 'em_u_infeccion_emb' },
     { texto: 'Sangrado brusco, muy abundante o que va a más tras el parto, o abdomen muy hinchado', em: { posparto: {} }, pregunta: 'em_u_sangrado_pp' },
-    { texto: 'Fiebre, escalofríos, dolor de vientre, pelvis o periné, o flujo maloliente tras el parto (infección)', em: { posparto: { hasta: 6 } }, pregunta: 'em_u_infeccion' },
+    { texto: 'Fiebre, escalofríos, dolor de vientre, pelvis o periné, o flujo maloliente tras el parto (infección)', em: { posparto: { hasta: 8 } }, pregunta: 'em_u_infeccion' },
     { texto: 'Pierna dolorosa e hinchada, falta de aire nueva, dolor en el pecho o tos con sangre (trombosis o embolia)', em: { embarazo: {}, posparto: {} }, pregunta: 'em_u_tev' },
     { texto: 'Dolor en el pecho, palpitaciones o falta de aire en reposo o al tumbarse (problema cardiaco del embarazo o el posparto)', em: { embarazo: {}, posparto: {} }, pregunta: 'em_u_corazon' },
     { texto: 'Herida del periné o de la cesárea que se abre o se infecta', em: { posparto: {} }, pregunta: 'em_u_perine' },
@@ -1305,12 +1306,12 @@ export const SIS_EMBARAZO = {
   preguntas: [
     { id: 'em_u_preeclampsia', em: { embarazo: { desde: 20 }, posparto: {} }, alerta: true,
       urgencia: 'Posibles síntomas de preeclampsia: que la vea un profesional sanitario ya, hoy.',
-      text: '¿Tiene dolor de cabeza fuerte, ve borroso o destellos, dolor fuerte justo debajo de las costillas, vómitos, o se le han hinchado de golpe la cara, las manos o los pies?',
+      text: '¿Tiene dolor de cabeza fuerte o que no se le pasa, ve borroso o destellos, dolor fuerte justo debajo de las costillas, vómitos, o se le han hinchado de golpe la cara, las manos o los pies?',
       razonamiento: {
-        porque: 'Son los síntomas de la preeclampsia, la hipertensión del embarazo que daña otros órganos; se define a partir de la semana 20 y también aparece tras el parto (NICE NG133).',
-        peso: 'NICE pide que, con estos síntomas, la vea un profesional sanitario «immediately» (NICE NG133, 1.1.1), y tras el parto preguntar por la cefalea intensa y el dolor epigástrico (1.5.15). Si tiene la tensión tomada, el umbral de la fase 1 decide el plazo (NICE NG201, 1.2.26–1.2.27).',
-        fuentes: ['NICE NG133', 'NICE NG201'],
-        citas: [`${EM_CITA.ng133}, 1.1.1, 1.5.15 y «Terms used in this guideline».`, `${EM_CITA.ng201}, 1.2.26–1.2.27.`]
+        porque: 'Son los síntomas de la preeclampsia, la hipertensión del embarazo que daña otros órganos; se define a partir de la semana 20 y también aparece tras el parto (NICE NG133; NICE NG194, 1.2.4).',
+        peso: 'En el embarazo, NICE pide que, con estos síntomas, la vea un profesional sanitario «immediately» (NICE NG133, 1.1.1). Tras el parto, el dolor de cabeza intenso o que no se pasa pide consejo médico sin demora, porque puede ser una preeclampsia (NICE NG194, 1.2.4); a quien ya tuvo preeclampsia hay que preguntarle por la cefalea intensa y el dolor epigástrico cada vez que se le toma la tensión (NICE NG133, 1.5.15). Si tiene la tensión tomada, el umbral de la fase 1 decide el plazo (NICE NG201, 1.2.26–1.2.27).',
+        fuentes: ['NICE NG133', 'NICE NG194', 'NICE NG201'],
+        citas: [`${EM_CITA.ng133}, 1.1.1, 1.5.15 y «Terms used in this guideline».`, `${EM_CITA.ng194}, 1.2.4.`, `${EM_CITA.ng201}, 1.2.26–1.2.27.`]
       } },
     { id: 'em_u_sangrado', em: { embarazo: { desde: 13 } }, alerta: true,
       urgencia: 'Sangrado vaginal sin explicación en el embarazo: valoración hospitalaria hoy.',
@@ -1339,6 +1340,15 @@ export const SIS_EMBARAZO = {
         fuentes: ['Mottola 2018'],
         citas: [`${EM_CITA.mottola}, recuadros 1 y 2.`]
       } },
+    { id: 'em_u_infeccion_emb', em: { embarazo: {} }, alerta: true,
+      urgencia: 'Posible infección en el embarazo: consulta médica hoy; si está confusa, respira muy rápido, le falta el aire o se encuentra muy mal, urgencias (112).',
+      text: '¿Tiene fiebre o escalofríos, o se encuentra muy mal?',
+      razonamiento: {
+        porque: 'La embarazada está en el grupo de alto riesgo de sepsis (NICE NG255, 1.2.1), y la sepsis puede dar solo un malestar general, sin fiebre (1.1.2).',
+        peso: 'Con criterios de alto riesgo (alteración mental nueva, frecuencia respiratoria de 25 o más, tensión sistólica de 90 o menos, pulso de más de 130…), NICE pide atención urgente, normalmente en ambulancia (NICE NG255, 1.6.1 y tabla 1). En el embarazo el pulso basal es 10–15 lpm más alto (1.4.4). «Hoy» y el 112 son redacción de la app.',
+        fuentes: ['NICE NG255'],
+        citas: [`${EM_CITA.ng255}, 1.1.2, 1.2.1, 1.4.4, 1.6.1 y tabla 1.`]
+      } },
     { id: 'em_u_sangrado_pp', em: { posparto: {} }, alerta: true,
       urgencia: 'Posible hemorragia o restos tras el parto: consulta médica sin demora, hoy.',
       text: '¿Tiene un sangrado vaginal brusco o muy abundante, que va a más, o expulsa coágulos o restos? ¿O se le ha hinchado mucho el vientre?',
@@ -1348,11 +1358,11 @@ export const SIS_EMBARAZO = {
         fuentes: ['NICE NG194', 'Simonds 2022'],
         citas: [`${EM_CITA.ng194}, 1.2.4 y 1.2.13.`, `${EM_CITA.simonds}, p. E10.`]
       } },
-    { id: 'em_u_infeccion', em: { posparto: { hasta: 6 } }, alerta: true,
+    { id: 'em_u_infeccion', em: { posparto: { hasta: 8 } }, alerta: true,
       urgencia: 'Posible infección tras el parto: consulta médica sin demora, hoy; si está muy mal, confusa, respira muy rápido o le falta el aire, urgencias (112).',
       text: '¿Tiene fiebre o escalofríos, o dolor de vientre, pelvis o periné, o un flujo que huele mal?',
       razonamiento: {
-        porque: 'Son los síntomas de una infección tras el parto (NICE NG194, 1.2.4). En las 6 semanas tras el parto, el aborto o la interrupción, la mujer está en el grupo de alto riesgo de sepsis (NICE NG255, 1.2.1).',
+        porque: 'Son los síntomas de una infección tras el parto (NICE NG194, 1.2.4). En las 6 semanas tras el parto, el aborto o la interrupción, la mujer está en el grupo de alto riesgo de sepsis (NICE NG255, 1.2.1). La pregunta sale las 8 primeras semanas tras el parto, las que cubre la guía del posparto (NICE NG194).',
         peso: 'Consulta médica «without delay» (NICE NG194, 1.2.4); con criterios de alto riesgo (alteración mental nueva, frecuencia respiratoria de 25 o más, tensión sistólica de 90 o menos, pulso de más de 130…), urgencias en ambulancia (NICE NG255, 1.6.1 y tabla 1). La sepsis puede no dar fiebre (NICE NG255, 1.1.2), y en el embarazo el pulso basal es 10–15 lpm más alto (1.4.4).',
         fuentes: ['NICE NG194', 'NICE NG255'],
         citas: [`${EM_CITA.ng194}, 1.2.4.`, `${EM_CITA.ng255}, 1.1.2, 1.2.1, 1.4.4, 1.6.1 y tabla 1.`]
@@ -1472,6 +1482,7 @@ export const SIS_EMBARAZO = {
       semanasSin: 'Anota las semanas: deciden qué preguntas salen en la fase 2.',
       // Regla de la tensión arterial (decisión 5)
       taGrave: 'Tensión de 160/110 o más en el embarazo: valoración el mismo día (NICE NG201, 1.2.27).',
+      taCronica: 'Antes de la semana 20, una tensión de 140/90 o más se trata como hipertensión crónica (NICE NG201, 1.2.25); sin controlar, contraindica el ejercicio (Mottola 2018, tabla 2). Que lo sepa su médico o su equipo obstétrico.',
       taAlta: 'Primera tensión de 140/90 o más desde la semana 20: valoración especializada en 24 h, si no la tiene ya en seguimiento (NICE NG201, 1.2.26).',
       // Fase 2: ánimo
       animoSi: 'Con un «sí»: el PHQ-9 de la calculadora o que la vea su médico de cabecera (NICE CG192, 1.5.5).',
@@ -1482,6 +1493,8 @@ export const SIS_EMBARAZO = {
       sueloHeces: 'Con escapes de heces, también valoración médica (NICE NG123, 1.3.20).',
       sueloRiesgo: 'Sin síntomas, pero con riesgo (familiar de primer grado con disfunción desde la semana 20, parto instrumental, occipitoposterior o lesión del esfínter anal): puede beneficiarse de un programa supervisado de 3 meses (NICE NG210, 1.3.12).',
       sueloDiario: 'Suelo pélvico a diario, con la técnica aprendida (Mottola 2018; NICE NG210, 1.3.11).',
+      // W2 (Woodley 2020): solo en el bloque de la fase 2; nunca al payload, al informe ni al prompt
+      sueloEvidencia: 'En el embarazo, entrenar el suelo pélvico de forma estructurada desde el principio, sin escapes, probablemente los previene al final del embarazo y los reduce algo tras el parto; como tratamiento de los escapes en el embarazo o el posparto, el efecto aún es incierto (Woodley 2020, Cochrane).',
       sueloFuente: 'Síntomas que preguntar tras el parto (NICE NG210, 1.5.1 y 1.5.3), sin puntuar.',
       // Fase 4b
       supino: 'Embarazada de 20 semanas o más: no la dejes mucho rato boca arriba y, si se marea, tiene náuseas o se encuentra mal, ponla de lado (Mottola 2018; ACOG 2020).',

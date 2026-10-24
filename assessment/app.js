@@ -2315,6 +2315,7 @@ function _pintarEMTA() {
   el.innerHTML = r === 'grave'
     ? `<div class="alert alert-danger"><span class="alert-icon">🚨</span><div>${citasEnTexto(t.taGrave)}</div></div>`
     : r === 'alta' ? `<div class="alert alert-danger"><span class="alert-icon">🩺</span><div>${citasEnTexto(t.taAlta)}</div></div>`
+    : r === 'cronica' ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(t.taCronica)}</div></div>`
     : r === 'sinSemanas' ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>Tensión de 140/90 o más: anota las semanas. ${citasEnTexto(t.taAlta)}</div></div>`
     : '';
 }
@@ -2415,6 +2416,7 @@ function _emBloqueHTML() {
     <div class="screening-section-title">🌸 Suelo pélvico</div>
     ${filas('suelo', EM.suelo)}
     ${suelo}
+    <div class="hm-nota">${citasEnTexto(t.sueloEvidencia)}</div>
     <div class="hm-fuente">${citasEnTexto(t.sueloFuente)}</div>`;
 }
 

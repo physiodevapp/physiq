@@ -362,6 +362,7 @@ export const CONTRASTE_URGENCIAS = {
     tema: 'contracciones regulares y dolorosas o pérdida de líquido',
     patrones: [`contracciones${HUECO(20)}(?:cada|regulares|dolorosas|seguidas)`, 'he roto (?:la )?(?:bolsa|aguas)|rompi (?:la )?(?:bolsa|aguas)', 'me sale (?:liquido|agua)']
   },
+  em_u_infeccion_emb: { tema: 'fiebre, escalofríos o encontrarse muy mal en el embarazo', patrones: [...FIEBRE, 'me encuentro (?:muy mal|fatal)'] },
   em_u_sangrado_pp: {
     tema: 'un sangrado vaginal brusco o abundante tras el parto, coágulos o el vientre muy hinchado',
     patrones: [`sangr\\w*${HUECO(20)}(?:much[oa]|abundante|a chorro|de golpe)`, 'coagulos', 'empapo (?:la|las|una) compresa']
