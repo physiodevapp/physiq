@@ -123,10 +123,11 @@ export function enlaceEjercicioHTML(irritabilidad, motivos = {}) {
 
 // Enlace de los recuadros de la fase 5 (docs/efectos-ejercicio.md, «Enlace
 // desde las condiciones especiales»): una regla de lectura, no clínica.
-// Lupus solo diagnosticado; osteoporosis en los dos estados. '' si el bloque no
-// está escrito o la condición no tiene bloque.
+// Lupus solo diagnosticado; osteoporosis y disautonomía en los dos estados. ''
+// si el bloque no está escrito o la condición no tiene bloque.
 const CONDICION_EJERCICIO = {
   lupus: { id: 'antiinflamatorio', ayuda: 'enlaceCondicionLupus' },
+  disautonomia: { id: 'ortostatica', ayuda: 'enlaceCondicionDisautonomia' },
   osteoporosis: { id: 'mecanotransduccion', ayuda: 'enlaceCondicionOsteoporosis' },
 };
 

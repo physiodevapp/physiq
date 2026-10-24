@@ -1715,6 +1715,7 @@ function _disautonomiaResultadosHTML(d) {
       <span class="alert-icon">🫀</span>
       <div><strong>Disautonomía.</strong> ${estado}${prueba ? ` · ${prueba.replace(/^\S/, c => c.toUpperCase())}` : ''}
         ${_lineasCondicionHTML(lineasRecomendacionDs(d), _sospechaDe(d, 'disautonomía (POTS o hipotensión ortostática)'))}
+        ${enlaceCondicionEjercicioHTML('disautonomia')}
       </div>
     </div>`;
 }

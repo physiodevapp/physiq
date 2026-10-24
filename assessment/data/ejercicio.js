@@ -233,6 +233,47 @@ export const BLOQUES_EJERCICIO = [
       ],
     },
     fuentes: ['Noetel 2024', 'Singh 2023', 'Xie 2021', 'Geneen 2017', 'Pérez-Romero 2026', 'Haller 2026', 'Hudson 2025', 'Lima 2023'] },
+  // Bloque 6 (2026-10): cinco fuentes leídas enteras en PMC (Fu y Levine 2015,
+  // Cortez 2025, Hogwood 2025, Ziaks 2024, Yanagimoto 2025), un PDF del usuario
+  // (Kwok 2025) y George 2016, leída entera para la tarjeta de POTS; niveles en
+  // docs/efectos-ejercicio.md. Lo clínico es poco y de certeza baja: algunos
+  // síntomas y la calidad de vida física. Dejar de cumplir el criterio de
+  // frecuencia cardiaca, discutido. La dosis no está aquí: es la del recuadro y
+  // el aviso de la tarjeta.
+  { id: 'ortostatica', titulo: 'Ejercicio en la intolerancia ortostática (POTS)',
+    resumen: 'Qué cambia el entrenamiento en el corazón, el volumen de sangre y la frecuencia cardiaca al ponerse de pie, y hasta dónde llega lo demostrado',
+    apartados: {
+      que: [
+        { t: 'La explicación más citada: en el POTS el corazón es algo pequeño y el volumen de sangre bajo, así que de pie cada latido expulsa menos sangre y la frecuencia cardiaca sube para compensar. El desacondicionamiento físico contribuiría a ello, y el reposo prolongado en cama produce cambios parecidos en el corazón (Fu y Levine 2015).', nivel: 'mecanismo' },
+        { t: 'Esa explicación no está cerrada: en la mayoría de los estudios el gasto cardiaco durante el ejercicio está conservado, dar suero intravenoso no mejora la capacidad de ejercicio, y al comparar con controles igual de desentrenados la capacidad aeróbica solo era menor en 3 de 10 estudios. Se propone que la subida exagerada de la frecuencia cardiaca y de la respiración sea la que hace parar antes (Hogwood 2025).', nivel: 'discutido' },
+        { t: 'Lo que cambia el entrenamiento: tras 3 meses, en los estudios de un mismo grupo, aumentaron la capacidad aeróbica (8 %), la masa del ventrículo izquierdo (12 %) y el volumen de sangre (6 %), y la frecuencia cardiaca fue más baja a cada nivel de esfuerzo, sin llegar a la de controles sanos sedentarios (Fu y Levine 2015). En el único ensayo aleatorizado mejoró la capacidad aeróbica sin cambiar el volumen que expulsa cada latido (Hogwood 2025).', nivel: 'mecanismo' },
+        { t: 'Si el beneficio viene del corazón, del volumen de sangre, de más actividad del sistema parasimpático o de la extracción de oxígeno por el músculo está sin aclarar, y tampoco se sabe si el ejercicio actúa sobre las causas propias del POTS o solo como en cualquier persona desentrenada (Hogwood 2025; Cortez 2025).', nivel: 'mecanismo' },
+      ],
+      evidencia: [
+        { t: 'En el único ensayo aleatorizado con criterios actuales, 3 meses de ejercicio semisupervisado frente a la atención habitual mejoraron la intolerancia ortostática y los síntomas vasomotores del COMPASS-31 y el componente físico del SF-36, pero no la puntuación total de síntomas ni el componente mental. El ensayo tiene riesgo de sesgo alto por las pérdidas (Kwok 2025).', nivel: 'clinico' },
+        { t: 'La calidad de vida mejoró en los 4 estudios que la midieron, comparando cada paciente antes y después; ninguno midió la función diaria ni la discapacidad. El riesgo de sesgo fue moderado o alto en todos los estudios menos uno, y los autores no pudieron graduar la certeza ni hacer recomendaciones de práctica (Cortez 2025).', nivel: 'clinico' },
+        { t: 'Dejar de cumplir el criterio de frecuencia cardiaca: entre la mitad y algo más de dos tercios de quienes terminaron programas de 3 a 6 meses ya no lo cumplían (Fu y Levine 2015; Cortez 2025). Pero son estudios sin aleatorizar, con sal y agua añadidas, y en el mayor abandonó el 59 % (George 2016); en adolescentes, 4 semanas no cambiaron la prueba de bipedestación (Yanagimoto 2025).', nivel: 'discutido' },
+        { t: 'Cuánto pesa todo esto: una revisión dice que el ejercicio mejora de forma eficaz la capacidad de ejercicio y los síntomas, con solo dos estudios de entrenamiento (Hogwood 2025); otra no pudo graduar la certeza por el riesgo de sesgo (Cortez 2025); la revisión de ensayos aleatorizados lo cita entre los tratamientos prometedores, todos con ensayos pequeños (Kwok 2025).', nivel: 'discutido' },
+      ],
+      consulta: [
+        { t: 'Los programas de los estudios empiezan tumbado o semirreclinado y pasan a ejercicio de pie poco a poco, normalmente no antes del segundo o tercer mes. Ningún ensayo compara esa progresión con empezar de pie (Fu y Levine 2015; Cortez 2025).', nivel: 'mecanismo' },
+        { t: 'Una propuesta de expertos: empezar por debajo del umbral que dispara los síntomas (15–20 latidos por encima de la frecuencia de reposo en esa postura, o un esfuerzo de 2 sobre 10) y progresar por cómo responde el paciente, no por calendario. Está pendiente de validar (Ziaks 2024).', nivel: 'mecanismo' },
+        { t: 'Los abandonos van del 10 al 59 % según el estudio, y uno con supervisión parcial tuvo de los más bajos (16 %) (Cortez 2025). Si el paciente empeora mucho tras un esfuerzo pequeño (malestar postesfuerzo), los expertos proponen cribarlo y empezar con dosis muy bajas; ningún estudio de eficacia lo midió (Ziaks 2024; Cortez 2025).', nivel: 'mecanismo' },
+        { t: 'En los estudios, el ejercicio iba casi siempre junto a más sal y agua, y a veces medicación: el efecto no se puede atribuir solo al ejercicio (Cortez 2025).', nivel: 'clinico' },
+      ],
+      paciente: [
+        { t: 'Un programa de ejercicio que empieza tumbado o sentado y avanza poco a poco hacia ejercicio de pie suele mejorar cómo tolera estar de pie y la parte física de su calidad de vida. No mejora todos los síntomas, ni a todo el mundo por igual.', apoya: [0, 1] },
+      ],
+      detalle: [
+        'Cuatro estudios pequeños parecen analizar a los mismos menos de 20 pacientes, así que ese grupo pesa de más en los resultados (Cortez 2025).',
+        'El «53 % curados» de quienes completaron el programa de 3 meses (Fu y Levine 2015) es de estudios sin grupo control aleatorizado; los propios autores dicen que para muchos pacientes 3 meses pueden ser poco y que hay que seguir entrenando para mantener la mejoría.',
+        'En el estudio comunitario con control, el «control» eran quienes rechazaron hacer ejercicio, y se excluyó a muchos cribados por tomar medicación (Cortez 2025).',
+        'En el ensayo de adolescentes, con 4 semanas en ingreso, de pie aumentaron el volumen que expulsa cada latido y el gasto cardiaco, pero no cambiaron la prueba de bipedestación ni se midieron los síntomas, y los grupos no se repartieron al azar (Yanagimoto 2025).',
+        'Los autores de una revisión cuentan, como experiencia propia y no como dato, que muchos pacientes empeoran en pocos días si dejan de entrenar, y que el exceso de ejercicio puede desencadenar un brote (Cortez 2025).',
+        'La revisión de ensayos aleatorizados excluye por diseño los estudios sin aleatorizar, que son casi toda la evidencia del ejercicio en el POTS (Kwok 2025).',
+      ],
+    },
+    fuentes: ['Fu y Levine 2015', 'Cortez 2025', 'Hogwood 2025', 'Ziaks 2024', 'Yanagimoto 2025', 'Kwok 2025', 'George 2016'] },
 ];
 
 // Bloque que enlaza la fase 6 por hipótesis (docs/efectos-ejercicio.md,
@@ -275,5 +316,6 @@ export const TEXTOS_EJERCICIO = {
   // Enlaces de los recuadros de la fase 5 (lupus diagnosticado, osteoporosis)
   enlaceCondicion: 'Efectos del ejercicio: «{titulo}» →',
   enlaceCondicionLupus: 'Sus frases para el paciente son para las enfermedades reumáticas inflamatorias, lupus incluido.',
+  enlaceCondicionDisautonomia: 'Por qué los programas empiezan tumbado y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionOsteoporosis: 'Lectura para ti: en el hueso el bloque solo llega a mecanismo (la densidad mejora algo); no está demostrado que el ejercicio reduzca las fracturas.',
 };
