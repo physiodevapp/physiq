@@ -121,6 +121,26 @@ export function enlaceEjercicioHTML(irritabilidad, motivos = {}) {
     </div>`;
 }
 
+// Enlace de los recuadros de la fase 5 (docs/efectos-ejercicio.md, «Enlace
+// desde las condiciones especiales»): una regla de lectura, no clínica.
+// Lupus solo diagnosticado; osteoporosis en los dos estados. '' si el bloque no
+// está escrito o la condición no tiene bloque.
+const CONDICION_EJERCICIO = {
+  lupus: { id: 'antiinflamatorio', ayuda: 'enlaceCondicionLupus' },
+  osteoporosis: { id: 'mecanotransduccion', ayuda: 'enlaceCondicionOsteoporosis' },
+};
+
+export function enlaceCondicionEjercicioHTML(condicion) {
+  const c = CONDICION_EJERCICIO[condicion];
+  const b = c && bloquesConContenido().find(k => k.id === c.id);
+  if (!b) return '';
+  const T = TEXTOS_EJERCICIO;
+  return `<div class="cond-ejercicio" data-bloque-condicion="${esc(b.id)}">
+          <button type="button" class="sint-recordatorio-ir" onclick="abrirEjercicio({ bloque: '${esc(b.id)}' })">${esc(T.enlaceCondicion.replace('{titulo}', b.titulo))}</button>
+          <span class="cond-ejercicio-ayuda">${esc(T[c.ayuda])}</span>
+        </div>`;
+}
+
 export function nivelHTML(nivel) {
   const n = NIVELES_EJERCICIO[nivel];
   return n ? ` <button type="button" class="ej-nivel ej-nivel-${nivel}" data-nivel="${nivel}" aria-expanded="false">${esc(n.corto)}</button>` : '';

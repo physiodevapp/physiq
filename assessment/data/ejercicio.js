@@ -272,4 +272,8 @@ export const TEXTOS_EJERCICIO = {
   enlaceMotivoReumatica: 'Por el lupus: sus frases para el paciente son para las enfermedades reumáticas inflamatorias.',
   enlaceEducacionAyuda: 'Abre «{titulo}», el bloque que corresponde a la irritabilidad elegida.',
   enlaceEducacionAyudaHip: 'Abre «{titulo}», el bloque que corresponde a {hipotesis}.',
+  // Enlaces de los recuadros de la fase 5 (lupus diagnosticado, osteoporosis)
+  enlaceCondicion: 'Efectos del ejercicio: «{titulo}» →',
+  enlaceCondicionLupus: 'Sus frases para el paciente son para las enfermedades reumáticas inflamatorias, lupus incluido.',
+  enlaceCondicionOsteoporosis: 'Lectura para ti: en el hueso el bloque solo llega a mecanismo (la densidad mejora algo); no está demostrado que el ejercicio reduzca las fracturas.',
 };

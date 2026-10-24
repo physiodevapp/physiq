@@ -51,7 +51,7 @@ import { nombreAuto, aplicarTecla } from './lib/modo-guia.js';
 import { VERBALES, TEXTOS_GUIA } from './data/guia.js';
 import { farmacosHTML, FILTRO_PACIENTE_FARM, textoCima } from './lib/farmacos.js';
 import { TEXTOS_FARMACOS } from './data/farmacos.js';
-import { ejercicioHTML, nivelFichaHTML } from './lib/ejercicio.js';
+import { ejercicioHTML, nivelFichaHTML, enlaceCondicionEjercicioHTML } from './lib/ejercicio.js';
 import { familiasMarcables, familiasPendientesNombres, normalizarFarmacos, farmacosVacio, derivadasDeTarjetas,
   familiasPaciente, textoFamiliaPaciente, fmPayload, FAMILIA_AC } from './lib/farmacos-paciente.js';
 import { TEXTOS_FARMACOS_PACIENTE } from './data/farmacos-paciente.js';
@@ -1824,6 +1824,7 @@ function _lupusResultadosHTML(d) {
       <span class="alert-icon">🦋</span>
       <div><strong>Lupus.</strong> ${ESTADOS_LES[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
         ${_lineasCondicionHTML([...lineasRecomendacionLES(d), ...(_recordatorioOPLupus(d) ? [OP.textos.lupus] : [])], _sospechaDe(d, 'lupus eritematoso sistémico'))}
+        ${d.es === 'diagnosticado' ? enlaceCondicionEjercicioHTML('lupus') : ''}
       </div>
     </div>`;
 }
@@ -2231,6 +2232,7 @@ function _osteoporosisResultadosHTML(d) {
       <span class="alert-icon">🦴</span>
       <div><strong>Osteoporosis o fragilidad ósea.</strong> ${ESTADOS_OP[d.es]}${datos.length ? ` · ${datos.join(' · ')}` : ''}
         ${_lineasCondicionHTML(lineasRecomendacionOP(d), _sospechaDe(d, 'osteoporosis o fragilidad ósea'))}
+        ${enlaceCondicionEjercicioHTML('osteoporosis')}
       </div>
     </div>`;
 }
