@@ -1106,7 +1106,7 @@ export const hypotheses = {
     dosis: 'Educación sobre la carga del tendón más ejercicio, 14 sesiones individuales en 8 semanas (la primera de 60 min, las demás de 30). Educación: evitar posturas y movimientos que comprimen los tendones contra el trocánter (aducción mantenida; no estirar piriforme ni cintilla iliotibial, que la fuerzan) y progresar la carga poco a poco. En casa, 4–6 ejercicios diarios de 15–20 min. Semana 1: isométricos de abducción en supino y de pie (5–15 s), puente y sentadilla bilaterales (10 rep) y pasos laterales (10 por lado). Semana 2: se añaden puente y sentadilla cargando más una pierna (5 rep). Semanas 3–8: ejercicios a una pierna de algo duro a duro (5–10 rep, 2 series) y deslizamientos laterales con goma; en consulta, 2 veces por semana, abducción contra resistencia, lenta y pesada. Dolor: en el ejercicio funcional, que no aumente en el trocánter; en la fuerza lenta y pesada, hasta 5/10 si cede después y no empeora esa noche ni a la mañana siguiente. Éxito (mejoría moderada o mayor): 77 % a las 8 semanas, frente al 58 % con infiltración y el 29 % esperando; a las 52 semanas, 79 % frente a 58 % y 52 %.',
     dosisFuente: 'Mellor 2018, BMJ 361:k1662 (ensayo aleatorizado LEAP, n = 204, frente a infiltración de corticoide y a esperar) · Mellor 2016, BMC Musculoskelet Disord 17:196 (protocolo del ensayo, tabla 3: ejercicios y progresión)',
     pronostico: {
-      horizonte: 'La atrofia grasa (grados I–III) es un factor pronóstico importante.',
+      horizonte: 'La atrofia grasa de los glúteos medio y menor (grados I–III) es un factor pronóstico importante.',
       notas: 'En la RM, el espectro va de la tendinopatía a distintos grados de rotura: los desgarros suelen empezar en el glúteo menor y extenderse hacia atrás al glúteo medio, con líquido en las bolsas. Diagnóstico diferencial: cadera en resorte externa, desgarro del labrum (dolor lateral en el 59 %), meralgia parestésica y neuropatía del iliohipogástrico.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 134, 137 y 142; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 179'
     },
@@ -1196,7 +1196,7 @@ export const hypotheses = {
     dosis: 'Lesión aguda de aductores en deportistas: rehabilitación activa por criterios. Nueve ejercicios de ingle 3 veces por semana en días alternos (balanceos de pierna en abducción-aducción y en flexión-extensión, círculos de cadera de pie; aducción y flexión de cadera, rotación de tronco y arco de tensión con goma; coordinación a una pierna y aducción de Copenhague) y, en paralelo, carrera, sprint y cambios de dirección progresivos. Pasa al entrenamiento controlado en el campo cuando no duelen la palpación, la aducción isométrica máxima con la cadera abducida, el estiramiento pasivo máximo, la aducción con goma a 10 RM ni 10 repeticiones de Copenhague, y el sprint y las pruebas de agilidad al 100 %. Plazos (mediana): RM grado 0–2, sin dolor a los 13 días y entrenamiento completo a los 18; grado 3, a los 55 y 78 días. Recaídas al año: 5 % si se alcanzó el criterio sin dolor, frente al 21 %. Series y cargas, en un apéndice no consultado. Cohorte sin grupo control, solo varones y solo aductor: para los flexores no hay pauta.',
     dosisFuente: 'Serner 2020, Orthop J Sports Med 8(1):2325967119897247 (cohorte prospectiva, n = 81 varones de 18 a 40 años, sin grupo control)',
     pronostico: {
-      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo (medido con un dinamómetro manual).',
       notas: 'Pruebas de imagen: ecografía o RM. En los aductores, la exploración localiza la lesión con una exactitud mayor del 90 %; en los flexores (psoas ilíaco, recto femoral, sartorio), poco mejor que lanzar una moneda, y la imagen puede infradiagnosticarla. Las lesiones agudas son alrededor del 40 % de las lesiones de ingle en el fútbol. Las de los aductores, sobre todo del aductor largo, son unas dos terceras partes; les siguen las del recto femoral, el psoas ilíaco, el sartorio y los abdominales. El aductor largo y el recto femoral pueden llegar a la rotura tendinosa proximal o a la avulsión.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 140; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 168, 170 y 173'
     },
@@ -1279,7 +1279,7 @@ export const hypotheses = {
     dosisFuente: 'Hölmich 1999, Lancet 353:439–443 (ensayo aleatorizado, n = 68 varones de 18 a 50 años, frente a fisioterapia pasiva)',
     pronostico: {
       horizonte: 'Con AINE y reposo el dolor se reduce, pero suele volver al retomar el deporte.',
-      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo, porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo (medido con un dinamómetro manual), porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
       notas: 'Pruebas de imagen: ecografía o RM. En la RM, con cortes axiales oblicuos para ver la inserción del aductor, suele haber edema óseo en la sínfisis y puede verse el signo de la hendidura secundaria.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 138–139; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 173; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 177'
     },
@@ -1296,7 +1296,7 @@ export const hypotheses = {
     dosisFuente: 'Vandeputte 2026, J Clin Med 15(15):5912 (revisión sistemática; tratamiento conservador solo en series de casos y cohortes, calidad baja a moderada)',
     pronostico: {
       horizonte: 'Con AINE y reposo el dolor se reduce, pero suele volver al retomar el deporte.',
-      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo, porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo (medido con un dinamómetro manual), porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
       notas: 'Prueba de imagen: ecografía. La vaina sinovial del tendón del psoas comunica con la articulación de la cadera en el 5 % de la población y puede inflamarse: se ve líquido alrededor del tendón en la ecografía o la RM.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 138–139; cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 145; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 173; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 177'
     },
@@ -1313,8 +1313,9 @@ export const hypotheses = {
     dosis: '',
     pronostico: {
       horizonte: 'Con AINE y reposo el dolor se reduce, pero suele volver al retomar el deporte.',
-      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo, porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
-      notas: 'Prueba de imagen: ecografía. Explorar de pie y con tos: una hernia inguinal palpable excluye este diagnóstico.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo (medido con un dinamómetro manual), porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
+      notas: 'Prueba de imagen: ecografía. Explorar de pie y con tos.',
+      derivacion: 'hay una hernia inguinal palpable: excluye este diagnóstico.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 138–139; cap. 4.1.3 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 145; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 164 y 173'
     },
     tests: [
@@ -1332,7 +1333,7 @@ export const hypotheses = {
     dosisFuente: 'Schöberl 2017, Knee Surg Sports Traumatol Arthrosc 25(6):1958–66 (ensayo aleatorizado de ondas de choque frente a simuladas, n = 44, ambos con el programa; grupo de solo reposo no aleatorizado, n = 51; leído entero: programa p. 3, fig. 3, resultados pp. 4–5)',
     pronostico: {
       horizonte: 'Con AINE y reposo el dolor se reduce, pero suele volver al retomar el deporte.',
-      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo, porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
+      seguimiento: 'Volver al deporte con un déficit de fuerza menor del 10–20 % respecto al lado sano o al valor previo (medido con un dinamómetro manual), porque la debilidad de cadera aumenta el riesgo de lesión de ingle.',
       notas: 'Pruebas de imagen: ecografía o RM. En la RM, edema óseo en la sínfisis.',
       fuente: 'Lluch 2020, cap. 4.1.2 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), pp. 138–139; cap. 4.1.4 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 173; cap. 4.1.5 (Llopis San Juan, Molina Martínez, Oviaño y Thorborg), p. 177'
     },
