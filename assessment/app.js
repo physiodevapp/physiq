@@ -3117,12 +3117,13 @@ function _modalAbrir(cerrar) {
 
 // ─── Atrás que cerraría la app (móvil, fuera del hub) ──────────
 // Decisión del usuario (2026-10): en la fase 1, sin nada abierto, el atrás
-// sale de la app; si eso pierde algo (se está grabando la consulta, o hay datos
-// sin nombre de paciente, que no se guardan) se pregunta antes. Ni Safari ni la
+// sale de la app; con una valoración en curso o grabando se pregunta antes (con
+// nombre también: el automático del modo guía hacía que nunca preguntara;
+// decisión del usuario, 2026-10), y solo la app vacía sale sin más. Ni Safari ni la
 // app instalada muestran el aviso de `beforeunload`, así que se usa una entrada
 // de guarda debajo de la de la fase 1: el atrás cae en ella y sale el diálogo.
 // Chrome salta las entradas puestas sin un gesto del usuario, así que la guarda
-// se pone en un clic o al escribir (_ponerGuardaSalida), y solo con algo que perder.
+// se pone en un clic o al escribir (_ponerGuardaSalida), y solo con algo en curso.
 let _guardaSalida = false;    // la entrada de abajo es la guarda
 let _salidaElegida = false;   // se eligió «Salir»: no volver a ponerla, y una guarda más
                               // abajo (de una recarga) se atraviesa sin preguntar otra vez
@@ -3131,8 +3132,9 @@ function _riesgoSalida() {
   const grabando = document.body.classList.contains('grab-activa');
   const motivo = document.getElementById('motivoConsulta')?.value;
   const nombre = (document.getElementById('patientName')?.value ?? state.patient ?? '').trim();
-  const sinGuardar = !nombre && (!!motivo || _hasAssessmentData());
-  return grabando || sinGuardar ? { grabando, sinGuardar } : null;
+  const enCurso = !!motivo || _hasAssessmentData();
+  const sinGuardar = !nombre && enCurso;
+  return grabando || enCurso ? { grabando, sinGuardar, guardada: enCurso && !sinGuardar } : null;
 }
 
 function _ponerGuardaSalida() {
@@ -3158,6 +3160,7 @@ function _avisarSalida() {
   const frases = [];
   if (r.grabando) frases.push('Se está grabando la consulta. Si sales, la grabación se detiene; lo grabado hasta ahora se conserva.');
   if (r.sinGuardar) frases.push('La valoración no está guardada porque no tiene nombre de paciente. Si sales, se pierde.');
+  if (r.guardada) frases.push('La valoración queda guardada (24 h) y vuelve al abrir la app.');
   showConfirmBanner('¿Salir de la app?', frases.join('<br><br>'), 'Salir', _salirDeVerdad,
     { borra: false, cancelLabel: 'Seguir aquí', sinEntrada: true, clase: 'salida-app',
       onCancel: () => history.pushState({ phase: state.currentPhase }, '') });
