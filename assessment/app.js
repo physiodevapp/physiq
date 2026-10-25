@@ -4621,16 +4621,15 @@ function _showSessionState(st) {
       <div class="session-panel-title" id="sessionPanelTitle">${label || 'Sin sesión activa'}</div>
       <div class="field">
         <label class="field-label">Paciente</label>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input class="field-input" type="text" id="patientName" style="flex:1;"
-                 placeholder="Nombre (opcional)" autocomplete="off">
-          <button class="session-panel-clear" id="sessionPanelClear" title="Borrar sesión">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h9M5 4V2h3v2M3.5 4l.5 7h5l.5-7"/></svg>
-          </button>
-        </div>
+        <input class="field-input" type="text" id="patientName"
+               placeholder="Nombre (opcional)" autocomplete="off">
       </div>
       <button type="button" class="session-reset-btn" id="sessionReset"${_hasAssessmentData() ? '' : ' disabled'}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Reiniciar valoración</button>
-      <div class="session-io-nota">El mismo paciente, desde cero: borra los datos clínicos y conserva el nombre. Para un paciente nuevo, usa la papelera.</div>
+      <div class="session-io-nota">El mismo paciente, desde cero: borra los datos clínicos y conserva el nombre.</div>
+      <!-- «Borrar sesión» con texto, en su propia fila (decisión del usuario, 2026-10:
+           la papelera sola junto al nombre parecía «borrar el campo») -->
+      <button type="button" class="session-reset-btn session-borrar-btn" id="sessionPanelClear"${hasSession || _hasAssessmentData() ? '' : ' disabled'}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>Borrar sesión</button>
+      <div class="session-io-nota">Para un paciente nuevo: borra la valoración y el nombre.</div>
       ${_ayudaReiniciarBorrarHTML()}
       <div class="session-io">
         <button type="button" class="session-io-btn" id="sessionExport"${state.maxVisitedIdx > 0 ? '' : ' disabled'}>⬇ Exportar</button>
@@ -4658,6 +4657,7 @@ function _showSessionState(st) {
         ? `${name} · ${new Date().toLocaleDateString('es-ES')}`
         : 'Sin sesión activa';
       panel.classList.toggle('has-session', !!name);
+      panel.querySelector('#sessionPanelClear').disabled = !name && !_hasAssessmentData();
       saveSession();
     });
     panel.querySelector('#sessionPanelClear').onclick = promptClearSession;

@@ -2330,15 +2330,15 @@
   .session-panel-title{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;touch-action:none;}
   .session-panel.has-session .session-panel-title{color:var(--accent);}
   .session-panel .field{display:flex;flex-direction:column;gap:4px;}
-  .session-panel-clear{display:none;background:none;border:1px solid var(--red);border-radius:8px;padding:8px;cursor:pointer;color:var(--red);flex-shrink:0;align-items:center;justify-content:center;align-self:stretch;transition:opacity 0.2s;}
-  .session-panel-clear:hover{opacity:0.7;}
-  .session-panel.has-session .session-panel-clear{display:flex;}
   /* Exportar / importar: dos botones a partes iguales, sin desbordar a 320 px */
   /* «Reiniciar valoración» (antes en la cabecera): borra los datos clínicos, conserva el nombre */
   .session-reset-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:40px;margin-top:14px;background:none;border:1px solid var(--border2);border-radius:8px;padding:8px;color:var(--text2);font-family:inherit;font-size:0.82rem;cursor:pointer;white-space:nowrap;transition:border-color 0.2s,color 0.2s;}
   .session-reset-btn:hover:not(:disabled){border-color:var(--red);color:var(--red);}
   .session-reset-btn:disabled{opacity:0.45;cursor:default;}
   .session-reset-btn svg{flex-shrink:0;}
+  /* «Borrar sesión»: misma forma que «Reiniciar», en rojo (borra también el nombre) */
+  .session-borrar-btn{border-color:var(--red);color:var(--red);}
+  @media (hover: hover) { .session-borrar-btn:hover:not(:disabled){opacity:0.75;} }
   .session-io{display:flex;gap:8px;margin-top:14px;}
   .session-io-btn{flex:1 1 0;min-width:0;min-height:40px;background:none;border:1px solid var(--border2);border-radius:8px;padding:8px;color:var(--text2);font-family:inherit;font-size:0.82rem;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color 0.2s,color 0.2s;}
   .session-io-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
