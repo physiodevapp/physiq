@@ -974,7 +974,8 @@ function _aplicarRegistro(r) {
   saveSession();
 }
 
-// Sesión sin nombre en modo guía (decisión 1): sin teclear, se guardaría igual
+// Nombre automático cuando no hay ninguno, para que la sesión se guarde (al elegir el
+// modo guía, decisión 1; y pasada la fase 1 en los dos modos)
 function _ponerNombreAuto() {
   state.patient = nombreAuto();
   const el = document.getElementById('patientName');
@@ -6098,9 +6099,12 @@ function saveSession() {
   if (motivoEl) state.motivoConsulta = motivoEl.value;
   const signoEl = document.getElementById('signoComparable');
   if (signoEl) state.signoComparable = signoEl.value;
-  // Modo guía: sin teclear no hay nombre, y sin nombre no se guardaría nada (con la
-  // valoración en marcha; «Borrar sesión» deja maxVisitedIdx en 0 y no se rehace sola)
-  if (esGuia() && !state.patient && state.maxVisitedIdx > 0) _ponerNombreAuto();
+  // Sin nombre no se guardaría nada, y un cierre de la app en segundo plano perdería
+  // la valoración: pasada la fase 1 se pone el automático, en los dos modos (decisión
+  // del usuario, 2026-10; antes solo en modo guía). «Borrar sesión» deja maxVisitedIdx
+  // en 0 y no se rehace sola; mientras se escribe en el campo del nombre no se toca,
+  // para poder vaciarlo y escribir el real.
+  if (!state.patient && state.maxVisitedIdx > 0 && document.activeElement !== patientEl) _ponerNombreAuto();
   _updateSessionPanelTitle();
   // Aviso de pendientes del modo breve: el formulario previo se rellena en la fase 1
   if (state.currentPhase === 1 && state.modo === 'breve') renderBrevePendientes();
@@ -6467,6 +6471,35 @@ function setThemePref(pref) {
 _themeMQ?.addEventListener?.('change', applyTheme);
 applyTheme();
 
+// Tamaño de letra (decisión del usuario, 2026-10): Normal o Grande (+12,5 %),
+// preferencia del dispositivo en localStorage como el tema. Casi todos los
+// tamaños están en rem, así que basta con el del elemento raíz
+// (html[data-letra="grande"], styles.css); el script del <head> lo aplica antes
+// de pintar. También en el hub (no depende del tema).
+const LETRA_KEY = 'physiq-assessment-letra';
+function getLetra() {
+  try { return localStorage.getItem(LETRA_KEY) === 'grande' ? 'grande' : 'normal'; } catch (e) { return 'normal'; }
+}
+function applyLetra() {
+  const grande = getLetra() === 'grande';
+  if (grande) document.documentElement?.setAttribute('data-letra', 'grande');
+  else document.documentElement?.removeAttribute('data-letra');
+  const btn = document.getElementById('letraBtn');
+  if (btn) {
+    const txt = grande ? 'Letra grande. Pulsa para volver al tamaño normal' : 'Letra normal. Pulsa para agrandarla';
+    btn.title = txt; btn.setAttribute('aria-label', txt);
+    btn.setAttribute('aria-pressed', String(grande));
+  }
+}
+function alternarLetra() {
+  try {
+    if (getLetra() === 'grande') localStorage.removeItem(LETRA_KEY);
+    else localStorage.setItem(LETRA_KEY, 'grande');
+  } catch (e) {}
+  applyLetra();
+}
+applyLetra();
+
 function _initHubIntegration() {
   if (window.self === window.top) return;
   document.body.classList.add('in-hub');
@@ -6517,7 +6550,7 @@ Object.assign(window, {
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
-  cycleThemePref, selectModo, selectRegistro, togglePreguntado, cerrarTecladoNumerico, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
+  cycleThemePref, alternarLetra, selectModo, selectRegistro, togglePreguntado, cerrarTecladoNumerico, toggleBreveVerTodo, completarPendientesBreve, selectEmbudo, selectIrritabDirecta, verResultadosSinConfirmar,
   updateEdadPaciente, updateVital, updateVitalColor,
   updateCirugia, selectCirProtocolo, toggleCirComplicacion, toggleDiagnosticoTratado,
   selectHMEstado, selectHMSubtipo, selectHMCuest, toggleHMBeighton, hmBeightonHacer, hmBeightonQuitar,

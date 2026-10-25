@@ -2361,6 +2361,14 @@
   @media (max-width:360px){ .session-version{font-size:0.64rem;} }
   .in-hub .theme-btn{display:none;}
   body:not(.in-hub) .btn-translate{display:none;}
+  /* Tamaño de letra (alternarLetra, app.js): casi todo está en rem, así que agrandar
+     la raíz agranda la app entera; el icono va en px para no cambiar con ella */
+  html[data-letra="grande"]{font-size:112.5%;}
+  .letra-btn{display:flex;align-items:baseline;justify-content:center;gap:1px;font-family:'Outfit',sans-serif;font-weight:600;line-height:1;}
+  .letra-a-peq{font-size:11px;}
+  .letra-a-gr{font-size:16px;}
+  .letra-btn[aria-pressed="true"]{color:var(--accent);}
+  @media print { .letra-btn { display: none !important; } }
   .session-panel-handle{display:none;width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px;touch-action:none;}
   @media (max-width: 768px) {
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
