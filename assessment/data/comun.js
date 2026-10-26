@@ -1478,7 +1478,7 @@ export const SIS_EMBARAZO = {
     textos: {
       nota: 'Márcala si está embarazada o ha dado a luz en el último año. Las preguntas de la fase 2 dependen de las semanas.',
       hombre: 'Con sexo «Hombre» no aplica.',
-      formulario: 'En el formulario previo dice que está embarazada o que ha dado a luz en el último año: marca la tarjeta.',
+      formulario: 'En el formulario del paciente dice que está embarazada o que ha dado a luz en el último año: marca la tarjeta.',
       semanasSin: 'Anota las semanas: deciden qué preguntas salen en la fase 2.',
       // Regla de la tensión arterial (decisión 5)
       taGrave: 'Tensión de 160/110 o más en el embarazo: valoración el mismo día (NICE NG201, 1.2.27).',

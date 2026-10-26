@@ -219,12 +219,13 @@ function _pintarScope(scope) {
   if (!esquema) {
     body.innerHTML = `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><span>${
       !scope ? 'Elija la región para ver las preguntas de la región.'
-             : `No hay formulario previo para esta región (${esc(_nombreRegion(scope).toLowerCase())}) todavía.`}</span></div>`;
+             : `No hay formulario del paciente para esta región (${esc(_nombreRegion(scope).toLowerCase())}) todavía.`}</span></div>`;
     return;
   }
   const y = window.scrollY;
   const resp = respuestas(scope);
   body.innerHTML = `
+    <div class="fp-hint">Puede rellenarlo el paciente en papel antes de la visita y tú pasarlo aquí, o preguntárselo ahora. Opcional.</div>
     <div class="fp-hint">Si el paciente no lo sabe, marque «No sabría decir» o «No sé»: también es una respuesta.</div>
     <div class="fp-literal-nota">✍️ Anote las respuestas de texto con las palabras del paciente: se muestran luego como cita.</div>
     ${esquema.secciones.map(s => `

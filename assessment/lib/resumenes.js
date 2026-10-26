@@ -41,7 +41,7 @@ export function textoNotas(d) {
 Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}${d.op ? `\n${lineaNotasOP(d.op)}` : ''}${d.em ? `\n${lineaNotasEM(d.em)}` : ''}${d.ac ? `\n${lineaNotasAC(d.ac)}` : ''}${d.fm ? `\n${lineaNotasFM(d.fm)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : d.np?.length ? 'sin positivos en lo preguntado (incompleto)' : 'Negativo'}${d.np?.length ? `\n❔ SIN PREGUNTAR: ${d.np.join(' · ')}` : ''}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA: ${d.dv.join(' · ')}` : ''}
 Hipótesis:
-${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario previo:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
+${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario del paciente:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
 Variable control: ${d.pn?.variableControl || '—'}
 Ventana recuperación: ${d.pn?.ventanaRecuperacion || '—'}
 Anclaje hábito: ${d.pn?.anclajeHabito || '—'}`;

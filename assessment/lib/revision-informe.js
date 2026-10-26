@@ -719,7 +719,7 @@ export function comprobacionesManuales({ ampliado = null, formularioYAudio = fal
     'Cada indicación del plan se atribuye a quien la dio (fisioterapeuta, cirujano, médico), y un consejo no aparece como algo que el paciente ya hace.',
     ...(conO.length ? [`Los tests con alternativas en el nombre se describen con esas mismas palabras, sin afirmar las dos: ${conO.map(n => `«${n}»`).join(', ')}.`] : []),
     'No hay plan, seguimiento ni prevención para otra zona o el otro lado que nadie indicó.',
-    ...(formularioYAudio ? ['Si lo que el paciente dijo en consulta difiere del formulario previo (un síntoma, una cifra de dolor), el informe da las dos versiones, sin cambiar ninguna para que encajen (p. ej. «primer episodio» convertido en «primera consulta de fisioterapia»).'] : []),
+    ...(formularioYAudio ? ['Si lo que el paciente dijo en consulta difiere del formulario del paciente (un síntoma, una cifra de dolor), el informe da las dos versiones, sin cambiar ninguna para que encajen (p. ej. «primer episodio» convertido en «primera consulta de fisioterapia»).'] : []),
   ];
 }
 

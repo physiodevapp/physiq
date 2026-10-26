@@ -512,7 +512,7 @@ function precargarFormularioPrevio() {
 function abrirFormularioPrevio(slot) {
   _cargarFormularioMod()
     .then(m => m.abrirFormularioPrevio(slot))
-    .catch(() => showToast('No se pudo cargar el formulario previo.', 'warning'));
+    .catch(() => showToast('No se pudo cargar el formulario del paciente.', 'warning'));
 }
 function resumenFormularioPrevio() {
   return _fpMod ? _fpMod.resumenFormularioPrevio() : [];
@@ -2560,7 +2560,7 @@ function getPendientesBreve() {
     .filter(h => HYPOTHESES[h] && !esTratada(h) && !Object.values(state.testResults[h] || {}).some(r => r === 'pos' || r === 'neg'))
     .map(h => HYPOTHESES[h].name);
   if (sinTests.length) pendientes.push({ fase: '4b', texto: `Tests de confirmación sin hacer: ${sinTests.join(', ')}` });
-  if (!resumenFormularioPrevio().length) pendientes.push({ fase: 1, texto: 'Formulario previo sin rellenar' });
+  if (!resumenFormularioPrevio().length) pendientes.push({ fase: 1, texto: 'Formulario del paciente sin rellenar' });
   if (esPosquirurgico(state.mecanismo) && !conProtocolo(state.cirugia)) {
     pendientes.push({ fase: 1, ancla: 'cardCirugia', texto: `${TEXTO_SIN_PROTOCOLO} (sin protocolo)` });
   }
@@ -3642,11 +3642,11 @@ export function _actualizarBandas() {
   const det = verSis ? null : _formularioAbierto();
   const verFp = !!(det && _bandaDebeVerse(fp, det.querySelector('summary'), det));
   if (verFp) {
-    const nombre = det.querySelector('.fp-summary-titulo')?.textContent.replace(/^Formulario previo\s*·\s*/, '') || '';
+    const nombre = det.querySelector('.fp-summary-titulo')?.textContent.replace(/^Formulario del paciente\s*·\s*/, '') || '';
     const cont = det.querySelector('.fp-contador')?.textContent || '';
     const elN = document.getElementById('fpBannerName');
     const elC = document.getElementById('fpBannerCont');
-    if (elN.textContent !== `Formulario previo · ${nombre}`) elN.textContent = `Formulario previo · ${nombre}`;
+    if (elN.textContent !== `Formulario del paciente · ${nombre}`) elN.textContent = `Formulario del paciente · ${nombre}`;
     if (elC.textContent !== cont) elC.textContent = cont;
   }
   fp.classList.toggle('visible', verFp);
