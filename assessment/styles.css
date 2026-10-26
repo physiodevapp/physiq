@@ -2498,7 +2498,9 @@
 .breve-ver-todo .breve-toggle-menos { display: inline; }
 #irritabDirecta { margin-bottom: 8px; }
 #irritabDirecta .option-btn { white-space: nowrap; padding-left: 4px; padding-right: 4px; }
-#modoConsulta + .plan-note-hint { margin-top: 10px; }
+/* Una nota justo debajo de un grupo de botones no se pega a ellos («Con
+   «Grabadora» grabas…»; antes solo #modoConsulta, que ya no la tiene debajo) */
+.option-group + .plan-note-hint { margin-top: 10px; }
 
 /* Fase 4: «Resultados sin confirmar» solo cuando el árbol está completo */
 #btnGoConfirm:disabled ~ #btnSinConfirmar { opacity: 0.4; pointer-events: none; }
@@ -3044,6 +3046,13 @@ body.lupus .solo-les { display: block; }
    escala de Beighton), aviso de los tests de laxitud (4b) y recuadro de la
    fase 5. Lo activa body.hipermovilidad (_pintarHMUI en app.js). */
 .hm-subtipo { margin-top: 12px; margin-bottom: 0; }
+/* Embarazo o posparto: las semanas van justo bajo los botones del estado */
+#emEmbWrap, #emPpWrap { margin-top: 12px; }
+/* Osteoporosis: la casilla «Alguna en los 2 últimos años…» sigue a la fila de
+   fracturas vertebrales con el mismo hueco que entre filas de un grupo */
+#opRecienteWrap { margin-top: 8px; }
+/* Fase 6: la primera fila de datos del plan del mes, bajo la frecuencia */
+.option-group + .summary-row { margin-top: 6px; }
 .hm-subtipos { flex-wrap: wrap; }
 .hm-subtipos .option-btn { width: auto; flex: 0 0 auto; padding: 8px 12px; font-size: 0.8rem; min-height: 40px; }
 /* Pantalla estrecha: las filas se estiran hasta el borde, sin botón descolgado
