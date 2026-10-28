@@ -1,6 +1,6 @@
 // ============================================================
 // Formulario previo a la primera visita · CARA 2 · HOMBRO
-// Texto literal de guia-de-consulta/data/formulario_hombro.js.
+// Transcrito de guia-de-consulta/data/formulario_hombro.js, con las preguntas en tú (decisión del usuario, 2026-10).
 // Mismo esquema que formularios/comun.js. `pistas` enlaza respuestas con
 // pasos del árbol CIF hombro (data/hombro.js): se muestran como recordatorio
 // en ese paso, nunca lo responden solas. Referencias: 'c:<id>' (cara 1),
@@ -15,9 +15,9 @@ export default {
   id: 'hombro',
   secciones: [
     {
-      titulo: 'Qué le provoca el dolor',
+      titulo: 'Qué te provoca el dolor',
       items: [
-        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Le aparece o le aumenta el dolor al…?', opciones: SNN,
+        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Te aparece o te aumenta el dolor al…?', opciones: SNN,
           filas: [
             { id: 'elevar', texto: 'Levantar el brazo, por delante o por un lado' },
             { id: 'encima', texto: 'Hacer cosas con el brazo por encima de la cabeza' },
@@ -30,14 +30,14 @@ export default {
       ]
     },
     {
-      titulo: 'Lo que nota en el hombro',
+      titulo: 'Lo que notas en el hombro',
       items: [
-        { id: 'limita', tipo: 'unica', ia: 'sintomas', texto: '¿Qué le limita más?',
+        { id: 'limita', tipo: 'unica', ia: 'sintomas', texto: '¿Qué te limita más?',
           opciones: ['Sobre todo el dolor', 'Sobre todo que el brazo no llega, está rígido', 'Las dos cosas por igual',
             'Empezó con dolor y cada vez está más rígido', NS] },
-        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Nota alguna de estas cosas?', opciones: SNN,
+        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Notas alguna de estas cosas?', opciones: SNN,
           filas: [
-            { id: 'fuerza', texto: 'Que le falta fuerza en ese brazo' },
+            { id: 'fuerza', texto: 'Que te falta fuerza en ese brazo' },
             { id: 'crujidos', texto: 'Crujidos o roce al moverlo' },
             { id: 'engancha', texto: 'Que se engancha, se bloquea o da un chasquido' },
             { id: 'muerto', texto: 'Que de golpe el brazo se queda «muerto», sin fuerza' },
@@ -48,18 +48,18 @@ export default {
     {
       titulo: 'El hombro y el cuello',
       items: [
-        { id: 'cuello', tipo: 'unica', ia: 'sintomas', texto: '¿El dolor del hombro cambia cuando mueve el cuello?',
-          ayuda: 'Aunque le duela también el cuello, fíjese solo en el hombro',
+        { id: 'cuello', tipo: 'unica', ia: 'sintomas', texto: '¿El dolor del hombro cambia cuando mueves el cuello?',
+          ayuda: 'Aunque también duela el cuello, se pregunta solo por el hombro',
           opciones: ['No cambia', 'Sí, aumenta', 'Sí, disminuye', NS] }
       ]
     },
     {
       titulo: 'Sensación de que el hombro se sale',
       items: [
-        { id: 'miedo', tipo: 'unica', ia: 'sintomas', texto: '¿Le da inseguridad o miedo poner el brazo arriba y hacia atrás, como al lanzar?', opciones: ['No', 'Sí', NS] },
-        { id: 'salido', tipo: 'unica', ia: 'historia', informe: 'Luxación o subluxación previa', texto: '¿Alguna vez se le ha salido el hombro de su sitio, o ha notado que «algo se iba»?',
+        { id: 'miedo', tipo: 'unica', ia: 'sintomas', texto: '¿Te da inseguridad o miedo poner el brazo arriba y hacia atrás, como al lanzar?', opciones: ['No', 'Sí', NS] },
+        { id: 'salido', tipo: 'unica', ia: 'historia', informe: 'Luxación o subluxación previa', texto: '¿Alguna vez se te ha salido el hombro de su sitio, o has notado que «algo se iba»?',
           opciones: ['No', 'Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio', NS] },
-        { id: 'veces', tipo: 'unica', ia: 'historia', informe: 'Número de veces', texto: 'Si se le ha salido: ¿cuántas veces?', opciones: ['Una', 'Varias', NS],
+        { id: 'veces', tipo: 'unica', ia: 'historia', informe: 'Número de veces', texto: 'Si se te ha salido: ¿cuántas veces?', opciones: ['Una', 'Varias', NS],
           mostrarSi: { id: 'salido', valores: ['Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio'] } },
         { id: 'ultima', tipo: 'texto', ia: 'historia', informe: 'Última vez', texto: '¿Cuándo fue la última?', verbal: '¿Cuándo fue la última vez que se te salió?', lineas: 1,
           mostrarSi: { id: 'salido', valores: ['Sí, y me lo tuvieron que volver a colocar', 'Sí, y volvió solo a su sitio'] } }
@@ -68,11 +68,11 @@ export default {
     {
       titulo: 'Otras cosas que nos ayudan',
       items: [
-        { id: 'antecedentes', tipo: 'matriz', ia: 'contexto', texto: '¿Le han dicho alguna vez que tiene…?', opciones: SNN,
+        { id: 'antecedentes', tipo: 'matriz', ia: 'contexto', texto: '¿Te han dicho alguna vez que tienes…?', opciones: SNN,
           filas: [
             { id: 'diabetes', texto: 'Diabetes o el azúcar alto' },
             { id: 'tiroides', texto: 'Problemas de tiroides' },
-            { id: 'dupuytren', texto: 'Dedos que se le quedan doblados hacia la palma', iaTexto: 'Contractura de Dupuytren (dedos que se quedan doblados hacia la palma)' },
+            { id: 'dupuytren', texto: 'Dedos que se te quedan doblados hacia la palma', iaTexto: 'Contractura de Dupuytren (dedos que se quedan doblados hacia la palma)' },
             { id: 'laxitud', texto: 'Articulaciones más flexibles de lo normal' }
           ] }
       ]
@@ -80,14 +80,14 @@ export default {
     {
       titulo: 'Trabajo, deporte y ejercicio',
       items: [
-        { id: 'actividades', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
+        { id: 'actividades', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en tu tiempo libre, ¿haces a menudo alguna de estas cosas? (se pueden marcar varias)',
           opciones: ['Trabajar con los brazos por encima de la cabeza', 'Levantar pesas', 'Nadar', 'Lanzar', 'Gimnasia', 'Ninguna', NS] },
-        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?', verbal: '¿Qué deporte o ejercicio haces? ¿Cuántos días a la semana?',
-          ayuda: 'Si NO hace deporte ni ejercicio de forma habitual, deje en blanco esta pregunta y las dos siguientes', lineas: 1,
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio haces?', verbal: '¿Qué deporte o ejercicio haces? ¿Cuántos días a la semana?',
+          ayuda: 'Si NO haces deporte ni ejercicio de forma habitual, esta pregunta y las dos siguientes se dejan en blanco', lineas: 1,
           chips: ['Natación', 'Gimnasio', 'Pádel', 'Tenis', 'Balonmano', 'Voleibol'] },
-        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
+        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (se pueden marcar varias)',
           opciones: ['Entreno más días u horas', 'Entreno más fuerte o con más peso', 'Empecé o volví hace poco', 'No ha cambiado nada', NS] },
-        { id: 'lanza', tipo: 'unica', ia: 'actividades', texto: 'Si lanza: desde que le duele, ¿ha perdido velocidad o puntería?', opciones: ['No', 'Sí', NS] }
+        { id: 'lanza', tipo: 'unica', ia: 'actividades', texto: 'Si lanzas: desde que te duele, ¿has perdido velocidad o puntería?', opciones: ['No', 'Sí', NS] }
       ]
     }
   ],

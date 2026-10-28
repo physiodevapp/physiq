@@ -18,7 +18,7 @@
 const NS = 'No sabría decir';
 const SNNS = ['Sí', 'No', NS];
 const SNN = ['Sí', 'No', 'No sé'];
-const MATRIZ_AYUDA = 'En cada línea, marque Sí o No. Si duda, marque «No sé».';
+const MATRIZ_AYUDA = 'En cada línea, Sí o No. Si no lo sabe, «No sé».';
 
 const MECANISMOS = [
   'Me caí apoyando la mano con el brazo estirado',
@@ -41,35 +41,35 @@ export default {
         // Luxación previa → IRPL (p. 87). Contracción brusca → rotura del bíceps o del
         // tríceps (p. 83). Lanzamiento: LCC «acute on chronic» (p. 85). Tirón del brazo
         // extendido en menores de 5 años (p. 94).
-        { id: 'que_paso', tipo: 'multi', ia: 'historia', informe: 'Cómo se lesionó', texto: '¿Qué pasó? (puede marcar varias)',
+        { id: 'que_paso', tipo: 'multi', ia: 'historia', informe: 'Cómo se lesionó', texto: '¿Qué pasó? (se pueden marcar varias)',
           opciones: [...MECANISMOS, 'Ninguna de estas', NS] },
         // «A sensation of a pop followed by local bruising» (p. 85).
-        { id: 'chasquido', tipo: 'unica', ia: 'historia', informe: 'Chasquido al lesionarse', texto: 'En ese momento, ¿notó un chasquido o un tirón, y después le salió un moratón?',
+        { id: 'chasquido', tipo: 'unica', ia: 'historia', informe: 'Chasquido al lesionarse', texto: 'En ese momento, ¿notaste un chasquido o un tirón, y después te salió un moratón?',
           opciones: SNNS, mostrarSi: { id: 'que_paso', valores: MECANISMOS } },
         // «Duration of immobilisation and any prior therapy» (p. 90); rigidez tras una
         // inmovilización prolongada (pp. 82 y 89). Sin corte de semanas: el capítulo no lo da.
-        { id: 'inmovilizado', tipo: 'unica', ia: 'historia', informe: 'Inmovilización tras la lesión', texto: 'Después de esa lesión, ¿le inmovilizaron el brazo (escayola, férula, cabestrillo)?',
+        { id: 'inmovilizado', tipo: 'unica', ia: 'historia', informe: 'Inmovilización tras la lesión', texto: 'Después de esa lesión, ¿te inmovilizaron el brazo (escayola, férula, cabestrillo)?',
           opciones: ['No', 'Sí', NS], detalle: { opcion: 'Sí', etiqueta: '¿Cuánto tiempo?', verbal: '¿Cuánto tiempo te lo inmovilizaron?' },
           mostrarSi: { id: 'que_paso', valores: MECANISMOS } }
       ]
     },
     {
-      titulo: 'Dónde le duele',
+      titulo: 'Dónde te duele',
       items: [
         // Tablas 1–4 del capítulo, una por zona (pp. 100–103); «dorsal forearm» (tabla 1).
-        { id: 'zona', tipo: 'multi', ia: 'sintomas', texto: '¿Dónde le duele sobre todo? (puede marcar varias)',
+        { id: 'zona', tipo: 'multi', ia: 'sintomas', texto: '¿Dónde te duele sobre todo? (se pueden marcar varias)',
           opciones: ['Por fuera del codo, del lado del pulgar', 'Por dentro, del lado del meñique', 'Por delante, en el pliegue del codo',
             'Por detrás, en la punta del codo', 'Por el dorso del antebrazo, más abajo del codo', 'En todo el codo, sin un punto concreto', NS] }
       ]
     },
     {
-      titulo: 'Qué le provoca el dolor',
+      titulo: 'Qué te provoca el dolor',
       items: [
         // Agarrar, levantar con el antebrazo en pronación, pomos, botes, dar la mano (p. 83;
         // tabla 2). Extensión terminal (p. 88; tabla 4). Final del recorrido en el codo
         // rígido (p. 90). Levantarse de una silla y la bolsa de la compra (p. 87). Apoyar el
         // codo comprime el cubital (p. 91).
-        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Le aparece o le aumenta el dolor al…?', ayuda: MATRIZ_AYUDA, opciones: SNN,
+        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Te aparece o te aumenta el dolor al…?', ayuda: MATRIZ_AYUDA, opciones: SNN,
           filas: [
             { id: 'agarrar', texto: 'Agarrar o apretar algo con fuerza (dar la mano, abrir un bote)' },
             { id: 'levantar', texto: 'Levantar algo con la palma hacia abajo (una taza, una sartén)' },
@@ -83,17 +83,17 @@ export default {
       ]
     },
     {
-      titulo: 'Lo que nota en el codo',
+      titulo: 'Lo que notas en el codo',
       items: [
         // Rigidez, bloqueo, chasquido, inestabilidad (p. 82, 87, 88); parestesias del 5.º
         // dedo (tabla 2; p. 91) y del 1.º al 3.º (tabla 3); torpeza de la mano (p. 86, 91) y
         // debilidad de los dedos del interóseo posterior (tabla 1).
-        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Nota alguna de estas cosas?', ayuda: MATRIZ_AYUDA, opciones: SNN,
+        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Notas alguna de estas cosas?', ayuda: MATRIZ_AYUDA, opciones: SNN,
           filas: [
-            { id: 'rigido', texto: 'No consigue estirar o doblar el codo del todo' },
-            { id: 'hormigueo_menique', texto: 'Hormigueo o se le duerme el meñique', iaTexto: 'Parestesias en el 5.º dedo' },
+            { id: 'rigido', texto: 'No consigues estirar o doblar el codo del todo' },
+            { id: 'hormigueo_menique', texto: 'Hormigueo o se te duerme el meñique', iaTexto: 'Parestesias en el 5.º dedo' },
             { id: 'hormigueo_pulgar', texto: 'Hormigueo en el pulgar, el índice o el corazón', iaTexto: 'Parestesias del 1.º al 3.º dedo' },
-            { id: 'torpeza', texto: 'Torpeza o falta de fuerza en la mano, o le cuesta estirar los dedos' },
+            { id: 'torpeza', texto: 'Torpeza o falta de fuerza en la mano, o te cuesta estirar los dedos' },
             { id: 'chasquido_codo', texto: 'Un chasquido o un enganchón, o que el codo se bloquea' },
             { id: 'falla', texto: 'Que el codo falla o da inseguridad, como si se fuera a salir', iaTexto: 'Sensación de fallo o inestabilidad del codo' }
           ] }
@@ -104,7 +104,7 @@ export default {
       items: [
         // Cuello u hombro e infiltraciones previas (p. 83); diabetes y neuropatías (p. 90);
         // artropatía inflamatoria (p. 90) y artritis reumatoide (p. 88).
-        { id: 'antecedentes', tipo: 'matriz', ia: 'contexto', texto: '¿Tiene o ha tenido…?', ayuda: MATRIZ_AYUDA, opciones: SNN,
+        { id: 'antecedentes', tipo: 'matriz', ia: 'contexto', texto: '¿Tienes o has tenido…?', ayuda: MATRIZ_AYUDA, opciones: SNN,
           filas: [
             { id: 'cuello_hombro', texto: 'Problemas de cuello o de hombro en ese mismo lado' },
             { id: 'infiltracion', texto: 'Infiltraciones en el codo' },
@@ -119,20 +119,20 @@ export default {
         // Movimientos repetidos, herramientas que vibran, actividades de fuerza (p. 82);
         // trabajo manual y tenis (tabla 1); golf, remo, esquí acuático (tabla 2; p. 84);
         // lanzadores (p. 85); culturistas, bici de montaña y gimnasia (p. 84).
-        { id: 'actividades', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
+        { id: 'actividades', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en tu tiempo libre, ¿haces a menudo alguna de estas cosas? (se pueden marcar varias)',
           opciones: ['Trabajo manual: agarrar, cargar o usar herramientas con fuerza', 'Usar herramientas que vibran', 'Deportes de raqueta', 'Golf',
             LANZAR, 'Pesas o culturismo', 'Bici de montaña o gimnasia', 'Remo o esquí acuático', 'Ninguna', NS] },
-        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio hace?', verbal: '¿Qué deporte o ejercicio haces? ¿Cuántos días a la semana?',
-          ayuda: 'Si NO hace deporte ni ejercicio de forma habitual, deje en blanco esta pregunta y la siguiente', lineas: 1,
+        { id: 'deporte', tipo: 'texto', ia: 'contexto', texto: '¿Qué deporte o ejercicio haces?', verbal: '¿Qué deporte o ejercicio haces? ¿Cuántos días a la semana?',
+          ayuda: 'Si NO haces deporte ni ejercicio de forma habitual, esta pregunta y la siguiente se dejan en blanco', lineas: 1,
           chips: ['Pádel', 'Tenis', 'Golf', 'Gimnasio', 'Balonmano', 'Escalada'] },
         // Cambios de material (raqueta, cordaje) o de trabajo manual (herramientas, horas)
         // (p. 83); aumento brusco de la actividad (p. 84); entrenamiento y material (pp. 85 y 94).
-        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo en su trabajo, su deporte o lo que hace con las manos? (puede marcar varias)',
+        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo en tu trabajo, tu deporte o lo que haces con las manos? (se pueden marcar varias)',
           opciones: ['Más horas o más repeticiones', 'Más fuerza o más peso', 'Empecé o volví hace poco', 'He cambiado de herramienta, raqueta o material', 'No ha cambiado nada', NS] },
         // Fuerza, control, velocidad y precisión; en qué fase del lanzamiento duele: armado
         // o inicio de la aceleración → LCC y cubital; frenado → pinzamiento posteromedial
         // (p. 86, 91); fatiga o mal control al lanzar (tabla 2).
-        { id: 'lanza', tipo: 'multi', ia: 'actividades', texto: 'Si lanza: desde que le duele… (puede marcar varias)',
+        { id: 'lanza', tipo: 'multi', ia: 'actividades', texto: 'Si lanzas: desde que te duele… (se pueden marcar varias)',
           opciones: ['He perdido fuerza, control, velocidad o puntería', 'Me duele con el brazo atrás, justo antes de soltar',
             'Me duele al soltar o al frenar el brazo después', 'Se me cansa o se me duerme la mano al lanzar', 'Nada de esto', NS],
           mostrarSi: { id: 'actividades', valores: [LANZAR] } }

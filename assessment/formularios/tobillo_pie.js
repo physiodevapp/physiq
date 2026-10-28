@@ -1,6 +1,6 @@
 // ============================================================
 // Formulario previo a la primera visita · CARA 2 · TOBILLO Y PIE
-// Texto literal de guia-de-consulta/data/formulario_tobillo_pie.js.
+// Transcrito de guia-de-consulta/data/formulario_tobillo_pie.js, con las preguntas en tú (decisión del usuario, 2026-10).
 // Mismo esquema que formularios/comun.js. `pistas` enlaza respuestas con
 // pasos del árbol CIF tobillo y pie (data/tobillo_pie.js): se muestran como
 // recordatorio en ese paso, nunca lo responden solas. Referencias: 'c:<id>'
@@ -9,7 +9,7 @@
 const NS = 'No sabría decir';
 const SNNS = ['Sí', 'No', NS];
 const SNN = ['Sí', 'No', 'No sé'];
-const MATRIZ_AYUDA = 'En cada línea, marque Sí o No. Si duda, marque «No sé».';
+const MATRIZ_AYUDA = 'En cada línea, Sí o No. Si no lo sabe, «No sé».';
 
 export default {
   id: 'tobillo_pie',
@@ -17,22 +17,22 @@ export default {
     {
       titulo: 'Si empezó con una torcedura, un golpe o una caída',
       items: [
-        { id: 'que_paso', tipo: 'multi', ia: 'historia', informe: 'Cómo se lesionó', texto: '¿Qué pasó? (puede marcar varias)',
+        { id: 'que_paso', tipo: 'multi', ia: 'historia', informe: 'Cómo se lesionó', texto: '¿Qué pasó? (se pueden marcar varias)',
           opciones: ['Se me torció el tobillo hacia dentro, apoyando el borde de fuera del pie',
             'Me giraron el pie hacia fuera con el tobillo doblado hacia arriba (un placaje, una entrada)',
             'Me caí hacia delante con el pie de puntillas, o fallé un escalón al bajar',
             'Caí de pie desde una altura, sobre el talón', 'Se me dobló el dedo gordo hacia arriba o hacia abajo',
             'Al arrancar o impulsarme, noté como una patada o un golpe detrás de la pierna',
             'Ninguna de estas', NS] },
-        { id: 'chasquido', tipo: 'unica', ia: 'historia', texto: '¿Oyó o notó un chasquido en ese momento?', opciones: SNNS },
-        { id: 'pudo_seguir', tipo: 'unica', ia: 'historia', texto: '¿Pudo seguir con lo que estaba haciendo?', opciones: ['Sí', 'No, tuve que parar', NS] },
-        { id: 'torceduras', tipo: 'unica', ia: 'historia', informe: 'Torceduras previas del mismo tobillo', texto: '¿Se le había torcido ese tobillo otras veces?', opciones: ['No', 'Una vez', 'Varias veces', NS] }
+        { id: 'chasquido', tipo: 'unica', ia: 'historia', texto: '¿Oíste o notaste un chasquido en ese momento?', opciones: SNNS },
+        { id: 'pudo_seguir', tipo: 'unica', ia: 'historia', texto: '¿Pudiste seguir con lo que estabas haciendo?', opciones: ['Sí', 'No, tuve que parar', NS] },
+        { id: 'torceduras', tipo: 'unica', ia: 'historia', informe: 'Torceduras previas del mismo tobillo', texto: '¿Se te había torcido ese tobillo otras veces?', opciones: ['No', 'Una vez', 'Varias veces', NS] }
       ]
     },
     {
-      titulo: 'Qué le provoca el dolor',
+      titulo: 'Qué te provoca el dolor',
       items: [
-        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Le aparece o le aumenta el dolor al…?', ayuda: MATRIZ_AYUDA, opciones: SNN,
+        { id: 'provoca', tipo: 'matriz', ia: 'actividades', texto: '¿Te aparece o te aumenta el dolor al…?', ayuda: MATRIZ_AYUDA, opciones: SNN,
           filas: [
             { id: 'primeros_pasos', texto: 'Dar los primeros pasos al levantarse de la cama' },
             { id: 'sentado', texto: 'Echar a andar después de estar sentado un rato' },
@@ -43,42 +43,42 @@ export default {
             { id: 'saltar', texto: 'Saltar o caer de un salto' },
             { id: 'irregular', texto: 'Caminar por terreno irregular o arena' },
             { id: 'bici', texto: 'Montar en bici o nadar' },
-            { id: 'zapatos', texto: 'Llevar ciertos zapatos (le rozan o le aprietan)' }
+            { id: 'zapatos', texto: 'Llevar ciertos zapatos (te rozan o te aprietan)' }
           ] },
-        { id: 'dia_despues', tipo: 'unica', ia: 'sintomas', texto: 'El día después de hacer más de lo normal, ¿está peor?', opciones: SNNS },
-        { id: 'calentar', tipo: 'unica', ia: 'sintomas', texto: 'Cuando empieza a moverse, el dolor…',
+        { id: 'dia_despues', tipo: 'unica', ia: 'sintomas', texto: 'El día después de hacer más de lo normal, ¿estás peor?', opciones: SNNS },
+        { id: 'calentar', tipo: 'unica', ia: 'sintomas', texto: 'Cuando empiezas a moverte, el dolor…',
           opciones: ['Se me pasa al calentar', 'Va a más cuanto más hago', 'No cambia', NS] },
-        { id: 'tacon', tipo: 'unica', ia: 'sintomas', texto: '¿Está mejor con un zapato que tenga algo de tacón?', opciones: ['Sí', 'No', 'No lo he notado'] }
+        { id: 'tacon', tipo: 'unica', ia: 'sintomas', texto: '¿Estás mejor con un zapato que tenga algo de tacón?', opciones: ['Sí', 'No', 'No lo he notado'] }
       ]
     },
     {
-      titulo: 'Lo que nota en el tobillo o el pie',
+      titulo: 'Lo que notas en el tobillo o el pie',
       items: [
-        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Nota alguna de estas cosas?', ayuda: MATRIZ_AYUDA, opciones: SNN,
+        { id: 'nota', tipo: 'matriz', ia: 'sintomas', texto: '¿Notas alguna de estas cosas?', ayuda: MATRIZ_AYUDA, opciones: SNN,
           filas: [
-            { id: 'falla', texto: 'El tobillo le falla o «se le va», o tiene miedo a torcérselo' },
+            { id: 'falla', texto: 'El tobillo te falla o «se te va», o tienes miedo a torcértelo' },
             { id: 'crujidos', texto: 'Crujidos o roces al mover el tobillo o el dedo gordo' },
             { id: 'hinchazon', texto: 'Hinchazón en el tobillo o el pie' },
-            { id: 'trabado', texto: 'Se le queda trabado o no llega a estirar la punta' },
+            { id: 'trabado', texto: 'Se te queda trabado o no llegas a estirar la punta' },
             { id: 'hormigueo', texto: 'Hormigueo, quemazón o descargas en el pie' },
-            { id: 'canica', texto: 'Al caminar, como si pisara una canica bajo los dedos' },
-            { id: 'bulto', texto: 'Un bulto detrás del talón que le roza con el zapato' }
+            { id: 'canica', texto: 'Al caminar, como si pisaras una canica bajo los dedos' },
+            { id: 'bulto', texto: 'Un bulto detrás del talón que te roza con el zapato' }
           ] },
-        { id: 'rigidez', tipo: 'unica', ia: 'sintomas', texto: 'Por la mañana, ¿está rígido o le duele al levantarse?',
+        { id: 'rigidez', tipo: 'unica', ia: 'sintomas', texto: 'Por la mañana, ¿notas rigidez o dolor al levantarte?',
           opciones: ['No', 'Sí, se me pasa en menos de una hora', 'Sí, me dura una hora o más', NS] }
       ]
     },
     {
       titulo: 'Trabajo, deporte y ejercicio',
       items: [
-        { id: 'actividad', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en su tiempo libre, ¿hace a menudo alguna de estas cosas? (puede marcar varias)',
+        { id: 'actividad', tipo: 'multi', ia: 'contexto', texto: 'En el trabajo o en tu tiempo libre, ¿haces a menudo alguna de estas cosas? (se pueden marcar varias)',
           opciones: ['Estar muchas horas de pie', 'Caminar mucho', 'Correr', 'Danza', 'Deportes con saltos o giros', 'Ninguna', NS] }
       ]
     },
     {
-      titulo: 'Si hace deporte o ejercicio',
+      titulo: 'Si haces deporte o ejercicio',
       items: [
-        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (puede marcar varias)',
+        { id: 'cambios', tipo: 'multi', ia: 'contexto', texto: 'En los últimos meses, ¿ha cambiado algo? (se pueden marcar varias)',
           opciones: ['Entreno más días u horas', 'Entreno más fuerte', 'Empecé o volví hace poco', 'Cambié de calzado',
             'Cambié de terreno o superficie', 'No ha cambiado nada', NS] }
       ]

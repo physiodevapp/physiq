@@ -1,6 +1,6 @@
 // ============================================================
 // Formulario previo a la primera visita · CARA 1 (común a todas las regiones)
-// Texto literal de guia-de-consulta/tools/plantilla_formularios.js (cara 1).
+// Transcrito de guia-de-consulta/tools/plantilla_formularios.js (cara 1), con las preguntas en tú (decisión del usuario, 2026-10).
 // Solo datos: lo pinta formulario.js. Los campos de cabecera del papel
 // (nombre, fecha, edad) no se repiten: ya están en la fase 1. Tampoco la
 // casilla final del papel «Hay algo relacionado con esta molestia que prefiero
@@ -24,9 +24,11 @@
 //   matriz { filas: [{id, texto, iaTexto?}], opciones }   una respuesta por fila;
 //                                   `iaTexto`: nombre clínico de la fila solo para el
 //                                   informe con IA, cuando el texto del papel es ambiguo
-//   texto  { lineas?, chips?, verbal } texto libre (teclado o micro). `verbal`: la pregunta
+//   texto  { lineas?, chips?, verbal? } texto libre (teclado o micro). `verbal`: la pregunta
 //                                   corta y natural para decirla en voz alta en el modo guía
-//                                   (docs/modo-guia.md), donde no hay caja de texto; en `detalle`
+//                                   (docs/modo-guia.md), donde no hay caja de texto; solo hace falta
+//                                   si el `texto` no sirve ya dicho tal cual (no es una pregunta
+//                                   completa, o es larga); el `texto` va en tú (decisión del usuario, 2026-10); en `detalle`
 //                                   de una opción va dentro: `detalle: { opcion, etiqueta, verbal }`
 //   mostrarSi: { id, valores }      solo se muestra si la pregunta `id`
 //                                   (de este mismo formulario) tiene uno de esos valores
@@ -51,12 +53,12 @@ export default {
     {
       titulo: '1 · Cómo empezó',
       items: [
-        { id: 'desde_cuando', tipo: 'texto', ia: 'historia', informe: 'Inicio de los síntomas', texto: '¿Desde cuándo le pasa?', verbal: '¿Desde cuándo te pasa?', ayuda: 'Fecha aproximada, o «hace X semanas»', lineas: 1 },
+        { id: 'desde_cuando', tipo: 'texto', ia: 'historia', informe: 'Inicio de los síntomas', texto: '¿Desde cuándo te pasa?', ayuda: 'Fecha aproximada, o «hace X semanas»', lineas: 1 },
         { id: 'desencadenante', tipo: 'unica', ia: 'historia', texto: '¿Hubo algo concreto que lo desencadenara? — un golpe, una caída, un esfuerzo, un gesto',
           opciones: ['Sí', 'No, empezó poco a poco sin causa clara', NS], detalle: { opcion: 'Sí', etiqueta: 'Y fue…', verbal: '¿Qué fue lo que lo desencadenó?' } },
         { id: 'inicio', tipo: 'unica', ia: 'historia', texto: '¿Apareció de golpe o poco a poco?', opciones: ['De golpe', 'Poco a poco', NS] },
-        { id: 'primera_vez', tipo: 'unica', ia: 'historia', informe: 'Primer episodio', texto: '¿Es la primera vez que le pasa?', opciones: ['Sí', 'No, ya me había pasado antes', NS] },
-        { id: 'episodio_previo', tipo: 'texto', ia: 'historia', informe: 'Episodio previo', texto: 'Si ya le había pasado: ¿cuándo fue la última vez y cuánto le duró?', verbal: '¿Cuándo fue la última vez que te pasó y cuánto te duró?', lineas: 1,
+        { id: 'primera_vez', tipo: 'unica', ia: 'historia', informe: 'Primer episodio', texto: '¿Es la primera vez que te pasa?', opciones: ['Sí', 'No, ya me había pasado antes', NS] },
+        { id: 'episodio_previo', tipo: 'texto', ia: 'historia', informe: 'Episodio previo', texto: 'Si ya te había pasado: ¿cuándo fue la última vez y cuánto te duró?', verbal: '¿Cuándo fue la última vez que te pasó y cuánto te duró?', lineas: 1,
           mostrarSi: { id: 'primera_vez', valores: ['No, ya me había pasado antes'] } }
       ]
     },
@@ -69,42 +71,42 @@ export default {
     {
       titulo: '3 · A lo largo del día',
       items: [
-        { id: 'peor_momento_dia', tipo: 'multi', ia: 'sintomas', texto: '¿Cuándo está peor? (puede marcar varias)',
+        { id: 'peor_momento_dia', tipo: 'multi', ia: 'sintomas', texto: '¿Cuándo está peor? (se pueden marcar varias)',
           opciones: ['Al levantarme', 'Durante el día, según lo que haga', 'Al final del día', 'Por la noche', NS] },
-        { id: 'despierta', tipo: 'unica', ia: 'sintomas', informe: 'Le despierta el dolor por la noche', texto: '¿Le despierta por la noche?', opciones: ['No', 'Sí', NS] },
-        { id: 'despierta_postura', tipo: 'unica', ia: 'sintomas', informe: 'Al cambiar de postura por la noche', texto: 'Si le despierta: al cambiar de postura, ¿se le calma?',
+        { id: 'despierta', tipo: 'unica', ia: 'sintomas', informe: 'Le despierta el dolor por la noche', texto: '¿Te despierta por la noche?', opciones: ['No', 'Sí', NS] },
+        { id: 'despierta_postura', tipo: 'unica', ia: 'sintomas', informe: 'Al cambiar de postura por la noche', texto: 'Si te despierta: al cambiar de postura, ¿se te calma?',
           opciones: ['Sí, cambiando de postura mejora', 'No, sigue igual haga lo que haga', NS],
           mostrarSi: { id: 'despierta', valores: ['Sí'] } },
-        { id: 'dolor_max_semana', tipo: 'escala', ia: 'sintomas', texto: 'Pensando en la última semana, ¿cuánto le ha dolido en el peor momento?',
+        { id: 'dolor_max_semana', tipo: 'escala', ia: 'sintomas', texto: 'Pensando en la última semana, ¿cuánto te ha dolido en el peor momento?',
           min: 0, max: 10, extremos: ['Nada', 'El peor que pueda imaginar'], estiloSeveridad: true },
-        { id: 'tiempo_calmarse', tipo: 'unica', ia: 'sintomas', texto: 'Cuando algo le empeora el dolor, ¿cuánto tarda en volver a como estaba antes?',
+        { id: 'tiempo_calmarse', tipo: 'unica', ia: 'sintomas', texto: 'Cuando algo te empeora el dolor, ¿cuánto tardas en volver a como estabas antes?',
           opciones: ['Se pasa enseguida', 'Unos minutos', 'Unas horas', 'Me dura el resto del día o más', NS] }
       ]
     },
     {
-      titulo: '4 · Qué le cuesta hacer',
-      intro: 'Su trabajo, un deporte, dormir, conducir, jugar con sus hijos: lo que sea importante para usted. Serán las tres cosas que mediremos en cada revisión.',
+      titulo: '4 · Qué te cuesta hacer',
+      intro: 'Tu trabajo, un deporte, dormir, conducir, jugar con tus hijos: lo que sea importante para ti. Serán las tres cosas que mediremos en cada revisión.',
       items: [
-        { id: 'actividad_1', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 1ª cosa', verbal: '¿Qué es lo que más has dejado de hacer, o haces peor, por esto?', lineas: 1,
+        { id: 'actividad_1', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué has dejado de hacer, o haces peor, por este problema? — 1ª cosa', verbal: '¿Qué es lo que más has dejado de hacer, o haces peor, por esto?', lineas: 1,
           chips: ['Dormir', 'Trabajar', 'Conducir', 'Caminar', 'Estar sentado', 'Hacer deporte'] },
-        { id: 'actividad_2', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 2ª cosa', verbal: '¿Qué otra cosa te cuesta?', lineas: 1 },
-        { id: 'actividad_3', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué ha dejado de hacer, o hace peor, por este problema? — 3ª cosa', verbal: '¿Y una tercera cosa que te cueste?', lineas: 1 }
+        { id: 'actividad_2', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué has dejado de hacer, o haces peor, por este problema? — 2ª cosa', verbal: '¿Qué otra cosa te cuesta?', lineas: 1 },
+        { id: 'actividad_3', tipo: 'texto', ia: 'actividades', informe: 'Actividades limitadas', texto: '¿Qué has dejado de hacer, o haces peor, por este problema? — 3ª cosa', verbal: '¿Y una tercera cosa que te cueste?', lineas: 1 }
       ]
     },
     {
-      titulo: '5 · Qué ha probado ya',
+      titulo: '5 · Qué has probado ya',
       items: [
-        { id: 'probado', tipo: 'multi', ia: 'historia', informe: 'Tratamientos ya probados', texto: '¿Qué ha probado ya?',
+        { id: 'probado', tipo: 'multi', ia: 'historia', informe: 'Tratamientos ya probados', texto: '¿Qué has probado ya?',
           opciones: ['Nada todavía', 'Reposo', 'Calor o frío', 'Medicación', 'Fisioterapia', 'Ejercicio', 'Otros'] },
-        { id: 'probado_sirvio', tipo: 'texto', ia: 'historia', informe: 'Resultado de lo probado', texto: '¿Le sirvió de algo?', verbal: '¿Te sirvió de algo lo que has probado?', lineas: 1 }
+        { id: 'probado_sirvio', tipo: 'texto', ia: 'historia', informe: 'Resultado de lo probado', texto: '¿Te sirvió de algo lo que has probado?', lineas: 1 }
       ]
     },
     {
-      titulo: '6 · Su salud en general',
+      titulo: '6 · Tu salud en general',
       items: [
-        { id: 'enfermedades', tipo: 'texto', ia: 'contexto', informe: 'Enfermedades', antecedente: true, texto: 'Enfermedades importantes que tenga o haya tenido', verbal: '¿Qué enfermedades importantes tienes o has tenido?', ayuda: 'Todas, aunque le parezca que no tienen relación con esto', lineas: 2 },
-        { id: 'operaciones', tipo: 'texto', ia: 'contexto', informe: 'Operaciones', antecedente: true, texto: 'Operaciones', verbal: '¿Te han operado alguna vez? ¿Cuándo?', ayuda: 'Y aproximadamente cuándo', lineas: 1 },
-        { id: 'medicacion', tipo: 'texto', ia: 'contexto', informe: 'Medicación actual', antecedente: true, texto: 'Medicación que toma ahora', verbal: '¿Qué medicación tomas ahora?', ayuda: 'Incluidos parches, inyecciones y lo que compra sin receta', lineas: 2 }
+        { id: 'enfermedades', tipo: 'texto', ia: 'contexto', informe: 'Enfermedades', antecedente: true, texto: '¿Qué enfermedades importantes tienes o has tenido?', ayuda: 'Todas, aunque parezca que no tienen relación con esto', lineas: 2 },
+        { id: 'operaciones', tipo: 'texto', ia: 'contexto', informe: 'Operaciones', antecedente: true, texto: '¿Te han operado alguna vez? ¿Cuándo?', ayuda: 'Y aproximadamente cuándo', lineas: 1 },
+        { id: 'medicacion', tipo: 'texto', ia: 'contexto', informe: 'Medicación actual', antecedente: true, texto: '¿Qué medicación tomas ahora?', ayuda: 'Incluidos parches, inyecciones y lo que se compra sin receta', lineas: 2 }
       ]
     }
   ],
