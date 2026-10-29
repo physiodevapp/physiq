@@ -2,9 +2,10 @@
 // impresos (docs/esquemas), con la misma numeración, para abrirla desde el QR
 // de cada hoja. Se pinta desde data/ con módulos puros (sin app.js ni state):
 // nunca pide ni guarda datos del paciente. #<región>/<hoja>[/<elemento>]
-import { SYSTEMIC_SCREENING, CIF_TREES, HYPOTHESES } from './data.js';
+import { SYSTEMIC_SCREENING, CIF_TREES, HYPOTHESES, DOSIS_DERIVAR } from './data.js';
+import { TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
 import { citasHTML, citasEnTexto, registroReferencias, enlaceCita } from './lib/citas.js';
-import { iaParrafoHTML, ctxCribado, ctxArbol, ctxTest, ctxIrritabilidad, attrIA, atributosIA, initAmpliarIA } from './ampliar-ia.js';
+import { iaParrafoHTML, ctxCribado, ctxArbol, ctxTest, ctxIrritabilidad, ctxPauta, ctxPronostico, attrIA, atributosIA, initAmpliarIA } from './ampliar-ia.js';
 import { ITEMS_IRRITABILIDAD, CORTES_OTROS, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad } from './lib/irritabilidad.js';
 import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML } from './lib/tests-4b.js';
@@ -110,6 +111,26 @@ function htmlArbol(region) {
       <p>Es una regla de la app, sin fuente citada. La fase 4b no tiene tests que hacer en ese caso.</p></div>`;
 }
 
+// ── Pauta y pronóstico de una hipótesis (los de la fase 5, sin paciente) ─────
+// Contenido fijo de data/: la pauta (todas sus situaciones, si se reparte en ramas), su fuente
+// y el pronóstico. No es un plan de sesión: eso es la fase 6, que tiene en cuenta urgencias,
+// condiciones especiales y red de seguridad que la guía no conoce. La derivación, siempre a la vista.
+function pautaHipHTML(h, region) {
+  if (h.dosis === DOSIS_DERIVAR) return `<div class="guia-urg"><b>🚑 Derivación</b>${esc(DOSIS_DERIVAR)}</div>`;
+  const p = h.pronostico;
+  const linea = (et, t) => t ? `<p data-ia-parrafo>${et ? `<b>${et}</b> ` : ''}${citasEnTexto(t)}${iaParrafoHTML()}</p>` : '';
+  const pauta = h.dosisRamas?.length
+    ? h.dosisRamas.map(r => linea('', r.texto)).join('') + linea('', h.dosisComun)   // cada rama empieza por su situación
+    : h.dosis ? linea('', h.dosis) : '<p><em>Sin dosis de referencia: a criterio del clínico.</em></p>';
+  return `<details class="razon guia-pauta"><summary>💊 Pauta y pronóstico</summary><div class="razon-cuerpo">
+    <div class="razon-seccion" ${atributosIA(ctxPauta(region, h.name))}><div class="razon-etq">${h.dosisFuente ? 'Pauta de tratamiento' : 'Dosis día 1 (baja fricción)'}</div>${pauta}
+      ${h.dosisFuente ? `<div class="razon-pie">${citasHTML(h.dosisFuente)}</div>` : ''}
+      ${h.dosis ? `<p class="guia-nota">🏥 Tras una cirugía: ${esc(TEXTO_PAUTA_COMPATIBLE.charAt(0).toLowerCase() + TEXTO_PAUTA_COMPATIBLE.slice(1))}</p>` : ''}</div>
+    ${p ? `<div class="razon-seccion" ${atributosIA(ctxPronostico(region, h.name))}><div class="razon-etq">Pronóstico y derivación</div>${linea('', p.horizonte)}${linea('Seguimiento:', p.seguimiento)}${linea('A tener en cuenta:', p.notas)}${linea('Reconsiderar o derivar si:', p.derivacion)}
+      ${p.fuente ? `<div class="razon-pie">${citasHTML(p.fuente)}</div>` : ''}</div>` : ''}
+  </div></details>`;
+}
+
 // ── Confirmación (fase 4b) ──────────────────────────────────────────────────
 function htmlConfirmacion(region) {
   const hyps = Object.values(HYPOTHESES).filter(h => h.region === region);
@@ -139,7 +160,7 @@ function htmlConfirmacion(region) {
           ${porQue(ctxTest(region, t.name, h.name), cuerpo)}</div>`;
       }).join('');
       return `<section class="guia-bloque" id="hip-${h.id}"><h3><span class="guia-num">${esc(h.num || '')}</span>${esc(h.name)}</h3>
-        <div class="guia-puntua" data-puntua="${h.id}">${puntuaHTML(h)}</div>${clusters}${tests}</section>`;
+        <div class="guia-puntua" data-puntua="${h.id}">${puntuaHTML(h)}</div>${clusters}${tests}${pautaHipHTML(h, region)}</section>`;
     }).join('')}`;
 }
 
@@ -287,6 +308,8 @@ function avisoHojaHTML(clave) {
 // lleva bajo el QR), la fecha de su último cambio de contenido y su PDF. Sale de
 // huellas.json, así que se mantiene sola. Las que cambiaron hace poco, marcadas.
 const DIAS_RECIENTE = 30;
+// Hojas sin QR (no tienen página en la guía): solo se listan aquí, con su versión y su PDF
+const PARA_PACIENTE = { 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios' };
 const NOMBRE_HOJA = { cribado: 'Cribado (fase 2)', 'arbol-a4': 'Árbol de decisión (fase 4)', confirmacion: 'Confirmación (fase 4b)' };
 const fechaLarga = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
 function htmlHojas() {
@@ -305,7 +328,8 @@ function htmlHojas() {
   return `<p class="guia-nota">Cada hoja impresa lleva su versión bajo el QR («v. …»). Si no coincide con la de esta lista, la hoja ha cambiado: descarga el PDF y reimprímela. «Reciente» = cambió en los últimos ${DIAS_RECIENTE} días (${recientes} de ${Object.keys(HUELLAS).length}).</p>
     ${REGIONES.map(r => grupo(nombreRegion(r), Object.entries(NOMBRE_HOJA).map(([t, n]) => fila(`${t}-${r}`, n)))).join('')}
     ${grupo('Tiempos de recuperación de tejidos', Object.entries(HOJAS_TEJIDO).map(([k, h]) => fila(`tejidos-${k}`, h.titulo)))}
-    ${grupo('Otras hojas', Object.entries(SUELTAS).map(([k, h]) => fila(k, h.titulo)))}`;
+    ${grupo('Otras hojas', Object.entries(SUELTAS).map(([k, h]) => fila(k, h.titulo)))}
+    ${grupo('Para dar al paciente', Object.entries(PARA_PACIENTE).map(([k, t]) => fila(k, t)))}`;
 }
 
 // ── Páginas sueltas (#<clave>): el QR de las hojas que no son de una región ──

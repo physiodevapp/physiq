@@ -55,6 +55,9 @@ export const BLOQUES_EJERCICIO = [
   // Hipoalgesia (2026-10): cuatro fuentes leídas enteras en PMC y dos PDF del
   // usuario (Rice 2019, Wewege y Jones 2021); niveles en docs/efectos-ejercicio.md.
   { id: 'hipoalgesia', titulo: 'Hipoalgesia inducida por el ejercicio',
+    // Hoja para el paciente (docs/esquemas, «ejercicio-paciente»): título en lenguaje llano y si va
+    // en la parte general o en «Si le han dicho que tiene…» (pendiente de revisión del usuario, 2026-10)
+    tituloPaciente: 'El ejercicio y el dolor', hojaPaciente: 'general',
     resumen: 'Ejercicio local y a distancia, qué pasa en el dolor crónico y con la sensibilización central, y qué implica para la dosis y los brotes',
     apartados: {
       que: [
@@ -94,6 +97,9 @@ export const BLOQUES_EJERCICIO = [
   // fuentes descartadas en docs/efectos-ejercicio.md. La densidad ósea es un
   // resultado del tejido (`mecanismo`); fracturas, fuerza y función, `clinico`.
   { id: 'mecanotransduccion', titulo: 'Carga y adaptación del tejido (mecanotransducción)',
+    // Hoja para el paciente (docs/esquemas, «ejercicio-paciente»): título en lenguaje llano y si va
+    // en la parte general o en «Si le han dicho que tiene…» (pendiente de revisión del usuario, 2026-10)
+    tituloPaciente: 'Moverse y cargar: músculos y tendones', hojaPaciente: 'general',
     resumen: 'Tendón, hueso, cartílago y músculo: cómo la carga se convierte en adaptación y qué pasa cuando se deja de cargar',
     apartados: {
       que: [
@@ -143,6 +149,9 @@ export const BLOQUES_EJERCICIO = [
   // Mioquinas (2026-10): cinco fuentes más leídas enteras en PMC; todo es
   // mecanismo o discutido, así que van aquí y no como bloque propio (decisión 2).
   { id: 'antiinflamatorio', titulo: 'Efecto antiinflamatorio y mioquinas',
+    // Hoja para el paciente (docs/esquemas, «ejercicio-paciente»): título en lenguaje llano y si va
+    // en la parte general o en «Si le han dicho que tiene…» (pendiente de revisión del usuario, 2026-10)
+    tituloPaciente: 'Si tiene una enfermedad reumática inflamatoria (artritis reumatoide, lupus…)', hojaPaciente: 'condicion',
     resumen: 'La IL-6 que libera el músculo al contraerse, la mioquina más estudiada; las demás mioquinas, con la irisina en discusión; y qué se sabe en dolor musculoesquelético',
     apartados: {
       que: [
@@ -194,6 +203,9 @@ export const BLOQUES_EJERCICIO = [
   // Lo clínico es el ánimo y el sueño referido, sobre todo fuera del dolor
   // musculoesquelético; en él, discutido. La autoeficacia, solo mecanismo.
   { id: 'centrales', titulo: 'Efectos centrales',
+    // Hoja para el paciente (docs/esquemas, «ejercicio-paciente»): título en lenguaje llano y si va
+    // en la parte general o en «Si le han dicho que tiene…» (pendiente de revisión del usuario, 2026-10)
+    tituloPaciente: 'Ánimo y sueño', hojaPaciente: 'general',
     resumen: 'Sueño, estado de ánimo y autoeficacia',
     apartados: {
       que: [
@@ -241,6 +253,9 @@ export const BLOQUES_EJERCICIO = [
   // frecuencia cardiaca, discutido. La dosis no está aquí: es la del recuadro y
   // el aviso de la tarjeta.
   { id: 'ortostatica', titulo: 'Ejercicio en la intolerancia ortostática (POTS)',
+    // Hoja para el paciente (docs/esquemas, «ejercicio-paciente»): título en lenguaje llano y si va
+    // en la parte general o en «Si le han dicho que tiene…» (pendiente de revisión del usuario, 2026-10)
+    tituloPaciente: 'Si se marea o se le acelera el corazón al estar de pie (POTS)', hojaPaciente: 'condicion',
     resumen: 'Qué cambia el entrenamiento en el corazón, el volumen de sangre y la frecuencia cardiaca al ponerse de pie, y hasta dónde llega lo demostrado',
     apartados: {
       que: [
@@ -279,6 +294,9 @@ export const BLOQUES_EJERCICIO = [
   // y cinco en PDF del usuario (Liaghat 2025, Smith 2013, Reychler 2021,
   // Spanhove 2022, Brittain 2023); niveles en docs/efectos-ejercicio.md.
   { id: 'hipermovilidad', titulo: 'Ejercicio en la hipermovilidad (SEDh / TEH)',
+    // Hoja para el paciente (docs/esquemas, «ejercicio-paciente»): título en lenguaje llano y si va
+    // en la parte general o en «Si le han dicho que tiene…» (pendiente de revisión del usuario, 2026-10)
+    tituloPaciente: 'Si tiene hipermovilidad articular', hojaPaciente: 'condicion',
     resumen: 'Si se puede cargar con fuerza a una persona hiperlaxa, cuánto dolor provoca el ejercicio y hasta dónde llega lo demostrado',
     apartados: {
       que: [
@@ -323,6 +341,9 @@ export const BLOQUES_EJERCICIO = [
   // enfrentadas); la seguridad, clínico con certeza muy baja y sin frase para el
   // paciente; la diástasis, mecanismo.
   { id: 'embarazo', titulo: 'Ejercicio en el embarazo y el posparto',
+    // Hoja para el paciente (docs/esquemas, «ejercicio-paciente»): título en lenguaje llano y si va
+    // en la parte general o en «Si le han dicho que tiene…» (pendiente de revisión del usuario, 2026-10)
+    tituloPaciente: 'Durante el embarazo y después del parto', hojaPaciente: 'condicion',
     resumen: 'Qué hace el ejercicio en el dolor lumbopélvico, el ánimo y los escapes de orina, qué pasa con la diástasis y el supino, y hasta dónde llega lo demostrado',
     apartados: {
       que: [
@@ -403,6 +424,12 @@ export const BLOQUE_POR_HIPOTESIS = {
 };
 
 export const TEXTOS_EJERCICIO = {
+  // Hoja impresa para el paciente (frases «Para explicárselo al paciente», literales); usted, como esas frases
+  hojaPacienteTitulo: 'El ejercicio: lo que dicen los estudios',
+  hojaPacienteIntro: 'En pocas palabras, lo que se sabe del ejercicio. Su fisioterapeuta le indicará qué ejercicios hacer, cuánto y cómo avanzar.',
+  hojaPacienteCondiciones: 'Si le han dicho que tiene…',
+  hojaPacienteMisEjercicios: 'Sus ejercicios',
+  hojaPacientePie: 'Resumen de estudios revisados. No sustituye a lo que le indiquen su fisioterapeuta o su médico: ante cualquier duda, pregúnteles.',
   intro: 'Qué hace el ejercicio en el cuerpo y hasta dónde llega lo que se sabe. Sirve para decidir la dosis y para explicárselo al paciente sin prometer más de lo demostrado.',
   limites: 'Es una guía de lectura: no dosifica por ti, no cambia el plan y no sustituye a un tratamiento médico. Cada afirmación lleva su nivel de evidencia.',
   nivelesTitulo: 'Nivel de cada afirmación',

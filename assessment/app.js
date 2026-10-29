@@ -4636,6 +4636,10 @@ function _showSessionState(st) {
         <input type="file" id="sessionImportFile" accept=".json,application/json" hidden>
       </div>
       <div class="session-io-nota">Valoración completa en un archivo .json, con los datos clínicos y el nombre del paciente.${state.maxVisitedIdx > 0 ? '' : ' Se puede exportar a partir de la fase 2.'}</div>
+      <!-- Hojas impresas (docs/esquemas): la página «Hojas para imprimir» de la guía, con la versión
+           y el PDF de cada una (decisión del usuario, 2026-10: la app no enlazaba la guía) -->
+      <div class="session-io"><a class="session-io-btn session-hojas" id="sessionHojas" href="./guia.html#hojas" target="_blank" rel="noopener">Hojas para imprimir ↗</a></div>
+      <div class="session-io-nota">Esquemas en papel de cada región y hojas de consulta, con su versión y su PDF; su QR abre la guía de consulta.</div>
       <div class="session-version" id="sessionVersion">${_versionPanelHTML()}</div>`;
     panel.querySelector('#sessionReset').onclick = resetApp;
     panel.querySelector('#sessionExport').onclick = exportarValoracionArchivo;
