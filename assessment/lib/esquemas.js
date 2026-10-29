@@ -89,3 +89,26 @@ export function datosHojaTejido(datos, hoja) {
   const ids = HOJAS_TEJIDO[hoja].grupos;
   return { ...datos, grupos: ids.map(id => datos.grupos.find(g => g.id === id)).filter(Boolean) };
 }
+
+// Cuadernos de consulta para imprimir a doble cara (docs/esquemas/cuaderno-*.pdf; decisión del usuario, 2026-10):
+// uno completo y uno por región. Cada sección empieza en página impar (generar.mjs añade páginas
+// en blanco). La hoja del paciente y los árboles A3 no entran: se imprimen aparte.
+export const HOJAS_GENERALES = ['condiciones', 'irritabilidad', 'farmacos', 'tejidos-blandos', 'tejidos-hueso'];
+const hojasRegion = r => [`cribado-${r}`, `arbol-a4-${r}`, `confirmacion-${r}`];
+export function definicionCuadernos(regiones, nombreRegion) {
+  const generales = { titulo: 'Hojas generales', hojas: HOJAS_GENERALES };
+  return [
+    { clave: 'cuaderno-completo', titulo: 'Cuaderno de consulta completo', secciones: [generales, ...regiones.map(r => ({ titulo: nombreRegion(r), hojas: hojasRegion(r) }))] },
+    ...regiones.map(r => ({ clave: `cuaderno-${r}`, titulo: `Cuaderno de consulta · ${nombreRegion(r)}`, secciones: [{ titulo: nombreRegion(r), hojas: hojasRegion(r) }, generales] })),
+  ];
+}
+// Nombre legible de una hoja impresa por su clave (la del archivo)
+const NOMBRES_HOJA = { condiciones: 'Condiciones especiales', irritabilidad: 'Irritabilidad (fase 3)', farmacos: 'Fármacos: qué vigilar en el plan', 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios (para el paciente)' };
+export function nombreHojaImpresa(clave, nombreRegion) {
+  if (NOMBRES_HOJA[clave]) return NOMBRES_HOJA[clave];
+  const t = clave.match(/^tejidos-(.+)$/);
+  if (t) return `Tiempos de recuperación · ${HOJAS_TEJIDO[t[1]]?.titulo || t[1]}`;
+  const m = clave.match(/^(cribado|arbol-a4|confirmacion)-(.+)$/);
+  if (m) return `${{ cribado: 'Cribado (fase 2)', 'arbol-a4': 'Árbol de decisión (fase 4)', confirmacion: 'Confirmación (fase 4b)' }[m[1]]} · ${nombreRegion(m[2])}`;
+  return clave;
+}

@@ -115,6 +115,12 @@
   .guia-hoja-nueva { display: inline-block; font-size: 0.7rem; font-weight: 600; color: var(--orange); border: 1px solid var(--orange); border-radius: 10px; padding: 0 6px; }
   .guia-hoja a { flex: none; color: var(--accent); text-decoration: none; border: 1px solid var(--border2); border-radius: 8px; padding: 0 12px; min-height: 40px; display: inline-flex; align-items: center; }
   .guia-aviso { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; max-width: 520px; margin: 0 auto; background: var(--surface3); color: var(--text); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; box-shadow: var(--modal-shadow); }
+  /* «¿Otro fármaco o duda?» al final de #farmacos */
+  .guia-pregunta textarea { width: 100%; box-sizing: border-box; margin: 4px 0 8px; font: inherit; }
+  .guia-destinos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .guia-destinos .option-btn { flex: 1 1 auto; }
+  .guia-preguntar { display: flex; align-items: center; justify-content: center; min-height: 44px; text-decoration: none; margin-top: 6px; }
+  .guia-preguntar[aria-disabled="true"] { opacity: 0.45; pointer-events: auto; }
   .guia-vacio { color: var(--text3); font-size: 0.85rem; }
   @media (max-width: 480px) { .guia-bloque { margin-left: -1rem; margin-right: -1rem; border-left: none; border-right: none; border-radius: 0; } }
 </style>
