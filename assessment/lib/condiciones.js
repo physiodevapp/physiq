@@ -77,8 +77,10 @@ export function avisoCambioRegion(c, st) {
   return { titulo: T.avisoTitulo, texto };
 }
 
-function filaHTML(c, st) {
-  const estado = estadoCondicion(c, st);
+// `guia`: la página de la guía de consulta (guia.html#condiciones, el QR de su hoja impresa):
+// sin paciente, así que sin etiqueta de estado ni botón para ir a la tarjeta.
+function filaHTML(c, st, { guia = false } = {}) {
+  const estado = guia ? null : estadoCondicion(c, st);
   const disponible = destinoDisponible(c, st);
   const etiqueta = estado ? `<span class="cond-estado${estado.marcada ? ' cond-estado-on' : ''}">${esc(estado.texto)}</span>` : '';
   const pistas = c.pistas.map(p => `<li>${esc(p.texto)}</li>`).join('');
@@ -93,16 +95,16 @@ function filaHTML(c, st) {
     <ul class="cond-pistas">${pistas}</ul>
     <p class="cond-anade"><span class="cond-anade-et">Añade:</span> ${esc(c.anade)}</p>
     ${fuentes}
-    <div class="cond-acciones">${boton}</div>
+    ${guia ? '' : `<div class="cond-acciones">${boton}</div>`}
   </section>`;
 }
 
-export function condicionesHTML(st) {
+export function condicionesHTML(st, opciones = {}) {
   const T = TEXTOS_CONDICIONES;
-  const transversales = CONDICIONES.filter(c => !c.region).map(c => filaHTML(c, st)).join('');
+  const transversales = CONDICIONES.filter(c => !c.region).map(c => filaHTML(c, st, opciones)).join('');
   const regiones = [...new Set(CONDICIONES.filter(c => c.region).map(c => c.region))];
   const deRegion = regiones.map(r => `<h3 class="cond-grupo">${esc(conRegion(T.grupoRegion, r))}</h3>`
-    + CONDICIONES.filter(c => c.region === r).map(c => filaHTML(c, st)).join('')).join('');
+    + CONDICIONES.filter(c => c.region === r).map(c => filaHTML(c, st, opciones)).join('')).join('');
   return `<p class="cond-intro">${esc(T.intro)}</p>
     <p class="cond-intro cond-intro-diag">${esc(T.diagnostico)}</p>
     ${transversales}${deRegion}

@@ -16,7 +16,7 @@ import {
   ETIQUETA_HIP_POSQ, pautaHipPosq,
 } from './lib/posquirurgico.js';
 import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
-import { nombreRegion, regionConLado } from './lib/region.js';
+import { nombreRegion, regionConLado, dolorInespecifico } from './lib/region.js';
 import { SILUETAS } from './data/siluetas.js';
 import { figuraSilueta, estadoZona, ladoAlTocar, textoElegida, notaSexo, siluetaHTML } from './lib/silueta.js';
 import { TEXTO_VALORACION_BREVE, textoNotas, textoInformePaciente } from './lib/resumenes.js';
@@ -4244,12 +4244,11 @@ function buildResults() {
   let hypHtml = `<div class="summary-section"><div class="summary-section-title">${sinConfirmar ? '🎯 Hipótesis de Trabajo — Confirmación pendiente' : '🎯 Hipótesis Diagnósticas — Ordenadas por Peso Diagnóstico'}</div>`;
 
   if (sorted.length === 0) {
-    const regionLabel = state.region ? nombreRegion(state.region) : 'la región';
     const showCS = state.cronologia === 'Crónico (>3 meses)' && state.riesgoPsico === 'Alto';
     hypHtml += `
       <div style="background:var(--surface2); border:1px solid var(--orange); border-radius:var(--radius); padding:1.2rem; color:var(--text2); font-size:0.85rem; line-height:1.7;">
         <div style="display:flex; align-items:center; gap:6px; color:var(--orange); font-weight:600; margin-bottom:8px;"><span style="line-height:1;">⚠️</span><span>Sin hipótesis diagnósticas identificadas</span></div>
-        <div>El algoritmo no encontró un patrón dominante claro. Se recomienda trabajar con hipótesis de trabajo de <em>dolor de ${regionLabel} inespecífico</em>.</div>
+        <div>El algoritmo no encontró un patrón dominante claro. Se recomienda trabajar con hipótesis de trabajo de <em>${dolorInespecifico(state.region)}</em>.</div>
         ${showCS ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border2);">Dado el perfil crónico y el riesgo psicosocial elevado, considere también <em>sensibilización central</em> como hipótesis complementaria.</div>` : ''}
       </div>`;
   } else {

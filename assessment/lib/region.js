@@ -26,3 +26,12 @@ export function regionConLado(r, lado) {
   if (!r) return '—';
   return lado ? `${nombreRegion(r)} (${ladoTexto(r, lado)})` : nombreRegion(r);
 }
+
+// Hipótesis de trabajo cuando el árbol termina sin ninguna: «dolor lumbar
+// inespecífico», «dolor de tobillo y pie inespecífico». La columna toma el
+// adjetivo; el resto, «de <región>». Lo usan la 4b, la fase 5, la guía y los esquemas.
+const ADJETIVO = { lumbar: 'lumbar', cervical: 'cervical' };
+export function dolorInespecifico(r) {
+  if (!r) return 'dolor inespecífico de la región';
+  return `dolor ${ADJETIVO[r] || `de ${nombreRegion(r).toLowerCase()}`} inespecífico`;
+}

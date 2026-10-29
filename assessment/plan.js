@@ -3,7 +3,7 @@
 // a lib/plan-tratamiento.js y lo pinta. Diseño: docs/plan-tratamiento.md.
 // Nunca toca buildPhysiQPayload(), 📋 Notas ni 📄 Informe (decisión 9).
 import { state } from './state.js';
-import { DOSIS_DERIVAR, ZONAS_SINTOMA } from './data.js';
+import { DOSIS_DERIVAR, ZONAS_SINTOMA, CIF_TREES } from './data.js';
 import { REGIONES_PLAN, AVISOS, MINUTOS_SESION, TEXTO_NIVELES, TEXTOS_SESION } from './data/plan-tratamiento.js';
 import {
   construirPlan, elegible, nivelEfectivo, hipotesisPorDefecto, frecuenciaPorDefecto, textoPlanSesion, textoPlanMes, textoDomiciliario, faltaEnCasa, textoPosq,
@@ -13,7 +13,8 @@ import { hipotesis, hipotesisActivas, esTratada } from './phase4b.js';
 import { getDerivacionesArbol } from './phase4.js';
 import { ramaPauta } from './lib/pauta.js';
 import { conProtocolo, semanasCirugia, pautaHipPosq, TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
-import { regionConLado } from './lib/region.js';
+import { regionConLado, dolorInespecifico } from './lib/region.js';
+import { arbolCompleto } from './lib/arbol.js';
 import { payloadSintomas, zonaConRedNeuro } from './lib/sintomas.js';
 import { dsActiva } from './lib/disautonomia.js';
 import { lesDiagnosticado } from './lib/lupus.js';
@@ -38,6 +39,16 @@ let _contenedor = null;
 let _ia = null;   // plan-ia.js («✨ Detallar con IA»), solo fuera del hub
 
 // ─── Estado de la fase ───────────────────────────────────────────
+
+// Sin hipótesis: no es lo mismo que falte el árbol que que haya terminado sin ninguna.
+function sinHipotesisHTML() {
+  const tree = CIF_TREES[state.region];
+  if (tree && arbolCompleto(tree, state.treeAnswers)) {
+    return `<div class="plan-ayuda" id="planSinHip">El árbol terminó sin hipótesis: no hay una pauta específica que planificar. Trabaja con ${dolorInespecifico(state.region)} (ver la fase 5) o vuelve al árbol para reconsiderar las respuestas. <button type="button" class="plan-enlace" onclick="goToPhase(4)">Ir al árbol →</button></div>`;
+  }
+  return '<div class="plan-ayuda" id="planSinHip">No hay hipótesis activas: completa el árbol de la fase 4. <button type="button" class="plan-enlace" onclick="goToPhase(4)">Ir al árbol →</button></div>';
+}
+
 function planVacio(idDefecto) {
   return {
     hipotesis: idDefecto ? [idDefecto] : [],
@@ -241,7 +252,7 @@ function pintarPlan() {
   <div class="card">
     <div class="card-title">Hipótesis a tratar</div>
     <p class="plan-ayuda">Una por defecto; puedes añadir una segunda (toca otra). La primera elegida es la principal.</p>
-    <div class="plan-hips">${hipHTML || '<div class="plan-ayuda">No hay hipótesis activas: completa el árbol de la fase 4.</div>'}</div>
+    <div class="plan-hips">${hipHTML || sinHipotesisHTML()}</div>
   </div>
 
   <div class="card">

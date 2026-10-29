@@ -40,3 +40,14 @@ export function nivelMatriz(irr = {}) {
     sinCalma: calma < 0,
   };
 }
+
+// La regla en tres frases (HTML con <b>), la misma en la guía de consulta (pestaña
+// Irritabilidad) y en su hoja impresa (docs/esquemas/hojas.mjs).
+export function reglaIrritabilidad() {
+  const c = CORTES_OTROS;
+  return [
+    'El <b>tiempo en calmarse</b> marca el suelo: minutos → baja, horas → moderada, día siguiente → alta (Maitland 2005, cap. 6, p. 117; Petersen 2021).',
+    `<b>Reposo + movimiento + tolerancia</b> (0–2 cada uno, el número de cada opción) solo pueden subirlo: 0–${c.bajaHasta} baja, ${c.bajaHasta + 1}–${c.moderadaHasta} moderada, ${c.moderadaHasta + 1}–6 alta.`,
+    'El nivel es el más alto de los dos. Se calcula con lo contestado y avisa si falta alguna fila, porque quedarse corto es el error peligroso. El impacto en las actividades es gravedad y no cuenta aquí.',
+  ];
+}
