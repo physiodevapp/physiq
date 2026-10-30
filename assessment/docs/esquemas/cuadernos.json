@@ -1,14 +1,14 @@
 {
   "cuaderno-cadera": {
-    "huella": "e826bd0f",
-    "archivo": "a4ec61d3",
+    "huella": "9bef16ad",
+    "archivo": "01ac94d0",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
       "cribado-cadera": "c1ee48e3",
       "arbol-a4-cadera": "bcbbfafd",
       "confirmacion-cadera": "91e1cab5",
-      "condiciones": "b23c556d",
+      "condiciones": "d3072a65",
       "irritabilidad": "aa80b592",
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
@@ -28,15 +28,15 @@
     "paginasPor": []
   },
   "cuaderno-cervical": {
-    "huella": "66b377df",
-    "archivo": "a6202e2e",
+    "huella": "d92a7e5d",
+    "archivo": "c078337f",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
       "cribado-cervical": "4532fad2",
       "arbol-a4-cervical": "3675bc25",
       "confirmacion-cervical": "42d3403d",
-      "condiciones": "b23c556d",
+      "condiciones": "d3072a65",
       "irritabilidad": "aa80b592",
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
@@ -56,15 +56,15 @@
     "paginasPor": []
   },
   "cuaderno-codo": {
-    "huella": "eb22e095",
-    "archivo": "2c7cbd6a",
+    "huella": "175eaddf",
+    "archivo": "cf181d38",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
       "cribado-codo": "cd89989a",
       "arbol-a4-codo": "ac805d37",
       "confirmacion-codo": "960641ca",
-      "condiciones": "b23c556d",
+      "condiciones": "d3072a65",
       "irritabilidad": "aa80b592",
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
@@ -84,12 +84,12 @@
     "paginasPor": []
   },
   "cuaderno-completo": {
-    "huella": "f1229671",
-    "archivo": "bc6c8dd1",
+    "huella": "43aa9bf3",
+    "archivo": "5a6bd536",
     "fecha": "2026-10-30",
     "paginas": 54,
     "hojas": {
-      "condiciones": "b23c556d",
+      "condiciones": "d3072a65",
       "irritabilidad": "aa80b592",
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
@@ -148,15 +148,15 @@
     "paginasPor": []
   },
   "cuaderno-hombro": {
-    "huella": "f019ea81",
-    "archivo": "a8e44589",
+    "huella": "bb29c78b",
+    "archivo": "e1601df1",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
       "cribado-hombro": "66819ebe",
       "arbol-a4-hombro": "6a46f4dc",
       "confirmacion-hombro": "9634c407",
-      "condiciones": "b23c556d",
+      "condiciones": "d3072a65",
       "irritabilidad": "aa80b592",
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
@@ -176,15 +176,15 @@
     "paginasPor": []
   },
   "cuaderno-lumbar": {
-    "huella": "fc43c22c",
-    "archivo": "9314dba6",
+    "huella": "9651e7f2",
+    "archivo": "2a3296c0",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
       "cribado-lumbar": "d512fa6a",
       "arbol-a4-lumbar": "38bae69b",
       "confirmacion-lumbar": "3decc75a",
-      "condiciones": "b23c556d",
+      "condiciones": "d3072a65",
       "irritabilidad": "aa80b592",
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
@@ -204,15 +204,15 @@
     "paginasPor": []
   },
   "cuaderno-rodilla": {
-    "huella": "fa927d2c",
-    "archivo": "af5a8d64",
+    "huella": "94a0a2f2",
+    "archivo": "d0ee4b6f",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
       "cribado-rodilla": "ea49ea6d",
       "arbol-a4-rodilla": "833e8650",
       "confirmacion-rodilla": "0ea9315f",
-      "condiciones": "b23c556d",
+      "condiciones": "d3072a65",
       "irritabilidad": "aa80b592",
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
@@ -232,15 +232,15 @@
     "paginasPor": []
   },
   "cuaderno-tobillo_pie": {
-    "huella": "619b3653",
-    "archivo": "d4c01356",
+    "huella": "a0c54891",
+    "archivo": "ff038488",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
       "cribado-tobillo_pie": "be610844",
       "arbol-a4-tobillo_pie": "14039795",
       "confirmacion-tobillo_pie": "6f1c5457",
-      "condiciones": "b23c556d",
+      "condiciones": "d3072a65",
       "irritabilidad": "aa80b592",
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",

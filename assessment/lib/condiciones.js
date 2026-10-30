@@ -93,7 +93,7 @@ function filaHTML(c, st, { guia = false } = {}) {
     <p class="cond-que">${esc(c.que)}</p>
     <div class="cond-piensa">${esc(c.piensa)}</div>
     <ul class="cond-pistas">${pistas}</ul>
-    <p class="cond-anade"><span class="cond-anade-et">Añade:</span> ${esc(c.anade)}</p>
+    <p class="cond-anade"><span class="cond-anade-et">Al marcarla, añade:</span> ${esc(c.anade)}</p>
     ${fuentes}
     ${guia ? '' : `<div class="cond-acciones">${boton}</div>`}
   </section>`;
