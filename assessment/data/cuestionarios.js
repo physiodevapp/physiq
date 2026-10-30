@@ -26,7 +26,15 @@
 //     subescalas?: [{ id, nombre, items: [n], calculo?: 'suma' | 'media' }],
 //     interpretacion?: [{ si?: { de: 'total' | <subescala>, min?, max? }, etiqueta, nivel: 'ok'|'medio'|'alto' }],
 //     interpretacionTexto?, sinInterpretacion?, alertas?: [{ item, min?, texto }],
-//     fuente, nota? }
+//     fuente, nota?,
+//     hoja?: { casillas: 'letras' | 'palabras', palabras?: { [valor]: texto }, orden?: 'descendente',
+//              nota?, na?: texto | false } }
+// `hoja`: cómo rotula las casillas de los ítems `escala` la hoja de respuestas del
+// lector con foto (docs/lector-cuestionarios.md), para que coincidan con el papel
+// oficial: por defecto, el número que el paciente rodea; 'palabras', la respuesta
+// (en el orden del papel; 'descendente' si su primera columna es la de más puntos);
+// 'letras', la posición (A = la primera). `na`: rótulo de la casilla N/A, o false
+// si la hoja no la lleva. No cambia cómo puntúa la calculadora.
 // Tipos de ítem: ver la cabecera de lib/cuestionarios.js.
 
 export const GRUPOS_CUESTIONARIO = [
@@ -357,6 +365,7 @@ export const CUESTIONARIOS = [
   // ─── Regionales: cadera y rodilla ─────────────────────────────────────────
   {
     id: 'womac',
+    hoja: { casillas: 'palabras', palabras: { 0: 'Ninguno', 1: 'Poco', 2: 'Bastante', 3: 'Mucho', 4: 'Muchísimo' } },
     nombre: 'WOMAC',
     titulo: 'Artrosis de cadera o rodilla',
     grupo: 'cadera_rodilla',
@@ -414,6 +423,7 @@ export const CUESTIONARIOS = [
   },
   {
     id: 'hos',
+    hoja: { casillas: 'palabras', orden: 'descendente', palabras: { 4: 'Ninguna dificultad', 3: 'Leve', 2: 'Moderada', 1: 'Extrema', 0: 'Incapaz' }, na: 'No responde' },
     nombre: 'HOS',
     titulo: 'Hip Outcome Score',
     grupo: 'cadera_rodilla',
@@ -444,6 +454,7 @@ export const CUESTIONARIOS = [
   },
   {
     id: 'koos',
+    hoja: { casillas: 'letras', nota: 'A = la primera respuesta de la fila en el cuestionario, B = la segunda… E = la última.' },
     nombre: 'KOOS',
     titulo: 'Lesión y artrosis de rodilla',
     grupo: 'cadera_rodilla',
@@ -533,6 +544,7 @@ export const CUESTIONARIOS = [
   // ─── Regionales: columna ──────────────────────────────────────────────────
   {
     id: 'odi',
+    hoja: { casillas: 'letras', nota: 'A = la primera frase del apartado en el cuestionario, B = la segunda… F = la última. Si ninguna te describe, deja la fila en blanco.', na: false },
     nombre: 'Oswestry (ODI)',
     siglas: ['ODI', 'Oswestry'],
     titulo: 'Discapacidad por dolor lumbar (versión 1.0)',
@@ -577,6 +589,7 @@ export const CUESTIONARIOS = [
   },
   {
     id: 'ndi',
+    hoja: { casillas: 'letras', nota: 'Marca la misma letra (A a F) que la frase que te describe en el cuestionario.', na: 'No conduzco' },
     nombre: 'NDI',
     titulo: 'Índice de discapacidad cervical',
     grupo: 'columna',
@@ -637,6 +650,7 @@ export const CUESTIONARIOS = [
   },
   {
     id: 'ases',
+    hoja: { casillas: 'palabras', palabras: { 0: 'Imposible', 1: 'Mucha dificultad', 2: 'Cierta dificultad', 3: 'Sin dificultad' } },
     nombre: 'ASES',
     titulo: 'Hombro (parte del paciente)',
     grupo: 'hombro_codo',
@@ -715,6 +729,7 @@ export const CUESTIONARIOS = [
   // ─── Regionales: tobillo y pie, y miembro inferior ───────────────────────
   {
     id: 'faam',
+    hoja: { casillas: 'palabras', orden: 'descendente', palabras: { 4: 'Sin dificultad', 3: 'Ligera', 2: 'Moderada', 1: 'Extrema', 0: 'Imposible' } },
     nombre: 'FAAM',
     titulo: 'Capacidad funcional de pie y tobillo',
     grupo: 'tobillo_pie',

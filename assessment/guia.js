@@ -15,6 +15,7 @@ import { TIEMPOS_TEJIDO } from './data/tejidos.js';
 import { condicionesHTML } from './lib/condiciones.js';
 import { farmacosHTML, textoCima } from './lib/farmacos.js';
 import { TEXTOS_FARMACOS } from './data/farmacos.js';
+import { CUESTIONARIOS } from './data/cuestionarios.js';
 import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
 import { alternarFicha, cerrarFicha } from './ficha.js';
 import { nombreRegion, dolorInespecifico } from './lib/region.js';
@@ -289,7 +290,7 @@ function claveHoja({ tejidos, suelta, region, hoja }) {
   if (tejidos) return `tejidos-${hoja}`;
   return hoja === 'arbol' ? `arbol-a4-${region}` : hoja === 'irritabilidad' ? '' : `${hoja}-${region}`;
 }
-let CUADERNOS = null;
+let CUADERNOS = null, RESPUESTAS = null;
 async function cargarHuellas() {
   try {
     const r = await fetch('./docs/esquemas/huellas.json', { cache: 'no-store' });
@@ -299,6 +300,10 @@ async function cargarHuellas() {
     const r = await fetch('./docs/esquemas/cuadernos.json', { cache: 'no-store' });
     if (r.ok) CUADERNOS = await r.json();
   } catch { /* sin cuadernos: la lista de hojas sigue */ }
+  try {
+    const r = await fetch('./docs/esquemas/respuestas/huellas.json', { cache: 'no-store' });
+    if (r.ok) RESPUESTAS = await r.json();
+  } catch { /* sin hojas de respuestas: la lista sigue */ }
 }
 // Enlace a un PDF con su versión (?v=): una versión nueva es otra dirección, así el navegador
 // (o el visor de PDF del móvil) no abre la copia que ya tenía en caché.
@@ -323,13 +328,13 @@ const fechaLarga = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('es-ES'
 function htmlHojas() {
   if (!HUELLAS) return '<p class="guia-vacio">No se ha podido cargar la lista de hojas. Prueba a recargar la página.</p>';
   const hoy = Date.now();
-  const fila = (clave, nombre) => {
-    const h = HUELLAS[clave];
+  const fila = (clave, nombre, de = HUELLAS, ruta = '') => {
+    const h = de[clave];
     if (!h) return '';
     const reciente = (hoy - new Date(`${h.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(nombre)}</b>
       <span class="guia-hoja-v">v. ${esc(h.huella)}</span> · <span>cambió el ${esc(fechaLarga(h.fecha))}</span>${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}</div>
-      <a href="${urlPDF(clave, h.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(nombre)} en PDF">PDF ↗</a></li>`;
+      <a href="${urlPDF(ruta + clave, h.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(nombre)} en PDF">PDF ↗</a></li>`;
   };
   const grupo = (titulo, filas) => `<section class="guia-bloque"><h3>${esc(titulo)}</h3><ul class="guia-hojas-lista">${filas.join('')}</ul></section>`;
   const recientes = Object.values(HUELLAS).filter(h => (hoy - new Date(`${h.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE).length;
@@ -346,7 +351,10 @@ function htmlHojas() {
     ${REGIONES.map(r => grupo(nombreRegion(r), Object.entries(NOMBRE_HOJA).map(([t, n]) => fila(`${t}-${r}`, n)))).join('')}
     ${grupo('Tiempos de recuperación de tejidos', Object.entries(HOJAS_TEJIDO).map(([k, h]) => fila(`tejidos-${k}`, h.titulo)))}
     ${grupo('Otras hojas', Object.entries(SUELTAS).map(([k, h]) => fila(k, h.titulo)))}
-    ${grupo('Para dar al paciente', Object.entries(PARA_PACIENTE).map(([k, t]) => fila(k, t)))}`;
+    ${grupo('Para dar al paciente', Object.entries(PARA_PACIENTE).map(([k, t]) => fila(k, t)))}
+    ${RESPUESTAS ? `<section class="guia-bloque guia-respuestas"><h3>Hojas de respuestas del lector con foto (en prueba)</h3>
+      <p class="guia-aviso-prueba"><b>En prueba: no las uses con pacientes.</b> Sirven para medir si el lector de cuestionarios con foto lee bien las marcas, rellenándolas con respuestas inventadas. El paciente no responde aquí al cuestionario: lee el texto oficial y marca en esta hoja.</p>
+      <ul class="guia-hojas-lista">${CUESTIONARIOS.filter(d => RESPUESTAS[d.id]).map(d => fila(d.id, `${d.nombre} · ${d.titulo}`, RESPUESTAS, 'respuestas/')).join('')}</ul></section>` : ''}`;
 }
 
 // ── Páginas sueltas (#<clave>): el QR de las hojas que no son de una región ──
