@@ -164,7 +164,7 @@ export const PHASE_DEFS = [
   { n: 1,    label: 'Triage y Cabecera',       short: 'Fase 1' },
   { n: 2,    label: 'Cribado Sistémico',        short: 'Fase 2' },
   { n: 3,    label: 'SINSS',                    short: 'Fase 3' },
-  { n: 4,    label: 'Algoritmo CIF',            short: 'Fase 4' },
+  { n: 4,    label: 'Árbol de decisión',            short: 'Fase 4' },
   { n: '4b', label: 'Confirmación de Hipótesis',short: 'Fase 4b' },
   { n: 5,    label: 'Resultados',               short: 'Fase 5' },
   { n: 6,    label: 'Plan de tratamiento',      short: 'Fase 6' },  // opcional (docs/plan-tratamiento.md)

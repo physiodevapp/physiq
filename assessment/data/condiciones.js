@@ -22,7 +22,7 @@ export const TEXTOS_CONDICIONES = {
   otraRegion: 'Cambiar a {region} e ir →',
   avisoTitulo: 'Cambiar región de valoración',
   avisoTexto: 'Ahora valoras {actual}. Esta pregunta solo está en el cribado de {region}: al cambiar se borran las respuestas del cribado sistémico.',
-  avisoFases: ' También se perderá el progreso de las fases SINSS, Algoritmo CIF y Confirmación de Hipótesis.',
+  avisoFases: ' También se perderá el progreso de las fases SINSS, Árbol de decisión y Confirmación de Hipótesis.',
   pie: 'Esta lista orienta: no diagnostica ni marca nada por ti.',
 };
 

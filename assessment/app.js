@@ -197,7 +197,7 @@ function navStepClick(n) {
   if (navEl.classList.contains('invalidated')) {
     // Mostrar tooltip informativo breve
     showNavTooltip(navEl, state.regionChanged && idx >= 3
-      ? 'Región modificada — complete el Algoritmo CIF primero'
+      ? 'Región modificada — complete el Árbol de decisión primero'
       : 'Árbol modificado — complete la Confirmación de Hipótesis primero');
     return;
   }
@@ -2645,7 +2645,7 @@ function selectRegion(regionId, card, despues) {
   if (state.region && state.region !== regionId && state.maxVisitedIdx >= 2) {
     showConfirmBanner(
       'Cambiar región de valoración',
-      'Al cambiar de región se perderá todo el progreso de las fases SINSS, Algoritmo CIF y Confirmación de Hipótesis. ¿Desea continuar?',
+      'Al cambiar de región se perderá todo el progreso de las fases SINSS, Árbol de decisión y Confirmación de Hipótesis. ¿Desea continuar?',
       'Cambiar región',
       aplicar
     );

@@ -549,7 +549,7 @@ export const screening = {
 // nodos 2 y 4 → ro_step1; 3 → ro_step1b; 5 → ro_step2b; 6 → ro_step2c;
 // 7 → ro_step3 (lo que ya había) y ro_step4–ro_step7 (una zona por paso).
 export const tree = {
-  title: 'Algoritmo CIF — Rodilla',
+  title: 'Árbol de decisión — Rodilla',
   steps: [
     {
       id: 'ro_step1',

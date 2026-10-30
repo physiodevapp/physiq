@@ -18,8 +18,8 @@ export const CONDICION_SISTEMA = {
 // Cuándo se ve una pregunta dentro de su sistema (mismas reglas que lib/<condición>.js)
 export function condicionPregunta(q) {
   const t = [];
-  if (q.hm === 'urgencia') t.push('con «Sospecha» o subtipo vascular');
-  if (q.hm === 'sospecha') t.push('con «Sospecha» o subtipo sin saber');
+  if (q.hm === 'urgencia') t.push('con «Sospecha», subtipo vascular o la regla de sospecha vascular cumplida');
+  if (q.hm === 'sospecha') t.push('con «Sospecha», o «Diagnosticada» sin subtipo conocido (otro, no lo sabe o sin marcar)');
   if (q.les === 'diagnosticado') t.push('solo «Diagnosticado»');
   if (q.op === 'sinFractura') t.push('sin fractura vertebral conocida');
   if (q.op === 'antirresortivo') t.push('con bifosfonato o denosumab');

@@ -400,7 +400,7 @@ export const screening = {
 
 // ── Fase 4 · CIF_TREES.codo
 export const tree = {
-  title: 'Algoritmo CIF — Codo',
+  title: 'Árbol de decisión — Codo',
   steps: [
     {
       id: 'co_step1',

@@ -732,7 +732,7 @@ export const screening = {
 
 // ── Fase 4 · CIF_TREES.hombro
 export const tree = {
-  title: 'Algoritmo CIF — Hombro',
+  title: 'Árbol de decisión — Hombro',
   steps: [
     {
       id: 'h_step1',

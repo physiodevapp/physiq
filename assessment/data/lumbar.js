@@ -917,7 +917,7 @@ export const screening = {
 
 // ── Fase 4 · CIF_TREES.lumbar
 export const tree = {
-  title: 'Algoritmo CIF — Lumbar',
+  title: 'Árbol de decisión — Lumbar',
   steps: [
     {
       id: 'lu_step1',

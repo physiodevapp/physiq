@@ -142,7 +142,7 @@ export function buildHypothesisCards() {
           <div style="font-size:0.65rem; font-family:'DM Mono',monospace; color:var(--orange); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Consideraciones</div>
           <div>· Revise si hay factores psicosociales relevantes (evaluados en Fase 1 y SINSS)</div>
           <div>· Valore iniciar con hipótesis de trabajo: <em>${dolor.charAt(0).toUpperCase() + dolor.slice(1)}</em></div>
-          <div>· Regrese al Algoritmo CIF y reconsidere las respuestas seleccionadas</div>
+          <div>· Regrese al Árbol de decisión y reconsidere las respuestas seleccionadas</div>
           ${showCS ? `<div style="margin-top:6px; padding-top:6px; border-top:1px solid var(--border2);">· Dado el perfil crónico y el riesgo psicosocial elevado, considere también <em>sensibilización central</em> como hipótesis complementaria</div>` : ''}
         </div>
       </div>`;

@@ -541,7 +541,7 @@ export const screening = {
 // 2 → tp_step1; 3 → tp_step2; 4 → tp_step3; 5 → tp_step4; 6 → tp_step5;
 // 7 → tp_step6–tp_step9 y 8 → tp_step10–tp_step13 (una zona por paso, como rodilla).
 export const tree = {
-  title: 'Algoritmo CIF — Tobillo y Pie',
+  title: 'Árbol de decisión — Tobillo y Pie',
   steps: [
     {
       // Nodo 2. El «NO» salta a tp_step4 (las ramas traumáticas pasan por tp_step2 y tp_step3).

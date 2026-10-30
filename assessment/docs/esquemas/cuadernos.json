@@ -1,12 +1,12 @@
 {
   "cuaderno-cadera": {
-    "huella": "db97fcdc",
-    "archivo": "d9a25a48",
+    "huella": "e826bd0f",
+    "archivo": "a4ec61d3",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
-      "cribado-cadera": "edc69c8d",
-      "arbol-a4-cadera": "59cfb6ca",
+      "cribado-cadera": "c1ee48e3",
+      "arbol-a4-cadera": "bcbbfafd",
       "confirmacion-cadera": "91e1cab5",
       "condiciones": "b23c556d",
       "irritabilidad": "aa80b592",
@@ -28,13 +28,13 @@
     "paginasPor": []
   },
   "cuaderno-cervical": {
-    "huella": "a25b3358",
-    "archivo": "ef8dfd44",
+    "huella": "66b377df",
+    "archivo": "a6202e2e",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
-      "cribado-cervical": "ba1808b4",
-      "arbol-a4-cervical": "0739a9f6",
+      "cribado-cervical": "4532fad2",
+      "arbol-a4-cervical": "3675bc25",
       "confirmacion-cervical": "42d3403d",
       "condiciones": "b23c556d",
       "irritabilidad": "aa80b592",
@@ -56,13 +56,13 @@
     "paginasPor": []
   },
   "cuaderno-codo": {
-    "huella": "f0c44b6b",
-    "archivo": "78017623",
+    "huella": "eb22e095",
+    "archivo": "2c7cbd6a",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
-      "cribado-codo": "8f66675c",
-      "arbol-a4-codo": "93e54d54",
+      "cribado-codo": "cd89989a",
+      "arbol-a4-codo": "ac805d37",
       "confirmacion-codo": "960641ca",
       "condiciones": "b23c556d",
       "irritabilidad": "aa80b592",
@@ -84,8 +84,8 @@
     "paginasPor": []
   },
   "cuaderno-completo": {
-    "huella": "4ff519a8",
-    "archivo": "846594e1",
+    "huella": "f1229671",
+    "archivo": "bc6c8dd1",
     "fecha": "2026-10-30",
     "paginas": 54,
     "hojas": {
@@ -94,26 +94,26 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04",
-      "cribado-hombro": "4e964638",
-      "arbol-a4-hombro": "be450a25",
+      "cribado-hombro": "66819ebe",
+      "arbol-a4-hombro": "6a46f4dc",
       "confirmacion-hombro": "9634c407",
-      "cribado-cadera": "edc69c8d",
-      "arbol-a4-cadera": "59cfb6ca",
+      "cribado-cadera": "c1ee48e3",
+      "arbol-a4-cadera": "bcbbfafd",
       "confirmacion-cadera": "91e1cab5",
-      "cribado-cervical": "ba1808b4",
-      "arbol-a4-cervical": "0739a9f6",
+      "cribado-cervical": "4532fad2",
+      "arbol-a4-cervical": "3675bc25",
       "confirmacion-cervical": "42d3403d",
-      "cribado-lumbar": "b04dbbcc",
-      "arbol-a4-lumbar": "c3105ed6",
+      "cribado-lumbar": "d512fa6a",
+      "arbol-a4-lumbar": "38bae69b",
       "confirmacion-lumbar": "3decc75a",
-      "cribado-rodilla": "46c52533",
-      "arbol-a4-rodilla": "c2e22c0d",
+      "cribado-rodilla": "ea49ea6d",
+      "arbol-a4-rodilla": "833e8650",
       "confirmacion-rodilla": "0ea9315f",
-      "cribado-codo": "8f66675c",
-      "arbol-a4-codo": "93e54d54",
+      "cribado-codo": "cd89989a",
+      "arbol-a4-codo": "ac805d37",
       "confirmacion-codo": "960641ca",
-      "cribado-tobillo_pie": "7cdd285a",
-      "arbol-a4-tobillo_pie": "7e986bbe",
+      "cribado-tobillo_pie": "be610844",
+      "arbol-a4-tobillo_pie": "14039795",
       "confirmacion-tobillo_pie": "6f1c5457"
     },
     "inicio": {
@@ -148,13 +148,13 @@
     "paginasPor": []
   },
   "cuaderno-hombro": {
-    "huella": "7042b46c",
-    "archivo": "a6988fe3",
+    "huella": "f019ea81",
+    "archivo": "a8e44589",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
-      "cribado-hombro": "4e964638",
-      "arbol-a4-hombro": "be450a25",
+      "cribado-hombro": "66819ebe",
+      "arbol-a4-hombro": "6a46f4dc",
       "confirmacion-hombro": "9634c407",
       "condiciones": "b23c556d",
       "irritabilidad": "aa80b592",
@@ -176,13 +176,13 @@
     "paginasPor": []
   },
   "cuaderno-lumbar": {
-    "huella": "f483e7bb",
-    "archivo": "3f122788",
+    "huella": "fc43c22c",
+    "archivo": "9314dba6",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
-      "cribado-lumbar": "b04dbbcc",
-      "arbol-a4-lumbar": "c3105ed6",
+      "cribado-lumbar": "d512fa6a",
+      "arbol-a4-lumbar": "38bae69b",
       "confirmacion-lumbar": "3decc75a",
       "condiciones": "b23c556d",
       "irritabilidad": "aa80b592",
@@ -204,13 +204,13 @@
     "paginasPor": []
   },
   "cuaderno-rodilla": {
-    "huella": "ac9d1fb7",
-    "archivo": "495bbe89",
+    "huella": "fa927d2c",
+    "archivo": "af5a8d64",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
-      "cribado-rodilla": "46c52533",
-      "arbol-a4-rodilla": "c2e22c0d",
+      "cribado-rodilla": "ea49ea6d",
+      "arbol-a4-rodilla": "833e8650",
       "confirmacion-rodilla": "0ea9315f",
       "condiciones": "b23c556d",
       "irritabilidad": "aa80b592",
@@ -232,13 +232,13 @@
     "paginasPor": []
   },
   "cuaderno-tobillo_pie": {
-    "huella": "f2a5ee7f",
-    "archivo": "d603209e",
+    "huella": "619b3653",
+    "archivo": "d4c01356",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
-      "cribado-tobillo_pie": "7cdd285a",
-      "arbol-a4-tobillo_pie": "7e986bbe",
+      "cribado-tobillo_pie": "be610844",
+      "arbol-a4-tobillo_pie": "14039795",
       "confirmacion-tobillo_pie": "6f1c5457",
       "condiciones": "b23c556d",
       "irritabilidad": "aa80b592",

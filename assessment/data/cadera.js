@@ -837,7 +837,7 @@ export const screening = {
 
 // ── Fase 4 · CIF_TREES.cadera
 export const tree = {
-  title: 'Algoritmo CIF — Cadera',
+  title: 'Árbol de decisión — Cadera',
   steps: [
     {
       id: 'ca_step1',

@@ -87,7 +87,7 @@ function htmlCribado(region) {
 function htmlArbol(region) {
   const tree = CIF_TREES[region], steps = tree.steps;
   const lab = id => { const i = steps.findIndex(s => s.id === id); return etiquetaPaso(steps[i], i); };
-  return `<h2>${esc(tree.title || `Árbol CIF · ${nombreRegion(region)}`)}</h2>
+  return `<h2>${esc(tree.title || `Árbol de decisión · ${nombreRegion(region)}`)}</h2>
     <p class="guia-nota">Cada respuesta puede sumar una hipótesis; se acumulan y se confirman con tests en la fase 4b.</p>
     ${steps.map((st, i) => {
       const r = st.razonamiento;

@@ -754,7 +754,7 @@ export const screening = {
 
 // ── Fase 4 · CIF_TREES.cervical
 export const tree = {
-  title: 'Algoritmo CIF — Cervical',
+  title: 'Árbol de decisión — Cervical',
   steps: [
     {
       id: 'ce_step1',
