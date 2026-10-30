@@ -49,7 +49,9 @@
   .guia-intro { font-size: 0.82rem; color: var(--text2); margin-bottom: 12px; line-height: 1.5; }
   .guia-nav { position: sticky; top: 0; z-index: 20; background: var(--bg); margin: 0 -1rem 14px; padding: 8px 1rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-bottom: 1px solid var(--border); }
   .guia-hojas { display: flex; gap: 6px; flex: 1 1 auto; }
-  .guia-hojas a { flex: 1 1 0; text-align: center; text-decoration: none; font-size: 0.85rem; color: var(--text2); border: 1px solid var(--border2); border-radius: 8px; padding: 9px 6px; min-height: 40px; }
+  /* Base = el ancho de su texto y el sobrante a partes iguales: las pestañas largas
+     («Irritabilidad», «Confirmación») no quedan pegadas al borde */
+  .guia-hojas a { flex: 1 1 auto; text-align: center; text-decoration: none; font-size: 0.85rem; color: var(--text2); border: 1px solid var(--border2); border-radius: 8px; padding: 9px 6px; min-height: 40px; }
   .guia-hojas a[aria-current="page"] { color: var(--accent); border-color: var(--accent); font-weight: 500; }
   .guia h2 { font-size: 1.05rem; font-weight: 500; color: var(--text); margin: 18px 0 8px; }
   .guia-nota { font-size: 0.78rem; color: var(--text3); margin: -4px 0 10px; }
@@ -111,7 +113,7 @@
   .guia-irr-ops .option-btn { width: 100%; min-height: 44px; font-size: 0.82rem; padding: 6px 8px; text-align: left; }
   .guia-irr-n { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); margin-right: 2px; }
   .guia-irr-pie { display: flex; justify-content: flex-end; padding-top: 8px; }
-  @media (max-width: 480px) { .guia-irr-ops { grid-template-columns: 1fr; } .guia-hojas a { font-size: 0.8rem; padding: 9px 2px; } }
+  @media (max-width: 480px) { .guia-irr-ops { grid-template-columns: 1fr; } .guia-hojas a { font-size: 0.8rem; padding: 9px clamp(3px, 0.9vw, 8px); } }
   /* Tiempos de tejido (#tejidos/<hoja>): título fijo en lugar del selector de región; el eje, bajo las pestañas */
   .guia-titulo { display: none; font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 1.9rem; line-height: 1.2; margin: 2px 0 4px; padding: 4px 0; }
   .guia-modo-tejidos .guia-titulo { display: block; }
