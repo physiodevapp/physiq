@@ -2343,7 +2343,8 @@
   .session-io-btn{flex:1 1 0;min-width:0;min-height:40px;background:none;border:1px solid var(--border2);border-radius:8px;padding:8px;color:var(--text2);font-family:inherit;font-size:0.82rem;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color 0.2s,color 0.2s;}
   .session-io-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
   .session-io-btn:disabled{opacity:0.45;cursor:default;}
-  .session-hojas{display:flex;align-items:center;justify-content:center;text-decoration:none;}
+  .session-hojas{display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;}
+  .session-hojas svg{flex:none;}
   .session-io-nota{margin-top:8px;font-size:0.72rem;line-height:1.4;color:var(--text3);}
   /* «¿Reiniciar o borrar?»: plegado bajo la nota de «Reiniciar valoración» */
   .session-ayuda{margin-top:6px;font-size:0.72rem;line-height:1.45;color:var(--text3);}

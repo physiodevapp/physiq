@@ -4638,7 +4638,7 @@ function _showSessionState(st) {
       <div class="session-io-nota">Valoración completa en un archivo .json, con los datos clínicos y el nombre del paciente.${state.maxVisitedIdx > 0 ? '' : ' Se puede exportar a partir de la fase 2.'}</div>
       <!-- Hojas impresas (docs/esquemas): la página «Hojas para imprimir» de la guía, con la versión
            y el PDF de cada una (decisión del usuario, 2026-10: la app no enlazaba la guía) -->
-      <div class="session-io"><a class="session-io-btn session-hojas" id="sessionHojas" href="./guia.html#hojas" target="_blank" rel="noopener">Hojas para imprimir ↗</a></div>
+      <div class="session-io"><a class="session-io-btn session-hojas" id="sessionHojas" href="./guia.html#hojas" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>Hojas para imprimir ↗</a></div>
       <div class="session-io-nota">Esquemas en papel de cada región y hojas de consulta, con su versión y su PDF; su QR abre la guía de consulta.</div>
       <div class="session-version" id="sessionVersion">${_versionPanelHTML()}</div>`;
     panel.querySelector('#sessionReset').onclick = resetApp;
