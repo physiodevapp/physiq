@@ -2,6 +2,7 @@
 // PhysiQ-Assessment · APP.js
 // Lógica principal de la aplicación
 // ============================================================
+import { THEME_UI, getThemePref, aplicarTema, guardarTema, seguirSistema, aplicarLetra, cambiarLetra } from './lib/apariencia.js';
 import { state } from './state.js';
 import { SYSTEMIC_SCREENING, HYPOTHESES, DOSIS_DERIVAR, TIEMPOS_TEJIDO, ZONAS_SINTOMA, CUESTIONARIOS, GRUPOS_CUESTIONARIO, PHASE_DEFS, PHASE_NAV_IDS, NRS_LABELS, NRS_CLASSES, QUICK_PHRASES } from './data.js';
 import { initCIFTree, getDerivacionesArbol } from './phase4.js';
@@ -6422,85 +6423,20 @@ comprobarVersion();
 // state (_historyDepth, _pendingBackNav, _closeAllOverlays) directly instead
 // of needing them exposed on window.
 // ─── THEME ───────────────────────────────────────────────────
-// Choice ('system'|'light'|'dark') lives in localStorage — a per-device UI
-// preference, not clinical data, and it must be readable synchronously by the
-// head script in index.html before first paint (IDB is async, and its session
-// record expires after 24h). In the hub the app is always dark and the
-// theme button is hidden (.in-hub .theme-btn), so the shared origin's stored
-// choice never leaks into the embedded copy.
-const THEME_KEY = 'physiq-assessment-theme';
-const _themeMQ = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
-
-function getThemePref() {
-  try { const p = localStorage.getItem(THEME_KEY); if (p === 'light' || p === 'dark') return p; } catch (e) {}
-  return 'system';
-}
-
-function applyTheme() {
-  const pref = getThemePref();
-  const inHub = window.self !== window.top;
-  const resolved = inHub ? 'dark' : pref === 'system' ? (_themeMQ?.matches ? 'light' : 'dark') : pref;
-  document.documentElement?.setAttribute('data-theme', resolved);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', resolved === 'light' ? '#ffffff' : '#0a0d12');
-  const btn = document.getElementById('themeBtn');
-  if (btn) {
-    const ui = THEME_UI[pref];
-    btn.innerHTML = ui.icon;
-    const txt = `Apariencia: ${ui.label}. Pulsa para cambiar a ${THEME_UI[ui.next].label}`;
-    btn.title = txt; btn.setAttribute('aria-label', txt);
-  }
-}
-
-const _SVG = d => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
-const THEME_UI = {
-  system: { next: 'light', label: 'Sistema', icon: _SVG('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>') },
-  light:  { next: 'dark',  label: 'Claro',   icon: _SVG('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>') },
-  dark:   { next: 'system', label: 'Oscuro', icon: _SVG('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>') },
-};
-
-// Header button: one tap cycles Sistema → Claro → Oscuro; its icon shows the current choice.
-function cycleThemePref() {
-  setThemePref(THEME_UI[getThemePref()].next);
-}
-
-function setThemePref(pref) {
-  try {
-    if (pref === 'system') localStorage.removeItem(THEME_KEY);
-    else localStorage.setItem(THEME_KEY, pref);
-  } catch (e) {}
-  applyTheme();
-}
-
-_themeMQ?.addEventListener?.('change', applyTheme);
+// Tema y tamaño de letra: lib/apariencia.js, compartido con la guía de consulta
+// (misma preferencia guardada). En el hub la app va siempre en oscuro y el botón
+// de tema se oculta (.in-hub .theme-btn), así que la elección guardada en el
+// mismo origen nunca llega a la copia embebida.
+function applyTheme() { aplicarTema({ forzarOscuro: window.self !== window.top }); }
+// Botón de la cabecera: cada toque pasa Sistema → Claro → Oscuro; el icono muestra la elección.
+function cycleThemePref() { setThemePref(THEME_UI[getThemePref()].next); }
+function setThemePref(pref) { guardarTema(pref); applyTheme(); }
+seguirSistema(applyTheme);
 applyTheme();
 
-// Tamaño de letra (decisión del usuario, 2026-10): Normal o Grande (+12,5 %),
-// preferencia del dispositivo en localStorage como el tema. Casi todos los
-// tamaños están en rem, así que basta con el del elemento raíz
-// (html[data-letra="grande"], styles.css); el script del <head> lo aplica antes
-// de pintar. También en el hub (no depende del tema).
-const LETRA_KEY = 'physiq-assessment-letra';
-function getLetra() {
-  try { return localStorage.getItem(LETRA_KEY) === 'grande' ? 'grande' : 'normal'; } catch (e) { return 'normal'; }
-}
-function applyLetra() {
-  const grande = getLetra() === 'grande';
-  if (grande) document.documentElement?.setAttribute('data-letra', 'grande');
-  else document.documentElement?.removeAttribute('data-letra');
-  const btn = document.getElementById('letraBtn');
-  if (btn) {
-    const txt = grande ? 'Letra grande. Pulsa para volver al tamaño normal' : 'Letra normal. Pulsa para agrandarla';
-    btn.title = txt; btn.setAttribute('aria-label', txt);
-    btn.setAttribute('aria-pressed', String(grande));
-  }
-}
-function alternarLetra() {
-  try {
-    if (getLetra() === 'grande') localStorage.removeItem(LETRA_KEY);
-    else localStorage.setItem(LETRA_KEY, 'grande');
-  } catch (e) {}
-  applyLetra();
-}
+// Tamaño de letra (decisión del usuario, 2026-10): Normal o Grande (+12,5 %). También en el hub.
+function applyLetra() { aplicarLetra(); }
+function alternarLetra() { cambiarLetra(); }
 applyLetra();
 
 function _initHubIntegration() {

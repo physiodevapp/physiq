@@ -45,7 +45,12 @@
   .guia-region-menu a[aria-current="true"]::after { content: '✓'; }
   @media (hover: hover) { .guia-region-menu a:hover { background: var(--surface2); } }
   .guia-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .guia-marca { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); }
+  .guia-marca { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  /* Tema y letra, como en la cabecera de la app (misma preferencia guardada: lib/apariencia.js) */
+  .guia-nowrap { white-space: nowrap; }
+  .guia-apariencia { display: flex; gap: 2px; margin-right: -6px; }
+  .guia-apariencia .session-btn { min-width: 40px; min-height: 40px; text-transform: none; letter-spacing: 0; }
+  @media print { .guia-apariencia { display: none; } }
   .guia-intro { font-size: 0.82rem; color: var(--text2); margin-bottom: 12px; line-height: 1.5; }
   .guia-nav { position: sticky; top: 0; z-index: 20; background: var(--bg); margin: 0 -1rem 14px; padding: 8px 1rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-bottom: 1px solid var(--border); }
   .guia-hojas { display: flex; gap: 6px; flex: 1 1 auto; }
@@ -153,7 +158,7 @@
 </head>
 <body>
 <main class="guia" id="guia">
-  <div class="guia-marca">Guía de consulta · PhysiQ-Assessment</div>
+  <div class="guia-marca"><span>Guía de consulta · <span class="guia-nowrap">PhysiQ-Assessment</span></span><span class="guia-apariencia"><button id="themeBtn" class="session-btn theme-btn" type="button"></button><button id="letraBtn" class="session-btn letra-btn" type="button" aria-pressed="false"><span class="letra-a-peq" aria-hidden="true">A</span><span class="letra-a-gr" aria-hidden="true">A</span></button></span></div>
   <div class="guia-region"><h1><button type="button" class="guia-region-btn" id="guiaRegion" aria-haspopup="true" aria-expanded="false" aria-controls="guiaRegionMenu"><span class="guia-vh">Región: </span><span id="guiaRegionNombre"></span></button></h1><ul class="guia-region-menu" id="guiaRegionMenu" hidden></ul></div>
   <h1 class="guia-titulo" id="guiaTitulo"></h1>
   <p class="guia-intro">El porqué de cada pregunta, paso y test de los esquemas impresos, con sus fuentes. Es la misma información que la app; esta página no pide ni guarda datos del paciente.</p>

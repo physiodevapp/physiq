@@ -20,6 +20,7 @@ import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
 import { alternarFicha, cerrarFicha } from './ficha.js';
 import { nombreRegion, dolorInespecifico } from './lib/region.js';
 import { textoVersion } from './lib/version.js';
+import { THEME_UI, getThemePref, aplicarTema, guardarTema, seguirSistema, aplicarLetra, cambiarLetra } from './lib/apariencia.js';
 
 const REGIONES = Object.keys(CIF_TREES);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -517,7 +518,16 @@ function pintar({ sinScroll = false } = {}) {
   } else window.scrollTo(0, 0);
 }
 
+// Tema y tamaño de letra: los mismos botones y la misma preferencia que la app
+// (lib/apariencia.js). Es lo único que la guía guarda, y no es nada del paciente.
+function iniciarApariencia() {
+  aplicarTema(); aplicarLetra(); seguirSistema(aplicarTema);
+  document.getElementById('themeBtn').addEventListener('click', () => { guardarTema(THEME_UI[getThemePref()].next); aplicarTema(); });
+  document.getElementById('letraBtn').addEventListener('click', () => { cambiarLetra(); });
+}
+
 async function iniciar() {
+  iniciarApariencia();
   const btn = document.getElementById('guiaRegion'), menu = document.getElementById('guiaRegionMenu');
   btn.addEventListener('click', () => menuRegion());
   // Elegir una región es seguir su enlace: el menú se cierra y vuelve el foco al título
