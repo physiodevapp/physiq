@@ -91,7 +91,7 @@ export function datosHojaTejido(datos, hoja) {
 }
 
 // Cuadernos de consulta para imprimir a doble cara (docs/esquemas/cuaderno-*.pdf; decisión del usuario, 2026-10):
-// uno completo y uno por región. Cada sección empieza en página impar (generar.mjs añade páginas
+// uno completo y uno por región. Cada hoja empieza en página impar (generar.mjs añade páginas
 // en blanco). La hoja del paciente y los árboles A3 no entran: se imprimen aparte.
 export const HOJAS_GENERALES = ['condiciones', 'irritabilidad', 'farmacos', 'tejidos-blandos', 'tejidos-hueso'];
 const hojasRegion = r => [`cribado-${r}`, `arbol-a4-${r}`, `confirmacion-${r}`];

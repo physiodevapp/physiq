@@ -1,9 +1,9 @@
 {
   "cuaderno-cadera": {
     "huella": "db97fcdc",
-    "archivo": "7743ebbb",
+    "archivo": "b7e8aadb",
     "fecha": "2026-10-30",
-    "paginas": 14,
+    "paginas": 18,
     "hojas": {
       "cribado-cadera": "edc69c8d",
       "arbol-a4-cadera": "59cfb6ca",
@@ -17,9 +17,9 @@
   },
   "cuaderno-cervical": {
     "huella": "a25b3358",
-    "archivo": "bba58b4c",
+    "archivo": "ee2af430",
     "fecha": "2026-10-30",
-    "paginas": 14,
+    "paginas": 18,
     "hojas": {
       "cribado-cervical": "ba1808b4",
       "arbol-a4-cervical": "0739a9f6",
@@ -33,9 +33,9 @@
   },
   "cuaderno-codo": {
     "huella": "f0c44b6b",
-    "archivo": "794a2d28",
+    "archivo": "b0ce7f6a",
     "fecha": "2026-10-30",
-    "paginas": 14,
+    "paginas": 18,
     "hojas": {
       "cribado-codo": "8f66675c",
       "arbol-a4-codo": "93e54d54",
@@ -49,9 +49,9 @@
   },
   "cuaderno-completo": {
     "huella": "4ff519a8",
-    "archivo": "f158e828",
+    "archivo": "fef9e574",
     "fecha": "2026-10-30",
-    "paginas": 46,
+    "paginas": 54,
     "hojas": {
       "condiciones": "b23c556d",
       "irritabilidad": "aa80b592",
@@ -83,9 +83,9 @@
   },
   "cuaderno-hombro": {
     "huella": "7042b46c",
-    "archivo": "fc3644e5",
+    "archivo": "4fff5c50",
     "fecha": "2026-10-30",
-    "paginas": 12,
+    "paginas": 18,
     "hojas": {
       "cribado-hombro": "4e964638",
       "arbol-a4-hombro": "be450a25",
@@ -99,9 +99,9 @@
   },
   "cuaderno-lumbar": {
     "huella": "f483e7bb",
-    "archivo": "fa35f797",
+    "archivo": "4ed1ccca",
     "fecha": "2026-10-30",
-    "paginas": 12,
+    "paginas": 18,
     "hojas": {
       "cribado-lumbar": "b04dbbcc",
       "arbol-a4-lumbar": "c3105ed6",
@@ -115,9 +115,9 @@
   },
   "cuaderno-rodilla": {
     "huella": "ac9d1fb7",
-    "archivo": "45bfb00b",
+    "archivo": "9bd29fdc",
     "fecha": "2026-10-30",
-    "paginas": 14,
+    "paginas": 18,
     "hojas": {
       "cribado-rodilla": "46c52533",
       "arbol-a4-rodilla": "c2e22c0d",
@@ -131,9 +131,9 @@
   },
   "cuaderno-tobillo_pie": {
     "huella": "f2a5ee7f",
-    "archivo": "a79fcde2",
+    "archivo": "95762264",
     "fecha": "2026-10-30",
-    "paginas": 14,
+    "paginas": 18,
     "hojas": {
       "cribado-tobillo_pie": "7cdd285a",
       "arbol-a4-tobillo_pie": "7e986bbe",
