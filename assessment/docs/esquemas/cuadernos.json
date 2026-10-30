@@ -1,7 +1,7 @@
 {
   "cuaderno-cadera": {
     "huella": "db97fcdc",
-    "archivo": "b7e8aadb",
+    "archivo": "d9a25a48",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
@@ -13,11 +13,23 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04"
-    }
+    },
+    "inicio": {
+      "cribado-cadera": 3,
+      "arbol-a4-cadera": 5,
+      "confirmacion-cadera": 7,
+      "condiciones": 9,
+      "irritabilidad": 11,
+      "farmacos": 13,
+      "tejidos-blandos": 15,
+      "tejidos-hueso": 17
+    },
+    "paginasFecha": "2026-10-30",
+    "paginasPor": []
   },
   "cuaderno-cervical": {
     "huella": "a25b3358",
-    "archivo": "ee2af430",
+    "archivo": "ef8dfd44",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
@@ -29,11 +41,23 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04"
-    }
+    },
+    "inicio": {
+      "cribado-cervical": 3,
+      "arbol-a4-cervical": 5,
+      "confirmacion-cervical": 7,
+      "condiciones": 9,
+      "irritabilidad": 11,
+      "farmacos": 13,
+      "tejidos-blandos": 15,
+      "tejidos-hueso": 17
+    },
+    "paginasFecha": "2026-10-30",
+    "paginasPor": []
   },
   "cuaderno-codo": {
     "huella": "f0c44b6b",
-    "archivo": "b0ce7f6a",
+    "archivo": "78017623",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
@@ -45,11 +69,23 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04"
-    }
+    },
+    "inicio": {
+      "cribado-codo": 3,
+      "arbol-a4-codo": 5,
+      "confirmacion-codo": 7,
+      "condiciones": 9,
+      "irritabilidad": 11,
+      "farmacos": 13,
+      "tejidos-blandos": 15,
+      "tejidos-hueso": 17
+    },
+    "paginasFecha": "2026-10-30",
+    "paginasPor": []
   },
   "cuaderno-completo": {
     "huella": "4ff519a8",
-    "archivo": "fef9e574",
+    "archivo": "846594e1",
     "fecha": "2026-10-30",
     "paginas": 54,
     "hojas": {
@@ -79,11 +115,41 @@
       "cribado-tobillo_pie": "7cdd285a",
       "arbol-a4-tobillo_pie": "7e986bbe",
       "confirmacion-tobillo_pie": "6f1c5457"
-    }
+    },
+    "inicio": {
+      "condiciones": 3,
+      "irritabilidad": 5,
+      "farmacos": 7,
+      "tejidos-blandos": 9,
+      "tejidos-hueso": 11,
+      "cribado-hombro": 13,
+      "arbol-a4-hombro": 15,
+      "confirmacion-hombro": 17,
+      "cribado-cadera": 19,
+      "arbol-a4-cadera": 21,
+      "confirmacion-cadera": 23,
+      "cribado-cervical": 25,
+      "arbol-a4-cervical": 27,
+      "confirmacion-cervical": 29,
+      "cribado-lumbar": 31,
+      "arbol-a4-lumbar": 33,
+      "confirmacion-lumbar": 35,
+      "cribado-rodilla": 37,
+      "arbol-a4-rodilla": 39,
+      "confirmacion-rodilla": 41,
+      "cribado-codo": 43,
+      "arbol-a4-codo": 45,
+      "confirmacion-codo": 47,
+      "cribado-tobillo_pie": 49,
+      "arbol-a4-tobillo_pie": 51,
+      "confirmacion-tobillo_pie": 53
+    },
+    "paginasFecha": "2026-10-30",
+    "paginasPor": []
   },
   "cuaderno-hombro": {
     "huella": "7042b46c",
-    "archivo": "4fff5c50",
+    "archivo": "a6988fe3",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
@@ -95,11 +161,23 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04"
-    }
+    },
+    "inicio": {
+      "cribado-hombro": 3,
+      "arbol-a4-hombro": 5,
+      "confirmacion-hombro": 7,
+      "condiciones": 9,
+      "irritabilidad": 11,
+      "farmacos": 13,
+      "tejidos-blandos": 15,
+      "tejidos-hueso": 17
+    },
+    "paginasFecha": "2026-10-30",
+    "paginasPor": []
   },
   "cuaderno-lumbar": {
     "huella": "f483e7bb",
-    "archivo": "4ed1ccca",
+    "archivo": "3f122788",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
@@ -111,11 +189,23 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04"
-    }
+    },
+    "inicio": {
+      "cribado-lumbar": 3,
+      "arbol-a4-lumbar": 5,
+      "confirmacion-lumbar": 7,
+      "condiciones": 9,
+      "irritabilidad": 11,
+      "farmacos": 13,
+      "tejidos-blandos": 15,
+      "tejidos-hueso": 17
+    },
+    "paginasFecha": "2026-10-30",
+    "paginasPor": []
   },
   "cuaderno-rodilla": {
     "huella": "ac9d1fb7",
-    "archivo": "9bd29fdc",
+    "archivo": "495bbe89",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
@@ -127,11 +217,23 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04"
-    }
+    },
+    "inicio": {
+      "cribado-rodilla": 3,
+      "arbol-a4-rodilla": 5,
+      "confirmacion-rodilla": 7,
+      "condiciones": 9,
+      "irritabilidad": 11,
+      "farmacos": 13,
+      "tejidos-blandos": 15,
+      "tejidos-hueso": 17
+    },
+    "paginasFecha": "2026-10-30",
+    "paginasPor": []
   },
   "cuaderno-tobillo_pie": {
     "huella": "f2a5ee7f",
-    "archivo": "95762264",
+    "archivo": "d603209e",
     "fecha": "2026-10-30",
     "paginas": 18,
     "hojas": {
@@ -143,6 +245,18 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04"
-    }
+    },
+    "inicio": {
+      "cribado-tobillo_pie": 3,
+      "arbol-a4-tobillo_pie": 5,
+      "confirmacion-tobillo_pie": 7,
+      "condiciones": 9,
+      "irritabilidad": 11,
+      "farmacos": 13,
+      "tejidos-blandos": 15,
+      "tejidos-hueso": 17
+    },
+    "paginasFecha": "2026-10-30",
+    "paginasPor": []
   }
 }
