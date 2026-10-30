@@ -98,8 +98,8 @@ const hojasRegion = r => [`cribado-${r}`, `arbol-a4-${r}`, `confirmacion-${r}`];
 export function definicionCuadernos(regiones, nombreRegion) {
   const generales = { titulo: 'Hojas generales', hojas: HOJAS_GENERALES };
   return [
-    { clave: 'cuaderno-completo', titulo: 'Cuaderno de consulta completo', secciones: [generales, ...regiones.map(r => ({ titulo: nombreRegion(r), hojas: hojasRegion(r) }))] },
-    ...regiones.map(r => ({ clave: `cuaderno-${r}`, titulo: `Cuaderno de consulta · ${nombreRegion(r)}`, secciones: [{ titulo: nombreRegion(r), hojas: hojasRegion(r) }, generales] })),
+    { clave: 'cuaderno-completo', titulo: 'Cuaderno de consulta completo', portada: { titulo: 'Todas las regiones', subtitulo: `Cribado, árbol de decisión y confirmación de las ${regiones.length} regiones · hojas generales` }, secciones: [generales, ...regiones.map(r => ({ titulo: nombreRegion(r), hojas: hojasRegion(r) }))] },
+    ...regiones.map(r => ({ clave: `cuaderno-${r}`, titulo: `Cuaderno de consulta · ${nombreRegion(r)}`, portada: { titulo: nombreRegion(r), subtitulo: 'Cribado, árbol de decisión y confirmación · hojas generales' }, secciones: [{ titulo: nombreRegion(r), hojas: hojasRegion(r) }, generales] })),
   ];
 }
 // Nombre legible de una hoja impresa por su clave (la del archivo)
