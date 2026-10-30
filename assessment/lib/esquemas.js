@@ -93,7 +93,7 @@ export function datosHojaTejido(datos, hoja) {
 // Cuadernos de consulta para imprimir a doble cara (docs/esquemas/cuaderno-*.pdf; decisión del usuario, 2026-10):
 // uno completo y uno por región. Cada hoja empieza en página impar (generar.mjs añade páginas
 // en blanco). La hoja del paciente y los árboles A3 no entran: se imprimen aparte.
-export const HOJAS_GENERALES = ['condiciones', 'irritabilidad', 'farmacos', 'tejidos-blandos', 'tejidos-hueso'];
+export const HOJAS_GENERALES = ['fase1', 'condiciones', 'irritabilidad', 'farmacos', 'tejidos-blandos', 'tejidos-hueso'];
 const hojasRegion = r => [`cribado-${r}`, `arbol-a4-${r}`, `confirmacion-${r}`];
 export function definicionCuadernos(regiones, nombreRegion) {
   const generales = { titulo: 'Hojas generales', hojas: HOJAS_GENERALES };
@@ -103,7 +103,7 @@ export function definicionCuadernos(regiones, nombreRegion) {
   ];
 }
 // Nombre legible de una hoja impresa por su clave (la del archivo)
-const NOMBRES_HOJA = { condiciones: 'Condiciones especiales', irritabilidad: 'Irritabilidad (fase 3)', farmacos: 'Fármacos: qué vigilar en el plan', 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios (para el paciente)' };
+const NOMBRES_HOJA = { fase1: 'Fase 1: banderas rojas y riesgo psicosocial', condiciones: 'Condiciones especiales', irritabilidad: 'Irritabilidad (fase 3)', farmacos: 'Fármacos: qué vigilar en el plan', 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios (para el paciente)' };
 export function nombreHojaImpresa(clave, nombreRegion) {
   if (NOMBRES_HOJA[clave]) return NOMBRES_HOJA[clave];
   const t = clave.match(/^tejidos-(.+)$/);
@@ -111,4 +111,17 @@ export function nombreHojaImpresa(clave, nombreRegion) {
   const m = clave.match(/^(cribado|arbol-a4|confirmacion)-(.+)$/);
   if (m) return `${{ cribado: 'Cribado (fase 2)', 'arbol-a4': 'Árbol de decisión (fase 4)', confirmacion: 'Confirmación (fase 4b)' }[m[1]]} · ${nombreRegion(m[2])}`;
   return clave;
+}
+
+// Número de una hipótesis para pintarlo en una hoja o en la guía: en data/ es un carácter
+// rodeado (①…㊿); dentro del círculo de la hoja quedaba un círculo dentro de otro, ilegible
+// a partir del 10. Se pinta la cifra sola. Lo que no es un número rodeado pasa tal cual.
+export function numeroHipotesis(num) {
+  const c = String(num ?? '').trim();
+  if (c.length !== 1) return c;
+  const p = c.codePointAt(0);
+  if (p >= 0x2460 && p <= 0x2473) return String(p - 0x2460 + 1);    // ①–⑳
+  if (p >= 0x3251 && p <= 0x325F) return String(p - 0x3251 + 21);   // ㉑–㉟
+  if (p >= 0x32B1 && p <= 0x32BF) return String(p - 0x32B1 + 36);   // ㊱–㊿
+  return c;
 }

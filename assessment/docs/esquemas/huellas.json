@@ -28,63 +28,63 @@
     "fecha": "2026-10-30"
   },
   "condiciones": {
-    "huella": "d3072a65",
+    "huella": "346305db",
     "fecha": "2026-10-30"
   },
   "confirmacion-cadera": {
-    "huella": "91e1cab5",
-    "fecha": "2026-10-29"
+    "huella": "b5e39370",
+    "fecha": "2026-10-30"
   },
   "confirmacion-cervical": {
-    "huella": "42d3403d",
-    "fecha": "2026-10-29"
+    "huella": "d78b75c6",
+    "fecha": "2026-10-30"
   },
   "confirmacion-codo": {
-    "huella": "960641ca",
-    "fecha": "2026-10-29"
+    "huella": "9003c0b7",
+    "fecha": "2026-10-30"
   },
   "confirmacion-hombro": {
-    "huella": "9634c407",
-    "fecha": "2026-10-29"
+    "huella": "65907534",
+    "fecha": "2026-10-30"
   },
   "confirmacion-lumbar": {
-    "huella": "3decc75a",
-    "fecha": "2026-10-29"
+    "huella": "09bc5a9f",
+    "fecha": "2026-10-30"
   },
   "confirmacion-rodilla": {
-    "huella": "0ea9315f",
-    "fecha": "2026-10-29"
+    "huella": "1fbd84bf",
+    "fecha": "2026-10-30"
   },
   "confirmacion-tobillo_pie": {
-    "huella": "6f1c5457",
-    "fecha": "2026-10-29"
+    "huella": "a73cd1f9",
+    "fecha": "2026-10-30"
   },
   "cribado-cadera": {
-    "huella": "c1ee48e3",
+    "huella": "aa049e20",
     "fecha": "2026-10-30"
   },
   "cribado-cervical": {
-    "huella": "4532fad2",
+    "huella": "04fa40b1",
     "fecha": "2026-10-30"
   },
   "cribado-codo": {
-    "huella": "cd89989a",
+    "huella": "0af35495",
     "fecha": "2026-10-30"
   },
   "cribado-hombro": {
-    "huella": "66819ebe",
+    "huella": "920f3483",
     "fecha": "2026-10-30"
   },
   "cribado-lumbar": {
-    "huella": "d512fa6a",
+    "huella": "9a4c310d",
     "fecha": "2026-10-30"
   },
   "cribado-rodilla": {
-    "huella": "ea49ea6d",
+    "huella": "f89cdbb0",
     "fecha": "2026-10-30"
   },
   "cribado-tobillo_pie": {
-    "huella": "be610844",
+    "huella": "ce06634b",
     "fecha": "2026-10-30"
   },
   "ejercicio-paciente": {
@@ -94,6 +94,10 @@
   "farmacos": {
     "huella": "2e233f87",
     "fecha": "2026-10-29"
+  },
+  "fase1": {
+    "huella": "731923f5",
+    "fecha": "2026-10-30"
   },
   "irritabilidad": {
     "huella": "aa80b592",

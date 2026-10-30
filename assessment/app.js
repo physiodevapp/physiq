@@ -45,6 +45,7 @@ import { AC, anticoaguladoVacio, normalizarAnticoagulado, acActivo, elementoACVi
   pendientesAC, acPayload, datosAC, lineasRecomendacionAC } from './lib/anticoagulado.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
+import { BANDERAS_FASE1, TEXTOS_FASE1, PREGUNTAS_PSICO } from './data/fase1.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
 import { pintarSintomas } from './sintomas.js';
 import { condicionesHTML, avisoCambioRegion } from './lib/condiciones.js';
@@ -1150,20 +1151,18 @@ function selectPsico(btn, value) {
 // recomendación lumbar: su versión de España (Gusi 2011) es solo una
 // traducción. El Örebro de 21 ítems sí (Cuesta-Vargas 2014); su forma corta
 // de 10 ítems no tiene versión española. Ver docs/cuestionarios.md.
-const TEXTO_HERRAMIENTA_PSICO = 'Herramienta recomendada: <strong>Örebro (OMPSQ, 21 ítems)</strong> — validada en castellano de España para dolor musculoesquelético de cualquier región (Cuesta-Vargas 2014).';
+const TEXTO_HERRAMIENTA_PSICO = TEXTOS_FASE1.herramienta;   // data/fase1.js
 const _herramientaPsicoHTML = () => TEXTO_HERRAMIENTA_PSICO + enlacesCalcular(TEXTO_HERRAMIENTA_PSICO);
 
 function updatePsicoRecomendacion() {
   const rec = document.getElementById('psicoRecomendacion');
   const { psico_miedo, psico_autoef, psico_emocional } = state;
-  const tools = [];
-  if (psico_miedo === 'Sí' || psico_miedo === 'Dudoso') tools.push('FABQ (Cuestionario de Creencias de Miedo-Evitación), TSK-11 (Escala de Kinesiofobia de Tampa), PCS (Escala de Catastrofización del Dolor)');
-  if (psico_autoef === 'Sí' || psico_autoef === 'Dudoso') tools.push('CADC (Cuestionario de Autoeficacia en Dolor Crónico)');
-  if (psico_emocional === 'Sí' || psico_emocional === 'Dudoso') tools.push('PHQ-2 → PHQ-9 (Cuestionario de Salud del Paciente)');
+  const resp = { psico_miedo, psico_autoef, psico_emocional };
+  const tools = PREGUNTAS_PSICO.filter(p => resp[p.id] === 'Sí' || resp[p.id] === 'Dudoso').map(p => p.cuestionarios);
 
   if (tools.length > 0) {
     rec.style.display = 'block';
-    rec.innerHTML = `<strong>Cuestionarios unidimensionales sugeridos:</strong>${tools.map(t => `<div class="psico-herr">${t}${enlacesCalcular(t)}</div>`).join('')}`;
+    rec.innerHTML = `<strong>${TEXTOS_FASE1.sugeridos}</strong>${tools.map(t => `<div class="psico-herr">${t}${enlacesCalcular(t)}</div>`).join('')}`;
   } else {
     rec.style.display = 'none';
   }
@@ -3973,12 +3972,7 @@ function collectPhase3() {
 
 // ─── PHASE 5 — RESULTS ───────────────────────────────────────
 
-const BR_LABELS = {
-  br1: 'Sudor nocturno / Pérdida de peso inexplicada',
-  br2: 'Trauma mayor reciente',
-  br3: 'Déficit neurológico progresivo',
-  br4: 'Dolor no mecánico (no cambia con postura ni movimiento)'
-};
+const BR_LABELS = Object.fromEntries(BANDERAS_FASE1.map(b => [b.id, b.texto]));   // data/fase1.js
 
 function getSistemicoAffirmativeTexts() {
   const affirmativeIds = Object.entries(state.sistemicoAnswers)
