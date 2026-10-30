@@ -457,15 +457,10 @@ function leerRuta() {
 }
 
 // El <select> de la región es el título: tan ancho como el nombre elegido, para que el ▾ vaya pegado
-function anchoRegion() {
+// El nombre de la región que se ve (el <select> transparente lo cubre: ver guia.html)
+function pintarNombreRegion() {
   const sel = document.getElementById('guiaRegion');
-  const m = document.createElement('span');
-  const cs = getComputedStyle(sel);
-  m.style.cssText = `position:absolute;visibility:hidden;white-space:pre;font:${cs.font};letter-spacing:${cs.letterSpacing}`;
-  m.textContent = sel.options[sel.selectedIndex]?.text || '';
-  document.body.appendChild(m);
-  sel.style.width = `calc(${Math.ceil(m.getBoundingClientRect().width)}px + 1.3em + 2px)`;
-  m.remove();
+  document.getElementById('guiaRegionNombre').textContent = sel.options[sel.selectedIndex]?.text || '';
 }
 
 function pintar({ sinScroll = false } = {}) {
@@ -501,7 +496,7 @@ function pintar({ sinScroll = false } = {}) {
     return;
   }
   document.getElementById('guiaRegion').value = region;
-  anchoRegion();
+  pintarNombreRegion();
   document.getElementById('guiaHojas').innerHTML = Object.entries(HOJAS_GUIA)
     .map(([k, n]) => `<a href="#${region}/${k}"${k === hoja ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   document.getElementById('guiaContenido').innerHTML = avisoHojaHTML(claveHoja({ region, hoja })) + PINTAR[hoja](region);
@@ -527,7 +522,6 @@ async function iniciar() {
     if (leerRuta().hojas && !HUELLAS) await cargarHuellas();
     pintar();
   });
-  document.fonts?.ready.then(anchoRegion);   // la fuente del título llega después
   pintar();
   const v = textoVersion();
   document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
