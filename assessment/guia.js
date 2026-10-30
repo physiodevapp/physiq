@@ -457,10 +457,19 @@ function leerRuta() {
 }
 
 // El <select> de la región es el título: tan ancho como el nombre elegido, para que el ▾ vaya pegado
-// El nombre de la región que se ve (el <select> transparente lo cubre: ver guia.html)
+// La región del título y su menú: un enlace por región a la misma hoja (tejidos → cribado)
 function pintarNombreRegion() {
-  const sel = document.getElementById('guiaRegion');
-  document.getElementById('guiaRegionNombre').textContent = sel.options[sel.selectedIndex]?.text || '';
+  const { region, hoja, tejidos } = leerRuta();
+  document.getElementById('guiaRegionNombre').textContent = nombreRegion(region);
+  document.getElementById('guiaRegionMenu').innerHTML = REGIONES.map(r =>
+    `<li><a href="#${r}/${tejidos ? 'cribado' : hoja}"${r === region ? ' aria-current="true"' : ''}>${esc(nombreRegion(r))}</a></li>`).join('');
+}
+function menuRegion(abrir) {
+  const btn = document.getElementById('guiaRegion'), menu = document.getElementById('guiaRegionMenu');
+  if (abrir === undefined) abrir = menu.hidden;
+  menu.hidden = !abrir;
+  btn.setAttribute('aria-expanded', String(abrir));
+  if (abrir) (menu.querySelector('[aria-current]') || menu.querySelector('a'))?.focus();
 }
 
 function pintar({ sinScroll = false } = {}) {
@@ -495,7 +504,6 @@ function pintar({ sinScroll = false } = {}) {
     if (!sinScroll) window.scrollTo(0, 0);
     return;
   }
-  document.getElementById('guiaRegion').value = region;
   pintarNombreRegion();
   document.getElementById('guiaHojas').innerHTML = Object.entries(HOJAS_GUIA)
     .map(([k, n]) => `<a href="#${region}/${k}"${k === hoja ? ' aria-current="page"' : ''}>${n}</a>`).join('');
@@ -510,9 +518,20 @@ function pintar({ sinScroll = false } = {}) {
 }
 
 async function iniciar() {
-  const sel = document.getElementById('guiaRegion');
-  sel.innerHTML = REGIONES.map(r => `<option value="${r}">${nombreRegion(r)}</option>`).join('');
-  sel.addEventListener('change', () => { const r = leerRuta(); location.hash = `${sel.value}/${r.tejidos ? 'cribado' : r.hoja}`; });
+  const btn = document.getElementById('guiaRegion'), menu = document.getElementById('guiaRegionMenu');
+  btn.addEventListener('click', () => menuRegion());
+  // Elegir una región es seguir su enlace: el menú se cierra y vuelve el foco al título
+  menu.addEventListener('click', e => { if (e.target.closest('a')) { menuRegion(false); btn.focus(); } });
+  document.addEventListener('click', e => { if (!menu.hidden && !e.target.closest('.guia-region')) menuRegion(false); });
+  document.addEventListener('keydown', e => {
+    if (menu.hidden) return;
+    if (e.key === 'Escape') { e.stopPropagation(); menuRegion(false); btn.focus(); }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const enlaces = [...menu.querySelectorAll('a')], i = enlaces.indexOf(document.activeElement);
+      enlaces[(i + (e.key === 'ArrowDown' ? 1 : enlaces.length - 1)) % enlaces.length].focus();
+      e.preventDefault();
+    }
+  }, true);
   // Las fuentes se enlazan con el registro; si no carga, se pintan sin enlace
   try { REF = await registroReferencias(); } catch { REF = null; }
   if (HUELLA_PAPEL) HOJA_PAPEL = claveHoja(leerRuta());

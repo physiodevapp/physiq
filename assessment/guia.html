@@ -29,17 +29,21 @@
 <style>
   /* Solo de la guía: el resto (tema, «¿Por qué?», citas, «✨ IA») es styles.css */
   .guia { max-width: 780px; margin: 0 auto; padding: 1rem 1rem 3rem; position: relative; }
-  /* La región es el título: un <select> sin caja, tocable (cambia poco: el QR ya la trae) */
-  .guia-region { margin: 2px 0 4px; }
-  /* El nombre visible es texto; el <select> nativo, transparente, lo cubre entero: el ancho es
-     siempre el del nombre (medir el texto del select fallaba en Android) y el selector del
-     sistema sigue abriéndose al tocar */
-  .guia-region label { position: relative; display: inline-flex; align-items: center; min-height: 44px; border-radius: 8px; cursor: pointer; }
-  .guia-region-nombre { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 1.9rem; line-height: 1.2; padding: 4px 0; }
-  .guia-region label::after { content: '▾'; margin-left: 0.35em; pointer-events: none; color: var(--accent); font-size: 1.2rem; }
-  .guia-region select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 16px; cursor: pointer; border: none; }
-  .guia-region label:has(select:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .guia-region option { font-family: 'Outfit', sans-serif; font-size: 1rem; color: var(--text); background: var(--surface); }
+  /* La región es el título: un botón sin caja que abre su propio menú, con los estilos de la
+     guía (decisión del usuario, 2026-10: el selector del teléfono no seguía el tema). Cada región
+     es un enlace a su #región/hoja, así que elegir es navegar, sin estado aparte */
+  .guia-region { margin: 2px 0 4px; position: relative; }
+  .guia-region-btn { display: inline-flex; align-items: center; gap: 0.35em; min-height: 44px; padding: 4px 0; border: none; background: none; color: var(--text); cursor: pointer; border-radius: 8px; font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 1.9rem; line-height: 1.2; text-align: left; }
+  .guia-region-btn::after { content: '▾'; color: var(--accent); font-size: 1.2rem; font-family: 'Outfit', sans-serif; transition: transform 0.15s; }
+  .guia-region-btn[aria-expanded="true"]::after { transform: rotate(180deg); }
+  .guia-region-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .guia-region-menu { position: absolute; top: 100%; left: 0; z-index: 30; margin: 4px 0 0; padding: 6px; list-style: none; min-width: 240px; max-width: calc(100vw - 2rem); background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; box-shadow: var(--modal-shadow); font-family: 'Outfit', sans-serif; }
+  .guia-region-menu[hidden] { display: none; }
+  .guia-region-menu a { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 8px; color: var(--text); text-decoration: none; font-size: 1rem; }
+  .guia-region-menu a:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .guia-region-menu a[aria-current="true"] { color: var(--accent); font-weight: 600; background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .guia-region-menu a[aria-current="true"]::after { content: '✓'; }
+  @media (hover: hover) { .guia-region-menu a:hover { background: var(--surface2); } }
   .guia-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .guia-marca { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); }
   .guia-intro { font-size: 0.82rem; color: var(--text2); margin-bottom: 12px; line-height: 1.5; }
@@ -51,7 +55,9 @@
   .guia-nota { font-size: 0.78rem; color: var(--text3); margin: -4px 0 10px; }
   .guia-bloque { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
   .guia-bloque.especial { border-color: color-mix(in srgb, #7c4ddb 55%, var(--border)); }
-  .guia-bloque > h3 { font-size: 0.95rem; font-weight: 500; color: var(--text); margin-bottom: 4px; display: flex; gap: 6px; align-items: baseline; }
+  /* Número en línea, no colgado: al saltar de línea el texto vuelve al borde, alineado con
+     las respuestas y «Por qué y más» (decisión del usuario, 2026-10) */
+  .guia-bloque > h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
   .guia-cond { font-size: 0.75rem; color: var(--text3); margin-bottom: 6px; }
   .guia-item { padding: 8px 0; border-top: 1px solid var(--border); scroll-margin-top: 72px; }
   .guia-item:first-of-type { border-top: none; }
@@ -64,7 +70,12 @@
   .guia-chip.der { background: var(--orange); color: #fff; }
   .guia-chip.cuando { background: var(--surface2); color: var(--text2); font-weight: 400; font-style: italic; }
   .guia-crit { font-size: 0.78rem; color: var(--text2); border-top: 1px dashed var(--border2); margin-top: 6px; padding-top: 6px; }
-  .guia-ops { list-style: none; margin: 6px 0 0; display: grid; gap: 6px; }
+  /* Respuestas del paso agrupadas bajo la pregunta con una raya a la izquierda (decisión del
+     usuario, 2026-10): se leen como ramas de la pregunta, no como más texto suyo */
+  .guia-item > h3 { margin-bottom: 10px; }
+  .guia-ops { list-style: none; margin: 0; display: grid; gap: 8px; border-left: 2px solid var(--border2); padding-left: 12px; }
+  /* En Confirmación, el nombre del test destaca sobre su LR, su peso y su criterio */
+  .guia-item[id^="test-"] > .guia-texto { font-weight: 600; }
   .guia-ops li { font-size: 0.85rem; color: var(--text2); line-height: 1.4; }
   .guia-ops b { color: var(--text); font-weight: 500; }
   .guia-hip { color: #8b5cf6; font-weight: 500; }
@@ -141,7 +152,7 @@
 <body>
 <main class="guia" id="guia">
   <div class="guia-marca">Guía de consulta · PhysiQ-Assessment</div>
-  <h1 class="guia-region"><label><span class="guia-vh">Región</span><span class="guia-region-nombre" id="guiaRegionNombre" aria-hidden="true"></span><select id="guiaRegion"></select></label></h1>
+  <div class="guia-region"><h1><button type="button" class="guia-region-btn" id="guiaRegion" aria-haspopup="true" aria-expanded="false" aria-controls="guiaRegionMenu"><span class="guia-vh">Región: </span><span id="guiaRegionNombre"></span></button></h1><ul class="guia-region-menu" id="guiaRegionMenu" hidden></ul></div>
   <h1 class="guia-titulo" id="guiaTitulo"></h1>
   <p class="guia-intro">El porqué de cada pregunta, paso y test de los esquemas impresos, con sus fuentes. Es la misma información que la app; esta página no pide ni guarda datos del paciente.</p>
   <nav class="guia-nav" aria-label="Hoja">
