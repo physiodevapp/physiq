@@ -10,7 +10,7 @@ import { ITEMS_IRRITABILIDAD, CORTES_OTROS, TEXTOS_IRRITABILIDAD } from './data/
 import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad } from './lib/irritabilidad.js';
 import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML } from './lib/tests-4b.js';
 import { resolveOptionTargets } from './lib/arbol.js';
-import { numeroHipotesis, CONDICION_SISTEMA, condicionPregunta, soloDeSistema, preguntasDeRegion, sistemasCribado, etiquetaPaso, HOJAS_GUIA, HOJAS_TEJIDO, datosHojaTejido, definicionCuadernos } from './lib/esquemas.js';
+import { numeroHipotesis, ORDEN_REGIONES, CONDICION_SISTEMA, condicionPregunta, soloDeSistema, preguntasDeRegion, sistemasCribado, etiquetaPaso, HOJAS_GUIA, HOJAS_TEJIDO, datosHojaTejido, definicionCuadernos } from './lib/esquemas.js';
 import { TIEMPOS_TEJIDO } from './data/tejidos.js';
 import { condicionesHTML } from './lib/condiciones.js';
 import { farmacosHTML, textoCima } from './lib/farmacos.js';
@@ -23,7 +23,7 @@ import { textoVersion } from './lib/version.js';
 import { htmlFase1, CALC_SISTEMA, initCalculadoras } from './guia-calc.js';
 import { THEME_UI, getThemePref, aplicarTema, guardarTema, seguirSistema, aplicarLetra, cambiarLetra } from './lib/apariencia.js';
 
-const REGIONES = Object.keys(CIF_TREES);
+const REGIONES = ORDEN_REGIONES;   // anatómico, como los cuadernos (lib/esquemas.js)
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const fmtLR = n => n >= 10 ? n.toFixed(0) : n.toFixed(n < 1 ? 2 : 1);   // como phase4b.js
 let REF = null;

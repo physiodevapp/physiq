@@ -93,6 +93,11 @@ export function datosHojaTejido(datos, hoja) {
 // Cuadernos de consulta para imprimir a doble cara (docs/esquemas/cuaderno-*.pdf; decisión del usuario, 2026-10):
 // uno completo y uno por región. Cada hoja empieza en página impar (generar.mjs añade páginas
 // en blanco). La hoja del paciente y los árboles A3 no entran: se imprimen aparte.
+// Orden de las regiones en el papel y en la guía (cuadernos, menú de región, «Hojas para
+// imprimir»): anatómico, de arriba abajo, columna cervical y miembro superior y luego columna
+// lumbar y miembro inferior, así las regiones que se refieren dolor quedan juntas (decisión del
+// usuario, 2026-10). La app no lo usa. Un test comprueba que tiene las mismas que CIF_TREES.
+export const ORDEN_REGIONES = ['cervical', 'hombro', 'codo', 'lumbar', 'cadera', 'rodilla', 'tobillo_pie'];
 export const HOJAS_GENERALES = ['fase1', 'condiciones', 'irritabilidad', 'farmacos', 'tejidos-blandos', 'tejidos-hueso'];
 const hojasRegion = r => [`cribado-${r}`, `arbol-a4-${r}`, `confirmacion-${r}`];
 export function definicionCuadernos(regiones, nombreRegion) {
