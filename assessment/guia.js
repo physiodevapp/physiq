@@ -445,7 +445,7 @@ function htmlHojas() {
     const reciente = (hoy - new Date(`${d.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(l.titulo)}</b>
       <span>${d.paginas} páginas (${d.paginas / 2} hojas de papel)</span> · <span class="guia-hoja-v">v. ${esc(d.huella)}</span> · <span>cambió el ${esc(fechaLarga(d.fecha))}</span>${d.ordenFecha ? ` · <span>orden de hojas desde el ${esc(fechaLarga(d.ordenFecha))}</span>` : ''}${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
-      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida">La lista u orden de hojas cambió el ${esc(fechaLarga(d.ordenFecha))}: si tu copia es anterior, reimprímelo entero.</span>` : ''}</div>
+      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida">Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero (cambió la lista u orden de hojas). Si es posterior, basta con cambiar las hojas «Reciente» y la portada.</span>` : ''}</div>
       <a href="${urlPDF(l.clave, d.archivo || d.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(l.titulo)} en PDF">PDF ↗</a></li>`;
   }) : [];
   return `<p class="guia-nota">Cada hoja impresa lleva su versión bajo el QR («v. …»). Si no coincide con la de esta lista, la hoja ha cambiado: descarga el PDF y reimprímela. «Reciente» = cambió en los últimos ${DIAS_RECIENTE} días (${recientes} de ${Object.keys(HUELLAS).length}).</p>
