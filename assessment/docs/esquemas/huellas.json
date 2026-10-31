@@ -99,6 +99,38 @@
     "huella": "731923f5",
     "fecha": "2026-10-30"
   },
+  "formulario-cadera": {
+    "huella": "29ae018d",
+    "fecha": "2026-10-31"
+  },
+  "formulario-cervical": {
+    "huella": "55f06d7a",
+    "fecha": "2026-10-31"
+  },
+  "formulario-codo": {
+    "huella": "522f4676",
+    "fecha": "2026-10-31"
+  },
+  "formulario-comun": {
+    "huella": "6628aa5c",
+    "fecha": "2026-10-31"
+  },
+  "formulario-hombro": {
+    "huella": "f6ba5a0d",
+    "fecha": "2026-10-31"
+  },
+  "formulario-lumbar": {
+    "huella": "31e760ec",
+    "fecha": "2026-10-31"
+  },
+  "formulario-rodilla": {
+    "huella": "0aa86671",
+    "fecha": "2026-10-31"
+  },
+  "formulario-tobillo_pie": {
+    "huella": "61d9178f",
+    "fecha": "2026-10-31"
+  },
   "irritabilidad": {
     "huella": "aa80b592",
     "fecha": "2026-10-30"

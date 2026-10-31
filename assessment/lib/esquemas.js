@@ -111,6 +111,8 @@ export function definicionCuadernos(regiones, nombreRegion) {
 const NOMBRES_HOJA = { fase1: 'Fase 1: banderas rojas y riesgo psicosocial', condiciones: 'Condiciones especiales', irritabilidad: 'Irritabilidad (fase 3)', farmacos: 'Fármacos: qué vigilar en el plan', 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios (para el paciente)' };
 export function nombreHojaImpresa(clave, nombreRegion) {
   if (NOMBRES_HOJA[clave]) return NOMBRES_HOJA[clave];
+  const fp = clave.match(/^formulario-(.+)$/);
+  if (fp) return `Formulario del paciente · ${fp[1] === 'comun' ? 'General' : nombreRegion(fp[1])}`;
   const t = clave.match(/^tejidos-(.+)$/);
   if (t) return `Tiempos de recuperación · ${HOJAS_TEJIDO[t[1]]?.titulo || t[1]}`;
   const m = clave.match(/^(cribado|arbol-a4|confirmacion)-(.+)$/);

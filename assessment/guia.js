@@ -368,7 +368,9 @@ function avisoHojaHTML(clave) {
 // huellas.json, así que se mantiene sola. Las que cambiaron hace poco, marcadas.
 const DIAS_RECIENTE = 30;
 // Hojas sin QR (no tienen página en la guía): solo se listan aquí, con su versión y su PDF
-const PARA_PACIENTE = { 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios' };
+// Formulario del paciente en papel: la cara común y la de cada región (en el orden anatómico)
+const PARA_PACIENTE = { 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios', 'formulario-comun': 'Formulario del paciente · General',
+  ...Object.fromEntries(ORDEN_REGIONES.map(r => [`formulario-${r}`, `Formulario del paciente · ${nombreRegion(r)}`])) };
 const NOMBRE_HOJA = { cribado: 'Cribado (fase 2)', 'arbol-a4': 'Árbol de decisión (fase 4)', confirmacion: 'Confirmación (fase 4b)' };
 // Filtro por región (decisión del usuario, 2026-10): deja el cuaderno de esa región, sus tres
 // hojas y las hojas generales. Sin botón «Todas»: un segundo toque en la región activa lo quita,
