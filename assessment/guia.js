@@ -11,6 +11,7 @@ import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad } from './lib/irritabilid
 import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML } from './lib/tests-4b.js';
 import { resolveOptionTargets } from './lib/arbol.js';
 import { cuestionariosEnTexto } from './lib/cuestionarios.js';
+import { htmlPlan, initPlan } from './guia-plan.js';
 import { htmlCuestionarios, despuesCuestionarios, htmlEjercicio, htmlPreguntar, htmlSintomasGuia } from './guia-extra.js';
 import { refsPasoFormulario, textoRefs } from './lib/formulario-numeros.js';
 import FORM_COMUN from './formularios/comun.js';
@@ -470,6 +471,7 @@ const SUELTAS = {
   irritabilidad: { titulo: 'Irritabilidad (fase 3)', html: () => htmlIrritabilidad('', { conTitulo: false }) },
   farmacos: { titulo: 'Fármacos: qué vigilar', html: () => `<div id="farmCuerpo">${farmacosHTML()}</div>${htmlPreguntar('farmacos', { titulo: '¿Otro fármaco o duda? Pregunta a la IA' })}` },
   sintomas: { titulo: 'Síntomas (fase 3)', html: htmlSintomasGuia },
+  plan: { titulo: 'Plan de tratamiento (fase 6)', html: htmlPlan },
   ejercicio: { titulo: 'Efectos del ejercicio', html: htmlEjercicio },
   preguntar: { titulo: 'Preguntar a la IA', html: () => htmlPreguntar() },
   cuestionarios: { titulo: 'Calculadora de cuestionarios', html: htmlCuestionarios, despues: despuesCuestionarios },
@@ -600,8 +602,9 @@ async function iniciar() {
   });
   pintar();
   const v = textoVersion();
-  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
+  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
   initAmpliarIA();
   initCalculadoras(pintar);
+  initPlan(pintar);
 }
 iniciar();
