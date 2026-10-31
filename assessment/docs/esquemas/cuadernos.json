@@ -1,13 +1,13 @@
 {
   "cuaderno-cadera": {
-    "huella": "bb03b215",
-    "archivo": "2c0b1302",
-    "fecha": "2026-10-30",
+    "huella": "d8758dd1",
+    "archivo": "81715100",
+    "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
       "cribado-cadera": "aa049e20",
-      "arbol-a4-cadera": "bcbbfafd",
-      "confirmacion-cadera": "b5e39370",
+      "arbol-a4-cadera": "1232113f",
+      "confirmacion-cadera": "f65463b3",
       "fase1": "731923f5",
       "condiciones": "346305db",
       "irritabilidad": "aa80b592",
@@ -26,18 +26,17 @@
       "tejidos-blandos": 17,
       "tejidos-hueso": 19
     },
-    "paginasFecha": "2026-10-30",
-    "paginasPor": []
+    "ordenFecha": "2026-10-30"
   },
   "cuaderno-cervical": {
-    "huella": "51047359",
-    "archivo": "e3ed75a6",
-    "fecha": "2026-10-30",
+    "huella": "17eef0d4",
+    "archivo": "b10261ff",
+    "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
       "cribado-cervical": "04fa40b1",
-      "arbol-a4-cervical": "3675bc25",
-      "confirmacion-cervical": "d78b75c6",
+      "arbol-a4-cervical": "4b4fa5a3",
+      "confirmacion-cervical": "8c54cc6f",
       "fase1": "731923f5",
       "condiciones": "346305db",
       "irritabilidad": "aa80b592",
@@ -56,18 +55,17 @@
       "tejidos-blandos": 17,
       "tejidos-hueso": 19
     },
-    "paginasFecha": "2026-10-30",
-    "paginasPor": []
+    "ordenFecha": "2026-10-30"
   },
   "cuaderno-codo": {
-    "huella": "a0f78250",
-    "archivo": "edf369dc",
-    "fecha": "2026-10-30",
+    "huella": "2a17129d",
+    "archivo": "65ce9d14",
+    "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
       "cribado-codo": "0af35495",
-      "arbol-a4-codo": "ac805d37",
-      "confirmacion-codo": "9003c0b7",
+      "arbol-a4-codo": "365effdd",
+      "confirmacion-codo": "c90b5dca",
       "fase1": "731923f5",
       "condiciones": "346305db",
       "irritabilidad": "aa80b592",
@@ -86,13 +84,12 @@
       "tejidos-blandos": 17,
       "tejidos-hueso": 19
     },
-    "paginasFecha": "2026-10-30",
-    "paginasPor": []
+    "ordenFecha": "2026-10-30"
   },
   "cuaderno-completo": {
-    "huella": "bf885049",
-    "archivo": "8953797e",
-    "fecha": "2026-10-30",
+    "huella": "631907c9",
+    "archivo": "2c79c02c",
+    "fecha": "2026-10-31",
     "paginas": 56,
     "hojas": {
       "fase1": "731923f5",
@@ -102,26 +99,26 @@
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04",
       "cribado-cervical": "04fa40b1",
-      "arbol-a4-cervical": "3675bc25",
-      "confirmacion-cervical": "d78b75c6",
+      "arbol-a4-cervical": "4b4fa5a3",
+      "confirmacion-cervical": "8c54cc6f",
       "cribado-hombro": "920f3483",
-      "arbol-a4-hombro": "6a46f4dc",
-      "confirmacion-hombro": "65907534",
+      "arbol-a4-hombro": "e18fb4fa",
+      "confirmacion-hombro": "06480c7b",
       "cribado-codo": "0af35495",
-      "arbol-a4-codo": "ac805d37",
-      "confirmacion-codo": "9003c0b7",
+      "arbol-a4-codo": "365effdd",
+      "confirmacion-codo": "c90b5dca",
       "cribado-lumbar": "9a4c310d",
-      "arbol-a4-lumbar": "38bae69b",
-      "confirmacion-lumbar": "09bc5a9f",
+      "arbol-a4-lumbar": "09c687c1",
+      "confirmacion-lumbar": "59ad31c6",
       "cribado-cadera": "aa049e20",
-      "arbol-a4-cadera": "bcbbfafd",
-      "confirmacion-cadera": "b5e39370",
+      "arbol-a4-cadera": "1232113f",
+      "confirmacion-cadera": "f65463b3",
       "cribado-rodilla": "f89cdbb0",
-      "arbol-a4-rodilla": "833e8650",
-      "confirmacion-rodilla": "1fbd84bf",
+      "arbol-a4-rodilla": "f48d782a",
+      "confirmacion-rodilla": "f69b8d44",
       "cribado-tobillo_pie": "ce06634b",
-      "arbol-a4-tobillo_pie": "14039795",
-      "confirmacion-tobillo_pie": "a73cd1f9"
+      "arbol-a4-tobillo_pie": "6c6a41e7",
+      "confirmacion-tobillo_pie": "3041d53a"
     },
     "inicio": {
       "fase1": 3,
@@ -152,18 +149,17 @@
       "arbol-a4-tobillo_pie": 53,
       "confirmacion-tobillo_pie": 55
     },
-    "paginasFecha": "2026-10-31",
-    "paginasPor": []
+    "ordenFecha": "2026-10-31"
   },
   "cuaderno-hombro": {
-    "huella": "2c641670",
-    "archivo": "4c38131d",
-    "fecha": "2026-10-30",
+    "huella": "b9b28e28",
+    "archivo": "7224096d",
+    "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
       "cribado-hombro": "920f3483",
-      "arbol-a4-hombro": "6a46f4dc",
-      "confirmacion-hombro": "65907534",
+      "arbol-a4-hombro": "e18fb4fa",
+      "confirmacion-hombro": "06480c7b",
       "fase1": "731923f5",
       "condiciones": "346305db",
       "irritabilidad": "aa80b592",
@@ -182,18 +178,17 @@
       "tejidos-blandos": 17,
       "tejidos-hueso": 19
     },
-    "paginasFecha": "2026-10-30",
-    "paginasPor": []
+    "ordenFecha": "2026-10-30"
   },
   "cuaderno-lumbar": {
-    "huella": "4b6ca532",
-    "archivo": "d77686a1",
-    "fecha": "2026-10-30",
+    "huella": "ed0130c2",
+    "archivo": "00da1457",
+    "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
       "cribado-lumbar": "9a4c310d",
-      "arbol-a4-lumbar": "38bae69b",
-      "confirmacion-lumbar": "09bc5a9f",
+      "arbol-a4-lumbar": "09c687c1",
+      "confirmacion-lumbar": "59ad31c6",
       "fase1": "731923f5",
       "condiciones": "346305db",
       "irritabilidad": "aa80b592",
@@ -212,18 +207,17 @@
       "tejidos-blandos": 17,
       "tejidos-hueso": 19
     },
-    "paginasFecha": "2026-10-30",
-    "paginasPor": []
+    "ordenFecha": "2026-10-30"
   },
   "cuaderno-rodilla": {
-    "huella": "8f8e3c7d",
-    "archivo": "5b0f2548",
-    "fecha": "2026-10-30",
+    "huella": "5b528439",
+    "archivo": "9d03a373",
+    "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
       "cribado-rodilla": "f89cdbb0",
-      "arbol-a4-rodilla": "833e8650",
-      "confirmacion-rodilla": "1fbd84bf",
+      "arbol-a4-rodilla": "f48d782a",
+      "confirmacion-rodilla": "f69b8d44",
       "fase1": "731923f5",
       "condiciones": "346305db",
       "irritabilidad": "aa80b592",
@@ -242,18 +236,17 @@
       "tejidos-blandos": 17,
       "tejidos-hueso": 19
     },
-    "paginasFecha": "2026-10-30",
-    "paginasPor": []
+    "ordenFecha": "2026-10-30"
   },
   "cuaderno-tobillo_pie": {
-    "huella": "ceaa20d2",
-    "archivo": "2337744c",
-    "fecha": "2026-10-30",
+    "huella": "850fa3b2",
+    "archivo": "7ce15121",
+    "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
       "cribado-tobillo_pie": "ce06634b",
-      "arbol-a4-tobillo_pie": "14039795",
-      "confirmacion-tobillo_pie": "a73cd1f9",
+      "arbol-a4-tobillo_pie": "6c6a41e7",
+      "confirmacion-tobillo_pie": "3041d53a",
       "fase1": "731923f5",
       "condiciones": "346305db",
       "irritabilidad": "aa80b592",
@@ -272,7 +265,6 @@
       "tejidos-blandos": 17,
       "tejidos-hueso": 19
     },
-    "paginasFecha": "2026-10-30",
-    "paginasPor": []
+    "ordenFecha": "2026-10-30"
   }
 }

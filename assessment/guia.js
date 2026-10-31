@@ -370,18 +370,16 @@ const fechaLarga = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('es-ES'
 function htmlHojas() {
   if (!HUELLAS) return '<p class="guia-vacio">No se ha podido cargar la lista de hojas. Prueba a recargar la página.</p>';
   const hoy = Date.now();
-  // Cuadernos cuyas páginas se movieron hace poco (una hoja ocupa otro número de páginas, o se
-  // añadió una): sustituir solo la hoja que cambió dejaría mal las de detrás
+  // Cuadernos cuya lista u orden de hojas cambió hace poco: hay que reimprimirlos enteros. Que una
+  // hoja ocupe más o menos papel no afecta a las demás (cada hoja numera sus páginas por sí misma).
   const recienteFecha = iso => !!iso && (hoy - new Date(`${iso}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
-  const movidas = new Set(Object.values(CUADERNOS || {}).filter(d => recienteFecha(d.paginasFecha)).flatMap(d => d.paginasPor || []));
   const fila = (clave, nombre, de = HUELLAS, ruta = '') => {
     const h = de[clave];
     if (!h) return '';
     const reciente = (hoy - new Date(`${h.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
-    const mueve = de === HUELLAS && movidas.has(clave);
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(nombre)}</b>
       <span class="guia-hoja-v">v. ${esc(h.huella)}</span> · <span>cambió el ${esc(fechaLarga(h.fecha))}</span>${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
-      ${mueve ? '<span class="guia-hoja-movida">Ahora ocupa otro número de páginas: en los cuadernos ya no basta con sustituirla, reimprímelos enteros.</span>' : ''}</div>
+</div>
       <a href="${urlPDF(ruta + clave, h.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(nombre)} en PDF">PDF ↗</a></li>`;
   };
   const grupo = (titulo, filas) => `<section class="guia-bloque"><h3>${esc(titulo)}</h3><ul class="guia-hojas-lista">${filas.join('')}</ul></section>`;
@@ -391,14 +389,14 @@ function htmlHojas() {
     const d = CUADERNOS[l.clave];
     const reciente = (hoy - new Date(`${d.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(l.titulo)}</b>
-      <span>${d.paginas} páginas (${d.paginas / 2} hojas de papel)</span> · <span class="guia-hoja-v">v. ${esc(d.huella)}</span> · <span>cambió el ${esc(fechaLarga(d.fecha))}</span>${d.paginasFecha ? ` · <span>páginas colocadas así desde el ${esc(fechaLarga(d.paginasFecha))}</span>` : ''}${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
-      ${recienteFecha(d.paginasFecha) ? `<span class="guia-hoja-movida">Las páginas se movieron el ${esc(fechaLarga(d.paginasFecha))}: si tu copia es anterior, reimprímelo entero; sustituir una hoja ya no basta.</span>` : ''}</div>
+      <span>${d.paginas} páginas (${d.paginas / 2} hojas de papel)</span> · <span class="guia-hoja-v">v. ${esc(d.huella)}</span> · <span>cambió el ${esc(fechaLarga(d.fecha))}</span>${d.ordenFecha ? ` · <span>orden de hojas desde el ${esc(fechaLarga(d.ordenFecha))}</span>` : ''}${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
+      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida">La lista u orden de hojas cambió el ${esc(fechaLarga(d.ordenFecha))}: si tu copia es anterior, reimprímelo entero.</span>` : ''}</div>
       <a href="${urlPDF(l.clave, d.archivo || d.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(l.titulo)} en PDF">PDF ↗</a></li>`;
   }) : [];
   return `<p class="guia-nota">Cada hoja impresa lleva su versión bajo el QR («v. …»). Si no coincide con la de esta lista, la hoja ha cambiado: descarga el PDF y reimprímela. «Reciente» = cambió en los últimos ${DIAS_RECIENTE} días (${recientes} de ${Object.keys(HUELLAS).length}).</p>
     ${filtroHojasHTML()}
     ${FILTRO_HOJAS ? `<p class="guia-nota guia-hojas-filtrado">${esc(nombreRegion(FILTRO_HOJAS))}: su cuaderno, sus tres hojas y las hojas generales. Toca otra vez la región para verlo todo.</p>` : ''}
-    ${cuadernos.length ? `<section class="guia-bloque"><h3>Cuadernos de consulta para imprimir a doble cara</h3><p class="guia-nota">Todas las hojas de consulta en un PDF, o las de una región con las generales. Cada hoja empieza en página impar, en su propio papel: si una cambia, imprime solo sus páginas del cuaderno nuevo (el índice dice cuáles) y sustitúyela. Si una hoja pasa a ocupar otro número de páginas, las de detrás se mueven: el cuaderno lo avisa en rojo y entonces se reimprime entero (la portada dice desde cuándo están colocadas así). La portada lleva el índice con la versión de cada hoja. La hoja del paciente va aparte.</p><ul class="guia-hojas-lista">${cuadernos.join('')}</ul></section>` : ''}
+    ${cuadernos.length ? `<section class="guia-bloque"><h3>Cuadernos de consulta para imprimir a doble cara</h3><p class="guia-nota">Todas las hojas de consulta en un PDF, o las de una región con las generales. Cada hoja empieza en su propio papel y numera sus páginas por sí misma («Cribado · Lumbar 1/2»): si una cambia, aunque ocupe más o menos papel, imprime solo esa hoja y la portada (lleva el índice con la versión de cada hoja) y sustitúyelas. Solo si cambia la lista u orden de hojas el cuaderno lo avisa en rojo y se reimprime entero. La hoja del paciente va aparte.</p><ul class="guia-hojas-lista">${cuadernos.join('')}</ul></section>` : ''}
     ${REGIONES.filter(r => !FILTRO_HOJAS || r === FILTRO_HOJAS).map(r => grupo(nombreRegion(r), Object.entries(NOMBRE_HOJA).map(([t, n]) => fila(`${t}-${r}`, n)))).join('')}
     ${grupo('Tiempos de recuperación de tejidos', Object.entries(HOJAS_TEJIDO).map(([k, h]) => fila(`tejidos-${k}`, h.titulo)))}
     ${grupo('Otras hojas', Object.entries(SUELTAS).map(([k, h]) => fila(k, h.titulo)))}
