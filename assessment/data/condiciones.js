@@ -42,7 +42,7 @@ export const CONDICIONES = [
       { texto: 'el problema empezó o sigue tras una operación de esta zona.', de: [] },
     ],
     anade: 'la tarjeta «Cirugía» con el protocolo del cirujano, preguntas de complicaciones en la fase 2 (herida, trombosis, embolia…), la hipótesis «Postoperatorio» y el plan supeditado al protocolo.',
-    soloApp: 'la tarjeta «Cirugía» (protocolo del cirujano), la hipótesis «Postoperatorio» y el plan supeditado al protocolo (fase 6).',
+    soloApp: 'el plan supeditado al protocolo (fase 6).',
     destino: { tarjeta: 'cardMecanismo' },
     boton: 'Ir a Mecanismo de inicio →',
     fuentes: [],

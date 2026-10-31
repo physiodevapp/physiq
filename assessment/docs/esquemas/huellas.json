@@ -28,7 +28,7 @@
     "fecha": "2026-10-31"
   },
   "condiciones": {
-    "huella": "7471703e",
+    "huella": "374bd5be",
     "fecha": "2026-10-31"
   },
   "confirmacion-cadera": {
@@ -96,8 +96,8 @@
     "fecha": "2026-10-29"
   },
   "fase1": {
-    "huella": "731923f5",
-    "fecha": "2026-10-30"
+    "huella": "66ee6dde",
+    "fecha": "2026-10-31"
   },
   "formulario-cadera": {
     "huella": "92789e8b",
@@ -134,6 +134,10 @@
   "irritabilidad": {
     "huella": "aa80b592",
     "fecha": "2026-10-30"
+  },
+  "sintomas": {
+    "huella": "ef9a61fd",
+    "fecha": "2026-10-31"
   },
   "tejidos-blandos": {
     "huella": "22d8cd90",

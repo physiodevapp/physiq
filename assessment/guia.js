@@ -5,11 +5,13 @@
 import { SYSTEMIC_SCREENING, CIF_TREES, HYPOTHESES, DOSIS_DERIVAR } from './data.js';
 import { TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
 import { citasHTML, citasEnTexto, registroReferencias, enlaceCita } from './lib/citas.js';
-import { iaParrafoHTML, ctxCribado, ctxArbol, ctxTest, ctxIrritabilidad, ctxPauta, ctxPronostico, DESTINOS_IA, destinoIA, promptPregunta, urlIA, MAX_TEXTO_IA, NOTA_CUENTAS, attrIA, atributosIA, initAmpliarIA } from './ampliar-ia.js';
+import { iaParrafoHTML, ctxCribado, ctxArbol, ctxTest, ctxIrritabilidad, ctxPauta, ctxPronostico, attrIA, atributosIA, initAmpliarIA } from './ampliar-ia.js';
 import { ITEMS_IRRITABILIDAD, CORTES_OTROS, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad } from './lib/irritabilidad.js';
 import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML } from './lib/tests-4b.js';
 import { resolveOptionTargets } from './lib/arbol.js';
+import { cuestionariosEnTexto } from './lib/cuestionarios.js';
+import { htmlCuestionarios, despuesCuestionarios, htmlEjercicio, htmlPreguntar, htmlSintomasGuia } from './guia-extra.js';
 import { refsPasoFormulario, textoRefs } from './lib/formulario-numeros.js';
 import FORM_COMUN from './formularios/comun.js';
 import FORM_CERVICAL from './formularios/cervical.js';
@@ -240,7 +242,7 @@ function htmlConfirmacion(region) {
           ${porQue(ctxTest(region, t.name, h.name), cuerpo)}</div>`;
       }).join('');
       return `<section class="guia-bloque" id="hip-${h.id}"><h3><span class="guia-num">${esc(numeroHipotesis(h.num))}</span>${esc(h.name)}</h3>
-        ${h.prom ? `<p class="guia-prom"><span class="guia-et">Cuestionario recomendado</span> ${esc(h.prom)}</p>` : ''}<div class="guia-puntua" data-puntua="${h.id}">${puntuaHTML(h)}</div>${clusters}${tests}${pautaHipHTML(h, region)}</section>`;
+        ${h.prom ? `<p class="guia-prom"><span class="guia-et">Cuestionario recomendado</span> ${esc(h.prom)}${cuestionariosEnTexto(h.prom, CUESTIONARIOS).map(id => ` <a class="guia-calc-link" href="#cuestionarios/${id}">Calcular ${esc(CUESTIONARIOS.find(d => d.id === id).nombre)} →</a>`).join('')}</p>` : ''}<div class="guia-puntua" data-puntua="${h.id}">${puntuaHTML(h)}</div>${clusters}${tests}${pautaHipHTML(h, region)}</section>`;
     }).join('')}`;
 }
 
@@ -466,48 +468,13 @@ function htmlHojas() {
 const SUELTAS = {
   condiciones: { titulo: 'Condiciones especiales', html: () => condicionesHTML({}, { guia: true }) },
   irritabilidad: { titulo: 'Irritabilidad (fase 3)', html: () => htmlIrritabilidad('', { conTitulo: false }) },
-  farmacos: { titulo: 'Fármacos: qué vigilar', html: () => `<div id="farmCuerpo">${farmacosHTML()}</div>${preguntaFarmacosHTML()}` },
-  fase1: { titulo: 'Fase 1: banderas rojas y riesgo psicosocial', html: htmlFase1 },
+  farmacos: { titulo: 'Fármacos: qué vigilar', html: () => `<div id="farmCuerpo">${farmacosHTML()}</div>${htmlPreguntar('farmacos', { titulo: '¿Otro fármaco o duda? Pregunta a la IA' })}` },
+  sintomas: { titulo: 'Síntomas (fase 3)', html: htmlSintomasGuia },
+  ejercicio: { titulo: 'Efectos del ejercicio', html: htmlEjercicio },
+  preguntar: { titulo: 'Preguntar a la IA', html: () => htmlPreguntar() },
+  cuestionarios: { titulo: 'Calculadora de cuestionarios', html: htmlCuestionarios, despues: despuesCuestionarios },
+  fase1: { titulo: 'Fase 1: inicio, cirugía, banderas rojas y riesgo psicosocial', html: htmlFase1 },
 };
-
-// «¿Otro fármaco o duda?»: el modo «Fármacos» de «✨ Preguntar a la IA» de la app (promptPregunta,
-// mismo guion y destinos), al final de la página de fármacos: completa su hoja con lo que no trae.
-// Solo se envía lo que se escribe; el destino elegido, en memoria (la guía no guarda nada).
-let DESTINO_PREGUNTA = destinoIA();
-function preguntaFarmacosHTML() {
-  const d = DESTINOS_IA[DESTINO_PREGUNTA];
-  return `<section class="guia-bloque guia-pregunta" id="guiaPregunta"><h3>¿Otro fármaco o duda? Pregunta a la IA</h3>
-    <p class="guia-nota">No escribas datos que identifiquen al paciente. Se envía solo lo que escribas, con un guion para fisioterapeutas: dolor e inflamación, síntomas viscerales, ejercicio, sueño y cuándo consultar, sin ajustar nunca la medicación; pide también la ficha técnica de CIMA. PhysiQ no revisa la respuesta.</p>
-    <label class="guia-vh" for="guiaPreguntaTexto">Fármaco o duda</label>
-    <textarea id="guiaPreguntaTexto" class="field-input" rows="3" maxlength="${MAX_TEXTO_IA}" placeholder="Ej.: pregabalina y ejercicio en mayores"></textarea>
-    <div class="option-group guia-destinos" role="group" aria-label="Dónde preguntar">${Object.entries(DESTINOS_IA).map(([k, x]) =>
-      `<button type="button" class="option-btn${k === DESTINO_PREGUNTA ? ' selected' : ''}" data-destino-pregunta="${k}" aria-pressed="${k === DESTINO_PREGUNTA}">${esc(x.nombre)}</button>`).join('')}</div>
-    <p class="guia-nota guia-destino-ventaja">${esc(d.ventaja)}</p>
-    <a class="btn btn-primary guia-preguntar" id="guiaPreguntaIr" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Preguntar en ${esc(d.nombre)} ↗</a>
-    <p class="guia-nota">${esc(NOTA_CUENTAS)}</p></section>`;
-}
-const textoPregunta = () => document.getElementById('guiaPreguntaTexto')?.value.trim() || '';
-document.addEventListener('input', e => {
-  if (e.target?.id !== 'guiaPreguntaTexto') return;
-  document.getElementById('guiaPreguntaIr')?.setAttribute('aria-disabled', String(textoPregunta().length < 3));
-});
-document.addEventListener('click', e => {
-  const t = e.target instanceof Element ? e.target : null;
-  const b = t?.closest('[data-destino-pregunta]');
-  if (b) {
-    DESTINO_PREGUNTA = b.dataset.destinoPregunta;
-    document.querySelectorAll('[data-destino-pregunta]').forEach(x => { const on = x === b; x.classList.toggle('selected', on); x.setAttribute('aria-pressed', on); });
-    const d = DESTINOS_IA[DESTINO_PREGUNTA];
-    document.getElementById('guiaPreguntaIr').textContent = `Preguntar en ${d.nombre} ↗`;
-    document.querySelector('.guia-destino-ventaja').textContent = d.ventaja;
-    return;
-  }
-  const a = t?.closest('#guiaPreguntaIr');
-  if (!a) return;
-  const q = textoPregunta();
-  if (q.length < 3) { e.preventDefault(); return; }
-  a.href = urlIA(DESTINO_PREGUNTA, promptPregunta({ pregunta: q, tipo: 'farmacos' }));   // en el propio clic, sin window.open
-});
 
 // «Ficha técnica (CIMA)»: como en la app, el enlace abre el buscador de CIMA y aquí se copia
 // el nombre para pegarlo; un aviso breve dice dónde (o qué buscar, si no se pudo copiar).
@@ -531,7 +498,7 @@ const PINTAR = { cribado: htmlCribado, arbol: htmlArbol, confirmacion: htmlConfi
 function leerRuta() {
   const [r, h, el] = decodeURIComponent(location.hash.slice(1)).split('/');
   if (r === 'hojas') return { hojas: true, region: '', hoja: '', elemento: '' };
-  if (SUELTAS[r]) return { suelta: r, region: '', hoja: '', elemento: '' };
+  if (SUELTAS[r]) return { suelta: r, region: '', hoja: '', elemento: h || '' };
   if (r === 'tejidos') return { tejidos: true, region: '', hoja: HOJAS_TEJIDO[h] ? h : 'blandos', elemento: '' };
   return { region: REGIONES.includes(r) ? r : 'lumbar', hoja: PINTAR[h] ? h : 'cribado', elemento: el || '' };
 }
@@ -557,10 +524,11 @@ function pintar({ sinScroll = false } = {}) {
   document.body.classList.toggle('guia-modo-tejidos', !!tejidos || !!hojas || !!suelta);
   document.body.classList.toggle('guia-modo-hojas', !!hojas || !!suelta);
   if (suelta) {
-    const { titulo, html } = SUELTAS[suelta];
+    const { titulo, html, despues } = SUELTAS[suelta];
     document.getElementById('guiaTitulo').textContent = titulo;
     document.getElementById('guiaHojas').innerHTML = '';
-    document.getElementById('guiaContenido').innerHTML = avisoHojaHTML(suelta) + html();
+    document.getElementById('guiaContenido').innerHTML = avisoHojaHTML(suelta) + html(elemento);
+    despues?.();
     document.title = `${titulo} · Guía de consulta`;
     if (!sinScroll) window.scrollTo(0, 0);
     return;
@@ -632,7 +600,7 @@ async function iniciar() {
   });
   pintar();
   const v = textoVersion();
-  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
+  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
   initAmpliarIA();
   initCalculadoras(pintar);
 }

@@ -98,7 +98,7 @@ export function datosHojaTejido(datos, hoja) {
 // lumbar y miembro inferior, así las regiones que se refieren dolor quedan juntas (decisión del
 // usuario, 2026-10). La app no lo usa. Un test comprueba que tiene las mismas que CIF_TREES.
 export const ORDEN_REGIONES = ['cervical', 'hombro', 'codo', 'lumbar', 'cadera', 'rodilla', 'tobillo_pie'];
-export const HOJAS_GENERALES = ['fase1', 'condiciones', 'irritabilidad', 'farmacos', 'tejidos-blandos', 'tejidos-hueso'];
+export const HOJAS_GENERALES = ['fase1', 'condiciones', 'irritabilidad', 'sintomas', 'farmacos', 'tejidos-blandos', 'tejidos-hueso'];
 const hojasRegion = r => [`cribado-${r}`, `arbol-a4-${r}`, `confirmacion-${r}`];
 export function definicionCuadernos(regiones, nombreRegion) {
   const generales = { titulo: 'Hojas generales', hojas: HOJAS_GENERALES };
@@ -108,7 +108,7 @@ export function definicionCuadernos(regiones, nombreRegion) {
   ];
 }
 // Nombre legible de una hoja impresa por su clave (la del archivo)
-const NOMBRES_HOJA = { fase1: 'Fase 1: banderas rojas y riesgo psicosocial', condiciones: 'Condiciones especiales', irritabilidad: 'Irritabilidad (fase 3)', farmacos: 'Fármacos: qué vigilar en el plan', 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios (para el paciente)' };
+const NOMBRES_HOJA = { fase1: 'Fase 1: inicio, cirugía, banderas rojas y riesgo psicosocial', condiciones: 'Condiciones especiales', irritabilidad: 'Irritabilidad (fase 3)', sintomas: 'Síntomas (fase 3)', farmacos: 'Fármacos: qué vigilar en el plan', 'ejercicio-paciente': 'El ejercicio: lo que dicen los estudios (para el paciente)' };
 export function nombreHojaImpresa(clave, nombreRegion) {
   if (NOMBRES_HOJA[clave]) return NOMBRES_HOJA[clave];
   const fp = clave.match(/^formulario-(.+)$/);
