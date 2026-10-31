@@ -11,6 +11,8 @@
 
 export const TEXTOS_CONDICIONES = {
   titulo: 'Condiciones especiales',
+  // soloApp: lo que la condición añade y no está en las hojas impresas ni en la guía (guia.html):
+  // la hoja de condiciones y la página de la guía lo dicen aparte, para no prometer en papel lo que no está.
   intro: 'Situaciones que cambian el cribado y el plan. Si una encaja, márcala y la app añade lo que necesita.',
   diagnostico: 'Si el paciente ya tiene el diagnóstico, márcala siempre.',
   // Apartado y botón de las filas de una región ({region}: su nombre en minúscula)
@@ -40,6 +42,7 @@ export const CONDICIONES = [
       { texto: 'el problema empezó o sigue tras una operación de esta zona.', de: [] },
     ],
     anade: 'la tarjeta «Cirugía» con el protocolo del cirujano, preguntas de complicaciones en la fase 2 (herida, trombosis, embolia…), la hipótesis «Postoperatorio» y el plan supeditado al protocolo.',
+    soloApp: 'la tarjeta «Cirugía» (protocolo del cirujano), la hipótesis «Postoperatorio» y el plan supeditado al protocolo (fase 6).',
     destino: { tarjeta: 'cardMecanismo' },
     boton: 'Ir a Mecanismo de inicio →',
     fuentes: [],
@@ -55,6 +58,7 @@ export const CONDICIONES = [
       { texto: 'llega con las palmas al suelo sin doblar las rodillas, o con el pulgar al antebrazo.', de: ['cq1', 'cq2'] },
     ],
     anade: 'su cribado en la fase 2 (cuestionario, escala de Beighton, sospecha del subtipo vascular), un aviso en los tests de laxitud y consideraciones para el plan.',
+    soloApp: 'los avisos del plan (fase 6).',
     destino: { tarjeta: 'cardHipermovilidad' },
     boton: 'Ir a la tarjeta →',
     fuentes: ['Malfait 2017'],
@@ -69,6 +73,7 @@ export const CONDICIONES = [
       { texto: 'le empeora con el calor, después de comer o al levantarse de golpe.', de: ['io2'] },
     ],
     anade: 'las preguntas del desmayo de alto riesgo y la prueba de bipedestación en la fase 2, y consideraciones para el ejercicio y el plan.',
+    soloApp: 'los avisos y la red de seguridad del plan (fase 6).',
     destino: { tarjeta: 'cardDisautonomia' },
     boton: 'Ir a la tarjeta →',
     fuentes: ['Vernino 2021', 'Raj 2020', 'Sheldon 2015', 'Hakim 2017', 'Fedorowski 2019'],
@@ -84,6 +89,7 @@ export const CONDICIONES = [
       { texto: 'tiene llagas en la boca que vuelven, se le cae el pelo o tiene fiebre sin infección.', de: ['lr3', 'lr5'] },
     ],
     anade: 'con «Diagnosticado», sus urgencias y derivaciones en la fase 2 y consideraciones para el ejercicio y el plan; con «Sospecha», los rasgos que justifican una valoración médica.',
+    soloApp: 'los avisos y la red de seguridad del plan (fase 6).',
     destino: { tarjeta: 'cardLupus' },
     boton: 'Ir a la tarjeta →',
     fuentes: ['Aringer 2019'],
@@ -98,6 +104,7 @@ export const CONDICIONES = [
       { texto: 'ha tenido una anafilaxia (una reacción brusca con falta de aire, mareo o desmayo, con o sin ronchas), también con el ejercicio.', de: ['ma_d_episodios'] },
     ],
     anade: 'qué hacer ante una anafilaxia en la sesión, sus desencadenantes, una derivación si tiene episodios nuevos sin valorar y la red de seguridad del plan. Los síntomas crónicos (cansancio, dolor) no bastan para marcarla.',
+    soloApp: 'el aviso y la red de seguridad del plan (fase 6).',
     destino: { tarjeta: 'cardMastocitos' },
     boton: 'Ir a la tarjeta →',
     fuentes: ['Valent 2022', 'Cardona 2020', 'Lee y Picard 2025'],
@@ -113,6 +120,7 @@ export const CONDICIONES = [
       { texto: 'está embarazada o dando el pecho y tiene un dolor de espalda nuevo, intenso y que no se pasa.', de: ['l_e4'] },
     ],
     anade: 'su urgencia y sus derivaciones en la fase 2, las caídas, una línea en los tests que cargan el hueso, y el ejercicio, el tope sin thrust y la red de seguridad del plan; con «Sospecha», los factores que piden valorar el riesgo de fractura.',
+    soloApp: 'los avisos, el tope sin thrust y la red de seguridad del plan (fase 6).',
     destino: { tarjeta: 'cardOsteoporosis' },
     boton: 'Ir a la tarjeta →',
     fuentes: ['Gregson 2025', 'Kanis 2019', 'Hadji 2026'],
@@ -127,6 +135,7 @@ export const CONDICIONES = [
       { texto: 'ha dado a luz en el último año, con cualquier tipo de parto.', de: ['em_u_sangrado_pp', 'em_u_infeccion'] },
     ],
     anade: 'sus urgencias y derivaciones en la fase 2 según las semanas, la regla de la tensión, el ánimo y el suelo pélvico, una línea sobre estar boca arriba en la 4b, y el ejercicio, la terapia manual y la red de seguridad del plan.',
+    soloApp: 'los avisos y la red de seguridad del plan (fase 6).',
     destino: { tarjeta: 'cardEmbarazo' },
     boton: 'Ir a la tarjeta →',
     fuentes: ['NICE NG201', 'NICE NG194', 'Mottola 2018'],
@@ -142,6 +151,7 @@ export const CONDICIONES = [
       { texto: 'le han puesto inyecciones de heparina tras una operación o una trombosis.', de: ['ac_u_pared'] },
     ],
     anade: 'la pregunta del golpe en la cabeza y las de los hematomas en la fase 2, una línea de técnica en la 4b, un recuadro en la fase 5, y los avisos, el tope sin thrust (solo con anticoagulante) y la red de seguridad del plan.',
+    soloApp: 'los avisos, el tope sin thrust y la red de seguridad del plan (fase 6).',
     destino: { tarjeta: 'cardAnticoagulado' },
     boton: 'Ir a la tarjeta →',
     fuentes: ['NICE NG232', 'Peng 2022', 'Muñoz 2022'],

@@ -10,6 +10,16 @@ import { ITEMS_IRRITABILIDAD, CORTES_OTROS, TEXTOS_IRRITABILIDAD } from './data/
 import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad } from './lib/irritabilidad.js';
 import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML } from './lib/tests-4b.js';
 import { resolveOptionTargets } from './lib/arbol.js';
+import { refsPasoFormulario, textoRefs } from './lib/formulario-numeros.js';
+import FORM_COMUN from './formularios/comun.js';
+import FORM_CERVICAL from './formularios/cervical.js';
+import FORM_HOMBRO from './formularios/hombro.js';
+import FORM_CODO from './formularios/codo.js';
+import FORM_LUMBAR from './formularios/lumbar.js';
+import FORM_CADERA from './formularios/cadera.js';
+import FORM_RODILLA from './formularios/rodilla.js';
+import FORM_TOBILLO from './formularios/tobillo_pie.js';
+import { recomendacionesCondicion, bloquesFase2, lineasTecnica4b, lineasTest } from './lib/guia-condiciones.js';
 import { numeroHipotesis, ORDEN_REGIONES, CONDICION_SISTEMA, condicionPregunta, soloDeSistema, preguntasDeRegion, sistemasCribado, etiquetaPaso, HOJAS_GUIA, HOJAS_TEJIDO, datosHojaTejido, definicionCuadernos } from './lib/esquemas.js';
 import { TIEMPOS_TEJIDO } from './data/tejidos.js';
 import { condicionesHTML } from './lib/condiciones.js';
@@ -76,7 +86,7 @@ function htmlCribado(region) {
         return `<div class="guia-item" id="q-${q.id}"><div class="guia-texto"><span class="guia-num">${k + 1}</span>${esc(q.text)}${q.urgencia ? '<span class="guia-chip urg">URGENCIA</span>' : q.derivacion ? '<span class="guia-chip der">DERIVACIÓN</span>' : ''}${conds[k] && !comun ? `<span class="guia-chip cuando">${esc(conds[k])}</span>` : ''}</div>
           ${q.urgencia ? `<div class="guia-nota guia-der">🚑 ${esc(q.urgencia)}</div>` : q.derivacion ? `<div class="guia-nota">🩺 ${esc(q.derivacion)}</div>` : ''}
           ${porQue(ctxCribado(region, q.text), cuerpo)}</div>`;
-      }).join('')}${crit}${banderasHTML(s, region, idx)}${zonasImpactoHTML(s)}${CALC_SISTEMA[s.id]?.() || ''}</section>`;
+      }).join('')}${crit}${banderasHTML(s, region, idx)}${zonasImpactoHTML(s)}${CALC_SISTEMA[s.id]?.() || ''}${consultaCondicionHTML(s)}</section>`;
   };
   const urg = sc.urgencia ? `<div class="guia-urg"><b>${esc(sc.urgencia.titulo)}</b>${sc.urgencia.lineas.map(l => `<div>· ${esc(l)}</div>`).join('')}</div>` : '';
   return `<h2>Cribado sistémico · ${nombreRegion(region)}</h2>${urg}
@@ -108,6 +118,32 @@ function banderasHTML(s, region, idx) {
 }
 const sinEtiquetas = t => String(t).replace(/<[^>]+>/g, '');
 
+// Condición especial en la consulta (lib/guia-condiciones.js): las preguntas que añade a la fase 2
+// fuera del cribado y el recuadro de recomendaciones de la fase 5, con las mismas funciones que la
+// app. El de la anafilaxia, abierto: es lo que se busca con prisa.
+function consultaCondicionHTML(s) {
+  const bloques = bloquesFase2(s);
+  const rec = recomendacionesCondicion(s.id);
+  const preguntas = bloques.map(b => `<div class="guia-banderas-tit">${esc(b.titulo)}</div>
+    <ul>${b.preguntas.map(q => `<li>${esc(q.texto)}${q.diferencial ? ' <em>(no suma: orienta a otra causa)</em>' : ''}</li>`).join('')}</ul>
+    ${b.fuentes.filter(Boolean).map(f => `<p class="guia-cc-nota">${citasEnTexto(f)}</p>`).join('')}`).join('');
+  const linea = l => `<li>${l.si ? `<b>Si ${esc(l.si.join(' o '))}:</b> ` : ''}${citasEnTexto(l.texto)}${l.no.length ? ` <em>(no si ${esc(l.no.join(' o '))})</em>` : ''}</li>`;
+  const recHTML = rec ? rec.map(e => `${rec.length > 1 ? `<div class="guia-banderas-tit">${esc(e.titulo)}</div>` : ''}<ul>${e.lineas.map(linea).join('')}</ul>`).join('') : '';
+  return (preguntas ? `<details class="guia-banderas"><summary>📝 Preguntas que añade en la fase 2</summary>${preguntas}</details>` : '')
+    + (recHTML ? `<details class="guia-banderas guia-cc-rec"${s.id === 'transversal_mastocitos' ? ' open' : ''}><summary>📋 Recomendaciones (recuadro de la fase 5)</summary>
+      <p class="guia-cc-nota">Lo que la app pone en el recuadro de la fase 5 según lo marcado en la tarjeta.</p>${recHTML}</details>` : '');
+}
+
+// Líneas de técnica de las condiciones especiales en la confirmación (fase 4b)
+function tecnicaCondicionesHTML() {
+  return `<details class="guia-banderas guia-cc-tec"><summary>Condiciones especiales: técnica en la exploración</summary>
+    <p class="guia-cc-nota">Con la condición marcada, la app pone estas líneas encima de los tests. Las de un test concreto (hipermovilidad, osteoporosis, Gaenslen en el posparto) van bajo ese test.</p>
+    <ul>${lineasTecnica4b().map(l => `<li>${l.icono} ${citasEnTexto(l.texto)}</li>`).join('')}</ul></details>`;
+}
+function lineasTestHTML(t) {
+  return lineasTest(t).map(l => `<div class="guia-cc-test">${l.icono} ${citasEnTexto(l.texto)}${l.porque ? `<details><summary>¿Por qué?</summary>${citasEnTexto(l.porque)}</details>` : ''}</div>`).join('');
+}
+
 // Zonas de dolor referido e impacto en el descanso y el ejercicio de un sistema (los mismos
 // textos que su bloque de la fase 2 de la app), plegados al final del bloque, bajo las banderas
 function zonasImpactoHTML(s) {
@@ -121,11 +157,13 @@ function zonasImpactoHTML(s) {
 }
 
 // ── Árbol CIF (fase 4) ──────────────────────────────────────────────────────
+// Formulario del paciente en papel: cada paso dice qué preguntas suyas mirar (G = general, R = región)
+const FORMULARIOS = { cervical: FORM_CERVICAL, hombro: FORM_HOMBRO, codo: FORM_CODO, lumbar: FORM_LUMBAR, cadera: FORM_CADERA, rodilla: FORM_RODILLA, tobillo_pie: FORM_TOBILLO };
 function htmlArbol(region) {
   const tree = CIF_TREES[region], steps = tree.steps;
   const lab = id => { const i = steps.findIndex(s => s.id === id); return etiquetaPaso(steps[i], i); };
   return `<h2>${esc(tree.title || `Árbol de decisión · ${nombreRegion(region)}`)}</h2>
-    <p class="guia-nota">Cada respuesta puede sumar una hipótesis; se acumulan y se confirman con tests en la fase 4b.</p>
+    <p class="guia-nota">Cada respuesta puede sumar una hipótesis; se acumulan y se confirman con tests en la fase 4b. «📝 Formulario» = preguntas del formulario del paciente que tocan el paso (G = hoja general, R = hoja de la región).</p>
     ${steps.map((st, i) => {
       const r = st.razonamiento;
       const cuerpo = r ? seccion('Por qué', `<p>${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>`)
@@ -139,6 +177,7 @@ function htmlArbol(region) {
         return `<li><b>${esc(corto.trim())}</b>${resto.length ? ` — ${esc(resto.join('—').trim())}` : ''}${res ? ` → ${res}` : ''}</li>`;
       }).join('');
       return `<section class="guia-bloque guia-item" id="paso-${st.id}"><h3><span class="guia-num">${esc(lab(st.id))}</span>${esc(st.question)}</h3>
+        ${(fp => fp ? `<div class="guia-fpref">📝 Formulario: ${esc(fp)}</div>` : '')(textoRefs(refsPasoFormulario(FORM_COMUN, FORMULARIOS[region], st.id)))}
         <ul class="guia-ops">${ops}</ul>${porQue(ctxArbol(region, st.iaPregunta || st.question), cuerpo)}</section>`;
     }).join('')}
     <div class="guia-sinhip" id="sin-hipotesis"><b>Si el árbol termina sin ninguna hipótesis</b>
@@ -181,6 +220,7 @@ function htmlConfirmacion(region) {
   return `<h2>Confirmación de hipótesis · ${nombreRegion(region)}</h2>
     <p class="guia-nota">LR en verde: multiplica la puntuación (LR+ ≥ 2 o LR− ≤ 0,5). «≈» = calculada de S y E.</p>
     <div id="guiaResumenCalc">${resumenCalcHTML(region)}</div>
+    ${tecnicaCondicionesHTML()}
     ${hyps.map(h => {
       const clusters = Object.entries(h.clusters || {}).map(([cid, c]) => {
         const n = h.tests.filter(t => t.cluster === cid).length, lr = lrEfectiva(c);
@@ -195,6 +235,7 @@ function htmlConfirmacion(region) {
           <div class="guia-lr">${t.cluster ? `en el clúster ${esc(h.clusters?.[t.cluster]?.nombre || '')}` : lrTxt(t)}</div>
           <div class="guia-peso">${pesoTest(h, t, k)}</div>
           ${t.criterio ? `<div class="guia-criterio" ${atributosIA(ctxTest(region, t.name, h.name))} data-ia-parrafo>${citasEnTexto(t.criterio)}${iaParrafoHTML()}</div>` : ''}
+          ${lineasTestHTML(t)}
           ${botonesTest(h.id, k)}
           ${porQue(ctxTest(region, t.name, h.name), cuerpo)}</div>`;
       }).join('');

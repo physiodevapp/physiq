@@ -94,6 +94,7 @@ function filaHTML(c, st, { guia = false } = {}) {
     <div class="cond-piensa">${esc(c.piensa)}</div>
     <ul class="cond-pistas">${pistas}</ul>
     <p class="cond-anade"><span class="cond-anade-et">Al marcarla, añade:</span> ${esc(c.anade)}</p>
+    ${guia && c.soloApp ? `<p class="cond-anade"><span class="cond-anade-et">Solo en la app:</span> ${esc(c.soloApp)} Lo demás está en la guía: el cribado de cada región y la confirmación.</p>` : ''}
     ${fuentes}
     ${guia ? '' : `<div class="cond-acciones">${boton}</div>`}
   </section>`;
