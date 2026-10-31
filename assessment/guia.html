@@ -47,7 +47,9 @@
   .guia-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .guia-marca { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   /* Tema y letra, como en la cabecera de la app (misma preferencia guardada: lib/apariencia.js) */
-  .guia-nowrap { white-space: nowrap; }
+  /* Una sola línea, centrada con los dos iconos; en pantalla estrecha, sin el nombre de la app */
+  .guia-marca-txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  @media (max-width: 560px) { .guia-marca-app { display: none; } }
   .guia-apariencia { display: flex; gap: 2px; margin-right: -6px; }
   .guia-apariencia .session-btn { min-width: 40px; min-height: 40px; text-transform: none; letter-spacing: 0; }
   @media print { .guia-apariencia { display: none; } }
@@ -191,7 +193,7 @@
 </head>
 <body>
 <main class="guia" id="guia">
-  <div class="guia-marca"><span>Guía de consulta · <span class="guia-nowrap">PhysiQ-Assessment</span></span><span class="guia-apariencia"><button id="themeBtn" class="session-btn theme-btn" type="button"></button><button id="letraBtn" class="session-btn letra-btn" type="button" aria-pressed="false"><span class="letra-a-peq" aria-hidden="true">A</span><span class="letra-a-gr" aria-hidden="true">A</span></button></span></div>
+  <div class="guia-marca"><span class="guia-marca-txt">Guía de consulta<span class="guia-marca-app"> · PhysiQ-Assessment</span></span><span class="guia-apariencia"><button id="themeBtn" class="session-btn theme-btn" type="button"></button><button id="letraBtn" class="session-btn letra-btn" type="button" aria-pressed="false"><span class="letra-a-peq" aria-hidden="true">A</span><span class="letra-a-gr" aria-hidden="true">A</span></button></span></div>
   <div class="guia-region"><h1><button type="button" class="guia-region-btn" id="guiaRegion" aria-haspopup="true" aria-expanded="false" aria-controls="guiaRegionMenu"><span class="guia-vh">Región: </span><span id="guiaRegionNombre"></span></button></h1><ul class="guia-region-menu" id="guiaRegionMenu" hidden></ul></div>
   <h1 class="guia-titulo" id="guiaTitulo"></h1>
   <p class="guia-intro">El porqué de cada pregunta, paso y test de los esquemas impresos, con sus fuentes. Es la misma información que la app; esta página no pide ni guarda datos del paciente.</p>
