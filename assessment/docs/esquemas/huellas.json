@@ -92,43 +92,43 @@
     "fecha": "2026-10-29"
   },
   "farmacos": {
-    "huella": "2e233f87",
-    "fecha": "2026-10-29"
+    "huella": "9b4a0863",
+    "fecha": "2026-10-31"
   },
   "fase1": {
     "huella": "66ee6dde",
     "fecha": "2026-10-31"
   },
   "formulario-cadera": {
-    "huella": "92789e8b",
+    "huella": "9ad18931",
     "fecha": "2026-10-31"
   },
   "formulario-cervical": {
-    "huella": "229c59a4",
+    "huella": "239bd290",
     "fecha": "2026-10-31"
   },
   "formulario-codo": {
-    "huella": "41b68e0b",
+    "huella": "a5cf78b1",
     "fecha": "2026-10-31"
   },
   "formulario-comun": {
-    "huella": "12d5f202",
+    "huella": "34d93e6e",
     "fecha": "2026-10-31"
   },
   "formulario-hombro": {
-    "huella": "03e02473",
+    "huella": "fc621ed9",
     "fecha": "2026-10-31"
   },
   "formulario-lumbar": {
-    "huella": "eb9c1e80",
+    "huella": "4b153ed4",
     "fecha": "2026-10-31"
   },
   "formulario-rodilla": {
-    "huella": "fbb7ae6e",
+    "huella": "5438e812",
     "fecha": "2026-10-31"
   },
   "formulario-tobillo_pie": {
-    "huella": "12d11b3e",
+    "huella": "1b257042",
     "fecha": "2026-10-31"
   },
   "irritabilidad": {
@@ -136,7 +136,7 @@
     "fecha": "2026-10-30"
   },
   "plan": {
-    "huella": "b6312f04",
+    "huella": "6fef1ac7",
     "fecha": "2026-10-31"
   },
   "sintomas": {
