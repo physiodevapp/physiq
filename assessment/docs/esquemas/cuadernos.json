@@ -1,11 +1,11 @@
 {
   "cuaderno-cadera": {
-    "huella": "d8758dd1",
-    "archivo": "81715100",
+    "huella": "46cbd58f",
+    "archivo": "580031af",
     "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
-      "cribado-cadera": "aa049e20",
+      "cribado-cadera": "35dfe430",
       "arbol-a4-cadera": "1232113f",
       "confirmacion-cadera": "f65463b3",
       "fase1": "731923f5",
@@ -29,12 +29,12 @@
     "ordenFecha": "2026-10-30"
   },
   "cuaderno-cervical": {
-    "huella": "17eef0d4",
-    "archivo": "b10261ff",
+    "huella": "986f7996",
+    "archivo": "dc191e1f",
     "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
-      "cribado-cervical": "04fa40b1",
+      "cribado-cervical": "8f1eeca9",
       "arbol-a4-cervical": "4b4fa5a3",
       "confirmacion-cervical": "8c54cc6f",
       "fase1": "731923f5",
@@ -58,12 +58,12 @@
     "ordenFecha": "2026-10-30"
   },
   "cuaderno-codo": {
-    "huella": "2a17129d",
-    "archivo": "65ce9d14",
+    "huella": "561a828d",
+    "archivo": "4b8280c7",
     "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
-      "cribado-codo": "0af35495",
+      "cribado-codo": "54c53595",
       "arbol-a4-codo": "365effdd",
       "confirmacion-codo": "c90b5dca",
       "fase1": "731923f5",
@@ -87,8 +87,8 @@
     "ordenFecha": "2026-10-30"
   },
   "cuaderno-completo": {
-    "huella": "631907c9",
-    "archivo": "2c79c02c",
+    "huella": "79a86434",
+    "archivo": "d7b4980b",
     "fecha": "2026-10-31",
     "paginas": 56,
     "hojas": {
@@ -98,25 +98,25 @@
       "farmacos": "2e233f87",
       "tejidos-blandos": "22d8cd90",
       "tejidos-hueso": "b036bf04",
-      "cribado-cervical": "04fa40b1",
+      "cribado-cervical": "8f1eeca9",
       "arbol-a4-cervical": "4b4fa5a3",
       "confirmacion-cervical": "8c54cc6f",
-      "cribado-hombro": "920f3483",
+      "cribado-hombro": "5216a7c7",
       "arbol-a4-hombro": "e18fb4fa",
       "confirmacion-hombro": "06480c7b",
-      "cribado-codo": "0af35495",
+      "cribado-codo": "54c53595",
       "arbol-a4-codo": "365effdd",
       "confirmacion-codo": "c90b5dca",
-      "cribado-lumbar": "9a4c310d",
+      "cribado-lumbar": "ae6815e9",
       "arbol-a4-lumbar": "09c687c1",
       "confirmacion-lumbar": "59ad31c6",
-      "cribado-cadera": "aa049e20",
+      "cribado-cadera": "35dfe430",
       "arbol-a4-cadera": "1232113f",
       "confirmacion-cadera": "f65463b3",
-      "cribado-rodilla": "f89cdbb0",
+      "cribado-rodilla": "a16f373c",
       "arbol-a4-rodilla": "f48d782a",
       "confirmacion-rodilla": "f69b8d44",
-      "cribado-tobillo_pie": "ce06634b",
+      "cribado-tobillo_pie": "9fb2f393",
       "arbol-a4-tobillo_pie": "6c6a41e7",
       "confirmacion-tobillo_pie": "3041d53a"
     },
@@ -152,12 +152,12 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-hombro": {
-    "huella": "b9b28e28",
-    "archivo": "7224096d",
+    "huella": "feff2cc7",
+    "archivo": "958a1d80",
     "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
-      "cribado-hombro": "920f3483",
+      "cribado-hombro": "5216a7c7",
       "arbol-a4-hombro": "e18fb4fa",
       "confirmacion-hombro": "06480c7b",
       "fase1": "731923f5",
@@ -181,12 +181,12 @@
     "ordenFecha": "2026-10-30"
   },
   "cuaderno-lumbar": {
-    "huella": "ed0130c2",
-    "archivo": "00da1457",
+    "huella": "07d0a347",
+    "archivo": "f9d6028a",
     "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
-      "cribado-lumbar": "9a4c310d",
+      "cribado-lumbar": "ae6815e9",
       "arbol-a4-lumbar": "09c687c1",
       "confirmacion-lumbar": "59ad31c6",
       "fase1": "731923f5",
@@ -210,12 +210,12 @@
     "ordenFecha": "2026-10-30"
   },
   "cuaderno-rodilla": {
-    "huella": "5b528439",
-    "archivo": "9d03a373",
+    "huella": "08124c25",
+    "archivo": "f1429d5e",
     "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
-      "cribado-rodilla": "f89cdbb0",
+      "cribado-rodilla": "a16f373c",
       "arbol-a4-rodilla": "f48d782a",
       "confirmacion-rodilla": "f69b8d44",
       "fase1": "731923f5",
@@ -239,12 +239,12 @@
     "ordenFecha": "2026-10-30"
   },
   "cuaderno-tobillo_pie": {
-    "huella": "850fa3b2",
-    "archivo": "7ce15121",
+    "huella": "a524b09f",
+    "archivo": "d7024233",
     "fecha": "2026-10-31",
     "paginas": 20,
     "hojas": {
-      "cribado-tobillo_pie": "ce06634b",
+      "cribado-tobillo_pie": "9fb2f393",
       "arbol-a4-tobillo_pie": "6c6a41e7",
       "confirmacion-tobillo_pie": "3041d53a",
       "fase1": "731923f5",

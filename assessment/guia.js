@@ -76,7 +76,7 @@ function htmlCribado(region) {
         return `<div class="guia-item" id="q-${q.id}"><div class="guia-texto"><span class="guia-num">${k + 1}</span>${esc(q.text)}${q.urgencia ? '<span class="guia-chip urg">URGENCIA</span>' : q.derivacion ? '<span class="guia-chip der">DERIVACIÓN</span>' : ''}${conds[k] && !comun ? `<span class="guia-chip cuando">${esc(conds[k])}</span>` : ''}</div>
           ${q.urgencia ? `<div class="guia-nota guia-der">🚑 ${esc(q.urgencia)}</div>` : q.derivacion ? `<div class="guia-nota">🩺 ${esc(q.derivacion)}</div>` : ''}
           ${porQue(ctxCribado(region, q.text), cuerpo)}</div>`;
-      }).join('')}${crit}${banderasHTML(s, region, idx)}${CALC_SISTEMA[s.id]?.() || ''}</section>`;
+      }).join('')}${crit}${banderasHTML(s, region, idx)}${zonasImpactoHTML(s)}${CALC_SISTEMA[s.id]?.() || ''}</section>`;
   };
   const urg = sc.urgencia ? `<div class="guia-urg"><b>${esc(sc.urgencia.titulo)}</b>${sc.urgencia.lineas.map(l => `<div>· ${esc(l)}</div>`).join('')}</div>` : '';
   return `<h2>Cribado sistémico · ${nombreRegion(region)}</h2>${urg}
@@ -107,6 +107,18 @@ function banderasHTML(s, region, idx) {
     ${amarillas.length ? `<div class="guia-banderas-tit amarilla">Amarillas</div><ul>${amarillas.map(item).join('')}</ul>` : ''}</details>`;
 }
 const sinEtiquetas = t => String(t).replace(/<[^>]+>/g, '');
+
+// Zonas de dolor referido e impacto en el descanso y el ejercicio de un sistema (los mismos
+// textos que su bloque de la fase 2 de la app), plegados al final del bloque, bajo las banderas
+function zonasImpactoHTML(s) {
+  const zonas = s.zonasDolor || [], desc = s.impactoDescanso || [], ejer = s.impactoEjercicio || [];
+  const bloque = (titulo, html) => `<details class="guia-banderas"><summary>${titulo}</summary>${html}</details>`;
+  return (zonas.length ? bloque(`📍 Zonas de dolor referido · ${zonas.length}`,
+      `<ul>${zonas.map(z => `<li><b>${z.zona}</b> — ${z.desc}</li>`).join('')}</ul>`) : '')
+    + (desc.length || ejer.length ? bloque('🌙 Impacto en el descanso y la tolerancia al ejercicio',
+      (desc.length ? `<div class="guia-banderas-tit">Descanso y sueño</div><ul>${desc.map(i => `<li>${i}</li>`).join('')}</ul>` : '')
+      + (ejer.length ? `<div class="guia-banderas-tit">Tolerancia al ejercicio</div><ul>${ejer.map(i => `<li>${i}</li>`).join('')}</ul>` : '')) : '');
+}
 
 // ── Árbol CIF (fase 4) ──────────────────────────────────────────────────────
 function htmlArbol(region) {
@@ -187,7 +199,7 @@ function htmlConfirmacion(region) {
           ${porQue(ctxTest(region, t.name, h.name), cuerpo)}</div>`;
       }).join('');
       return `<section class="guia-bloque" id="hip-${h.id}"><h3><span class="guia-num">${esc(numeroHipotesis(h.num))}</span>${esc(h.name)}</h3>
-        <div class="guia-puntua" data-puntua="${h.id}">${puntuaHTML(h)}</div>${clusters}${tests}${pautaHipHTML(h, region)}</section>`;
+        ${h.prom ? `<p class="guia-prom"><span class="guia-et">Cuestionario recomendado</span> ${esc(h.prom)}</p>` : ''}<div class="guia-puntua" data-puntua="${h.id}">${puntuaHTML(h)}</div>${clusters}${tests}${pautaHipHTML(h, region)}</section>`;
     }).join('')}`;
 }
 

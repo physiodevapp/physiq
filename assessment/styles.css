@@ -2366,7 +2366,10 @@
   /* Tamaño de letra (alternarLetra, app.js): casi todo está en rem, así que agrandar
      la raíz agranda la app entera; el icono va en px para no cambiar con ella */
   html[data-letra="grande"]{font-size:112.5%;}
-  .letra-btn{display:flex;align-items:baseline;justify-content:center;gap:1px;font-family:'Outfit',sans-serif;font-weight:600;line-height:1;}
+  /* Las dos «A» van juntas por la línea base (.letra-aa) y el grupo, centrado en el botón como los
+     demás iconos de la cabecera: con align-items:baseline en el botón quedaban arriba del todo */
+  .letra-btn{display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:600;line-height:1;}
+  .letra-aa{display:inline-flex;align-items:baseline;gap:1px;}
   .letra-a-peq{font-size:11px;}
   .letra-a-gr{font-size:16px;}
   .letra-btn[aria-pressed="true"]{color:var(--accent);}

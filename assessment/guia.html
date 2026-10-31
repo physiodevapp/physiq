@@ -189,11 +189,13 @@
   .guia-preguntar[aria-disabled="true"] { opacity: 0.45; pointer-events: auto; }
   .guia-vacio { color: var(--text3); font-size: 0.85rem; }
   @media (max-width: 480px) { .guia-bloque { margin-left: -1rem; margin-right: -1rem; padding-left: 1rem; padding-right: 1rem; border-left: none; border-right: none; border-radius: 0; } }
+.guia-prom{margin:.2rem 0 .5rem;font-size:.85rem;color:var(--text2)}
+.guia-prom .guia-et{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);margin-right:.35rem}
 </style>
 </head>
 <body>
 <main class="guia" id="guia">
-  <div class="guia-marca"><span class="guia-marca-txt">Guía de consulta<span class="guia-marca-app"> · PhysiQ-Assessment</span></span><span class="guia-apariencia"><button id="themeBtn" class="session-btn theme-btn" type="button"></button><button id="letraBtn" class="session-btn letra-btn" type="button" aria-pressed="false"><span class="letra-a-peq" aria-hidden="true">A</span><span class="letra-a-gr" aria-hidden="true">A</span></button></span></div>
+  <div class="guia-marca"><span class="guia-marca-txt">Guía de consulta<span class="guia-marca-app"> · PhysiQ-Assessment</span></span><span class="guia-apariencia"><button id="themeBtn" class="session-btn theme-btn" type="button"></button><button id="letraBtn" class="session-btn letra-btn" type="button" aria-pressed="false"><span class="letra-aa" aria-hidden="true"><span class="letra-a-peq">A</span><span class="letra-a-gr">A</span></span></button></span></div>
   <div class="guia-region"><h1><button type="button" class="guia-region-btn" id="guiaRegion" aria-haspopup="true" aria-expanded="false" aria-controls="guiaRegionMenu"><span class="guia-vh">Región: </span><span id="guiaRegionNombre"></span></button></h1><ul class="guia-region-menu" id="guiaRegionMenu" hidden></ul></div>
   <h1 class="guia-titulo" id="guiaTitulo"></h1>
   <p class="guia-intro">El porqué de cada pregunta, paso y test de los esquemas impresos, con sus fuentes. Es la misma información que la app; esta página no pide ni guarda datos del paciente.</p>
