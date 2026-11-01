@@ -52,6 +52,7 @@
   @media (max-width: 560px) { .guia-marca-app { display: none; } }
   .guia-apariencia { display: flex; gap: 2px; margin-right: -6px; }
   .guia-apariencia .session-btn { min-width: 40px; min-height: 40px; text-transform: none; letter-spacing: 0; }
+  .guia-apariencia a.session-btn { display: inline-flex; align-items: center; justify-content: center; color: inherit; text-decoration: none; }
   @media print { .guia-apariencia { display: none; } }
   .guia-intro { font-size: 0.82rem; color: var(--text2); margin-bottom: 12px; line-height: 1.5; }
   .guia-nav { position: sticky; top: 0; z-index: 20; background: var(--bg); margin: 0 -1rem 14px; padding: 8px 1rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-bottom: 1px solid var(--border); }
@@ -61,12 +62,12 @@
   .guia-hojas a { flex: 1 1 auto; text-align: center; text-decoration: none; font-size: 0.85rem; color: var(--text2); border: 1px solid var(--border2); border-radius: 8px; padding: 9px 6px; min-height: 40px; }
   .guia-hojas a[aria-current="page"] { color: var(--accent); border-color: var(--accent); font-weight: 500; }
   .guia h2 { font-size: 1.05rem; font-weight: 500; color: var(--text); margin: 18px 0 8px; }
-  .guia-nota { font-size: 0.78rem; color: var(--text3); margin: -4px 0 10px; }
-  .guia-bloque { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+  .guia-nota { font-size: 0.78rem; line-height: 1.45; color: var(--text3); margin: 2px 0 14px; }
+  .guia-bloque { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 14px; margin-bottom: 14px; }
   .guia-bloque.especial { border-color: color-mix(in srgb, #7c4ddb 55%, var(--border)); }
   /* Número en línea, no colgado: al saltar de línea el texto vuelve al borde, alineado con
      las respuestas y «Por qué y más» (decisión del usuario, 2026-10) */
-  .guia-bloque > h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .guia-bloque > h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
   .guia-cond { font-size: 0.75rem; color: var(--text3); margin-bottom: 6px; }
   .guia-item { padding: 8px 0; border-top: 1px solid var(--border); scroll-margin-top: 72px; }
   .guia-item:first-of-type { border-top: none; }
@@ -183,10 +184,10 @@
   .guia-hoja a { flex: none; color: var(--accent); text-decoration: none; border: 1px solid var(--border2); border-radius: 8px; padding: 0 12px; min-height: 40px; display: inline-flex; align-items: center; }
   .guia-aviso { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; max-width: 520px; margin: 0 auto; background: var(--surface3); color: var(--text); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; box-shadow: var(--modal-shadow); }
   /* «¿Otro fármaco o duda?» al final de #farmacos */
-  .guia-pregunta textarea { width: 100%; box-sizing: border-box; margin: 4px 0 8px; font: inherit; }
-  .guia-destinos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .guia-pregunta textarea { width: 100%; box-sizing: border-box; margin: 2px 0 16px; font: inherit; }
+  .guia-destinos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
   .guia-destinos .option-btn { flex: 1 1 auto; }
-  .guia-preguntar { display: flex; align-items: center; justify-content: center; min-height: 44px; text-decoration: none; margin-top: 6px; }
+  .guia-preguntar { display: flex; align-items: center; justify-content: center; min-height: 44px; text-decoration: none; margin: 4px 0 12px; }
   .guia-preguntar[aria-disabled="true"] { opacity: 0.45; pointer-events: auto; }
   .guia-vacio { color: var(--text3); font-size: 0.85rem; }
   @media (max-width: 480px) { .guia-bloque { margin-left: -1rem; margin-right: -1rem; padding-left: 1rem; padding-right: 1rem; border-left: none; border-right: none; border-radius: 0; } }
@@ -201,7 +202,7 @@
 .guia-gc-tabla tr.ds-fila-toca th { color: var(--accent); }
 .guia-gc-tabla tr.ds-fila-toca input { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .guia-cc-lista { margin: 4px 0 6px; padding-left: 18px; font-size: 0.86rem; line-height: 1.5; color: var(--text2); } .guia-cc-lista li { margin-bottom: 4px; }
-.guia-cuest { margin-top: 8px; } .guia-pregunta .guia-tipos { margin-bottom: 4px; }
+.guia-cuest { margin-top: 8px; } .guia-pregunta .guia-tipos { margin-bottom: 8px; }
 .guia-plan-fila { margin: 10px 0; } .guia-plan-et { font-family: 'DM Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text3); margin-bottom: 4px; }
 .guia-plan-ops { flex-wrap: wrap; gap: 6px; } .guia-plan-ops .option-btn { flex: 0 1 auto; min-height: 40px; }
 .guia-plan-txt { white-space: pre-wrap; font-family: inherit; font-size: 0.86rem; line-height: 1.5; color: var(--text2); margin: 0; }
@@ -210,7 +211,7 @@
 </head>
 <body>
 <main class="guia" id="guia">
-  <div class="guia-marca"><span class="guia-marca-txt">Guía de consulta<span class="guia-marca-app"> · PhysiQ-Assessment</span></span><span class="guia-apariencia"><button id="themeBtn" class="session-btn theme-btn" type="button"></button><button id="letraBtn" class="session-btn letra-btn" type="button" aria-pressed="false"><span class="letra-aa" aria-hidden="true"><span class="letra-a-peq">A</span><span class="letra-a-gr">A</span></span></button></span></div>
+  <div class="guia-marca"><span class="guia-marca-txt">Guía de consulta<span class="guia-marca-app"> · PhysiQ-Assessment</span></span><span class="guia-apariencia"><a id="guiaIABtn" class="session-btn pregunta-ia-btn" href="#preguntar" aria-label="Preguntar a la IA (libre, fármacos o ejercicio)" title="Preguntar a la IA"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg></a><button id="themeBtn" class="session-btn theme-btn" type="button"></button><button id="letraBtn" class="session-btn letra-btn" type="button" aria-pressed="false"><span class="letra-aa" aria-hidden="true"><span class="letra-a-peq">A</span><span class="letra-a-gr">A</span></span></button></span></div>
   <div class="guia-region"><h1><button type="button" class="guia-region-btn" id="guiaRegion" aria-haspopup="true" aria-expanded="false" aria-controls="guiaRegionMenu"><span class="guia-vh">Región: </span><span id="guiaRegionNombre"></span></button></h1><ul class="guia-region-menu" id="guiaRegionMenu" hidden></ul></div>
   <h1 class="guia-titulo" id="guiaTitulo"></h1>
   <p class="guia-intro">El porqué de cada pregunta, paso y test de los esquemas impresos, con sus fuentes. Es la misma información que la app; esta página no pide ni guarda datos del paciente.</p>
