@@ -199,6 +199,7 @@ function htmlArbol(region) {
   const lab = id => { const i = steps.findIndex(s => s.id === id); return etiquetaPaso(steps[i], i); };
   return `<h2>${esc(tree.title || `Árbol de decisión · ${nombreRegion(region)}`)}</h2>
     <p class="guia-nota">Cada respuesta puede sumar una hipótesis; se acumulan y se confirman con tests en la fase 4b. «📝 Formulario» = preguntas del formulario del paciente que tocan el paso (G = hoja general, R = hoja de la región); toca una para verla.${enlacesFormulario(region)}</p>
+    <p class="guia-nota">En la hoja impresa, «Todas» sobre una flecha significa que cualquier respuesta de ese paso sigue al paso siguiente: las respuestas solo deciden qué hipótesis suman. Si la flecha lleva nombres de respuestas, solo esas siguen por ella.</p>
     ${steps.map((st, i) => {
       const r = st.razonamiento;
       const cuerpo = r ? seccion('Por qué', `<p>${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>`)
