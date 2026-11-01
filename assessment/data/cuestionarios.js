@@ -51,7 +51,10 @@ export const GRUPOS_CUESTIONARIO = [
   { id: 'miembro_inferior', nombre: 'Miembro inferior', regiones: ['cadera', 'rodilla', 'tobillo_pie'] },
 ];
 
-const FRECUENCIA_2_SEMANAS = '0 = ningún día · 1 = varios días · 2 = más de la mitad de los días · 3 = casi todos los días';
+const FRECUENCIA_2_SEMANAS = '0 = nunca · 1 = varios días · 2 = más de la mitad de los días · 3 = casi cada día';
+
+// WOMAC: la hoja española rotula en femenino las casillas de rigidez (B) y capacidad funcional (C)
+const PALABRAS_WOMAC_FEM = { 0: 'Ninguna', 1: 'Poca', 2: 'Bastante', 3: 'Mucha', 4: 'Muchísima' };
 
 // FAAM: ítems de vida diaria que la validación española (Cervera-Garvi 2017) retiró
 const RETIRADOS_FAAM_SP = [2, 7, 13, 14, 18, 20];
@@ -67,8 +70,8 @@ export const CUESTIONARIOS = [
     leyenda: FRECUENCIA_2_SEMANAS,
     escala: { min: 0, max: 3 },
     items: [
-      { n: 1, t: 'Poco interés o placer en hacer cosas' },
-      { n: 2, t: 'Decaído, deprimido o sin esperanza' },
+      { n: 1, t: 'Poco interés o alegría por hacer cosas' },
+      { n: 2, t: 'Decaído, deprimido o desesperanzado' },
     ],
     interpretacion: [
       { si: { min: 3 }, etiqueta: 'Cribado positivo: completar el PHQ-9', nivel: 'medio' },
@@ -87,8 +90,8 @@ export const CUESTIONARIOS = [
     leyenda: FRECUENCIA_2_SEMANAS,
     escala: { min: 0, max: 3 },
     items: [
-      { n: 1, t: 'Poco interés o placer en hacer cosas' },
-      { n: 2, t: 'Decaído, deprimido o sin esperanza' },
+      { n: 1, t: 'Poco interés o alegría por hacer cosas' },
+      { n: 2, t: 'Decaído, deprimido o desesperanzado' },
       { n: 3, t: 'Problemas de sueño (dormir poco o demasiado)' },
       { n: 4, t: 'Cansancio o poca energía' },
       { n: 5, t: 'Poco apetito o comer en exceso' },
@@ -117,16 +120,16 @@ export const CUESTIONARIOS = [
     nombre: 'GAD-7',
     titulo: 'Síntomas de ansiedad',
     grupo: 'animo',
-    instrucciones: 'Últimas 2 semanas.',
+    instrucciones: 'Últimos 14 días (así lo dice la hoja española).',
     leyenda: FRECUENCIA_2_SEMANAS,
     escala: { min: 0, max: 3 },
     items: [
-      { n: 1, t: 'Nervioso, ansioso o con los nervios de punta' },
+      { n: 1, t: 'Nervioso, angustiado o muy tenso' },
       { n: 2, t: 'No poder dejar de preocuparse o controlarlo' },
       { n: 3, t: 'Preocuparse demasiado por distintas cosas' },
       { n: 4, t: 'Dificultad para relajarse' },
       { n: 5, t: 'Tan inquieto que cuesta quedarse quieto' },
-      { n: 6, t: 'Molestarse o irritarse con facilidad' },
+      { n: 6, t: 'Enfadarse o irritarse con facilidad' },
       { n: 7, t: 'Miedo de que pueda pasar algo terrible' },
     ],
     interpretacion: [
@@ -341,6 +344,7 @@ export const CUESTIONARIOS = [
   },
   {
     id: 'slanss',
+    hoja: { sino: { no: 'a) No', si: 'b) Sí' } },
     validacionEs: 'López-de-Uralde-Villanueva 2018 (Neurología 33(8):505–514)',
     nombre: 'S-LANSS',
     titulo: 'Dolor neuropático (autocumplimentado)',
@@ -377,12 +381,12 @@ export const CUESTIONARIOS = [
       ...['Al andar en llano', 'Al subir o bajar escaleras', 'Por la noche en la cama', 'Sentado o tumbado', 'De pie']
         .map((t, i) => ({ n: i + 1, etiquetaN: `A${i + 1}`, seccion: 'A · Dolor', t })),
       ...['Al despertarse', 'Tras estar sentado, tumbado o en reposo']
-        .map((t, i) => ({ n: i + 6, etiquetaN: `B${i + 1}`, seccion: 'B · Rigidez', t })),
+        .map((t, i) => ({ n: i + 6, etiquetaN: `B${i + 1}`, seccion: 'B · Rigidez', t, palabras: PALABRAS_WOMAC_FEM })),
       ...['Bajar escaleras', 'Subir escaleras', 'Levantarse tras estar sentado', 'Estar de pie', 'Agacharse a coger algo del suelo',
         'Andar en llano', 'Entrar y salir del coche', 'Ir de compras', 'Ponerse medias o calcetines', 'Levantarse de la cama',
         'Quitarse medias o calcetines', 'Estar tumbado en la cama', 'Entrar y salir de la ducha o bañera', 'Estar sentado',
         'Sentarse y levantarse del retrete', 'Tareas domésticas pesadas', 'Tareas domésticas ligeras']
-        .map((t, i) => ({ n: i + 8, etiquetaN: `C${i + 1}`, seccion: 'C · Capacidad funcional (dificultad)', t })),
+        .map((t, i) => ({ n: i + 8, etiquetaN: `C${i + 1}`, seccion: 'C · Capacidad funcional (dificultad)', t, palabras: PALABRAS_WOMAC_FEM })),
     ],
     subescalas: [
       { id: 'dolor', nombre: 'Dolor', items: [1, 2, 3, 4, 5] },
@@ -423,7 +427,7 @@ export const CUESTIONARIOS = [
   },
   {
     id: 'hos',
-    hoja: { casillas: 'palabras', orden: 'descendente', palabras: { 4: 'Ninguna dificultad', 3: 'Leve', 2: 'Moderada', 1: 'Extrema', 0: 'Incapaz' }, na: 'No responde' },
+    hoja: { casillas: 'palabras', orden: 'descendente', palabras: { 4: 'Ninguna dificultad', 3: 'Dificultad leve', 2: 'Dificultad moderada', 1: 'Dificultad extrema', 0: 'Incapaz de hacerlo' }, na: 'No responde' },
     nombre: 'HOS',
     titulo: 'Hip Outcome Score',
     grupo: 'cadera_rodilla',
@@ -544,7 +548,7 @@ export const CUESTIONARIOS = [
   // ─── Regionales: columna ──────────────────────────────────────────────────
   {
     id: 'odi',
-    hoja: { casillas: 'letras', nota: 'A = la primera frase del apartado en el cuestionario, B = la segunda… F = la última. Si ninguna te describe, deja la fila en blanco.', na: false },
+    hoja: { nota: 'Marca el mismo número que la frase que te describe en el cuestionario: 0 = la primera frase del apartado … 5 = la última. Si ninguna te describe, deja la fila en blanco.', na: false },
     nombre: 'Oswestry (ODI)',
     siglas: ['ODI', 'Oswestry'],
     titulo: 'Discapacidad por dolor lumbar (versión 1.0)',
@@ -589,7 +593,7 @@ export const CUESTIONARIOS = [
   },
   {
     id: 'ndi',
-    hoja: { casillas: 'letras', nota: 'Marca la misma letra (A a F) que la frase que te describe en el cuestionario.', na: 'No conduzco' },
+    hoja: { casillas: 'letras', nota: 'A = la primera frase de la sección en el cuestionario, B = la segunda… F = la última (si tu hoja ya las marca con letras, la misma letra). Si no conduces por motivos ajenos al cuello, marca «No conduzco».', na: 'No conduzco' },
     nombre: 'NDI',
     titulo: 'Índice de discapacidad cervical',
     grupo: 'columna',
@@ -650,7 +654,6 @@ export const CUESTIONARIOS = [
   },
   {
     id: 'ases',
-    hoja: { casillas: 'palabras', palabras: { 0: 'Imposible', 1: 'Mucha dificultad', 2: 'Cierta dificultad', 3: 'Sin dificultad' } },
     nombre: 'ASES',
     titulo: 'Hombro (parte del paciente)',
     grupo: 'hombro_codo',
@@ -793,14 +796,14 @@ export const CUESTIONARIOS = [
     titulo: 'Inestabilidad crónica de tobillo',
     grupo: 'tobillo_pie',
     validacionEs: 'Cruz-Díaz 2013 (Clin Rheumatol 32(1):91–98) · Rodríguez-Fernández 2015 (Disabil Rehabil 37(20):1888–1894; CAIT-Sv)',
-    instrucciones: 'Un cuestionario por tobillo: puntúa el afectado. Toca la frase que marcó el paciente.',
+    instrucciones: 'La hoja tiene una columna por tobillo (izquierdo y derecho): puntúa el afectado. Toca la frase que marcó el paciente.',
     items: [
       { n: 1, tipo: 'opciones', t: 'Dolor en el tobillo', opciones: [{ t: 'Nunca', v: 5 }, { t: 'Al practicar deporte', v: 4 }, { t: 'Al correr en superficie irregular', v: 3 }, { t: 'Al correr en llano', v: 2 }, { t: 'Al caminar en superficie irregular', v: 1 }, { t: 'Al caminar en llano', v: 0 }] },
-      { n: 2, tipo: 'opciones', t: 'Inestabilidad', opciones: [{ t: 'Nunca', v: 4 }, { t: 'A veces en deporte', v: 3 }, { t: 'A menudo en deporte', v: 2 }, { t: 'A veces en la vida diaria', v: 1 }, { t: 'A menudo en la vida diaria', v: 0 }] },
-      { n: 3, tipo: 'opciones', t: 'Inestabilidad en giros bruscos', opciones: [{ t: 'Nunca', v: 3 }, { t: 'A veces al correr', v: 2 }, { t: 'A menudo al correr', v: 1 }, { t: 'Al caminar', v: 0 }] },
-      { n: 4, tipo: 'opciones', t: 'Inestabilidad al bajar escaleras', opciones: [{ t: 'Nunca', v: 3 }, { t: 'Si va rápido', v: 2 }, { t: 'Ocasionalmente', v: 1 }, { t: 'Siempre', v: 0 }] },
-      { n: 5, tipo: 'opciones', t: 'Inestabilidad apoyado sobre una pierna', opciones: [{ t: 'Nunca', v: 2 }, { t: 'Sobre el antepié', v: 1 }, { t: 'Con el pie plano', v: 0 }] },
-      { n: 6, tipo: 'opciones', t: 'Inestabilidad al saltar', opciones: [{ t: 'Nunca', v: 3 }, { t: 'Saltos de lado a lado', v: 2 }, { t: 'Saltos en el sitio', v: 1 }, { t: 'Al saltar', v: 0 }] },
+      { n: 2, tipo: 'opciones', t: 'Inestabilidad', opciones: [{ t: 'Nunca', v: 4 }, { t: 'A veces en deporte', v: 3 }, { t: 'Frecuentemente en deporte', v: 2 }, { t: 'A veces en la vida diaria', v: 1 }, { t: 'Frecuentemente en la vida diaria', v: 0 }] },
+      { n: 3, tipo: 'opciones', t: 'Inestabilidad en giros bruscos', opciones: [{ t: 'Nunca', v: 3 }, { t: 'A veces al correr', v: 2 }, { t: 'Con frecuencia al correr', v: 1 }, { t: 'Al caminar', v: 0 }] },
+      { n: 4, tipo: 'opciones', t: 'Inestabilidad al bajar escaleras', opciones: [{ t: 'Nunca', v: 3 }, { t: 'Si baja rápido', v: 2 }, { t: 'Ocasionalmente', v: 1 }, { t: 'Siempre', v: 0 }] },
+      { n: 5, tipo: 'opciones', t: 'Inestabilidad de pie sobre una pierna', opciones: [{ t: 'Nunca', v: 2 }, { t: 'De puntillas', v: 1 }, { t: 'Con el pie plano', v: 0 }] },
+      { n: 6, tipo: 'opciones', t: 'Inestabilidad al saltar', opciones: [{ t: 'Nunca', v: 3 }, { t: 'Saltando a una pierna de lado a lado', v: 2 }, { t: 'Saltando a una pierna en el sitio', v: 1 }, { t: 'Saltando con las dos piernas', v: 0 }] },
       { n: 7, tipo: 'opciones', t: 'Inestabilidad según la superficie', opciones: [{ t: 'Nunca', v: 4 }, { t: 'Corriendo en irregular', v: 3 }, { t: 'Trotando en irregular', v: 2 }, { t: 'Caminando en irregular', v: 1 }, { t: 'Caminando en llano', v: 0 }] },
       { n: 8, tipo: 'opciones', t: 'Cuando empieza a torcerse, puede pararlo', opciones: [{ t: 'Inmediatamente', v: 3 }, { t: 'A menudo', v: 2 }, { t: 'Algunas veces', v: 1 }, { t: 'Nunca', v: 0 }, { t: 'Nunca se le ha torcido', v: 3 }] },
       { n: 9, tipo: 'opciones', t: 'Tras una torcedura, vuelve a la normalidad', opciones: [{ t: 'Inmediatamente', v: 3 }, { t: 'En menos de un día', v: 2 }, { t: 'En 1–2 días', v: 1 }, { t: 'Pasados 2 días', v: 0 }, { t: 'Nunca se le ha torcido', v: 3 }] },
@@ -811,8 +814,8 @@ export const CUESTIONARIOS = [
       { etiqueta: 'Sin inestabilidad', nivel: 'ok' },
     ],
     interpretacionTexto: 'Suma de 0 (más inestable) a 30. Cortes publicados: ≤ 27 (Hiller 2006, sensibilidad 82,9 %, especificidad 74,7 %) y < 24 (International Ankle Consortium, Gribble 2014: «score of < 24», es decir, ≤ 23).',
-    fuente: 'Hoja con puntos por opción aportada por el usuario · Hiller 2006 · Gribble 2014 · Rodríguez-Fernández 2015',
-    nota: 'La hoja no indica de qué validación española sale; sus puntos coinciden con los del original. Corte del International Ankle Consortium leído en Gribble 2014 (Br J Sports Med 48:1014–1018; el mismo texto en J Athl Train 49(1):121–127): «< 24», así que 24 cae en la zona dudosa.',
+    fuente: 'Rodríguez-Fernández 2015 (CAIT-Sv, apéndice 2: redacción y puntos) · Hiller 2006 · Gribble 2014',
+    nota: 'Etiquetas resumidas de la CAIT-Sv (Rodríguez-Fernández 2015, apéndice 2), cuyos puntos son los del original. Circula otra hoja española sin autoría («Cuestionario CAIT», aportada por el usuario) con los mismos puntos y otra redacción en las preguntas 5 y 6 («sobre el pulpejo», «saltos pequeños»): mejor la CAIT-Sv, que es la validada. Corte del International Ankle Consortium leído en Gribble 2014 (Br J Sports Med 48:1014–1018; el mismo texto en J Athl Train 49(1):121–127): «< 24», así que 24 cae en la zona dudosa.',
   },
   {
     id: 'idfai',

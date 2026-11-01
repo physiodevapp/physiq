@@ -380,7 +380,7 @@ function claveHoja({ tejidos, suelta, region, hoja }) {
   if (tejidos) return `tejidos-${hoja}`;
   return hoja === 'arbol' ? `arbol-a4-${region}` : hoja === 'irritabilidad' ? '' : `${hoja}-${region}`;
 }
-let CUADERNOS = null, RESPUESTAS = null;
+let CUADERNOS = null;
 async function cargarHuellas() {
   try {
     const r = await fetch('./docs/esquemas/huellas.json', { cache: 'no-store' });
@@ -390,10 +390,6 @@ async function cargarHuellas() {
     const r = await fetch('./docs/esquemas/cuadernos.json', { cache: 'no-store' });
     if (r.ok) CUADERNOS = await r.json();
   } catch { /* sin cuadernos: la lista de hojas sigue */ }
-  try {
-    const r = await fetch('./docs/esquemas/respuestas/huellas.json', { cache: 'no-store' });
-    if (r.ok) RESPUESTAS = await r.json();
-  } catch { /* sin hojas de respuestas: la lista sigue */ }
 }
 // Enlace a un PDF con su versión (?v=): una versión nueva es otra dirección, así el navegador
 // (o el visor de PDF del móvil) no abre la copia que ya tenía en caché.
@@ -431,14 +427,14 @@ function htmlHojas() {
   // Cuadernos cuya lista u orden de hojas cambió hace poco: hay que reimprimirlos enteros. Que una
   // hoja ocupe más o menos papel no afecta a las demás (cada hoja numera sus páginas por sí misma).
   const recienteFecha = iso => !!iso && (hoy - new Date(`${iso}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
-  const fila = (clave, nombre, de = HUELLAS, ruta = '') => {
-    const h = de[clave];
+  const fila = (clave, nombre) => {
+    const h = HUELLAS[clave];
     if (!h) return '';
     const reciente = (hoy - new Date(`${h.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(nombre)}</b>
       <span class="guia-hoja-v">v. ${esc(h.huella)}</span> · <span>cambió el ${esc(fechaLarga(h.fecha))}</span>${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
 </div>
-      <a href="${urlPDF(ruta + clave, h.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(nombre)} en PDF">PDF ↗</a></li>`;
+      <a href="${urlPDF(clave, h.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(nombre)} en PDF">PDF ↗</a></li>`;
   };
   const grupo = (titulo, filas) => `<section class="guia-bloque"><h3>${esc(titulo)}</h3><ul class="guia-hojas-lista">${filas.join('')}</ul></section>`;
   const recientes = Object.values(HUELLAS).filter(h => (hoy - new Date(`${h.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE).length;
@@ -458,10 +454,7 @@ function htmlHojas() {
     ${REGIONES.filter(r => !FILTRO_HOJAS || r === FILTRO_HOJAS).map(r => grupo(nombreRegion(r), Object.entries(NOMBRE_HOJA).map(([t, n]) => fila(`${t}-${r}`, n)))).join('')}
     ${grupo('Tiempos de recuperación de tejidos', Object.entries(HOJAS_TEJIDO).map(([k, h]) => fila(`tejidos-${k}`, h.titulo)))}
     ${grupo('Otras hojas', Object.entries(SUELTAS).map(([k, h]) => fila(k, h.titulo)))}
-    ${grupo('Para dar al paciente', Object.entries(PARA_PACIENTE).map(([k, t]) => fila(k, t)))}
-    ${RESPUESTAS ? `<section class="guia-bloque guia-respuestas"><h3>Hojas de respuestas del lector con foto (en prueba)</h3>
-      <p class="guia-aviso-prueba"><b>En prueba: no las uses con pacientes.</b> Sirven para medir si el lector de cuestionarios con foto lee bien las marcas, rellenándolas con respuestas inventadas. El paciente no responde aquí al cuestionario: lee el texto oficial y marca en esta hoja.</p>
-      <ul class="guia-hojas-lista">${CUESTIONARIOS.filter(d => RESPUESTAS[d.id]).map(d => fila(d.id, `${d.nombre} · ${d.titulo}`, RESPUESTAS, 'respuestas/')).join('')}</ul></section>` : ''}`;
+    ${grupo('Para dar al paciente', Object.entries(PARA_PACIENTE).map(([k, t]) => fila(k, t)))}`;
 }
 
 // ── Páginas sueltas (#<clave>): el QR de las hojas que no son de una región ──

@@ -3457,6 +3457,17 @@ body:has(.session-panel-overlay.open) .ia-menu { z-index: 1002; }
   background: var(--surface); border: 1px solid var(--border2); border-radius: 8px;
   box-shadow: 0 6px 10px -8px var(--scrim);
 }
+/* En la hoja de la calculadora el resultado es una banda de borde a borde (como las
+   bandas de contexto de la app): con el mismo ancho, borde y esquinas que los botones
+   se leía como un botón más al hacer scroll (usuario, 2026-11). El área que hace
+   scroll se extiende hasta el borde de la hoja para que la banda no se recorte. */
+.cuest-panel { --cuest-pad: 1.8rem; }
+@media (max-width: 768px) { .cuest-panel { --cuest-pad: 1.4rem; } }
+.cuest-panel > .cuest-cuerpo { margin-inline: calc(-1 * var(--cuest-pad)); padding-inline: var(--cuest-pad); }
+.cuest-panel .cuest-resultado {
+  margin-inline: calc(-1 * var(--cuest-pad)); padding-inline: var(--cuest-pad);
+  border-width: 1px 0; border-radius: 0;
+}
 .cuest-res-linea { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; row-gap: 2px; }
 .cuest-res-total { font-family: 'DM Mono', monospace; font-size: 1.05rem; font-weight: 500; color: var(--text); }
 .cuest-res-interp { font-size: 0.85rem; font-weight: 600; color: var(--text2); }
