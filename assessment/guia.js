@@ -525,6 +525,9 @@ function pintar({ sinScroll = false } = {}) {
   const { tejidos, hojas, suelta, region, hoja, elemento } = leerRuta();
   document.body.classList.toggle('guia-modo-tejidos', !!tejidos || !!hojas || !!suelta);
   document.body.classList.toggle('guia-modo-hojas', !!hojas || !!suelta);
+  // ✨ de la cabecera en azul mientras se está en «Preguntar a la IA», como una pestaña activa
+  const ia = document.getElementById('guiaIABtn');
+  if (suelta === 'preguntar') ia?.setAttribute('aria-current', 'page'); else ia?.removeAttribute('aria-current');
   if (suelta) {
     const { titulo, html, despues } = SUELTAS[suelta];
     document.getElementById('guiaTitulo').textContent = titulo;
