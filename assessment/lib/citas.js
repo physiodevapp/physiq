@@ -32,9 +32,12 @@ export function registroReferencias() {
 // 'Hegedus 2012'; «Lluch 2020, cap. 3.1 (Struyf)» → 'Lluch 2020'): la más
 // larga, para no confundir 'Malik 2023' con 'Malik y Herron 2023'.
 export function claveRegistro(cita, REF) {
-  let mejor = null;
+  let mejor = null, largo = 0;
   for (const k of Object.keys(REF)) {
-    if (cita.startsWith(k) && !/^[\p{L}\d]/u.test(cita.slice(k.length)) && (!mejor || k.length > mejor.length)) mejor = k;
+    // la clave o una de sus formas `citadaComo` («Hansrani 2023, ensayo» → «Hansrani 2023 (ensayo)»)
+    for (const f of [k, ...(REF[k]?.citadaComo || [])]) {
+      if (cita.startsWith(f) && !/^[\p{L}\d]/u.test(cita.slice(f.length)) && f.length > largo) { mejor = k; largo = f.length; }
+    }
   }
   return mejor;
 }
