@@ -99,13 +99,14 @@ document.addEventListener('click', e => {
 // paciente: solo se envía lo que se escribe. Modo y destino, en memoria.
 let DESTINO = destinoIA();
 let TIPO = TIPO_PREGUNTA_DEFECTO;
-export function htmlPreguntar(tipo = TIPO_PREGUNTA_DEFECTO, { titulo = '¿Una duda? Pregunta a la IA', id = 'guiaPregunta' } = {}) {
+// soloTipo: sin selector de modo (la página de fármacos; los tres modos, en el ✨ de la cabecera)
+export function htmlPreguntar(tipo = TIPO_PREGUNTA_DEFECTO, { titulo = '¿Una duda? Pregunta a la IA', id = 'guiaPregunta', soloTipo = false } = {}) {
   TIPO = TIPOS_PREGUNTA[tipo] ? tipo : TIPO_PREGUNTA_DEFECTO;
   const d = DESTINOS_IA[DESTINO], tp = TIPOS_PREGUNTA[TIPO];
   return `<section class="guia-bloque guia-pregunta" id="${id}"><h3>${esc(titulo)}</h3>
     <p class="guia-nota">No escribas datos que identifiquen al paciente. Se envía solo lo que escribas; PhysiQ no revisa la respuesta.</p>
-    <div class="option-group guia-tipos" role="group" aria-label="Tipo de pregunta">${Object.entries(TIPOS_PREGUNTA).map(([k, x]) =>
-      `<button type="button" class="option-btn${k === TIPO ? ' selected' : ''}" data-tipo-pregunta="${k}" aria-pressed="${k === TIPO}">${esc(x.nombre)}</button>`).join('')}</div>
+    ${soloTipo ? '' : `<div class="option-group guia-tipos" role="group" aria-label="Tipo de pregunta">${Object.entries(TIPOS_PREGUNTA).map(([k, x]) =>
+      `<button type="button" class="option-btn${k === TIPO ? ' selected' : ''}" data-tipo-pregunta="${k}" aria-pressed="${k === TIPO}">${esc(x.nombre)}</button>`).join('')}</div>`}
     <p class="guia-nota guia-guion">${esc(tp.guion || '')}</p>
     <label class="guia-vh" for="guiaPreguntaTexto">Pregunta</label>
     <textarea id="guiaPreguntaTexto" class="field-input" rows="3" maxlength="${MAX_TEXTO_IA}" placeholder="${esc(tp.placeholder)}"></textarea>

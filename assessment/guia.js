@@ -469,7 +469,7 @@ function htmlHojas() {
 const SUELTAS = {
   condiciones: { titulo: 'Condiciones especiales', html: () => condicionesHTML({}, { guia: true }) },
   irritabilidad: { titulo: 'Irritabilidad (fase 3)', html: () => htmlIrritabilidad('', { conTitulo: false }) },
-  farmacos: { titulo: 'Fármacos: qué vigilar', html: () => `<div id="farmCuerpo">${farmacosHTML()}</div>${htmlPreguntar('farmacos', { titulo: '¿Otro fármaco o duda? Pregunta a la IA' })}` },
+  farmacos: { titulo: 'Fármacos: qué vigilar', html: () => `<div id="farmCuerpo">${farmacosHTML()}</div>${htmlPreguntar('farmacos', { titulo: '¿Otro fármaco o duda? Pregunta a la IA', soloTipo: true })}` },
   sintomas: { titulo: 'Síntomas (fase 3)', html: htmlSintomasGuia },
   plan: { titulo: 'Plan de tratamiento (fase 6)', html: htmlPlan },
   ejercicio: { titulo: 'Efectos del ejercicio', html: htmlEjercicio },
