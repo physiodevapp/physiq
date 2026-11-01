@@ -27,3 +27,12 @@ export function refsPasoFormulario(comun, region, stepId) {
 
 // «G2, G4 · R1, R3»
 export const textoRefs = refs => [refs.filter(r => r[0] === 'G'), refs.filter(r => r[0] === 'R')].filter(a => a.length).map(a => a.join(', ')).join(' · ');
+
+// La pregunta de una referencia («G3», «R2»): { item, hoja: 'general'|'region' } o null
+export function preguntaPorRef(comun, region, ref) {
+  const esq = ref[0] === 'G' ? comun : region;
+  if (!esq) return null;
+  const n = numerosFormulario(esq, ref[0]);
+  for (const sec of esq.secciones) for (const it of sec.items) if (n[it.id] === ref) return { item: it, seccion: sec.titulo || '', hoja: ref[0] === 'G' ? 'general' : 'region' };
+  return null;
+}

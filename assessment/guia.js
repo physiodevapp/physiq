@@ -13,7 +13,7 @@ import { resolveOptionTargets } from './lib/arbol.js';
 import { cuestionariosEnTexto } from './lib/cuestionarios.js';
 import { htmlPlan, initPlan } from './guia-plan.js';
 import { htmlCuestionarios, despuesCuestionarios, htmlEjercicio, htmlPreguntar, htmlSintomasGuia } from './guia-extra.js';
-import { refsPasoFormulario, textoRefs } from './lib/formulario-numeros.js';
+import { refsPasoFormulario, textoRefs, preguntaPorRef } from './lib/formulario-numeros.js';
 import FORM_COMUN from './formularios/comun.js';
 import FORM_CERVICAL from './formularios/cervical.js';
 import FORM_HOMBRO from './formularios/hombro.js';
@@ -162,11 +162,43 @@ function zonasImpactoHTML(s) {
 // ── Árbol CIF (fase 4) ──────────────────────────────────────────────────────
 // Formulario del paciente en papel: cada paso dice qué preguntas suyas mirar (G = general, R = región)
 const FORMULARIOS = { cervical: FORM_CERVICAL, hombro: FORM_HOMBRO, codo: FORM_CODO, lumbar: FORM_LUMBAR, cadera: FORM_CADERA, rodilla: FORM_RODILLA, tobillo_pie: FORM_TOBILLO };
+// «📝 Formulario: R1, R3»: cada referencia es un botón que abre la pregunta en la ficha flotante
+// (la misma de las citas), para no tener que buscarla en el PDF del formulario
+function refsFormularioHTML(region, stepId) {
+  const refs = refsPasoFormulario(FORM_COMUN, FORMULARIOS[region], stepId);
+  if (!refs.length) return '';
+  const boton = r => `<button type="button" class="guia-fpref-btn" data-fpref="${r}" aria-label="Pregunta ${r} del formulario">${r}</button>`;
+  const grupos = [refs.filter(r => r[0] === 'G'), refs.filter(r => r[0] === 'R')].filter(g => g.length);
+  return `<div class="guia-fpref" data-region="${region}">📝 Formulario: ${grupos.map(g => g.map(boton).join(', ')).join(' · ')}</div>`;
+}
+function fichaPreguntaHTML(region, ref) {
+  const p = preguntaPorRef(FORM_COMUN, FORMULARIOS[region], ref);
+  if (!p) return '';
+  const { item: it, seccion, hoja } = p;
+  const lista = xs => `<ul class="guia-fp-ops">${xs.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
+  let cuerpo = '';
+  if (it.tipo === 'matriz') cuerpo = lista(it.filas.map(f => f.texto)) + `<p class="guia-fp-meta">En cada fila: ${esc(it.opciones.join(' · '))}</p>`;
+  else if (it.tipo === 'escala') cuerpo = `<p class="guia-fp-meta">Escala de 0 a 10</p>`;
+  else if (it.tipo === 'texto') cuerpo = `<p class="guia-fp-meta">Respuesta libre</p>`;
+  else cuerpo = lista(it.opciones || []) + (it.tipo === 'multi' ? `<p class="guia-fp-meta">Puede marcar varias</p>` : '');
+  const nombreHoja = hoja === 'general' ? 'Formulario general' : `Formulario de ${nombreRegion(region).toLowerCase()}`;
+  return `<p class="guia-fp-kicker">${esc(ref)} · ${esc(nombreHoja)}${seccion ? ` · ${esc(seccion)}` : ''}</p><p class="guia-fp-texto">${esc(it.texto)}</p>${cuerpo}`;
+}
+// Enlaces a los PDF del formulario del paciente (general y de la región), con su versión
+function enlacesFormulario(region) {
+  const a = (clave, txt) => `<a href="${urlPDF(clave, HUELLAS?.[clave]?.huella)}" target="_blank" rel="noopener">${txt} ↗</a>`;
+  return ` Formulario en PDF: ${a(`formulario-${region}`, nombreRegion(region))} · ${a('formulario-comun', 'General')}.`;
+}
+document.addEventListener('click', e => {
+  const b = e.target instanceof Element ? e.target.closest('[data-fpref]') : null;
+  if (!b) return;
+  alternarFicha(b, fichaPreguntaHTML(b.closest('[data-region]')?.dataset.region, b.dataset.fpref), { id: 'fpFicha', clase: 'guia-fp-ficha' });
+});
 function htmlArbol(region) {
   const tree = CIF_TREES[region], steps = tree.steps;
   const lab = id => { const i = steps.findIndex(s => s.id === id); return etiquetaPaso(steps[i], i); };
   return `<h2>${esc(tree.title || `Árbol de decisión · ${nombreRegion(region)}`)}</h2>
-    <p class="guia-nota">Cada respuesta puede sumar una hipótesis; se acumulan y se confirman con tests en la fase 4b. «📝 Formulario» = preguntas del formulario del paciente que tocan el paso (G = hoja general, R = hoja de la región).</p>
+    <p class="guia-nota">Cada respuesta puede sumar una hipótesis; se acumulan y se confirman con tests en la fase 4b. «📝 Formulario» = preguntas del formulario del paciente que tocan el paso (G = hoja general, R = hoja de la región); toca una para verla.${enlacesFormulario(region)}</p>
     ${steps.map((st, i) => {
       const r = st.razonamiento;
       const cuerpo = r ? seccion('Por qué', `<p>${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>`)
@@ -180,7 +212,7 @@ function htmlArbol(region) {
         return `<li><b>${esc(corto.trim())}</b>${resto.length ? ` — ${esc(resto.join('—').trim())}` : ''}${res ? ` → ${res}` : ''}</li>`;
       }).join('');
       return `<section class="guia-bloque guia-item" id="paso-${st.id}"><h3><span class="guia-num">${esc(lab(st.id))}</span>${esc(st.question)}</h3>
-        ${(fp => fp ? `<div class="guia-fpref">📝 Formulario: ${esc(fp)}</div>` : '')(textoRefs(refsPasoFormulario(FORM_COMUN, FORMULARIOS[region], st.id)))}
+        ${refsFormularioHTML(region, st.id)}
         <ul class="guia-ops">${ops}</ul>${porQue(ctxArbol(region, st.iaPregunta || st.question), cuerpo)}</section>`;
     }).join('')}
     <div class="guia-sinhip" id="sin-hipotesis"><b>Si el árbol termina sin ninguna hipótesis</b>
