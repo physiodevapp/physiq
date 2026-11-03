@@ -98,4 +98,14 @@ export function initRazonPlegable() {
   });
   window.addEventListener('scroll', alHacerScroll, { passive: true });
   window.addEventListener('resize', alHacerScroll, { passive: true });
+  // Las bandas de contexto aparecen con su propio IntersectionObserver, y en un
+  // móvil cargado pueden llegar después de la medida de 150 ms: entonces la línea
+  // quedaba tapada bajo la banda. Se mide de nuevo cada vez que una cambia y al
+  // acabar su animación de entrada (fadeUp la desplaza mientras dura).
+  const alCambiarBanda = () => { if (document.querySelector('details.razon[open]')) medir(); };
+  const observador = typeof MutationObserver === 'function' ? new MutationObserver(alCambiarBanda) : null;
+  document.querySelectorAll('.context-banner').forEach(b => {
+    observador?.observe(b, { attributes: true, attributeFilter: ['class', 'style'] });
+    b.addEventListener('animationend', alCambiarBanda);
+  });
 }
