@@ -604,6 +604,41 @@ function iniciarApariencia() {
   document.getElementById('letraBtn').addEventListener('click', () => { cambiarLetra(); });
 }
 
+// «Regiones ▾» del pie (usuario, 2026-11): el mismo menú que el título de una región, abierto
+// hacia arriba, para llegar a cualquier región desde las páginas sueltas; cada una abre su cribado
+function pieRegionesHTML() {
+  return `<span class="guia-pie-regiones"><button type="button" class="guia-pie-reg-btn" id="guiaPieRegiones" aria-haspopup="true" aria-expanded="false" aria-controls="guiaPieMenu">Regiones ▾</button><ul class="guia-region-menu guia-pie-menu" id="guiaPieMenu" hidden>${REGIONES.map(r =>
+    `<li><a href="#${r}/cribado">${esc(nombreRegion(r))}</a></li>`).join('')}</ul></span>`;
+}
+function menuPie(abrir) {
+  const btn = document.getElementById('guiaPieRegiones'), menu = document.getElementById('guiaPieMenu');
+  if (!btn || !menu) return;
+  if (abrir === undefined) abrir = menu.hidden;
+  menu.hidden = !abrir;
+  btn.setAttribute('aria-expanded', String(abrir));
+  if (abrir) menu.querySelector('a')?.focus();
+}
+function iniciarPieRegiones() {
+  document.addEventListener('click', e => {
+    const t = e.target instanceof Element ? e.target : null;
+    if (t?.closest('#guiaPieRegiones')) { menuPie(); return; }
+    const menu = document.getElementById('guiaPieMenu');
+    if (!menu || menu.hidden) return;
+    if (t?.closest('#guiaPieMenu a')) { menuPie(false); return; }
+    if (!t?.closest('.guia-pie-regiones')) menuPie(false);
+  });
+  document.addEventListener('keydown', e => {
+    const menu = document.getElementById('guiaPieMenu');
+    if (!menu || menu.hidden) return;
+    if (e.key === 'Escape') { e.stopPropagation(); menuPie(false); document.getElementById('guiaPieRegiones').focus(); }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const enlaces = [...menu.querySelectorAll('a')], i = enlaces.indexOf(document.activeElement);
+      enlaces[(i + (e.key === 'ArrowDown' ? 1 : enlaces.length - 1)) % enlaces.length].focus();
+      e.preventDefault();
+    }
+  }, true);
+}
+
 async function iniciar() {
   iniciarApariencia();
   const btn = document.getElementById('guiaRegion'), menu = document.getElementById('guiaRegionMenu');
@@ -631,7 +666,8 @@ async function iniciar() {
   });
   pintar();
   const v = textoVersion();
-  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
+  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. ${pieRegionesHTML()} · <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
+  iniciarPieRegiones();
   initAmpliarIA();
   initCalculadoras(pintar);
   initPlan(pintar);
