@@ -6,8 +6,9 @@ import { SYSTEMIC_SCREENING, CIF_TREES, HYPOTHESES, DOSIS_DERIVAR } from './data
 import { TEXTO_PAUTA_COMPATIBLE } from './lib/posquirurgico.js';
 import { citasHTML, citasEnTexto, registroReferencias, enlaceCita } from './lib/citas.js';
 import { iaParrafoHTML, ctxCribado, ctxArbol, ctxTest, ctxIrritabilidad, ctxPauta, ctxPronostico, attrIA, atributosIA, initAmpliarIA } from './ampliar-ia.js';
+import { initRazonPlegable } from './razon-plegable.js';
 import { ITEMS_IRRITABILIDAD, CORTES_OTROS, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
-import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad } from './lib/irritabilidad.js';
+import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad, bandaIrritabilidad } from './lib/irritabilidad.js';
 import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML } from './lib/tests-4b.js';
 import { resolveOptionTargets } from './lib/arbol.js';
 import { cuestionariosEnTexto } from './lib/cuestionarios.js';
@@ -346,6 +347,7 @@ function htmlIrritabilidad(region, { conTitulo = true } = {}) {
   return `${conTitulo ? '<h2>Irritabilidad (fase 3)</h2>' : ''}
     <p class="guia-nota">La misma matriz y la misma regla que la fase 3 de la app (y la fase 6). Marca lo que refiere el paciente; un segundo toque desmarca. No se guarda nada: se borra al recargar.</p>
     <div id="guiaIrrRes">${resultadoIrritabHTML(region)}</div>
+    <button type="button" class="guia-irr-banda" id="guiaIrrBanda" hidden><span class="guia-vh">Ir al resumen: </span><span data-b="emoji" aria-hidden="true"></span> <strong data-b="nivel"></strong> <span class="guia-irr-banda-det" data-b="detalle"></span><span class="guia-irr-banda-dir" aria-hidden="true">↑ volver</span></button>
     <section class="guia-bloque">${ITEMS_IRRITABILIDAD.map(filaIrritabHTML).join('')}
       <div class="guia-irr-pie"><button type="button" class="guia-borrar" data-irr-borrar>Borrar respuestas</button></div></section>
     <details class="razon guia-irr-regla"><summary>ⓘ Cómo se calcula</summary><div class="razon-cuerpo">
@@ -363,13 +365,37 @@ document.addEventListener('click', e => {
       x.classList.toggle('selected', on); x.setAttribute('aria-pressed', on);
     });
     document.getElementById('guiaIrrRes').innerHTML = resultadoIrritabHTML(leerRuta().region);
+    bandaIrr();
     return;
   }
+  if (t?.closest('#guiaIrrBanda')) { document.getElementById('guiaIrrRes')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
   if (t?.closest('[data-irr-borrar]')) {
     Object.keys(IRRITABILIDAD).forEach(k => delete IRRITABILIDAD[k]);
     pintar();
   }
 });
+
+// Banda de una línea bajo las pestañas con el nivel calculado y lo que falta, mientras
+// se marca la matriz y el recuadro completo (encima) no se ve (usuario, 2026-11); el
+// mismo texto que la banda de la fase 3 de la app (bandaIrritabilidad()).
+function bandaIrr() {
+  const banda = document.getElementById('guiaIrrBanda'), res = document.getElementById('guiaIrrRes');
+  if (!banda || !res) return;
+  const nav = document.querySelector('.guia-nav')?.getBoundingClientRect();
+  const arriba = nav ? Math.max(0, nav.bottom) : 0;
+  const filas = [...document.querySelectorAll('.guia-irr-fila')];
+  const m = filas.length ? { top: filas[0].getBoundingClientRect().top, bottom: filas.at(-1).getBoundingClientRect().bottom } : null;
+  const r = res.getBoundingClientRect();
+  const ver = !!m && m.bottom > arriba + 60 && m.top < window.innerHeight - 48 && !(r.bottom > arriba + 8 && r.top < window.innerHeight);
+  if (ver) {
+    const b = bandaIrritabilidad(IRRITABILIDAD);
+    for (const k of ['emoji', 'nivel', 'detalle']) { const el = banda.querySelector(`[data-b="${k}"]`); if (el.textContent !== b[k]) el.textContent = b[k]; }
+    banda.style.top = `${arriba}px`;
+  }
+  banda.hidden = !ver;
+}
+window.addEventListener('scroll', () => requestAnimationFrame(bandaIrr), { passive: true });
+window.addEventListener('resize', () => requestAnimationFrame(bandaIrr));
 
 // ── Tiempos de recuperación de tejidos (#tejidos/<hoja>, el QR de sus dos hojas) ──
 // La misma gráfica que el panel ⏱ de la app (lib/tejidos.js), con los grupos de esa hoja;
@@ -669,6 +695,7 @@ async function iniciar() {
   document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. ${pieRegionesHTML()} · <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
   iniciarPieRegiones();
   initAmpliarIA();
+  initRazonPlegable();
   initCalculadoras(pintar);
   initPlan(pintar);
 }

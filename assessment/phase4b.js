@@ -270,11 +270,13 @@ export function buildTestItem(hId, test, idx) {
   const porque = r?.porque ? `<details class="razon">
       <summary>ⓘ ¿Por qué?</summary>
       <div class="razon-cuerpo" data-ia-ctx="${attrIA(ctxTest(hyp?.region, test.name, hyp?.name))}"><p><span class="razon-etq">Por qué</span> ${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>
-        ${r.fuentes?.length ? `<div class="razon-pie">— ${citasHTML(r.fuentes)}</div>` : ''}</div>
+        ${r.fuentes?.length || ampliar ? `<div class="razon-pie">${r.fuentes?.length ? `— ${citasHTML(r.fuentes)}` : ''}${ampliar ? ` ${ampliar}` : ''}</div>` : ''}</div>
     </details>` : '';
   // Autor y año de cada cita; al tocarla, la cita entera y su enlace (lib/citas.js)
+  // «Ampliar →» va en la línea de la fuente; con el «¿Por qué?» abierto, en su pie (CSS
+  // esconde la otra copia), para que no parezca otra cosa que sigue a «Replegar ▴»
   const fuente = test.fuente || ampliar
-    ? `<div class="test-source">${test.fuente ? citasHTML(test.fuente) : ''}${ampliar}</div>` : '';
+    ? `<div class="test-source">${test.fuente ? citasHTML(test.fuente) : ''}${ampliar ? `<span class="ampliar-fuente">${ampliar}</span>` : ''}</div>` : '';
 
   const savedResult = (state.testResults[hId] && state.testResults[hId][idx]) || 'nd';
   return `<div class="test-item">

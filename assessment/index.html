@@ -135,6 +135,16 @@
   <span class="context-banner-back" aria-hidden="true">↑ volver</span>
 </button>
 
+<!-- IRRITABILIDAD (fase 3): una línea con el nivel calculado mientras se marca la
+     matriz y el recuadro completo no está a la vista (usuario, 2026-11) -->
+<button type="button" class="sis-context-banner irr-context-banner context-banner" id="irrContextBanner" onclick="irAResumenIrritabilidad()">
+  <span class="sr-only">Ir al resumen: </span>
+  <span class="sis-banner-icon" id="irrBannerIcon" aria-hidden="true"></span>
+  <span class="sis-banner-name" id="irrBannerName"></span>
+  <span class="fp-banner-cont" id="irrBannerCont"></span>
+  <span class="context-banner-back" id="irrBannerDir" aria-hidden="true">↓ ver</span>
+</button>
+
 <!-- HYPOTHESIS CONTEXT BANNER — appears when header scrolls out of view -->
 <button type="button" class="hyp-context-banner context-banner" id="hypContextBanner" onclick="scrollToActiveHypHeader()">
   <span class="sr-only">Volver a </span>

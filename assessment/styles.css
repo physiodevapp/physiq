@@ -753,6 +753,7 @@
     border-radius: var(--radius-lg);
     margin-bottom: 1rem;
     overflow: hidden;
+    overflow: clip;   /* sin ser contenedor de scroll: deja funcionar el sticky de .razon */
     border: 1px solid var(--border);
     transition: all 0.3s;
   }
@@ -835,6 +836,9 @@
     color: var(--text2);
   }
   .fp-banner-cont { flex-shrink: 0; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text3); white-space: nowrap; }
+  /* Irritabilidad (fase 3): el nivel nunca se corta; lo que falta pasa a dos líneas si no cabe */
+  .irr-context-banner .sis-banner-name { flex: 0 0 auto; color: var(--text); }
+  .irr-context-banner .fp-banner-cont { flex: 1 1 auto; min-width: 0; white-space: normal; line-height: 1.3; }
   /* Back button styles unified in .context-banner-back below */
 
   /* ── SEMÁFORO DOTS — Tests Exploratorios title ──────────── */
@@ -978,6 +982,8 @@
   .cluster-rule { font-size: 0.75rem; color: var(--text2); line-height: 1.5; }
   .cluster-box .test-source { margin: 4px 0 0; }
   .test-source .razon-ampliar { font-family: 'Outfit', sans-serif; white-space: nowrap; }
+  /* Con el «¿Por qué?» del test abierto, «Ampliar →» solo en su pie (phase4b.js) */
+  .test-item:has(> details.razon[open]) .ampliar-fuente { display: none; }
   /* «Anatomía» del test (docs/anatomia-kenhub.md): enlaces a Kenhub bajo la fuente */
   .test-anat { font-size: 0.72rem; color: var(--text3); line-height: 1.6; margin: -4px 0 10px; }
   .test-anat-etq {
@@ -1662,6 +1668,7 @@
     border: 1px solid var(--border2);
     border-radius: var(--radius);
     overflow: hidden;
+    overflow: clip;   /* recorta igual sin ser contenedor de scroll: deja funcionar el sticky de .razon */
     transition: border-color 0.2s;
   }
   .sistema-accordion-row.has-alert { border-color: rgba(255,71,87,0.4); }
@@ -2577,6 +2584,28 @@
   text-transform: uppercase; color: var(--text3); margin-right: 4px;
 }
 .razon-pie { font-size: 0.7rem; color: var(--text3); }
+/* Desplegado (usuario, 2026-11; razon-plegable.js): la línea se queda fija bajo las
+   barras de arriba (--razon-top, medido) hasta que acaba el <details>, con el fondo
+   de su contenedor (--razon-fondo) y franjas laterales del mismo color, para que
+   replegar esté siempre a mano; al final, «Replegar ▴». */
+.razon[open] > summary {
+  display: block; position: sticky; top: var(--razon-top, 0px); z-index: 4;
+  background: var(--razon-fondo, var(--surface));
+  box-shadow: -12px 0 0 var(--razon-fondo, var(--surface)), 12px 0 0 var(--razon-fondo, var(--surface));
+  padding: 6px 0; min-height: 32px; box-sizing: border-box;
+}
+.razon[open] > summary::after { content: '▴'; margin-left: 4px; }
+.razon-replegar {
+  display: block; background: none; border: none; cursor: pointer;
+  font: inherit; font-size: 0.72rem; color: var(--accent);
+  padding: 6px 0; min-height: 32px; margin: 2px 0 0;
+}
+@media (hover: hover) { .razon-replegar:hover { text-decoration: underline; } }
+@media (pointer: coarse) { .razon[open] > summary, .razon-replegar { min-height: 44px; display: flex; align-items: center; } }
+@media print {
+  .razon-replegar { display: none; }
+  .razon[open] > summary { position: static; box-shadow: none; }
+}
 /* Fase 4: el «¿Por qué esta pregunta?» va pegado a la pregunta del paso y
    se lleva el margen que la pregunta dejaba antes de las opciones. */
 .tree-question-text:has(+ .razon) { margin-bottom: 0; }

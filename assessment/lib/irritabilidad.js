@@ -51,3 +51,16 @@ export function reglaIrritabilidad() {
     'El nivel es el más alto de los dos. Se calcula con lo contestado y avisa si falta alguna fila, porque quedarse corto es el error peligroso. El impacto en las actividades es gravedad y no cuenta aquí.',
   ];
 }
+
+// Texto de la banda fija de la matriz (fase 3 de la app y pestaña Irritabilidad de
+// la guía; usuario, 2026-11): una línea con el nivel calculado y lo que falta, que
+// cambia con cada toque mientras el recuadro completo no está a la vista.
+export const EMOJI_NIVEL = { baja: '🟢', moderada: '🟠', alta: '🔴' };
+export function bandaIrritabilidad(irr = {}) {
+  const { nivel, sinCalma } = nivelMatriz(irr);
+  const total = ITEMS_IRRITABILIDAD.length;
+  const hechas = ITEMS_IRRITABILIDAD.filter(i => indice(irr, i.clave) >= 0).length;
+  if (!nivel) return { emoji: '⚪', nivel: 'Irritabilidad sin registrar', detalle: `0 de ${total} filas` };
+  const detalle = hechas === total ? 'matriz completa' : sinCalma ? 'falta tiempo en calmarse' : `${hechas} de ${total} filas`;
+  return { emoji: EMOJI_NIVEL[nivel], nivel: `Irritabilidad ${nivel}`, detalle };
+}

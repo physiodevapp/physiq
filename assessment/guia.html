@@ -99,7 +99,8 @@
   .guia-lr .util { color: var(--green); font-weight: 500; }
   .guia-peso { font-size: 0.8rem; color: var(--text2); margin: 2px 0; }
   .guia-criterio { font-size: 0.82rem; color: var(--text2); margin: 4px 0; line-height: 1.45; }
-  .guia .razon-cuerpo .razon-seccion { margin: 6px 0; }
+  /* Dentro de «Por qué y más» basta la línea del propio desplegable: sin la de cada apartado (usuario, 2026-11); los separa el espacio y su rótulo */
+  .guia .razon-cuerpo .razon-seccion { margin: 14px 0 6px; border-left: 0; padding-left: 0; }
   .guia .razon-cuerpo ul, .guia .razon-cuerpo ol { padding-left: 18px; margin: 2px 0 4px; }
   .guia-pie { margin-top: 24px; font-size: 0.75rem; color: var(--text3); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 10px; }
   .guia-urg { border: 1px solid var(--red); background: color-mix(in srgb, var(--red) 8%, var(--surface)); color: var(--text); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; font-size: 0.82rem; line-height: 1.45; }
@@ -121,6 +122,13 @@
   .guia-irr-baja { border-color: color-mix(in srgb, var(--green) 50%, var(--border)); background: color-mix(in srgb, var(--green) 7%, var(--surface)); }
   .guia-irr-moderada { border-color: color-mix(in srgb, var(--orange) 50%, var(--border)); background: color-mix(in srgb, var(--orange) 7%, var(--surface)); }
   .guia-irr-alta { border-color: color-mix(in srgb, var(--red) 50%, var(--border)); background: color-mix(in srgb, var(--red) 7%, var(--surface)); }
+  .guia-irr-banda { position: fixed; left: 0; right: 0; z-index: 19; display: flex; align-items: center; gap: 6px; width: 100%; min-height: 44px; padding: 8px 1rem; border: 0; border-bottom: 1px solid var(--border); background: var(--bg); box-shadow: 0 8px 12px -4px var(--bg); color: var(--text2); font: inherit; font-size: 0.82rem; text-align: left; cursor: pointer; }
+  .guia-irr-banda[hidden] { display: none; }
+  .guia-irr-banda strong { color: var(--text); font-weight: 600; }
+  .guia-irr-banda-det { flex: 1; min-width: 0; color: var(--text3); line-height: 1.3; }
+  .guia-irr-banda strong { white-space: nowrap; }
+  .guia-irr-banda-dir { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text3); white-space: nowrap; }
+  @media print { .guia-irr-banda { display: none !important; } }
   .guia-irr-margen { font-size: 0.78rem; color: var(--text3); }
   .guia-irr-ops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
   .guia-irr-ops .option-btn { width: 100%; min-height: 44px; font-size: 0.82rem; padding: 6px 8px; text-align: left; }

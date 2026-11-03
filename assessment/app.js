@@ -43,7 +43,7 @@ import { EM, ESTADOS_EM, CASILLAS_EM, SEMANAS_POSPARTO_MAX, embarazoVacio, norma
   lineasRecomendacionEM } from './lib/embarazo.js';
 import { AC, anticoaguladoVacio, normalizarAnticoagulado, acActivo, elementoACVisible, migrarCasillaLupus,
   pendientesAC, acPayload, datosAC, lineasRecomendacionAC } from './lib/anticoagulado.js';
-import { nivelMatriz, matrizVacia, NOMBRE_NIVEL } from './lib/irritabilidad.js';
+import { nivelMatriz, matrizVacia, NOMBRE_NIVEL, bandaIrritabilidad } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { BANDERAS_FASE1, TEXTOS_FASE1, PREGUNTAS_PSICO } from './data/fase1.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -61,6 +61,7 @@ import { CONDICIONES } from './data/condiciones.js';
 import { tiemposTejidoHTML, infoBarraHTML, fuentesTejidoHTML, filasPaciente, FILTRO_PACIENTE } from './lib/tejidos.js';
 import { listaCuestionariosHTML, formularioCuestionarioHTML, resultadoCuestionarioHTML, itemCuestionarioHTML, resumenCuestionarios, cuestionariosEnTexto, enlacesCalcularHTML } from './lib/cuestionarios.js';
 import { initAmpliarIA, iaParrafoHTML, ctxCribado, ctxPauta, ctxPronostico, ctxCondicion, ctxIrritabilidad, atributosIA, attrIA, DESTINOS_IA, NOTA_CUENTAS, destinoIA, guardarDestinoIA, promptPregunta, TIPOS_PREGUNTA, TIPO_PREGUNTA_DEFECTO, urlIA } from './ampliar-ia.js';
+import { initRazonPlegable } from './razon-plegable.js';
 
 // ─── SCROLL LOCK (dialogs / bottom sheets) ───────────────────
 // Reference-counted: several overlays (confirm-banner, session panel,
@@ -3638,6 +3639,7 @@ export function _actualizarBandas() {
     verSis = !!(header && row.classList.contains('open') && _bandaDebeVerse(sis, header, row));
   }
   sis?.classList.toggle('visible', verSis);
+  _bandaIrritabilidad(verSis);
   if (!fp) return;
   const det = verSis ? null : _formularioAbierto();
   const verFp = !!(det && _bandaDebeVerse(fp, det.querySelector('summary'), det));
@@ -3650,6 +3652,38 @@ export function _actualizarBandas() {
     if (elC.textContent !== cont) elC.textContent = cont;
   }
   fp.classList.toggle('visible', verFp);
+}
+
+// Banda de irritabilidad (fase 3; usuario, 2026-11): el nivel calculado y lo que
+// falta, en una línea, mientras la matriz está en pantalla y el recuadro completo
+// (#irritabilidadResumen, debajo de la matriz) no se ve. Con el nivel elegido
+// directamente (modo breve) no sale: la matriz no se usa.
+function _bandaIrritabilidad(otraVisible) {
+  const banda = document.getElementById('irrContextBanner');
+  if (!banda) return;
+  let ver = false, abajo = true;
+  if (!otraVisible && state.currentPhase === 3 && !state.irritabilidadDirecta) {
+    const matriz = [document.getElementById('irritabTarjetas'), document.getElementById('irritabTabla')].find(el => el?.offsetHeight > 0);
+    const resumen = document.getElementById('irritabilidadResumen');
+    if (matriz && resumen) {
+      const arriba = (parseFloat(getComputedStyle(banda).top) || 0) + 44;
+      const m = matriz.getBoundingClientRect(), r = resumen.getBoundingClientRect();
+      const matrizEnPantalla = m.bottom > arriba + 24 && m.top < window.innerHeight - 48;
+      const resumenVisible = r.top < window.innerHeight && r.bottom > arriba;
+      ver = matrizEnPantalla && !resumenVisible;
+      abajo = r.top >= window.innerHeight;
+    }
+  }
+  if (ver) {
+    const b = bandaIrritabilidad(state.irritabilidad);
+    const pon = (id, txt) => { const el = document.getElementById(id); if (el.textContent !== txt) el.textContent = txt; };
+    pon('irrBannerIcon', b.emoji); pon('irrBannerName', b.nivel); pon('irrBannerCont', b.detalle);
+    pon('irrBannerDir', abajo ? '↓ ver' : '↑ volver');
+  }
+  banda.classList.toggle('visible', ver);
+}
+function irAResumenIrritabilidad() {
+  document.getElementById('irritabilidadResumen')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 // Flag como propiedad de la función (no `let`): goToPhase la llama y podría
@@ -3954,6 +3988,7 @@ function renderIrritabResumen(nivel, matriz = null) {
   const T = TEXTOS_IRRITABILIDAD;
   if (!nivel) {
     div.innerHTML = `<div class="alert alert-info"><span class="alert-icon">⚪</span><span>${citasEnTexto(T.noRegistrada)}</span></div>`;
+    _programarBandas();
     return;
   }
   const { color, emoji } = { Baja: { color: 'var(--green)', emoji: '🟢' }, Moderada: { color: 'var(--orange)', emoji: '🟠' }, Alta: { color: 'var(--red)', emoji: '🔴' } }[nivel] || { color: 'var(--green)', emoji: '🟢' };
@@ -3964,6 +3999,7 @@ function renderIrritabResumen(nivel, matriz = null) {
     <span class="alert-icon">${emoji}</span>
     <span ${atributosIA(ctxIrritabilidad(state.region, nivel))}><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — <span data-ia-parrafo>${citasEnTexto(textos.join(' '))}${iaParrafoHTML()}</span>${falta ? `<br><em>${citasEnTexto(falta)}</em>` : ''}<br><span class="irritab-ayuda" data-ia-parrafo>${citasEnTexto(T.margen)}${iaParrafoHTML()}</span></span>
   </div>`;
+  _programarBandas();
 }
 
 function collectPhase3() {
@@ -6464,6 +6500,7 @@ function _initHubIntegration() {
 _initHubIntegration();
 _iniciarGrabadora();
 initAmpliarIA();
+initRazonPlegable();
 
 // ─── PUBLIC API ──────────────────────────────────────────────
 // Named exports for phase4.js / phase4b.js (which import these directly) and
@@ -6479,7 +6516,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
   abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, volverAHerramientas, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
-  navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, selectIrritab,
+  navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, irAResumenIrritabilidad, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,
   toggleAccordionRow, toggleDictation, toggleImpact, togglePhaseSheet, toggleSessionPanel,
