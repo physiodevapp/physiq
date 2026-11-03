@@ -99,8 +99,8 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-completo": {
-    "huella": "3a2b506b",
-    "archivo": "b7762606",
+    "huella": "9a8bcd04",
+    "archivo": "d265d55a",
     "fecha": "2026-11-03",
     "paginas": 62,
     "hojas": {
@@ -123,7 +123,7 @@
       "confirmacion-codo": "9a5d7042",
       "cribado-lumbar": "392d2f50",
       "arbol-a4-lumbar": "a028246f",
-      "confirmacion-lumbar": "b3b7a11e",
+      "confirmacion-lumbar": "53e2dc69",
       "cribado-cadera": "483cb323",
       "arbol-a4-cadera": "b835303d",
       "confirmacion-cadera": "868c847b",
@@ -201,14 +201,14 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-lumbar": {
-    "huella": "09097a55",
-    "archivo": "1427f276",
-    "fecha": "2026-10-31",
+    "huella": "ddeb07f4",
+    "archivo": "81c93009",
+    "fecha": "2026-11-03",
     "paginas": 26,
     "hojas": {
       "cribado-lumbar": "392d2f50",
       "arbol-a4-lumbar": "a028246f",
-      "confirmacion-lumbar": "b3b7a11e",
+      "confirmacion-lumbar": "53e2dc69",
       "fase1": "18d660ee",
       "condiciones": "7ceffde3",
       "irritabilidad": "ec35256c",
