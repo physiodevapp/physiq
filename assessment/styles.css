@@ -801,6 +801,13 @@
     color: var(--text3);
   }
   .hyp-progreso-completo { color: var(--text2); }
+  /* Bajo el nombre: en móvil, la etiqueta de puntuación con el progreso como una
+     parte más (se parte tras cada «·»); en escritorio, solo el progreso (la
+     etiqueta va a la derecha, .hyp-score) */
+  .hyp-meta { display: block; min-width: 0; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text2); }
+  .hyp-meta-movil { display: none; }
+  .hyp-meta .hyp-etq-parte.hyp-progreso { color: var(--text3); }
+  .hyp-meta .hyp-etq-parte.hyp-progreso-completo { color: var(--text2); }
   .hyp-progreso-completo::after { content: ' ✓'; }
   .hyp-replegar { margin-top: 0.75rem; }
   .hyp-score {
@@ -2038,6 +2045,8 @@
     .sis-context-banner { top: 94px; }
     /* Ocultar score numérico en header móvil — aparece en el banner */
     .hyp-score { display: none; }
+    .hyp-meta-movil { display: block; }
+    .hyp-meta-esc { display: none; }
     .option-group-full .option-btn { min-height: 44px; font-size: 0.9rem; }
     /* Zonas de dolor referido — una columna en móvil */
     .referred-zone-item { flex-direction: column; gap: 2px; padding: 8px 0; }

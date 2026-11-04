@@ -107,7 +107,7 @@ function tarjetaPosqHTML(hyp) {
   return `
       <div class="hypothesis-header" onclick="toggleHypCard('${hyp.id}')">
         <span class="hyp-color-dot"></span>
-        <span class="hyp-titulo"><span class="hyp-name" title="${esc(hyp.name)}">${esc(hyp.name)}</span></span>
+        <span class="hyp-titulo"><span class="hyp-name" title="${esc(hyp.name)}">${esc(hyp.name)}</span>${metaHTML(hyp.id, null, ETIQUETA_HIP_POSQ)}</span>
         <span class="hyp-score" id="score_${hyp.id}">${etiquetaHipHTML(ETIQUETA_HIP_POSQ)}</span>
         <span class="hyp-chevron">▾</span>
       </div>
@@ -125,6 +125,32 @@ function tarjetaPosqHTML(hyp) {
 // «Replegar ▴» al final de cada tarjeta abierta (usuario, 2026-11; como el de
 // razon-plegable.js): pliega la tarjeta y vuelve a su cabecera
 const REPLEGAR_HTML = `<button type="button" class="razon-replegar hyp-replegar" onclick="replegarHipotesis(this)">Replegar ▴</button>`;
+
+// Cabecera plegada en móvil (usuario, 2026-11): bajo el nombre, la etiqueta de
+// puntuación con el progreso como una parte más («🟢 Peso alto (LR× 5.9) · 2 de 5
+// tests hechos»), que se parte tras cada «·» como .hyp-etq. En escritorio la etiqueta
+// va a la derecha (.hyp-score) y bajo el nombre solo el progreso. «Sin evaluar» no se
+// repite: el progreso («0 de 5 tests hechos») ya lo dice.
+const MARCA_PROGRESO = '\u0001';
+function metaHTML(hId, hyp, label) {
+  const progreso = hyp ? progresoHTML(hId, hyp) : '';
+  const txt = progreso ? progreso.replace(/<[^>]+>/g, '') : '';
+  const completo = progreso.includes('hyp-progreso-completo');
+  let movil = '';
+  if (label && label !== 'Sin evaluar') {
+    movil = etiquetaHipHTML(txt ? `${label} · ${MARCA_PROGRESO}` : label)
+      .replace(`<span class="hyp-etq-parte">${MARCA_PROGRESO}</span>`,
+        `<span class="hyp-etq-parte hyp-progreso${completo ? ' hyp-progreso-completo' : ''}">${txt}</span>`);
+  } else if (progreso) movil = progreso.replace(/ id="[^"]*"/, '');
+  return `<span class="hyp-meta" id="meta_${hId}"><span class="hyp-meta-movil">${movil}</span><span class="hyp-meta-esc">${progreso}</span></span>`;
+}
+// La misma etiqueta en la cabecera (derecha, escritorio) y en la línea de móvil
+function pintarPuntuacion(hId, label) {
+  const d = document.getElementById(`score_${hId}`);
+  if (d) d.innerHTML = etiquetaHipHTML(label);
+  const m = document.getElementById(`meta_${hId}`);
+  if (m) m.outerHTML = metaHTML(hId, HYPOTHESES[hId], label);
+}
 
 // Cabecera plegada: «2 de 5 tests hechos» (pos o neg). Ni en `pq1` (sin tests)
 // ni en una hipótesis «ya diagnosticada y tratada» (sus tests no aplican)
@@ -209,7 +235,7 @@ export function buildHypothesisCards() {
     card.innerHTML = `
       <div class="hypothesis-header" onclick="toggleHypCard('${hId}')">
         <span class="hyp-color-dot"></span>
-        <span class="hyp-titulo"><span class="hyp-name" title="${hyp.name}">${hyp.name}</span>${progresoHTML(hId, hyp)}</span>
+        <span class="hyp-titulo"><span class="hyp-name" title="${hyp.name}">${hyp.name}</span>${metaHTML(hId, hyp, previa?.label || 'Sin evaluar')}</span>
         <span class="hyp-score" id="score_${hId}">${etiquetaHipHTML(previa?.label || 'Sin evaluar')}</span>
         <span class="hyp-chevron">▾</span>
       </div>
@@ -478,8 +504,7 @@ export function clearAllTests() {
         if (card) {
           card.className = 'hypothesis-card hyp-orange';
         }
-        const score = document.getElementById('score_' + hId);
-        if (score) score.innerHTML = etiquetaHipHTML('Sin evaluar');
+        pintarPuntuacion(hId, 'Sin evaluar');
       });
       saveSession();
     }
@@ -515,13 +540,7 @@ export function recalcHypScore(hId) {
   state.hypothesisScores[hId] = { totalLR, label, colorClass };
   const card = document.getElementById(`hypcard_${hId}`);
   card.className = `hypothesis-card ${colorClass}`;
-  document.getElementById(`score_${hId}`).innerHTML = etiquetaHipHTML(label);
-  const prog = document.getElementById(`prog_${hId}`);
-  if (prog) {
-    const p = progresoTests(hyp, results);
-    prog.textContent = textoProgreso(p);
-    prog.classList.toggle('hyp-progreso-completo', p.hechos === p.total);
-  }
+  pintarPuntuacion(hId, label);   // también el progreso de la cabecera
 }
 
 // Osteoporosis (Fase P, docs/osteoporosis.md, decisión 7): línea de técnica en
