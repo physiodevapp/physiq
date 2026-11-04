@@ -228,7 +228,8 @@ function htmlArbol(region) {
         const [corto, ...resto] = o.label.split('—');
         const hips = o.hypothesis.map(h => HYPOTHESES[h]).filter(Boolean).map(h => `<span class="guia-hip">${esc(numeroHipotesis(h.num))} ${esc(h.name)}</span>`).join(', ');
         const t = resolveOptionTargets(tree, i, o)[0];
-        const ruta = !t ? 'fin del árbol' : t.id !== steps[i + 1]?.id ? `sigue en el paso ${lab(t.id)}` : '';
+        const ruta = !t ? 'fin del árbol' : t.id !== steps[i + 1]?.id
+          ? `<a class="guia-salto" href="#${region}/arbol/paso-${t.id}">sigue en el paso ${esc(lab(t.id))}</a>` : '';   // salto, enlazado (usuario, 2026-11)
         const res = [hips, o.derivacion ? `<span class="guia-der">Derivación médica: ${esc(o.derivacion)}</span>` : '', ruta].filter(Boolean).join(' · ');
         return `<li><b>${esc(corto.trim())}</b>${resto.length ? ` — ${esc(resto.join('—').trim())}` : ''}${res ? ` → ${res}` : ''}</li>`;
       }).join('');
