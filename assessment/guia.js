@@ -811,7 +811,12 @@ function pintar({ sinScroll = false } = {}) {
 
 // Alto de las pestañas fijas, para la línea fija de los bloques plegables
 const navAlto = () => document.querySelector('.guia-nav')?.offsetHeight || 0;
-function medirNav() { document.documentElement.style.setProperty('--guia-nav-alto', `${navAlto()}px`); }
+// Alto real, con decimales (offsetHeight redondea y podía dejar una rendija), y otra
+// vez cuando cambia (la fuente web llega después, letra grande)
+function medirNav() {
+  const alto = document.querySelector('.guia-nav')?.getBoundingClientRect().height || 0;
+  document.documentElement.style.setProperty('--guia-nav-alto', `${alto}px`);
+}
 function actualizarPlegarTodo() {
   const b = document.querySelector('[data-plegar-todo]');
   if (b) b.textContent = document.querySelector('details.guia-plegable:not([open])') ? 'Desplegar todo' : 'Plegar todo';
@@ -828,7 +833,10 @@ function actualizarFijas() {
   const top = navAlto();
   document.querySelectorAll('details.guia-plegable').forEach(d => {
     const r = d.getBoundingClientRect();
-    const fija = d.open && !_imprimiendo && r.top < top - 1 && r.bottom > top + 48;
+    // Compacta hasta que el bloque sale entero por arriba: en el tramo final la línea
+    // sigue pegada (la empuja el final del bloque) y volver a la alta se veía como una
+    // doble raya con el recuento asomando bajo las pestañas (usuario, 2026-11)
+    const fija = d.open && !_imprimiendo && r.top < top - 1 && r.bottom > top;
     if (fija === d.classList.contains('fija')) return;
     if (!fija) { quitarFija(d); return; }
     const s = d.querySelector(':scope > summary');
@@ -870,6 +878,8 @@ function iniciarPlegables() {
     }
   });
   window.addEventListener('resize', () => { medirNav(); programarFijas(); }, { passive: true });
+  const nav = document.querySelector('.guia-nav');
+  if (nav && typeof ResizeObserver === 'function') new ResizeObserver(() => { medirNav(); programarFijas(); }).observe(nav);
   window.addEventListener('scroll', programarFijas, { passive: true });
   // Al imprimir, todo desplegado; después, como estaba
   let antes = [];

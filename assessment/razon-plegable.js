@@ -51,7 +51,17 @@ function fondoDe(el) {
 let _medida = 0, _trasBanda = 0;
 function medir() {
   _medida = 0;
-  document.documentElement.style.setProperty('--razon-top', `${altoBarras()}px`);
+  const top = altoBarras();
+  document.documentElement.style.setProperty('--razon-top', `${top}px`);
+  marcarPegadas(top);
+}
+// .pegada mientras la línea está pegada bajo las barras (el <details> empieza por
+// encima de ellas): solo entonces lleva la tapa de arriba (styles.css)
+function marcarPegadas(top) {
+  document.querySelectorAll('details.razon').forEach(d => {
+    const pegada = d.open && d.getBoundingClientRect().top < top - 1;
+    if (pegada !== d.classList.contains('pegada')) d.classList.toggle('pegada', pegada);
+  });
 }
 function alHacerScroll() {
   if (!document.querySelector('details.razon[open]')) return;
@@ -101,7 +111,7 @@ export function initRazonPlegable() {
   document.addEventListener('toggle', e => {
     const d = e.target;
     if (!(d instanceof HTMLDetailsElement) || !d.classList.contains('razon')) return;
-    if (d.open) alAbrir(d); else alCerrar(d);
+    if (d.open) alAbrir(d); else { d.classList.remove('pegada'); alCerrar(d); }
   }, true);
   document.addEventListener('click', e => {
     const b = e.target instanceof Element ? e.target.closest('.razon-replegar') : null;
