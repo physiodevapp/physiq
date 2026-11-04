@@ -8,15 +8,27 @@
 // ni lee datos: solo mira el DOM.
 
 // Barras fijas o pegadas arriba que taparían la línea: cabecera, barra de fase
-// (móvil), bandas de contexto visibles y las pestañas de la guía
-const BARRAS = '.app-header, .mobile-phase-bar, .context-banner.visible, .guia-nav';
+// (móvil), bandas de contexto visibles, las pestañas de la guía y, en la guía, la línea
+// fija del sistema o la hipótesis abierta (bloques plegables, guia.js)
+const BARRAS_FIJAS = '.app-header, .mobile-phase-bar, .context-banner.visible, .guia-nav';
+const BARRAS = `${BARRAS_FIJAS}, .guia-plegable[open] > summary`;
 
-export function altoBarras() {
+export function altoBarras(sel = BARRAS) {
   // Apiladas desde arriba, en orden de posición (no de DOM): cada una cuenta si
   // empieza donde acaba la anterior
-  const rects = [...document.querySelectorAll(BARRAS)]
-    .filter(el => ['fixed', 'sticky'].includes(getComputedStyle(el).position))
-    .map(el => el.getBoundingClientRect()).filter(r => r.height > 0)
+  // Una barra fija, por su `top` de CSS y su alto, no por su posición en pantalla:
+  // las bandas de contexto entran con una animación (fadeUp) que las desplaza, y
+  // medidas a mitad no parecían apiladas y no contaban (CI, 2026-11)
+  const rects = [...document.querySelectorAll(sel)]
+    .map(el => ({ el, cs: getComputedStyle(el) }))
+    .filter(({ cs }) => ['fixed', 'sticky'].includes(cs.position))
+    .map(({ el, cs }) => {
+      if (cs.position === 'fixed' && cs.display !== 'none' && !Number.isNaN(parseFloat(cs.top))) {
+        const top = parseFloat(cs.top);
+        return { top, bottom: top + el.offsetHeight, height: el.offsetHeight };
+      }
+      return el.getBoundingClientRect();
+    }).filter(r => r.height > 0)
     .sort((a, b) => a.top - b.top);
   let alto = 0;
   for (const r of rects) if (r.top <= alto + 1 && r.bottom > alto) alto = r.bottom;
@@ -62,7 +74,10 @@ function alAbrir(d) {
 }
 
 function alCerrar(d) {
-  const top = altoBarras();
+  // Dentro de un bloque plegable de la guía, su línea se quedará fija encima de la
+  // pregunta aunque ahora (con el texto recién plegado) esté fuera de la pantalla
+  const lineaBloque = d.closest('.guia-plegable[open]')?.querySelector(':scope > summary');
+  const top = lineaBloque ? altoBarras(BARRAS_FIJAS) + lineaBloque.offsetHeight : altoBarras();
   // El bloque de la pregunta (cribado, paso del árbol, test); si no, el contenedor directo
   const ancla = d.closest('.sq2, .tree-question, .test-item') || d.parentElement || d;
   let y = ancla.getBoundingClientRect().top;
@@ -100,12 +115,15 @@ export function initRazonPlegable() {
   window.addEventListener('resize', alHacerScroll, { passive: true });
   // Las bandas de contexto aparecen con su propio IntersectionObserver, y en un
   // móvil cargado pueden llegar después de la medida de 150 ms: entonces la línea
-  // quedaba tapada bajo la banda. Se mide de nuevo cada vez que una cambia y al
-  // acabar su animación de entrada (fadeUp la desplaza mientras dura).
+  // quedaba tapada bajo la banda. Se mide de nuevo cada vez que una cambia (clase,
+  // estilo o alto: la de la 4b crece con la puntuación) y al acabar su animación de
+  // entrada (fadeUp la desplaza mientras dura).
   const alCambiarBanda = () => { if (document.querySelector('details.razon[open]')) medir(); };
   const observador = typeof MutationObserver === 'function' ? new MutationObserver(alCambiarBanda) : null;
+  const alto = typeof ResizeObserver === 'function' ? new ResizeObserver(alCambiarBanda) : null;
   document.querySelectorAll('.context-banner').forEach(b => {
     observador?.observe(b, { attributes: true, attributeFilter: ['class', 'style'] });
+    alto?.observe(b);
     b.addEventListener('animationend', alCambiarBanda);
   });
 }

@@ -9,7 +9,7 @@ import { iaParrafoHTML, ctxCribado, ctxArbol, ctxTest, ctxIrritabilidad, ctxPaut
 import { initRazonPlegable } from './razon-plegable.js';
 import { ITEMS_IRRITABILIDAD, CORTES_OTROS, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad, bandaIrritabilidad } from './lib/irritabilidad.js';
-import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML } from './lib/tests-4b.js';
+import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML, progresoTests, textoProgreso } from './lib/tests-4b.js';
 import { resolveOptionTargets } from './lib/arbol.js';
 import { cuestionariosEnTexto } from './lib/cuestionarios.js';
 import { htmlPlan, initPlan } from './guia-plan.js';
@@ -64,6 +64,18 @@ function fuentesHTML(citas) {
     : `<li>${c.texto} <a class="razon-enlace" href="${c.url}" target="_blank" rel="noopener noreferrer">Abrir ↗</a></li>`).join('');
   return `<div class="razon-seccion razon-fuentes"><div class="razon-etq">Fuentes</div><ul>${li}</ul></div>`;
 }
+// ── Bloques plegables (usuario, 2026-11): cada sistema del cribado y cada hipótesis
+// de la confirmación. Su línea (el <summary>) dice qué hay dentro y, abierta, se queda
+// fija bajo las pestañas; al final, «Replegar ▴». Los abiertos se recuerdan en memoria
+// mientras no cambian la región ni la hoja, para que repintar (un enlace del resumen,
+// «Borrar resultados») no los cierre. El aviso de urgencia de la región nunca se pliega.
+const ABIERTOS = new Set();
+let _rutaPlegables = '';
+const plegable = ({ id, clase = '', cab, cuerpo }) =>
+  `<details class="guia-bloque guia-plegable${clase}" id="${id}"${ABIERTOS.has(id) ? ' open' : ''}><summary class="guia-bloque-cab">${cab}</summary>`
+  + `<div class="guia-bloque-cuerpo">${cuerpo}<button type="button" class="razon-replegar guia-replegar">Replegar ▴</button></div></details>`;
+const PLEGAR_TODO = '<div class="guia-plegar-todo"><button type="button" class="guia-plegar-btn" data-plegar-todo>Desplegar todo</button></div>';
+const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
 const porQue = (ctx, cuerpo) => cuerpo.trim()
   ? `<details class="razon"><summary>ⓘ Por qué y más</summary><div class="razon-cuerpo" data-ia-ctx="${attrIA(ctx)}">${cuerpo}</div></details>` : '';
 
@@ -79,8 +91,14 @@ function htmlCribado(region) {
     const idx = Object.fromEntries(preguntas.map((q, i) => [q.id, i + 1]));
     const c = s.criterioCompuesto;
     const crit = c ? `<div class="guia-crit"><b>${esc(c.etiqueta)}</b> — ${c.minPositivas} o más de las preguntas ${c.ids.map(id => idx[id]).join(', ')}${c.filtro?.edadMax ? ` · edad ≤ ${c.filtro.edadMax}` : ''}${c.filtro?.evolucion ? ` · evolución: ${esc(c.filtro.evolucion)}` : ''}${c.nota ? `<br>${esc(c.nota)}` : ''}</div>` : '';
-    return `<section class="guia-bloque${solo ? ' especial' : ''}"><h3>${esc(s.icon || '')} ${esc(s.nombre)}</h3>
+    const nUrg = preguntas.filter(q => q.urgencia).length, nDer = preguntas.filter(q => q.derivacion).length;
+    const cuenta = [plural(preguntas.length, 'pregunta', 'preguntas'),
+      nUrg ? `<span class="guia-meta-urg">${plural(nUrg, 'urgencia', 'urgencias')}</span>` : '',
+      nDer ? `<span class="guia-meta-der">${plural(nDer, 'derivación', 'derivaciones')}</span>` : ''].filter(Boolean).join(' · ');
+    const cab = `<h3>${esc(s.icon || '')} ${esc(s.nombre)}</h3>
       ${solo ? `<div class="guia-cond">Solo con ${esc(CONDICION_SISTEMA[solo])}${comun ? ` · ${esc(comun)}` : ''}</div>` : ''}
+      <div class="guia-bloque-meta guia-meta-linea">${cuenta}</div>`;
+    return plegable({ id: `sis-${s.id}`, clase: solo ? ' especial' : '', cab, cuerpo: `
       ${preguntas.map((q, k) => {
         const r = q.razonamiento;
         const cuerpo = r ? seccion('Por qué', `<p>${citasEnTexto(r.porque)}${iaParrafoHTML()}</p>`)
@@ -90,10 +108,11 @@ function htmlCribado(region) {
         return `<div class="guia-item" id="q-${q.id}"><div class="guia-texto"><span class="guia-num">${k + 1}</span>${esc(q.text)}${q.urgencia ? '<span class="guia-chip urg">URGENCIA</span>' : q.derivacion ? '<span class="guia-chip der">DERIVACIÓN</span>' : ''}${conds[k] && !comun ? `<span class="guia-chip cuando">${esc(conds[k])}</span>` : ''}</div>
           ${q.urgencia ? `<div class="guia-nota guia-der">🚑 ${esc(q.urgencia)}</div>` : q.derivacion ? `<div class="guia-nota">🩺 ${esc(q.derivacion)}</div>` : ''}
           ${porQue(ctxCribado(region, q.text), cuerpo)}</div>`;
-      }).join('')}${crit}${banderasHTML(s, region, idx)}${zonasImpactoHTML(s)}${CALC_SISTEMA[s.id]?.() || ''}${consultaCondicionHTML(s)}</section>`;
+      }).join('')}${crit}${banderasHTML(s, region, idx)}${zonasImpactoHTML(s)}${CALC_SISTEMA[s.id]?.() || ''}${consultaCondicionHTML(s)}` });
   };
   const urg = sc.urgencia ? `<div class="guia-urg"><b>${esc(sc.urgencia.titulo)}</b>${sc.urgencia.lineas.map(l => `<div>· ${esc(l)}</div>`).join('')}</div>` : '';
   return `<h2>Cribado sistémico · ${nombreRegion(region)}</h2>${urg}
+    ${PLEGAR_TODO}
     ${siempre.map(sistema).join('')}
     ${especiales.length ? `<h2>Condiciones especiales</h2><p class="guia-nota">Solo aparecen en la fase 2 si en la fase 1 está marcada su tarjeta (o el mecanismo «Post-quirúrgico»). La escala de Beighton, la sospecha del subtipo vascular, la prueba de bipedestación y la regla de la tensión en el embarazo tienen su calculadora en su bloque.</p>${especiales.map(sistema).join('')}` : ''}`;
 }
@@ -258,6 +277,7 @@ function htmlConfirmacion(region) {
     <p class="guia-nota">LR en verde: multiplica la puntuación (LR+ ≥ 2 o LR− ≤ 0,5). «≈» = calculada de S y E.</p>
     <div id="guiaResumenCalc">${resumenCalcHTML(region)}</div>
     ${tecnicaCondicionesHTML()}
+    ${PLEGAR_TODO}
     ${hyps.map(h => {
       const clusters = Object.entries(h.clusters || {}).map(([cid, c]) => {
         const n = h.tests.filter(t => t.cluster === cid).length, lr = lrEfectiva(c);
@@ -276,8 +296,10 @@ function htmlConfirmacion(region) {
           ${botonesTest(h.id, k)}
           ${porQue(ctxTest(region, t.name, h.name), cuerpo)}</div>`;
       }).join('');
-      return `<section class="guia-bloque" id="hip-${h.id}"><h3><span class="guia-num">${esc(numeroHipotesis(h.num))}</span>${esc(h.name)}</h3>
-        ${h.prom ? `<p class="guia-prom"><span class="guia-et">Cuestionario recomendado</span> ${esc(h.prom)}${cuestionariosEnTexto(h.prom, CUESTIONARIOS).map(id => ` <a class="guia-calc-link" href="#cuestionarios/${id}">Calcular ${esc(CUESTIONARIOS.find(d => d.id === id).nombre)} →</a>`).join('')}</p>` : ''}<div class="guia-puntua" data-puntua="${h.id}">${puntuaHTML(h)}</div>${clusters}${tests}${pautaHipHTML(h, region)}</section>`;
+      const cab = `<h3><span class="guia-num">${esc(numeroHipotesis(h.num))}</span>${esc(h.name)}</h3>
+        <div class="guia-bloque-meta">${h.dosis === DOSIS_DERIVAR ? '<span class="guia-meta-urg">🚑 Derivación</span>' : ''}<span class="guia-puntua" data-puntua="${h.id}">${puntuaHTML(h)}</span><span class="guia-progreso" data-progreso="${h.id}">${progresoHTML(h)}</span></div>`;
+      return plegable({ id: `hip-${h.id}`, cab, cuerpo: `
+        ${h.prom ? `<p class="guia-prom"><span class="guia-et">Cuestionario recomendado</span> ${esc(h.prom)}${cuestionariosEnTexto(h.prom, CUESTIONARIOS).map(id => ` <a class="guia-calc-link" href="#cuestionarios/${id}">Calcular ${esc(CUESTIONARIOS.find(d => d.id === id).nombre)} →</a>`).join('')}</p>` : ''}${clusters}${tests}${pautaHipHTML(h, region)}` });
     }).join('')}`;
 }
 
@@ -290,8 +312,10 @@ function botonesTest(hId, k) {
 }
 function puntuaHTML(h) {
   const res = RESULTADOS[h.id] || {};
-  return Object.keys(res).length ? etiquetaHipHTML(calcLRScore(h, res).label) : '<span class="guia-sin">Sin evaluar: marca los tests hechos</span>';
+  return Object.keys(res).length ? etiquetaHipHTML(calcLRScore(h, res).label) : '<span class="guia-sin">Sin evaluar</span>';
 }
+// «2 de 5 tests hechos», como la cabecera plegada de la 4b (progresoTests)
+const progresoHTML = h => textoProgreso(progresoTests(h, RESULTADOS[h.id]));
 function resumenCalcHTML(region) {
   const hechas = Object.values(HYPOTHESES).filter(h => h.region === region && Object.keys(RESULTADOS[h.id] || {}).length)
     .map(h => ({ h, p: calcLRScore(h, RESULTADOS[h.id]) })).sort((a, b) => b.p.totalLR - a.p.totalLR);
@@ -315,6 +339,8 @@ document.addEventListener('click', e => {
     b.parentElement.outerHTML = botonesTest(hip, Number(test));
     const p = document.querySelector(`[data-puntua="${hip}"]`);
     if (p) p.innerHTML = puntuaHTML(HYPOTHESES[hip]);
+    const g = document.querySelector(`[data-progreso="${hip}"]`);
+    if (g) g.textContent = progresoHTML(HYPOTHESES[hip]);
     pintarCalc(HYPOTHESES[hip].region);
     return;
   }
@@ -610,17 +636,76 @@ function pintar({ sinScroll = false } = {}) {
     return;
   }
   pintarNombreRegion();
+  if (_rutaPlegables !== `${region}/${hoja}`) { ABIERTOS.clear(); _rutaPlegables = `${region}/${hoja}`; }
   document.getElementById('guiaHojas').innerHTML = Object.entries(HOJAS_GUIA)
     .map(([k, n]) => `<a href="#${region}/${k}"${k === hoja ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   document.getElementById('guiaContenido').innerHTML = avisoHojaHTML(claveHoja({ region, hoja })) + PINTAR[hoja](region);
   document.title = `${HOJAS_GUIA[hoja]} · ${nombreRegion(region)} · Guía de consulta`;
+  medirNav();
+  actualizarPlegarTodo();
   const destino = elemento && document.getElementById(elemento);
   if (destino) {
     destino.classList.add('destacado');
     destino.querySelectorAll('details.razon').forEach(d => { d.open = true; });
-    destino.scrollIntoView({ block: 'start' });
+    // Su sistema o hipótesis, abierto; y la línea fija de ese bloque no lo tapa
+    const bloque = destino.closest('details.guia-plegable');
+    if (bloque) { bloque.open = true; ABIERTOS.add(bloque.id); }
+    const linea = bloque && bloque !== destino ? bloque.querySelector(':scope > summary').offsetHeight : 0;
+    window.scrollTo(0, destino.getBoundingClientRect().top + window.scrollY - navAlto() - linea - 8);
   } else window.scrollTo(0, 0);
 }
+
+// Alto de las pestañas fijas, para la línea fija de los bloques plegables
+const navAlto = () => document.querySelector('.guia-nav')?.offsetHeight || 0;
+function medirNav() { document.documentElement.style.setProperty('--guia-nav-alto', `${navAlto()}px`); }
+function actualizarPlegarTodo() {
+  const b = document.querySelector('[data-plegar-todo]');
+  if (b) b.textContent = document.querySelector('details.guia-plegable:not([open])') ? 'Desplegar todo' : 'Plegar todo';
+}
+function iniciarPlegables() {
+  // `toggle` no burbujea: en captura. Al plegar un bloque con su línea por encima
+  // de las pestañas (estaba fija), se vuelve a ella para no quedarse más abajo
+  document.addEventListener('toggle', e => {
+    const d = e.target;
+    if (!(d instanceof HTMLDetailsElement) || !d.classList.contains('guia-plegable')) return;
+    if (d.open) ABIERTOS.add(d.id); else ABIERTOS.delete(d.id);
+    actualizarPlegarTodo();
+    if (d.open || _imprimiendo || performance.now() < _sinSaltoHasta) return;
+    const y = d.getBoundingClientRect().top, top = navAlto();
+    if (y < top) window.scrollTo({ top: window.scrollY + y - top - 8, behavior: 'instant' });
+  }, true);
+  document.addEventListener('click', e => {
+    const t = e.target instanceof Element ? e.target : null;
+    const rep = t?.closest('.guia-replegar');
+    if (rep) {
+      const d = rep.closest('details.guia-plegable');
+      if (d) { d.open = false; d.querySelector(':scope > summary').focus({ preventScroll: true }); }
+      return;
+    }
+    if (t?.closest('[data-plegar-todo]')) {
+      const todos = [...document.querySelectorAll('details.guia-plegable')];
+      const abrir = todos.some(d => !d.open);
+      _sinSaltoHasta = performance.now() + 500;   // sin saltos de scroll al plegarlos todos
+      todos.forEach(d => { d.open = abrir; if (abrir) ABIERTOS.add(d.id); else ABIERTOS.delete(d.id); });
+      actualizarPlegarTodo();   // ya, sin esperar a los `toggle`, que llegan después
+    }
+  });
+  window.addEventListener('resize', medirNav, { passive: true });
+  // Al imprimir, todo desplegado; después, como estaba
+  let antes = [];
+  window.addEventListener('beforeprint', () => {
+    _imprimiendo = true;
+    antes = [...document.querySelectorAll('details.guia-plegable')].filter(d => !d.open);
+    antes.forEach(d => { d.open = true; });
+  });
+  window.addEventListener('afterprint', () => {
+    antes.forEach(d => { d.open = false; });
+    antes = [];
+    _imprimiendo = false;
+    _sinSaltoHasta = performance.now() + 500;
+  });
+}
+let _imprimiendo = false, _sinSaltoHasta = 0;
 
 // Tema y tamaño de letra: los mismos botones y la misma preferencia que la app
 // (lib/apariencia.js). Es lo único que la guía guarda, y no es nada del paciente.
@@ -696,6 +781,7 @@ async function iniciar() {
   iniciarPieRegiones();
   initAmpliarIA();
   initRazonPlegable();
+  iniciarPlegables();
   initCalculadoras(pintar);
   initPlan(pintar);
 }

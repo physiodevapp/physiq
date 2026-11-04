@@ -229,3 +229,17 @@ export function etiquetaHipHTML(label) {
   const texto = partes.map((p, i) => `<span class="hyp-etq-parte">${escEtq(p)}${i < partes.length - 1 ? ' ·' : ''}</span>`).join(' ');
   return `<span class="hyp-etq">${m ? `<span class="hyp-etq-icono">${m[1]}</span>` : ''}<span class="hyp-etq-texto">${texto}</span></span>`;
 }
+
+// Progreso de una hipótesis (usuario, 2026-11): cuántos de sus tests tienen
+// resultado (positivo o negativo), para la cabecera plegada de la 4b y la guía.
+// Cuenta todos los tests, puntúen o no («Sin datos» no cuenta como hecho).
+export function progresoTests(hyp, results) {
+  const total = hyp?.tests?.length || 0;
+  const hechos = (hyp?.tests || []).filter((t, i) => ['pos', 'neg'].includes(results?.[i])).length;
+  return { hechos, total };
+}
+export function textoProgreso({ hechos, total }) {
+  if (!total) return '';
+  const pl = total > 1 ? 's' : '';
+  return `${hechos} de ${total} test${pl} hecho${pl}`;
+}

@@ -13,6 +13,7 @@ import { iaParrafoHTML, ctxTest, attrIA, atributosIA } from './ampliar-ia.js';
 import {
   LR_POS_MIN, LR_NEG_MAX, parseProporcion, parseLR, lrEfectiva, testPuntua, PESO_TEST, pesoTest,
   enlacesAnatomia, anatomiaLineaHTML, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML,
+  progresoTests, textoProgreso,
 } from './lib/tests-4b.js';
 export {
   LR_POS_MIN, LR_NEG_MAX, parseProporcion, parseLR, lrEfectiva, testPuntua, PESO_TEST, pesoTest,
@@ -106,7 +107,7 @@ function tarjetaPosqHTML(hyp) {
   return `
       <div class="hypothesis-header" onclick="toggleHypCard('${hyp.id}')">
         <span class="hyp-color-dot"></span>
-        <span class="hyp-name" title="${esc(hyp.name)}">${esc(hyp.name)}</span>
+        <span class="hyp-titulo"><span class="hyp-name" title="${esc(hyp.name)}">${esc(hyp.name)}</span></span>
         <span class="hyp-score" id="score_${hyp.id}">${etiquetaHipHTML(ETIQUETA_HIP_POSQ)}</span>
         <span class="hyp-chevron">▾</span>
       </div>
@@ -117,7 +118,21 @@ function tarjetaPosqHTML(hyp) {
           <div style="font-size:0.72rem; color:var(--accent); font-family:'DM Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">PROM Recomendado</div>
           <span class="prom-badge">${hyp.prom}</span>${enlacesCalcular(hyp.prom)}
         </div>
+        ${REPLEGAR_HTML}
       </div>`;
+}
+
+// «Replegar ▴» al final de cada tarjeta abierta (usuario, 2026-11; como el de
+// razon-plegable.js): pliega la tarjeta y vuelve a su cabecera
+const REPLEGAR_HTML = `<button type="button" class="razon-replegar hyp-replegar" onclick="replegarHipotesis(this)">Replegar ▴</button>`;
+
+// Cabecera plegada: «2 de 5 tests hechos» (pos o neg). Ni en `pq1` (sin tests)
+// ni en una hipótesis «ya diagnosticada y tratada» (sus tests no aplican)
+function progresoHTML(hId, hyp) {
+  if (esTratada(hId)) return '';
+  const p = progresoTests(hyp, state.testResults[hId]);
+  const txt = textoProgreso(p);
+  return txt ? `<span class="hyp-progreso${p.hechos === p.total ? ' hyp-progreso-completo' : ''}" id="prog_${hId}">${txt}</span>` : '';
 }
 
 export function buildHypothesisCards() {
@@ -194,7 +209,7 @@ export function buildHypothesisCards() {
     card.innerHTML = `
       <div class="hypothesis-header" onclick="toggleHypCard('${hId}')">
         <span class="hyp-color-dot"></span>
-        <span class="hyp-name" title="${hyp.name}">${hyp.name}</span>
+        <span class="hyp-titulo"><span class="hyp-name" title="${hyp.name}">${hyp.name}</span>${progresoHTML(hId, hyp)}</span>
         <span class="hyp-score" id="score_${hId}">${etiquetaHipHTML(previa?.label || 'Sin evaluar')}</span>
         <span class="hyp-chevron">▾</span>
       </div>
@@ -208,6 +223,7 @@ export function buildHypothesisCards() {
           <div style="font-size:0.72rem; color:var(--accent); font-family:'DM Mono',monospace; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">PROM Recomendado</div>
           <span class="prom-badge">${hyp.prom}</span>${enlacesCalcular(hyp.prom)}
         </div>
+        ${REPLEGAR_HTML}
       </div>`;
     container.appendChild(card);
   });
@@ -358,14 +374,7 @@ export function setupHypObserver(hId) {
   const card = document.getElementById(`hypcard_${hId}`);
   if (!card) return;
   const header = card.querySelector('.hypothesis-header');
-  const dot = card.querySelector('.hyp-color-dot');
-  const name = card.querySelector('.hyp-name');
-  const dotBg = window.getComputedStyle(dot).backgroundColor;
-
-  const bannerDot = document.getElementById('hypBannerDot');
-  const bannerName = document.getElementById('hypBannerName');
-  if (bannerDot) bannerDot.style.background = dotBg;
-  if (bannerName) bannerName.textContent = name.textContent;
+  pintarBandaHip(card);
 
   const patientBarEl = document.querySelector('.patient-sticky');
   const patientBarH = patientBarEl ? patientBarEl.offsetHeight : 0;
@@ -387,14 +396,37 @@ export function setupHypObserver(hId) {
 
 export function refreshHypBanner(hId) {
   const card = document.getElementById(`hypcard_${hId}`);
-  if (!card) return;
+  if (card) pintarBandaHip(card);
+}
+
+// Banda fija (móvil): punto, nombre y, debajo, la misma etiqueta de puntuación
+// que la cabecera (etiquetaHipHTML), que se actualiza al marcar cada test
+function pintarBandaHip(card) {
   const dot = card.querySelector('.hyp-color-dot');
-  const name = card.querySelector('.hyp-name');
-  const dotBg = window.getComputedStyle(dot).backgroundColor;
   const bannerDot = document.getElementById('hypBannerDot');
   const bannerName = document.getElementById('hypBannerName');
-  if (bannerDot) bannerDot.style.background = dotBg;
-  if (bannerName) bannerName.textContent = name.textContent;
+  const bannerScore = document.getElementById('hypBannerScore');
+  if (bannerDot && dot) bannerDot.style.background = window.getComputedStyle(dot).backgroundColor;
+  if (bannerName) bannerName.textContent = card.querySelector('.hyp-name')?.textContent || '';
+  if (bannerScore) bannerScore.innerHTML = card.querySelector('.hyp-score')?.innerHTML || '';
+}
+
+export function replegarHipotesis(btn) {
+  const card = btn.closest('.hypothesis-card');
+  if (!card) return;
+  const header = card.querySelector('.hypothesis-header');
+  // Barras fijas de arriba sin la propia banda, que se va al plegar
+  const top = [...document.querySelectorAll('.app-header, .mobile-phase-bar')]
+    .filter(el => getComputedStyle(el).position === 'fixed')
+    .reduce((m, el) => Math.max(m, el.getBoundingClientRect().bottom), 0)
+    + (document.querySelector('.patient-sticky')?.offsetHeight || 0);
+  // Posición absoluta calculada antes de plegar: lo de encima no cambia
+  const destino = window.scrollY + header.getBoundingClientRect().top - top - 8;
+  card.classList.remove('open');
+  teardownHypObserver();
+  requestAnimationFrame(() => {
+    if (header.getBoundingClientRect().top < top) window.scrollTo({ top: destino, behavior: 'instant' });
+  });
 }
 
 export function teardownHypObserver() {
@@ -484,6 +516,12 @@ export function recalcHypScore(hId) {
   const card = document.getElementById(`hypcard_${hId}`);
   card.className = `hypothesis-card ${colorClass}`;
   document.getElementById(`score_${hId}`).innerHTML = etiquetaHipHTML(label);
+  const prog = document.getElementById(`prog_${hId}`);
+  if (prog) {
+    const p = progresoTests(hyp, results);
+    prog.textContent = textoProgreso(p);
+    prog.classList.toggle('hyp-progreso-completo', p.hechos === p.total);
+  }
 }
 
 // Osteoporosis (Fase P, docs/osteoporosis.md, decisión 7): línea de técnica en
@@ -503,3 +541,4 @@ window.clearAllTests = clearAllTests;
 window.setTestResult = setTestResult;
 window.abrirRazonamientoTest = abrirRazonamientoTest;
 window.scrollToActiveHypHeader = scrollToActiveHypHeader;
+window.replegarHipotesis = replegarHipotesis;

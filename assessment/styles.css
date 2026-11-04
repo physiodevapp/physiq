@@ -786,6 +786,23 @@
     text-overflow: ellipsis;
     min-width: 0;
   }
+  /* Nombre y, debajo, «2 de 5 tests hechos» (usuario, 2026-11). Los hijos de un
+     flex se vuelven bloque: la elipsis y el recorte a dos líneas de .hyp-name siguen */
+  .hyp-titulo {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .hyp-progreso {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text3);
+  }
+  .hyp-progreso-completo { color: var(--text2); }
+  .hyp-progreso-completo::after { content: ' ✓'; }
+  .hyp-replegar { margin-top: 0.75rem; }
   .hyp-score {
     font-family: 'DM Mono', monospace;
     font-size: 0.75rem;
@@ -882,6 +899,16 @@
     border-radius: 50%;
     flex-shrink: 0;
   }
+  /* Nombre y «↑ volver» en la primera fila; debajo, la etiqueta de puntuación
+     (usuario, 2026-11) con todo el ancho bajo el nombre, para que a 320 px y letra
+     grande cada parte quepa entera: se parte tras el «·», como .hyp-etq */
+  .hyp-banner-score {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    line-height: 1.35;
+    color: var(--text2);
+  }
+  .hyp-banner-score:empty { display: none; }
   .hyp-banner-name {
     flex: 1;
     font-size: 0.8rem;
@@ -2000,7 +2027,13 @@
     .option-group-col[data-cols="2"] .option-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
     .option-group-col[data-cols="1"] .option-btn { text-align: left; padding: 10px 16px; }
     /* Fase 4b — contexto banner debajo de la barra de fase */
-    .hyp-context-banner.visible { display: flex; }
+    .hyp-context-banner.visible {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      column-gap: 10px;
+      row-gap: 2px;
+    }
+    .hyp-banner-score { grid-column: 2 / -1; }
     .hyp-context-banner { top: 94px; }
     .sis-context-banner { top: 94px; }
     /* Ocultar score numérico en header móvil — aparece en el banner */
