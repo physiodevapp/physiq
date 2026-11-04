@@ -211,13 +211,45 @@
   @media (max-width: 480px) { .guia-tejidos { margin: 0 -1rem; padding: 0 1rem; } }
   /* Aviso de hoja impresa desfasada (?h= del QR distinto de huellas.json) */
   .guia-papel { border: 1px solid var(--orange); background: color-mix(in srgb, var(--orange) 10%, var(--surface)); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; font-size: 0.82rem; line-height: 1.5; color: var(--text); }
-  .guia-papel b { display: block; color: var(--orange); margin-bottom: 2px; }
-  .guia-papel a { display: inline-block; margin-top: 4px; color: var(--accent); min-height: 32px; line-height: 32px; }
+  .guia-papel > b { display: block; color: var(--orange); margin-bottom: 2px; }
+  .guia-papel > p { margin: 0 0 4px; }
+  .guia-papel-res { font-weight: 600; }
   .guia-papel.ok { border-color: var(--border2); background: var(--surface2); color: var(--text2); padding: 6px 12px; }
+  /* Una fila de acciones: «Ver cambios ▾» (lista plegada) y el PDF actual */
+  .guia-papel-acc { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 16px; }
+  .guia-papel-pdf { color: var(--accent); min-height: 40px; display: inline-flex; align-items: center; }
+  .guia-ver { font: inherit; font-size: 0.82rem; color: var(--accent); background: none; border: none; padding: 0; min-height: 40px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .guia-ver > span { display: inline-block; }
+  .guia-ver[aria-expanded="true"] > span { transform: rotate(180deg); }
+  .guia-hoja-txt .guia-ver { min-height: 32px; font-size: 0.8rem; }
+  /* La lista de cambios: una línea por elemento, con su tipo en una etiqueta pequeña */
+  .guia-cambios ul { list-style: none; margin: 4px 0 0; padding: 0; }
+  .guia-cambios li { padding: 5px 0; border-top: 1px solid var(--border); font-size: 0.8rem; line-height: 1.45; color: var(--text2); overflow-wrap: anywhere; }
+  .guia-cambios li b { color: var(--text); font-weight: 600; }
+  .guia-cambios li a { color: var(--accent); text-decoration: none; }
+  .guia-cambios li a b { color: inherit; }
+  /* Lo quitado (lo del papel) tachado y lo nuevo resaltado */
+  .guia-cambios del, .guia-dif del { color: var(--text3); text-decoration-thickness: 1px; }
+  .guia-cambios ins, .guia-dif ins { text-decoration: none; color: var(--text); background: color-mix(in srgb, var(--accent2) 16%, transparent); border-radius: 3px; padding: 0 2px; }
+  .guia-dif { font-weight: 400 !important; }
+  .guia-cambio-tipo { display: inline-block; font-size: 0.66rem; font-weight: 600; line-height: 1; border-radius: 6px; padding: 2px 5px; vertical-align: 1px; color: var(--text2); background: var(--surface2); }
+  .guia-cambio-tipo.cambio { color: var(--orange); background: color-mix(in srgb, var(--orange) 14%, transparent); }
+  .guia-cambio-tipo.nuevo, .guia-cambio-tipo.numero { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+  .guia-cambio-tipo.quitado { color: var(--red); background: color-mix(in srgb, var(--red) 12%, transparent); }
+  .guia-cambio-antes, .guia-cambio-mas { color: var(--text3); }
+  .guia-cambios-nota { margin: 6px 0 0; font-size: 0.8rem; color: var(--text2); }
+  /* La marca en el elemento que cambió desde el papel: pequeña; tocarla dice qué decía la hoja */
+  .guia-cambio { position: relative; font: inherit; font-size: 0.62rem; font-weight: 600; line-height: 1; border-radius: 8px; padding: 3px 6px; margin-right: 4px; vertical-align: 2px; cursor: pointer; color: var(--orange); background: color-mix(in srgb, var(--orange) 12%, transparent); border: 1px solid color-mix(in srgb, var(--orange) 55%, transparent); }
+  .guia-cambio.nuevo, .guia-cambio.numero { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+  .guia-cambio::after { content: ''; position: absolute; inset: -10px -4px; }
+  .guia-meta-cambio { color: var(--orange); }
+  @media print { .guia-cambio, .guia-meta-cambio { display: none; } }
   /* Hojas para imprimir (#hojas): sin pestañas; una fila por hoja con su versión, fecha y PDF */
   .guia-modo-hojas .guia-nav { display: none; }
   .guia-hojas-lista { list-style: none; margin: 0; padding: 0; }
-  .guia-hoja { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 0.85rem; }
+  .guia-hoja { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 10px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 0.85rem; }
+  .guia-hoja-txt { flex: 1 1 0; }
+  .guia-hoja > .guia-cambios { flex: 1 1 100%; }
   .guia-hoja:first-child { border-top: none; }
   .guia-hoja-txt { min-width: 0; color: var(--text2); line-height: 1.45; }
   .guia-hoja-txt b { display: block; color: var(--text); font-weight: 500; }
@@ -226,7 +258,7 @@
   .guia-hoja-nueva { display: inline-block; font-size: 0.7rem; font-weight: 600; color: var(--orange); border: 1px solid var(--orange); border-radius: 10px; padding: 0 6px; }
   .guia-hojas-filtro { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
   @media (max-width: 520px) { .guia-hojas-filtro .tej-filtro-btn { flex: 1 1 auto; min-height: 40px; } }
-  .guia-hoja a { flex: none; color: var(--accent); text-decoration: none; border: 1px solid var(--border2); border-radius: 8px; padding: 0 12px; min-height: 40px; display: inline-flex; align-items: center; }
+  .guia-hoja > a { flex: none; color: var(--accent); text-decoration: none; border: 1px solid var(--border2); border-radius: 8px; padding: 0 12px; min-height: 40px; display: inline-flex; align-items: center; }
   .guia-aviso { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; max-width: 520px; margin: 0 auto; background: var(--surface3); color: var(--text); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; box-shadow: var(--modal-shadow); }
   /* «¿Otro fármaco o duda?» al final de #farmacos */
   .guia-pregunta textarea { width: 100%; box-sizing: border-box; margin: 2px 0 16px; font: inherit; }

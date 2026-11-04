@@ -24,7 +24,7 @@ import FORM_CADERA from './formularios/cadera.js';
 import FORM_RODILLA from './formularios/rodilla.js';
 import FORM_TOBILLO from './formularios/tobillo_pie.js';
 import { recomendacionesCondicion, bloquesFase2, lineasTecnica4b, lineasTest } from './lib/guia-condiciones.js';
-import { numeroHipotesis, ORDEN_REGIONES, CONDICION_SISTEMA, condicionPregunta, soloDeSistema, preguntasDeRegion, sistemasCribado, etiquetaPaso, HOJAS_GUIA, HOJAS_TEJIDO, datosHojaTejido, definicionCuadernos } from './lib/esquemas.js';
+import { numeroHipotesis, ORDEN_REGIONES, CONDICION_SISTEMA, condicionPregunta, soloDeSistema, preguntasDeRegion, sistemasCribado, etiquetaPaso, HOJAS_GUIA, HOJAS_TEJIDO, datosHojaTejido, definicionCuadernos, nombreHojaImpresa } from './lib/esquemas.js';
 import { TIEMPOS_TEJIDO } from './data/tejidos.js';
 import { condicionesHTML } from './lib/condiciones.js';
 import { farmacosHTML, textoCima } from './lib/farmacos.js';
@@ -32,6 +32,7 @@ import { TEXTOS_FARMACOS } from './data/farmacos.js';
 import { CUESTIONARIOS } from './data/cuestionarios.js';
 import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
 import { alternarFicha, cerrarFicha } from './ficha.js';
+import { compararVersiones, versionDe, conDetalle, resumenCambios, totalCambios, etiquetaElemento, recortar, textoElemento, diferenciaTexto } from './lib/cambios-hojas.js';
 import { nombreRegion, dolorInespecifico } from './lib/region.js';
 import { textoVersion } from './lib/version.js';
 import { htmlFase1, CALC_SISTEMA, initCalculadoras } from './guia-calc.js';
@@ -458,9 +459,16 @@ document.addEventListener('click', e => {
 // ── ¿Está al día la hoja impresa? ───────────────────────────────────────────
 // El QR de cada hoja lleva su huella (?h=, docs/esquemas/hojas.mjs). Si no coincide con la
 // actual (docs/esquemas/huellas.json, desplegado en la misma ruta con los PDF), la guía avisa y enlaza el PDF
-// actual para reimprimirla. Solo en la hoja de la que vino el QR; sin ?h= o sin huellas, nada.
+// actual para reimprimirla. Solo en la hoja de la que vino el QR (historial/indice.json dice cuál
+// es, aunque se haya recargado en otra pestaña con el ?h= aún en la dirección); sin ?h= o sin huellas, nada.
+// Qué cambió desde el papel sale del historial de esa hoja (lib/cambios-hojas.js): en el aviso, una
+// línea y «Ver cambios» plegado; en la página, una marca en cada elemento que cambió (usuario, 2026-11:
+// en el móvil, sin más scroll ni ruido salvo que se quiera ver el detalle).
 const HUELLA_PAPEL = new URLSearchParams(location.search).get('h') || '';
 let HOJA_PAPEL = '', HUELLAS = null;
+// Lo que cambió desde la versión del papel: { version (la del papel), d (compararVersiones) }; null
+// si el papel está al día, o si su versión no tiene detalle (anterior al registro de cambios)
+let CAMBIOS_PAPEL = null;
 function claveHoja({ tejidos, suelta, region, hoja }) {
   if (suelta) return suelta;
   if (tejidos) return `tejidos-${hoja}`;
@@ -477,15 +485,149 @@ async function cargarHuellas() {
     if (r.ok) CUADERNOS = await r.json();
   } catch { /* sin cuadernos: la lista de hojas sigue */ }
 }
+const HISTORIAL = {};
+async function cargarHistorial(clave) {
+  if (!HISTORIAL[clave]) {
+    HISTORIAL[clave] = fetch(`./docs/esquemas/historial/${clave}.json`, { cache: 'no-store' })
+      .then(r => (r.ok ? r.json() : [])).catch(() => []);
+  }
+  return HISTORIAL[clave];
+}
+// De qué hoja es el papel y qué cambió desde entonces
+async function identificarPapel() {
+  let indice = {};
+  try { const r = await fetch('./docs/esquemas/historial/indice.json', { cache: 'no-store' }); if (r.ok) indice = await r.json(); } catch { /* sin índice */ }
+  const actual = HUELLAS && Object.keys(HUELLAS).find(k => HUELLAS[k].huella === HUELLA_PAPEL);
+  HOJA_PAPEL = actual || indice[HUELLA_PAPEL] || claveHoja(leerRuta());
+  if (!HUELLAS?.[HOJA_PAPEL] || HUELLAS[HOJA_PAPEL].huella === HUELLA_PAPEL) return;
+  const hist = await cargarHistorial(HOJA_PAPEL);
+  const version = versionDe(hist, HUELLA_PAPEL), ultima = versionDe(hist, HUELLAS[HOJA_PAPEL].huella);
+  if (conDetalle(version) && conDetalle(ultima)) CAMBIOS_PAPEL = { version, d: compararVersiones(version, ultima) };
+}
 // Enlace a un PDF con su versión (?v=): una versión nueva es otra dirección, así el navegador
 // (o el visor de PDF del móvil) no abre la copia que ya tenía en caché.
 const urlPDF = (clave, v) => `./docs/esquemas/${clave}.pdf${v ? `?v=${encodeURIComponent(v)}` : ''}`;
+const fechaCortaDe = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+// Botón que despliega un bloque oculto (la lista de cambios): una línea mientras está plegado
+const botonVer = (id, texto, extra = '') => `<button type="button" class="guia-ver" aria-expanded="false" aria-controls="${id}"${extra}>${texto} <span aria-hidden="true">▾</span></button>`;
 function avisoHojaHTML(clave) {
   if (!HUELLA_PAPEL || !HUELLAS || !clave || clave !== HOJA_PAPEL || !HUELLAS[clave]) return '';
-  if (HUELLAS[clave].huella === HUELLA_PAPEL) return `<div class="guia-papel ok" id="guiaPapel">✓ Tu hoja impresa está al día (v. ${esc(HUELLA_PAPEL)}).</div>`;
+  const actual = HUELLAS[clave].huella;
+  if (actual === HUELLA_PAPEL) return `<div class="guia-papel ok" id="guiaPapel">✓ Tu hoja impresa está al día (v. ${esc(HUELLA_PAPEL)}).</div>`;
+  const pdf = `<a class="guia-papel-pdf" href="${urlPDF(clave, actual)}" target="_blank" rel="noopener">PDF actual ↗</a>`;
+  const d = CAMBIOS_PAPEL?.d;
+  if (d?.soloFormato) {
+    return `<div class="guia-papel ok" id="guiaPapel">✓ Tu hoja impresa sigue valiendo: desde que se imprimió (v. ${esc(HUELLA_PAPEL)}) solo cambió el formato, no el contenido.</div>`;
+  }
+  if (!d) {
+    return `<div class="guia-papel" id="guiaPapel"><b>Tu hoja impresa es de una versión anterior</b>
+      <p>Es anterior al registro de cambios (v. ${esc(HUELLA_PAPEL)}; la actual es v. ${esc(actual)}): no se puede detallar qué cambió. Manda lo que ves aquí.</p>
+      <div class="guia-papel-acc">${pdf}</div></div>`;
+  }
+  const regional = !!leerRuta().region && !leerRuta().suelta && !leerRuta().tejidos;
+  const consejo = d.numeracion ? 'Cambió la numeración: reimprímela.'
+    : regional ? 'Sus números siguen valiendo; lo cambiado va marcado.' : 'Reimprímela cuando puedas.';
   return `<div class="guia-papel" id="guiaPapel"><b>Tu hoja impresa es de una versión anterior</b>
-    La numeración o el contenido pueden haber cambiado desde que se imprimió (v. ${esc(HUELLA_PAPEL)}; la actual es v. ${esc(HUELLAS[clave].huella)}): manda lo que ves aquí.
-    <a href="${urlPDF(clave, HUELLAS[clave].huella)}" target="_blank" rel="noopener">Descargar la hoja actual (PDF) para reimprimirla →</a></div>`;
+    <p><span class="guia-papel-res">${esc(resumenCambios(d))}</span> desde tu hoja del ${esc(fechaCortaDe(CAMBIOS_PAPEL.version.fecha))}. ${consejo}</p>
+    <div class="guia-papel-acc">${botonVer('guiaPapelLista', `Ver cambios (${totalCambios(d)})`)}${pdf}</div>
+    <div id="guiaPapelLista" class="guia-cambios" hidden>${listaCambiosHTML(d, leerRuta())}</div></div>`;
+}
+
+// La lista de cambios (aviso del papel y «Hojas para imprimir»): una línea por elemento, con
+// enlace a él si sigue en la hoja; los otros textos, como frases quitadas y nuevas (las primeras)
+const MAX_FRASES = 5;
+// Lo que cambió dentro de un texto: unas palabras de contexto, lo quitado tachado y lo nuevo resaltado
+function difHTML(antes, ahora) {
+  const f = diferenciaTexto(antes, ahora);
+  const r = t => esc(recortar(t, 120));
+  return `${f.inicio ? '…' : ''}${esc(f.ctxAntes)} ${f.antes ? `<del>${r(f.antes)}</del> ` : ''}${f.ahora ? `<ins>${r(f.ahora)}</ins> ` : ''}${esc(f.ctxDespues)}${f.fin ? '…' : ''}`;
+}
+function listaCambiosHTML(d, ruta = {}) {
+  // La etiqueta enlaza al elemento en su página (si sigue en la hoja); el texto, sin subrayar
+  const etq = it => {
+    const href = ruta.region && it.ancla ? `#${ruta.region}/${ruta.hoja}/${it.ancla}` : '';
+    return href ? `<a href="${href}"><b>${esc(etiquetaElemento(it))}</b></a>` : `<b>${esc(etiquetaElemento(it))}</b>`;
+  };
+  const antes = it => (it.antesPos != null ? ` <span class="guia-cambio-antes">(antes ${esc(etiquetaElemento(it, it.antesPos))})</span>` : '');
+  const fila = (tipo, et, it, cuerpo) => `<li><span class="guia-cambio-tipo ${tipo}">${et}</span> ${etq(it)}${antes(it)} · ${cuerpo}</li>`;
+  const corto = it => esc(recortar(textoElemento(it), 80));
+  const frases = (lista, tipo, et) => lista.slice(0, MAX_FRASES).map(f => `<li><span class="guia-cambio-tipo ${tipo}">${et}</span> «${esc(recortar(f, 140))}»</li>`).join('')
+    + (lista.length > MAX_FRASES ? `<li class="guia-cambio-mas">y ${lista.length - MAX_FRASES} más</li>` : '');
+  return `<ul>${[
+    ...d.cambiados.map(it => fila('cambio', 'Cambió', it, difHTML(textoElemento({ ...it, texto: it.antesTexto }), textoElemento(it)))),
+    ...d.nuevos.map(it => fila('nuevo', 'Nuevo', it, corto(it))),
+    ...d.movidos.map(it => fila('numero', 'Nº', it, corto(it))),
+    ...d.quitados.map(it => fila('quitado', 'Quitado', it, corto(it))),
+  ].join('')}${d.otros ? frases(d.textos.quitadas, 'quitado', 'Quitado') + frases(d.textos.nuevas, 'nuevo', 'Nuevo') : ''}</ul>`;
+}
+
+// En la página de la hoja del papel: una marca en cada elemento que cambió (toque = qué decía tu
+// hoja), y en la línea de cada sistema o hipótesis plegados, «Con cambios»
+const MARCA_CAMBIO = { cambio: 'Cambió', nuevo: 'Nuevo', numero: 'Nº cambiado' };
+function marcarCambios() {
+  const d = CAMBIOS_PAPEL?.d, ruta = leerRuta();
+  if (!d || !ruta.region || ruta.suelta || ruta.tejidos || claveHoja(ruta) !== HOJA_PAPEL) return;
+  const items = [...d.cambiados.map(it => ['cambio', it]), ...d.nuevos.map(it => ['nuevo', it]), ...d.movidos.map(it => ['numero', it])];
+  for (const [tipo, it] of items) {
+    const el = it.ancla && document.getElementById(it.ancla);
+    if (!el) continue;
+    // Detrás del número, en la primera línea: se ve sin buscarla
+    const donde = el.matches('details') ? el.querySelector(':scope > summary h3') : el.querySelector('.guia-texto, h3');
+    if (!donde || donde.querySelector('.guia-cambio')) continue;
+    const num = donde.querySelector('.guia-num');
+    (num || donde).insertAdjacentHTML(num ? 'afterend' : 'afterbegin', `<button type="button" class="guia-cambio ${tipo}" data-cambio="${esc(it.clave)}" aria-label="${MARCA_CAMBIO[tipo]} desde tu hoja impresa: ver qué decía">${MARCA_CAMBIO[tipo]}</button> `);
+    const bloque = el.closest('details.guia-plegable');
+    const meta = bloque && bloque !== el && bloque.querySelector(':scope > summary .guia-bloque-meta');
+    if (meta && !meta.querySelector('.guia-meta-cambio')) meta.insertAdjacentHTML('beforeend', `${meta.classList.contains('guia-meta-linea') ? ' · ' : ''}<span class="guia-meta-cambio">Con cambios</span>`);
+  }
+}
+function fichaCambioHTML(clave) {
+  const d = CAMBIOS_PAPEL.d;
+  const it = [...d.cambiados, ...d.nuevos, ...d.movidos].find(x => x.clave === clave);
+  if (!it) return '';
+  const kicker = `<p class="guia-fp-kicker">Tu hoja impresa · v. ${esc(HUELLA_PAPEL)}</p>`;
+  if (!it.antesTexto && it.antesPos == null) return `${kicker}<p class="guia-fp-texto">No está en tu hoja impresa: es nuevo.</p>`;
+  const pos = it.antesPos != null ? `<p class="guia-fp-meta">En tu hoja era «${esc(etiquetaElemento(it, it.antesPos))}»; ahora, «${esc(etiquetaElemento(it))}».</p>` : '';
+  return `${kicker}${it.antesTexto ? `<p class="guia-fp-meta">Lo que cambió (tachado, lo de tu hoja):</p><p class="guia-fp-texto guia-dif">${difHTML(textoElemento({ ...it, texto: it.antesTexto }), textoElemento(it))}</p>` : ''}${pos}`;
+}
+document.addEventListener('click', e => {
+  const t = e.target instanceof Element ? e.target : null;
+  const marca = t?.closest('[data-cambio]');
+  if (marca && CAMBIOS_PAPEL) {
+    e.preventDefault();   // dentro de la línea de un bloque, no lo pliega ni despliega
+    alternarFicha(marca, fichaCambioHTML(marca.dataset.cambio), { id: 'cambioFicha', clase: 'guia-fp-ficha' });
+    return;
+  }
+  const ver = t?.closest('.guia-ver');
+  if (!ver) return;
+  const caja = document.getElementById(ver.getAttribute('aria-controls'));
+  if (!caja) return;
+  const abrir = caja.hidden;
+  caja.hidden = !abrir;
+  ver.setAttribute('aria-expanded', String(abrir));
+  if (abrir && ver.dataset.cargar) cargarCambiosHoja(ver.dataset.cargar, caja);
+});
+// La página de la guía de una hoja de región, por su clave (para enlazar sus elementos)
+function rutaDeClave(clave) {
+  const m = clave.match(/^(cribado|arbol-a4|confirmacion)-(.+)$/);
+  return m ? { region: m[2], hoja: m[1] === 'arbol-a4' ? 'arbol' : m[1] } : {};
+}
+// «Hojas para imprimir»: qué cambió en el último cambio de una hoja (su versión anterior → la actual)
+async function cargarCambiosHoja(clave, caja) {
+  if (caja.dataset.cargado) return;
+  caja.dataset.cargado = '1';
+  caja.innerHTML = '<p class="guia-cambios-nota">Cargando…</p>';
+  const hist = await cargarHistorial(clave);
+  const i = hist.findIndex(v => v.huella === HUELLAS?.[clave]?.huella);
+  const antes = i > 0 ? hist[i - 1] : null, ahora = hist[i];
+  if (!conDetalle(antes) || !conDetalle(ahora)) {
+    caja.innerHTML = '<p class="guia-cambios-nota">No se puede detallar: la versión anterior es de antes del registro de cambios.</p>';
+    return;
+  }
+  const d = compararVersiones(antes, ahora);
+  caja.innerHTML = d.soloFormato
+    ? `<p class="guia-cambios-nota">Desde la v. ${esc(antes.huella)} solo cambió el formato: una hoja impresa antes sigue valiendo.</p>`
+    : `<p class="guia-cambios-nota">Desde la v. ${esc(antes.huella)} (${esc(fechaCortaDe(antes.fecha))}): ${esc(resumenCambios(d))}.</p>${listaCambiosHTML(d, rutaDeClave(clave))}`;
 }
 
 // ── Hojas para imprimir (#hojas) ─────────────────────────────────────────────
@@ -517,10 +659,11 @@ function htmlHojas() {
     const h = HUELLAS[clave];
     if (!h) return '';
     const reciente = (hoy - new Date(`${h.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
+    // Las recientes, con «Qué cambió» plegado: el detalle se carga al abrirlo (historial de la hoja)
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(nombre)}</b>
-      <span class="guia-hoja-v">v. ${esc(h.huella)}</span> · <span>cambió el ${esc(fechaLarga(h.fecha))}</span>${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
+      <span class="guia-hoja-v">v. ${esc(h.huella)}</span> · <span>cambió el ${esc(fechaLarga(h.fecha))}</span>${reciente ? ` <span class="guia-hoja-nueva">Reciente</span> ${botonVer(`cambios-${clave}`, 'Qué cambió', ` data-cargar="${clave}"`)}` : ''}
 </div>
-      <a href="${urlPDF(clave, h.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(nombre)} en PDF">PDF ↗</a></li>`;
+      <a href="${urlPDF(clave, h.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(nombre)} en PDF">PDF ↗</a>${reciente ? `<div id="cambios-${clave}" class="guia-cambios" hidden></div>` : ''}</li>`;
   };
   const grupo = (titulo, filas) => `<section class="guia-bloque"><h3>${esc(titulo)}</h3><ul class="guia-hojas-lista">${filas.join('')}</ul></section>`;
   const recientes = Object.values(HUELLAS).filter(h => (hoy - new Date(`${h.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE).length;
@@ -528,10 +671,19 @@ function htmlHojas() {
   const cuadernos = CUADERNOS ? definicionCuadernos(REGIONES, nombreRegion).filter(l => CUADERNOS[l.clave] && (!FILTRO_HOJAS || l.clave === `cuaderno-${FILTRO_HOJAS}`)).map(l => {
     const d = CUADERNOS[l.clave];
     const reciente = (hoy - new Date(`${d.fecha}T12:00:00`).getTime()) / 864e5 <= DIAS_RECIENTE;
+    // Qué hojas suyas cambiaron hace poco (las que se sustituyen, con la portada), de la más nueva a la
+    // más antigua; si el orden de hojas cambió hace poco, solo las posteriores (antes, se reimprime entero)
+    const base = recienteFecha(d.ordenFecha) ? d.ordenFecha : '';
+    const cambiadas = Object.keys(d.hojas || {}).filter(k => HUELLAS[k] && recienteFecha(HUELLAS[k].fecha) && HUELLAS[k].fecha > base)
+      .sort((a, b) => HUELLAS[b].fecha.localeCompare(HUELLAS[a].fecha));
+    const idCamb = `cambiadas-${l.clave}`;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(l.titulo)}</b>
       <span>${d.paginas} páginas (${d.paginas / 2} hojas de papel)</span> · <span class="guia-hoja-v">v. ${esc(d.huella)}</span> · <span>cambió el ${esc(fechaLarga(d.fecha))}</span>${d.ordenFecha ? ` · <span>orden de hojas desde el ${esc(fechaLarga(d.ordenFecha))}</span>` : ''}${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
-      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida">Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero (cambió la lista u orden de hojas). Si es posterior, basta con cambiar las hojas «Reciente» y la portada.</span>` : ''}</div>
-      <a href="${urlPDF(l.clave, d.archivo || d.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(l.titulo)} en PDF">PDF ↗</a></li>`;
+      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida">Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero.</span>` : ''}
+      ${cambiadas.length ? botonVer(idCamb, `${base ? 'Cambiaron después' : 'Hojas que cambiaron'} (${cambiadas.length})`) : ''}</div>
+      <a href="${urlPDF(l.clave, d.archivo || d.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(l.titulo)} en PDF">PDF ↗</a>
+      ${cambiadas.length ? `<div id="${idCamb}" class="guia-cambios" hidden><p class="guia-cambios-nota">${base ? `Si lo imprimiste después del ${esc(fechaLarga(base))}, basta` : 'Basta'} con sustituir las que cambiaron después de imprimirlo, y la portada:</p>
+        <ul>${cambiadas.map(k => `<li><a href="${urlPDF(k, HUELLAS[k].huella)}" target="_blank" rel="noopener">${esc(nombreHojaImpresa(k, nombreRegion))} ↗</a> · ${esc(fechaCortaDe(HUELLAS[k].fecha))}</li>`).join('')}</ul></div>` : ''}</li>`;
   }) : [];
   return `<p class="guia-nota">Cada hoja impresa lleva su versión bajo el QR («v. …»). Si no coincide con la de esta lista, la hoja ha cambiado: descarga el PDF y reimprímela. «Reciente» = cambió en los últimos ${DIAS_RECIENTE} días (${recientes} de ${Object.keys(HUELLAS).length}).</p>
     ${filtroHojasHTML()}
@@ -642,6 +794,7 @@ function pintar({ sinScroll = false } = {}) {
     .map(([k, n]) => `<a href="#${region}/${k}"${k === hoja ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   document.getElementById('guiaContenido').innerHTML = avisoHojaHTML(claveHoja({ region, hoja })) + PINTAR[hoja](region);
   document.title = `${HOJAS_GUIA[hoja]} · ${nombreRegion(region)} · Guía de consulta`;
+  marcarCambios();
   medirNav();
   actualizarPlegarTodo();
   const destino = elemento && document.getElementById(elemento);
@@ -796,8 +949,8 @@ async function iniciar() {
   }, true);
   // Las fuentes se enlazan con el registro; si no carga, se pintan sin enlace
   try { REF = await registroReferencias(); } catch { REF = null; }
-  if (HUELLA_PAPEL) HOJA_PAPEL = claveHoja(leerRuta());
   if (HUELLA_PAPEL || leerRuta().hojas) await cargarHuellas();
+  if (HUELLA_PAPEL) await identificarPapel();
   window.addEventListener('hashchange', async () => {
     cerrarFicha({ sinFoco: true });
     if (leerRuta().hojas && !HUELLAS) await cargarHuellas();
