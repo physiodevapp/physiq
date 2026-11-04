@@ -662,14 +662,39 @@ function actualizarPlegarTodo() {
   const b = document.querySelector('[data-plegar-todo]');
   if (b) b.textContent = document.querySelector('details.guia-plegable:not([open])') ? 'Desplegar todo' : 'Plegar todo';
 }
+// Título fijo compacto (usuario, 2026-11): mientras la línea de un bloque abierto está
+// pegada bajo las pestañas, .fija la reduce a una barra; el alto que pierde se le
+// devuelve como margen inferior, para que el contenido de debajo no salte
+function quitarFija(d) {
+  d.classList.remove('fija');
+  const s = d.querySelector(':scope > summary');
+  if (s) s.style.marginBottom = '';
+}
+function actualizarFijas() {
+  const top = navAlto();
+  document.querySelectorAll('details.guia-plegable').forEach(d => {
+    const r = d.getBoundingClientRect();
+    const fija = d.open && !_imprimiendo && r.top < top - 1 && r.bottom > top + 48;
+    if (fija === d.classList.contains('fija')) return;
+    if (!fija) { quitarFija(d); return; }
+    const s = d.querySelector(':scope > summary');
+    const alto = s.getBoundingClientRect().height, margen = parseFloat(getComputedStyle(s).marginBottom) || 0;
+    d.classList.add('fija');
+    s.style.marginBottom = `${margen + alto - s.getBoundingClientRect().height}px`;
+  });
+}
+let _fijasPendiente = 0;
+const programarFijas = () => { if (!_fijasPendiente) _fijasPendiente = requestAnimationFrame(() => { _fijasPendiente = 0; actualizarFijas(); }); };
+
 function iniciarPlegables() {
   // `toggle` no burbujea: en captura. Al plegar un bloque con su línea por encima
   // de las pestañas (estaba fija), se vuelve a ella para no quedarse más abajo
   document.addEventListener('toggle', e => {
     const d = e.target;
     if (!(d instanceof HTMLDetailsElement) || !d.classList.contains('guia-plegable')) return;
-    if (d.open) ABIERTOS.add(d.id); else ABIERTOS.delete(d.id);
+    if (d.open) ABIERTOS.add(d.id); else { ABIERTOS.delete(d.id); quitarFija(d); }
     actualizarPlegarTodo();
+    programarFijas();
     if (d.open || _imprimiendo || performance.now() < _sinSaltoHasta) return;
     const y = d.getBoundingClientRect().top, top = navAlto();
     if (y < top) window.scrollTo({ top: window.scrollY + y - top - 8, behavior: 'instant' });
@@ -690,11 +715,13 @@ function iniciarPlegables() {
       actualizarPlegarTodo();   // ya, sin esperar a los `toggle`, que llegan después
     }
   });
-  window.addEventListener('resize', medirNav, { passive: true });
+  window.addEventListener('resize', () => { medirNav(); programarFijas(); }, { passive: true });
+  window.addEventListener('scroll', programarFijas, { passive: true });
   // Al imprimir, todo desplegado; después, como estaba
   let antes = [];
   window.addEventListener('beforeprint', () => {
     _imprimiendo = true;
+    document.querySelectorAll('details.guia-plegable.fija').forEach(quitarFija);
     antes = [...document.querySelectorAll('details.guia-plegable')].filter(d => !d.open);
     antes.forEach(d => { d.open = true; });
   });
