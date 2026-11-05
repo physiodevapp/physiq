@@ -822,12 +822,13 @@ function actualizarPlegarTodo() {
   if (b) b.textContent = document.querySelector('details.guia-plegable:not([open])') ? 'Desplegar todo' : 'Plegar todo';
 }
 // Título fijo compacto (usuario, 2026-11): mientras la línea de un bloque abierto está
-// pegada bajo las pestañas, .fija la reduce a una barra; el alto que pierde se le
-// devuelve como margen inferior, para que el contenido de debajo no salte
+// pegada bajo las pestañas, .fija la reduce a una barra; el alto que pierde se devuelve
+// con un hueco justo debajo, para que el contenido no salte. Un hueco aparte y no un
+// margen de la línea: el sticky respeta su propio margen, y con él la línea empezaba a
+// subir ~36 px antes del final del bloque
 function quitarFija(d) {
   d.classList.remove('fija');
-  const s = d.querySelector(':scope > summary');
-  if (s) s.style.marginBottom = '';
+  d.querySelector(':scope > .guia-fija-hueco')?.remove();
 }
 function actualizarFijas() {
   const top = navAlto();
@@ -840,9 +841,13 @@ function actualizarFijas() {
     if (fija === d.classList.contains('fija')) return;
     if (!fija) { quitarFija(d); return; }
     const s = d.querySelector(':scope > summary');
-    const alto = s.getBoundingClientRect().height, margen = parseFloat(getComputedStyle(s).marginBottom) || 0;
+    const alto = s.getBoundingClientRect().height;
     d.classList.add('fija');
-    s.style.marginBottom = `${margen + alto - s.getBoundingClientRect().height}px`;
+    const hueco = document.createElement('div');
+    hueco.className = 'guia-fija-hueco';
+    hueco.setAttribute('aria-hidden', 'true');
+    hueco.style.height = `${Math.max(0, alto - s.getBoundingClientRect().height)}px`;
+    s.after(hueco);
   });
 }
 let _fijasPendiente = 0;

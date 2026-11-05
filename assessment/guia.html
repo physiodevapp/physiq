@@ -91,7 +91,7 @@
   /* Tapa por arriba (usuario, 2026-11): entre las pestañas y la línea fija podía quedar
      una rendija de 1–3 px (redondeos al hacer scroll en móvil) por la que se veía el
      texto que pasa por detrás. Queda bajo las pestañas, que van por encima */
-  .guia-plegable.fija > summary::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 8px; background: var(--surface); pointer-events: none; }
+  .guia-plegable.fija > summary::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 40px; background: var(--surface); pointer-events: none; }
   .guia-plegable.fija > summary h3 { font-size: 0.95rem; margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .guia-plegable.fija > summary .guia-cond, .guia-plegable.fija > summary .guia-meta-linea, .guia-plegable.fija > summary .guia-progreso { display: none; }
   .guia-plegable.fija > summary .guia-bloque-meta { margin-top: 2px; }
