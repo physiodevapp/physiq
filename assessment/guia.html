@@ -88,6 +88,9 @@
      alto que pierde lo devuelve guia.js como margen, así que nada salta debajo */
   .guia-plegable.fija > summary { padding-top: 8px; padding-bottom: 8px; border-bottom-color: transparent; box-shadow: 0 6px 10px -6px var(--scrim); border-radius: 0; }
   .guia-plegable.fija > summary::after { top: 9px; }
+  /* Al final del bloque, pasado «Replegar ▴»: sin sombra, línea y fondo de la tarjeta
+     como una sola pieza (usuario, 2026-11) */
+  .guia-plegable.fija.al-final > summary { box-shadow: none; }
   /* Tapa por arriba (usuario, 2026-11): entre las pestañas y la línea fija podía quedar
      una rendija de 1–3 px (redondeos al hacer scroll en móvil) por la que se veía el
      texto que pasa por detrás. Queda bajo las pestañas, que van por encima */
