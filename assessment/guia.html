@@ -82,15 +82,17 @@
   .guia-plegable[open] > summary::after { transform: rotate(180deg); }
   .guia-plegable[open] > summary { position: sticky; top: var(--guia-nav-alto, 57px); z-index: 5; border-bottom: 1px solid var(--border); border-radius: 10px 10px 0 0; margin-bottom: 6px; padding-bottom: 10px; }
   .guia-plegable > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-  /* Fija arriba (guia.js, .fija): barra compacta de una línea, con sombra en vez de
-     borde, para que al final del bloque tape poco y no parezca una doble raya
-     (usuario, 2026-11). En la confirmación sigue la puntuación (y la derivación). El
-     alto que pierde lo devuelve guia.js como margen, así que nada salta debajo */
-  .guia-plegable.fija > summary { padding-top: 8px; padding-bottom: 8px; border-bottom-color: transparent; box-shadow: 0 6px 10px -6px var(--scrim); border-radius: 0; }
+  /* Fija arriba (guia.js, .fija): barra compacta de una línea con el mismo borde
+     inferior que la línea sin fijar (usuario, 2026-11: antes una sombra, pensada contra
+     una doble raya que venía de otros fallos ya resueltos). En la confirmación sigue la
+     puntuación (y la derivación). El alto que pierde lo devuelve guia.js con un hueco,
+     así que nada salta debajo */
+  .guia-plegable.fija > summary { padding-top: 8px; padding-bottom: 8px; border-radius: 0; transition: border-bottom-color 0.15s ease; }
   .guia-plegable.fija > summary::after { top: 9px; }
-  /* Al final del bloque, pasado «Replegar ▴»: sin sombra, línea y fondo de la tarjeta
-     como una sola pieza (usuario, 2026-11) */
-  .guia-plegable.fija.al-final > summary { box-shadow: none; }
+  /* Al final del bloque, pasado «Replegar ▴»: el borde se desvanece, línea y fondo de
+     la tarjeta como una sola pieza (usuario, 2026-11) */
+  .guia-plegable.fija.al-final > summary { border-bottom-color: transparent; }
+  @media (prefers-reduced-motion: reduce) { .guia-plegable.fija > summary { transition: none; } }
   /* Tapa por arriba (usuario, 2026-11): entre las pestañas y la línea fija podía quedar
      una rendija de 1–3 px (redondeos al hacer scroll en móvil) por la que se veía el
      texto que pasa por detrás. Queda bajo las pestañas, que van por encima */

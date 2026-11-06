@@ -839,7 +839,7 @@ function actualizarFijas() {
     // doble raya con el recuento asomando bajo las pestañas (usuario, 2026-11)
     const fija = d.open && !_imprimiendo && r.top < top - 1 && r.bottom > top;
     // Al final: el final del bloque ya empuja la línea hacia arriba, «Replegar ▴» ha
-    // pasado por debajo y solo queda el fondo de la tarjeta; sin sombra, para que la
+    // pasado por debajo y solo queda el fondo de la tarjeta; sin borde (se desvanece), para que la
     // línea y ese fondo se lean como una sola pieza (usuario, 2026-11)
     const alFinal = fija && d.querySelector(':scope > summary').getBoundingClientRect().top < top - 0.5;
     if (alFinal !== d.classList.contains('al-final')) d.classList.toggle('al-final', alFinal);
