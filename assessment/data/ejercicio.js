@@ -387,6 +387,46 @@ export const BLOQUES_EJERCICIO = [
       ],
     },
     fuentes: ['Liddle y Pennick 2015', 'Davenport 2019 (dolor lumbopélvico)', 'Ruchat 2025', 'Davenport 2018 (ánimo)', 'Deprato 2025', 'Woodley 2020', 'Davenport 2018 (incontinencia)', 'Beamish 2025', 'NICE NG210', 'Gluppe 2021', 'Sperstad 2016', 'Davenport 2019 (mortalidad fetal)', 'Davenport 2019 (daños maternos)', 'ACOG 2020', 'Mottola 2019', 'Mottola 2018', 'Evenson 2024', 'Davenport 2025', 'Christopher 2024', 'Deering 2024'] },
+  // Parkinson (2026-11, revisado por el usuario): decisión 13 de docs/parkinson.md. Ernst 2024 leída
+  // entera en PMC (citas literales de un agente); Osborne 2022 y Keus 2014,
+  // solo lo leído para la tarjeta (docs/parkinson.md). Niveles en
+  // docs/efectos-ejercicio.md, «Bloque 11 — Parkinson: decisiones de nivel».
+  { id: 'parkinson', titulo: 'Ejercicio en el Parkinson',
+    // Hoja para el paciente (docs/esquemas, «ejercicio-paciente»): revisado por el usuario (2026-11)
+    tituloPaciente: 'Si tiene enfermedad de Parkinson', hojaPaciente: 'condicion',
+    resumen: 'Qué tipos de ejercicio mejoran el movimiento y la calidad de vida, cuánto se sabe de su seguridad y a quién se aplican los estudios',
+    apartados: {
+      que: [
+        { t: 'En modelos de Parkinson en roedores, el ejercicio forzado o voluntario tiene efectos neuroprotectores y aumenta la neurotransmisión de dopamina; en personas, el ejercicio puede cambiar algunos marcadores de neuroplasticidad. Es la explicación que da la introducción de la revisión Cochrane, no un resultado de sus ensayos (Ernst 2024).', nivel: 'mecanismo' },
+        { t: 'Que el ejercicio frene la progresión de la enfermedad no está demostrado: la revisión mide signos motores, calidad de vida, congelación de la marcha, movilidad y efectos adversos poco después de terminar cada programa, no la progresión (Ernst 2024).', nivel: 'clinico' },
+      ],
+      evidencia: [
+        { t: 'Casi todos los tipos de ejercicio estudiados mejoran los signos motores y la calidad de vida frente a no hacer ejercicio, con poca diferencia entre ellos: los autores concluyen que el tipo exacto «podría ser secundario». En los signos motores, la danza y el entrenamiento de marcha, equilibrio y función, con efecto moderado (confianza moderada); el resto, con efecto pequeño (confianza de moderada a baja); los estiramientos solos no mostraron efecto. En la calidad de vida, el ejercicio en el agua, con efecto grande (confianza moderada) (Ernst 2024, 154 ensayos, 7837 participantes).', nivel: 'clinico' },
+        { t: 'La movilidad funcional y el equilibrio (Timed Up and Go) mejoraron con siete tipos de ejercicio frente a no hacerlo, con resultados muy distintos entre estudios y sin graduar la confianza (Ernst 2024).', nivel: 'clinico' },
+        { t: 'A quién se aplica: casi todos los estudios incluyen enfermedad leve a moderada y sin deterioro cognitivo importante (Hoehn y Yahr de 1 a 4, solo 17 estudios por encima de 3; media de edad de 60 a 74 años), así que en la enfermedad avanzada o con deterioro cognitivo los resultados podrían no valer (Ernst 2024; Osborne 2022).', nivel: 'clinico' },
+        { t: 'Cuánto dura el efecto: los programas duraron de media 11 semanas y todo se midió en las 6 semanas siguientes, así que la revisión no permite concluir que el efecto se mantenga (Ernst 2024). La guía de la APTA dice que lo ganado se pierde si se deja de hacer (Osborne 2022).', nivel: 'clinico' },
+        { t: 'Seguridad: el 45 % de los estudios no dio datos, y casi todos los demás solo del grupo que hacía ejercicio. Lo más notificado fueron caídas (18 estudios) y dolor (10). Los autores no ven problemas de seguridad importantes, pero la certeza es muy baja y advierten que el riesgo puede aumentar al avanzar la enfermedad (Ernst 2024).', nivel: 'clinico' },
+        { t: 'Congelación de la marcha: en la red de comparaciones, el entrenamiento aeróbico la redujo frente a no hacer ejercicio, pero con intervalos muy amplios, sin graduar la confianza, y los autores lo consideran no concluyente y piden interpretarlo con mucha cautela (Ernst 2024).', nivel: 'clinico' },
+      ],
+      consulta: [
+        { t: 'Como el tipo de ejercicio parece importar poco, los autores proponen tener especialmente en cuenta las preferencias de cada persona al elegirlo (Ernst 2024).', nivel: 'clinico' },
+        { t: 'Lo que se mide cambia con la medicación: la revisión prefirió los datos en «on», recoge un ensayo que solo vio beneficio en «off» y señala que el momento respecto a la toma puede confundir los resultados (Ernst 2024). La guía europea propone entrenar la capacidad física en «on» y valorar y reevaluar en la misma fase (Keus 2014, 6.7.2).', nivel: 'clinico' },
+        { t: 'Con la enfermedad avanzada (Hoehn y Yahr 4–5), las pautas de ejercicio se estudiaron sobre todo en estadios 1–3 (Osborne 2022); en cama o silla, la guía europea se centra en prevenir úlceras y contracturas, la postura, los cambios de posición y las transferencias (Keus 2014, 6.8.3).', nivel: 'clinico' },
+      ],
+      paciente: [
+        { t: 'En el Parkinson, hacer ejercicio con regularidad mejora algo el movimiento y la calidad de vida. Casi cualquier tipo sirve, así que conviene elegir uno que le guste y pueda mantener.', apoya: [0] },
+        { t: 'Lo que se gana con el ejercicio se pierde si se deja: por eso conviene seguir haciéndolo, no solo durante unas semanas.', apoya: [3] },
+      ],
+      detalle: [
+        'Cifras de los signos motores (parte motora de la UPDRS; diferencia mínima importante, 2,5 puntos): danza −10,2; marcha, equilibrio y función −7,5 (confianza moderada); multicomponente −5,9 (moderada); aeróbico −5,8, en el agua −5,1, fuerza −5,0 y cuerpo-mente (tai chi, yoga) −3,6 (baja); LSVT BIG −6,7 y estiramientos +4,2, con confianza muy baja (Ernst 2024).',
+        'Cifras de la calidad de vida (PDQ-39; diferencia mínima importante, 4,72 puntos): en el agua −15,2 (confianza moderada); cuerpo-mente −7,2, marcha, equilibrio y función −6,2, multicomponente −5,3 y danza −3,9 (baja); videojuegos, fuerza, aeróbico y estiramientos, con confianza muy baja (Ernst 2024).',
+        'Todos los resultados de calidad de vida tienen riesgo de sesgo alto, porque los cuenta el propio paciente sabiendo qué ha hecho; en los signos motores, casi la mitad (Ernst 2024).',
+        'La intensidad no se analizó por separado: los autores la citan, junto con la frecuencia y la duración de las sesiones, como una posible explicación de las diferencias entre estudios. La duración del programa (menos o más de 12 semanas) se analizó como exploratoria: la movilidad mejoró más a menudo con 12 semanas o más (Ernst 2024).',
+        'Con los estiramientos solos no se vio efecto, pero los autores no descartan que un programa de estiramientos bien diseñado ayude (Ernst 2024).',
+        'Un metaanálisis en red anterior, de 2019, no encontró efecto en la calidad de vida donde esta revisión sí (Ernst 2024).',
+      ],
+    },
+    fuentes: ['Ernst 2024', 'Osborne 2022', 'Keus 2014'] },
 ];
 
 // Bloque que enlaza la fase 6 por hipótesis (docs/efectos-ejercicio.md,
@@ -444,6 +484,7 @@ export const TEXTOS_EJERCICIO = {
   enlaceMotivoOrtostatica: 'Por la disautonomía: su frase para el paciente habla de tolerar estar de pie, sin prometer que mejoren todos los síntomas; la dosis es la del aviso de este plan.',
   enlaceMotivoHipermovilidad: 'Por la hipermovilidad: sus frases para el paciente dicen que la fuerza graduada no suele aumentar el dolor y que no hay un ejercicio «especial»; vienen de ensayos sin el subtipo vascular.',
   enlaceMotivoEmbarazo: 'Por el embarazo o el posparto: sus frases para el paciente hablan del ánimo, de los escapes y del dolor de espalda o pelvis tras el parto, sin prometer más; la dosis es la del aviso de este plan.',
+  enlaceMotivoParkinson: 'Por el Parkinson: sus frases para el paciente dicen que casi cualquier ejercicio ayuda algo y que lo ganado se pierde si se deja; la dosis es la del aviso de este plan.',
   enlaceEducacionAyuda: 'Abre «{titulo}», el bloque que corresponde a la irritabilidad elegida.',
   enlaceEducacionAyudaHip: 'Abre «{titulo}», el bloque que corresponde a {hipotesis}.',
   // Enlaces de los recuadros de la fase 5 (estados: CONDICION_EJERCICIO, lib/ejercicio.js)
@@ -452,5 +493,6 @@ export const TEXTOS_EJERCICIO = {
   enlaceCondicionHipermovilidad: 'Si se puede cargar con fuerza y cuánto dolor provoca, según los ensayos en SEDh y TEH; no vale para el subtipo vascular.',
   enlaceCondicionDisautonomia: 'Por qué los programas empiezan tumbado y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionEmbarazo: 'Por qué se recomienda moverse y hasta dónde llega lo demostrado en el dolor de espalda y pelvis, el ánimo y los escapes; la dosis sigue siendo la de este recuadro.',
+  enlaceCondicionParkinson: 'Qué tipos de ejercicio ayudan y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionOsteoporosis: 'Lectura para ti: en el hueso el bloque solo llega a mecanismo (la densidad mejora algo); no está demostrado que el ejercicio reduzca las fracturas.',
 };

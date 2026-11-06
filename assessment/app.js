@@ -2298,6 +2298,7 @@ function _parkinsonResultadosHTML(d) {
       <div><strong>Parkinson.</strong> ${d.es === 'diagnosticado' ? 'Diagnosticado' : 'Sospecha'}${datos.length ? ` · ${datos.join(' · ')}` : ''}
         ${estHTML}
         ${_lineasCondicionHTML(lineas.filter(l => l !== est), _sospechaDe(d, 'enfermedad de Parkinson'))}
+        ${enlaceCondicionEjercicioHTML('parkinson', { estado: d.es })}
       </div>
     </div>`;
 }
