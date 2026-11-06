@@ -723,6 +723,62 @@
     <div class="hm-nota">Qué vigilar con estos fármacos: <button type="button" class="sint-recordatorio-ir" onclick="abrirFarmacos({ familia: 'antitromboticos' })">Fármacos: anticoagulantes y antiagregantes →</button></div>
   </div>
 
+  <!-- Condición especial (docs/parkinson.md): sin marcar = no consta; dos estados -->
+  <div class="card" id="cardParkinson">
+    <div class="card-title">Parkinson</div>
+    <div class="plan-note-hint" id="pkNota"></div>
+    <div class="option-group option-group-full" id="pkEstado">
+      <button type="button" class="option-btn" data-valor="diagnosticado" onclick="selectPKEstado('diagnosticado')">Diagnosticado</button>
+      <button type="button" class="option-btn" data-valor="sospecha" onclick="selectPKEstado('sospecha')">Sospecha</button>
+    </div>
+    <div id="pkDiagWrap" style="display:none">
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Estadio (Hoehn y Yahr), si lo sabe</div>
+      <div class="option-group hm-subtipos" data-pk-fila="estadio">
+        <button type="button" class="option-btn" data-valor="12" onclick="selectPKFila('estadio','12')">1–2</button>
+        <button type="button" class="option-btn" data-valor="3" onclick="selectPKFila('estadio','3')">3</button>
+        <button type="button" class="option-btn" data-valor="45" onclick="selectPKFila('estadio','45')">4–5</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectPKFila('estadio','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Tiene fluctuaciones on/off?</div>
+      <div class="option-group hm-subtipos" data-pk-fila="fluctuaciones">
+        <button type="button" class="option-btn" data-valor="SI" onclick="selectPKFila('fluctuaciones','SI')">Sí</button>
+        <button type="button" class="option-btn" data-valor="NO" onclick="selectPKFila('fluctuaciones','NO')">No</button>
+        <button type="button" class="option-btn" data-valor="NS" onclick="selectPKFila('fluctuaciones','NS')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo" id="pkFaseWrap" style="display:none">
+      <div class="form-label">Ahora está en</div>
+      <div class="option-group hm-subtipos" data-pk-fila="fase">
+        <button type="button" class="option-btn" data-valor="on" onclick="selectPKFila('fase','on')">On</button>
+        <button type="button" class="option-btn" data-valor="off" onclick="selectPKFila('fase','off')">Off</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectPKFila('fase','ns')">No sabría decir</button>
+      </div>
+      <div class="plan-note-hint" id="pkFaseNota"></div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Se le congela la marcha?</div>
+      <div class="option-group hm-subtipos" data-pk-fila="congelacion">
+        <button type="button" class="option-btn" data-valor="SI" onclick="selectPKFila('congelacion','SI')">Sí</button>
+        <button type="button" class="option-btn" data-valor="NO" onclick="selectPKFila('congelacion','NO')">No</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Lleva estimulador cerebral profundo?</div>
+      <div class="option-group hm-subtipos" data-pk-fila="estimulador">
+        <button type="button" class="option-btn" data-valor="SI" onclick="selectPKFila('estimulador','SI')">Sí</button>
+        <button type="button" class="option-btn" data-valor="NO" onclick="selectPKFila('estimulador','NO')">No</button>
+        <button type="button" class="option-btn" data-valor="NS" onclick="selectPKFila('estimulador','NS')">No lo sabe</button>
+      </div>
+      <div class="pk-estimulador" id="pkEstimulador"></div>
+    </div>
+    <div class="hm-nota">Las caídas se preguntan en el sistema «Parkinson» de la fase 2.</div>
+    </div>
+    <div id="pkSospechaWrap" style="display:none"><div class="hm-nota" id="pkSospecha"></div></div>
+  </div>
+
   <!-- Paso 3 de la farmacología (docs/farmacos-paciente.md): familias de la guía
        que toma, sin texto libre; los chips salen de data/farmacos.js -->
   <div class="card" id="cardFarmacos">
@@ -1042,6 +1098,7 @@
     <div class="irritab-cards irritab-mobile breve-opcional" id="irritabTarjetas"></div>
     <div class="ds-nota solo-ds" id="dsNotaTolerancia"></div>
     <div class="ds-nota solo-les" id="lesNotaBrote" style="display:none"></div>
+    <div class="ds-nota solo-pk" id="pkNotaDolor"></div>
     <div id="irritabilidadResumen" style="margin-top:1rem;"></div>
   </div>
 

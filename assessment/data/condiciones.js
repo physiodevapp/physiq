@@ -157,6 +157,22 @@ export const CONDICIONES = [
     fuentes: ['NICE NG232', 'Peng 2022', 'Muñoz 2022'],
   },
   {
+    id: 'parkinson',
+    nombre: 'Parkinson',
+    que: 'Enfermedad neurológica que da lentitud, rigidez, temblor y problemas de equilibrio, y que se trata con medicación que hay que tomar a sus horas.',
+    piensa: 'Piensa en ella si:',
+    pistas: [
+      { texto: 'tiene temblor, rigidez, lentitud o problemas de marcha sin diagnóstico;', de: ['pk_d_sospecha'] },
+      { texto: 'un dolor de hombro o brazo de un lado con rigidez o menos braceo;', de: ['pk_d_sospecha'] },
+      { texto: 'ya tiene el diagnóstico y viene por otro dolor.', de: ['pk_d_medicacion', 'pk_d_complicaciones'] },
+    ],
+    anade: 'las preguntas de la fase 2, la medida de la tensión de pie, la línea del estimulador, el recuadro de la fase 5 y los avisos de la fase 6.',
+    enPlan: 'sus avisos (ejercicio, estimulador y vibración) y su red de seguridad',
+    destino: { tarjeta: 'cardParkinson' },
+    boton: 'Ir a la tarjeta →',
+    fuentes: ['NICE NG71', 'Buhmann 2020', 'Paggou 2023'],
+  },
+  {
     id: 'tarlov',
     region: 'lumbar',
     nombre: 'Quiste de Tarlov',

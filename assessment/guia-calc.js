@@ -1,8 +1,9 @@
 // Calculadoras de la guía de consulta (guia.html) para lo que la hoja impresa no puede
 // calcular: la fase 1 (banderas rojas y riesgo psicosocial, página #fase1) y, en el cribado,
 // la escala de Beighton con el cuestionario, la regla de sospecha del subtipo vascular, la
-// prueba de bipedestación y la regla de la tensión en el embarazo. Las reglas son las de la
-// app (lib/hipermovilidad.js, lib/disautonomia.js, lib/embarazo.js), no una copia. Todo en
+// prueba de bipedestación, la regla de la tensión en el embarazo y la tensión tumbado y de pie
+// del Parkinson. Las reglas son las de la app (lib/hipermovilidad.js, lib/disautonomia.js,
+// lib/embarazo.js, lib/parkinson.js), no una copia. Todo en
 // memoria: nada se guarda y se borra al recargar o con «Borrar».
 import { SIS_HIPERMOVILIDAD, HIP_POSQUIRURGICA } from './data/comun.js';
 import * as POSQ from './lib/posquirurgico.js';
@@ -11,6 +12,7 @@ import { BANDERAS_FASE1, TEXTOS_FASE1, NIVELES_PSICO, PREGUNTAS_PSICO, RESPUESTA
 import { HM, resultadoHAG, reglaVascular, siCuestionario, respondidasCuestionario } from './lib/hipermovilidad.js';
 import { DS, FILAS_PRUEBA, resultadoPrueba, estadoReloj, tomaFueraDeTiempo, textoTiempo } from './lib/disautonomia.js';
 import { EM, reglaTA } from './lib/embarazo.js';
+import { PK, FILAS_TENSION, resultadoTension } from './lib/parkinson.js';
 import { citasEnTexto } from './lib/citas.js';
 
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -19,8 +21,8 @@ const caja = (tono, icono, html) => `<div class="guia-calc-res ${tono}"><span ar
 const nota = html => `<p class="guia-nota">${html}</p>`;
 
 // Lo marcado en las calculadoras (solo en memoria)
-const C = { edad: null, banderas: {}, psico: '', psicoQ: {}, beighton: {}, cuestionario: {}, vascular: {}, prueba: {}, ta: {} };
-const vaciar = () => Object.assign(C, { edad: null, banderas: {}, psico: '', psicoQ: {}, beighton: {}, cuestionario: {}, vascular: {}, prueba: {}, ta: {} });
+const C = { edad: null, banderas: {}, psico: '', psicoQ: {}, beighton: {}, cuestionario: {}, vascular: {}, prueba: {}, ta: {}, tension: {} };
+const vaciar = () => Object.assign(C, { edad: null, banderas: {}, psico: '', psicoQ: {}, beighton: {}, cuestionario: {}, vascular: {}, prueba: {}, ta: {}, tension: {} });
 
 // Botón que se marca y desmarca (un segundo toque quita la respuesta, como en la app)
 const opcion = (grupo, clave, valor, texto, marcado) =>
@@ -122,39 +124,47 @@ function resPrueba() {
   return ref + partes.join('');
 }
 // Reloj de la prueba, como el de la app (lib/disautonomia.js, estadoReloj): 5 min tumbado, luego de
-// pie con un pitido, vibración y la fila resaltada en los minutos 1, 3, 5, 8 y 10, y «toma a las 3:40»
-// si la FC se escribe lejos de su minuto. Solo en memoria; nunca rellena la tabla.
+// pie con un pitido, vibración y la fila resaltada en cada minuto de medida (disautonomía: 1, 3, 5,
+// 8 y 10; tensión del Parkinson: 1 y 3), y «toma a las 3:40» si la primera cifra de la fila se
+// escribe lejos de su minuto. Un solo reloj a la vez; `RELOJ.de` dice de qué calculadora es
+// ('ds' | 'pk'). Solo en memoria; nunca rellena la tabla.
 let RELOJ = null, TICK = null, AVISADAS = 0, AUDIO = null, WAKE = null;
+const MINUTOS = { ds: DS.prueba.minutos, pk: PK.tension.minutos };
+const estadoDe = de => (RELOJ?.de === de ? estadoReloj(RELOJ, Date.now(), MINUTOS[de]) : null);
 const etiqFila = f => (f === 'tumbado' ? 'Tumbado' : `${f.slice(1)} min`);
-function vistaReloj(e) {
+function vistaReloj(e, de = 'ds') {
   if (!e || e.caducado) return { modo: 'sin' };
   if (e.fase === 'reposo') return e.cumplido
     ? { modo: 'reposo-ok', fase: 'Reposo', tiempo: textoTiempo(e.s), toca: 'Reposo cumplido: toma la medida tumbado.', sig: '' }
     : { modo: 'reposo', fase: 'Reposo', tiempo: textoTiempo(e.s), toca: '', sig: `Tumbado: quedan ${textoTiempo(Math.ceil(e.restante))}` };
-  if (e.terminado) return { modo: 'fin', fase: 'De pie', tiempo: textoTiempo(e.s), toca: '', sig: `Prueba terminada: ${DS.prueba.minutos[DS.prueba.minutos.length - 1]} min de pie.` };
+  if (e.terminado) return { modo: 'fin', fase: 'De pie', tiempo: textoTiempo(e.s), toca: '', sig: `Prueba terminada: ${MINUTOS[de][MINUTOS[de].length - 1]} min de pie.` };
   return { modo: 'pie', fase: 'De pie', tiempo: textoTiempo(e.s), toca: e.fila ? `Ahora: medida de ${etiqFila(e.fila)}` : '',
     sig: e.proxima ? `Siguiente: ${etiqFila(e.proxima.fila)} en ${textoTiempo(Math.ceil(e.proxima.en))}` : '' };
 }
-function relojHTML(v = vistaReloj(estadoReloj(RELOJ, Date.now()))) {
-  const btn = (k, texto, clase = 'btn-secondary') => `<button type="button" class="btn ${clase} ds-reloj-btn" data-gc-reloj="${k}">${texto}</button>`;
+function relojHTML(de = 'ds', v = vistaReloj(estadoDe(de), de)) {
+  const btn = (k, texto, clase = 'btn-secondary') => `<button type="button" class="btn ${clase} ds-reloj-btn" data-gc-reloj="${k}" data-gc-de="${de}">${texto}</button>`;
   if (v.modo === 'sin') return `<div class="ds-reloj-botones" data-modo="sin">${btn('reposo', 'Empezar reposo tumbado (5 min)')}${btn('pie', 'Se pone de pie')}</div>`;
   const botones = v.modo === 'fin' ? btn('parar', 'Cerrar el reloj') : v.modo === 'pie' ? btn('parar', 'Parar') : btn('pie', 'Se pone de pie', 'btn-primary') + btn('parar', 'Parar');
   return `<div class="ds-reloj-cab" data-modo="${v.modo}"><span class="ds-reloj-fase">${v.fase}</span><span class="ds-reloj-tiempo" role="timer" data-r="tiempo">${v.tiempo}</span></div>
     <div class="ds-reloj-toca" data-r="toca">${v.toca}</div><div class="ds-reloj-sig" data-r="sig">${v.sig}</div><div class="ds-reloj-botones">${botones}</div>`;
 }
 function pintarReloj() {
-  const e = estadoReloj(RELOJ, Date.now()), v = vistaReloj(e);
-  document.querySelectorAll('[data-gc-reloj-caja]').forEach(el => {
-    if (el.querySelector('[data-modo]')?.dataset.modo !== v.modo) { el.innerHTML = relojHTML(v); return; }
-    el.querySelectorAll('[data-r]').forEach(x => { if (x.textContent !== v[x.dataset.r]) x.textContent = v[x.dataset.r]; });
-  });
-  const fila = e && !e.caducado ? e.fila : null;
-  document.querySelectorAll('[data-gc-fila]').forEach(tr => tr.classList.toggle('ds-fila-toca', tr.dataset.gcFila === fila));
-  document.querySelectorAll('[data-gc-toma]').forEach(x => {
-    const t = tomaFueraDeTiempo(x.dataset.gcToma, RELOJ?.tomas?.[x.dataset.gcToma]);
-    x.textContent = t == null ? '' : `toma a las ${textoTiempo(t)}`;
-  });
-  return { e, fila };
+  let res = { e: null, fila: null };
+  for (const de of Object.keys(MINUTOS)) {
+    const e = estadoDe(de), v = vistaReloj(e, de);
+    document.querySelectorAll(`[data-gc-reloj-caja="${de}"]`).forEach(el => {
+      if (el.querySelector('[data-modo]')?.dataset.modo !== v.modo) { el.innerHTML = relojHTML(de, v); return; }
+      el.querySelectorAll('[data-r]').forEach(x => { if (x.textContent !== v[x.dataset.r]) x.textContent = v[x.dataset.r]; });
+    });
+    const fila = e && !e.caducado ? e.fila : null;
+    document.querySelectorAll(`[data-gc-tabla="${de}"] [data-gc-fila]`).forEach(tr => tr.classList.toggle('ds-fila-toca', tr.dataset.gcFila === fila));
+    document.querySelectorAll(`[data-gc-tabla="${de}"] [data-gc-toma]`).forEach(x => {
+      const t = RELOJ?.de === de ? tomaFueraDeTiempo(x.dataset.gcToma, RELOJ.tomas?.[x.dataset.gcToma]) : null;
+      x.textContent = t == null ? '' : `toma a las ${textoTiempo(t)}`;
+    });
+    if (RELOJ?.de === de) res = { e, fila };
+  }
+  return res;
 }
 function pitido() {
   try {
@@ -179,13 +189,13 @@ function tick() {
   if (!e || e.caducado || e.terminado || (e.fase === 'reposo' && e.cumplido && e.marcas <= AVISADAS)) parar();
   if (e && !e.caducado && e.marcas > AVISADAS) {
     AVISADAS = e.marcas; pitido();
-    const tr = fila && document.querySelector(`[data-gc-fila="${fila}"]`);
+    const tr = fila && document.querySelector(`[data-gc-tabla="${RELOJ.de}"] [data-gc-fila="${fila}"]`);
     if (tr) { const r = tr.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 80) tr.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
   }
 }
-function empezar(fase) {
+function empezar(fase, de = 'ds') {
   try { AUDIO = AUDIO || new (window.AudioContext || window.webkitAudioContext)(); AUDIO.resume?.(); } catch { AUDIO = null; }
-  RELOJ = { fase, inicio: Date.now(), tomas: {} };
+  RELOJ = { fase, inicio: Date.now(), tomas: {}, de };
   parar(); AVISADAS = 0;
   TICK = setInterval(tick, 250); pantalla(true);
   pintarReloj();
@@ -202,8 +212,8 @@ export function calcDisautonomiaHTML() {
   return `<details class="guia-calc-cond" id="calc-disautonomia"><summary>🧮 Calculadora: prueba de bipedestación activa</summary><div class="guia-calc-cuerpo">
     ${edadHTML()}
     <ul class="guia-gc-prep">${DS.prueba.preparacion.map(p => `<li>${esc(p.texto)}</li>`).join('')}</ul>
-    <div class="ds-reloj" data-gc-reloj-caja>${relojHTML()}</div>
-    <div class="guia-gc-tabla"><table><thead><tr><th></th><th>FC</th><th>TAS</th><th>TAD</th><th>Síntomas</th></tr></thead><tbody>${FILAS_PRUEBA.map(fila).join('')}</tbody></table></div>
+    <div class="ds-reloj" data-gc-reloj-caja="ds">${relojHTML('ds')}</div>
+    <div class="guia-gc-tabla" data-gc-tabla="ds"><table><thead><tr><th></th><th>FC</th><th>TAS</th><th>TAD</th><th>Síntomas</th></tr></thead><tbody>${FILAS_PRUEBA.map(fila).join('')}</tbody></table></div>
     <div id="guiaGcPrueba" class="guia-gc-res">${resPrueba()}</div>
     <p class="guia-nota">${citasEnTexto(DS.prueba.fuente)}</p>${borrar}</div></details>`;
 }
@@ -226,18 +236,46 @@ export function calcEmbarazoHTML() {
     <div id="guiaGcTA" class="guia-gc-res">${resTA()}</div>${borrar}</div></details>`;
 }
 
+// ── Parkinson: tensión tumbado y de pie (docs/parkinson.md, decisión 10) ─────
+// Tumbado y minutos 1 y 3, con la regla de la hipotensión ortostática de la app
+// (resultadoTension, lib/parkinson.js) y sin la del POTS.
+function resTension() {
+  const hechas = Object.values(C.tension).some(f => Object.keys(f || {}).length);
+  if (!hechas) return nota('Escribe la tensión tumbado y a los minutos 1 y 3 de pie.');
+  const r = resultadoTension(Object.fromEntries(FILAS_TENSION.map(f => [f, C.tension[f] || {}])));
+  const caida = r.caida && (r.caida.tas != null || r.caida.tad != null)
+    ? `<p class="guia-gc-total">Caída máxima de pie: TAS ${r.caida.tas ?? '—'} · TAD ${r.caida.tad ?? '—'} mmHg</p>` : '';
+  if (r.estado === 'ho') return caida + caja('medio', '⚠️', citasEnTexto(PK.textos.ho));
+  if (r.estado === 'no-ho') return caida + caja('bajo', '✓', esc(PK.textos.noHo));
+  return nota('Faltan la tensión tumbado y al menos una medida de pie.');
+}
+export function calcParkinsonHTML() {
+  const fila = f => {
+    const v = C.tension[f] || {};
+    return `<tr data-gc-fila="${f}"><th>${f === 'tumbado' ? 'Tumbado' : `De pie, ${f.slice(1)}′`}<span class="ds-toma" data-gc-toma="${f}"></span></th>
+      ${['tas', 'tad', 'fc'].map(c => `<td><input type="number" inputmode="numeric" min="0" max="300" aria-label="${c.toUpperCase()} ${f}" data-gc-num="tension" data-gc-k="${f}.${c}" value="${v[c] ?? ''}"></td>`).join('')}</tr>`;
+  };
+  return `<details class="guia-calc-cond" id="calc-parkinson"><summary>🧮 Calculadora: tensión tumbado y de pie</summary><div class="guia-calc-cuerpo">
+    ${nota(esc(PK.tension.seguridad))}
+    <div class="ds-reloj" data-gc-reloj-caja="pk">${relojHTML('pk')}</div>
+    <div class="guia-gc-tabla" data-gc-tabla="pk"><table><thead><tr><th></th><th>TAS</th><th>TAD</th><th>FC</th></tr></thead><tbody>${FILAS_TENSION.map(fila).join('')}</tbody></table></div>
+    <div id="guiaGcTension" class="guia-gc-res">${resTension()}</div>
+    <p class="guia-nota">${citasEnTexto(PK.tension.fuente)}</p>${borrar}</div></details>`;
+}
+
 // Calculadora de cada sistema de condición especial del cribado (por su id)
 export const CALC_SISTEMA = {
   transversal_hipermovilidad: calcHipermovilidadHTML,
   transversal_disautonomia: calcDisautonomiaHTML,
   transversal_embarazo: calcEmbarazoHTML,
+  transversal_parkinson: calcParkinsonHTML,
 };
 
 // Repinta los resultados (no las entradas: así no se pierde el foco al escribir)
 function repintarResultados() {
   const set = (id, fn) => { const el = document.getElementById(id); if (el) el.innerHTML = fn(); };
   set('guiaGcFase1', resFase1); set('guiaGcBeighton', resBeighton); set('guiaGcVascular', resVascular);
-  set('guiaGcPrueba', resPrueba); set('guiaGcTA', resTA);
+  set('guiaGcPrueba', resPrueba); set('guiaGcTA', resTA); set('guiaGcTension', resTension);
   document.querySelectorAll('[data-gc-num="edad"]').forEach(x => { if (x !== document.activeElement) x.value = C.edad ?? ''; });
 }
 
@@ -246,7 +284,7 @@ export function initCalculadoras(repintar) {
   document.addEventListener('click', e => {
     const t = e.target instanceof Element ? e.target : null;
     const rb = t?.closest('[data-gc-reloj]');
-    if (rb) { const k = rb.dataset.gcReloj; if (k === 'parar') { RELOJ = null; parar(); pintarReloj(); } else empezar(k); return; }
+    if (rb) { const k = rb.dataset.gcReloj; if (k === 'parar') { RELOJ = null; parar(); pintarReloj(); } else empezar(k, rb.dataset.gcDe || 'ds'); return; }
     if (t?.closest('[data-gc-borrar]')) { vaciar(); RELOJ = null; parar(); repintar({ sinScroll: true }); return; }
     const b = t?.closest('[data-gc]');
     if (!b) return;
@@ -277,8 +315,15 @@ export function initCalculadoras(repintar) {
         const fila = C.prueba[f] || (C.prueba[f] = {});
         if (v == null) delete fila[c]; else fila[c] = v;
         // Con el reloj de pie en marcha, cuándo se escribió la FC de esa fila
-        const e = estadoReloj(RELOJ, Date.now());
+        const e = estadoDe('ds');
         if (c === 'fc' && e?.fase === 'pie' && !e.caducado && /^m\d+$/.test(f)) { if (v == null) delete RELOJ.tomas[f]; else RELOJ.tomas[f] ??= Math.round(e.s); pintarReloj(); }
+      } else if (g === 'tension') {
+        const [f, c] = k.split('.');
+        const fila = C.tension[f] || (C.tension[f] = {});
+        if (v == null) delete fila[c]; else fila[c] = v;
+        // Con el reloj de pie en marcha, cuándo se escribió la TAS de esa fila (como en la app)
+        const e = estadoDe('pk');
+        if (c === 'tas' && e?.fase === 'pie' && !e.caducado && /^m\d+$/.test(f)) { if (v == null) delete RELOJ.tomas[f]; else RELOJ.tomas[f] ??= Math.round(e.s); pintarReloj(); }
       }
       repintarResultados();
     } else if (el?.dataset?.gcChk === 'prueba') {

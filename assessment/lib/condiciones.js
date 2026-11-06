@@ -50,6 +50,11 @@ export function estadoCondicion(c, st) {
       const ac = st.anticoagulado || {};
       return ac.estado === 'toma' ? marcada('Toma') : sin('No consta');
     }
+    case 'parkinson': {
+      const pk = st.parkinson || {};
+      if (pk.estado === 'diagnosticado') return marcada('Diagnosticado');
+      return pk.estado === 'sospecha' ? marcada('Sospecha') : sin('No consta');
+    }
     case 'lupus': {
       const le = st.lupus || {};
       if (le.estado === 'diagnosticado') return marcada('Diagnosticado');

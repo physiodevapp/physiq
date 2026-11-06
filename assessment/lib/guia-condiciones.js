@@ -16,6 +16,7 @@ import { MA, lineasRecomendacionMA } from './mastocitos.js';
 import { OP, lineasRecomendacionOP } from './osteoporosis.js';
 import { EM, lineasRecomendacionEM } from './embarazo.js';
 import { AC, lineasRecomendacionAC } from './anticoagulado.js';
+import { PK, lineasRecomendacionPK } from './parkinson.js';
 
 // Por sistema: estados con su caso base y sus variantes [etiqueta, cambio en el payload]
 export const RECOMENDACIONES = {
@@ -100,6 +101,17 @@ export const RECOMENDACIONES = {
       ['toma heparina', { ti: ['hp'] }],
     ] },
   ] },
+  transversal_parkinson: { fn: lineasRecomendacionPK, estados: [
+    { titulo: 'Diagnosticado', base: { es: 'diagnosticado' }, variantes: [
+      ['lleva estimulador cerebral profundo', { ec: 'SI' }],
+      ['no sabe si lleva estimulador cerebral profundo', { ec: 'NS' }],
+      ['se le congela la marcha', { cg: 'SI' }],
+      ['se ha caído en el último año (preguntas de caídas)', { cd: 'una' }],
+      ['está en un estadio 4–5 de Hoehn y Yahr', { hy: '45' }],
+      ['contesta SÍ a los ataques de sueño', { sn: true }],
+    ] },
+    { titulo: 'Sospecha', base: { es: 'sospecha' }, variantes: [] },
+  ] },
 };
 
 // Recuadro de la fase 5 de un sistema: [{ titulo, lineas: [{ texto, si?, no? }] }] (null si no tiene)
@@ -137,6 +149,9 @@ export function bloquesFase2(sis) {
     b.push({ titulo: 'Factores de riesgo de fractura (con «Sospecha»)', preguntas: OP.factores, fuentes: [OP.textos.sospechaDerivar, OP.textos.sospechaJoven, OP.factoresFuente] });
     b.push({ titulo: 'Caídas (los dos estados)', preguntas: [{ id: 'n', texto: `En el último año, ¿se ha caído? (${Object.values(OP.caidas.n).join(' · ')})` }, ...OP.caidas.casillas], fuentes: [OP.caidas.fuente, OP.caidas.sincope] });
   }
+  if (sis.id === 'transversal_parkinson') {
+    b.push({ titulo: 'Caídas (los dos estados; las mismas de la osteoporosis)', preguntas: [{ id: 'n', texto: `En el último año, ¿se ha caído? (${Object.values(OP.caidas.n).join(' · ')})` }, ...OP.caidas.casillas], fuentes: [OP.caidas.fuente, OP.caidas.sincope] });
+  }
   if (sis.id === 'transversal_embarazo') {
     b.push({ titulo: 'Ánimo', preguntas: EM.animo, fuentes: [EM.textos.animoSi, EM.textos.animoAnsiedad, EM.textos.animoFuente] });
     b.push({ titulo: 'Suelo pélvico', preguntas: EM.suelo, fuentes: [EM.textos.sueloEvidencia, EM.textos.sueloFuente] });
@@ -152,6 +167,8 @@ export function lineasTecnica4b() {
     { icono: '🦋', cond: 'Lupus diagnosticado', texto: LES.textos.tecnica4b },
     { icono: '💉', cond: 'Trastorno mastocitario o anafilaxia', texto: MA.textos.tecnica4b },
     { icono: '🩸', cond: 'Anticoagulado o antiagregado', texto: AC.textos.tecnica4b },
+    { icono: '🧠', cond: 'Parkinson diagnosticado', texto: PK.textos.tecnica4b },
+    { icono: '⚡', cond: 'Parkinson con estimulador cerebral profundo (o sin confirmar)', texto: PK.textos.cables4b },
   ];
 }
 

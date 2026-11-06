@@ -3112,6 +3112,13 @@ body.disautonomia .solo-ds { display: block; }
    el bloque de los rasgos, .ds-bloque. */
 .solo-les { display: none; }
 body.lupus .solo-les { display: block; }
+/* Parkinson (Fase P, docs/parkinson.md): la nota de la fase 3, que activa
+   body.parkinson (_pintarPKUI en app.js). La medida de la tensión reutiliza
+   .ds-tabla con tres columnas (TAS, TAD, FC) y el reloj de la disautonomía. */
+.solo-pk { display: none; }
+body.parkinson .solo-pk { display: block; }
+.pk-tabla { grid-template-columns: minmax(52px, auto) repeat(3, minmax(0, 1fr)); }
+.pk-estimulador:not(:empty) { margin-top: 8px; }
 /* Casillas de lupus y desencadenantes de mastocitos: chips de selección
    múltiple (.hm-subtipos), como las complicaciones de la cirugía */
 #maOtro { margin-top: 8px; }

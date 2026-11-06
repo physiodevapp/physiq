@@ -233,8 +233,10 @@ export const textoTiempo = s => mmss(Math.max(0, s));
 //   pie:    { fase, s, fila (la que toca ahora o null antes del minuto 1),
 //             proxima: { fila, min, en } | null, terminado }
 // `marcas`: cuántos avisos han llegado ya (fin del reposo, o cada minuto de
-// medida), para avisar una sola vez de cada uno.
-export function estadoReloj(reloj, ahora) {
+// medida), para avisar una sola vez de cada uno. `minutos`: los de la prueba
+// (los de la disautonomía; la tensión del Parkinson, docs/parkinson.md, usa 1 y 3).
+export function estadoReloj(reloj, ahora, minutos = DS.prueba.minutos) {
+  const finS = minutos[minutos.length - 1] * 60 + 60;
   if (!reloj || typeof reloj.inicio !== 'number' || !['reposo', 'pie'].includes(reloj.fase)) return null;
   const s = Math.max(0, (ahora - reloj.inicio) / 1000);
   if (s > RELOJ.caducaS) return { fase: reloj.fase, s, caducado: true, marcas: 0 };
@@ -242,15 +244,14 @@ export function estadoReloj(reloj, ahora) {
     const cumplido = s >= RELOJ.reposoS;
     return { fase: 'reposo', s, restante: Math.max(0, RELOJ.reposoS - s), cumplido, fila: cumplido ? 'tumbado' : null, marcas: cumplido ? 1 : 0 };
   }
-  const minutos = DS.prueba.minutos;
   const pasados = minutos.filter(m => s >= m * 60);
   const ultimo = pasados[pasados.length - 1];
   const siguiente = minutos.find(m => s < m * 60);
   return {
     fase: 'pie', s,
-    fila: ultimo != null && s < RELOJ.finS ? `m${ultimo}` : null,
+    fila: ultimo != null && s < finS ? `m${ultimo}` : null,
     proxima: siguiente != null ? { fila: `m${siguiente}`, min: siguiente, en: siguiente * 60 - s } : null,
-    terminado: s >= RELOJ.finS,
+    terminado: s >= finS,
     marcas: pasados.length,
   };
 }

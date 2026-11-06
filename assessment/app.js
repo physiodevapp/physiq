@@ -35,7 +35,7 @@ import { MA, FILAS_MA, DESENCADENANTES_MA, mastocitosVacio, normalizarMastocitos
   pendientesMA, maPayload, datosMA, lineasRecomendacionMA } from './lib/mastocitos.js';
 import { OP, ESTADOS_OP, FILAS_OP, CASILLAS_OP, CASILLAS_CAIDAS, osteoporosisVacio, normalizarOsteoporosis, opActivo,
   opDiagnosticada, factoresVisibles, fracturaVertebral, elementoOPVisible, siFactores, respondidosFactores,
-  resultadoSospecha, resultadoCaidas, derivacionCorticoides, derivacionesOP, pendientesOP, opPayload, datosOP,
+  resultadoSospecha, resultadoCaidas, resultadoCaidasDe, derivacionCorticoides, derivacionesOP, pendientesOP, opPayload, datosOP,
   lineasRecomendacionOP } from './lib/osteoporosis.js';
 import { EM, ESTADOS_EM, CASILLAS_EM, SEMANAS_POSPARTO_MAX, embarazoVacio, normalizarEmbarazo, emActivo, emEmbarazada,
   emPosparto, semanasPosparto, elementoEMVisible, reglaTA, urgenciasEM, derivacionesEM, animoPositivo, animoRespondido,
@@ -43,6 +43,9 @@ import { EM, ESTADOS_EM, CASILLAS_EM, SEMANAS_POSPARTO_MAX, embarazoVacio, norma
   lineasRecomendacionEM } from './lib/embarazo.js';
 import { AC, anticoaguladoVacio, normalizarAnticoagulado, acActivo, elementoACVisible, migrarCasillaLupus,
   pendientesAC, acPayload, datosAC, lineasRecomendacionAC } from './lib/anticoagulado.js';
+import { PK, FILAS_PK, FILAS_TENSION, parkinsonVacio, normalizarParkinson, tensionVacia, pkActivo, pkDiagnosticado,
+  faseVisible, estimuladorAviso, elementoPKVisible, resultadoTension, resultadoCaidasPK, pendientesPK, pkPayload,
+  datosPK, lineaEstimulador, lineasRecomendacionPK } from './lib/parkinson.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL, bandaIrritabilidad } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { BANDERAS_FASE1, TEXTOS_FASE1, PREGUNTAS_PSICO } from './data/fase1.js';
@@ -366,6 +369,8 @@ function _softResetApp() {
   state.osteoporosis = osteoporosisVacio();
   state.embarazo = embarazoVacio();
   state.anticoagulado = anticoaguladoVacio();
+  state.parkinson = parkinsonVacio();
+  _pkRelojParar();
   state.farmacos = farmacosVacio();
   state.cronologia = '';
   state.banderasRojas = banderasRojasIniciales();
@@ -478,6 +483,7 @@ function _softResetApp() {
   _pintarOPUI();
   _pintarEMUI();
   _pintarACUI();
+  _pintarPKUI();
   _pintarFarmacosUI();
 }
 
@@ -887,7 +893,7 @@ function getNoPreguntadas() {
   if (state.region && SYSTEMIC_SCREENING[state.region]) {
     const breve = state.modo === 'breve';
     sistemasActivos().forEach(sis => {
-      const conEmbudo = !(sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado);
+      const conEmbudo = !(sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson);
       const cubiertoPorBreve = breve && conEmbudo && state.sistemicoBreve?.[sis.id] !== 'SI';
       let n = 0;
       sis.preguntas.forEach(q => {
@@ -1594,27 +1600,27 @@ const _dsReloj = () => state.disautonomia?.bipedestacion?.reloj || null;
 // Qué muestra el reloj: la parte fija (botones) solo cambia con el `modo`;
 // cada segundo se cambian solo los textos, para no sustituir un botón bajo el
 // dedo (un toque en «Parar» no se pierde).
-function _dsRelojVista(e) {
+function _dsRelojVista(e, minutos = DS.prueba.minutos) {
   if (!e || e.caducado) return { modo: 'sin' };
   if (e.fase === 'reposo') {
     return e.cumplido
       ? { modo: 'reposo-ok', fase: 'Reposo', tiempo: textoTiempo(e.s), toca: 'Reposo cumplido: toma la medida tumbado.', sig: '' }
       : { modo: 'reposo', fase: 'Reposo', tiempo: textoTiempo(e.s), toca: '', sig: `Tumbado: quedan ${textoTiempo(Math.ceil(e.restante))}` };
   }
-  if (e.terminado) return { modo: 'fin', fase: 'De pie', tiempo: textoTiempo(e.s), toca: '', sig: `Prueba terminada: ${DS.prueba.minutos[DS.prueba.minutos.length - 1]} min de pie.` };
+  if (e.terminado) return { modo: 'fin', fase: 'De pie', tiempo: textoTiempo(e.s), toca: '', sig: `Prueba terminada: ${minutos[minutos.length - 1]} min de pie.` };
   return { modo: 'pie', fase: 'De pie', tiempo: textoTiempo(e.s),
     toca: e.fila ? `Ahora: medida de ${_ETIQ_FILA_DS(e.fila)}` : '',
     sig: e.proxima ? `Siguiente: ${_ETIQ_FILA_DS(e.proxima.fila)} en ${textoTiempo(Math.ceil(e.proxima.en))}` : '' };
 }
 
-function _dsRelojHTML(v = _dsRelojVista(estadoReloj(_dsReloj(), Date.now()))) {
+function _dsRelojHTML(v = _dsRelojVista(estadoReloj(_dsReloj(), Date.now())), pre = 'ds') {
   const btn = (fn, texto, clase = 'btn-secondary') => `<button type="button" class="btn ${clase} ds-reloj-btn" onclick="${fn}">${texto}</button>`;
   if (v.modo === 'sin') {
-    return `<div class="ds-reloj-botones" data-modo="sin">${btn("dsRelojEmpezar('reposo')", 'Empezar reposo tumbado (5 min)')}${btn("dsRelojEmpezar('pie')", 'Se pone de pie')}</div>`;
+    return `<div class="ds-reloj-botones" data-modo="sin">${btn(`${pre}RelojEmpezar('reposo')`, 'Empezar reposo tumbado (5 min)')}${btn(`${pre}RelojEmpezar('pie')`, 'Se pone de pie')}</div>`;
   }
-  const botones = v.modo === 'fin' ? btn('dsRelojParar()', 'Cerrar el reloj')
-    : v.modo === 'pie' ? btn('dsRelojParar()', 'Parar')
-      : btn("dsRelojEmpezar('pie')", 'Se pone de pie', 'btn-primary') + btn('dsRelojParar()', 'Parar');
+  const botones = v.modo === 'fin' ? btn(`${pre}RelojParar()`, 'Cerrar el reloj')
+    : v.modo === 'pie' ? btn(`${pre}RelojParar()`, 'Parar')
+      : btn(`${pre}RelojEmpezar('pie')`, 'Se pone de pie', 'btn-primary') + btn(`${pre}RelojParar()`, 'Parar');
   return `<div class="ds-reloj-cab" data-modo="${v.modo}"><span class="ds-reloj-fase">${v.fase}</span><span class="ds-reloj-tiempo" role="timer" data-r="tiempo">${v.tiempo}</span></div>
     <div class="ds-reloj-toca" data-r="toca">${v.toca}</div><div class="ds-reloj-sig" data-r="sig">${v.sig}</div>
     <div class="ds-reloj-botones">${botones}</div>`;
@@ -2029,6 +2035,273 @@ function _anticoaguladoResultadosHTML(d) {
     </div>`;
 }
 
+// ─── PARKINSON (Fase P, docs/parkinson.md) ─────────────────────────────────
+// Tarjeta de la fase 1: No consta (nada marcado) · Diagnosticado · Sospecha.
+// Con «Diagnosticado», cinco filas de botones (estadio, fluctuaciones, fase
+// ahora —solo con fluctuaciones—, congelación, estimulador); con el
+// estimulador en «Sí» o «No lo sabe», la línea de las técnicas en rojo y
+// nunca plegada. Con «Sospecha», solo la nota de derivar. Activa el sistema de
+// la fase 2 (preguntas, tensión tumbado y de pie, caídas), las notas de las
+// fases 3 y 4b, el recuadro de la fase 5 y los avisos y la red de la fase 6.
+function _pintarPKUI() {
+  const pk = state.parkinson;
+  document.body.classList.toggle('parkinson', pkActivo(pk));
+  const nota = document.getElementById('pkNota');
+  if (nota && !nota.innerHTML) nota.textContent = `Sin marcar = no consta. ${PK.textos.nota}`;
+  document.querySelectorAll('#pkEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === pk.estado));
+  const diag = document.getElementById('pkDiagWrap');
+  if (diag) diag.style.display = pkDiagnosticado(pk) ? '' : 'none';
+  const sosp = document.getElementById('pkSospechaWrap');
+  if (sosp) sosp.style.display = pk.estado === 'sospecha' ? '' : 'none';
+  const sospTxt = document.getElementById('pkSospecha');
+  if (sospTxt && !sospTxt.innerHTML) sospTxt.innerHTML = citasEnTexto(PK.textos.sospecha);
+  Object.keys(FILAS_PK).forEach(k => document.querySelectorAll(`[data-pk-fila="${k}"] .option-btn`)
+    .forEach(b => b.classList.toggle('selected', b.dataset.valor === pk[k])));
+  const fase = document.getElementById('pkFaseWrap');
+  if (fase) fase.style.display = faseVisible(pk) ? '' : 'none';
+  const faseNota = document.getElementById('pkFaseNota');
+  if (faseNota && !faseNota.innerHTML) faseNota.innerHTML = citasEnTexto(PK.textos.fase);
+  const est = document.getElementById('pkEstimulador');
+  if (est) {
+    est.innerHTML = estimuladorAviso(pk)
+      ? `<div class="alert alert-danger"><span class="alert-icon">⚡</span><div><strong>${citasEnTexto(lineaEstimulador(pk.estimulador))}</strong></div></div>` : '';
+  }
+  const dolor = document.getElementById('pkNotaDolor');
+  if (dolor && !dolor.innerHTML) dolor.innerHTML = `🧠 ${citasEnTexto(PK.textos.dolor)}`;
+}
+
+function _pkCambio() {
+  _sincronizarCaidas();
+  _pintarPKUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectPKEstado(valor) {
+  state.parkinson.estado = state.parkinson.estado === valor ? '' : valor;
+  _pkCambio();
+}
+
+// Filas de la tarjeta: un segundo toque sobre la opción marcada la quita. Sin
+// fluctuaciones, la fase on/off no cuenta y se limpia.
+function selectPKFila(fila, valor) {
+  if (!FILAS_PK[fila]) return;
+  state.parkinson[fila] = state.parkinson[fila] === valor ? '' : valor;
+  if (state.parkinson.fluctuaciones !== 'SI') state.parkinson.fase = '';
+  _pkCambio();
+}
+
+function getPkPayload() {
+  return pkPayload(state.parkinson);
+}
+
+// Lo que el recuadro de la fase 5 lee además del payload: las caídas y los
+// ataques de sueño (pk_d_sueno), que no van a `pk`.
+function _datosRecuadroPK(d) {
+  return { ...d, cd: resultadoCaidasPK(state.parkinson), sn: Object.fromEntries(_respuestasActivas()).pk_d_sueno === 'SI' };
+}
+
+// ── Tensión tumbado y de pie (decisión 10): bloque del sistema de la fase 2 ──
+const _ETIQ_FILA_PK = f => (f === 'tumbado' ? 'Tumbado' : `${f.slice(1)} min`);
+
+function pkTensionHacer() {
+  state.parkinson.tension = tensionVacia();
+  _pintarPKBloques();
+  saveSession();
+}
+
+function pkTensionQuitar() {
+  state.parkinson.tension = null;
+  _pkRelojParar();
+  _pintarPKBloques();
+  saveSession();
+}
+
+// Una cifra de la medida. No repinta el bloque (se perdería el foco): copia el
+// valor a la otra copia del sistema y repinta solo el resultado.
+function updatePKTension(fila, campo, el) {
+  const t = state.parkinson.tension;
+  if (!t) return;
+  t[fila] = t[fila] || {};
+  const n = el.value === '' ? null : Number(el.value);
+  if (n === null || isNaN(n)) delete t[fila][campo]; else t[fila][campo] = n;
+  const e = estadoReloj(t.reloj, Date.now(), PK.tension.minutos);
+  if (campo === 'tas' && n != null && e?.fase === 'pie' && !e.caducado && fila !== 'tumbado' && t.reloj.tomas?.[fila] == null) {
+    t.reloj.tomas = { ...(t.reloj.tomas || {}), [fila]: Math.round(e.s) };
+    _pintarPKTomas();
+  }
+  document.querySelectorAll(`[data-pk-fila-t="${fila}"][data-pk-campo="${campo}"]`).forEach(x => {
+    if (x !== el) x.value = t[fila][campo] ?? '';
+  });
+  _pintarPKResultado();
+  saveSession();
+}
+
+function _pkResultadoHTML() {
+  const r = resultadoTension(state.parkinson.tension);
+  const t = PK.textos;
+  const caida = r.caida && (r.caida.tas != null || r.caida.tad != null)
+    ? `<div class="hm-resultado">Caída máxima de pie: TAS ${r.caida.tas ?? '—'} · TAD ${r.caida.tad ?? '—'} mmHg</div>` : '';
+  if (r.estado === 'ho') return `${caida}<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(t.ho)}</div></div>`;
+  if (r.estado === 'no-ho') return `${caida}<div class="hm-nota">${t.noHo}</div>`;
+  if (r.estado === 'incompleta') return '<div class="hm-nota">Faltan la tensión tumbado y al menos una medida de pie.</div>';
+  return '';
+}
+
+function _pintarPKResultado() {
+  const html = _pkResultadoHTML();
+  document.querySelectorAll('[data-pk-resultado]').forEach(el => { el.innerHTML = html; });
+}
+
+// Bloque del sistema de la fase 2 (va dos veces: panel de escritorio y acordeón).
+function _pkBloqueHTML() {
+  const pk = state.parkinson;
+  if (!pkActivo(pk)) return '';
+  const t = pk.tension;
+  let cuerpo;
+  if (!t) {
+    cuerpo = `<button type="button" class="btn btn-secondary hm-btn" onclick="pkTensionHacer()">Hacer la medida</button>`;
+  } else {
+    const num = (f, c) => `<input type="number" inputmode="numeric" class="form-input" min="20" max="260" aria-label="${_ETIQ_FILA_PK(f)}: ${c.toUpperCase()}" data-pk-fila-t="${f}" data-pk-campo="${c}" value="${t[f]?.[c] ?? ''}" oninput="updatePKTension('${f}','${c}',this)">`;
+    cuerpo = `<div class="ds-nota">${PK.tension.seguridad}</div>
+      <div class="ds-reloj" data-pk-reloj>${_pkRelojHTML()}</div>
+      <div class="ds-tabla pk-tabla">
+        <div class="ds-tabla-cab"></div><div class="ds-tabla-cab">TAS</div><div class="ds-tabla-cab">TAD</div><div class="ds-tabla-cab">FC</div>
+        ${FILAS_TENSION.map(f => `<div class="ds-fila-et" data-pk-et="${f}">${_ETIQ_FILA_PK(f)}${_pkTomaHTML(f)}</div>${num(f, 'tas')}${num(f, 'tad')}${num(f, 'fc')}`).join('')}
+      </div>
+      <div data-pk-resultado>${_pkResultadoHTML()}</div>
+      <div class="hm-fuente">${citasEnTexto(PK.tension.fuente)}</div>
+      <button type="button" class="hm-quitar" onclick="pkTensionQuitar()">Quitar la medida</button>`;
+  }
+  return `<div class="screening-section-title">🧍 Tensión tumbado y de pie</div>${cuerpo}${_caidasBloqueHTML(_caidasLeer(), 'pk')}`;
+}
+
+function _pintarPKBloques() {
+  const html = _pkBloqueHTML();
+  document.querySelectorAll('[data-pk-bloque]').forEach(el => { el.innerHTML = html; });
+  _pkMarcarFila();
+  _pkRelojArrancar();
+}
+
+// ── Reloj de la medida: el de la disautonomía, con los minutos 1 y 3 ──
+let _pkTick = null, _pkMarcasAvisadas = 0, _pkWakeLock = null;
+const _pkReloj = () => state.parkinson?.tension?.reloj || null;
+const _pkEstadoReloj = () => estadoReloj(_pkReloj(), Date.now(), PK.tension.minutos);
+const _pkRelojHTML = (v = _dsRelojVista(_pkEstadoReloj(), PK.tension.minutos)) => _dsRelojHTML(v, 'pk');
+
+function _pintarPKReloj() {
+  const v = _dsRelojVista(_pkEstadoReloj(), PK.tension.minutos);
+  document.querySelectorAll('[data-pk-reloj]').forEach(el => {
+    if (el.querySelector('[data-modo]')?.dataset.modo !== v.modo) { el.innerHTML = _pkRelojHTML(v); return; }
+    el.querySelectorAll('[data-r]').forEach(x => { const t = v[x.dataset.r]; if (x.textContent !== t) x.textContent = t; });
+  });
+}
+
+function _pkTomaHTML(f) {
+  const t = tomaFueraDeTiempo(f, _pkReloj()?.tomas?.[f]);
+  return t == null ? '' : `<span class="ds-toma">toma a las ${textoTiempo(t)}</span>`;
+}
+
+function _pintarPKTomas() {
+  FILAS_TENSION.forEach(f => document.querySelectorAll(`[data-pk-et="${f}"]`).forEach(el => {
+    el.innerHTML = `${_ETIQ_FILA_PK(f)}${_pkTomaHTML(f)}`;
+  }));
+}
+
+function _pkMarcarFila() {
+  const e = _pkEstadoReloj();
+  const fila = e && !e.caducado ? e.fila : null;
+  document.querySelectorAll('[data-pk-et], .pk-tabla [data-pk-fila-t]').forEach(el => {
+    el.classList.toggle('ds-fila-toca', (el.dataset.pkEt || el.dataset.pkFilaT) === fila);
+  });
+  return fila;
+}
+
+function _pkPantallaEncendida(si) {
+  if (si) {
+    if (_pkWakeLock || document.visibilityState !== 'visible') return;
+    navigator.wakeLock?.request('screen').then(l => {
+      if (_pkTick) _pkWakeLock = l; else l.release().catch(() => {});
+    }).catch(() => {});
+  } else {
+    _pkWakeLock?.release?.().catch(() => {});
+    _pkWakeLock = null;
+  }
+}
+
+function _pkRelojTick() {
+  const e = pkActivo(state.parkinson) ? _pkEstadoReloj() : null;
+  if (!e || e.caducado || e.terminado || (e.fase === 'reposo' && e.cumplido && e.marcas <= _pkMarcasAvisadas)) {
+    clearInterval(_pkTick); _pkTick = null;
+    _pkPantallaEncendida(false);
+  }
+  _pintarPKReloj();
+  const fila = _pkMarcarFila();
+  if (e && !e.caducado && e.marcas > _pkMarcasAvisadas) {
+    _pkMarcasAvisadas = e.marcas;
+    _dsPitido();
+    const et = [...document.querySelectorAll(`[data-pk-et="${fila}"]`)].find(x => x.offsetParent !== null);
+    if (et) {
+      const r = et.getBoundingClientRect();
+      if (r.top < 80 || r.bottom > window.innerHeight - 80) et.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }
+}
+
+function _pkRelojArrancar() {
+  if (_pkTick) return;
+  const e = _pkEstadoReloj();
+  if (!e || e.caducado || e.terminado || (e.fase === 'reposo' && e.cumplido)) return;
+  _pkMarcasAvisadas = e.marcas;
+  _pkTick = setInterval(_pkRelojTick, 250);
+  _pkPantallaEncendida(true);
+}
+
+function _pkRelojParar() {
+  clearInterval(_pkTick); _pkTick = null;
+  _pkPantallaEncendida(false);
+}
+
+function pkRelojEmpezar(fase) {
+  const t = state.parkinson.tension;
+  if (!t) return;
+  try { _dsAudio = _dsAudio || new (window.AudioContext || window.webkitAudioContext)(); _dsAudio.resume?.(); } catch { _dsAudio = null; }
+  t.reloj = { fase, inicio: Date.now(), tomas: {} };
+  _pkRelojParar();
+  _pintarPKBloques();
+  saveSession();
+}
+
+function pkRelojParar() {
+  const t = state.parkinson.tension;
+  if (t) t.reloj = null;
+  _pkRelojParar();
+  _pintarPKBloques();
+  saveSession();
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && _pkTick) { _pkPantallaEncendida(true); _pkRelojTick(); }
+});
+
+// Recuadro de la fase 5 (docs/parkinson.md): nunca se pliega. La línea del
+// estimulador, la primera y en rojo.
+function _parkinsonResultadosHTML(d) {
+  const datos = datosPK(d);
+  const lineas = lineasRecomendacionPK(_datosRecuadroPK(d));
+  const est = lineaEstimulador(d.ec);
+  const estHTML = est ? `<div class="alert alert-danger" style="margin:8px 0 0;"><span class="alert-icon">⚡</span><div><strong>${citasEnTexto(est)}</strong></div></div>` : '';
+  return `
+    <div class="alert alert-info pk-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">🧠</span>
+      <div><strong>Parkinson.</strong> ${d.es === 'diagnosticado' ? 'Diagnosticado' : 'Sospecha'}${datos.length ? ` · ${datos.join(' · ')}` : ''}
+        ${estHTML}
+        ${_lineasCondicionHTML(lineas.filter(l => l !== est), _sospechaDe(d, 'enfermedad de Parkinson'))}
+      </div>
+    </div>`;
+}
+
 // ─── FÁRMACOS QUE TOMA (paso 3 de la farmacología, docs/farmacos-paciente.md) ──
 // Chips de las familias con contenido de la guía (lib/farmacos-paciente.js, que
 // las saca de data/farmacos.js: las que se escriben después entran solas), sin
@@ -2151,6 +2424,7 @@ function _pintarOPUI() {
 }
 
 function _opCambio() {
+  _sincronizarCaidas();
   _pintarOPUI();
   _pintarFarmacosUI();   // corticoides y antirresortivo de la osteoporosis → chip (decisión 4)
   _invalidar4b();
@@ -2186,18 +2460,43 @@ function selectOPFactor(id, valor) {
 
 // Caídas en el último año: un segundo toque quita la respuesta; sin caídas,
 // las casillas no cuentan y se limpian.
-function selectOPCaidas(valor) {
-  const c = state.osteoporosis.caidas;
-  c.n = c.n === valor ? '' : valor;
-  if (c.n === '0' || !c.n) CASILLAS_CAIDAS.forEach(k => { c[k] = false; });
+// Con las tarjetas de la osteoporosis y del Parkinson marcadas, las dos tienen
+// el mismo bloque y las mismas respuestas (docs/parkinson.md, decisión 8): se
+// lee de la primera activa y se escribe en las dos.
+function _caidasActivas() {
+  return [opActivo(state.osteoporosis) && state.osteoporosis, pkActivo(state.parkinson) && state.parkinson].filter(Boolean);
+}
+function _caidasLeer() {
+  return _caidasActivas()[0]?.caidas || state.osteoporosis.caidas;
+}
+// Al marcar una de las dos tarjetas con la otra ya marcada: la que no tiene
+// respuestas toma las de la otra.
+function _sincronizarCaidas() {
+  if (!opActivo(state.osteoporosis) || !pkActivo(state.parkinson)) return;
+  const op = state.osteoporosis.caidas, pk = state.parkinson.caidas;
+  if (!pk.n && op.n) state.parkinson.caidas = { ...op };
+  else state.osteoporosis.caidas = { ...pk };
+}
+function _pintarCaidasBloques() {
   _pintarOPBloques();
+  _pintarPKBloques();
+}
+
+function selectOPCaidas(valor) {
+  const n = _caidasLeer().n === valor ? '' : valor;
+  for (const x of _caidasActivas()) {
+    x.caidas.n = n;
+    if (n === '0' || !n) CASILLAS_CAIDAS.forEach(k => { x.caidas[k] = false; });
+  }
+  _pintarCaidasBloques();
   saveSession();
 }
 
 function toggleOPCaidaCasilla(k) {
   if (!CASILLAS_CAIDAS.includes(k)) return;
-  state.osteoporosis.caidas[k] = !state.osteoporosis.caidas[k];
-  _pintarOPBloques();
+  const v = !_caidasLeer()[k];
+  for (const x of _caidasActivas()) x.caidas[k] = v;
+  _pintarCaidasBloques();
   saveSession();
 }
 
@@ -2233,24 +2532,30 @@ function _opBloqueHTML() {
       ${aviso}
       <div class="hm-fuente">${citasEnTexto(OP.factoresFuente)}</div>`);
   }
-  const c = op.caidas;
-  const rc = resultadoCaidas(op);
+  partes.push(_caidasBloqueHTML(_caidasLeer(), 'op'));
+  return partes.join('');
+}
+
+// Bloque de caídas (NICE NG249, sin puntuar), el de la osteoporosis, también
+// en el sistema del Parkinson (`pre`: 'op' | 'pk', solo cambia los atributos).
+function _caidasBloqueHTML(c, pre) {
+  const t = OP.textos;
+  const rc = resultadoCaidasDe(c);
   const casillas = c.n === '1' || c.n === '2' ? `<div class="form-label">Además (marca lo que pasó)</div>
     <div class="option-group hm-subtipos">${OP.caidas.casillas.map(k =>
-    `<button type="button" class="option-btn${c[k.id] ? ' selected' : ''}" data-op-caida="${k.id}" aria-pressed="${!!c[k.id]}" onclick="toggleOPCaidaCasilla('${k.id}')">${k.texto}</button>`).join('')}</div>` : '';
+    `<button type="button" class="option-btn${c[k.id] ? ' selected' : ''}" data-${pre}-caida="${k.id}" aria-pressed="${!!c[k.id]}" onclick="toggleOPCaidaCasilla('${k.id}')">${k.texto}</button>`).join('')}</div>` : '';
   const resultado = !rc ? '' : `${rc === 'alto'
     ? `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><div>${citasEnTexto(t.caidasAlto)}</div></div>`
     : `<div class="hm-nota">${citasEnTexto(t[_OP_RESULTADO_CAIDAS[rc]])}</div>`}${rc === 'no' ? '' : `<div class="hm-nota">${citasEnTexto(t.caidasDosis)}</div>`}`;
   const sincope = c.conciencia ? `<div class="hm-nota">${OP.caidas.sincope}
     <button type="button" class="sint-recordatorio-ir" onclick="irAPreguntaCribado('sx_sincope')">Ir a la pregunta →</button></div>` : '';
-  partes.push(`<div class="screening-section-title">🚶 Caídas</div>
+  return `<div class="screening-section-title">🚶 Caídas</div>
     <div class="form-label">¿Se ha caído en el último año?</div>
-    <div class="option-group hm-subtipos" data-op-caidas>
+    <div class="option-group hm-subtipos" data-${pre}-caidas>
       ${Object.entries(OP.caidas.n).map(([v, txt]) => `<button type="button" class="option-btn${c.n === v ? ' selected' : ''}" onclick="selectOPCaidas('${v}')">${txt}</button>`).join('')}
     </div>
     ${casillas}${sincope}${resultado}
-    <div class="hm-fuente">${citasEnTexto(OP.caidas.fuente)}</div>`);
-  return partes.join('');
+    <div class="hm-fuente">${citasEnTexto(OP.caidas.fuente)}</div>`;
 }
 
 function _pintarOPBloques() {
@@ -2547,7 +2852,7 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis && !s.soloEmbarazo && !s.soloAnticoagulado);   // los de las condiciones especiales no tienen embudo
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis && !s.soloEmbarazo && !s.soloAnticoagulado && !s.soloParkinson);   // los de las condiciones especiales no tienen embudo
     const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
     const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
@@ -2575,6 +2880,7 @@ function getPendientesBreve() {
   pendientes.push(...pendientesMA(state.mastocitos));   // docs/mastocitaria.md: autoinyector sin registrar
   pendientes.push(...pendientesOP(state.osteoporosis));
   pendientes.push(...pendientesEM(state.embarazo));
+  pendientes.push(...pendientesPK(state.parkinson));   // docs/parkinson.md: estimulador y fase on/off sin registrar
   pendientes.push(...pendientesAC(state.anticoagulado));   // docs/anticoagulado.md: qué toma, sin registrar   // docs/embarazo-posparto.md: semanas o fecha del parto sin registrar   // docs/osteoporosis.md: fracturas vertebrales o factores sin registrar
   return pendientes;
 }
@@ -2806,7 +3112,8 @@ function sistemasActivos(regionId = state.region) {
   // solo las preguntas y banderas de su estado (`hm`, lib/hipermovilidad.js)
   const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId))
     && elementoHMVisible(x, state.hipermovilidad, state.sistemicoAnswers) && elementoLESVisible(x, state.lupus) && elementoOPVisible(x, state.osteoporosis)
-    && elementoEMVisible(x, state.embarazo, state.osteoporosis) && elementoACVisible(x, state.anticoagulado);
+    && elementoEMVisible(x, state.embarazo, state.osteoporosis) && elementoACVisible(x, state.anticoagulado)
+    && elementoPKVisible(x, state.parkinson);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
     .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
@@ -2816,6 +3123,7 @@ function sistemasActivos(regionId = state.region) {
     .filter(sis => !sis.soloOsteoporosis || opActivo(state.osteoporosis))
     .filter(sis => !sis.soloEmbarazo || emActivo(state.embarazo))
     .filter(sis => !sis.soloAnticoagulado || acActivo(state.anticoagulado))
+    .filter(sis => !sis.soloParkinson || pkActivo(state.parkinson))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -2851,6 +3159,7 @@ function _repintarCribado() {
   _pintarLESBloques();
   _pintarOPBloques();
   _pintarEMBloques();
+  _pintarPKBloques();
   updateSistemicoAlert();
 }
 
@@ -2943,6 +3252,7 @@ function buildSistemicoQuestions(regionId) {
   _pintarLESBloques();
   _pintarOPBloques();
   _pintarEMBloques();
+  _pintarPKBloques();
   sistemas.forEach(sis => _pintarEmbudo(sis.id));
   updateSistemicoAlert();
 }
@@ -2983,7 +3293,7 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) {
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
       <div class="hm-bloque" data-hm-bloque></div>`;
-  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado) {
+  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson) {
     // El de disautonomía (docs/pots.md) tampoco: primero las preguntas del
     // síncope y, después de ellas, la sospecha y la prueba (data-ds-bloque)
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">`;
@@ -3033,6 +3343,8 @@ function buildSistemaHTML(sis) {
   if (sis.soloOsteoporosis) html += `<div class="ds-bloque" data-op-bloque></div>`;
   // Ánimo y suelo pélvico del embarazo y el posparto (lib/embarazo.js)
   if (sis.soloEmbarazo) html += `<div class="ds-bloque" data-em-bloque></div>`;
+  // Tensión tumbado y de pie y caídas del Parkinson (lib/parkinson.js)
+  if (sis.soloParkinson) html += `<div class="ds-bloque" data-pk-bloque></div>`;
 
   html += `<div class="sis-extra">`;
   // Referred pain zones
@@ -3803,7 +4115,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -4229,6 +4541,9 @@ function buildResults() {
   // ── Anticoagulado o antiagregado (docs/anticoagulado.md): técnica y banderas, nunca plegados
   const ac = getAcPayload();
   if (ac) container.innerHTML += _anticoaguladoResultadosHTML(ac);
+  // ── Parkinson (docs/parkinson.md): estimulador, ejercicio y seguridad, nunca plegados
+  const pk = getPkPayload();
+  if (pk) container.innerHTML += _parkinsonResultadosHTML(pk);
   // ── Fármacos que toma (docs/farmacos-paciente.md, decisión 15): lista y
   // enlace a la guía, sin texto clínico; solo con alguna familia además de los
   // antitrombóticos, que ya tienen su recuadro
@@ -5113,6 +5428,7 @@ function buildPhysiQPayload() {
     ...(getOpPayload() ? { op: getOpPayload() } : {}),
     ...(getEmPayload() ? { em: getEmPayload() } : {}),
     ...(getAcPayload() ? { ac: getAcPayload() } : {}),
+    ...(getPkPayload() ? { pk: getPkPayload() } : {}),
     ...(getFmPayload() ? { fm: getFmPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
@@ -6116,6 +6432,7 @@ function _hasAssessmentData() {
     || !!state.osteoporosis?.estado
     || !!state.embarazo?.estado
     || !!state.anticoagulado?.estado
+    || !!state.parkinson?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -6227,6 +6544,7 @@ function _restoreSessionDOM() {
   state.mastocitos = normalizarMastocitos(state.mastocitos);                // sesiones anteriores a la tarjeta mastocitaria
   state.osteoporosis = normalizarOsteoporosis(state.osteoporosis);          // sesiones anteriores a la osteoporosis
   state.embarazo = normalizarEmbarazo(state.embarazo);                      // sesiones anteriores al embarazo
+  state.parkinson = normalizarParkinson(state.parkinson);                   // sesiones anteriores al Parkinson
   state.farmacos = normalizarFarmacos(state.farmacos);                      // sesiones anteriores al paso 3 de la farmacología
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
@@ -6238,6 +6556,7 @@ function _restoreSessionDOM() {
   _pintarOPUI();
   _pintarEMUI();
   _pintarACUI();
+  _pintarPKUI();
   _pintarFarmacosUI();
   _pintarLado();
 
@@ -6366,6 +6685,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarOPUI();
   _pintarEMUI();
   _pintarACUI();
+  _pintarPKUI();
   _pintarFarmacosUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
@@ -6515,7 +6835,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, volverAHerramientas, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, volverAHerramientas, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, selectPKEstado, selectPKFila, pkTensionHacer, pkTensionQuitar, updatePKTension, pkRelojEmpezar, pkRelojParar, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, irAResumenIrritabilidad, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,

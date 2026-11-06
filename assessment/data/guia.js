@@ -430,5 +430,14 @@ export const CONTRASTE_URGENCIAS = {
     tema: 'un dolor fuerte y un bulto en la pared de la barriga tras toser, un esfuerzo o la heparina (posible hematoma de la vaina de los rectos)',
     patrones: [`(?:barriga|tripa|abdomen|vientre)${HUECO(30)}(?:bulto|morado|moraton|hematoma)`, `(?:bulto|moraton|hematoma)${HUECO(30)}(?:barriga|tripa|abdomen|vientre)`]
   },
-  ac_u_compartimental: { tema: 'un miembro muy hinchado y tenso con un dolor desproporcionado (posible síndrome compartimental)', patrones: COMPARTIMENTAL }
+  ac_u_compartimental: { tema: 'un miembro muy hinchado y tenso con un dolor desproporcionado (posible síndrome compartimental)', patrones: COMPARTIMENTAL },
+  // ── Parkinson (docs/parkinson.md) ──
+  pk_u_crisis: {
+    tema: 'mucho más rigidez o inmovilidad en pocos días con fiebre, confusión, sudor o dificultad para tragar (posible crisis acinética)',
+    patrones: [
+      'crisis acinetica|parkinsonismo.hiperpirexia',
+      `(?:mucho mas rigid[oa]|mas rigid[oa] que nunca|no me puedo mover|no puedo moverme|bloquead[oa])${HUECO(60)}(?:fiebre|confus|sudo|tragar)`,
+      `(?:fiebre|confus|sudo)${HUECO(60)}(?:mucho mas rigid[oa]|no me puedo mover|no puedo moverme)`
+    ]
+  }
 };

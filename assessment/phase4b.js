@@ -26,6 +26,7 @@ import { DS, dsActiva } from './lib/disautonomia.js';
 import { LES, lesDiagnosticado } from './lib/lupus.js';
 import { MA, maActivo } from './lib/mastocitos.js';
 import { AC, acActivo } from './lib/anticoagulado.js';
+import { PK, pkDiagnosticado, estimuladorAviso } from './lib/parkinson.js';
 import { OP, opActivo } from './lib/osteoporosis.js';
 import { emPosparto, lineaSupino, lineaGaenslen } from './lib/embarazo.js';
 import { fraseAncla } from './lib/modo-guia.js';
@@ -202,6 +203,12 @@ export function buildHypothesisCards() {
   // Anticoagulado o antiagregado (docs/anticoagulado.md, decisión 11): una línea
   // general, sin campo por test (ninguna fuente dice qué tests sangran). No cambia las LR
   if (acActivo(state.anticoagulado)) container.insertAdjacentHTML('beforeend', `<div class="ds-nota ac-nota-4b">🩸 ${citasEnTexto(AC.textos.tecnica4b)}</div>`);
+  // Parkinson (docs/parkinson.md): rigidez, temblor y fase on/off; con el
+  // estimulador en «Sí» o «No lo sabe», sin presión cerca de los cables
+  // (decisión 21). Una regla de técnica; no cambia las LR
+  if (pkDiagnosticado(state.parkinson)) {
+    container.insertAdjacentHTML('beforeend', `<div class="ds-nota pk-nota-4b">🧠 ${citasEnTexto(PK.textos.tecnica4b)}${estimuladorAviso(state.parkinson) ? `<br>⚡ <strong>${citasEnTexto(PK.textos.cables4b)}</strong>` : ''}</div>`);
+  }
   // Embarazo de 20 semanas o más (docs/embarazo-posparto.md, T1): una línea
   // para todos los tests boca arriba, encima de las hipótesis. No cambia las LR
   const supino = lineaSupino(state.embarazo);

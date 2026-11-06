@@ -27,6 +27,7 @@ const CONDICIONES = [
   ['op', 'Osteoporosis diagnosticada'], ['opSospecha', 'Sospecha de osteoporosis'], ['opImpacto', 'Fractura vertebral o varias por fragilidad', 'op'],
   ['emb', 'Embarazada'], ['pp', 'Posparto'], ['lact', 'Da el pecho', 'pp'],
   ['acAnti', 'Toma anticoagulante'], ['acAgreg', 'Solo antiagregante'],
+  ['pk', 'Parkinson diagnosticado'], ['pkEstimulador', 'Con estimulador cerebral profundo (o sin confirmar)', 'pk'],
 ];
 
 // Las hipótesis de la región como las prepara la app (plan.js, hipotesisEntrada), sin el árbol:
@@ -61,6 +62,7 @@ function entrada(hs) {
     sinThrust: [c.op || c.opSospecha ? 'osteoporosis' : '', c.les && c.lesCorticoides ? 'corticoides' : '', c.acAnti ? 'anticoagulante' : ''].filter(Boolean),
     embarazo: c.emb ? { estado: 'embarazada', lactancia: false } : c.pp ? { estado: 'posparto', lactancia: !!c.lact } : null,
     anticoagulado: !!(c.acAnti || c.acAgreg),
+    parkinson: c.pk ? { estimulador: !!c.pkEstimulador } : null,
     farmacos: [],
     estabilidad: P.estabilidad, riesgoPsico: P.psico ? 'Alto' : '', psico_miedo: '',
     signoComparable: '', sesion: P.sesion, gravedadManual: '', irritabilidadManual: P.irr, duraciones: {},

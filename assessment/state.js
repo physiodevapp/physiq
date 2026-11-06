@@ -81,6 +81,15 @@ const state = {
   // ['vk', 'do', 'hp', 'as', 'oa', 'ns'] (antivitamina K, anticoagulante directo,
   // heparina, aspirina, otro antiagregante, no lo sabe).
   anticoagulado: { estado: '', toma: [] },
+  // Tarjeta «Parkinson» (Fase P, docs/parkinson.md, lib/parkinson.js): estado ''
+  // (no consta) | 'diagnosticado' | 'sospecha'; con «Diagnosticado», estadio
+  // '' | '12' | '3' | '45' | 'ns' (Hoehn y Yahr), fluctuaciones '' | 'SI' | 'NO' |
+  // 'NS', fase '' | 'on' | 'off' | 'ns' (solo con fluctuaciones), congelacion
+  // '' | 'SI' | 'NO', estimulador '' | 'SI' | 'NO' | 'NS'; caidas: las mismas
+  // respuestas que la osteoporosis (NICE NG249); tension: null (sin hacer) |
+  // { tumbado, m1, m3: { tas, tad, fc }, reloj? }.
+  parkinson: { estado: '', estadio: '', fluctuaciones: '', fase: '', congelacion: '', estimulador: '',
+    caidas: { n: '', lesion: false, suelo: false, conciencia: false, fragilidad: false }, tension: null },
   // Tarjeta «Fármacos que toma» (paso 3 de la farmacología, docs/farmacos-paciente.md,
   // lib/farmacos-paciente.js): toma = ids de las familias con contenido de la guía
   // (data/farmacos.js), sin los antitrombóticos, que van en su tarjeta.

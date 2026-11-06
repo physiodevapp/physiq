@@ -83,11 +83,22 @@ export function resultadoSospecha(op, edad) {
 // 'alto' (2 o más, o una con lesión, sin poder levantarse, pérdida de
 // conocimiento o fragilidad) | 'una' | 'no' | null (sin contestar). Sin puntuar.
 export function resultadoCaidas(op) {
-  const c = op?.caidas;
-  if (!opActivo(op) || !c?.n) return null;
+  return opActivo(op) ? resultadoCaidasDe(op.caidas) : null;
+}
+// Lo mismo a partir de las respuestas, para el bloque de caídas que reutiliza
+// el Parkinson (docs/parkinson.md, decisión 8).
+export function resultadoCaidasDe(c) {
+  if (!c?.n) return null;
   if (c.n === '0') return 'no';
   if (c.n === '2' || CASILLAS_CAIDAS.some(k => c[k])) return 'alto';
   return 'una';
+}
+// Respuestas de caídas normalizadas (las mismas de la osteoporosis).
+export function normalizarCaidas(caidas) {
+  const c = { ...caidasVacio(), ...(caidas && typeof caidas === 'object' ? caidas : {}) };
+  if (!OP.caidas.n[c.n]) c.n = '';
+  for (const k of CASILLAS_CAIDAS) c[k] = c[k] === true;
+  return c;
 }
 
 // ── Derivación por corticoides sin protección ósea (decisión 5) ──

@@ -17,6 +17,7 @@ import { lineaNotasMA, informeMA } from './mastocitos.js';
 import { lineaNotasOP, informeOP } from './osteoporosis.js';
 import { lineaNotasEM, informeEM } from './embarazo.js';
 import { lineaNotasAC, informeAC } from './anticoagulado.js';
+import { lineaNotasPK, informePK } from './parkinson.js';
 import { lineaNotasFM } from './farmacos-paciente.js';
 
 // Línea fija de transparencia del modo breve: fase 5, 📋 Notas y 📄 Informe.
@@ -38,7 +39,7 @@ export function textoNotas(d) {
     ? `\n⏱ ${TEXTO_VALORACION_BREVE}${d.pe?.length ? `\nPendiente:\n${d.pe.map(x => `  · ${x}`).join('\n')}` : ''}`
     : '';
   return `VALORACIÓN PhysiQ-Assessment${d.p ? `\nPaciente: ${d.p}` : ''}${breve}
-Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}${d.op ? `\n${lineaNotasOP(d.op)}` : ''}${d.em ? `\n${lineaNotasEM(d.em)}` : ''}${d.ac ? `\n${lineaNotasAC(d.ac)}` : ''}${d.fm ? `\n${lineaNotasFM(d.fm)}` : ''}
+Región: ${regionConLado(d.r, d.la)} · NRS: ${d.nr != null ? `${d.nr}/10` : 'no registrado'} · Irritabilidad: ${d.ir || 'no registrada'}${lineaNotasSintomas(d) ? `\n${lineaNotasSintomas(d)}` : ''}${d.cq ? `\n${_lineaCirugiaNotas(d.cq)}` : ''}${d.hm ? `\n${lineaNotasHM(d.hm)}` : ''}${d.ds ? `\n${lineaNotasDs(d.ds)}` : ''}${d.le ? `\n${lineaNotasLES(d.le)}` : ''}${d.ma ? `\n${lineaNotasMA(d.ma)}` : ''}${d.op ? `\n${lineaNotasOP(d.op)}` : ''}${d.em ? `\n${lineaNotasEM(d.em)}` : ''}${d.ac ? `\n${lineaNotasAC(d.ac)}` : ''}${d.pk ? `\n${lineaNotasPK(d.pk)}` : ''}${d.fm ? `\n${lineaNotasFM(d.fm)}` : ''}
 Cribado sistémico: ${d.si ? 'POSITIVO ⚠️' : d.np?.length ? 'sin positivos en lo preguntado (incompleto)' : 'Negativo'}${d.np?.length ? `\n❔ SIN PREGUNTAR: ${d.np.join(' · ')}` : ''}${d.ur?.length ? `\n🚨 DERIVACIÓN URGENTE: ${d.ur.join(' · ')}` : ''}${d.dv?.length ? `\n🩺 DERIVACIÓN MÉDICA: ${d.dv.join(' · ')}` : ''}
 Hipótesis:
 ${hyps}${d.cu?.length ? `\nCuestionarios:\n${d.cu.map(c => `  · ${lineaCuestionario(c)}`).join('\n')}` : ''}${d.fp?.length ? `\nFormulario del paciente:\n${d.fp.map(x => `  · ${x.q} → ${x.a}`).join('\n')}` : ''}
@@ -109,6 +110,10 @@ export function textoInformePaciente(d, fpInf = { historia: [], antecedentes: []
   // antecedente, sin nombres de fármaco ni recomendaciones de técnica
   const infAc = d.ac ? informeAC(d.ac) : null;
   const bloqueAc = infAc?.lineas.length ? `\n\n${infAc.titulo}\n${infAc.lineas.map(l => `  · ${l}`).join('\n')}` : '';
+  // Parkinson (docs/parkinson.md): estadio, fluctuaciones y estimulador, sin
+  // técnicas; con la sospecha, la valoración por un especialista sin la palabra Parkinson
+  const infPk = d.pk ? informePK(d.pk) : null;
+  const bloquePk = infPk?.lineas.length ? `\n\n${infPk.titulo}\n${infPk.lineas.map(l => `  · ${l}`).join('\n')}` : '';
 
   // `fpInf`: solo lo marcado con `informe` en formularios/*.js (informeFormularioPrevio,
   // formulario.js) — nunca el formulario entero
@@ -122,7 +127,7 @@ Región valorada: ${region}${breve ? `\n\n${TEXTO_VALORACION_BREVE}` : ''}
 
 MOTIVO DE CONSULTA
 ${d.mo || '—'}
-Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueHM}${bloqueDs}${bloqueLe}${bloqueMa}${bloqueOp}${bloqueEm}${bloqueAc}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
+Mecanismo de inicio: ${d.me || '—'} · Evolución: ${d.cr || '—'}${antecedenteQx}${bloqueHM}${bloqueDs}${bloqueLe}${bloqueMa}${bloqueOp}${bloqueEm}${bloqueAc}${bloquePk}${bloqueFp('SEGÚN REFIERE EL PACIENTE', fpInf.historia)}${bloqueFp('ANTECEDENTES REFERIDOS POR EL PACIENTE', fpInf.antecedentes)}
 
 VALORACIÓN
 ${lineasInformeSintomas(d).map(l => `${l}\n`).join('')}${d.nr != null ? `Intensidad del dolor referida: ${d.nr}/10\n` : ''}${d.ir ? `Irritabilidad del cuadro: ${d.ir}\n` : ''}Naturaleza del dolor: ${d.na || '—'}

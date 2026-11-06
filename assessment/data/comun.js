@@ -1685,3 +1685,166 @@ export const SIS_ANTICOAGULADO = {
     },
   },
 };
+
+// ─── Parkinson (Fase P, docs/parkinson.md) ─────────────────────────────────
+// Sistema transversal de las 7 regiones, solo con la tarjeta «Parkinson» de la
+// fase 1 marcada (`soloParkinson`, sistemasActivos() en app.js). Cada pregunta
+// y bandera lleva `pk`: 'diagnosticado' (solo con «Diagnosticado»),
+// 'estimulador' (con el estimulador cerebral profundo en «Sí»), 'sospecha'
+// (solo con «Sospecha»); sin `pk`, con los dos estados (lib/parkinson.js,
+// elementoPKVisible). `privada`: su texto no va a `sq` (📄 Informe ni prompt),
+// como el ánimo del embarazo (decisión 18). Textos del «Texto cerrado para
+// revisión», aprobado por el usuario (noviembre 2026), copiados tal cual.
+const PK_CITA = {
+  osborne: 'Osborne 2022 — Osborne, Botkin, Colon-Semenza et al., «Physical therapist management of Parkinson disease: a clinical practice guideline from the American Physical Therapy Association», Phys Ther 2022;102(4):pzab302',
+  nice: 'NICE NG71 — NICE, «Parkinson\'s disease in adults», guía NG71, 2017, capítulo «Recommendations»',
+  simonet: 'Simonet 2019 — Simonet, Tolosa, Camara y Valldeoriola, «Emergencies and critical issues in Parkinson\'s disease», Pract Neurol 2020;20(1):15–25',
+  potter: 'Pötter-Nerger 2024 — Pötter-Nerger, Schrader, Jost et al., «The akinetic crisis in Parkinson\'s disease — the upper end of a spectrum of subacute akinetic states», J Neural Transm 2024;131(10):1199–1207',
+  lewitt: 'LeWitt 2020 — LeWitt, Kymes y Hauser, «Parkinson disease and orthostatic hypotension in the elderly: recognition and management of risk factors for falls», Aging Dis 2020;11(3):679–691',
+  keus: 'Keus 2014 — Keus, Munneke, Graziano et al., «European Physiotherapy Guideline for Parkinson\'s disease», KNGF/ParkinsonNet, 2014',
+  buhmann: 'Buhmann 2020 — Buhmann, Kassubek y Jost, «Management of pain in Parkinson\'s disease», J Parkinsons Dis 2020;10(s1):S37–S48',
+  paggou: 'Paggou 2023 — Paggou, Stefanis, Chronopoulos et al., «Shoulder dysfunction in Parkinson disease: review of clinical, imaging findings and contributing factors», J Musculoskelet Neuronal Interact 2023;23(2):263–280',
+};
+
+export const SIS_PARKINSON = {
+  id: 'transversal_parkinson', icon: '🧠', nombre: 'Parkinson', soloParkinson: true,
+  banderasRojas: [
+    { texto: 'Mucho más rígido o inmóvil en pocos días, con fiebre, confusión, mucho sudor o dificultad para tragar (crisis acinética)', pk: 'diagnosticado', pregunta: 'pk_u_crisis' },
+  ],
+  banderasAmarillas: [
+    { texto: 'Ha dejado la medicación del Parkinson o no puede tomarla o retenerla (vómitos, diarrea, no puede tragar, una cirugía)', pk: 'diagnosticado', pregunta: 'pk_d_medicacion' },
+    { texto: 'Con estimulador cerebral profundo: vuelven de golpe el temblor, la rigidez o la lentitud, o aparecen movimientos involuntarios fuertes o cambios de conducta', pk: 'estimulador', pregunta: 'pk_d_estimulador' },
+  ],
+  preguntas: [
+    { id: 'pk_u_crisis', pk: 'diagnosticado', alerta: true,
+      urgencia: 'Posible crisis acinética (síndrome de parkinsonismo-hiperpirexia): urgencias hoy',
+      text: 'En los últimos días, ¿está mucho más rígido o inmóvil que de costumbre y además tiene fiebre, está confuso, suda mucho o le cuesta tragar?',
+      razonamiento: {
+        porque: 'En la crisis acinética, la rigidez y la acinesia empeoran en 2–3 días y dejan de responder a la levodopa, con fiebre alta, alteración de la conciencia en la mitad de los casos, disfagia y síntomas autonómicos (Pötter-Nerger 2024). El desencadenante más frecuente es una infección (respiratoria o urinaria); también el cambio o la retirada de la medicación, los traumatismos, las caídas y fracturas, la cirugía, el calor y la deshidratación (Pötter-Nerger 2024; Simonet 2019).',
+        peso: 'La mortalidad va del 4 al 23 % (Pötter-Nerger 2024); la del síndrome de parkinsonismo-hiperpirexia, del 4 % (Simonet 2019). La crisis completa es rara (0,3 %), pero los empeoramientos subagudos son frecuentes; el fisioterapeuta no puede distinguirlos y no hace falta: con fiebre, confusión, sudor o dificultad para tragar, urgencias hoy.',
+        fuentes: ['Pötter-Nerger 2024', 'Simonet 2019'],
+        citas: [`${PK_CITA.potter}.`, `${PK_CITA.simonet}, tabla 1.`]
+      } },
+    { id: 'pk_d_medicacion', pk: 'diagnosticado', alerta: true,
+      derivacion: 'Contactar hoy con su neurólogo o médico: la medicación no se debe retirar de golpe',
+      text: '¿Ha dejado de tomar su medicación del Parkinson, o no puede tomarla o retenerla (vómitos, diarrea, no puede tragar, una cirugía)?',
+      razonamiento: {
+        porque: 'Retirar de golpe la medicación del Parkinson, o que deje de absorberse (una gastroenteritis, una cirugía abdominal), puede dar una acinesia aguda o un síndrome neuroléptico maligno (NICE NG71, 1.3.2–1.3.4). Es uno de los desencadenantes de la crisis acinética (Simonet 2019, tabla 1).',
+        peso: 'Sin fiebre, confusión ni dificultad para tragar, no es una urgencia, pero sí una llamada hoy al equipo que le lleva. Con alguno de esos síntomas, es la pregunta de la crisis acinética.',
+        fuentes: ['NICE NG71', 'Simonet 2019'],
+        citas: [`${PK_CITA.nice}, recomendaciones 1.3.2–1.3.4.`, `${PK_CITA.simonet}, tabla 1.`]
+      } },
+    { id: 'pk_d_estimulador', pk: 'estimulador', alerta: true,
+      derivacion: 'Contactar hoy con el centro que le implantó el estimulador',
+      text: '¿Han vuelto de golpe el temblor, la rigidez o la lentitud, o tiene movimientos involuntarios fuertes o cambios de conducta nuevos?',
+      razonamiento: {
+        porque: 'Con un estimulador cerebral profundo, la reaparición brusca del parkinsonismo, las discinesias o las conductas anómalas pueden deberse a un fallo de la estimulación; la interrupción de la estimulación puede dar un cuadro parecido al síndrome de hiperpirexia (Simonet 2019).',
+        peso: 'La fuente pide contactar con el centro implantador (Simonet 2019). Si además hay fiebre, confusión, sudor o dificultad para tragar, es la pregunta de la crisis acinética, que va a urgencias.',
+        fuentes: ['Simonet 2019'],
+        citas: [`${PK_CITA.simonet}, apartado de la estimulación cerebral profunda.`]
+      } },
+    { id: 'pk_d_complicaciones', pk: 'diagnosticado', alerta: true,
+      derivacion: 'Consultar a su neurólogo: el ajuste de la medicación puede reducirlos',
+      text: '¿Tiene periodos off que no sabe prever, movimientos involuntarios fuertes o calambres dolorosos cuando está en off?',
+      razonamiento: {
+        porque: 'Los off impredecibles, las discinesias graves y la distonía en off (calambres o espasmos dolorosos) son complicaciones motoras complejas, que la guía europea pone entre las banderas rojas que piden aconsejar consulta médica (Keus 2014, 5.13).',
+        peso: 'El fisioterapeuta no cambia la medicación; apoya que el paciente lo hable con quien se la prescribe, porque su ajuste puede reducirlos (Keus 2014, 3.2 y 5.13). Si el fisio ve fluctuaciones o mala adherencia, aconseja hablarlo con el neurólogo (Keus 2014, 6.7.2).',
+        fuentes: ['Keus 2014'],
+        citas: [`${PK_CITA.keus}, apartados 3.2, 5.13 y 6.7.2.`]
+      } },
+    { id: 'pk_d_mental', pk: 'diagnosticado', privada: true, alerta: true,
+      derivacion: 'Consultar a su médico',
+      text: '¿Ve cosas que no están, o tiene conductas nuevas que no puede controlar (tomar medicación de más, juego, compras, comida)?',
+      razonamiento: {
+        porque: 'Las alucinaciones y los trastornos del control de impulsos (tomar medicación de más sin receta, juego, compras, comida o sexo compulsivos, actividades repetitivas) son alteraciones mentales graves que la guía europea pone entre las banderas rojas (Keus 2014, 5.13); pueden relacionarse con la medicación (Simonet 2019).',
+        peso: 'Pide consulta médica, no urgencias (Keus 2014, 5.13). Su texto no llega al informe para el paciente ni al prompt de la IA: solo la derivación.',
+        fuentes: ['Keus 2014', 'Simonet 2019'],
+        citas: [`${PK_CITA.keus}, apartado 5.13.`, `${PK_CITA.simonet}.`]
+      } },
+    { id: 'pk_d_ortostatica', alerta: true,
+      derivacion: 'Medir la tensión tumbado y de pie, y comentarlo con su médico',
+      text: '¿Se marea, ve borroso, nota las piernas flojas o le duele el cuello y los hombros al estar de pie, y se le pasa al sentarse o tumbarse?',
+      razonamiento: {
+        porque: 'La hipotensión ortostática aparece en el 47–58 % de los pacientes con Parkinson y dobla el riesgo de caídas y fracturas; las caídas al levantarse hacen sospecharla (LeWitt 2020). El dolor «en percha», de cuello y hombros, acompaña a la hipotensión ortostática (Buhmann 2020; LeWitt 2020, tabla 3).',
+        peso: 'Se confirma midiendo la tensión: una caída de 20 mmHg de la sistólica o de 10 de la diastólica en los 3 primeros minutos de pie (LeWitt 2020); en la neurogénica la FC casi no sube. Pide revisar los fármacos con su médico (NICE NG71, 1.5.8). El desmayo de alto riesgo ya lo pregunta la región (síncope).',
+        fuentes: ['LeWitt 2020', 'Buhmann 2020', 'NICE NG71'],
+        citas: [`${PK_CITA.lewitt}, tabla 3.`, `${PK_CITA.buhmann}.`, `${PK_CITA.nice}, recomendación 1.5.8.`]
+      } },
+    { id: 'pk_d_tragar', pk: 'diagnosticado', alerta: true,
+      derivacion: 'Consultar a su médico: valoración de la deglución',
+      text: '¿Tose o se atraganta al comer o beber, o ha tenido infecciones respiratorias seguidas?',
+      razonamiento: {
+        porque: 'La disfagia del Parkinson lleva a la neumonía por aspiración (Simonet 2019).',
+        peso: 'Con problemas para tragar, NICE pide derivar a logopedia (NICE NG71, 1.7.8). No es una urgencia salvo que se sume a la crisis acinética.',
+        fuentes: ['Simonet 2019', 'NICE NG71'],
+        citas: [`${PK_CITA.simonet}.`, `${PK_CITA.nice}, recomendación 1.7.8.`]
+      } },
+    { id: 'pk_d_sueno', pk: 'diagnosticado', alerta: true,
+      derivacion: 'Consultar a su médico; no conducir mientras tanto',
+      text: '¿Se queda dormido de repente durante el día, sin poder evitarlo?',
+      razonamiento: {
+        porque: 'La somnolencia diurna y los ataques de sueño de comienzo brusco aparecen en el Parkinson y con su medicación (NICE NG71, 1.5.1; Simonet 2019).',
+        peso: 'NICE pide revisar la medicación y avisar de que no conduzca mientras tenga ataques de sueño (NICE NG71, 1.5.1). En la sesión, no dejarle solo en la bicicleta o la cinta.',
+        fuentes: ['NICE NG71', 'Simonet 2019'],
+        citas: [`${PK_CITA.nice}, recomendación 1.5.1.`, `${PK_CITA.simonet}.`]
+      } },
+    { id: 'pk_d_sospecha', pk: 'sospecha', alerta: true,
+      derivacion: 'Derivar pronto y sin tratar a un especialista en trastornos del movimiento',
+      text: 'Temblor, rigidez, lentitud, problemas de equilibrio o de la marcha, sin diagnóstico',
+      razonamiento: {
+        porque: 'NICE pide sospechar un Parkinson ante el temblor, la rigidez, la lentitud o los problemas de equilibrio o de la marcha (NICE NG71, 1.2.1).',
+        peso: 'Ante la sospecha, derivar pronto y sin tratar a un especialista (NICE NG71, 1.2.2). El fisioterapeuta no lo diagnostica: con «Sospecha», el resultado es la derivación, nunca «probable Parkinson».',
+        detalle: 'Un dolor musculoesquelético de un solo lado, como un «síndrome hombro-brazo», es una presentación precoz típica de la acinesia y la rigidez y a menudo pasa desapercibido (Buhmann 2020); el dolor de hombro, el hombro congelado y la asimetría del braceo pueden preceder a los signos cardinales, con rigidez y temblor del mismo lado (Paggou 2023). No es una regla: es un motivo para fijarse en la rigidez, la lentitud y el braceo.',
+        fuentes: ['NICE NG71', 'Buhmann 2020', 'Paggou 2023'],
+        citas: [`${PK_CITA.nice}, recomendaciones 1.2.1–1.2.2.`, `${PK_CITA.buhmann}.`, `${PK_CITA.paggou}, tabla 1 y discusión.`]
+      } },
+  ],
+  // Filas de la tarjeta, medida de la tensión y textos. Las citas de estos
+  // textos cuentan en docs/referencias.md como menciones del cribado.
+  parkinson: {
+    estadios: { 12: '1–2', 3: '3', 45: '4–5', ns: 'No lo sabe' },
+    fluctuaciones: { SI: 'Sí', NO: 'No', NS: 'No lo sabe' },
+    fases: { on: 'On', off: 'Off', ns: 'No sabría decir' },
+    congelacion: { SI: 'Sí', NO: 'No' },
+    estimulador: { SI: 'Sí', NO: 'No', NS: 'No lo sabe' },
+    // Tensión tumbado y de pie (decisión 10): la prueba de bipedestación de la
+    // disautonomía reducida a tumbado y los minutos 1 y 3, con la regla de la
+    // hipotensión ortostática y sin la del POTS (LeWitt 2020).
+    tension: {
+      minutos: [1, 3],
+      fuente: 'Tumbado 5 min y de pie, con medida al minuto 1 y al 3; hipotensión ortostática con una caída de 20 mmHg o más de la sistólica o de 10 o más de la diastólica en los 3 primeros minutos; en la neurogénica la FC casi no sube (LeWitt 2020).',
+      seguridad: 'Quédate a su lado durante la medida. Si aparece un mareo fuerte, siéntalo o túmbalo y para.',
+    },
+    textos: {
+      nota: 'Márcala si tiene diagnóstico de enfermedad de Parkinson, o «Sospecha» si tiene temblor, rigidez, lentitud o problemas de equilibrio o de marcha sin diagnosticar.',
+      fase: 'Anótalo: lo que mides cambia con la fase (Osborne 2022; Keus 2014, 6.7.2).',
+      estimulador: 'Nada de onda corta ni microondas (riesgo de lesión cerebral grave o muerte aunque esté apagado, o retirado si quedan electrodos), ni ultrasonido, TENS, interferenciales ni otra electroestimulación, ni presión manual cerca de los cables (FDA 2002; Health Canada 2003; Keus 2014, 5.13).',
+      estimuladorDuda: 'Hasta confirmarlo:',
+      sospecha: 'Deriva pronto y sin tratar a un especialista: no lo diagnostiques (NICE NG71, 1.2.2).',
+      // Fase 2: medida de la tensión
+      ho: 'Hipotensión ortostática: comentarlo con su médico, con revisión de los fármacos (NICE NG71, 1.5.8).',
+      noHo: 'Sin caída de la tensión en los 3 primeros minutos de pie.',
+      // Fase 3
+      dolor: 'Pregunta por el dolor aunque no lo cuente: muchos no lo relacionan con el Parkinson. Anota si está en on u off, y si el dolor cambia con las tomas, que lo hable con quien le receta (Buhmann 2020; Keus 2014, 6.7.2 y 6.7.3).',
+      // Fase 4b
+      tecnica4b: 'La rigidez limita la movilidad pasiva y el temblor puede tapar la respuesta: compara con el otro lado y anota si está en on u off (redacción propia sobre Osborne 2022 y Paggou 2023; Keus 2014, 6.7.2).',
+      cables4b: 'Sin presión manual cerca de los cables del estimulador (Keus 2014, 5.13).',
+      // Fase 5
+      ejercicio: 'Con lo que usaron los ensayos, sin una dosis óptima establecida: aeróbico moderado a alto, al menos 3 días por semana, 30–40 min; fuerza progresiva 1–2 días por semana; equilibrio 2–3 veces por semana; marcha 20–60 min, 3–5 días por semana, 4–12 semanas. Lo ganado se pierde si se deja (Osborne 2022). Casi cualquier tipo de ejercicio ayuda; el tipo importa menos que hacerlo (Ernst 2024).',
+      intensidad: 'La FC puede subir menos de lo esperado: vigila también el esfuerzo percibido (Osborne 2022). Si estaba inactivo, empieza bajo y sube poco a poco (Keus 2014, 5.13).',
+      congelacion: 'Bicicleta antes que cinta; usa estímulos externos (auditivos o visuales) para la marcha (Osborne 2022). Hidroterapia solo con supervisión individual (Keus 2014, 5.13).',
+      onOff: 'La capacidad física se entrena mejor en on; las estrategias se aprenden en on y, si hacen falta en off, se practican también en off. Valora y reevalúa en la misma fase y anótala (Keus 2014, 6.7.2; Osborne 2022).',
+      estadios: 'Las pautas se estudiaron sobre todo en estadios 1–3 (Osborne 2022).',
+      cama: 'En cama o silla: prevenir úlceras y contracturas, postura, cambios de posición y formar a los cuidadores en las transferencias (Keus 2014, 6.8.3).',
+      ortostatica: 'Levantarse en dos tiempos; maniobras físicas: cruzar las piernas tensando, inclinarse hacia delante, ponerse en cuclillas. Fármacos, sal y agua, con su médico (LeWitt 2020, tabla 4).',
+      hueso: 'Osteoporosis y fracturas, más del doble que sin Parkinson; la cadera es la mitad de las fracturas y las vertebrales pasan desapercibidas tras la postura encorvada. Valora la tarjeta de osteoporosis (Torsney 2014; Tan 2014).',
+      dolor5: 'Si el dolor no sigue a la medicación, trátalo como en las guías generales del dolor, con progresión por tiempo y no por dolor; si cambia con las tomas o con el off, que lo hable con quien le receta (Keus 2014, 6.4.8 y 6.7.3; Buhmann 2020).',
+      vibracion: 'No uses plataformas de vibración de cuerpo entero (Keus 2014, 6.4.6: recomendación fuerte en contra).',
+      sueno: 'No le dejes solo en la bicicleta o la cinta (redacción propia sobre Simonet 2019).',
+      parar: 'Parar y consultar con náuseas, dolor u opresión torácica de más de unos minutos, falta de aire inusual, mareo, palpitaciones, sudor frío o si la TAS baja más de 10 mmHg durante el ejercicio (Keus 2014, 6.7.5).',
+      experiencia: 'Las guías recomiendan fisioterapia con experiencia en Parkinson (NICE NG71, 1.7.2–1.7.3; Osborne 2022).',
+      // Bloque del informe con IA (sin fuentes)
+      reglaIA: 'Con estimulador cerebral profundo, no propongas diatermia, ultrasonido ni electroestimulación.',
+    },
+  },
+};

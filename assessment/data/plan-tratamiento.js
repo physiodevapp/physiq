@@ -131,6 +131,14 @@ export const AVISOS = {
   osteoporosisMoverse: 'Osteoporosis: enseñar a moverse con seguridad, sin prohibir: bisagra de cadera al agacharse y levantar; la torsión, suave y mejor girando con pasos; no levantar ni dejar cosas en el suelo (Brooke-Wavell 2022, recuadro 3; Giangregorio 2015). Cuidado al pasar de tumbado a sentado o al darse la vuelta: en un ensayo, ejercicios en prono y darse la vuelta de boca arriba a boca abajo rompieron una costilla y un cartílago costal (Gibbs 2019). Con lluvia o hielo, el ejercicio mejor dentro de casa (Giangregorio 2014).',
   sinThrustOsteoporosis: 'Osteoporosis: sin manipulación con thrust en la columna ni en las costillas; la movilización suave puede ser adecuada (Maitland 2005, cap. 9, p. 223; Puentedura 2015, tabla 1). Los escalones no proponen grado V; si la pauta de una hipótesis incluye manipulación, aquí no se aplica.',
   sinThrustLupus: 'Lupus con corticoides mantenidos: sin manipulación con thrust en la columna torácica (Puentedura 2015, tabla 1: corticoides a largo plazo, contraindicación absoluta). Si la pauta de una hipótesis incluye manipulación, aquí no se aplica.',
+  // Parkinson (Fase P, docs/parkinson.md): con «Diagnosticado», en cualquier
+  // región, `parkinson` (las líneas 2, 3 y 5 del recuadro de la fase 5) y
+  // `parkinsonVibracion`; con el estimulador en «Sí» o «No lo sabe», en
+  // cualquier plan (decisión 20), `parkinsonEstimulador`. Sin tope de thrust
+  // propio (decisión 9). Los mismos textos que PK.textos (data/comun.js).
+  parkinson: 'Parkinson: Con lo que usaron los ensayos, sin una dosis óptima establecida: aeróbico moderado a alto, al menos 3 días por semana, 30–40 min; fuerza progresiva 1–2 días por semana; equilibrio 2–3 veces por semana; marcha 20–60 min, 3–5 días por semana, 4–12 semanas. Lo ganado se pierde si se deja (Osborne 2022). Casi cualquier tipo de ejercicio ayuda; el tipo importa menos que hacerlo (Ernst 2024). La FC puede subir menos de lo esperado: vigila también el esfuerzo percibido (Osborne 2022). Si estaba inactivo, empieza bajo y sube poco a poco (Keus 2014, 5.13). La capacidad física se entrena mejor en on; las estrategias se aprenden en on y, si hacen falta en off, se practican también en off. Valora y reevalúa en la misma fase y anótala (Keus 2014, 6.7.2; Osborne 2022).',
+  parkinsonEstimulador: 'Parkinson con estimulador cerebral profundo, o sin confirmar si lo lleva: nada de onda corta ni microondas (riesgo de lesión cerebral grave o muerte aunque esté apagado, o retirado si quedan electrodos), ni ultrasonido, TENS, interferenciales ni otra electroestimulación, ni presión manual cerca de los cables (FDA 2002; Health Canada 2003; Keus 2014, 5.13).',
+  parkinsonVibracion: 'Parkinson: no uses plataformas de vibración de cuerpo entero (Keus 2014, 6.4.6: recomendación fuerte en contra).',
   // Anticoagulado o antiagregado (Fase P, docs/anticoagulado.md): `anticoagulado`
   // con la tarjeta marcada, en cualquier región; el tope «sin thrust» solo con
   // anticoagulante (decisión 4); punción seca y ondas de choque solo en las
@@ -336,6 +344,16 @@ export const HIP_PUNCION_SECA = ['h6', 'ce1', 'ce7', 'ce14', 'lu9', 'co1', 'ca1'
 export const HIP_ONDAS_CHOQUE = ['h2', 'ca9', 'ca19', 'ro6'];
 export const RED_ANTICOAGULADO = { cierre: 'cierreAnticoagulado', casa: 'alarmaAnticoagulado' };
 
+// Parkinson (docs/parkinson.md): con «Diagnosticado», en cualquier región, los
+// avisos `parkinson` y `parkinsonVibracion`, y la red de la crisis acinética y
+// de cuándo parar el ejercicio (decisión 19); el del estimulador, con él en
+// «Sí» o «No lo sabe» (decisión 20).
+export const AVISOS_PARKINSON = ['parkinson', 'parkinsonVibracion'];
+export const RED_PARKINSON = [
+  { cierre: 'cierreCrisisParkinson', casa: 'alarmaCrisisParkinson' },
+  { cierre: 'cierreEjercicioParkinson', casa: 'alarmaEjercicioParkinson' },
+];
+
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
 // empezar a movilizar tras la cirugía.
@@ -363,6 +381,8 @@ export const TEXTOS_SESION = {
   cierreEmbarazo: 'Red de seguridad (embarazo): explicar que el dolor de cabeza fuerte, la visión borrosa, el dolor fuerte bajo las costillas o la hinchazón brusca de la cara o las manos piden que la vea un profesional hoy; que si nota que el bebé se mueve menos llame a su maternidad a cualquier hora, y que si sangra, pierde líquido o tiene contracciones regulares y dolorosas, pare y llame (NICE NG133, 1.1.1; NICE NG201, 1.2.34; Mottola 2018, recuadro 2).',
   cierrePosparto: 'Red de seguridad (posparto): explicar que un sangrado brusco o muy abundante, la fiebre o los escalofríos, el flujo maloliente, la pierna hinchada y dolorosa, la falta de aire, el dolor en el pecho o un dolor de cabeza fuerte piden consulta médica sin demora, y comprobar que lo ha entendido (NICE NG194, 1.2.4).',
   cierreAnticoagulado: 'Red de seguridad (anticoagulado o antiagregado): explicar que un golpe en la cabeza, aunque se encuentre bien, pide ir a urgencias, y que un dolor de cabeza fuerte, vómitos, somnolencia o confusión en los días siguientes piden llamar al 112; que un dolor fuerte de cuello o espalda con debilidad u hormigueo, un dolor muy fuerte en la ingle, la cadera o la barriga con mareo, o un brazo o una pierna muy hinchados y tensos con un dolor desproporcionado piden urgencias; si lo toma por una trombosis, que la falta de aire brusca, el dolor en el pecho al respirar o la tos con sangre piden llamar al 112, y que la pierna que se hincha más, se calienta o duele más pide que le vea un médico hoy; y que no deje ni se salte el fármaco sin hablarlo con su médico (NICE NG232, 1.2.4 y 1.10.9; Peng 2022; Lukies 2023; Brooker 2020; Vyas 2024; NICE NG158; Steffel 2021).',
+  cierreCrisisParkinson: 'Red de seguridad (Parkinson): explicar que si en los próximos días está mucho más rígido o inmóvil con fiebre, confusión o mucho sudor, o no puede tomar su medicación, debe ir a urgencias (Pötter-Nerger 2024; NICE NG71, 1.3.2).',
+  cierreEjercicioParkinson: 'Red de seguridad (Parkinson): explicar que pare el ejercicio y consulte si nota náuseas, dolor u opresión en el pecho que dura más de unos minutos, falta de aire fuera de lo normal, mareo, palpitaciones o sudor frío (Keus 2014, 6.7.5).',
   cierreSincope: 'Red de seguridad (disautonomía): explicar que, si se desmaya mientras hace ejercicio, debe parar y no volver a hacer ejercicio hasta que le vea el médico, y comprobar que lo ha entendido (NICE CG109, 1.3.2.2 y 1.5.4.3; Brignole 2018, p. 1911).',
   reevaluacionBase: 'Signo comparable y la actividad que el paciente refiere como control (Maitland 2005, cap. 6, pp. 100–101 y 128).',
   reevaluacionSiguiente: 'Cómo reaccionó a la sesión anterior, en sus palabras y comparado con antes («D más 1», Maitland 2005, cap. 6, p. 156; cap. 9, tabla 9.3; Hengeveld y Banks 2005, cap. 9, p. 246).',
@@ -628,6 +648,10 @@ export const TEXTOS_CASA = {
   // Anticoagulado o antiagregado (RED_ANTICOAGULADO): redacción propia sobre las
   // fuentes de las urgencias del sistema de la fase 2.
   alarmaAnticoagulado: { texto: 'Si te das un golpe en la cabeza, aunque te encuentres bien, ve hoy a urgencias; si en los días siguientes tienes un dolor de cabeza fuerte que va a más, vómitos, somnolencia o confusión, llama al 112. Si te empieza de golpe un dolor fuerte de cuello o espalda con debilidad, hormigueo o cambios al orinar, ve a urgencias ya. Un dolor muy fuerte en la ingle, la cadera o la barriga con mareo, o un brazo o una pierna muy hinchados, tensos y con un dolor desproporcionado, también. Si lo tomas por una trombosis: si te falta el aire de repente, te duele el pecho al respirar o toses sangre, llama al 112; si la pierna se te hincha más, se pone caliente o te duele más, que te vea un médico hoy. No dejes ni te saltes tu anticoagulante sin hablarlo antes con tu médico.', fuente: 'Redacción propia sobre NICE NG232, 1.2.4 y 1.10.9 (golpe en la cabeza); Peng 2022 (hematoma epidural espinal); Lukies 2023 (hematoma del psoas); Brooker 2020 (síndrome compartimental); Vyas 2024 y NICE NG158 (embolia pulmonar y TVP, como pq_tep y pq_tvp); Steffel 2021 (no saltarse dosis) (docs/anticoagulado.md)' },
+  // Parkinson (RED_PARKINSON, decisión 19): el texto cerrado de docs/parkinson.md, pasado a «tú»
+  // como las demás alarmas del programa para casa (recomendación aceptada por el usuario, 2026-11).
+  alarmaCrisisParkinson: { texto: 'Si en los próximos días estás mucho más rígido o inmóvil con fiebre, confusión o mucho sudor, o no puedes tomar tu medicación, ve a urgencias.', fuente: 'Pötter-Nerger 2024 (crisis acinética); NICE NG71, 1.3.2 (no retirar la medicación de golpe) (docs/parkinson.md)' },
+  alarmaEjercicioParkinson: { texto: 'Para el ejercicio y consulta si notas náuseas, dolor u opresión en el pecho que dura más de unos minutos, falta de aire fuera de lo normal, mareo, palpitaciones o sudor frío.', fuente: 'Keus 2014, 6.7.5 (cuándo parar el ejercicio; solo lo que el paciente puede notar, decisión 19) (docs/parkinson.md)' },
   alarmaSincope: { texto: 'Si te desmayas mientras haces ejercicio, para y no vuelvas a hacer ejercicio hasta que te vea el médico.', fuente: 'NICE CG109, recomendaciones 1.3.2.2 y 1.5.4.3: con un síncope durante el ejercicio, no hacer ejercicio hasta la valoración; Brignole 2018, p. 1911 (docs/pots.md)' },
   queHacer: { texto: 'Qué hacer:', tipo: 'etiqueta' },
   cuandoHacerlo: { texto: 'Cuándo hacerlo:', tipo: 'etiqueta' },

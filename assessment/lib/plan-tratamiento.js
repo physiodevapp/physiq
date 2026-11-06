@@ -11,7 +11,7 @@ import {
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
   AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA, AVISOS_LUPUS, RED_LUPUS, AVISOS_MASTOCITOS, RED_MASTOCITOS,
   AVISOS_OSTEOPOROSIS, RED_OSTEOPOROSIS, AVISOS_EMBARAZO, AVISOS_POSPARTO, HIP_SACROILIACA, RED_EMBARAZO, RED_POSPARTO,
-  AVISOS_ANTICOAGULADO, HIP_PUNCION_SECA, HIP_ONDAS_CHOQUE, RED_ANTICOAGULADO,
+  AVISOS_ANTICOAGULADO, HIP_PUNCION_SECA, HIP_ONDAS_CHOQUE, RED_ANTICOAGULADO, AVISOS_PARKINSON, RED_PARKINSON,
 } from '../data/plan-tratamiento.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 import { nivelMatriz } from './irritabilidad.js';
@@ -178,12 +178,12 @@ export function cantidadSesion(elegidas = [], region) {
 // la de la fractura vertebral (RED_OSTEOPOROSIS, docs/osteoporosis.md) y la
 // del embarazo o el posparto (RED_EMBARAZO / RED_POSPARTO, docs/embarazo-posparto.md).
 // Sin repetir.
-export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false, osteoporosis = false, embarazo = '', anticoagulado = false } = {}) {
+export function redSeguridad(region, neuro, elegidas = [], { disautonomia = false, lupus = false, mastocitos = false, osteoporosis = false, embarazo = '', anticoagulado = false, parkinson = false } = {}) {
   const r = RED_SEGURIDAD[region] || {};
   const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id]),
     disautonomia && RED_DISAUTONOMIA, ...(lupus ? RED_LUPUS : []), mastocitos && RED_MASTOCITOS,
     osteoporosis && RED_OSTEOPOROSIS, embarazo === 'embarazada' && RED_EMBARAZO, embarazo === 'posparto' && RED_POSPARTO,
-    anticoagulado && RED_ANTICOAGULADO].filter(Boolean)
+    anticoagulado && RED_ANTICOAGULADO, ...(parkinson ? RED_PARKINSON : [])].filter(Boolean)
     .filter((p, i, a) => a.findIndex(q => q.cierre === p.cierre) === i);
   return {
     cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
@@ -221,7 +221,8 @@ export function rangosBloques(duraciones = {}) {
 //   'osteoporosis' | 'corticoides' | 'anticoagulante', motivosSinThrust()),
 //   embarazo (null, o { estado: 'embarazada'|'posparto', lactancia } con la tarjeta
 //   marcada, docs/embarazo-posparto.md), anticoagulado (la tarjeta «Paciente
-//   anticoagulado o antiagregado» marcada, docs/anticoagulado.md),
+//   anticoagulado o antiagregado» marcada, docs/anticoagulado.md), parkinson
+//   (null, o { estimulador } con la tarjeta en «Diagnosticado», docs/parkinson.md),
 //   estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
@@ -252,7 +253,7 @@ export function construirPlan(e) {
   // La red neurológica también con un síntoma en una zona `redNeuro` (hoy el
   // periné en lumbar: cola de caballo), aunque no haya hipótesis neurológica
   const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia, lupus: !!e.lupus, mastocitos: !!e.mastocitos,
-    osteoporosis: !!e.osteoporosis?.diagnosticada, embarazo: e.embarazo?.estado || '', anticoagulado: !!e.anticoagulado });
+    osteoporosis: !!e.osteoporosis?.diagnosticada, embarazo: e.embarazo?.estado || '', anticoagulado: !!e.anticoagulado, parkinson: !!e.parkinson });
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
   const tabla = tablaEscalones(familia);
@@ -296,6 +297,12 @@ export function construirPlan(e) {
     avisosHip.push(...AVISOS_ANTICOAGULADO.map(k => AVISOS[k]));
     if (elegidas.some(h => HIP_PUNCION_SECA.includes(h.id))) avisosHip.push(AVISOS.anticoaguladoPuncion);
     if (elegidas.some(h => HIP_ONDAS_CHOQUE.includes(h.id))) avisosHip.push(AVISOS.anticoaguladoOndas);
+  }
+  // Parkinson (docs/parkinson.md): en cualquier región; el del estimulador, en
+  // cualquier plan con él en «Sí» o «No lo sabe» (decisión 20)
+  if (e.parkinson) {
+    if (e.parkinson.estimulador) avisosHip.push(AVISOS.parkinsonEstimulador);
+    avisosHip.push(...AVISOS_PARKINSON.map(k => AVISOS[k]));
   }
   // Fármacos que toma (docs/farmacos-paciente.md, decisión 12): frases literales
   // de la guía revisada, una por familia; sin topes ni reglas por combinaciones
