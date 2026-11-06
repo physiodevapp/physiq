@@ -106,7 +106,12 @@ export default {
       items: [
         { id: 'enfermedades', tipo: 'texto', ia: 'contexto', informe: 'Enfermedades', antecedente: true, texto: '¿Qué enfermedades importantes tienes o has tenido?', ayuda: 'Todas, aunque parezca que no tienen relación con esto', lineas: 2 },
         { id: 'operaciones', tipo: 'texto', ia: 'contexto', informe: 'Operaciones', antecedente: true, texto: '¿Te han operado alguna vez? ¿Cuándo?', ayuda: 'Y aproximadamente cuándo', lineas: 1 },
-        { id: 'medicacion', tipo: 'texto', ia: 'contexto', informe: 'Medicación actual', antecedente: true, texto: '¿Qué medicación tomas ahora?', ayuda: 'Incluidos parches, inyecciones y lo que se compra sin receta', lineas: 2 }
+        { id: 'medicacion', tipo: 'texto', ia: 'contexto', informe: 'Medicación actual', antecedente: true, texto: '¿Qué medicación tomas ahora?', ayuda: 'Incluidos parches, inyecciones y lo que se compra sin receta', lineas: 2 },
+        // «Implantes con electrodos» (docs/implantes-electrodos.md, decisión 18): pista
+        // de la tarjeta de la fase 1, que nunca la marca
+        { id: 'implantes', tipo: 'unica', ia: 'contexto', informe: 'Aparatos implantados', antecedente: true,
+          texto: '¿Llevas algún aparato implantado: marcapasos, desfibrilador, estimulador o implante del oído?',
+          opciones: ['Sí', 'No', 'No sé'], detalle: { opcion: 'Sí', etiqueta: '¿Cuál?', verbal: '¿Qué aparato llevas?' } }
       ]
     }
   ],
@@ -115,6 +120,8 @@ export default {
     cronologia: ['c:desde_cuando', 'c:evolucion'],
     // «Fármacos que toma» (docs/farmacos-paciente.md, decisión 10): la
     // medicación escrita en el formulario, nunca leída para marcar chips
-    farmacos: ['c:medicacion']
+    farmacos: ['c:medicacion'],
+    // «Implantes con electrodos» (decisión 18): la respuesta, nunca leída para marcar la tarjeta
+    implantes: ['c:implantes']
   }
 };

@@ -138,6 +138,21 @@ export const AVISOS = {
   // propio (decisión 9). Los mismos textos que PK.textos (data/comun.js).
   parkinson: 'Parkinson: Con lo que usaron los ensayos, sin una dosis óptima establecida: aeróbico moderado a alto, al menos 3 días por semana, 30–40 min; fuerza progresiva 1–2 días por semana; equilibrio 2–3 veces por semana; marcha 20–60 min, 3–5 días por semana, 4–12 semanas. Lo ganado se pierde si se deja (Osborne 2022). Casi cualquier tipo de ejercicio ayuda; el tipo importa menos que hacerlo (Ernst 2024). La FC puede subir menos de lo esperado: vigila también el esfuerzo percibido (Osborne 2022). Si estaba inactivo, empieza bajo y sube poco a poco (Keus 2014, 5.13). La capacidad física se entrena mejor en on; las estrategias se aprenden en on y, si hacen falta en off, se practican también en off. Valora y reevalúa en la misma fase y anótala (Keus 2014, 6.7.2; Osborne 2022).',
   parkinsonEstimulador: 'Parkinson con estimulador cerebral profundo, o sin confirmar si lo lleva: nada de onda corta ni microondas (riesgo de lesión cerebral grave o muerte aunque esté apagado, o retirado si quedan electrodos), ni ultrasonido, TENS, interferenciales ni otra electroestimulación, ni presión manual cerca de los cables (FDA 2002; Health Canada 2003; Keus 2014, 5.13).',
+  // Implantes con electrodos (Fase P, docs/implantes-electrodos.md, texto cerrado):
+  // en cualquier plan con la tarjeta marcada, las líneas rojas de sus chips
+  // (copia literal de IMPLANTES.lineas, data/comun.js, con el prefijo; prueba
+  // unitaria) y, con el estimulador medular, la de los movimientos de columna.
+  // Sin red de seguridad ni tope de técnica nuevos (decisión 15).
+  implantes_diatermia: 'Implantes con electrodos: Nada de onda corta ni microondas, térmicas o no, en ninguna zona, aunque el aparato esté apagado o se haya retirado y queden electrodos, ni a menos de 3 m de un aparato de onda corta encendido, aunque no sea para él. Ultrasonido terapéutico, nunca encima o cerca del aparato o de sus cables, ni si no sabes por dónde van (FDA 2002; Health Canada 2003; Houghton 2010, 3-6 y 8-6).',
+  implantes_cardiaco: 'Implantes con electrodos: Electroterapia (TENS, interferenciales, electroestimulación), solo tras consultar a la unidad de marcapasos, que valora el riesgo y vigila la primera sesión. Lo más lejos posible del aparato, con los dos electrodos del mismo lado y nunca en la parte anterior del tórax. Si no hubo interferencia, puedes seguir en el mismo sitio y con los mismos parámetros; si cambian, otra prueba. Para enseguida si nota síntomas cardiacos (Stühlinger 2022; Suhail Arain 2023; Houghton 2010, 4-16).',
+  implantes_medular: 'Implantes con electrodos: Ultrasonido terapéutico, en ninguna zona. Electroterapia, nunca de forma que la corriente pase sobre cualquier parte del sistema. Sin masaje ni fricción sobre el generador ni los cables (Medtronic 2023; Ghaly 2016).',
+  implantes_cerebral: 'Implantes con electrodos: Nada de onda corta ni microondas (riesgo de lesión cerebral grave o muerte aunque esté apagado, o retirado si quedan electrodos), ni ultrasonido, TENS, interferenciales ni otra electroestimulación, ni presión manual cerca de los cables (FDA 2002; Health Canada 2003; Keus 2014, 5.13).',
+  implantes_coclear: 'Implantes con electrodos: Ni electroterapia ni ultrasonido en la zona del implante (cabeza y cuello). Antes de cualquier corriente, que se quite el procesador; fuera de la cabeza y el cuello puede dejárselo si estás con él todo el rato y sabe quitárselo si nota que funciona mal. Si funciona mal, para (MED-EL 2026; Houghton 2010, 4-15 y 4-17).',
+  implantes_nervio: 'Implantes con electrodos: Electroterapia, nunca donde pueda alterar el aparato: ni encima ni cerca del aparato o de sus cables (Houghton 2010, 4-1).',
+  implantes_laser: 'Implantes con electrodos: El láser, lejos del aparato y de los cables (Medtronic 2023).',
+  implantes_retirado: 'Implantes con electrodos: Si no consta que se retiraron todos los electrodos, trátalo como si los llevara (FDA 2002).',
+  implantes_nosabe: 'Implantes con electrodos: Hasta saber qué lleva (pide la tarjeta del implante), sigue todas estas reglas.',
+  implantes_columna: 'Implantes con electrodos: Que evite la flexión, torsión, salto o estiramiento bruscos, excesivos o repetidos, y sobre todo inclinar mucho el tronco: pueden romper o desplazar los cables (Medtronic 2023; Ghaly 2016). Pregunta si el equipo que lo implantó le puso más límites.',
   parkinsonVibracion: 'Parkinson: no uses plataformas de vibración de cuerpo entero (Keus 2014, 6.4.6: recomendación fuerte en contra).',
   // Anticoagulado o antiagregado (Fase P, docs/anticoagulado.md): `anticoagulado`
   // con la tarjeta marcada, en cualquier región; el tope «sin thrust» solo con
@@ -357,6 +372,16 @@ export const RED_PARKINSON = [
 // Avisos con mecanismo Post-quirúrgico propios de una región, después de los
 // de las periféricas (decisión 78): lo que su capítulo de Peripheral dice de
 // empezar a movilizar tras la cirugía.
+// Implantes con electrodos (docs/implantes-electrodos.md, decisión 12): con una
+// de estas hipótesis elegida, la línea de su pauta (redacción propia; copia
+// literal de IMPLANTES.pautas, data/comun.js). {nombre} = la hipótesis.
+export const AVISOS_IMPLANTES_PAUTA = {
+  h1: 'Implantes con electrodos: la pauta de {nombre} admite onda corta, ultrasonido o electroestimulación: la onda corta, no; lo demás, solo dentro de las líneas de arriba.',
+  ce5: 'Implantes con electrodos: la pauta de {nombre} propone TENS: solo dentro de las líneas de arriba.',
+  ro2: 'Implantes con electrodos: la pauta de {nombre} propone electroestimulación neuromuscular: solo dentro de las líneas de arriba.',
+  ro4: 'Implantes con electrodos: la pauta de {nombre} propone electroestimulación neuromuscular: solo dentro de las líneas de arriba.',
+};
+
 export const AVISOS_POSQ_REGION = { rodilla: ['posqRodilla'], cadera: ['posqCadera'], tobillo_pie: ['posqTobillo'] };
 
 // Bloques de la sesión de 50 minutos: organización orientativa y editable, no
@@ -653,6 +678,11 @@ export const TEXTOS_CASA = {
   alarmaCrisisParkinson: { texto: 'Si en los próximos días estás mucho más rígido o inmóvil con fiebre, confusión o mucho sudor, o no puedes tomar tu medicación, ve a urgencias.', fuente: 'Pötter-Nerger 2024 (crisis acinética); NICE NG71, 1.3.2 (no retirar la medicación de golpe) (docs/parkinson.md)' },
   alarmaEjercicioParkinson: { texto: 'Para el ejercicio y consulta si notas náuseas, dolor u opresión en el pecho que dura más de unos minutos, falta de aire fuera de lo normal, mareo, palpitaciones o sudor frío.', fuente: 'Keus 2014, 6.7.5 (cuándo parar el ejercicio; solo lo que el paciente puede notar, decisión 19) (docs/parkinson.md)' },
   alarmaSincope: { texto: 'Si te desmayas mientras haces ejercicio, para y no vuelvas a hacer ejercicio hasta que te vea el médico.', fuente: 'NICE CG109, recomendaciones 1.3.2.2 y 1.5.4.3: con un síncope durante el ejercicio, no hacer ejercicio hasta la valoración; Brignole 2018, p. 1911 (docs/pots.md)' },
+  // Implantes con electrodos (docs/implantes-electrodos.md, texto cerrado): consejos
+  // para casa con desfibrilador y con estimulador medular (TEXTOS_CASA, sin red nueva).
+  implantesTensDAI: { texto: 'No uses un aparato de TENS en casa por tu cuenta; solo si tu unidad de marcapasos lo ha probado contigo, en ese sitio y con esos parámetros.', fuente: 'Stühlinger 2022 (consenso EHRA: electroestimulación solo tras consultar al especialista y probarla); Mohammad 2022 (descargas inapropiadas con TENS en casa) (docs/implantes-electrodos.md)' },
+  implantesColumna: { texto: 'Evita doblar mucho o girar el tronco de golpe, y repetir saltos o estiramientos bruscos; pregunta a tu equipo qué límites tienes.', fuente: 'Medtronic 2023 (información para prescriptores: actividades que pueden romper o desplazar los componentes) (docs/implantes-electrodos.md)' },
+  implantesTensMedular: { texto: 'Si usas TENS en casa, que la corriente no pase por el aparato ni por los cables; si notas que interfiere, déjala y consulta.', fuente: 'Medtronic 2023 (información para prescriptores, apéndice A: TENS) (docs/implantes-electrodos.md)' },
   queHacer: { texto: 'Qué hacer:', tipo: 'etiqueta' },
   cuandoHacerlo: { texto: 'Cuándo hacerlo:', tipo: 'etiqueta' },
   cuandoParar: { texto: 'Cuándo parar:', tipo: 'etiqueta' },
@@ -739,4 +769,4 @@ export const REEVALUACION_RETROSPECTIVA = [
 ];
 
 // Fuentes de la fase (claves de data/referencias.js), para docs/referencias.md.
-export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023', 'Butler 2000', 'Butler 1991', 'NICE NG193', 'Kamonseki 2022', 'Raj 2020', 'Fu 2010', 'George 2016', 'Hakim 2017', 'NICE CG109', 'Brignole 2018', 'RCUK 2021', 'NICE NG258', 'Brockow 2021', 'Muñoz 2024', 'Srisuwatchari 2023', 'Pravettoni 2016', 'Christensen 2019'];
+export const FUENTES_PLAN = ['Petersen 2021', 'Maitland 2005', 'Hengeveld y Banks 2005', 'Barakatt 2009', 'Zusman 1998', 'Finucane 2020', 'Margetis y Donnally 2025', 'Rushton 2023', 'Goodman 2018', 'Kuijper 2009', 'Blanpied 2017', 'Reid 2014', 'Kelley 2013', 'Salamh 2025', 'Quzli 2025', 'Wistow 2025', 'Lluch 2020', 'Momodu y Savaliya 2023', 'Pangia 2025', 'NICE NG226', 'Prill 2025', 'Willy 2019', 'Balcarek 2025', 'Rathleff 2020', 'Truong 2023', 'Waheed 2023', 'NICE NG158', 'Vyas 2024', 'NICE NG89', 'Koc 2025', 'Enseki 2023', 'Mellor 2018', 'Rich 2025', 'Serner 2020', 'Hölmich 1999', 'May y Marappa-Ganeshan 2023', 'van Dijk 2016', 'Silbernagel 2007', 'Jonsson 2008', 'Pringels 2025', 'Kulig 2009', 'Martin 2021', 'McKeon 2008', 'Koc 2023', 'Warden 2014', 'Shamrock 2023', 'Butler 2000', 'Butler 1991', 'NICE NG193', 'Kamonseki 2022', 'Raj 2020', 'Fu 2010', 'George 2016', 'Hakim 2017', 'NICE CG109', 'Brignole 2018', 'RCUK 2021', 'NICE NG258', 'Brockow 2021', 'Muñoz 2024', 'Srisuwatchari 2023', 'Pravettoni 2016', 'Christensen 2019', 'Mohammad 2022', 'Stühlinger 2022', 'Ghaly 2016', 'Houghton 2010', 'Suhail Arain 2023'];

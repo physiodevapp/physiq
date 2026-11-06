@@ -12,7 +12,9 @@ import {
   AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA, AVISOS_LUPUS, RED_LUPUS, AVISOS_MASTOCITOS, RED_MASTOCITOS,
   AVISOS_OSTEOPOROSIS, RED_OSTEOPOROSIS, AVISOS_EMBARAZO, AVISOS_POSPARTO, HIP_SACROILIACA, RED_EMBARAZO, RED_POSPARTO,
   AVISOS_ANTICOAGULADO, HIP_PUNCION_SECA, HIP_ONDAS_CHOQUE, RED_ANTICOAGULADO, AVISOS_PARKINSON, RED_PARKINSON,
+  AVISOS_IMPLANTES_PAUTA,
 } from '../data/plan-tratamiento.js';
+import { clavesLineas } from './implantes.js';
 import { TEXTO_SIN_PROTOCOLO, TEXTO_PAUTA_COMPATIBLE } from './posquirurgico.js';
 import { nivelMatriz } from './irritabilidad.js';
 import { avisosFarmacos } from './farmacos-paciente.js';
@@ -223,6 +225,8 @@ export function rangosBloques(duraciones = {}) {
 //   marcada, docs/embarazo-posparto.md), anticoagulado (la tarjeta «Paciente
 //   anticoagulado o antiagregado» marcada, docs/anticoagulado.md), parkinson
 //   (null, o { estimulador } con la tarjeta en «Diagnosticado», docs/parkinson.md),
+//   implantes (null, o { tipos } con la tarjeta «Implantes con electrodos» marcada,
+//   docs/implantes-electrodos.md),
 //   estabilidad, riesgoPsico,
 //   psico_miedo, signoComparable, sesion: 'primera'|'siguiente',
 //   gravedadManual, irritabilidadManual }
@@ -300,9 +304,20 @@ export function construirPlan(e) {
   }
   // Parkinson (docs/parkinson.md): en cualquier región; el del estimulador, en
   // cualquier plan con él en «Sí» o «No lo sabe» (decisión 20)
+  // Con el chip del estimulador en «Implantes con electrodos», su línea sale
+  // allí, una sola vez (docs/implantes-electrodos.md, decisión 11).
+  const ecpEnImplantes = !!e.implantes?.tipos?.includes('ecp');
   if (e.parkinson) {
-    if (e.parkinson.estimulador) avisosHip.push(AVISOS.parkinsonEstimulador);
+    if (e.parkinson.estimulador && !ecpEnImplantes) avisosHip.push(AVISOS.parkinsonEstimulador);
     avisosHip.push(...AVISOS_PARKINSON.map(k => AVISOS[k]));
+  }
+  // Implantes con electrodos (docs/implantes-electrodos.md, texto cerrado): en
+  // cualquier plan, las líneas rojas de sus chips y, con el medular, la de los
+  // movimientos de columna; con una pauta elegida que propone la técnica, su línea
+  if (e.implantes) {
+    avisosHip.push(...clavesLineas(e.implantes.tipos).map(k => AVISOS[`implantes_${k}`]));
+    if ((e.implantes.tipos || []).includes('em')) avisosHip.push(AVISOS.implantes_columna);
+    for (const h of elegidas) if (AVISOS_IMPLANTES_PAUTA[h.id]) avisosHip.push(AVISOS_IMPLANTES_PAUTA[h.id].replace('{nombre}', h.name));
   }
   // Fármacos que toma (docs/farmacos-paciente.md, decisión 12): frases literales
   // de la guía revisada, una por familia; sin topes ni reglas por combinaciones
@@ -354,7 +369,14 @@ export function construirPlan(e) {
     nervio,
     alarmasCasa: red.casa,
     // Consejos de una tarjeta de la fase 1 para el programa para casa (hoy, la osteoporosis)
-    consejosCasa: e.osteoporosis ? [TEXTOS_CASA.moverseOsteoporosis.texto] : [],
+    // y los implantes con electrodos: con desfibrilador, la TENS; con el medular,
+    // los movimientos de columna y la TENS (docs/implantes-electrodos.md)
+    consejosCasa: [
+      e.osteoporosis ? TEXTOS_CASA.moverseOsteoporosis.texto : '',
+      e.implantes?.tipos?.includes('dai') ? TEXTOS_CASA.implantesTensDAI.texto : '',
+      e.implantes?.tipos?.includes('em') ? TEXTOS_CASA.implantesColumna.texto : '',
+      e.implantes?.tipos?.includes('em') ? TEXTOS_CASA.implantesTensMedular.texto : '',
+    ].filter(Boolean),
     hipotesis: elegidas,
     sesion: {
       ...rangosBloques(e.duraciones),

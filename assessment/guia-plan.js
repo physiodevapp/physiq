@@ -28,6 +28,10 @@ const CONDICIONES = [
   ['emb', 'Embarazada'], ['pp', 'Posparto'], ['lact', 'Da el pecho', 'pp'],
   ['acAnti', 'Toma anticoagulante'], ['acAgreg', 'Solo antiagregante'],
   ['pk', 'Parkinson diagnosticado'], ['pkEstimulador', 'Con estimulador cerebral profundo (o sin confirmar)', 'pk'],
+  // Implantes con electrodos (docs/implantes-electrodos.md): sin ningún chip, como «No sabe cuál»
+  ['ie', 'Implantes con electrodos'], ['ie_mp', 'Marcapasos', 'ie'], ['ie_dai', 'Desfibrilador', 'ie'],
+  ['ie_em', 'Estimulador medular', 'ie'], ['ie_ecp', 'Estimulador cerebral profundo', 'ie'], ['ie_ci', 'Implante coclear', 'ie'],
+  ['ie_on', 'Otro estimulador de nervios', 'ie'], ['ie_co', 'Estimulador del crecimiento óseo', 'ie'], ['ie_re', 'Retirado, pueden quedar electrodos', 'ie'],
 ];
 
 // Las hipótesis de la región como las prepara la app (plan.js, hipotesisEntrada), sin el árbol:
@@ -63,6 +67,7 @@ function entrada(hs) {
     embarazo: c.emb ? { estado: 'embarazada', lactancia: false } : c.pp ? { estado: 'posparto', lactancia: !!c.lact } : null,
     anticoagulado: !!(c.acAnti || c.acAgreg),
     parkinson: c.pk ? { estimulador: !!c.pkEstimulador } : null,
+    implantes: c.ie ? { tipos: ['mp', 'dai', 'em', 'ecp', 'ci', 'on', 'co', 're'].filter(k => c[`ie_${k}`]) } : null,
     farmacos: [],
     estabilidad: P.estabilidad, riesgoPsico: P.psico ? 'Alto' : '', psico_miedo: '',
     signoComparable: '', sesion: P.sesion, gravedadManual: '', irritabilidadManual: P.irr, duraciones: {},

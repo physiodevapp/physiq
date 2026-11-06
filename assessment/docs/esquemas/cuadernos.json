@@ -1,7 +1,7 @@
 {
   "cuaderno-cadera": {
-    "huella": "20432d09",
-    "archivo": "a915b77d",
+    "huella": "fa041756",
+    "archivo": "fc382215",
     "fecha": "2026-11-06",
     "paginas": 28,
     "hojas": {
@@ -9,7 +9,7 @@
       "arbol-a4-cadera": "b835303d",
       "confirmacion-cadera": "868c847b",
       "fase1": "18d660ee",
-      "condiciones": "32895818",
+      "condiciones": "c252801d",
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
@@ -33,8 +33,8 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-cervical": {
-    "huella": "e5bab5d8",
-    "archivo": "2507caac",
+    "huella": "8d18a847",
+    "archivo": "dc21d22d",
     "fecha": "2026-11-06",
     "paginas": 28,
     "hojas": {
@@ -42,7 +42,7 @@
       "arbol-a4-cervical": "ee88b18c",
       "confirmacion-cervical": "be369a47",
       "fase1": "18d660ee",
-      "condiciones": "32895818",
+      "condiciones": "c252801d",
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
@@ -66,8 +66,8 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-codo": {
-    "huella": "65d8a770",
-    "archivo": "636cbc28",
+    "huella": "2cecf5af",
+    "archivo": "c42d141a",
     "fecha": "2026-11-06",
     "paginas": 28,
     "hojas": {
@@ -75,7 +75,7 @@
       "arbol-a4-codo": "041e8ec9",
       "confirmacion-codo": "9a5d7042",
       "fase1": "18d660ee",
-      "condiciones": "32895818",
+      "condiciones": "c252801d",
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
@@ -99,13 +99,13 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-completo": {
-    "huella": "2ea07f94",
-    "archivo": "11623999",
+    "huella": "65096ef3",
+    "archivo": "25574fb2",
     "fecha": "2026-11-06",
     "paginas": 76,
     "hojas": {
       "fase1": "18d660ee",
-      "condiciones": "32895818",
+      "condiciones": "c252801d",
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
@@ -168,8 +168,8 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-hombro": {
-    "huella": "762d514d",
-    "archivo": "822b1da2",
+    "huella": "e86cbf22",
+    "archivo": "81f83b5b",
     "fecha": "2026-11-06",
     "paginas": 28,
     "hojas": {
@@ -177,7 +177,7 @@
       "arbol-a4-hombro": "5ab4de71",
       "confirmacion-hombro": "8ba9eaa3",
       "fase1": "18d660ee",
-      "condiciones": "32895818",
+      "condiciones": "c252801d",
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
@@ -201,8 +201,8 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-lumbar": {
-    "huella": "3b3351d9",
-    "archivo": "44bc2065",
+    "huella": "73c791e6",
+    "archivo": "413f1fad",
     "fecha": "2026-11-06",
     "paginas": 28,
     "hojas": {
@@ -210,7 +210,7 @@
       "arbol-a4-lumbar": "a028246f",
       "confirmacion-lumbar": "53e2dc69",
       "fase1": "18d660ee",
-      "condiciones": "32895818",
+      "condiciones": "c252801d",
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
@@ -234,8 +234,8 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-rodilla": {
-    "huella": "1772a8b9",
-    "archivo": "961588ae",
+    "huella": "e8e4f346",
+    "archivo": "f3728b8e",
     "fecha": "2026-11-06",
     "paginas": 28,
     "hojas": {
@@ -243,7 +243,7 @@
       "arbol-a4-rodilla": "8d812e7c",
       "confirmacion-rodilla": "a235a5fc",
       "fase1": "18d660ee",
-      "condiciones": "32895818",
+      "condiciones": "c252801d",
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
@@ -267,8 +267,8 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-tobillo_pie": {
-    "huella": "bd9ef4fa",
-    "archivo": "5a928605",
+    "huella": "ce6e0b25",
+    "archivo": "2b21cc61",
     "fecha": "2026-11-06",
     "paginas": 28,
     "hojas": {
@@ -276,7 +276,7 @@
       "arbol-a4-tobillo_pie": "0bb9973b",
       "confirmacion-tobillo_pie": "7beddce2",
       "fase1": "18d660ee",
-      "condiciones": "32895818",
+      "condiciones": "c252801d",
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",

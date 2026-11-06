@@ -173,6 +173,27 @@ export const CONDICIONES = [
     fuentes: ['NICE NG71', 'Buhmann 2020', 'Paggou 2023'],
   },
   {
+    // docs/implantes-electrodos.md, «Texto cerrado para revisión». Sin sistema
+    // de la fase 2: las pistas no salen de una pregunta (como el posquirúrgico),
+    // y las fuentes son las de las líneas de su tarjeta (data/comun.js, IMPLANTES).
+    id: 'implantes',
+    nombre: 'Implantes con electrodos',
+    que: 'Aparatos implantados con cables que llevan corriente al corazón, la médula, el cerebro, un nervio o el oído. La onda corta y las microondas pueden calentar los cables y lesionar el tejido de alrededor; la electroterapia puede engañar a un marcapasos o un desfibrilador.',
+    piensa: 'Piensa en ella si:',
+    pistas: [
+      { texto: 'lleva marcapasos o desfibrilador;', de: [] },
+      { texto: 'le pusieron un estimulador para el dolor de espalda o de piernas, o lleva un implante coclear;', de: [] },
+      { texto: 'le quitaron un aparato y no sabe si quedan cables.', de: [] },
+    ],
+    anade: 'las líneas rojas de la tarjeta, el recuadro de la fase 5 y el aviso de la fase 6.',
+    enPlan: 'el aviso de los agentes físicos que limita cada implante',
+    destino: { tarjeta: 'cardImplantes' },
+    boton: 'Ir a la tarjeta →',
+    fuentes: ['FDA 2002 (diatermia)', 'Health Canada 2003 (diatermia)', 'Stühlinger 2022', 'Houghton 2010'],
+    // Línea bajo la fila (data/comun.js, IMPLANTES.textos.holter)
+    notaAparte: 'holter',
+  },
+  {
     id: 'tarlov',
     region: 'lumbar',
     nombre: 'Quiste de Tarlov',

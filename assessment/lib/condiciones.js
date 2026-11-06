@@ -6,7 +6,8 @@
 // ============================================================
 
 import { CONDICIONES, TEXTOS_CONDICIONES } from '../data/condiciones.js';
-import { citasHTML } from './citas.js';
+import { citasHTML, citasEnTexto } from './citas.js';
+import { IMPLANTES } from '../data/comun.js';
 import { nombreRegion } from './region.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -49,6 +50,10 @@ export function estadoCondicion(c, st) {
     case 'anticoagulado': {
       const ac = st.anticoagulado || {};
       return ac.estado === 'toma' ? marcada('Toma') : sin('No consta');
+    }
+    case 'implantes': {
+      const ie = st.implantes || {};
+      return ie.estado === 'lleva' ? marcada('Lleva') : sin('No consta');
     }
     case 'parkinson': {
       const pk = st.parkinson || {};
@@ -101,6 +106,7 @@ function filaHTML(c, st, { guia = false } = {}) {
     <p class="cond-anade"><span class="cond-anade-et">Al marcarla, añade:</span> ${esc(c.anade)}</p>
     ${guia && c.enPlan ? `<p class="cond-anade"><span class="cond-anade-et">En el plan (fase 6):</span> ${esc(c.enPlan)}. Lo calcula la página «Plan de tratamiento» de esta guía, como la app.</p>` : ''}
     ${fuentes}
+    ${c.notaAparte ? `<p class="cond-anade cond-nota-aparte">${citasEnTexto(esc(IMPLANTES.textos[c.notaAparte]))}</p>` : ''}
     ${guia ? '' : `<div class="cond-acciones">${boton}</div>`}
   </section>`;
 }

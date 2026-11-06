@@ -23,6 +23,7 @@ import { opActivo, opDiagnosticada, impactoLimitado, opPayload, motivosSinThrust
 import { emActivo } from './lib/embarazo.js';
 import { acActivo } from './lib/anticoagulado.js';
 import { pkDiagnosticado, estimuladorAviso } from './lib/parkinson.js';
+import { ieActivo } from './lib/implantes.js';
 import { familiasPaciente, FAMILIA_AC } from './lib/farmacos-paciente.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
@@ -122,6 +123,8 @@ function entrada(hs) {
     anticoagulado: acActivo(state.anticoagulado),
     // Parkinson (docs/parkinson.md): avisos y red de seguridad con «Diagnosticado»
     parkinson: pkDiagnosticado(state.parkinson) ? { estimulador: estimuladorAviso(state.parkinson) } : null,
+    // Implantes con electrodos (docs/implantes-electrodos.md): avisos y consejos para casa
+    implantes: ieActivo(state.implantes) ? { tipos: state.implantes.tipos } : null,
     // Fármacos que toma (docs/farmacos-paciente.md): un aviso por familia revisada;
     // los antitrombóticos salen de su tarjeta
     farmacos: familiasPaciente(state).map(x => x.id).filter(id => id !== FAMILIA_AC),

@@ -90,6 +90,11 @@ const state = {
   // { tumbado, m1, m3: { tas, tad, fc }, reloj? }.
   parkinson: { estado: '', estadio: '', fluctuaciones: '', fase: '', congelacion: '', estimulador: '',
     caidas: { n: '', lesion: false, suelo: false, conciencia: false, fragilidad: false }, tension: null },
+  // Tarjeta «Implantes con electrodos» (Fase P, docs/implantes-electrodos.md,
+  // lib/implantes.js): estado '' (no consta) | 'lleva'; tipos: subconjunto de
+  // ['mp','dai','em','ecp','ci','on','co','re','ns'] en el orden de la tarjeta
+  // («ns» excluye los demás). `ecp` es el mismo dato que parkinson.estimulador = 'SI'.
+  implantes: { estado: '', tipos: [] },
   // Tarjeta «Fármacos que toma» (paso 3 de la farmacología, docs/farmacos-paciente.md,
   // lib/farmacos-paciente.js): toma = ids de las familias con contenido de la guía
   // (data/farmacos.js), sin los antitrombóticos, que van en su tarjeta.

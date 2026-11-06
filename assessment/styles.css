@@ -3119,6 +3119,9 @@ body.lupus .solo-les { display: block; }
 body.parkinson .solo-pk { display: block; }
 .pk-tabla { grid-template-columns: minmax(52px, auto) repeat(3, minmax(0, 1fr)); }
 .pk-estimulador:not(:empty) { margin-top: 8px; }
+.ie-lineas:not(:empty) { margin-top: 8px; }
+.ie-lineas .alert { margin: 0 0 8px; }
+.ie-lineas .alert:last-child { margin-bottom: 0; }
 /* Casillas de lupus y desencadenantes de mastocitos: chips de selección
    múltiple (.hm-subtipos), como las complicaciones de la cirugía */
 #maOtro { margin-top: 8px; }

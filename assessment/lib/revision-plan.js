@@ -137,7 +137,17 @@ const RE_FUENTE = /\b([A-ZÁÉÍÓÚÑ][a-záéíóúñü'-]+)(?:\s+(?:y|e|&)\s+
 const RE_GUIA = /\b(NICE|APTA|JOSPT|KNGF|Cochrane)\b/g;
 const NO_AUTOR = new Set(['Sesión', 'Sesiones', 'Semana', 'Semanas', 'Plan', 'Nivel', 'Día', 'Días', 'En', 'Desde', 'Hasta', 'Octubre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Noviembre', 'Diciembre']);
 
-export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], noElegidas = [], derivar = [], independientes = [], primera = false, fuente = '' } = {}) {
+// Técnicas que la tarjeta «Implantes con electrodos» limita, con su nombre en el mensaje.
+const TECNICAS_IMPLANTE = [
+  [/onda corta/i, 'onda corta'],
+  [/microondas/i, 'microondas'],
+  [/ultrason/i, 'ultrasonido terapéutico'],
+  [/\bTENS\b/, 'TENS'],
+  [/interferencial/i, 'interferenciales'],
+  [/electroestimulaci|electroterapia|\bNMES\b|corrientes? (galvánica|excitomotriz)/i, 'electroestimulación'],
+];
+
+export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], noElegidas = [], derivar = [], independientes = [], primera = false, fuente = '', implantes = false } = {}) {
   const puntos = [];
   const sec = seccionesPlan(texto);
   const sesionMes = [sec['SESIÓN'] || '', sec['PLAN DEL MES'] || ''].join('\n');
@@ -246,6 +256,21 @@ export function revisarPlan(texto, { esqueleto = '', escalon = 1, alarmas = [], 
       const raizLado = normalizar(lado).slice(0, 6);   // «derech», «izquie»
       if (zona && nl.includes(zona) && (!raizLado || nl.includes(raizLado)) && !negacion.test(l)) {
         puntos.push({ id: 'independiente', nivel: 'medio', mensaje: `Nombra el síntoma independiente (${nombre}) sin decir que este plan no lo trata: comprueba que no le pone ejercicios.`, cita: recorte(l) });
+      }
+    }
+  }
+  // 6. Agentes físicos con la tarjeta «Implantes con electrodos» marcada
+  // (docs/implantes-electrodos.md, texto cerrado): un punto alto por técnica
+  // nombrada fuera de una frase que la descarte («nada de», «sin», «no …»)
+  if (implantes) {
+    const nombradas = new Set();
+    for (const l of lineas(texto)) {
+      if (/\b(nada de|sin|no|ni|evita|nunca)\b/i.test(l)) continue;
+      for (const [re, nombre] of TECNICAS_IMPLANTE) {
+        if (re.test(l) && !nombradas.has(nombre)) {
+          nombradas.add(nombre);
+          puntos.push({ id: 'implante', nivel: 'alto', mensaje: `El plan propone ${nombre} y el paciente lleva un implante con electrodos: comprueba que respeta las líneas de la tarjeta.`, cita: recorte(l) });
+        }
       }
     }
   }

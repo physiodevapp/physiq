@@ -29,6 +29,7 @@ import { ORCHESTRATOR_URL, parseSSEBuffer, parseSSEBlock, errorLegible, errorCon
 import { estadoLicencia, onLicencia, comprobarLicencia, marcarSinLicencia, claveGuardada, detalleLicencia } from './lib/licencia-ia.js';
 import { crearTurnstile } from './lib/turnstile.js';
 import { VERSION_SHA } from './lib/version.js';
+import { ieActivo } from './lib/implantes.js';
 
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const $ = id => document.getElementById(id);
@@ -251,6 +252,7 @@ function puntosDe(ctx, ia) {
       esqueleto: ctx.esqueleto, escalon: en.escalon.n, alarmas: en.alarmas,
       noElegidas: en.noElegidas, derivar: en.derivar, independientes: ctx.independientes, primera: en.primera,
       fuente: JSON.stringify([en.datos, en.ampliado, en.transcripcion?.texto || '']),
+      implantes: ieActivo(state.implantes),
     });
   } catch { /* una regla rota nunca tumba la tarjeta */ }
   try { comprobaciones = comprobacionesPlan({ posq: !!ctx.plan.mes.posq, transcripcion: !!ia.conTranscripcion }); } catch { /* ídem */ }

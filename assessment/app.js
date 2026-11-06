@@ -46,6 +46,8 @@ import { AC, anticoaguladoVacio, normalizarAnticoagulado, acActivo, elementoACVi
 import { PK, FILAS_PK, FILAS_TENSION, parkinsonVacio, normalizarParkinson, tensionVacia, pkActivo, pkDiagnosticado,
   faseVisible, estimuladorAviso, elementoPKVisible, resultadoTension, resultadoCaidasPK, pendientesPK, pkPayload,
   datosPK, lineaEstimulador, lineasRecomendacionPK } from './lib/parkinson.js';
+import { IE, implantesVacio, normalizarImplantes, ieActivo, alternarTipo, clavesLineas, sincronizarEstimulador,
+  estimuladorEnImplantes, pendientesIE, iePayload, lineaLleva, lineasRecomendacionIE, lineasPautaIE } from './lib/implantes.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL, bandaIrritabilidad } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { BANDERAS_FASE1, TEXTOS_FASE1, PREGUNTAS_PSICO } from './data/fase1.js';
@@ -371,6 +373,7 @@ function _softResetApp() {
   state.anticoagulado = anticoaguladoVacio();
   state.parkinson = parkinsonVacio();
   _pkRelojParar();
+  state.implantes = implantesVacio();
   state.farmacos = farmacosVacio();
   state.cronologia = '';
   state.banderasRojas = banderasRojasIniciales();
@@ -484,6 +487,7 @@ function _softResetApp() {
   _pintarEMUI();
   _pintarACUI();
   _pintarPKUI();
+  _pintarIEUI();
   _pintarFarmacosUI();
 }
 
@@ -2063,8 +2067,12 @@ function _pintarPKUI() {
   if (faseNota && !faseNota.innerHTML) faseNota.innerHTML = citasEnTexto(PK.textos.fase);
   const est = document.getElementById('pkEstimulador');
   if (est) {
-    est.innerHTML = estimuladorAviso(pk)
-      ? `<div class="alert alert-danger"><span class="alert-icon">⚡</span><div><strong>${citasEnTexto(lineaEstimulador(pk.estimulador))}</strong></div></div>` : '';
+    // Con el chip del estimulador en «Implantes con electrodos», la línea vive
+    // allí una sola vez (docs/implantes-electrodos.md, decisión 11).
+    est.innerHTML = !estimuladorAviso(pk) ? ''
+      : estimuladorEnImplantes(state.implantes) && pk.estimulador === 'SI'
+        ? `<div class="hm-nota">${_escHTML(IE.textos.verImplantes)} <button type="button" class="sint-recordatorio-ir" onclick="irATarjetaIE()">Ir a la tarjeta →</button></div>`
+        : `<div class="alert alert-danger"><span class="alert-icon">⚡</span><div><strong>${citasEnTexto(lineaEstimulador(pk.estimulador))}</strong></div></div>`;
   }
   const dolor = document.getElementById('pkNotaDolor');
   if (dolor && !dolor.innerHTML) dolor.innerHTML = `🧠 ${citasEnTexto(PK.textos.dolor)}`;
@@ -2080,6 +2088,7 @@ function _pkCambio() {
 
 function selectPKEstado(valor) {
   state.parkinson.estado = state.parkinson.estado === valor ? '' : valor;
+  _sincronizarEstimulador('pkEstado');
   _pkCambio();
 }
 
@@ -2089,6 +2098,7 @@ function selectPKFila(fila, valor) {
   if (!FILAS_PK[fila]) return;
   state.parkinson[fila] = state.parkinson[fila] === valor ? '' : valor;
   if (state.parkinson.fluctuaciones !== 'SI') state.parkinson.fase = '';
+  if (fila === 'estimulador') _sincronizarEstimulador('pkFila');
   _pkCambio();
 }
 
@@ -2291,7 +2301,9 @@ function _parkinsonResultadosHTML(d) {
   const datos = datosPK(d);
   const lineas = lineasRecomendacionPK(_datosRecuadroPK(d));
   const est = lineaEstimulador(d.ec);
-  const estHTML = est ? `<div class="alert alert-danger" style="margin:8px 0 0;"><span class="alert-icon">⚡</span><div><strong>${citasEnTexto(est)}</strong></div></div>` : '';
+  const enImplantes = d.ec === 'SI' && estimuladorEnImplantes(state.implantes);
+  const estHTML = enImplantes ? `<div class="hm-nota">${_escHTML(IE.textos.verImplantes)}</div>`
+    : est ? `<div class="alert alert-danger" style="margin:8px 0 0;"><span class="alert-icon">⚡</span><div><strong>${citasEnTexto(est)}</strong></div></div>` : '';
   return `
     <div class="alert alert-info pk-fase5" style="margin-bottom:1rem;">
       <span class="alert-icon">🧠</span>
@@ -2299,6 +2311,100 @@ function _parkinsonResultadosHTML(d) {
         ${estHTML}
         ${_lineasCondicionHTML(lineas.filter(l => l !== est), _sospechaDe(d, 'enfermedad de Parkinson'))}
         ${enlaceCondicionEjercicioHTML('parkinson', { estado: d.es })}
+      </div>
+    </div>`;
+}
+
+// ─── IMPLANTES CON ELECTRODOS (Fase P, docs/implantes-electrodos.md) ───────
+// Tarjeta de la fase 1: No consta (nada marcado) · Lleva (un solo estado).
+// Con «Lleva», chips de qué lleva y, debajo, sus líneas rojas, nunca plegadas
+// (lib/implantes.js: `diatermia` siempre; las de cada chip una sola vez; sin
+// chips, las de «No sabe cuál»). Sin sistema de la fase 2. El chip del
+// estimulador cerebral profundo es el mismo dato que la fila del Parkinson.
+function _pintarIEUI() {
+  const ie = state.implantes;
+  document.body.classList.toggle('implantes', ieActivo(ie));
+  const nota = document.getElementById('ieNota');
+  if (nota && !nota.innerHTML) nota.textContent = `Sin marcar = no consta. ${IE.textos.nota}`;
+  document.querySelectorAll('#ieEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === ie.estado));
+  const wrap = document.getElementById('ieTiposWrap');
+  if (wrap) wrap.style.display = ieActivo(ie) ? '' : 'none';
+  const cont = document.getElementById('ieTipos');
+  if (cont) {
+    if (!cont.children.length) {
+      cont.innerHTML = IE.tipos.map(t =>
+        `<button type="button" class="option-btn" data-ie-tipo="${t.id}" aria-pressed="false" onclick="toggleIETipo('${t.id}')">${_escHTML(t.texto)}</button>`).join('');
+    }
+    cont.querySelectorAll('[data-ie-tipo]').forEach(b => {
+      const on = ie.tipos.includes(b.dataset.ieTipo);
+      b.classList.toggle('selected', on);
+      b.setAttribute('aria-pressed', on);
+    });
+  }
+  const lin = document.getElementById('ieLineas');
+  if (lin) lin.innerHTML = ieActivo(ie) ? _lineasRojasIEHTML(ie.tipos) : '';
+}
+
+function _lineasRojasIEHTML(tipos) {
+  return clavesLineas(tipos).map(k =>
+    `<div class="alert alert-danger" data-ie-linea="${k}"><span class="alert-icon">⚡</span><div><strong>${citasEnTexto(IE.lineas[k])}</strong></div></div>`).join('');
+}
+
+// El estimulador cerebral profundo, un solo dato (decisión 11): tras un cambio
+// en una de las dos tarjetas, la otra se pone a juego.
+function _sincronizarEstimulador(evento) {
+  const r = sincronizarEstimulador({ ie: state.implantes, pk: state.parkinson, evento });
+  state.implantes = r.ie;
+  state.parkinson.estimulador = r.pk.estimulador ?? '';
+  _pintarIEUI();
+}
+
+function _ieCambio() {
+  _sincronizarEstimulador('ie');
+  _pintarIEUI();
+  _pintarPKUI();
+  saveSession();
+}
+
+function selectIEEstado(valor) {
+  state.implantes.estado = state.implantes.estado === valor ? '' : valor;
+  if (!state.implantes.estado) state.implantes.tipos = [];
+  _ieCambio();
+}
+
+// Chips de qué lleva. «No sabe cuál» excluye a los demás y al revés.
+function toggleIETipo(k) {
+  state.implantes = alternarTipo(state.implantes, k);
+  _ieCambio();
+}
+
+// «Ir a la tarjeta →» desde el Parkinson.
+function irATarjetaIE() {
+  const card = document.getElementById('cardImplantes');
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.remove('flash-destacar');
+  void card.offsetWidth;
+  card.classList.add('flash-destacar');
+}
+
+function getIePayload() {
+  return iePayload(state.implantes);
+}
+
+// Recuadro de la fase 5 (docs/implantes-electrodos.md): nunca se pliega. Las
+// líneas rojas, la de los movimientos de columna con el medular, las de las
+// pautas que proponen la técnica y la del calor y el frío.
+function _implantesResultadosHTML(d) {
+  const hips = hipotesisActivas().map(id => ({ id, name: hipotesis(id)?.name || id }));
+  const rojas = lineasRecomendacionIE(d).map(l =>
+    `<div class="alert alert-danger" style="margin:8px 0 0;"><span class="alert-icon">⚡</span><div><strong>${citasEnTexto(l)}</strong></div></div>`).join('');
+  return `
+    <div class="alert alert-info ie-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">⚡</span>
+      <div><strong>Implantes con electrodos.</strong> ${_escHTML(lineaLleva(d))}
+        ${rojas}
+        ${_lineasCondicionHTML([...lineasPautaIE(hips), IE.textos.calorFrio], 'implantes con electrodos')}
       </div>
     </div>`;
 }
@@ -2881,7 +2987,8 @@ function getPendientesBreve() {
   pendientes.push(...pendientesMA(state.mastocitos));   // docs/mastocitaria.md: autoinyector sin registrar
   pendientes.push(...pendientesOP(state.osteoporosis));
   pendientes.push(...pendientesEM(state.embarazo));
-  pendientes.push(...pendientesPK(state.parkinson));   // docs/parkinson.md: estimulador y fase on/off sin registrar
+  pendientes.push(...pendientesPK(state.parkinson));
+  pendientes.push(...pendientesIE(state.implantes));   // docs/implantes-electrodos.md: qué lleva, sin registrar   // docs/parkinson.md: estimulador y fase on/off sin registrar
   pendientes.push(...pendientesAC(state.anticoagulado));   // docs/anticoagulado.md: qué toma, sin registrar   // docs/embarazo-posparto.md: semanas o fecha del parto sin registrar   // docs/osteoporosis.md: fracturas vertebrales o factores sin registrar
   return pendientes;
 }
@@ -4545,6 +4652,9 @@ function buildResults() {
   // ── Parkinson (docs/parkinson.md): estimulador, ejercicio y seguridad, nunca plegados
   const pk = getPkPayload();
   if (pk) container.innerHTML += _parkinsonResultadosHTML(pk);
+  // ── Implantes con electrodos (docs/implantes-electrodos.md): líneas rojas, nunca plegadas
+  const ie = getIePayload();
+  if (ie) container.innerHTML += _implantesResultadosHTML(ie);
   // ── Fármacos que toma (docs/farmacos-paciente.md, decisión 15): lista y
   // enlace a la guía, sin texto clínico; solo con alguna familia además de los
   // antitrombóticos, que ya tienen su recuadro
@@ -5430,6 +5540,7 @@ function buildPhysiQPayload() {
     ...(getEmPayload() ? { em: getEmPayload() } : {}),
     ...(getAcPayload() ? { ac: getAcPayload() } : {}),
     ...(getPkPayload() ? { pk: getPkPayload() } : {}),
+    ...(getIePayload() ? { ie: getIePayload() } : {}),
     ...(getFmPayload() ? { fm: getFmPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
@@ -6434,6 +6545,7 @@ function _hasAssessmentData() {
     || !!state.embarazo?.estado
     || !!state.anticoagulado?.estado
     || !!state.parkinson?.estado
+    || !!state.implantes?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -6546,6 +6658,10 @@ function _restoreSessionDOM() {
   state.osteoporosis = normalizarOsteoporosis(state.osteoporosis);          // sesiones anteriores a la osteoporosis
   state.embarazo = normalizarEmbarazo(state.embarazo);                      // sesiones anteriores al embarazo
   state.parkinson = normalizarParkinson(state.parkinson);                   // sesiones anteriores al Parkinson
+  state.implantes = normalizarImplantes(state.implantes);                   // sesiones anteriores a los implantes con electrodos
+  // Sesiones anteriores con el estimulador del Parkinson en «Sí»: el chip del
+  // estimulador cerebral profundo (el mismo dato, docs/implantes-electrodos.md, decisión 11).
+  state.implantes = sincronizarEstimulador({ ie: state.implantes, pk: state.parkinson, evento: 'restaurar' }).ie;
   state.farmacos = normalizarFarmacos(state.farmacos);                      // sesiones anteriores al paso 3 de la farmacología
   if (!state.derivacionResuelta) state.derivacionResuelta = {};
   normalizarSintomas(state);   // sesiones anteriores a la tarjeta Síntomas
@@ -6558,6 +6674,7 @@ function _restoreSessionDOM() {
   _pintarEMUI();
   _pintarACUI();
   _pintarPKUI();
+  _pintarIEUI();
   _pintarFarmacosUI();
   _pintarLado();
 
@@ -6687,6 +6804,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarEMUI();
   _pintarACUI();
   _pintarPKUI();
+  _pintarIEUI();
   _pintarFarmacosUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
@@ -6836,7 +6954,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, volverAHerramientas, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, selectPKEstado, selectPKFila, pkTensionHacer, pkTensionQuitar, updatePKTension, pkRelojEmpezar, pkRelojParar, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, volverAHerramientas, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, selectPKEstado, selectPKFila, selectIEEstado, toggleIETipo, irATarjetaIE, pkTensionHacer, pkTensionQuitar, updatePKTension, pkRelojEmpezar, pkRelojParar, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, irAResumenIrritabilidad, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,

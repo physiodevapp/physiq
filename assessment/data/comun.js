@@ -1848,3 +1848,68 @@ export const SIS_PARKINSON = {
     },
   },
 };
+
+// ============================================================
+// IMPLANTES CON ELECTRODOS (Fase P, docs/implantes-electrodos.md, «Texto cerrado
+// para revisión», aprobado por el usuario, noviembre 2026). Sin sistema de la
+// fase 2: una tarjeta de la fase 1 con chips de qué lleva, sus líneas rojas
+// (nunca plegadas), el recuadro de la fase 5 y el aviso de la fase 6. Las
+// frases, tal cual del texto cerrado; las que no tienen fuente, redacción propia.
+// ============================================================
+export const IMPLANTES = {
+  tipos: [
+    { id: 'mp', texto: 'Marcapasos (también sin cables o resincronizador)', corto: 'marcapasos' },
+    { id: 'dai', texto: 'Desfibrilador implantable (también subcutáneo)', corto: 'desfibrilador implantable' },
+    { id: 'em', texto: 'Estimulador medular', corto: 'estimulador medular' },
+    { id: 'ecp', texto: 'Estimulador cerebral profundo', corto: 'estimulador cerebral profundo' },
+    { id: 'ci', texto: 'Implante coclear', corto: 'implante coclear' },
+    { id: 'on', texto: 'Otro estimulador de nervios (sacro, vago, hipogloso, nervio periférico)', corto: 'otro estimulador de nervios' },
+    { id: 'co', texto: 'Estimulador del crecimiento óseo', corto: 'estimulador del crecimiento óseo' },
+    { id: 're', texto: 'Se lo quitaron, pueden quedar electrodos', corto: 'implante retirado, pueden quedar electrodos' },
+    { id: 'ns', texto: 'No sabe cuál', corto: 'no sabe cuál' },
+  ],
+  // Líneas rojas, en este orden (claves del texto cerrado).
+  lineas: {
+    diatermia: 'Nada de onda corta ni microondas, térmicas o no, en ninguna zona, aunque el aparato esté apagado o se haya retirado y queden electrodos, ni a menos de 3 m de un aparato de onda corta encendido, aunque no sea para él. Ultrasonido terapéutico, nunca encima o cerca del aparato o de sus cables, ni si no sabes por dónde van (FDA 2002; Health Canada 2003; Houghton 2010, 3-6 y 8-6).',
+    cardiaco: 'Electroterapia (TENS, interferenciales, electroestimulación), solo tras consultar a la unidad de marcapasos, que valora el riesgo y vigila la primera sesión. Lo más lejos posible del aparato, con los dos electrodos del mismo lado y nunca en la parte anterior del tórax. Si no hubo interferencia, puedes seguir en el mismo sitio y con los mismos parámetros; si cambian, otra prueba. Para enseguida si nota síntomas cardiacos (Stühlinger 2022; Suhail Arain 2023; Houghton 2010, 4-16).',
+    medular: 'Ultrasonido terapéutico, en ninguna zona. Electroterapia, nunca de forma que la corriente pase sobre cualquier parte del sistema. Sin masaje ni fricción sobre el generador ni los cables (Medtronic 2023; Ghaly 2016).',
+    // La línea del estimulador de la tarjeta del Parkinson, sin cambios (SIS_PARKINSON.parkinson.textos.estimulador).
+    cerebral: 'Nada de onda corta ni microondas (riesgo de lesión cerebral grave o muerte aunque esté apagado, o retirado si quedan electrodos), ni ultrasonido, TENS, interferenciales ni otra electroestimulación, ni presión manual cerca de los cables (FDA 2002; Health Canada 2003; Keus 2014, 5.13).',
+    coclear: 'Ni electroterapia ni ultrasonido en la zona del implante (cabeza y cuello). Antes de cualquier corriente, que se quite el procesador; fuera de la cabeza y el cuello puede dejárselo si estás con él todo el rato y sabe quitárselo si nota que funciona mal. Si funciona mal, para (MED-EL 2026; Houghton 2010, 4-15 y 4-17).',
+    nervio: 'Electroterapia, nunca donde pueda alterar el aparato: ni encima ni cerca del aparato o de sus cables (Houghton 2010, 4-1).',
+    laser: 'El láser, lejos del aparato y de los cables (Medtronic 2023).',
+    retirado: 'Si no consta que se retiraron todos los electrodos, trátalo como si los llevara (FDA 2002).',
+    nosabe: 'Hasta saber qué lleva (pide la tarjeta del implante), sigue todas estas reglas.',   // redacción propia (decisión 5)
+  },
+  // Qué líneas salen con cada chip (sin chips, como «No sabe cuál»).
+  lineasPorTipo: {
+    mp: ['cardiaco'], dai: ['cardiaco'], em: ['medular', 'laser'], ecp: ['cerebral', 'laser'],
+    ci: ['coclear'], on: ['nervio', 'laser'], co: ['nervio'], re: ['retirado'],
+    ns: ['cardiaco', 'nervio', 'laser', 'nosabe'],
+  },
+  textos: {
+    // Nota bajo el título: redacción propia; «pregúntalo siempre», de FDA 2002.
+    nota: 'Márcala si lleva un aparato implantado con cables o electrodos, aunque esté apagado, o si se lo quitaron y no sabe si quedan cables. Pregúntalo siempre antes de usar agentes físicos.',
+    // Fase 5
+    columna: 'Que evite la flexión, torsión, salto o estiramiento bruscos, excesivos o repetidos, y sobre todo inclinar mucho el tronco: pueden romper o desplazar los cables (Medtronic 2023; Ghaly 2016). Pregunta si el equipo que lo implantó le puso más límites.',
+    calorFrio: 'El calor superficial y el frío no tienen restricción por el implante (Houghton 2010, tabla 1).',
+    // Recuadro del Parkinson con el estimulador marcado también aquí (decisión 11)
+    verImplantes: 'Estimulador: ver Implantes con electrodos.',
+    // Guía de condiciones especiales: línea bajo la fila
+    holter: 'Un Holter implantable no se marca: la TENS no le hace daño, pero puede registrar una falsa arritmia; avisa a quien lo lee (Suarez-Fuster 2018; Stühlinger 2022).',
+    // Informe con IA (sin fuentes)
+    iaSiempre: 'No propongas onda corta ni microondas. No propongas ultrasonido terapéutico sobre el aparato o sus cables.',
+    iaCardiaco: 'Con marcapasos o desfibrilador, no propongas electroterapia salvo que conste que la ha autorizado su unidad de marcapasos.',
+    iaOtros: 'No propongas electroterapia sobre el aparato o sus cables.',
+    iaUltrasonido: 'No propongas ultrasonido terapéutico en ninguna zona.',
+  },
+  // Línea por pauta (decisión 12, redacción propia): hipótesis cuya pauta
+  // propone la técnica. Lista fija; una prueba unitaria falla si una pauta
+  // nueva la propone.
+  pautas: {
+    h1: 'admite onda corta, ultrasonido o electroestimulación: la onda corta, no; lo demás, solo dentro de las líneas de arriba',
+    ce5: 'propone TENS: solo dentro de las líneas de arriba',
+    ro2: 'propone electroestimulación neuromuscular: solo dentro de las líneas de arriba',
+    ro4: 'propone electroestimulación neuromuscular: solo dentro de las líneas de arriba',
+  },
+};

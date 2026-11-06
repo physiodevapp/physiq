@@ -779,6 +779,24 @@
     <div id="pkSospechaWrap" style="display:none"><div class="hm-nota" id="pkSospecha"></div></div>
   </div>
 
+  <!-- Condición especial (docs/implantes-electrodos.md): sin marcar = no consta;
+       un solo estado, chips de qué lleva y sus líneas rojas, nunca plegadas -->
+  <div class="card" id="cardImplantes">
+    <div class="card-title">Implantes con electrodos</div>
+    <div class="plan-note-hint" id="ieNota"></div>
+    <div id="fpPistas_implantes"></div>
+    <div class="option-group option-group-full" id="ieEstado">
+      <button type="button" class="option-btn" data-valor="lleva" onclick="selectIEEstado('lleva')">Lleva</button>
+    </div>
+    <div id="ieTiposWrap" style="display:none">
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Qué lleva? (marca todo lo que lleve)</div>
+      <div class="option-group hm-subtipos" id="ieTipos"></div>
+    </div>
+    <div class="ie-lineas" id="ieLineas"></div>
+    </div>
+  </div>
+
   <!-- Paso 3 de la farmacología (docs/farmacos-paciente.md): familias de la guía
        que toma, sin texto libre; los chips salen de data/farmacos.js -->
   <div class="card" id="cardFarmacos">
