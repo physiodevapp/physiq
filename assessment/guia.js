@@ -32,7 +32,7 @@ import { TEXTOS_FARMACOS } from './data/farmacos.js';
 import { CUESTIONARIOS } from './data/cuestionarios.js';
 import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
 import { alternarFicha, cerrarFicha } from './ficha.js';
-import { compararVersiones, versionDe, conDetalle, resumenCambios, totalCambios, etiquetaElemento, recortar, textoElemento, diferenciaTexto, paginasReimprimir } from './lib/cambios-hojas.js';
+import { compararVersiones, versionDe, conDetalle, resumenCambios, totalCambios, etiquetaElemento, recortar, textoElemento, diferenciaTexto, paginasReimprimir, hojasCambiadasDesde } from './lib/cambios-hojas.js';
 import { nombreRegion, dolorInespecifico } from './lib/region.js';
 import { textoVersion } from './lib/version.js';
 import { htmlFase1, CALC_SISTEMA, initCalculadoras } from './guia-calc.js';
@@ -649,6 +649,30 @@ function filtroHojasHTML() {
     `<button type="button" class="tej-filtro-btn${FILTRO_HOJAS === r ? ' activo' : ''}" data-filtro-hojas="${r}" aria-pressed="${FILTRO_HOJAS === r}">${esc(nombreRegion(r))}</button>`).join('')}</div>`;
 }
 const fechaLarga = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+// Fecha en que el usuario imprimió cada cuaderno (solo en memoria, como los demás filtros)
+const FECHA_COPIA = {};
+const hoyISO = () => { const f = new Date(); return `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}-${String(f.getDate()).padStart(2, '0')}`; };
+// Lo que hay que sustituir de un cuaderno: con la fecha de impresión, las hojas que cambiaron ese día
+// o después; sin ella, las que cambiaron hace poco (desde el último cambio de orden, si es reciente)
+function cambiosCuadernoHTML(clave, { base = '', cambiadas: porDefecto = [] } = {}) {
+  const d = CUADERNOS?.[clave];
+  if (!d) return '';
+  const fecha = FECHA_COPIA[clave] || '';
+  const sel = fecha ? hojasCambiadasDesde(d, HUELLAS, fecha) : null;
+  if (sel?.entero) return `<p class="guia-cambios-paginas guia-hoja-movida">Tu copia es de antes del ${esc(fechaLarga(d.ordenFecha))}, cuando cambió la lista u orden de hojas: reimprime el cuaderno entero.</p>`;
+  const cambiadas = sel ? sel.claves : porDefecto;
+  if (sel && !cambiadas.length) return `<p class="guia-cambios-paginas">✓ Ninguna hoja ha cambiado desde el ${esc(fechaLarga(fecha))}: tu copia está al día.</p>`;
+  const pags = cambiadas.length ? paginasReimprimir(d, cambiadas) : null;
+  const rangosHTML = t => t.split(', ').map(r => `<span class="guia-rango">${esc(r)}</span>`).join(', ');
+  const intro = sel
+    ? `Desde el ${esc(fechaLarga(fecha))} (incluido, por si cambió después de imprimir) cambiaron ${cambiadas.length === 1 ? 'esta hoja' : `estas ${cambiadas.length} hojas`}: sustitúyelas, y la portada`
+    : `${base ? `Si lo imprimiste después del ${esc(fechaLarga(base))}, basta` : 'Basta'} con sustituir las que cambiaron después de imprimirlo, y la portada`;
+  return `<p class="guia-cambios-nota">${intro}${pags ? ` (págs. ${pags.rango(pags.portada)})` : ''}:</p>
+        ${pags ? (pags.texto === `1-${d.paginas}` ? `<p class="guia-cambios-paginas">Han cambiado todas: imprime el cuaderno entero.</p>`
+          : `<p class="guia-cambios-paginas">Del PDF actual, a doble cara, imprime las páginas <b>${rangosHTML(pags.texto)}</b> <button type="button" class="guia-copiar" data-copiar="${esc(pags.texto)}">Copiar</button></p>
+            <p class="guia-cambios-nota">Son números del PDF actual: en tu copia impresa, busca cada hoja por su nombre.</p>`) : ''}
+        <ul>${cambiadas.map(k => `<li><a href="${urlPDF(k, HUELLAS[k].huella)}" target="_blank" rel="noopener">${esc(nombreHojaImpresa(k, nombreRegion))} ↗</a> · ${esc(fechaCortaDe(HUELLAS[k].fecha))}${pags?.porHoja[k] ? ` · págs. ${pags.rango(pags.porHoja[k])}` : ''}</li>`).join('')}</ul>`;
+}
 function htmlHojas() {
   if (!HUELLAS) return '<p class="guia-vacio">No se ha podido cargar la lista de hojas. Prueba a recargar la página.</p>';
   const hoy = Date.now();
@@ -677,18 +701,14 @@ function htmlHojas() {
     const cambiadas = Object.keys(d.hojas || {}).filter(k => HUELLAS[k] && recienteFecha(HUELLAS[k].fecha) && HUELLAS[k].fecha > base)
       .sort((a, b) => HUELLAS[b].fecha.localeCompare(HUELLAS[a].fecha));
     const idCamb = `cambiadas-${l.clave}`;
-    // Las páginas del PDF actual que hay que imprimir para sustituirlas (con la portada)
-    const pags = cambiadas.length ? paginasReimprimir(d, cambiadas) : null;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(l.titulo)}</b>
       <span>${d.paginas} páginas (${d.paginas / 2} hojas de papel)</span> · <span class="guia-hoja-v">v. ${esc(d.huella)}</span> · <span>cambió el ${esc(fechaLarga(d.fecha))}</span>${d.ordenFecha ? ` · <span>orden de hojas desde el ${esc(fechaLarga(d.ordenFecha))}</span>` : ''}${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
       ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida">Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero.</span>` : ''}
       ${cambiadas.length ? botonVer(idCamb, `${base ? 'Cambiaron después' : 'Hojas que cambiaron'} (${cambiadas.length})`) : ''}</div>
       <a href="${urlPDF(l.clave, d.archivo || d.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(l.titulo)} en PDF">PDF ↗</a>
-      ${cambiadas.length ? `<div id="${idCamb}" class="guia-cambios" hidden><p class="guia-cambios-nota">${base ? `Si lo imprimiste después del ${esc(fechaLarga(base))}, basta` : 'Basta'} con sustituir las que cambiaron después de imprimirlo, y la portada${pags ? ` (págs. ${pags.rango(pags.portada)})` : ''}:</p>
-        ${pags ? (pags.texto === `1-${d.paginas}` ? `<p class="guia-cambios-paginas">Han cambiado todas: imprime el cuaderno entero.</p>`
-          : `<p class="guia-cambios-paginas">Del PDF actual, a doble cara, imprime las páginas <b>${esc(pags.texto)}</b> <button type="button" class="guia-copiar" data-copiar="${esc(pags.texto)}">Copiar</button></p>
-            <p class="guia-cambios-nota">Son números del PDF actual: en tu copia impresa, busca cada hoja por su nombre.</p>`) : ''}
-        <ul>${cambiadas.map(k => `<li><a href="${urlPDF(k, HUELLAS[k].huella)}" target="_blank" rel="noopener">${esc(nombreHojaImpresa(k, nombreRegion))} ↗</a> · ${esc(fechaCortaDe(HUELLAS[k].fecha))}${pags?.porHoja[k] ? ` · págs. ${pags.rango(pags.porHoja[k])}` : ''}</li>`).join('')}</ul></div>` : ''}</li>`;
+      ${cambiadas.length ? `<div id="${idCamb}" class="guia-cambios" hidden>
+        <label class="guia-copia">¿Cuándo lo imprimiste? <input type="date" data-fecha-copia="${l.clave}" value="${esc(FECHA_COPIA[l.clave] || '')}" max="${hoyISO()}"></label>
+        <div data-copia-res="${l.clave}" data-base="${base}" data-cambiadas="${cambiadas.join(',')}">${cambiosCuadernoHTML(l.clave, { base, cambiadas })}</div></div>` : ''}</li>`;
   }) : [];
   return `<p class="guia-nota">Cada hoja impresa lleva su versión bajo el QR («v. …»). Si no coincide con la de esta lista, la hoja ha cambiado: descarga el PDF y reimprímela. «Reciente» = cambió en los últimos ${DIAS_RECIENTE} días (${recientes} de ${Object.keys(HUELLAS).length}).</p>
     ${filtroHojasHTML()}
@@ -729,6 +749,16 @@ document.addEventListener('click', e => {
   const fallo = () => avisoGuia(textoCima(TEXTOS_FARMACOS.cimaSinCopiar, n));
   try { navigator.clipboard.writeText(n).then(() => avisoGuia(textoCima(TEXTOS_FARMACOS.cimaCopiado, n)), fallo); } catch { fallo(); }
 }, true);
+
+// «¿Cuándo lo imprimiste?»: repinta solo la lista de ese cuaderno (el desplegable sigue abierto)
+document.addEventListener('change', e => {
+  const inp = e.target instanceof Element ? e.target.closest('input[data-fecha-copia]') : null;
+  if (!inp) return;
+  const k = inp.dataset.fechaCopia;
+  if (inp.value) FECHA_COPIA[k] = inp.value; else delete FECHA_COPIA[k];
+  const res = document.querySelector(`[data-copia-res="${k}"]`);
+  if (res) res.innerHTML = cambiosCuadernoHTML(k, { base: res.dataset.base, cambiadas: res.dataset.cambiadas ? res.dataset.cambiadas.split(',') : [] });
+});
 
 // «Copiar» de las páginas a reimprimir de un cuaderno (Hojas para imprimir)
 document.addEventListener('click', e => {

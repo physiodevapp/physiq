@@ -122,3 +122,15 @@ export function paginasReimprimir(cuaderno, claves) {
   const rango = ([a, b]) => (a === b ? `${a}` : `${a}-${b}`);
   return { portada, porHoja, rangos, texto: rangos.map(rango).join(', '), rango };
 }
+
+// Qué hojas de un cuaderno hay que sustituir en una copia impresa el día `fecha` ('AAAA-MM-DD'):
+// las que cambiaron ese día o después (ese mismo día cuenta, por si cambió después de imprimir).
+// Si la copia es de antes del último cambio de lista u orden de hojas (`ordenFecha`), entera.
+// `huellas`: { clave: { huella, fecha } } (docs/esquemas/huellas.json).
+export function hojasCambiadasDesde(cuaderno, huellas, fecha) {
+  if (!cuaderno || !fecha) return null;
+  if (cuaderno.ordenFecha && fecha < cuaderno.ordenFecha) return { entero: true, claves: [] };
+  const claves = Object.keys(cuaderno.hojas || {}).filter(k => huellas?.[k] && huellas[k].fecha >= fecha)
+    .sort((a, b) => huellas[b].fecha.localeCompare(huellas[a].fecha));
+  return { entero: false, claves };
+}
