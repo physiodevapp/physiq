@@ -256,7 +256,8 @@
   .guia-cambio-tipo.quitado { color: var(--red); background: color-mix(in srgb, var(--red) 12%, transparent); }
   .guia-cambio-antes, .guia-cambio-mas { color: var(--text3); }
   .guia-cambios-nota { margin: 6px 0 0; font-size: 0.8rem; color: var(--text2); }
-  .guia-cambios-paginas { margin: 6px 0 0; font-size: 0.8rem; color: var(--text2); }
+  .guia-cambios-paginas { margin: 8px 0 0; font-size: 0.8rem; color: var(--text2); display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .guia-cambios-paginas + .guia-cambios-nota { margin-top: 8px; }
   .guia-cambios-paginas b { color: var(--text); }
   .guia-rango { white-space: nowrap; }
   .guia-cambios { min-width: 0; overflow-wrap: anywhere; }
@@ -264,7 +265,7 @@
   .guia-copia label { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 0.8rem; color: var(--text2); }
   .guia-copia input[type="text"] { width: 10ch; font-family: 'DM Mono', monospace; }
   .guia-copia input { font: inherit; font-size: 0.85rem; color: var(--text); background: var(--surface2, transparent); border: 1px solid var(--border2); border-radius: 6px; padding: 4px 8px; min-height: 36px; }
-  .guia-copiar { font: inherit; font-size: 0.8rem; color: var(--accent); background: none; border: 1px solid var(--border2); border-radius: 6px; padding: 0 10px; min-height: 32px; margin-left: 4px; cursor: pointer; }
+  .guia-copiar { font: inherit; font-size: 0.8rem; color: var(--accent); background: none; border: 1px solid var(--border2); border-radius: 6px; padding: 0 12px; min-height: 32px; display: inline-flex; align-items: center; cursor: pointer; }
   /* La marca en el elemento que cambió desde el papel: pequeña; tocarla dice qué decía la hoja */
   .guia-cambio { position: relative; font: inherit; font-size: 0.62rem; font-weight: 600; line-height: 1; border-radius: 8px; padding: 3px 6px; margin-right: 4px; vertical-align: 2px; cursor: pointer; color: var(--orange); background: color-mix(in srgb, var(--orange) 12%, transparent); border: 1px solid color-mix(in srgb, var(--orange) 55%, transparent); }
   .guia-cambio.nuevo, .guia-cambio.numero { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }

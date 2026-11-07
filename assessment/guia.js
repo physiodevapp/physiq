@@ -696,7 +696,7 @@ function cambiosCuadernoHTML(clave, { base = '', cambiadas: porDefecto = [] } = 
     ].join('');
     const rangosHTML2 = t => t.split(', ').map(r => `<span class="guia-rango">${esc(r)}</span>`).join(', ');
     return `<p class="guia-cambios-nota">En tu copia (v. ${esc(v)}): cada hoja va en su propio papel, así que basta con esto y con cambiar la portada (págs. ${esc(`1-${portada}`)}), que lleva el índice nuevo.</p>
-        <p class="guia-cambios-paginas">Del PDF actual, a doble cara, imprime las páginas <b>${rangosHTML2(rangosV)}</b> <button type="button" class="guia-copiar" data-copiar="${esc(rangosV)}">Copiar</button></p>
+        <p class="guia-cambios-paginas"><span>Del PDF actual, a doble cara, imprime las páginas <b>${rangosHTML2(rangosV)}</b></span> <button type="button" class="guia-copiar" data-copiar="${esc(rangosV)}">Copiar</button></p>
         <p class="guia-cambios-nota">Son números del PDF actual: en tu copia impresa, busca cada hoja por su nombre.</p>${bloques}`;
   } else if (fecha) {
     sel = hojasCambiadasDesde(d, HUELLAS, fecha);
@@ -714,7 +714,7 @@ function cambiosCuadernoHTML(clave, { base = '', cambiadas: porDefecto = [] } = 
   const rangosHTML = t => t.split(', ').map(r => `<span class="guia-rango">${esc(r)}</span>`).join(', ');
   return `<p class="guia-cambios-nota">${intro}${pags ? ` (págs. ${pags.rango(pags.portada)})` : ''}:</p>
         ${pags ? (pags.texto === `1-${d.paginas}` ? `<p class="guia-cambios-paginas">Han cambiado todas: imprime el cuaderno entero.</p>`
-          : `<p class="guia-cambios-paginas">Del PDF actual, a doble cara, imprime las páginas <b>${rangosHTML(pags.texto)}</b> <button type="button" class="guia-copiar" data-copiar="${esc(pags.texto)}">Copiar</button></p>
+          : `<p class="guia-cambios-paginas"><span>Del PDF actual, a doble cara, imprime las páginas <b>${rangosHTML(pags.texto)}</b></span> <button type="button" class="guia-copiar" data-copiar="${esc(pags.texto)}">Copiar</button></p>
             <p class="guia-cambios-nota">Son números del PDF actual: en tu copia impresa, busca cada hoja por su nombre.</p>`) : ''}
         <ul>${cambiadas.map(k => `<li><a href="${urlPDF(k, HUELLAS[k].huella)}" target="_blank" rel="noopener">${esc(nombreHojaImpresa(k, nombreRegion))} ↗</a> · ${esc(fechaCortaDe(HUELLAS[k].fecha))}${pags?.porHoja[k] ? ` · págs. ${pags.rango(pags.porHoja[k])}` : ''}</li>`).join('')}</ul>`;
 }
