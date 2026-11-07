@@ -147,6 +147,16 @@ export const FAMILIAS_PACIENTE = {
       'Inhibidores de la aromatasa: en un ensayo con 121 mujeres inactivas con dolor articular, fuerza supervisada 2 días por semana (6 ejercicios, 3 series de 8–12 repeticiones, subiendo el peso tras dos sesiones haciendo 12 repeticiones en cada serie) y 150 minutos semanales de aeróbico, del 50 % al 60–80 % de la frecuencia cardíaca máxima en el primer mes, durante 12 meses, bajaron el peor dolor 1,6 puntos (29 %), frente a una subida del 3 % con los cuidados habituales, sin efectos adversos (Irwin 2015). El beneficio más claro llegó a los 12 meses (Irwin 2015).',
     ],
   },
+  antiparkinsonianos: {
+    corto: 'Antiparkinsonianos',
+    rotulo: 'Toma antiparkinsonianos o agonistas dopaminérgicos',
+    plan: [
+      'En la sesión: cambios lentos de tumbado a de pie, con una pausa sentado; si se marea y no puede sentarse o tumbarse enseguida, que cruce las piernas y apriete piernas, glúteos y abdomen, o que se ponga de puntillas (Fanciulli 2026; Fanciulli 2025).',
+      'Caídas: las que ocurren sin tropiezo ni resbalón pueden ser por hipotensión ortostática (Fanciulli 2026).',
+      'Comidas y levodopa: una comida rica en proteína reduce su absorción, y una comida grasa la retrasa unas 2 horas (Gandhi y Saadabadi 2023).',
+      'Si se duerme en la sesión o en situaciones monótonas, que lo sepa su médico; mientras dure, no debe conducir (Fanciulli 2025).',
+    ],
+  },
 };
 
 // Textos de la tarjeta, la guía y la fase 5 (redacción propia, decisión 18)

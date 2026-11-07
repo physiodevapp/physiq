@@ -1138,6 +1138,89 @@ export const FAMILIAS_FARMACO = [
     },
     fuentes: ['Gregson 2025', 'Kanis 2019', 'Shane 2014', 'Black 2020', 'Adler 2016', 'Tsourdi 2021', 'Anastasilakis 2021', 'Ruggiero 2022', 'Gehrke 2023', 'Zeng 2024', 'Wang 2025', 'Jin 2021', 'Alaranji y Reilly 2025', 'Anastasopoulou y Goyal 2026', 'Sharma 2026', 'Hildebrand 2024', 'Greear 2024', 'Nischal y Gupta 2023', 'Fong y Patel 2026', 'Hyder 2021', 'Tenti 2020', 'Shin 2022', 'Hadji 2025', 'Irwin 2015', 'Lu 2020', 'Fujiwara 2025', 'Tsuchiya 2022', 'Hwang 2023', 'Kim y Chen 2024', 'Hershman 2022', 'Spångeus 2024', 'Jasti 2026', 'Lagina y Tripathy 2026', 'Thomas 2017', 'Vehmanen 2021', 'Borsati 2025', 'Desai 2013', 'García-Sánchez 2022', 'Pedersini 2022', 'Kim y Jang 2024'],
   },
+  // Antiparkinsonianos y agonistas dopaminérgicos (2026-11; borrador y
+  // decisiones en docs/farmacos-antiparkinsonianos.md): ocho capítulos de
+  // StatPearls (PDF del usuario) y siete fuentes de PMC leídos enteros, más el
+  // artículo de Pötter-Nerger 2024 ya leído para la tarjeta de Parkinson. El
+  // biperideno solo lo nombra Ko 2024, entre los anticolinérgicos que mide: lo
+  // que dice la familia de los anticolinérgicos es de la clase (usuario, 2026-11).
+  {
+    id: 'antiparkinsonianos',
+    nombre: 'Antiparkinsonianos y agonistas dopaminérgicos',
+    ejemplos: 'Levodopa (con carbidopa o benserazida); agonistas dopaminérgicos (pramipexol, ropinirol, rotigotina, apomorfina); inhibidores de la MAO-B (rasagilina, safinamida, selegilina); inhibidores de la COMT (entacapona, opicapona); amantadina; anticolinérgicos (trihexifenidilo, biperideno)',
+    cima: ['levodopa', 'carbidopa', 'benserazida', 'pramipexol', 'ropinirol', 'rotigotina', 'apomorfina', 'rasagilina', 'safinamida', 'selegilina', 'entacapona', 'opicapona', 'amantadina', 'trihexifenidilo', 'biperideno'],
+    apartados: {
+      dolor: {
+        texto: [
+          'Grupos: la levodopa, que se da con carbidopa o benserazida para reducir sus náuseas, vómitos y diarrea (Gandhi y Saadabadi 2023; Leyden y Tadi 2023); los agonistas dopaminérgicos; los inhibidores de la MAO-B; los inhibidores de la COMT, que se añaden cuando el efecto de cada toma se acaba antes de la siguiente (Muranova y Shanina 2023), y la amantadina. Los agonistas (pramipexol, ropinirol, rotigotina) también se recetan en el síndrome de piernas inquietas, sin Parkinson (Mansur 2023).',
+          'Dolor que cambia con las tomas: se considera ligado al Parkinson el dolor que aparece con los síntomas motores, mejora con la medicación o empeora con las fluctuaciones, sobre todo en la fase off; a menudo va con distonía, y puede ser también un dolor abdominal, «por dentro» (Fanciulli 2025). En el off de primera hora de la mañana puede haber calambres distónicos dolorosos (Fanciulli 2025).',
+          'El dolor musculoesquelético es el más frecuente en el Parkinson (40–80 %); el de la artrosis o de la columna está menos ligado a la enfermedad, aunque a veces también mejora con la medicación (Fanciulli 2025). Muchos pacientes no relacionan su dolor con el Parkinson y no se lo cuentan a su neurólogo (Fanciulli 2025): si el dolor cambia según la hora de la toma, que lo sepa, porque el tratamiento de ese dolor empieza por revisar la medicación (Fanciulli 2025).',
+          'Dolor que empeora al ponerse de pie o después de la toma: dolor de cuello y hombros «en percha» o lumbar puede ser una hipotensión ortostática, no un problema mecánico (Fanciulli 2026).',
+          'Levodopa y nervio periférico: con la levodopa puede bajar la vitamina B12 y es más probable una neuropatía periférica sensitivomotora; su capítulo pide vigilarla antes y durante el tratamiento (Gandhi y Saadabadi 2023). La infusión intestinal de levodopa se ha asociado a daño de las fibras nerviosas finas, con dolor y molestias sensitivas (Leyden y Tadi 2023).',
+          'Las fuentes leídas no hablan de la curación de los tejidos con estos fármacos.',
+        ],
+        detalle: [
+          'Algunos antiparkinsonianos (pramipexol, rotigotina, safinamida) han mostrado efecto sobre el dolor, quizá porque mejoran la estimulación dopaminérgica o reducen las fluctuaciones (Fanciulli 2025).',
+          'Fractura de cadera: el capítulo de la levodopa señala más riesgo en mayores, por una leve subida de la homocisteína (Gandhi y Saadabadi 2023).',
+        ],
+      },
+      visceral: {
+        texto: [
+          'Lo más frecuente: náuseas, mareo, dolor de cabeza y somnolencia con la levodopa (Gandhi y Saadabadi 2023); náuseas, vómitos, hipotensión ortostática, dolor de cabeza, mareo y arritmias con los agonistas, sobre todo según la dosis (Choi y Horner 2023).',
+          'Hinchazón de piernas: los agonistas dan más edema de tobillo que la levodopa (Fanciulli 2026), y el edema es uno de los motivos para retirar un agonista o la amantadina (Koschel 2022). La amantadina da edema periférico y livedo reticularis, una piel moteada y violácea en red que desaparece al dejarla (Chang y Ramphul 2023). Que lo tome no descarta una trombosis: las preguntas de la fase 2 siguen valiendo.',
+          'Movimientos involuntarios (discinesias): la levodopa da complicaciones motoras en alrededor del 50 % de quienes la toman 5–10 años (Gandhi y Saadabadi 2023); la entacapona las adelanta o empeora (Muranova y Shanina 2023), y los inhibidores de la MAO-B pueden hacerlas aparecer o empeorarlas junto con la levodopa (Patel y Saadabadi 2025).',
+          'Alucinaciones, confusión, delirios y agitación: de lo más frecuente en mayores con la levodopa (Gandhi y Saadabadi 2023) y con el uso prolongado de los agonistas (Choi y Horner 2023); también con la amantadina (Chang y Ramphul 2023) y los inhibidores de la MAO-B (Patel y Saadabadi 2025).',
+          'Entacapona: la orina se vuelve rojiza o naranja, sin importancia; la diarrea llega al 10 %, y si persiste puede ser una colitis (Muranova y Shanina 2023).',
+          'Anticolinérgicos (trihexifenidilo, biperideno) y amantadina: boca seca, estreñimiento y retención de orina (Chang y Ramphul 2023; Ghossein 2023; Ko 2024). Los anticolinérgicos, además, visión borrosa, taquicardia, menos sudor y más temperatura y, en mayores, peor memoria y confusión; empeoran una demencia (Ghossein 2023). Los antiparkinsonianos, sobre todo los anticolinérgicos, empeoran el estreñimiento (Fanciulli 2025).',
+        ],
+        detalle: [
+          'Los agonistas derivados del cornezuelo (bromocriptina, cabergolina), hoy poco usados en el Parkinson, pueden dar fibrosis pulmonar, pleural, peritoneal o de las válvulas del corazón (Choi y Horner 2023).',
+          'Apomorfina en bomba: nódulos donde se pincha, somnolencia y náuseas (Koschel 2022).',
+          'Piel: el Parkinson se asocia con el melanoma, y los capítulos de la levodopa y la amantadina piden revisar la piel periódicamente (Gandhi y Saadabadi 2023; Chang y Ramphul 2023).',
+        ],
+      },
+      ejercicio: {
+        texto: [
+          'Hipotensión ortostática: la levodopa y los agonistas bajan la tensión según la dosis, y puede empeorar al empezar o subir un fármaco dopaminérgico (Fanciulli 2026); con los agonistas, sobre todo mientras su médico va fijando la dosis, y el paciente puede no notar los síntomas (Choi y Horner 2023). El ropinirol la da más que el pramipexol, y la rotigotina menos (Fanciulli 2026). La amantadina da hipotensión ortostática, síncope, mareo y caídas (Chang y Ramphul 2023).',
+          'En la sesión: cambios lentos de tumbado a de pie, con una pausa sentado; si se marea y no puede sentarse o tumbarse enseguida, que cruce las piernas y apriete piernas, glúteos y abdomen, o que se ponga de puntillas (Fanciulli 2026; Fanciulli 2025). El ejercicio sentado, tumbado o en el agua puede mejorar la tolerancia (Fanciulli 2026). La tensión puede bajar después de comer y en los músculos que trabajan durante el ejercicio (Fanciulli 2026).',
+          'Caídas: las que ocurren sin tropiezo ni resbalón pueden ser por hipotensión ortostática (Fanciulli 2026). Con los agonistas y con los inhibidores de la MAO-B se pide vigilar las caídas en mayores (Choi y Horner 2023; Patel y Saadabadi 2025).',
+          'Comidas y levodopa: una comida rica en proteína reduce su absorción, y una comida grasa la retrasa unas 2 horas (Gandhi y Saadabadi 2023). Si la sesión no rinde igual según el día, pregunta a qué hora tomó la medicación. Las fuentes leídas para esta familia no dan un horario para el ejercicio; lo que dice la guía de fisioterapia sobre la fase on está en la tarjeta de Parkinson.',
+        ],
+        detalle: [
+          'La levodopa da menos hipotensión ortostática y menos edema de tobillo que los agonistas (Fanciulli 2026).',
+          'Para medir la hipotensión ortostática: bajada de la sistólica de 20 mmHg o más, o de la diastólica de 10 o más, en los 3 primeros minutos de pie (Fanciulli 2025), la misma medida de la tarjeta de Parkinson.',
+          'El capítulo de la carbidopa pide que el fisioterapeuta conozca toda la medicación del paciente, para adaptar la sesión a sus cambios (Leyden y Tadi 2023).',
+        ],
+      },
+      sueno: {
+        texto: [
+          'Somnolencia y ataques de sueño: los fármacos dopaminérgicos, sobre todo los agonistas, dan somnolencia de día y episodios de sueño repentino, sin aviso (Fanciulli 2025; Choi y Horner 2023); también la levodopa y la entacapona (Gandhi y Saadabadi 2023; Muranova y Shanina 2023). Con levodopa sola el riesgo de ataques de sueño es menor que con agonistas (Di Laudo 2023).',
+          'Uno de cada cuatro no nota la somnolencia antes de dormirse, así que lo que cuenta un familiar es esencial (Fanciulli 2025). Si se duerme en la sesión o en situaciones monótonas, que lo sepa su médico; mientras dure, no debe conducir (Fanciulli 2025).',
+          'Cansancio no es somnolencia: quien está fatigado se agota antes, pero no se duerme sin querer al descansar (Fanciulli 2025).',
+          'Noche: las dosis altas fragmentan el sueño, y la amantadina aumenta los despertares (Fanciulli 2025). Cuando se pasa el efecto de la toma por la noche vuelven el temblor, la rigidez y la dificultad para darse la vuelta o levantarse de la cama (Fanciulli 2025).',
+          'El ejercicio de día, sobre todo por la mañana, puede reducir la somnolencia diurna, y evitar el ejercicio intenso 3–4 horas antes de dormir puede ayudar (Di Laudo 2023).',
+        ],
+        detalle: [
+          'Fuentes que no coinciden en los inhibidores de la MAO-B: su capítulo de StatPearls advierte de somnolencia y de dormirse de golpe conduciendo, comiendo o hablando, incluso meses o más de un año después de empezar (Patel y Saadabadi 2025); una revisión los cuenta entre los que reducen la somnolencia diurna (Di Laudo 2023).',
+          'La somnolencia diurna excesiva aparece en alrededor del 35 % de las personas con Parkinson (Di Laudo 2023).',
+        ],
+      },
+      consultar: {
+        texto: [
+          'Nunca aconsejes dejarlos ni bajarlos. Dejarlos de golpe, o no poder tomarlos (vómitos, diarrea, no poder tragar, una cirugía), puede dar una crisis grave con fiebre, rigidez, confusión y dificultad para tragar (Gandhi y Saadabadi 2023; Pötter-Nerger 2024; Koschel 2022), también con la amantadina (Chang y Ramphul 2023). Es la pregunta de la tarjeta de Parkinson; con fiebre y rigidez, a urgencias.',
+          'Síndrome de retirada de los agonistas: ansiedad, ataques de pánico, ánimo bajo, sudor, mareo al levantarse y dolor generalizado al bajarlos o dejarlos; le pasa al 15–24 % de quienes los reducen y solo mejora volviendo al agonista (Pötter-Nerger 2024, guía). Si aparecen tras un cambio de dosis, que lo sepa su neurólogo.',
+          'Conductas impulsivas: juego, compras, sexualidad, atracones, actividades repetitivas sin fin o tomar más medicación de la pautada (Scanferla y Djamshidian 2026), sobre todo con los agonistas (Choi y Horner 2023), y más con el pramipexol y por boca que en parche; menos con la levodopa sola (Scanferla y Djamshidian 2026). También se han descrito con los inhibidores de la MAO-B (Patel y Saadabadi 2025). El paciente suele no contarlo, por vergüenza o porque no lo ve como un problema, así que pregunta también a un familiar (Scanferla y Djamshidian 2026). Si lo notas o te lo cuentan, que lo sepa su neurólogo.',
+          'Coméntalo también si el mareo o las caídas al levantarse coinciden con empezar o subir un fármaco (Fanciulli 2026), si aparecen alucinaciones o confusión (Gandhi y Saadabadi 2023) o si la diarrea no se pasa con la entacapona (Muranova y Shanina 2023).',
+          'Piernas inquietas tratadas con agonistas o levodopa: si los síntomas empiezan antes en el día, son más intensos o se extienden a los brazos, puede ser un empeoramiento causado por el propio tratamiento (aumentación), que aparece en meses o años y debe valorar su médico (Mansur 2023; Mogavero 2026).',
+        ],
+        detalle: [
+          'Aumentación: por debajo del 10 % en los estudios cortos, en torno al 30 % a los 2–3 años y hasta el 42–68 % en algunas series muy largas; la levodopa parece la de más riesgo, y por ella los agonistas ya no son el primer tratamiento de las piernas inquietas (Mogavero 2026).',
+          'Tras dejar la levodopa de golpe, la función motora puede seguir empeorando durante 7–15 días (Koschel 2022).',
+        ],
+      },
+    },
+    fuentes: ['Gandhi y Saadabadi 2023', 'Leyden y Tadi 2023', 'Choi y Horner 2023', 'Muranova y Shanina 2023', 'Chang y Ramphul 2023', 'Patel y Saadabadi 2025', 'Mansur 2023', 'Ghossein 2023', 'Fanciulli 2025', 'Fanciulli 2026', 'Koschel 2022', 'Pötter-Nerger 2024', 'Pötter-Nerger 2024 (guía)', 'Scanferla y Djamshidian 2026', 'Di Laudo 2023', 'Mogavero 2026', 'Ko 2024'],
+  },
 ];
 
 export const TEXTOS_FARMACOS = {

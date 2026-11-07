@@ -2311,6 +2311,7 @@ function _parkinsonResultadosHTML(d) {
         ${estHTML}
         ${_lineasCondicionHTML(lineas.filter(l => l !== est), _sospechaDe(d, 'enfermedad de Parkinson'))}
         ${enlaceCondicionEjercicioHTML('parkinson', { estado: d.es })}
+        ${d.es === 'diagnosticado' ? `<div class="hm-nota"><button type="button" class="sint-recordatorio-ir" onclick="abrirFarmacos({ familia: 'antiparkinsonianos' })">Fármacos del Parkinson →</button></div>` : ''}
       </div>
     </div>`;
 }

@@ -1,8 +1,8 @@
 {
   "cuaderno-cadera": {
-    "huella": "fa041756",
-    "archivo": "fc382215",
-    "fecha": "2026-11-06",
+    "huella": "e29603e9",
+    "archivo": "ea9d54d3",
+    "fecha": "2026-11-07",
     "paginas": 28,
     "hojas": {
       "cribado-cadera": "4d0aa1b6",
@@ -13,7 +13,7 @@
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
-      "farmacos": "d6988c13",
+      "farmacos": "83bcafb2",
       "tejidos-blandos": "7279a518",
       "tejidos-hueso": "de168e4c"
     },
@@ -33,9 +33,9 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-cervical": {
-    "huella": "8d18a847",
-    "archivo": "dc21d22d",
-    "fecha": "2026-11-06",
+    "huella": "c5e60b2c",
+    "archivo": "737c8b40",
+    "fecha": "2026-11-07",
     "paginas": 28,
     "hojas": {
       "cribado-cervical": "b1da49ad",
@@ -46,7 +46,7 @@
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
-      "farmacos": "d6988c13",
+      "farmacos": "83bcafb2",
       "tejidos-blandos": "7279a518",
       "tejidos-hueso": "de168e4c"
     },
@@ -66,9 +66,9 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-codo": {
-    "huella": "2cecf5af",
-    "archivo": "c42d141a",
-    "fecha": "2026-11-06",
+    "huella": "3b721494",
+    "archivo": "83ce9c46",
+    "fecha": "2026-11-07",
     "paginas": 28,
     "hojas": {
       "cribado-codo": "d02e73b1",
@@ -79,7 +79,7 @@
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
-      "farmacos": "d6988c13",
+      "farmacos": "83bcafb2",
       "tejidos-blandos": "7279a518",
       "tejidos-hueso": "de168e4c"
     },
@@ -99,9 +99,9 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-completo": {
-    "huella": "65096ef3",
-    "archivo": "25574fb2",
-    "fecha": "2026-11-06",
+    "huella": "59dd726c",
+    "archivo": "8bfdb5cd",
+    "fecha": "2026-11-07",
     "paginas": 76,
     "hojas": {
       "fase1": "18d660ee",
@@ -109,7 +109,7 @@
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
-      "farmacos": "d6988c13",
+      "farmacos": "83bcafb2",
       "tejidos-blandos": "7279a518",
       "tejidos-hueso": "de168e4c",
       "cribado-cervical": "b1da49ad",
@@ -168,9 +168,9 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-hombro": {
-    "huella": "e86cbf22",
-    "archivo": "81f83b5b",
-    "fecha": "2026-11-06",
+    "huella": "c92f8a1d",
+    "archivo": "d0c2b0f9",
+    "fecha": "2026-11-07",
     "paginas": 28,
     "hojas": {
       "cribado-hombro": "9746d799",
@@ -181,7 +181,7 @@
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
-      "farmacos": "d6988c13",
+      "farmacos": "83bcafb2",
       "tejidos-blandos": "7279a518",
       "tejidos-hueso": "de168e4c"
     },
@@ -201,9 +201,9 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-lumbar": {
-    "huella": "73c791e6",
-    "archivo": "413f1fad",
-    "fecha": "2026-11-06",
+    "huella": "8b3aafd9",
+    "archivo": "d42396a4",
+    "fecha": "2026-11-07",
     "paginas": 28,
     "hojas": {
       "cribado-lumbar": "061d53f7",
@@ -214,7 +214,7 @@
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
-      "farmacos": "d6988c13",
+      "farmacos": "83bcafb2",
       "tejidos-blandos": "7279a518",
       "tejidos-hueso": "de168e4c"
     },
@@ -234,9 +234,9 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-rodilla": {
-    "huella": "e8e4f346",
-    "archivo": "f3728b8e",
-    "fecha": "2026-11-06",
+    "huella": "6516a8b9",
+    "archivo": "efc2d43d",
+    "fecha": "2026-11-07",
     "paginas": 28,
     "hojas": {
       "cribado-rodilla": "c26ecbfc",
@@ -247,7 +247,7 @@
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
-      "farmacos": "d6988c13",
+      "farmacos": "83bcafb2",
       "tejidos-blandos": "7279a518",
       "tejidos-hueso": "de168e4c"
     },
@@ -267,9 +267,9 @@
     "ordenFecha": "2026-10-31"
   },
   "cuaderno-tobillo_pie": {
-    "huella": "ce6e0b25",
-    "archivo": "2b21cc61",
-    "fecha": "2026-11-06",
+    "huella": "3060a1ae",
+    "archivo": "f746faa7",
+    "fecha": "2026-11-07",
     "paginas": 28,
     "hojas": {
       "cribado-tobillo_pie": "e7880e01",
@@ -280,7 +280,7 @@
       "irritabilidad": "ec35256c",
       "sintomas": "63967bed",
       "plan": "6a14a639",
-      "farmacos": "d6988c13",
+      "farmacos": "83bcafb2",
       "tejidos-blandos": "7279a518",
       "tejidos-hueso": "de168e4c"
     },
