@@ -95,3 +95,30 @@ export function diferenciaTexto(antes, ahora, contexto = 3) {
     fin: s > contexto,
   };
 }
+
+// Páginas del PDF actual de un cuaderno que hay que imprimir para sustituir unas hojas: las de cada
+// hoja (desde su `inicio` hasta antes de la siguiente, con la página en blanco de relleno, así que
+// cada rango empieza en impar y acaba en par y ocupa sus propios papeles a doble cara) y la portada.
+// `cuaderno` = una entrada de docs/esquemas/cuadernos.json. Sin `inicio`, o sin ninguna de esas
+// hojas en el cuaderno, null. `texto` va listo para la casilla «Páginas» del diálogo de imprimir.
+export function paginasReimprimir(cuaderno, claves) {
+  const ini = cuaderno?.inicio;
+  if (!ini || !cuaderno.paginas) return null;
+  const orden = Object.entries(ini).sort((a, b) => a[1] - b[1]);
+  if (!orden.length) return null;
+  const fin = i => (i < orden.length - 1 ? orden[i + 1][1] - 1 : cuaderno.paginas);
+  const porHoja = {};
+  for (const k of claves) {
+    const i = orden.findIndex(([c]) => c === k);
+    if (i >= 0) porHoja[k] = [orden[i][1], fin(i)];
+  }
+  if (!Object.keys(porHoja).length) return null;
+  const portada = [1, orden[0][1] - 1];
+  const rangos = [];
+  for (const r of [portada, ...Object.values(porHoja)].sort((a, b) => a[0] - b[0])) {
+    const ult = rangos.at(-1);
+    if (ult && r[0] <= ult[1] + 1) ult[1] = Math.max(ult[1], r[1]); else rangos.push([...r]);
+  }
+  const rango = ([a, b]) => (a === b ? `${a}` : `${a}-${b}`);
+  return { portada, porHoja, rangos, texto: rangos.map(rango).join(', '), rango };
+}
