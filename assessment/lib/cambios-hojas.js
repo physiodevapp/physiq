@@ -135,13 +135,33 @@ export function hojasCambiadasDesde(cuaderno, huellas, fecha) {
   return { entero: false, claves };
 }
 
-// Qué hojas de un cuaderno hay que sustituir en una copia de la que se sabe su versión (la «v.» de la
-// portada, o el ?c= de su QR): las que tienen otra versión que la actual, en el orden del cuaderno.
-// `copia` = { hojas: { clave: huella } } de docs/esquemas/cuadernos-historial.json. Si la copia tiene
-// otra lista u orden de hojas, entera. Exacto: no depende de fechas.
+// Qué hacer con una copia impresa de un cuaderno de la que se sabe su versión (la «v.» de la
+// portada, o el ?c= de su QR), comparándola hoja por hoja con el cuaderno actual. Exacto: no
+// depende de fechas. Como cada hoja va en su propio papel y numera sus páginas por sí misma
+// (decisión del usuario, 2026-11), nunca hace falta reimprimirlo entero:
+//   claves    → hojas que siguen pero con otra versión: se imprimen y se sustituyen
+//   nuevas    → [{ clave, tras }]: se imprimen y se meten detrás de `tras` (null = tras la portada)
+//   quitadas  → claves que ya no están: se retiran
+//   movidas   → [{ clave, tras }]: se pasan detrás de `tras` (las mínimas: las que no están en la
+//               subsecuencia más larga que conserva el orden)
+// `copia` = { hojas: { clave: huella } } de docs/esquemas/cuadernos-historial.json.
 export function hojasCambiadasEnCopia(cuaderno, copia) {
   if (!cuaderno?.hojas || !copia?.hojas) return null;
   const actual = Object.keys(cuaderno.hojas), antes = Object.keys(copia.hojas);
-  if (actual.join('|') !== antes.join('|')) return { entero: true, claves: [] };
-  return { entero: false, claves: actual.filter(k => copia.hojas[k] !== cuaderno.hojas[k]) };
+  const enCopia = new Set(antes), enActual = new Set(actual);
+  const comunes = actual.filter(k => enCopia.has(k));
+  // Subsecuencia creciente más larga de las posiciones en la copia: esas hojas no se mueven
+  const pos = comunes.map(k => antes.indexOf(k));
+  const largo = pos.map(() => 1), previo = pos.map(() => -1);
+  for (let i = 0; i < pos.length; i++) for (let j = 0; j < i; j++) if (pos[j] < pos[i] && largo[j] + 1 > largo[i]) { largo[i] = largo[j] + 1; previo[i] = j; }
+  const quietas = new Set();
+  let i = largo.indexOf(Math.max(0, ...largo));
+  while (i >= 0) { quietas.add(comunes[i]); i = previo[i]; }
+  const tras = k => { const n = actual.indexOf(k); return n > 0 ? actual[n - 1] : null; };
+  return {
+    claves: comunes.filter(k => copia.hojas[k] !== cuaderno.hojas[k]),
+    nuevas: actual.filter(k => !enCopia.has(k)).map(k => ({ clave: k, tras: tras(k) })),
+    quitadas: antes.filter(k => !enActual.has(k)),
+    movidas: comunes.filter(k => !quietas.has(k)).map(k => ({ clave: k, tras: tras(k) })),
+  };
 }

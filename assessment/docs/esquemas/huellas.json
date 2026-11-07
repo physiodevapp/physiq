@@ -132,16 +132,20 @@
     "fecha": "2026-10-31"
   },
   "irritabilidad": {
-    "huella": "ec35256c",
-    "fecha": "2026-10-31"
+    "huella": "708321f5",
+    "fecha": "2026-11-07"
+  },
+  "neuro": {
+    "huella": "f659a09c",
+    "fecha": "2026-11-07"
   },
   "plan": {
     "huella": "6a14a639",
     "fecha": "2026-11-06"
   },
   "sintomas": {
-    "huella": "63967bed",
-    "fecha": "2026-10-31"
+    "huella": "939bcabb",
+    "fecha": "2026-11-07"
   },
   "tejidos-blandos": {
     "huella": "7279a518",

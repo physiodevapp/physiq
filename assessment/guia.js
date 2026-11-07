@@ -27,6 +27,7 @@ import { recomendacionesCondicion, bloquesFase2, lineasTecnica4b, lineasTest } f
 import { numeroHipotesis, ORDEN_REGIONES, CONDICION_SISTEMA, condicionPregunta, soloDeSistema, preguntasDeRegion, sistemasCribado, etiquetaPaso, HOJAS_GUIA, HOJAS_TEJIDO, datosHojaTejido, definicionCuadernos, nombreHojaImpresa } from './lib/esquemas.js';
 import { TIEMPOS_TEJIDO } from './data/tejidos.js';
 import { condicionesHTML } from './lib/condiciones.js';
+import { neuroGuiaHTML } from './lib/neuro.js';
 import { farmacosHTML, textoCima } from './lib/farmacos.js';
 import { TEXTOS_FARMACOS } from './data/farmacos.js';
 import { CUESTIONARIOS } from './data/cuestionarios.js';
@@ -677,18 +678,35 @@ function cambiosCuadernoHTML(clave, { base = '', cambiadas: porDefecto = [] } = 
     const copia = CUADERNOS_HIST?.[v];
     if (!copia) return `<p class="guia-cambios-paginas">No reconozco la v. ${esc(v)}. Comprueba que la has copiado bien (8 caracteres, al final del texto de la portada) o usa la fecha en que lo imprimiste.</p>`;
     if (copia.clave !== clave) return `<p class="guia-cambios-paginas">La v. ${esc(v)} es de otro cuaderno: ${esc(definicionCuadernos(REGIONES, nombreRegion).find(l => l.clave === copia.clave)?.titulo || copia.clave)}.</p>`;
-    sel = hojasCambiadasEnCopia(d, copia);
-    if (sel.entero) return `<p class="guia-cambios-paginas guia-hoja-movida">Tu copia (v. ${esc(v)}) tiene otra lista u orden de hojas: reimprime el cuaderno entero.</p>`;
-    sel.claves.sort((a, b) => (HUELLAS[b]?.fecha || '').localeCompare(HUELLAS[a]?.fecha || ''));
-    if (!sel.claves.length) return `<p class="guia-cambios-paginas">✓ Tu copia (v. ${esc(v)}) está al día: todas sus hojas tienen la versión actual.</p>`;
-    intro = `En tu copia (v. ${esc(v)}) ${sel.claves.length === 1 ? 'hay una hoja con otra versión' : `hay ${sel.claves.length} hojas con otra versión`}: sustitúyelas, y la portada`;
+    const c = hojasCambiadasEnCopia(d, copia);
+    const nombre = k => `«${esc(nombreHojaImpresa(k, nombreRegion))}»`;
+    const tras = t => (t ? `detrás de ${nombre(t)}` : 'justo después de la portada');
+    if (!c.claves.length && !c.nuevas.length && !c.quitadas.length && !c.movidas.length) return `<p class="guia-cambios-paginas">✓ Tu copia (v. ${esc(v)}) está al día: tiene las mismas hojas, en el mismo orden y con la versión actual.</p>`;
+    // Lo que hay que imprimir: las cambiadas y las nuevas, con la portada (su índice cambia)
+    const imprimir = [...c.claves, ...c.nuevas.map(n => n.clave)];
+    const pags = imprimir.length ? paginasReimprimir(d, imprimir) : null;
+    const portada = d.inicio ? Math.min(...Object.values(d.inicio)) - 1 : 2;
+    const rangosV = pags ? pags.texto : `1-${portada}`;
+    const linea = (k, txt) => `<li><a href="${urlPDF(k, HUELLAS[k]?.huella || '')}" target="_blank" rel="noopener">${esc(nombreHojaImpresa(k, nombreRegion))} ↗</a>${txt}${pags?.porHoja[k] ? ` · págs. ${pags.rango(pags.porHoja[k])}` : ''}</li>`;
+    const bloques = [
+      c.claves.length ? `<p class="guia-cambios-nota"><b>Sustituye</b> (otra versión):</p><ul>${c.claves.map(k => linea(k, HUELLAS[k] ? ` · ${esc(fechaCortaDe(HUELLAS[k].fecha))}` : '')).join('')}</ul>` : '',
+      c.nuevas.length ? `<p class="guia-cambios-nota"><b>Añade</b> (hojas nuevas):</p><ul>${c.nuevas.map(n => linea(n.clave, ` · ${tras(n.tras)}`)).join('')}</ul>` : '',
+      c.quitadas.length ? `<p class="guia-cambios-nota"><b>Quita</b> (ya no están en el cuaderno):</p><ul>${c.quitadas.map(k => `<li>${esc(nombreHojaImpresa(k, nombreRegion))}</li>`).join('')}</ul>` : '',
+      c.movidas.length ? `<p class="guia-cambios-nota"><b>Mueve</b> (cambian de sitio, sin reimprimirlas):</p><ul>${c.movidas.map(n => `<li>${esc(nombreHojaImpresa(n.clave, nombreRegion))} · ${tras(n.tras)}</li>`).join('')}</ul>` : '',
+    ].join('');
+    const rangosHTML2 = t => t.split(', ').map(r => `<span class="guia-rango">${esc(r)}</span>`).join(', ');
+    return `<p class="guia-cambios-nota">En tu copia (v. ${esc(v)}): cada hoja va en su propio papel, así que basta con esto y con cambiar la portada (págs. ${esc(`1-${portada}`)}), que lleva el índice nuevo.</p>
+        <p class="guia-cambios-paginas">Del PDF actual, a doble cara, imprime las páginas <b>${rangosHTML2(rangosV)}</b> <button type="button" class="guia-copiar" data-copiar="${esc(rangosV)}">Copiar</button></p>
+        <p class="guia-cambios-nota">Son números del PDF actual: en tu copia impresa, busca cada hoja por su nombre.</p>${bloques}`;
   } else if (fecha) {
     sel = hojasCambiadasDesde(d, HUELLAS, fecha);
-    if (sel.entero) return `<p class="guia-cambios-paginas guia-hoja-movida">Tu copia es de antes del ${esc(fechaLarga(d.ordenFecha))}, cuando cambió la lista u orden de hojas: reimprime el cuaderno entero.</p>`;
+    if (sel.entero) return `<p class="guia-cambios-paginas guia-hoja-movida">Tu copia es de antes del ${esc(fechaLarga(d.ordenFecha))}, cuando cambió la lista u orden de hojas. Escribe arriba la «cuaderno v.» de su portada y la guía te dirá qué hojas añadir, quitar, mover o sustituir; si no la tienes, reimprímelo entero.</p>`;
     if (!sel.claves.length) return `<p class="guia-cambios-paginas">✓ Ninguna hoja ha cambiado desde el ${esc(fechaLarga(fecha))}: tu copia está al día.</p>`;
     intro = `Desde el ${esc(fechaLarga(fecha))} (incluido, por si cambió después de imprimir) cambiaron ${sel.claves.length === 1 ? 'esta hoja' : `estas ${sel.claves.length} hojas`}: sustitúyelas, y la portada`;
   } else {
-    if (!porDefecto.length) return `<p class="guia-cambios-nota">Ninguna hoja ha cambiado en los últimos ${DIAS_RECIENTE} días. Para una copia más antigua, escribe la v. de su portada o la fecha en que lo imprimiste.</p>`;
+    if (!porDefecto.length) return base
+      ? `<p class="guia-cambios-nota">Ninguna hoja ha cambiado desde el ${esc(fechaLarga(base))}, cuando cambió la lista u orden de hojas. Si lo imprimiste antes, escribe arriba la «cuaderno v.» de su portada para saber qué añadir, mover o sustituir.</p>`
+      : `<p class="guia-cambios-nota">Ninguna hoja ha cambiado en los últimos ${DIAS_RECIENTE} días. Para una copia más antigua, escribe la v. de su portada o la fecha en que lo imprimiste.</p>`;
     intro = `${base ? `Si lo imprimiste después del ${esc(fechaLarga(base))}, basta` : 'Basta'} con sustituir las que cambiaron después de imprimirlo, y la portada`;
   }
   const cambiadas = sel ? sel.claves : porDefecto;
@@ -738,7 +756,7 @@ function htmlHojas() {
     const idCamb = `cambiadas-${l.clave}`;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(l.titulo)}</b>
       <span>${d.paginas} páginas (${d.paginas / 2} hojas de papel)</span> · <span class="guia-hoja-v">v. ${esc(d.huella)}</span> · <span>cambió el ${esc(fechaLarga(d.fecha))}</span>${d.ordenFecha ? ` · <span>orden de hojas desde el ${esc(fechaLarga(d.ordenFecha))}</span>` : ''}${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
-      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida" data-movida="${l.clave}"${copiaConocida(l.clave) ? ' hidden' : ''}>Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero.</span>` : ''}
+      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida" data-movida="${l.clave}"${copiaConocida(l.clave) ? ' hidden' : ''}>Cambió la lista u orden de hojas el ${esc(fechaLarga(d.ordenFecha))}: si lo imprimiste antes, escribe la «cuaderno v.» de su portada para saber qué añadir o mover.</span>` : ''}
       ${botonVer(idCamb, cambiadas.length ? `${base ? 'Cambiaron después' : 'Hojas que cambiaron'} (${cambiadas.length})` : '¿Qué reimprimir?')}</div>
       <a href="${urlPDF(l.clave, d.archivo || d.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(l.titulo)} en PDF">PDF ↗</a>
       <div id="${idCamb}" class="guia-cambios" hidden>
@@ -750,7 +768,7 @@ function htmlHojas() {
   return `${desconocido ? `<div class="guia-papel" id="guiaPapelCuaderno">No reconozco la versión de tu cuaderno (v. ${esc(VERSION_CUADERNO)}). Abre su cuaderno abajo y escribe la fecha en que lo imprimiste.</div>` : ''}<p class="guia-nota">Cada hoja impresa lleva su versión bajo el QR («v. …»). Si no coincide con la de esta lista, la hoja ha cambiado: descarga el PDF y reimprímela. «Reciente» = cambió en los últimos ${DIAS_RECIENTE} días (${recientes} de ${Object.keys(HUELLAS).length}).</p>
     ${filtroHojasHTML()}
     ${FILTRO_HOJAS ? `<p class="guia-nota guia-hojas-filtrado">${esc(nombreRegion(FILTRO_HOJAS))}: su cuaderno, sus tres hojas y las hojas generales. Toca otra vez la región para verlo todo.</p>` : ''}
-    ${cuadernos.length ? `<section class="guia-bloque"><h3>Cuadernos de consulta para imprimir a doble cara</h3><p class="guia-nota">Todas las hojas de consulta en un PDF, o las de una región con las generales. Cada hoja empieza en su propio papel y numera sus páginas por sí misma («Cribado · Lumbar 1/2»): si una cambia, aunque ocupe más o menos papel, imprime solo esa hoja y la portada (lleva el índice con la versión de cada hoja) y sustitúyelas. Solo si cambia la lista u orden de hojas el cuaderno lo avisa en rojo y se reimprime entero. La hoja del paciente va aparte.</p><ul class="guia-hojas-lista">${cuadernos.join('')}</ul></section>` : ''}
+    ${cuadernos.length ? `<section class="guia-bloque"><h3>Cuadernos de consulta para imprimir a doble cara</h3><p class="guia-nota">Todas las hojas de consulta en un PDF, o las de una región con las generales. Cada hoja empieza en su propio papel y numera sus páginas por sí misma («Cribado · Lumbar 1/2»): si una cambia, aunque ocupe más o menos papel, imprime solo esa hoja y la portada (lleva el índice con la versión de cada hoja) y sustitúyelas. Si se añade, quita o mueve una hoja, escribe la «cuaderno v.» de tu portada (o escanea su QR) y la guía te dice cuál y dónde va. La hoja del paciente va aparte.</p><ul class="guia-hojas-lista">${cuadernos.join('')}</ul></section>` : ''}
     ${REGIONES.filter(r => !FILTRO_HOJAS || r === FILTRO_HOJAS).map(r => grupo(nombreRegion(r), Object.entries(NOMBRE_HOJA).map(([t, n]) => fila(`${t}-${r}`, n)))).join('')}
     ${grupo('Tiempos de recuperación de tejidos', Object.entries(HOJAS_TEJIDO).map(([k, h]) => fila(`tejidos-${k}`, h.titulo)))}
     ${grupo('Otras hojas', Object.entries(SUELTAS).map(([k, h]) => fila(k, h.titulo)))}
@@ -764,6 +782,7 @@ const SUELTAS = {
   irritabilidad: { titulo: 'Irritabilidad (fase 3)', html: () => htmlIrritabilidad('', { conTitulo: false }) },
   farmacos: { titulo: 'Fármacos: qué vigilar', html: () => `<div id="farmCuerpo">${farmacosHTML()}</div>${htmlPreguntar('farmacos', { titulo: '¿Otro fármaco o duda? Pregunta a la IA', soloTipo: true })}` },
   sintomas: { titulo: 'Síntomas (fase 3)', html: htmlSintomasGuia },
+  neuro: { titulo: 'Dermatomas, miotomas y reflejos', html: neuroGuiaHTML },
   plan: { titulo: 'Plan de tratamiento (fase 6)', html: htmlPlan },
   ejercicio: { titulo: 'Efectos del ejercicio', html: htmlEjercicio },
   preguntar: { titulo: 'Preguntar a la IA', html: () => htmlPreguntar() },
@@ -1079,7 +1098,7 @@ async function iniciar() {
   pintar();
   if (cuadernoPapel && leerRuta().hojas) abrirCuadernoPapel(cuadernoPapel);
   const v = textoVersion();
-  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. ${pieRegionesHTML()} · <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
+  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. ${pieRegionesHTML()} · <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#neuro">Dermatomas, miotomas y reflejos</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
   iniciarPieRegiones();
   initAmpliarIA();
   initRazonPlegable();
