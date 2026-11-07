@@ -32,7 +32,7 @@ import { TEXTOS_FARMACOS } from './data/farmacos.js';
 import { CUESTIONARIOS } from './data/cuestionarios.js';
 import { tiemposTejidoHTML, infoBarraHTML } from './lib/tejidos.js';
 import { alternarFicha, cerrarFicha } from './ficha.js';
-import { compararVersiones, versionDe, conDetalle, resumenCambios, totalCambios, etiquetaElemento, recortar, textoElemento, diferenciaTexto, paginasReimprimir, hojasCambiadasDesde } from './lib/cambios-hojas.js';
+import { compararVersiones, versionDe, conDetalle, resumenCambios, totalCambios, etiquetaElemento, recortar, textoElemento, diferenciaTexto, paginasReimprimir, hojasCambiadasDesde, hojasCambiadasEnCopia } from './lib/cambios-hojas.js';
 import { nombreRegion, dolorInespecifico } from './lib/region.js';
 import { textoVersion } from './lib/version.js';
 import { htmlFase1, CALC_SISTEMA, initCalculadoras } from './guia-calc.js';
@@ -475,6 +475,10 @@ function claveHoja({ tejidos, suelta, region, hoja }) {
   return hoja === 'arbol' ? `arbol-a4-${region}` : hoja === 'irritabilidad' ? '' : `${hoja}-${region}`;
 }
 let CUADERNOS = null;
+// Cada versión de cada cuaderno: { huella: { clave, fecha, hojas } } (docs/esquemas/cuadernos-historial.json)
+let CUADERNOS_HIST = null;
+// La «cuaderno v.» del QR de su portada (?c=): la guía abre ese cuaderno con lo que hay que reimprimir
+const VERSION_CUADERNO = (new URLSearchParams(location.search).get('c') || '').toLowerCase();
 async function cargarHuellas() {
   try {
     const r = await fetch('./docs/esquemas/huellas.json', { cache: 'no-store' });
@@ -484,6 +488,10 @@ async function cargarHuellas() {
     const r = await fetch('./docs/esquemas/cuadernos.json', { cache: 'no-store' });
     if (r.ok) CUADERNOS = await r.json();
   } catch { /* sin cuadernos: la lista de hojas sigue */ }
+  try {
+    const r = await fetch('./docs/esquemas/cuadernos-historial.json', { cache: 'no-store' });
+    if (r.ok) CUADERNOS_HIST = await r.json();
+  } catch { /* sin historial: queda la fecha de impresión */ }
 }
 const HISTORIAL = {};
 async function cargarHistorial(clave) {
@@ -649,29 +657,54 @@ function filtroHojasHTML() {
     `<button type="button" class="tej-filtro-btn${FILTRO_HOJAS === r ? ' activo' : ''}" data-filtro-hojas="${r}" aria-pressed="${FILTRO_HOJAS === r}">${esc(nombreRegion(r))}</button>`).join('')}</div>`;
 }
 const fechaLarga = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-// Fecha en que el usuario imprimió cada cuaderno (solo en memoria, como los demás filtros)
-const FECHA_COPIA = {};
+// Copia impresa de cada cuaderno (solo en memoria, como los demás filtros): su fecha de impresión o,
+// mejor, la «v.» de su portada (exacta: se compara la versión de cada hoja)
+const FECHA_COPIA = {}, V_COPIA = {};
 const hoyISO = () => { const f = new Date(); return `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}-${String(f.getDate()).padStart(2, '0')}`; };
-// Lo que hay que sustituir de un cuaderno: con la fecha de impresión, las hojas que cambiaron ese día
-// o después; sin ella, las que cambiaron hace poco (desde el último cambio de orden, si es reciente)
+const esVersion = v => /^[0-9a-f]{8}$/.test(v);
+// Lo que hay que sustituir de un cuaderno: con la «v.» de la portada, las hojas con otra versión;
+// con la fecha de impresión, las que cambiaron ese día o después; sin nada, las que cambiaron hace
+// poco (desde el último cambio de orden, si es reciente)
 function cambiosCuadernoHTML(clave, { base = '', cambiadas: porDefecto = [] } = {}) {
   const d = CUADERNOS?.[clave];
   if (!d) return '';
-  const fecha = FECHA_COPIA[clave] || '';
-  const sel = fecha ? hojasCambiadasDesde(d, HUELLAS, fecha) : null;
-  if (sel?.entero) return `<p class="guia-cambios-paginas guia-hoja-movida">Tu copia es de antes del ${esc(fechaLarga(d.ordenFecha))}, cuando cambió la lista u orden de hojas: reimprime el cuaderno entero.</p>`;
+  const v = V_COPIA[clave] || '', fecha = v ? '' : (FECHA_COPIA[clave] || '');
+  let sel = null, intro = '';
+  if (v) {
+    if (!esVersion(v)) return '<p class="guia-cambios-nota">Escribe los 8 caracteres de «cuaderno v.», al final del texto de la portada.</p>';
+    const copia = CUADERNOS_HIST?.[v];
+    if (!copia) return `<p class="guia-cambios-paginas">No reconozco la v. ${esc(v)}. Comprueba que la has copiado bien (8 caracteres, al final del texto de la portada) o usa la fecha en que lo imprimiste.</p>`;
+    if (copia.clave !== clave) return `<p class="guia-cambios-paginas">La v. ${esc(v)} es de otro cuaderno: ${esc(definicionCuadernos(REGIONES, nombreRegion).find(l => l.clave === copia.clave)?.titulo || copia.clave)}.</p>`;
+    sel = hojasCambiadasEnCopia(d, copia);
+    if (sel.entero) return `<p class="guia-cambios-paginas guia-hoja-movida">Tu copia (v. ${esc(v)}) tiene otra lista u orden de hojas: reimprime el cuaderno entero.</p>`;
+    sel.claves.sort((a, b) => (HUELLAS[b]?.fecha || '').localeCompare(HUELLAS[a]?.fecha || ''));
+    if (!sel.claves.length) return `<p class="guia-cambios-paginas">✓ Tu copia (v. ${esc(v)}) está al día: todas sus hojas tienen la versión actual.</p>`;
+    intro = `En tu copia (v. ${esc(v)}) ${sel.claves.length === 1 ? 'hay una hoja con otra versión' : `hay ${sel.claves.length} hojas con otra versión`}: sustitúyelas, y la portada`;
+  } else if (fecha) {
+    sel = hojasCambiadasDesde(d, HUELLAS, fecha);
+    if (sel.entero) return `<p class="guia-cambios-paginas guia-hoja-movida">Tu copia es de antes del ${esc(fechaLarga(d.ordenFecha))}, cuando cambió la lista u orden de hojas: reimprime el cuaderno entero.</p>`;
+    if (!sel.claves.length) return `<p class="guia-cambios-paginas">✓ Ninguna hoja ha cambiado desde el ${esc(fechaLarga(fecha))}: tu copia está al día.</p>`;
+    intro = `Desde el ${esc(fechaLarga(fecha))} (incluido, por si cambió después de imprimir) cambiaron ${sel.claves.length === 1 ? 'esta hoja' : `estas ${sel.claves.length} hojas`}: sustitúyelas, y la portada`;
+  } else {
+    if (!porDefecto.length) return `<p class="guia-cambios-nota">Ninguna hoja ha cambiado en los últimos ${DIAS_RECIENTE} días. Para una copia más antigua, escribe la v. de su portada o la fecha en que lo imprimiste.</p>`;
+    intro = `${base ? `Si lo imprimiste después del ${esc(fechaLarga(base))}, basta` : 'Basta'} con sustituir las que cambiaron después de imprimirlo, y la portada`;
+  }
   const cambiadas = sel ? sel.claves : porDefecto;
-  if (sel && !cambiadas.length) return `<p class="guia-cambios-paginas">✓ Ninguna hoja ha cambiado desde el ${esc(fechaLarga(fecha))}: tu copia está al día.</p>`;
   const pags = cambiadas.length ? paginasReimprimir(d, cambiadas) : null;
   const rangosHTML = t => t.split(', ').map(r => `<span class="guia-rango">${esc(r)}</span>`).join(', ');
-  const intro = sel
-    ? `Desde el ${esc(fechaLarga(fecha))} (incluido, por si cambió después de imprimir) cambiaron ${cambiadas.length === 1 ? 'esta hoja' : `estas ${cambiadas.length} hojas`}: sustitúyelas, y la portada`
-    : `${base ? `Si lo imprimiste después del ${esc(fechaLarga(base))}, basta` : 'Basta'} con sustituir las que cambiaron después de imprimirlo, y la portada`;
   return `<p class="guia-cambios-nota">${intro}${pags ? ` (págs. ${pags.rango(pags.portada)})` : ''}:</p>
         ${pags ? (pags.texto === `1-${d.paginas}` ? `<p class="guia-cambios-paginas">Han cambiado todas: imprime el cuaderno entero.</p>`
           : `<p class="guia-cambios-paginas">Del PDF actual, a doble cara, imprime las páginas <b>${rangosHTML(pags.texto)}</b> <button type="button" class="guia-copiar" data-copiar="${esc(pags.texto)}">Copiar</button></p>
             <p class="guia-cambios-nota">Son números del PDF actual: en tu copia impresa, busca cada hoja por su nombre.</p>`) : ''}
         <ul>${cambiadas.map(k => `<li><a href="${urlPDF(k, HUELLAS[k].huella)}" target="_blank" rel="noopener">${esc(nombreHojaImpresa(k, nombreRegion))} ↗</a> · ${esc(fechaCortaDe(HUELLAS[k].fecha))}${pags?.porHoja[k] ? ` · págs. ${pags.rango(pags.porHoja[k])}` : ''}</li>`).join('')}</ul>`;
+}
+// Abre el desplegable del cuaderno del QR y lo lleva a la vista
+function abrirCuadernoPapel(clave) {
+  const caja = document.getElementById(`cambiadas-${clave}`), ver = document.querySelector(`[aria-controls="cambiadas-${clave}"]`);
+  if (!caja || !ver) return;
+  caja.hidden = false;
+  ver.setAttribute('aria-expanded', 'true');
+  ver.closest('.guia-hoja')?.scrollIntoView({ block: 'start' });
 }
 function htmlHojas() {
   if (!HUELLAS) return '<p class="guia-vacio">No se ha podido cargar la lista de hojas. Prueba a recargar la página.</p>';
@@ -703,14 +736,16 @@ function htmlHojas() {
     const idCamb = `cambiadas-${l.clave}`;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(l.titulo)}</b>
       <span>${d.paginas} páginas (${d.paginas / 2} hojas de papel)</span> · <span class="guia-hoja-v">v. ${esc(d.huella)}</span> · <span>cambió el ${esc(fechaLarga(d.fecha))}</span>${d.ordenFecha ? ` · <span>orden de hojas desde el ${esc(fechaLarga(d.ordenFecha))}</span>` : ''}${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
-      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida">Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero.</span>` : ''}
-      ${cambiadas.length ? botonVer(idCamb, `${base ? 'Cambiaron después' : 'Hojas que cambiaron'} (${cambiadas.length})`) : ''}</div>
+      ${recienteFecha(d.ordenFecha) && !(V_COPIA[l.clave] && CUADERNOS_HIST?.[V_COPIA[l.clave]]) ? `<span class="guia-hoja-movida">Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero.</span>` : ''}
+      ${botonVer(idCamb, cambiadas.length ? `${base ? 'Cambiaron después' : 'Hojas que cambiaron'} (${cambiadas.length})` : '¿Qué reimprimir?')}</div>
       <a href="${urlPDF(l.clave, d.archivo || d.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(l.titulo)} en PDF">PDF ↗</a>
-      ${cambiadas.length ? `<div id="${idCamb}" class="guia-cambios" hidden>
-        <label class="guia-copia">¿Cuándo lo imprimiste? <input type="date" data-fecha-copia="${l.clave}" value="${esc(FECHA_COPIA[l.clave] || '')}" max="${hoyISO()}"></label>
-        <div data-copia-res="${l.clave}" data-base="${base}" data-cambiadas="${cambiadas.join(',')}">${cambiosCuadernoHTML(l.clave, { base, cambiadas })}</div></div>` : ''}</li>`;
+      <div id="${idCamb}" class="guia-cambios" hidden>
+        <div class="guia-copia"><label>«cuaderno v.» de tu portada <input type="text" data-v-copia="${l.clave}" value="${esc(V_COPIA[l.clave] || '')}" maxlength="8" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(d.huella)}"></label>
+          <label>o el día que lo imprimiste <input type="date" data-fecha-copia="${l.clave}" value="${esc(FECHA_COPIA[l.clave] || '')}" max="${hoyISO()}"></label></div>
+        <div data-copia-res="${l.clave}" data-base="${base}" data-cambiadas="${cambiadas.join(',')}">${cambiosCuadernoHTML(l.clave, { base, cambiadas })}</div></div></li>`;
   }) : [];
-  return `<p class="guia-nota">Cada hoja impresa lleva su versión bajo el QR («v. …»). Si no coincide con la de esta lista, la hoja ha cambiado: descarga el PDF y reimprímela. «Reciente» = cambió en los últimos ${DIAS_RECIENTE} días (${recientes} de ${Object.keys(HUELLAS).length}).</p>
+  const desconocido = VERSION_CUADERNO && CUADERNOS_HIST && !CUADERNOS_HIST[VERSION_CUADERNO];
+  return `${desconocido ? `<div class="guia-papel" id="guiaPapelCuaderno">No reconozco la versión de tu cuaderno (v. ${esc(VERSION_CUADERNO)}). Abre su cuaderno abajo y escribe la fecha en que lo imprimiste.</div>` : ''}<p class="guia-nota">Cada hoja impresa lleva su versión bajo el QR («v. …»). Si no coincide con la de esta lista, la hoja ha cambiado: descarga el PDF y reimprímela. «Reciente» = cambió en los últimos ${DIAS_RECIENTE} días (${recientes} de ${Object.keys(HUELLAS).length}).</p>
     ${filtroHojasHTML()}
     ${FILTRO_HOJAS ? `<p class="guia-nota guia-hojas-filtrado">${esc(nombreRegion(FILTRO_HOJAS))}: su cuaderno, sus tres hojas y las hojas generales. Toca otra vez la región para verlo todo.</p>` : ''}
     ${cuadernos.length ? `<section class="guia-bloque"><h3>Cuadernos de consulta para imprimir a doble cara</h3><p class="guia-nota">Todas las hojas de consulta en un PDF, o las de una región con las generales. Cada hoja empieza en su propio papel y numera sus páginas por sí misma («Cribado · Lumbar 1/2»): si una cambia, aunque ocupe más o menos papel, imprime solo esa hoja y la portada (lleva el índice con la versión de cada hoja) y sustitúyelas. Solo si cambia la lista u orden de hojas el cuaderno lo avisa en rojo y se reimprime entero. La hoja del paciente va aparte.</p><ul class="guia-hojas-lista">${cuadernos.join('')}</ul></section>` : ''}
@@ -750,14 +785,27 @@ document.addEventListener('click', e => {
   try { navigator.clipboard.writeText(n).then(() => avisoGuia(textoCima(TEXTOS_FARMACOS.cimaCopiado, n)), fallo); } catch { fallo(); }
 }, true);
 
-// «¿Cuándo lo imprimiste?»: repinta solo la lista de ese cuaderno (el desplegable sigue abierto)
+// La copia impresa de un cuaderno («cuaderno v.» o fecha): repinta solo su lista (el desplegable
+// sigue abierto); escribir una borra la otra, para que no haya dos respuestas
+function repintarCopia(k) {
+  const res = document.querySelector(`[data-copia-res="${k}"]`);
+  if (res) res.innerHTML = cambiosCuadernoHTML(k, { base: res.dataset.base, cambiadas: res.dataset.cambiadas ? res.dataset.cambiadas.split(',') : [] });
+}
 document.addEventListener('change', e => {
   const inp = e.target instanceof Element ? e.target.closest('input[data-fecha-copia]') : null;
   if (!inp) return;
   const k = inp.dataset.fechaCopia;
   if (inp.value) FECHA_COPIA[k] = inp.value; else delete FECHA_COPIA[k];
-  const res = document.querySelector(`[data-copia-res="${k}"]`);
-  if (res) res.innerHTML = cambiosCuadernoHTML(k, { base: res.dataset.base, cambiadas: res.dataset.cambiadas ? res.dataset.cambiadas.split(',') : [] });
+  if (inp.value) { delete V_COPIA[k]; const v = document.querySelector(`input[data-v-copia="${k}"]`); if (v) v.value = ''; }
+  repintarCopia(k);
+});
+document.addEventListener('input', e => {
+  const inp = e.target instanceof Element ? e.target.closest('input[data-v-copia]') : null;
+  if (!inp) return;
+  const k = inp.dataset.vCopia, v = inp.value.trim().toLowerCase();
+  if (v) V_COPIA[k] = v; else delete V_COPIA[k];
+  if (v) { delete FECHA_COPIA[k]; const f = document.querySelector(`input[data-fecha-copia="${k}"]`); if (f) f.value = ''; }
+  repintarCopia(k);
 });
 
 // «Copiar» de las páginas a reimprimir de un cuaderno (Hojas para imprimir)
@@ -1013,7 +1061,10 @@ async function iniciar() {
   }, true);
   // Las fuentes se enlazan con el registro; si no carga, se pintan sin enlace
   try { REF = await registroReferencias(); } catch { REF = null; }
-  if (HUELLA_PAPEL || leerRuta().hojas) await cargarHuellas();
+  if (HUELLA_PAPEL || VERSION_CUADERNO || leerRuta().hojas) await cargarHuellas();
+  // El QR de la portada de un cuaderno: su versión ya escrita, para abrirlo con lo que hay que reimprimir
+  const cuadernoPapel = VERSION_CUADERNO && CUADERNOS_HIST?.[VERSION_CUADERNO]?.clave;
+  if (cuadernoPapel && CUADERNOS?.[cuadernoPapel]) V_COPIA[cuadernoPapel] = VERSION_CUADERNO;
   if (HUELLA_PAPEL) await identificarPapel();
   window.addEventListener('hashchange', async () => {
     cerrarFicha({ sinFoco: true });
@@ -1021,6 +1072,7 @@ async function iniciar() {
     pintar();
   });
   pintar();
+  if (cuadernoPapel && leerRuta().hojas) abrirCuadernoPapel(cuadernoPapel);
   const v = textoVersion();
   document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. ${pieRegionesHTML()} · <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
   iniciarPieRegiones();

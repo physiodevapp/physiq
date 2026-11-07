@@ -134,3 +134,14 @@ export function hojasCambiadasDesde(cuaderno, huellas, fecha) {
     .sort((a, b) => huellas[b].fecha.localeCompare(huellas[a].fecha));
   return { entero: false, claves };
 }
+
+// Qué hojas de un cuaderno hay que sustituir en una copia de la que se sabe su versión (la «v.» de la
+// portada, o el ?c= de su QR): las que tienen otra versión que la actual, en el orden del cuaderno.
+// `copia` = { hojas: { clave: huella } } de docs/esquemas/cuadernos-historial.json. Si la copia tiene
+// otra lista u orden de hojas, entera. Exacto: no depende de fechas.
+export function hojasCambiadasEnCopia(cuaderno, copia) {
+  if (!cuaderno?.hojas || !copia?.hojas) return null;
+  const actual = Object.keys(cuaderno.hojas), antes = Object.keys(copia.hojas);
+  if (actual.join('|') !== antes.join('|')) return { entero: true, claves: [] };
+  return { entero: false, claves: actual.filter(k => copia.hojas[k] !== cuaderno.hojas[k]) };
+}
