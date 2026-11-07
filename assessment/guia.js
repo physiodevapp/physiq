@@ -662,6 +662,8 @@ const fechaLarga = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('es-ES'
 const FECHA_COPIA = {}, V_COPIA = {};
 const hoyISO = () => { const f = new Date(); return `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}-${String(f.getDate()).padStart(2, '0')}`; };
 const esVersion = v => /^[0-9a-f]{8}$/.test(v);
+// La «cuaderno v.» escrita (o del QR) es una versión conocida de ese mismo cuaderno
+const copiaConocida = k => !!V_COPIA[k] && CUADERNOS_HIST?.[V_COPIA[k]]?.clave === k;
 // Lo que hay que sustituir de un cuaderno: con la «v.» de la portada, las hojas con otra versión;
 // con la fecha de impresión, las que cambiaron ese día o después; sin nada, las que cambiaron hace
 // poco (desde el último cambio de orden, si es reciente)
@@ -736,7 +738,7 @@ function htmlHojas() {
     const idCamb = `cambiadas-${l.clave}`;
     return `<li class="guia-hoja${reciente ? ' reciente' : ''}"><div class="guia-hoja-txt"><b>${esc(l.titulo)}</b>
       <span>${d.paginas} páginas (${d.paginas / 2} hojas de papel)</span> · <span class="guia-hoja-v">v. ${esc(d.huella)}</span> · <span>cambió el ${esc(fechaLarga(d.fecha))}</span>${d.ordenFecha ? ` · <span>orden de hojas desde el ${esc(fechaLarga(d.ordenFecha))}</span>` : ''}${reciente ? ' <span class="guia-hoja-nueva">Reciente</span>' : ''}
-      ${recienteFecha(d.ordenFecha) && !(V_COPIA[l.clave] && CUADERNOS_HIST?.[V_COPIA[l.clave]]) ? `<span class="guia-hoja-movida">Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero.</span>` : ''}
+      ${recienteFecha(d.ordenFecha) ? `<span class="guia-hoja-movida" data-movida="${l.clave}"${copiaConocida(l.clave) ? ' hidden' : ''}>Si lo imprimiste antes del ${esc(fechaLarga(d.ordenFecha))}, reimprímelo entero.</span>` : ''}
       ${botonVer(idCamb, cambiadas.length ? `${base ? 'Cambiaron después' : 'Hojas que cambiaron'} (${cambiadas.length})` : '¿Qué reimprimir?')}</div>
       <a href="${urlPDF(l.clave, d.archivo || d.huella)}" target="_blank" rel="noopener" aria-label="Descargar ${esc(l.titulo)} en PDF">PDF ↗</a>
       <div id="${idCamb}" class="guia-cambios" hidden>
@@ -790,6 +792,9 @@ document.addEventListener('click', e => {
 function repintarCopia(k) {
   const res = document.querySelector(`[data-copia-res="${k}"]`);
   if (res) res.innerHTML = cambiosCuadernoHTML(k, { base: res.dataset.base, cambiadas: res.dataset.cambiadas ? res.dataset.cambiadas.split(',') : [] });
+  // Con la versión de la copia reconocida, el aviso por fecha («Si lo imprimiste antes del…») sobra
+  const movida = document.querySelector(`[data-movida="${k}"]`);
+  if (movida) movida.hidden = copiaConocida(k);
 }
 document.addEventListener('change', e => {
   const inp = e.target instanceof Element ? e.target.closest('input[data-fecha-copia]') : null;
