@@ -1931,6 +1931,7 @@ const ON_CITA = {
   campbell19: 'Campbell 2019 — Campbell, Winters-Stone, Wiskemann et al., «Exercise Guidelines for Cancer Survivors: Consensus Statement from International Multidisciplinary Roundtable», Med Sci Sports Exerc 2019;51(11):2375–2390',
   campbell22: 'Campbell 2022 — Campbell, Cormie, Weller et al., «Exercise Recommendation for People With Bone Metastases: Expert Consensus for Health Care Providers and Exercise Professionals», JCO Oncol Pract 2022;18(5):e697–e709',
   gilchrist: 'Gilchrist 2019 — Gilchrist, Barac, Ades et al., «Cardio-Oncology Rehabilitation to Manage Cardiovascular Outcomes in Cancer Patients and Survivors», Circulation 2019;139(21):e997–e1012',
+  lyon: 'Lyon 2022 — Lyon, López-Fernández, Couch et al., «2022 ESC Guidelines on cardio-oncology», Eur Heart J 2022;43(41):4229–4361',
 };
 
 export const SIS_ONCOLOGICO = {
@@ -1938,6 +1939,7 @@ export const SIS_ONCOLOGICO = {
   banderasRojas: [
     { texto: 'Con antecedente de cáncer: dificultad para andar, debilidad, adormecimiento u hormigueo, dolor que baja por un miembro o cambios al orinar o en el intestino (compresión medular metastásica)', pregunta: 'on_u_medula' },
     { texto: 'Con antecedente de cáncer: dolor de espalda o cuello nuevo o que ha cambiado, intenso, que va a más, mecánico, al hacer fuerza o que despierta por la noche', pregunta: 'on_u_columna' },
+    { texto: 'Con inmunoterapia en curso: dolor en el pecho, falta de aire, palpitaciones, mareo o desmayo nuevos (posible miocarditis)', on: 'inmuno', pregunta: 'on_u_miocarditis' },
   ],
   banderasAmarillas: [
     { texto: 'Con antecedente de cáncer: dolor nuevo en otro hueso que no se pasa', pregunta: 'on_d_hueso' },
@@ -1962,6 +1964,15 @@ export const SIS_ONCOLOGICO = {
         peso: 'Se pregunta por un dolor «nuevo o que ha cambiado»: con un dolor lumbar ya estudiado y sin metástasis, NICE pide explicar qué cambios vigilar y consultar con urgencia si cambia o empeora (NICE NG234, 1.3.6). El dolor localizado a la presión es un hallazgo de la exploración, no se pregunta. El antecedente de cáncer ya pesa por sí solo en el cribado de malignidad de cada región (en lumbar, l2: la probabilidad de un tumor vertebral sube al 7 % en atención primaria, Downie 2013), y el dolor nocturno tiene su propia pregunta (l_on2, cv1).',
         fuentes: ['NICE NG234', 'Downie 2013'],
         citas: [`${ON_CITA.nice}, recomendaciones 1.3.3 y 1.3.6 y recuadro 1.`, `${ON_CITA.downie}.`]
+      } },
+    { id: 'on_u_miocarditis', on: 'inmuno', alerta: true,
+      urgencia: 'Posible miocarditis por inmunoterapia: valoración médica urgente hoy (urgencias o el teléfono de 24 horas de oncología).',
+      text: 'Si está recibiendo inmunoterapia: ¿tiene desde hace poco dolor en el pecho, falta de aire, palpitaciones, mareo o se ha desmayado?',
+      razonamiento: {
+        porque: 'Los inhibidores de puntos de control inmunitario pueden causar una miocarditis grave: en la mayor serie, de 122 pacientes, empezó pronto (a los 30 días de media de la primera dosis) y murieron hasta la mitad. Ante síntomas cardiacos nuevos en cualquier momento, la guía europea pide valoración por cardio-oncología sin demora (Lyon 2022).',
+        peso: 'Se pregunta solo con «En tratamiento» y el chip «Inmunoterapia». La guía no da un plazo en horas: lo de «hoy» es redacción propia aprobada por el usuario, por la mortalidad. Un síncope de alto riesgo también está en la pregunta de síncope de cada región (sx_sincope).',
+        fuentes: ['Lyon 2022'],
+        citas: [`${ON_CITA.lyon}, sección 5 (inhibidores de puntos de control inmunitario).`]
       } },
     { id: 'on_d_hueso', alerta: true,
       derivacion: 'Dolor óseo nuevo con antecedente de cáncer: que lo valore pronto su oncólogo o su médico.',
@@ -2043,9 +2054,9 @@ export const SIS_ONCOLOGICO = {
       ayudaTratamiento: 'Incluye la terapia hormonal de mantenimiento (anastrozol, letrozol, exemestano, tamoxifeno, o para la próstata).',
       metastasis: 'Antes del ejercicio estructurado, consulta con su equipo médico, imprescindible si la lesión es inestable o de estabilidad desconocida, si ha tenido dolor óseo o tratamiento para él en los últimos 3 meses, o una fractura por la enfermedad en el último año (Campbell 2022, tabla 1).',
       duda: 'Hasta confirmarlo:',
-      cardiaco: 'Recibió un tratamiento que puede dañar el corazón años después. Pide una valoración cardiaca antes del ejercicio de intensidad moderada (Gilchrist 2019).',
+      cardiaco: 'Recibió un tratamiento que puede dañar el corazón años después. Pide una valoración cardiaca antes del ejercicio de intensidad moderada (Gilchrist 2019). La guía europea recomienda, además, una revisión cardiovascular cada año, con electrocardiograma y péptidos natriuréticos: que se la pida a su médico (Lyon 2022).',
       cardiacoAlterado: 'Sigue los límites de su cardiólogo; si no los tienes, pídeselos antes del ejercicio moderado.',   // [propia]
-      tensionBrazos: 'Mide la tensión en los dos brazos: la radioterapia puede estrechar la arteria de un lado (Gilchrist 2019).',
+      tensionBrazos: 'Mide la tensión en los dos brazos: la radioterapia puede estrechar la arteria de un lado (Gilchrist 2019). Tras la radioterapia del cuello, hasta un 30 % tiene después una estenosis carotídea importante (más del 70 %): la guía europea propone una ecografía carotídea cada 5 años, desde los 5 años de la radioterapia (Lyon 2022).',
       ostomiaTarjeta: 'Con ostomía: valoración y autorización médica antes del ejercicio (Campbell 2019, tabla 4).',
       osteoporosis: 'Si tiene osteoporosis, marca también su tarjeta.',
       hormonal: 'Qué vigilar con estos fármacos →',
@@ -2058,7 +2069,9 @@ export const SIS_ONCOLOGICO = {
       metastasis5: 'Consulta con su equipo médico antes del ejercicio estructurado, imprescindible si la lesión es inestable o de estabilidad desconocida, si ha tenido dolor óseo o tratamiento para él en los últimos 3 meses, o una fractura por la enfermedad en el último año (Campbell 2022, tabla 1). Evita los impactos, la flexión y la extensión extremas del tronco, la flexión o la extensión del tronco con carga y los giros bruscos (Campbell 2019, tabla 5), y los movimientos rápidos o cargados al final del recorrido en la zona de la lesión (Campbell 2022); empieza con movimiento activo sin carga y progresa despacio mientras no aumente el dolor (Campbell 2022, tabla 1); prevén las caídas (Campbell 2022). Si refiere dolor óseo, que lo valore su equipo médico antes de seguir (Campbell 2019, tabla 5).',
       triaje: 'Antes del ejercicio (triaje de la NCCN): con metástasis óseas, ostomía, cirugía de pulmón o abdomen, enfermedad cardiopulmonar o fatiga extrema, valoración y autorización médica previas; con neuropatía, linfedema, problemas musculoesqueléticos o hueso frágil, valoración médica recomendada y adaptar el ejercicio a lo que encuentres (Campbell 2019, tabla 4).',
       cardiotoxico5: 'Más riesgo cardiaco tardío, sobre todo con 60 años o más al tratarse: los supervivientes a 5 años tienen 1,3–3,6 veces más mortalidad cardiovascular. Antes del ejercicio moderado, valoración cardiopulmonar (prueba de esfuerzo, o marcha de 6 minutos como alternativa) (Gilchrist 2019).',
+      autonomico: 'Tras radioterapia con el corazón en el campo puede aparecer, años después, hipotensión ortostática, POTS o taquicardia sinusal inapropiada: si se marea al ponerse de pie, valora la tarjeta de disautonomía. La angina puede no notarse, así que no tener dolor en el pecho no descarta isquemia (Lyon 2022).',
       dosis: 'Objetivo: aeróbico moderado al menos 3 veces por semana, al menos 30 minutos, al menos 8–12 semanas; y fuerza al menos 2 veces por semana, al menos 2 series de 8–15 repeticiones al 60 % de 1RM o más. Para la fatiga hace falta intensidad moderada; la suave apenas la reduce. Si no lo tolera, baja la dosis aunque quede por debajo (Campbell 2019).',
+      ejercicioESC: 'Como objetivo general, al menos 150 minutos de ejercicio a la semana, durante el tratamiento y después. El interválico de alta intensidad es seguro supervisado, pero puede no ser factible en personas mayores o frágiles; con riesgo cardiovascular alto, valora la rehabilitación cardiaca dirigida (Lyon 2022).',
       supervisado: 'Con secuelas o deterioro físico, mejor un programa supervisado por un profesional sanitario que uno comunitario (Schmitz 2019). Antes de empezar, valora la condición física y la función (Campbell 2019, tabla 5).',
       linfedema5: 'Tras un cáncer de mama, la fuerza progresiva supervisada de grandes grupos musculares, 2–3 veces por semana, empezando bajo y subiendo despacio, es segura; en el linfedema de otros cánceres no hay datos (Campbell 2019). La manga de compresión durante el ejercicio, según prefiera: no hay pruebas a favor ni en contra (Campbell 2019, tabla 5).',
       ostomia5: 'Ostomía: que vacíe la bolsa antes; fuerza con poca resistencia y progresión lenta, sin Valsalva; adapta los ejercicios de tronco que den presión o abombamiento del abdomen; con ileostomía, más riesgo de deshidratación (Campbell 2019, tabla 5).',

@@ -11,7 +11,7 @@ import {
   PROGRESION_PERIFERICA, REGLAS_MES_PERIFERICAS, AVISOS_POSQ_PERIFERICA, AVISOS_POSQ_REGION, RED_HIP, HIP_NERVIO_PERIFERICO,
   AVISOS_DISAUTONOMIA, RED_DISAUTONOMIA, AVISOS_LUPUS, RED_LUPUS, AVISOS_MASTOCITOS, RED_MASTOCITOS,
   AVISOS_OSTEOPOROSIS, RED_OSTEOPOROSIS, AVISOS_EMBARAZO, AVISOS_POSPARTO, HIP_SACROILIACA, RED_EMBARAZO, RED_POSPARTO,
-  AVISOS_ANTICOAGULADO, HIP_PUNCION_SECA, HIP_ONDAS_CHOQUE, RED_ANTICOAGULADO, AVISOS_PARKINSON, RED_PARKINSON, RED_ONCOLOGICO,
+  AVISOS_ANTICOAGULADO, HIP_PUNCION_SECA, HIP_ONDAS_CHOQUE, RED_ANTICOAGULADO, AVISOS_PARKINSON, RED_PARKINSON, RED_ONCOLOGICO, RED_ONCOLOGICO_INMUNO,
   AVISOS_IMPLANTES_PAUTA,
 } from '../data/plan-tratamiento.js';
 import { clavesLineas } from './implantes.js';
@@ -185,7 +185,7 @@ export function redSeguridad(region, neuro, elegidas = [], { disautonomia = fals
   const partes = [neuro && r.neuro, ...[].concat(r.siempre || []), ...elegidas.map(h => RED_HIP[h.id]),
     disautonomia && RED_DISAUTONOMIA, ...(lupus ? RED_LUPUS : []), mastocitos && RED_MASTOCITOS,
     osteoporosis && RED_OSTEOPOROSIS, embarazo === 'embarazada' && RED_EMBARAZO, embarazo === 'posparto' && RED_POSPARTO,
-    anticoagulado && RED_ANTICOAGULADO, ...(parkinson ? RED_PARKINSON : []), oncologico && RED_ONCOLOGICO].filter(Boolean)
+    anticoagulado && RED_ANTICOAGULADO, ...(parkinson ? RED_PARKINSON : []), oncologico && RED_ONCOLOGICO, oncologico?.inmuno && RED_ONCOLOGICO_INMUNO].filter(Boolean)
     .filter((p, i, a) => a.findIndex(q => q.cierre === p.cierre) === i);
   return {
     cierre: partes.map(p => TEXTOS_SESION[p.cierre]),
@@ -260,7 +260,7 @@ export function construirPlan(e) {
   // La red neurológica también con un síntoma en una zona `redNeuro` (hoy el
   // periné en lumbar: cola de caballo), aunque no haya hipótesis neurológica
   const red = redSeguridad(e.region, neuro || !!e.redNeuroZona, elegidas, { disautonomia: !!e.disautonomia, lupus: !!e.lupus, mastocitos: !!e.mastocitos,
-    osteoporosis: !!e.osteoporosis?.diagnosticada, embarazo: e.embarazo?.estado || '', anticoagulado: !!e.anticoagulado, parkinson: !!e.parkinson, oncologico: !!e.oncologico });
+    osteoporosis: !!e.osteoporosis?.diagnosticada, embarazo: e.embarazo?.estado || '', anticoagulado: !!e.anticoagulado, parkinson: !!e.parkinson, oncologico: e.oncologico ? { inmuno: !!e.oncologico.inmuno } : false });
   const familias = elegidas.length ? elegidas.map(h => familiaHip(h, e.region)) : [familiaRegion(e.region)];
   const familia = familias[0];
   const tabla = tablaEscalones(familia);
@@ -320,6 +320,7 @@ export function construirPlan(e) {
   if (e.oncologico) {
     avisosHip.push(AVISOS.oncologico);
     if (e.oncologico.metastasis) avisosHip.push(AVISOS.oncologicoMetastasis);
+    if (e.oncologico.rtCorazon) avisosHip.push(AVISOS.oncologicoAutonomico);
     if (e.oncologico.cardiotoxico && ['', 'no', 'ns'].includes(e.oncologico.revisionCardiaca || '')) avisosHip.push(AVISOS.oncologicoCorazon);
   }
   // Implantes con electrodos (docs/implantes-electrodos.md, texto cerrado): en

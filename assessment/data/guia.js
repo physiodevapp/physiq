@@ -455,6 +455,13 @@ export const CONTRASTE_URGENCIAS = {
     patrones: [
       'metastasis (?:en (?:la )?(?:columna|espalda|vertebra)|vertebral|osea)',
       `(?:dolor de espalda|dolor de cuello|dolor en la columna)${HUECO(40)}(?:cada vez (?:mas fuerte|peor)|no se me (?:quita|pasa) (?:ni|con) nada)`
+    ]  },
+  on_u_miocarditis: {
+    tema: 'dolor en el pecho, falta de aire, palpitaciones o desmayo nuevos con inmunoterapia en curso (posible miocarditis)',
+    patrones: [
+      'miocarditis',
+      `(?:inmunoterapia)${HUECO(80)}(?:dolor (?:en el|de) pecho|me falta el aire|palpitaciones|me desmaye|me he desmayado)`,
+      `(?:dolor (?:en el|de) pecho|me falta el aire|palpitaciones|me desmaye|me he desmayado)${HUECO(80)}(?:inmunoterapia)`
     ]
   }
 };

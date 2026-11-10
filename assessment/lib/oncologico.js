@@ -38,6 +38,8 @@ export const conSecuela = (on, k) => onActivo(on) && on.secuelas.includes(k);
 export const conLinfedemaRiesgo = on => conSecuela(on, 'linfedema') || (onActivo(on) && on.tratamientos.includes('cirugiaGanglios'));
 export const conHormonal = on => onActivo(on) && on.tratamientos.includes('hormonal');
 export const conRadioCuello = on => onActivo(on) && on.tratamientos.includes('rtCuello');
+// Inmunoterapia en curso: «En tratamiento» con el chip «Inmunoterapia» (miocarditis, Lyon 2022).
+export const conInmunoActiva = on => onActivo(on) && on.estado === 'tratamiento' && on.tratamientos.includes('inmuno');
 
 // Sesiones anteriores o datos incompletos → la forma completa, con los chips
 // en el orden de la tarjeta; lo que depende de otra fila se limpia.
@@ -78,6 +80,7 @@ export function elementoONVisible(x, on) {
   if (!x || typeof x === 'string' || !x.on) return true;
   if (x.on === 'cardiotoxico') return cardiotoxico(on);
   if (x.on === 'linfedema') return conLinfedemaRiesgo(on);
+  if (x.on === 'inmuno') return conInmunoActiva(on);
   return true;
 }
 
@@ -152,7 +155,7 @@ const canceresTexto = d => (d.cn?.length ? d.cn.join(', ') : 'cáncer sin precis
 
 // Líneas del recuadro de la fase 5, con sus citas, en el orden del texto
 // cerrado (más las de las tablas de Campbell 2019). La de la terapia hormonal
-// es un botón (app.js) y la del bloque de ejercicio aún no existe.
+// es un botón (app.js) y la del bloque de ejercicio, otro (app.js).
 export function lineasRecomendacionON(d) {
   const t = ON.textos;
   const sc = d?.sc || [];
@@ -160,7 +163,9 @@ export function lineasRecomendacionON(d) {
     d?.mo === 'si' ? t.metastasis5 : d?.mo === 'ns' ? conDuda(t.metastasis5) : '',
     t.triaje,
     cardioDe(d || {}) ? t.cardiotoxico5 : '',
+    (d?.tr || []).includes('rtCorazon') ? t.autonomico : '',
     t.dosis,
+    t.ejercicioESC,
     t.supervisado,
     sc.includes('linfedema') ? t.linfedema5 : '',
     sc.includes('ostomia') ? t.ostomia5 : '',
