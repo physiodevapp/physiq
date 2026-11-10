@@ -2527,6 +2527,7 @@ function _oncologicoResultadosHTML(d) {
       <div><strong>Antecedente de cáncer.</strong> ${_escHTML(cn)} · ${d.es === 'tratamiento' ? 'En tratamiento' : 'Tratamiento terminado'}${datos.length ? ` · ${_escHTML(datos.join(' · '))}` : ''}
         ${_lineasCondicionHTML(lineasRecomendacionON(d), 'antecedente de cáncer')}
         ${hormonal}
+        ${enlaceCondicionEjercicioHTML('oncologico', { estado: d.es })}
       </div>
     </div>`;
 }

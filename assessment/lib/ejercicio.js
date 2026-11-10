@@ -114,6 +114,9 @@ const CONDICION_EJERCICIO = {
   // Parkinson, solo con «Diagnosticado»: con «Sospecha» el recuadro solo pide derivar (docs/efectos-ejercicio.md, «Bloque 11»)
   parkinson: { id: 'parkinson', ayuda: 'enlaceCondicionParkinson', motivo: 'parkinson', ayudaPlan: 'enlaceMotivoParkinson',
     enlaza: ({ estado }) => estado === 'diagnosticado' },
+  // Antecedente de cáncer, en los dos estados: las fuentes recogen resultados durante y después del tratamiento (docs/efectos-ejercicio.md, «Bloque 12»)
+  oncologico: { id: 'oncologico', ayuda: 'enlaceCondicionOncologico', motivo: 'oncologico', ayudaPlan: 'enlaceMotivoOncologico',
+    enlaza: ({ estado }) => !!estado },
 };
 
 export function condicionEnlazaEjercicio(condicion, datos = {}) {
@@ -134,7 +137,7 @@ export function datosCondicionEjercicio(condicion, tarjeta, respuestas = {}) {
 // riesgo psicosocial medio o alto, o un PHQ-2, PHQ-9 o GAD-7 completo con
 // síntomas; y el bloque de cada condición especial con `motivo`, con la misma
 // regla de estados que su recuadro de la fase 5 (CONDICION_EJERCICIO).
-// `tarjetas`: { lupus, disautonomia, hipermovilidad, embarazo, parkinson } de state; `respuestas`:
+// `tarjetas`: { lupus, disautonomia, hipermovilidad, embarazo, parkinson, oncologico } de state; `respuestas`:
 // state.sistemicoAnswers (regla vascular). Una regla de lectura, no clínica.
 export function motivosEjercicio({ riesgoPsico, cuestionarios, tarjetas = {}, respuestas = {} } = {}) {
   const psico = riesgoPsico === 'Medio' || riesgoPsico === 'Alto';

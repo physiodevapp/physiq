@@ -427,6 +427,39 @@ export const BLOQUES_EJERCICIO = [
       ],
     },
     fuentes: ['Ernst 2024', 'Osborne 2022', 'Keus 2014'] },
+  { id: 'oncologico', titulo: 'Ejercicio tras un cáncer',
+    // Bloque 12 (docs/efectos-ejercicio.md, propuesta aceptada y bloque revisado por el usuario, 2026-11)
+    tituloPaciente: 'Si ha tenido un cáncer', hojaPaciente: 'condicion',
+    resumen: 'Qué mejora el ejercicio durante y después del tratamiento de un cáncer, qué no está demostrado y qué se sabe de su seguridad',
+    apartados: {
+      que: [
+        { t: 'En modelos animales, el ejercicio protege el corazón frente a la toxicidad de algunos tratamientos; en personas, la función del ventrículo no mostró efecto demostrado y la función vascular mejoró de forma moderada con aeróbico, en estudios pequeños y como resultado secundario (Campbell 2019; Sturgeon 2023).', nivel: 'mecanismo' },
+        { t: 'En el hueso, un año de fuerza de moderada a vigorosa más impacto, al menos dos veces por semana, frena la pérdida de densidad mineral o la mejora algo; caminar no basta y la fuerza moderada con aeróbico no la frenó. La densidad es un marcador: no se midieron fracturas (Campbell 2019; Sturgeon 2023).', nivel: 'mecanismo' },
+      ],
+      evidencia: [
+        { t: 'Durante y después del tratamiento, el ejercicio mejora la fatiga, la ansiedad, los síntomas depresivos y la calidad de vida, y la función física que declara el paciente; es la evidencia más sólida del consenso del ACSM. Para la fatiga, el aeróbico moderado; con intensidad baja el efecto fue débil. Para la ansiedad y el ánimo, el aeróbico o el combinado; la fuerza sola no (Campbell 2019).', nivel: 'clinico' },
+        { t: 'En el linfedema del brazo tras un cáncer de mama, la fuerza progresiva y supervisada es segura: no lo empeora. No se ha demostrado que lo prevenga ni que lo mejore, y no se puede trasladar a otros cánceres (Campbell 2019).', nivel: 'clinico' },
+        { t: 'No está demostrado que mejore la neuropatía por quimioterapia, la cognición medida con tests, las caídas, las náuseas, el dolor, la función sexual ni la tolerancia al tratamiento: hay estudios a favor y en contra, pocos diseñados para ese resultado. Ningún estudio de caídas encontró que el ejercicio hiciera daño, y los datos no indican que empeore la tolerancia al tratamiento (Sturgeon 2023).', nivel: 'clinico' },
+        { t: 'En el sueño, las revisiones no coinciden: una encontró un efecto pequeño y otra ninguno (Sturgeon 2023).', nivel: 'discutido' },
+        { t: 'A quién se aplica: la mayoría de los estudios son de cáncer de mama y de próstata, y muchos ensayos piloto incluyeron solo a personas con síntomas, así que el beneficio puede ser menor en quien tiene pocos (Campbell 2019; Sturgeon 2023).', nivel: 'clinico' },
+      ],
+      consulta: [
+        { t: 'Que la evidencia sea insuficiente para un resultado no significa que la persona deba quedarse quieta: el consenso pide que evite la inactividad (Campbell 2019).', nivel: 'clinico' },
+        { t: 'La seguridad de la fuerza con impacto en quien tiene osteoporosis o metástasis óseas no se ha estudiado: con ellas, puede no estar indicada (Sturgeon 2023); la pauta es la del recuadro de la fase 5.', nivel: 'clinico' },
+        { t: 'Para las caídas, sin ensayos propios, se pueden usar los programas de prevención de caídas de siempre (Campbell 2019; Sturgeon 2023).', nivel: 'clinico' },
+      ],
+      paciente: [
+        { t: 'Tras un cáncer, el ejercicio ayuda con el cansancio, el ánimo y la calidad de vida. Para el cansancio conviene que sea moderado: el muy suave apenas lo cambia.', apoya: [0] },
+        { t: 'Si tiene linfedema en el brazo tras un cáncer de mama, hacer fuerza empezando con poco peso y subiendo despacio, con supervisión, es seguro.', apoya: [1] },
+      ],
+      detalle: [
+        'Dosis con las que se vio el efecto: fatiga, aeróbico moderado 3 veces por semana al menos 12 semanas; ansiedad y ánimo, aeróbico moderado 3 veces por semana 12 semanas o combinado 2 veces por semana de 6 a 12 semanas; calidad de vida, combinado 2 o 3 veces por semana al menos 12 semanas (Campbell 2019).',
+        'Supervisión: en ansiedad, ánimo y calidad de vida, el efecto fue mayor con programas supervisados; en la fatiga, no dependió de la supervisión; en la función física, los programas sin supervisar pueden servir en supervivientes mayores (Campbell 2019).',
+        'Sturgeon 2023 revisó 78 estudios (13 481 supervivientes) de los diez resultados que el consenso de 2019 dejó como insuficientes y ninguno cambió: «there remains insufficient evidence for a FITT prescription for any outcome». En la neuropatía, 7 estudios a favor y 6 sin beneficio; en el dolor, el 65 % a favor pero muy heterogéneos; en la función sexual, solo cáncer de próstata.',
+        'Ninguna de estas fuentes trata la supervivencia ni la recaída: el bloque no dice nada de ellas.',
+      ],
+    },
+    fuentes: ['Campbell 2019', 'Sturgeon 2023'] },
 ];
 
 // Bloque que enlaza la fase 6 por hipótesis (docs/efectos-ejercicio.md,
@@ -485,6 +518,7 @@ export const TEXTOS_EJERCICIO = {
   enlaceMotivoHipermovilidad: 'Por la hipermovilidad: sus frases para el paciente dicen que la fuerza graduada no suele aumentar el dolor y que no hay un ejercicio «especial»; vienen de ensayos sin el subtipo vascular.',
   enlaceMotivoEmbarazo: 'Por el embarazo o el posparto: sus frases para el paciente hablan del ánimo, de los escapes y del dolor de espalda o pelvis tras el parto, sin prometer más; la dosis es la del aviso de este plan.',
   enlaceMotivoParkinson: 'Por el Parkinson: sus frases para el paciente dicen que casi cualquier ejercicio ayuda algo y que lo ganado se pierde si se deja; la dosis es la del aviso de este plan.',
+  enlaceMotivoOncologico: 'Por el antecedente de cáncer: sus frases para el paciente hablan del cansancio, el ánimo y la calidad de vida, y de la fuerza con linfedema tras un cáncer de mama; la dosis es la del aviso de este plan.',
   enlaceEducacionAyuda: 'Abre «{titulo}», el bloque que corresponde a la irritabilidad elegida.',
   enlaceEducacionAyudaHip: 'Abre «{titulo}», el bloque que corresponde a {hipotesis}.',
   // Enlaces de los recuadros de la fase 5 (estados: CONDICION_EJERCICIO, lib/ejercicio.js)
@@ -494,5 +528,6 @@ export const TEXTOS_EJERCICIO = {
   enlaceCondicionDisautonomia: 'Por qué los programas empiezan tumbado y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionEmbarazo: 'Por qué se recomienda moverse y hasta dónde llega lo demostrado en el dolor de espalda y pelvis, el ánimo y los escapes; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionParkinson: 'Qué tipos de ejercicio ayudan y hasta dónde llega lo demostrado; la dosis sigue siendo la de este recuadro.',
+  enlaceCondicionOncologico: 'Qué mejora el ejercicio tras un cáncer y qué no está demostrado; la dosis sigue siendo la de este recuadro.',
   enlaceCondicionOsteoporosis: 'Lectura para ti: en el hueso el bloque solo llega a mecanismo (la densidad mejora algo); no está demostrado que el ejercicio reduzca las fracturas.',
 };
