@@ -1913,3 +1913,163 @@ export const IMPLANTES = {
     ro4: 'propone electroestimulación neuromuscular: solo dentro de las líneas de arriba',
   },
 };
+
+// ─── Antecedente de cáncer (Fase P, docs/antecedente-oncologico.md) ─────────
+// Sistema transversal de las 7 regiones, solo con la tarjeta «Antecedente de
+// cáncer» de la fase 1 marcada (`soloOncologico`, sistemasActivos() en app.js).
+// Cada pregunta y bandera puede llevar `on`: 'cardiotoxico' (solo con
+// antraciclinas o trastuzumab, o radioterapia con el corazón en el campo) o
+// 'linfedema' (solo con «Linfedema» en secuelas o «Cirugía con ganglios
+// extirpados»); sin `on`, con los dos estados (lib/oncologico.js,
+// elementoONVisible). Textos del «Texto cerrado para revisión», aprobado por
+// el usuario (noviembre 2026), con los cambios de NICE NG234 y de las tablas
+// de Campbell 2019 y 2022, copiados tal cual. Los marcados [propia] en el
+// texto cerrado son redacción propia aprobada.
+const ON_CITA = {
+  nice: 'NICE NG234 — NICE, «Spinal metastases and metastatic spinal cord compression», guía NG234, 2023',
+  downie: 'Downie 2013 — Downie, Williams, Henschke et al., «Red flags to screen for malignancy and fracture in patients with low back pain: systematic review», BMJ 2013;347:f7095',
+  campbell19: 'Campbell 2019 — Campbell, Winters-Stone, Wiskemann et al., «Exercise Guidelines for Cancer Survivors: Consensus Statement from International Multidisciplinary Roundtable», Med Sci Sports Exerc 2019;51(11):2375–2390',
+  campbell22: 'Campbell 2022 — Campbell, Cormie, Weller et al., «Exercise Recommendation for People With Bone Metastases: Expert Consensus for Health Care Providers and Exercise Professionals», JCO Oncol Pract 2022;18(5):e697–e709',
+  gilchrist: 'Gilchrist 2019 — Gilchrist, Barac, Ades et al., «Cardio-Oncology Rehabilitation to Manage Cardiovascular Outcomes in Cancer Patients and Survivors», Circulation 2019;139(21):e997–e1012',
+};
+
+export const SIS_ONCOLOGICO = {
+  id: 'transversal_oncologico', icon: '🎗', nombre: 'Antecedente de cáncer', soloOncologico: true,
+  banderasRojas: [
+    { texto: 'Con antecedente de cáncer: dificultad para andar, debilidad, adormecimiento u hormigueo, dolor que baja por un miembro o cambios al orinar o en el intestino (compresión medular metastásica)', pregunta: 'on_u_medula' },
+    { texto: 'Con antecedente de cáncer: dolor de espalda o cuello nuevo o que ha cambiado, intenso, que va a más, mecánico, al hacer fuerza o que despierta por la noche', pregunta: 'on_u_columna' },
+  ],
+  banderasAmarillas: [
+    { texto: 'Con antecedente de cáncer: dolor nuevo en otro hueso que no se pasa', pregunta: 'on_d_hueso' },
+    { texto: 'Tras un tratamiento que puede dañar el corazón: más falta de aire, tobillos más hinchados o palpitaciones', on: 'cardiotoxico', pregunta: 'on_d_corazon' },
+    { texto: 'Con linfedema o ganglios extirpados: hinchazón nueva o que aumenta en el brazo o la pierna', on: 'linfedema', pregunta: 'on_d_linfedema' },
+  ],
+  preguntas: [
+    { id: 'on_u_medula', alerta: true,
+      urgencia: 'Posible compresión medular por metástasis: urgencia oncológica, a urgencias hoy sin demora.',
+      text: '¿Tiene, desde hace poco, dificultad para andar, debilidad en brazos o piernas, adormecimiento u hormigueo, un dolor que baja por un brazo o una pierna, o cambios al orinar o en el control del intestino?',
+      razonamiento: {
+        porque: 'En alguien con un cáncer pasado o actual, la dificultad para andar, la debilidad de los miembros, el adormecimiento, el hormigueo o la pérdida de sensibilidad, el dolor radicular y los cambios en la vejiga o el intestino son síntomas y signos de compresión medular metastásica (NICE NG234, recuadro 1).',
+        peso: 'NICE pide contactar de inmediato y tratarlo como una urgencia oncológica (NICE NG234, 1.3.2: «Treat this as an oncological emergency»). Se cruza con la cola de caballo (l6, en lumbar), la compresión por una fractura vertebral de la osteoporosis (op_u_medula) y el hematoma epidural del anticoagulado (ac_u_espinal): cualquiera de ellas lleva a urgencias, y no se repiten aquí.',
+        fuentes: ['NICE NG234'],
+        citas: [`${ON_CITA.nice}, recomendación 1.3.2 y recuadro 1.`]
+      } },
+    { id: 'on_u_columna', alerta: true,
+      urgencia: 'Dolor de columna con rasgos de metástasis en alguien con cáncer: valoración por su oncología en 24 h.',
+      text: '¿Tiene un dolor de espalda o de cuello nuevo o que ha cambiado, que es intenso y no cede, va a más, empeora al estar de pie, sentado o al moverse, al toser, estornudar o hacer fuerza en el baño, le despierta por la noche, o le da calambres en las piernas al caminar?',
+      razonamiento: {
+        porque: 'NICE recoge como rasgos de un dolor de columna por metástasis el dolor intenso que no cede, el que va a más, el mecánico (empeora de pie, sentado o al moverse), el que empeora al hacer fuerza (toser, estornudar o ir al baño), el que despierta por la noche, el dolor localizado a la presión y la claudicación (calambres en las piernas al caminar) (NICE NG234, recuadro 1). Con un cáncer pasado o actual, pide el consejo del coordinador de oncología en 24 horas (NICE NG234, 1.3.3).',
+        peso: 'Se pregunta por un dolor «nuevo o que ha cambiado»: con un dolor lumbar ya estudiado y sin metástasis, NICE pide explicar qué cambios vigilar y consultar con urgencia si cambia o empeora (NICE NG234, 1.3.6). El dolor localizado a la presión es un hallazgo de la exploración, no se pregunta. El antecedente de cáncer ya pesa por sí solo en el cribado de malignidad de cada región (en lumbar, l2: la probabilidad de un tumor vertebral sube al 7 % en atención primaria, Downie 2013), y el dolor nocturno tiene su propia pregunta (l_on2, cv1).',
+        fuentes: ['NICE NG234', 'Downie 2013'],
+        citas: [`${ON_CITA.nice}, recomendaciones 1.3.3 y 1.3.6 y recuadro 1.`, `${ON_CITA.downie}.`]
+      } },
+    { id: 'on_d_hueso', alerta: true,
+      derivacion: 'Dolor óseo nuevo con antecedente de cáncer: que lo valore pronto su oncólogo o su médico.',
+      text: '¿Tiene un dolor nuevo en otro hueso (cadera, muslo, brazo, costillas) que no se le pasa?',
+      razonamiento: {
+        porque: 'Con un cáncer pasado o actual, un dolor óseo nuevo que no se pasa puede ser una metástasis; las metástasis óseas tienen riesgo de complicación esquelética, que se valora antes del ejercicio (Campbell 2022).',
+        peso: 'NICE NG234 trata solo la columna, así que fuera de ella no hay plazo con fuente: la derivación «pronto» a su oncólogo o su médico es redacción propia aprobada por el usuario. Si el dolor está en la espalda o el cuello, es la pregunta anterior (24 h).',
+        fuentes: ['Campbell 2022', 'NICE NG234'],
+        citas: [`${ON_CITA.campbell22}.`, `${ON_CITA.nice}, alcance de la guía.`]
+      } },
+    { id: 'on_d_corazon', on: 'cardiotoxico', alerta: true,
+      derivacion: 'Síntomas cardiacos tras un tratamiento que puede dañar el corazón: a cardiología antes del ejercicio moderado (Gilchrist 2019).',
+      text: '¿Tiene desde hace poco más falta de aire, los tobillos más hinchados o palpitaciones?',
+      razonamiento: {
+        porque: 'Las antraciclinas, el trastuzumab y la radioterapia con el corazón en el campo aumentan el riesgo cardiaco tardío, sobre todo con 60 años o más al tratarse; los supervivientes a 5 años tienen 1,3–3,6 veces más mortalidad cardiovascular (Gilchrist 2019).',
+        peso: 'La AHA propone valorar la seguridad cardiopulmonar, con prueba de esfuerzo o una marcha de 6 minutos, antes de la rehabilitación cardio-oncológica (Gilchrist 2019). Con síntomas nuevos, a cardiología antes del ejercicio moderado.',
+        fuentes: ['Gilchrist 2019'],
+        citas: [`${ON_CITA.gilchrist}.`]
+      } },
+    { id: 'on_d_linfedema', on: 'linfedema', alerta: true,
+      derivacion: 'Linfedema nuevo o que aumenta: que lo valore su médico o su fisioterapeuta de linfedema.',
+      text: '¿Se le ha hinchado más el brazo o la pierna, o le ha aparecido hinchazón nueva?',
+      razonamiento: {
+        porque: 'Tras extirpar ganglios, o con un linfedema ya conocido, una hinchazón nueva o que aumenta cambia el ejercicio: el empeoramiento del linfedema es de las situaciones que piden valoración y autorización médica antes de seguir (Campbell 2019, tabla 4). En el cáncer de mama, la fuerza progresiva supervisada es segura con linfedema del brazo; en otros cánceres no hay datos (Campbell 2019).',
+        peso: 'Derivación no urgente, de redacción propia aprobada por el usuario (decisión 8). Sin una fuente leída sobre la celulitis encima de un linfedema, no hay pregunta de urgencia para ella.',
+        fuentes: ['Campbell 2019'],
+        citas: [`${ON_CITA.campbell19}, tablas 4 y 5.`]
+      } },
+  ],
+  // Chips y filas de la tarjeta y textos. Las citas de estos textos cuentan en
+  // docs/referencias.md como menciones del cribado.
+  oncologico: {
+    estados: { terminado: 'Tratamiento terminado', tratamiento: 'En tratamiento' },
+    canceres: [
+      { id: 'mama', texto: 'Mama', corto: 'mama' },
+      { id: 'prostata', texto: 'Próstata', corto: 'próstata' },
+      { id: 'colorrectal', texto: 'Colorrectal', corto: 'colorrectal' },
+      { id: 'pulmon', texto: 'Pulmón', corto: 'pulmón' },
+      { id: 'hematologico', texto: 'Hematológico', corto: 'hematológico' },
+      { id: 'cabezaCuello', texto: 'Cabeza y cuello', corto: 'cabeza y cuello' },
+      { id: 'ginecologico', texto: 'Ginecológico', corto: 'ginecológico' },
+      { id: 'otro', texto: 'Otro', corto: 'otro' },
+      { id: 'ns', texto: 'No lo sabe', corto: 'no sabe cuál' },
+    ],
+    tratamientos: [
+      { id: 'cirugiaGanglios', texto: 'Cirugía con ganglios extirpados', corto: 'cirugía con ganglios extirpados' },
+      { id: 'quimio', texto: 'Quimioterapia', corto: 'quimioterapia' },
+      { id: 'cardiotoxico', texto: 'Antraciclinas o trastuzumab', corto: 'antraciclinas o trastuzumab' },
+      { id: 'rtCorazon', texto: 'Radioterapia con el corazón en el campo (tórax, mama izquierda, mediastino)', corto: 'radioterapia (corazón en el campo)' },
+      { id: 'rtCuello', texto: 'Radioterapia del cuello o del mediastino', corto: 'radioterapia (cuello o mediastino)' },
+      { id: 'hormonal', texto: 'Terapia hormonal', corto: 'terapia hormonal' },
+      { id: 'inmuno', texto: 'Inmunoterapia', corto: 'inmunoterapia' },
+      { id: 'ns', texto: 'No lo sabe', corto: 'tratamientos: no lo sabe' },
+    ],
+    metastasis: { no: 'No', si: 'Sí', ns: 'No lo sabe' },
+    zonas: [
+      { id: 'columna', texto: 'Columna', corto: 'columna' },
+      { id: 'pelvis', texto: 'Pelvis o cadera', corto: 'pelvis o cadera' },
+      { id: 'femur', texto: 'Fémur', corto: 'fémur' },
+      { id: 'otras', texto: 'Otras', corto: 'otras' },
+    ],
+    revision: { si_normal: 'Sí, normal', si_alterado: 'Sí, alterado', no: 'No', ns: 'No lo sabe' },
+    secuelas: [
+      { id: 'neuropatia', texto: 'Neuropatía (hormigueo o adormecimiento en pies o manos)', corto: 'neuropatía' },
+      { id: 'linfedema', texto: 'Linfedema', corto: 'linfedema' },
+      { id: 'ostomia', texto: 'Ostomía', corto: 'ostomía' },
+      { id: 'fatiga', texto: 'Fatiga', corto: 'fatiga' },
+      { id: 'osteoporosis', texto: 'Osteoporosis', corto: 'osteoporosis' },
+    ],
+    linfedema: [
+      { id: 'brazoDerecho', texto: 'Brazo derecho', corto: 'brazo derecho' },
+      { id: 'brazoIzquierdo', texto: 'Brazo izquierdo', corto: 'brazo izquierdo' },
+      { id: 'piernaDerecha', texto: 'Pierna derecha', corto: 'pierna derecha' },
+      { id: 'piernaIzquierda', texto: 'Pierna izquierda', corto: 'pierna izquierda' },
+    ],
+    textos: {
+      // Fase 1 (nota y ayuda: [propia])
+      nota: 'Márcala si ha tenido un cáncer, aunque esté curado. No sustituye a la pregunta del cribado de cada región, que se hace a todos.',
+      ayudaTratamiento: 'Incluye la terapia hormonal de mantenimiento (anastrozol, letrozol, exemestano, tamoxifeno, o para la próstata).',
+      metastasis: 'Antes del ejercicio estructurado, consulta con su equipo médico, imprescindible si la lesión es inestable o de estabilidad desconocida, si ha tenido dolor óseo o tratamiento para él en los últimos 3 meses, o una fractura por la enfermedad en el último año (Campbell 2022, tabla 1).',
+      duda: 'Hasta confirmarlo:',
+      cardiaco: 'Recibió un tratamiento que puede dañar el corazón años después. Pide una valoración cardiaca antes del ejercicio de intensidad moderada (Gilchrist 2019).',
+      cardiacoAlterado: 'Sigue los límites de su cardiólogo; si no los tienes, pídeselos antes del ejercicio moderado.',   // [propia]
+      tensionBrazos: 'Mide la tensión en los dos brazos: la radioterapia puede estrechar la arteria de un lado (Gilchrist 2019).',
+      ostomiaTarjeta: 'Con ostomía: valoración y autorización médica antes del ejercicio (Campbell 2019, tabla 4).',
+      osteoporosis: 'Si tiene osteoporosis, marca también su tarjeta.',
+      hormonal: 'Qué vigilar con estos fármacos →',
+      // Fase 3
+      fatiga: 'La fatiga del cáncer no es irritabilidad: el ejercicio moderado la reduce, y el suave apenas (Campbell 2019). Dosifica por cómo toleró la sesión anterior.',
+      // Fase 4b (el thrust y la neuropatía: [propia])
+      metastasis4b: 'Metástasis óseas: sin impactos, sin flexión ni extensión extremas del tronco, sin flexión ni extensión del tronco con carga y sin giros bruscos (Campbell 2019, tabla 5); sin movimientos rápidos ni cargados al final del recorrido en la zona de la lesión (Campbell 2022); y sin thrust en esa zona.',
+      neuropatia4b: 'Neuropatía: las pruebas de sensibilidad y equilibrio pueden salir alteradas por ella; compáralas con su línea base.',
+      // Fase 5, en este orden
+      metastasis5: 'Consulta con su equipo médico antes del ejercicio estructurado, imprescindible si la lesión es inestable o de estabilidad desconocida, si ha tenido dolor óseo o tratamiento para él en los últimos 3 meses, o una fractura por la enfermedad en el último año (Campbell 2022, tabla 1). Evita los impactos, la flexión y la extensión extremas del tronco, la flexión o la extensión del tronco con carga y los giros bruscos (Campbell 2019, tabla 5), y los movimientos rápidos o cargados al final del recorrido en la zona de la lesión (Campbell 2022); empieza con movimiento activo sin carga y progresa despacio mientras no aumente el dolor (Campbell 2022, tabla 1); prevén las caídas (Campbell 2022). Si refiere dolor óseo, que lo valore su equipo médico antes de seguir (Campbell 2019, tabla 5).',
+      triaje: 'Antes del ejercicio (triaje de la NCCN): con metástasis óseas, ostomía, cirugía de pulmón o abdomen, enfermedad cardiopulmonar o fatiga extrema, valoración y autorización médica previas; con neuropatía, linfedema, problemas musculoesqueléticos o hueso frágil, valoración médica recomendada y adaptar el ejercicio a lo que encuentres (Campbell 2019, tabla 4).',
+      cardiotoxico5: 'Más riesgo cardiaco tardío, sobre todo con 60 años o más al tratarse: los supervivientes a 5 años tienen 1,3–3,6 veces más mortalidad cardiovascular. Antes del ejercicio moderado, valoración cardiopulmonar (prueba de esfuerzo, o marcha de 6 minutos como alternativa) (Gilchrist 2019).',
+      dosis: 'Objetivo: aeróbico moderado al menos 3 veces por semana, al menos 30 minutos, al menos 8–12 semanas; y fuerza al menos 2 veces por semana, al menos 2 series de 8–15 repeticiones al 60 % de 1RM o más. Para la fatiga hace falta intensidad moderada; la suave apenas la reduce. Si no lo tolera, baja la dosis aunque quede por debajo (Campbell 2019).',
+      supervisado: 'Con secuelas o deterioro físico, mejor un programa supervisado por un profesional sanitario que uno comunitario (Schmitz 2019). Antes de empezar, valora la condición física y la función (Campbell 2019, tabla 5).',
+      linfedema5: 'Tras un cáncer de mama, la fuerza progresiva supervisada de grandes grupos musculares, 2–3 veces por semana, empezando bajo y subiendo despacio, es segura; en el linfedema de otros cánceres no hay datos (Campbell 2019). La manga de compresión durante el ejercicio, según prefiera: no hay pruebas a favor ni en contra (Campbell 2019, tabla 5).',
+      ostomia5: 'Ostomía: que vacíe la bolsa antes; fuerza con poca resistencia y progresión lenta, sin Valsalva; adapta los ejercicios de tronco que den presión o abombamiento del abdomen; con ileostomía, más riesgo de deshidratación (Campbell 2019, tabla 5).',
+      neuropatia5: 'Neuropatía: valora estabilidad, equilibrio y marcha antes; bicicleta estática o agua mejor que caminar si afecta a la estabilidad (o cinta con barandillas); máquinas mejor que pesos libres; mancuernas recubiertas o guantes acolchados si molestan las manos (Campbell 2019, tabla 5). Aplica los programas de prevención de caídas habituales (Campbell 2019; Montero-Odasso 2022). En el único estudio leído, la neuropatía no se asoció a las caídas y sí la función ejecutiva (McNeish 2023).',
+      enTratamiento: 'Si se encuentra mal o tiene fiebre, a urgencias o al teléfono de 24 horas de oncología (NICE CG151).',
+      vigilar: 'Explícale qué cambios vigilar (dolor de espalda nuevo o que empeora, debilidad, adormecimiento, cambios al orinar) y que consulte con urgencia si aparecen (NICE NG234, 1.3.6).',
+      // Fase 6 (aviso del corazón: [propia])
+      ligera: 'Hasta tener la valoración, intensidad ligera.',
+      // Bloque del informe con IA (sin fuentes)
+      iaCorazon: 'Con tratamiento cardiotóxico sin revisión cardiaca, no propongas ejercicio de intensidad moderada sin valoración previa.',
+      iaMetastasis: 'Con metástasis óseas, nada de movimientos rápidos o cargados al final del recorrido en la zona de la lesión.',
+    },
+  },
+};

@@ -55,6 +55,11 @@ export function estadoCondicion(c, st) {
       const ie = st.implantes || {};
       return ie.estado === 'lleva' ? marcada('Lleva') : sin('No consta');
     }
+    case 'oncologico': {
+      const on = st.oncologico || {};
+      if (on.estado === 'terminado') return marcada('Tratamiento terminado');
+      return on.estado === 'tratamiento' ? marcada('En tratamiento') : sin('No consta');
+    }
     case 'parkinson': {
       const pk = st.parkinson || {};
       if (pk.estado === 'diagnosticado') return marcada('Diagnosticado');

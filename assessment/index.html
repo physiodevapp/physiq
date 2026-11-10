@@ -798,6 +798,60 @@
     </div>
   </div>
 
+  <!-- Condición especial (docs/antecedente-oncologico.md): sin marcar = no consta;
+       dos estados, chips (los pinta _pintarONUI) y líneas rojas, nunca plegadas -->
+  <div class="card" id="cardOncologico">
+    <div class="card-title">Antecedente de cáncer</div>
+    <div class="plan-note-hint" id="onNota"></div>
+    <div class="option-group option-group-full" id="onEstado">
+      <button type="button" class="option-btn" data-valor="terminado" onclick="selectONEstado('terminado')">Tratamiento terminado</button>
+      <button type="button" class="option-btn" data-valor="tratamiento" onclick="selectONEstado('tratamiento')">En tratamiento</button>
+    </div>
+    <div class="plan-note-hint" id="onAyuda"></div>
+    <div id="onCuerpo" style="display:none">
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Qué cáncer? (marca todo lo que haya tenido)</div>
+      <div class="option-group hm-subtipos" data-on-lista="canceres"></div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Qué tratamientos recibió?</div>
+      <div class="option-group hm-subtipos" data-on-lista="tratamientos"></div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">¿Metástasis en los huesos?</div>
+      <div class="option-group hm-subtipos" data-on-fila="metastasis">
+        <button type="button" class="option-btn" data-valor="no" onclick="selectONFila('metastasis','no')">No</button>
+        <button type="button" class="option-btn" data-valor="si" onclick="selectONFila('metastasis','si')">Sí</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectONFila('metastasis','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo" id="onZonasWrap" style="display:none">
+      <div class="form-label">¿Dónde?</div>
+      <div class="option-group hm-subtipos" data-on-lista="zonas"></div>
+    </div>
+    <div class="form-group hm-subtipo" id="onRevisionWrap" style="display:none">
+      <div class="form-label">¿Le revisaron el corazón después del tratamiento?</div>
+      <div class="option-group hm-subtipos" data-on-fila="revision">
+        <button type="button" class="option-btn" data-valor="si_normal" onclick="selectONFila('revision','si_normal')">Sí, normal</button>
+        <button type="button" class="option-btn" data-valor="si_alterado" onclick="selectONFila('revision','si_alterado')">Sí, alterado</button>
+        <button type="button" class="option-btn" data-valor="no" onclick="selectONFila('revision','no')">No</button>
+        <button type="button" class="option-btn" data-valor="ns" onclick="selectONFila('revision','ns')">No lo sabe</button>
+      </div>
+    </div>
+    <div class="form-group hm-subtipo">
+      <div class="form-label">Secuelas</div>
+      <div class="option-group hm-subtipos" data-on-lista="secuelas"></div>
+    </div>
+    <div class="form-group hm-subtipo" id="onLinfedemaWrap" style="display:none">
+      <div class="form-label">¿Dónde tiene el linfedema?</div>
+      <div class="option-group hm-subtipos" data-on-lista="linfedema"></div>
+    </div>
+    <div class="on-lineas" id="onLineas"></div>
+    <div class="hm-nota" id="onOsteoporosis" style="display:none"></div>
+    <div class="hm-nota" id="onHormonal" style="display:none"></div>
+    </div>
+  </div>
+
   <!-- Paso 3 de la farmacología (docs/farmacos-paciente.md): familias de la guía
        que toma, sin texto libre; los chips salen de data/farmacos.js -->
   <div class="card" id="cardFarmacos">
@@ -1118,6 +1172,7 @@
     <div class="ds-nota solo-ds" id="dsNotaTolerancia"></div>
     <div class="ds-nota solo-les" id="lesNotaBrote" style="display:none"></div>
     <div class="ds-nota solo-pk" id="pkNotaDolor"></div>
+    <div class="ds-nota" id="onNotaFatiga" style="display:none"></div>
     <div id="irritabilidadResumen" style="margin-top:1rem;"></div>
   </div>
 

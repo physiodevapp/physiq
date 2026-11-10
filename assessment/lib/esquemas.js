@@ -15,6 +15,7 @@ export const CONDICION_SISTEMA = {
   soloEmbarazo: 'tarjeta «Embarazo o posparto» marcada',
   soloAnticoagulado: 'tarjeta «Paciente anticoagulado o antiagregado» marcada',
   soloParkinson: 'tarjeta «Parkinson» marcada',
+  soloOncologico: 'tarjeta «Antecedente de cáncer» marcada',
 };
 // Cuándo se ve una pregunta dentro de su sistema (mismas reglas que lib/<condición>.js)
 export function condicionPregunta(q) {
@@ -29,6 +30,8 @@ export function condicionPregunta(q) {
   if (q.pk === 'diagnosticado') t.push('solo «Diagnosticado»');
   if (q.pk === 'estimulador') t.push('con estimulador cerebral profundo');
   if (q.pk === 'sospecha') t.push('solo «Sospecha»');
+  if (q.on === 'cardiotoxico') t.push('con un tratamiento que puede dañar el corazón');
+  if (q.on === 'linfedema') t.push('con linfedema o ganglios extirpados');
   if (q.em) {
     const tramo = (nombre, r, uds) => r ? nombre + (r.desde ? ` desde la semana ${r.desde}` : '') + (r.hasta ? ` hasta la semana ${r.hasta}${uds}` : '') : null;
     const partes = [tramo('embarazo', q.em.embarazo, ''), tramo('posparto', q.em.posparto, ' tras el parto')].filter(Boolean);

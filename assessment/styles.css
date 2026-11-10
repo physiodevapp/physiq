@@ -3122,6 +3122,11 @@ body.parkinson .solo-pk { display: block; }
 .ie-lineas:not(:empty) { margin-top: 8px; }
 .ie-lineas .alert { margin: 0 0 8px; }
 .ie-lineas .alert:last-child { margin-bottom: 0; }
+/* Antecedente de cáncer (Fase P, docs/antecedente-oncologico.md): líneas rojas
+   de la tarjeta, nunca plegadas, como las de los implantes. */
+.on-lineas:not(:empty) { margin-top: 8px; }
+.on-lineas .alert { margin: 0 0 8px; }
+.on-lineas .alert:last-child { margin-bottom: 0; }
 /* Casillas de lupus y desencadenantes de mastocitos: chips de selección
    múltiple (.hm-subtipos), como las complicaciones de la cirugía */
 #maOtro { margin-top: 8px; }

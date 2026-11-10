@@ -28,8 +28,8 @@
     "fecha": "2026-10-31"
   },
   "condiciones": {
-    "huella": "c252801d",
-    "fecha": "2026-11-06"
+    "huella": "0f5a4c05",
+    "fecha": "2026-11-10"
   },
   "confirmacion-cadera": {
     "huella": "868c847b",
@@ -60,32 +60,32 @@
     "fecha": "2026-10-31"
   },
   "cribado-cadera": {
-    "huella": "4d0aa1b6",
-    "fecha": "2026-11-06"
+    "huella": "ae24d888",
+    "fecha": "2026-11-10"
   },
   "cribado-cervical": {
-    "huella": "b1da49ad",
-    "fecha": "2026-11-06"
+    "huella": "6e3f3895",
+    "fecha": "2026-11-10"
   },
   "cribado-codo": {
-    "huella": "d02e73b1",
-    "fecha": "2026-11-06"
+    "huella": "45ed5c99",
+    "fecha": "2026-11-10"
   },
   "cribado-hombro": {
-    "huella": "9746d799",
-    "fecha": "2026-11-06"
+    "huella": "aee68121",
+    "fecha": "2026-11-10"
   },
   "cribado-lumbar": {
-    "huella": "061d53f7",
-    "fecha": "2026-11-06"
+    "huella": "b11773cb",
+    "fecha": "2026-11-10"
   },
   "cribado-rodilla": {
-    "huella": "c26ecbfc",
-    "fecha": "2026-11-06"
+    "huella": "661abb0a",
+    "fecha": "2026-11-10"
   },
   "cribado-tobillo_pie": {
-    "huella": "e7880e01",
-    "fecha": "2026-11-06"
+    "huella": "c657c1c9",
+    "fecha": "2026-11-10"
   },
   "ejercicio-paciente": {
     "huella": "049c0f83",
@@ -140,8 +140,8 @@
     "fecha": "2026-11-07"
   },
   "plan": {
-    "huella": "6a14a639",
-    "fecha": "2026-11-06"
+    "huella": "1313d59c",
+    "fecha": "2026-11-10"
   },
   "sintomas": {
     "huella": "939bcabb",

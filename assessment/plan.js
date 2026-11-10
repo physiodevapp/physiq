@@ -24,6 +24,7 @@ import { emActivo } from './lib/embarazo.js';
 import { acActivo } from './lib/anticoagulado.js';
 import { pkDiagnosticado, estimuladorAviso } from './lib/parkinson.js';
 import { ieActivo } from './lib/implantes.js';
+import { onActivo, conMetastasis, cardiotoxico, conSecuela } from './lib/oncologico.js';
 import { familiasPaciente, FAMILIA_AC } from './lib/farmacos-paciente.js';
 import { hmActiva } from './lib/hipermovilidad.js';
 import { citasHTML, citasEnTexto } from './lib/citas.js';
@@ -125,6 +126,10 @@ function entrada(hs) {
     parkinson: pkDiagnosticado(state.parkinson) ? { estimulador: estimuladorAviso(state.parkinson) } : null,
     // Implantes con electrodos (docs/implantes-electrodos.md): avisos y consejos para casa
     implantes: ieActivo(state.implantes) ? { tipos: state.implantes.tipos } : null,
+    // Antecedente de cáncer (docs/antecedente-oncologico.md): avisos y red de seguridad
+    oncologico: onActivo(state.oncologico) ? { estado: state.oncologico.estado, metastasis: conMetastasis(state.oncologico),
+      cardiotoxico: cardiotoxico(state.oncologico), revisionCardiaca: state.oncologico.revision,
+      linfedema: conSecuela(state.oncologico, 'linfedema'), neuropatia: conSecuela(state.oncologico, 'neuropatia') } : null,
     // Fármacos que toma (docs/farmacos-paciente.md): un aviso por familia revisada;
     // los antitrombóticos salen de su tarjeta
     farmacos: familiasPaciente(state).map(x => x.id).filter(id => id !== FAMILIA_AC),

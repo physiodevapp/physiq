@@ -439,5 +439,22 @@ export const CONTRASTE_URGENCIAS = {
       `(?:mucho mas rigid[oa]|mas rigid[oa] que nunca|no me puedo mover|no puedo moverme|bloquead[oa])${HUECO(60)}(?:fiebre|confus|sudo|tragar)`,
       `(?:fiebre|confus|sudo)${HUECO(60)}(?:mucho mas rigid[oa]|no me puedo mover|no puedo moverme)`
     ]
+  },
+  // ── Antecedente de cáncer (docs/antecedente-oncologico.md) ──
+  on_u_medula: {
+    tema: 'dificultad para andar, debilidad, adormecimiento, dolor que baja por un miembro o cambios al orinar en alguien con cáncer (posible compresión medular metastásica)',
+    patrones: [
+      'compresion medular',
+      `(?:debilidad|flojera|torpeza|perdiendo fuerza|hormigue\\w*)${HUECO(30)}(?:las (?:dos )?piernas|ambas piernas)`,
+      `(?:las dos piernas|ambas piernas)${HUECO(20)}(?:acorchad|dormid|debiles|flojas|sin fuerza|torpes)`,
+      ...ESFINTERES
+    ]
+  },
+  on_u_columna: {
+    tema: 'un dolor de espalda o cuello nuevo, intenso, que va a más o despierta por la noche en alguien con cáncer (posible metástasis en la columna)',
+    patrones: [
+      'metastasis (?:en (?:la )?(?:columna|espalda|vertebra)|vertebral|osea)',
+      `(?:dolor de espalda|dolor de cuello|dolor en la columna)${HUECO(40)}(?:cada vez (?:mas fuerte|peor)|no se me (?:quita|pasa) (?:ni|con) nada)`
+    ]
   }
 };

@@ -194,6 +194,20 @@ export const CONDICIONES = [
     notaAparte: 'holter',
   },
   {
+    id: 'oncologico',
+    nombre: 'Antecedente de cáncer',
+    que: 'Haber tenido un cáncer, aunque esté curado; los tratamientos y sus secuelas cambian el ejercicio.',
+    piensa: 'Piensa en ella si:',
+    pistas: [
+      { texto: 'ha tenido un cáncer o toma terapia hormonal tras uno.', de: [] },
+    ],
+    anade: 'preguntas de metástasis óseas, corazón y linfedema; recuadro con la dosis de ejercicio; avisos y red de seguridad del plan.',
+    enPlan: 'sus avisos (dosis de ejercicio, metástasis óseas y corazón) y su red de seguridad',
+    destino: { tarjeta: 'cardOncologico' },
+    boton: 'Ir a la tarjeta →',
+    fuentes: ['Campbell 2019', 'Campbell 2022', 'Gilchrist 2019', 'Schmitz 2019'],
+  },
+  {
     id: 'tarlov',
     region: 'lumbar',
     nombre: 'Quiste de Tarlov',

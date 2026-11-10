@@ -5,7 +5,7 @@
 // con las demás regiones en SYSTEMIC_SCREENING / CIF_TREES / HYPOTHESES;
 // los esquemas de cada objeto están documentados allí.
 // ============================================================
-import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, SIS_LUPUS, SIS_MASTOCITOS, SIS_OSTEOPOROSIS, SIS_EMBARAZO, SIS_ANTICOAGULADO, SIS_PARKINSON, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZON_XANTOMAS, RAZON_CALCIFICANTE } from './comun.js';
+import { SIS_POSQUIRURGICO, SIS_HIPERMOVILIDAD, SIS_DISAUTONOMIA, SIS_LUPUS, SIS_MASTOCITOS, SIS_OSTEOPOROSIS, SIS_EMBARAZO, SIS_ANTICOAGULADO, SIS_PARKINSON, SIS_ONCOLOGICO, PREGUNTA_SINCOPE, SIS_ENDOCRINO, SIS_HEMATOLOGICO, DOSIS_DERIVAR, RAZON_XANTOMAS, RAZON_CALCIFICANTE } from './comun.js';
 
 // ── Fase 3 · ZONAS_SINTOMA.codo — zonas del mapa corporal para P1–P4
 // (docs/sintomas-multiples.md). Revisadas por el usuario (2026-10);
@@ -43,6 +43,7 @@ export const screening = {
     SIS_EMBARAZO,        // solo con la tarjeta «Embarazo o posparto» activa (docs/embarazo-posparto.md)
     SIS_ANTICOAGULADO,   // solo con la tarjeta «Paciente anticoagulado o antiagregado» activa (docs/anticoagulado.md)
     SIS_PARKINSON,       // solo con la tarjeta «Parkinson» activa (docs/parkinson.md)
+    SIS_ONCOLOGICO,      // solo con la tarjeta «Antecedente de cáncer» activa (docs/antecedente-oncologico.md)
     {
       id: 'co_trauma', icon: '🦴', nombre: 'Traumático (Fractura o Luxación)',
       banderasRojas: [

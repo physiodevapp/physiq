@@ -17,6 +17,7 @@ import { OP, lineasRecomendacionOP } from './osteoporosis.js';
 import { EM, lineasRecomendacionEM } from './embarazo.js';
 import { AC, lineasRecomendacionAC } from './anticoagulado.js';
 import { PK, lineasRecomendacionPK } from './parkinson.js';
+import { ON, lineasRecomendacionON } from './oncologico.js';
 
 // Por sistema: estados con su caso base y sus variantes [etiqueta, cambio en el payload]
 export const RECOMENDACIONES = {
@@ -101,6 +102,17 @@ export const RECOMENDACIONES = {
       ['toma heparina', { ti: ['hp'] }],
     ] },
   ] },
+  transversal_oncologico: { fn: lineasRecomendacionON, estados: [
+    { titulo: 'Tratamiento terminado', base: { es: 'terminado' }, variantes: [
+      ['tiene metástasis óseas', { mo: 'si' }],
+      ['no sabe si tiene metástasis óseas', { mo: 'ns' }],
+      ['recibió antraciclinas o trastuzumab, o radioterapia con el corazón en el campo', { tr: ['cardiotoxico'] }],
+      ['tiene linfedema', { sc: ['linfedema'] }],
+      ['tiene una ostomía', { sc: ['ostomia'] }],
+      ['tiene neuropatía', { sc: ['neuropatia'] }],
+    ] },
+    { titulo: 'En tratamiento', base: { es: 'tratamiento' }, variantes: [] },
+  ] },
   transversal_parkinson: { fn: lineasRecomendacionPK, estados: [
     { titulo: 'Diagnosticado', base: { es: 'diagnosticado' }, variantes: [
       ['lleva estimulador cerebral profundo', { ec: 'SI' }],
@@ -169,6 +181,8 @@ export function lineasTecnica4b() {
     { icono: '🩸', cond: 'Anticoagulado o antiagregado', texto: AC.textos.tecnica4b },
     { icono: '🧠', cond: 'Parkinson diagnosticado', texto: PK.textos.tecnica4b },
     { icono: '⚡', cond: 'Parkinson con estimulador cerebral profundo (o sin confirmar)', texto: PK.textos.cables4b },
+    { icono: '🎗', cond: 'Antecedente de cáncer con metástasis óseas (o sin confirmar)', texto: ON.textos.metastasis4b },
+    { icono: '🎗', cond: 'Antecedente de cáncer con neuropatía', texto: ON.textos.neuropatia4b },
   ];
 }
 

@@ -95,6 +95,12 @@ const state = {
   // ['mp','dai','em','ecp','ci','on','co','re','ns'] en el orden de la tarjeta
   // («ns» excluye los demás). `ecp` es el mismo dato que parkinson.estimulador = 'SI'.
   implantes: { estado: '', tipos: [] },
+  // Tarjeta «Antecedente de cáncer» (Fase P, docs/antecedente-oncologico.md,
+  // lib/oncologico.js): estado '' (no consta) | 'terminado' | 'tratamiento';
+  // canceres, tratamientos, zonas (de las metástasis), secuelas y linfedema
+  // (miembro): listas de ids de los chips; metastasis '' | 'no' | 'si' | 'ns';
+  // revision (del corazón) '' | 'si_normal' | 'si_alterado' | 'no' | 'ns'.
+  oncologico: { estado: '', canceres: [], tratamientos: [], metastasis: '', zonas: [], revision: '', secuelas: [], linfedema: [] },
   // Tarjeta «Fármacos que toma» (paso 3 de la farmacología, docs/farmacos-paciente.md,
   // lib/farmacos-paciente.js): toma = ids de las familias con contenido de la guía
   // (data/farmacos.js), sin los antitrombóticos, que van en su tarjeta.

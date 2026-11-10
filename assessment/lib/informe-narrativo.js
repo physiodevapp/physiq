@@ -187,6 +187,7 @@ import { bloqueEMIA } from './embarazo.js';
 import { bloqueACIA } from './anticoagulado.js';
 import { bloquePKIA } from './parkinson.js';
 import { bloqueIEIA } from './implantes.js';
+import { bloqueONIA } from './oncologico.js';
 import { bloqueFMIA } from './farmacos-paciente.js';
 import { ITEMS_IRRITABILIDAD } from '../data/irritabilidad.js';
 
@@ -295,6 +296,7 @@ export function contextoValoracion(data, nombreRegion = r => r, ampliado = null,
   if (data.ac) extra.push(bloqueACIA(data.ac));
   if (data.pk) extra.push(bloquePKIA(data.pk));
   if (data.ie) extra.push(bloqueIEIA(data.ie));   // docs/implantes-electrodos.md
+  if (data.on) extra.push(bloqueONIA(data.on));   // docs/antecedente-oncologico.md
   if (data.fm) extra.push(bloqueFMIA(data.fm));   // docs/farmacos-paciente.md, decisión 17
   if (data.ur?.length) extra.push(`DERIVACIÓN URGENTE indicada en el cribado (debe constar en el informe):\n${data.ur.map(s => `  · ${s}`).join('\n')}`);
   if (data.dv?.length) extra.push(`Derivación médica indicada en la exploración (debe constar en el informe):\n${data.dv.map(s => `  · ${s}`).join('\n')}`);

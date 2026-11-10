@@ -27,6 +27,7 @@ import { LES, lesDiagnosticado } from './lib/lupus.js';
 import { MA, maActivo } from './lib/mastocitos.js';
 import { AC, acActivo } from './lib/anticoagulado.js';
 import { PK, pkDiagnosticado, estimuladorAviso } from './lib/parkinson.js';
+import { ON, conMetastasis, conSecuela } from './lib/oncologico.js';
 import { OP, opActivo } from './lib/osteoporosis.js';
 import { emPosparto, lineaSupino, lineaGaenslen } from './lib/embarazo.js';
 import { fraseAncla } from './lib/modo-guia.js';
@@ -208,6 +209,14 @@ export function buildHypothesisCards() {
   // (decisión 21). Una regla de técnica; no cambia las LR
   if (pkDiagnosticado(state.parkinson)) {
     container.insertAdjacentHTML('beforeend', `<div class="ds-nota pk-nota-4b">🧠 ${citasEnTexto(PK.textos.tecnica4b)}${estimuladorAviso(state.parkinson) ? `<br>⚡ <strong>${citasEnTexto(PK.textos.cables4b)}</strong>` : ''}</div>`);
+  }
+  // Antecedente de cáncer (docs/antecedente-oncologico.md): con metástasis
+  // óseas «Sí» o «No lo sabe», qué evitar en la zona (y sin thrust, decisión 10);
+  // con neuropatía, comparar con la línea base. Reglas de técnica; no cambian las LR
+  {
+    const on = state.oncologico;
+    const lineas = [conMetastasis(on) ? ON.textos.metastasis4b : '', conSecuela(on, 'neuropatia') ? ON.textos.neuropatia4b : ''].filter(Boolean);
+    if (lineas.length) container.insertAdjacentHTML('beforeend', `<div class="ds-nota on-nota-4b">${lineas.map(l => `🎗 ${citasEnTexto(l)}`).join('<br>')}</div>`);
   }
   // Embarazo de 20 semanas o más (docs/embarazo-posparto.md, T1): una línea
   // para todos los tests boca arriba, encima de las hipótesis. No cambia las LR

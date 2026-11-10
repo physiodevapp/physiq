@@ -48,6 +48,8 @@ import { PK, FILAS_PK, FILAS_TENSION, parkinsonVacio, normalizarParkinson, tensi
   datosPK, lineaEstimulador, lineasRecomendacionPK } from './lib/parkinson.js';
 import { IE, implantesVacio, normalizarImplantes, ieActivo, alternarTipo, clavesLineas, sincronizarEstimulador,
   estimuladorEnImplantes, pendientesIE, iePayload, lineaLleva, lineasRecomendacionIE, lineasPautaIE } from './lib/implantes.js';
+import { ON, LISTAS_ON, oncologicoVacio, normalizarOncologico, onActivo, revisionVisible, conSecuela, conHormonal,
+  alternarChip, elementoONVisible, lineasTarjetaON, pendientesON, onPayload, datosON, lineasRecomendacionON } from './lib/oncologico.js';
 import { nivelMatriz, matrizVacia, NOMBRE_NIVEL, bandaIrritabilidad } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { BANDERAS_FASE1, TEXTOS_FASE1, PREGUNTAS_PSICO } from './data/fase1.js';
@@ -374,6 +376,7 @@ function _softResetApp() {
   state.parkinson = parkinsonVacio();
   _pkRelojParar();
   state.implantes = implantesVacio();
+  state.oncologico = oncologicoVacio();
   state.farmacos = farmacosVacio();
   state.cronologia = '';
   state.banderasRojas = banderasRojasIniciales();
@@ -488,6 +491,7 @@ function _softResetApp() {
   _pintarACUI();
   _pintarPKUI();
   _pintarIEUI();
+  _pintarONUI();
   _pintarFarmacosUI();
 }
 
@@ -897,7 +901,7 @@ function getNoPreguntadas() {
   if (state.region && SYSTEMIC_SCREENING[state.region]) {
     const breve = state.modo === 'breve';
     sistemasActivos().forEach(sis => {
-      const conEmbudo = !(sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson);
+      const conEmbudo = !(sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson || sis.soloOncologico);
       const cubiertoPorBreve = breve && conEmbudo && state.sistemicoBreve?.[sis.id] !== 'SI';
       let n = 0;
       sis.preguntas.forEach(q => {
@@ -2410,6 +2414,123 @@ function _implantesResultadosHTML(d) {
     </div>`;
 }
 
+// ─── ANTECEDENTE DE CÁNCER (Fase P, docs/antecedente-oncologico.md) ────────
+// Tarjeta de la fase 1: No consta (nada marcado) · Tratamiento terminado · En
+// tratamiento. Chips (cáncer, tratamientos, dónde las metástasis, secuelas y
+// miembro del linfedema; «No lo sabe» excluye a los demás), filas de
+// metástasis y de la revisión del corazón (esta solo con un tratamiento
+// cardiotóxico o «No lo sabe»), y sus líneas rojas, nunca plegadas. Con
+// «Osteoporosis», una línea a su tarjeta (no la marca); con terapia hormonal,
+// la guía de fármacos en los del hueso. Activa el sistema de la fase 2, las
+// notas de las fases 3 y 4b, el recuadro de la fase 5 y los avisos y la red de
+// la fase 6.
+function _pintarONUI() {
+  const on = state.oncologico;
+  const activo = onActivo(on);
+  document.body.classList.toggle('oncologico', activo);
+  const nota = document.getElementById('onNota');
+  if (nota && !nota.innerHTML) nota.textContent = `Sin marcar = no consta. ${ON.textos.nota}`;
+  const ayuda = document.getElementById('onAyuda');
+  if (ayuda && !ayuda.innerHTML) ayuda.textContent = `«En tratamiento»: ${ON.textos.ayudaTratamiento}`;
+  document.querySelectorAll('#onEstado .option-btn').forEach(b => b.classList.toggle('selected', b.dataset.valor === on.estado));
+  const cuerpo = document.getElementById('onCuerpo');
+  if (cuerpo) cuerpo.style.display = activo ? '' : 'none';
+  document.querySelectorAll('[data-on-lista]').forEach(cont => {
+    const lista = cont.dataset.onLista;
+    if (!cont.children.length) {
+      cont.innerHTML = LISTAS_ON[lista].map(x =>
+        `<button type="button" class="option-btn" data-on-chip="${x.id}" aria-pressed="false" onclick="toggleONChip('${lista}','${x.id}')">${_escHTML(x.texto)}</button>`).join('');
+    }
+    cont.querySelectorAll('[data-on-chip]').forEach(b => {
+      const sel = (on[lista] || []).includes(b.dataset.onChip);
+      b.classList.toggle('selected', sel);
+      b.setAttribute('aria-pressed', sel);
+    });
+  });
+  document.querySelectorAll('[data-on-fila]').forEach(g => g.querySelectorAll('.option-btn')
+    .forEach(b => b.classList.toggle('selected', b.dataset.valor === on[g.dataset.onFila])));
+  const vis = (id, si) => { const el = document.getElementById(id); if (el) el.style.display = si ? '' : 'none'; };
+  vis('onZonasWrap', activo && on.metastasis === 'si');
+  vis('onRevisionWrap', revisionVisible(on));
+  vis('onLinfedemaWrap', conSecuela(on, 'linfedema'));
+  const lin = document.getElementById('onLineas');
+  if (lin) lin.innerHTML = lineasTarjetaON(on).map(l =>
+    `<div class="alert alert-danger" data-on-linea="${l.clave}"><span class="alert-icon">🎗</span><div><strong>${citasEnTexto(l.texto)}</strong></div></div>`).join('');
+  const op = document.getElementById('onOsteoporosis');
+  if (op) {
+    op.style.display = conSecuela(on, 'osteoporosis') ? '' : 'none';
+    if (!op.innerHTML) op.innerHTML = `${_escHTML(ON.textos.osteoporosis)} <button type="button" class="sint-recordatorio-ir" onclick="irATarjetaOP()">Ir a la tarjeta →</button>`;
+  }
+  const hor = document.getElementById('onHormonal');
+  if (hor) {
+    hor.style.display = conHormonal(on) ? '' : 'none';
+    if (!hor.innerHTML) hor.innerHTML = `<button type="button" class="sint-recordatorio-ir" onclick="abrirFarmacos({ familia: 'hueso' })">${_escHTML(ON.textos.hormonal)}</button>`;
+  }
+  const fat = document.getElementById('onNotaFatiga');
+  if (fat) {
+    fat.style.display = conSecuela(on, 'fatiga') ? '' : 'none';
+    if (!fat.innerHTML) fat.innerHTML = `🎗 ${citasEnTexto(ON.textos.fatiga)}`;
+  }
+}
+
+function _onCambio() {
+  state.oncologico = normalizarOncologico(state.oncologico);
+  _pintarONUI();
+  _invalidar4b();
+  if (state.region && document.getElementById('sistemaPanels')?.children.length) _repintarCribado();
+  saveSession();
+}
+
+function selectONEstado(valor) {
+  const on = state.oncologico;
+  if (on.estado === valor) state.oncologico = oncologicoVacio();
+  else on.estado = valor;
+  _onCambio();
+}
+
+// Filas de la tarjeta (metástasis, revisión del corazón): un segundo toque
+// sobre la opción marcada la quita.
+function selectONFila(fila, valor) {
+  if (!['metastasis', 'revision'].includes(fila)) return;
+  state.oncologico[fila] = state.oncologico[fila] === valor ? '' : valor;
+  _onCambio();
+}
+
+function toggleONChip(lista, id) {
+  state.oncologico = alternarChip(state.oncologico, lista, id);
+  _onCambio();
+}
+
+// «Ir a la tarjeta →» de la osteoporosis (no la marca).
+function irATarjetaOP() {
+  const card = document.getElementById('cardOsteoporosis');
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.remove('flash-destacar');
+  void card.offsetWidth;
+  card.classList.add('flash-destacar');
+}
+
+function getOnPayload() {
+  return onPayload(state.oncologico);
+}
+
+// Recuadro de la fase 5 (docs/antecedente-oncologico.md): nunca se pliega.
+function _oncologicoResultadosHTML(d) {
+  const datos = datosON(d);
+  const cn = d.cn?.length ? d.cn.join(', ') : 'cáncer sin precisar';
+  const hormonal = d.tr?.includes('hormonal')
+    ? `<div class="hm-nota"><button type="button" class="sint-recordatorio-ir" onclick="abrirFarmacos({ familia: 'hueso' })">${_escHTML(ON.textos.hormonal)}</button></div>` : '';
+  return `
+    <div class="alert alert-info on-fase5" style="margin-bottom:1rem;">
+      <span class="alert-icon">🎗</span>
+      <div><strong>Antecedente de cáncer.</strong> ${_escHTML(cn)} · ${d.es === 'tratamiento' ? 'En tratamiento' : 'Tratamiento terminado'}${datos.length ? ` · ${_escHTML(datos.join(' · '))}` : ''}
+        ${_lineasCondicionHTML(lineasRecomendacionON(d), 'antecedente de cáncer')}
+        ${hormonal}
+      </div>
+    </div>`;
+}
+
 // ─── FÁRMACOS QUE TOMA (paso 3 de la farmacología, docs/farmacos-paciente.md) ──
 // Chips de las familias con contenido de la guía (lib/farmacos-paciente.js, que
 // las saca de data/farmacos.js: las que se escriben después entran solas), sin
@@ -2960,7 +3081,7 @@ function getPendientesBreve() {
   const pendientes = [];
   const data = SYSTEMIC_SCREENING[state.region];
   if (data) {
-    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis && !s.soloEmbarazo && !s.soloAnticoagulado && !s.soloParkinson);   // los de las condiciones especiales no tienen embudo
+    const conEmbudo = sistemasActivos().filter(s => !s.soloHipermovilidad && !s.soloDisautonomia && !s.soloLupus && !s.soloMastocitos && !s.soloOsteoporosis && !s.soloEmbarazo && !s.soloAnticoagulado && !s.soloParkinson && !s.soloOncologico);   // los de las condiciones especiales no tienen embudo
     const porEmbudo = conEmbudo.filter(s => state.sistemicoBreve[s.id] === 'NO').map(s => s.nombre);
     const sinCribar = conEmbudo.filter(s => !state.sistemicoBreve[s.id]).map(s => s.nombre);
     if (porEmbudo.length) pendientes.push({ fase: 2, texto: `Cribado sistémico solo por embudo (sin preguntas una a una): ${porEmbudo.join(', ')}` });
@@ -2989,6 +3110,7 @@ function getPendientesBreve() {
   pendientes.push(...pendientesOP(state.osteoporosis));
   pendientes.push(...pendientesEM(state.embarazo));
   pendientes.push(...pendientesPK(state.parkinson));
+  pendientes.push(...pendientesON(state.oncologico));   // docs/antecedente-oncologico.md: metástasis óseas y revisión del corazón sin registrar
   pendientes.push(...pendientesIE(state.implantes));   // docs/implantes-electrodos.md: qué lleva, sin registrar   // docs/parkinson.md: estimulador y fase on/off sin registrar
   pendientes.push(...pendientesAC(state.anticoagulado));   // docs/anticoagulado.md: qué toma, sin registrar   // docs/embarazo-posparto.md: semanas o fecha del parto sin registrar   // docs/osteoporosis.md: fracturas vertebrales o factores sin registrar
   return pendientes;
@@ -3222,7 +3344,7 @@ function sistemasActivos(regionId = state.region) {
   const enRegion = x => (typeof x === 'string' || !x.regiones || x.regiones.includes(regionId))
     && elementoHMVisible(x, state.hipermovilidad, state.sistemicoAnswers) && elementoLESVisible(x, state.lupus) && elementoOPVisible(x, state.osteoporosis)
     && elementoEMVisible(x, state.embarazo, state.osteoporosis) && elementoACVisible(x, state.anticoagulado)
-    && elementoPKVisible(x, state.parkinson);
+    && elementoPKVisible(x, state.parkinson) && elementoONVisible(x, state.oncologico);
   return data.sistemas
     .filter(sis => !sis.soloPosquirurgico || esPosquirurgico(state.mecanismo))
     .filter(sis => !sis.soloHipermovilidad || hmActiva(state.hipermovilidad))
@@ -3233,6 +3355,7 @@ function sistemasActivos(regionId = state.region) {
     .filter(sis => !sis.soloEmbarazo || emActivo(state.embarazo))
     .filter(sis => !sis.soloAnticoagulado || acActivo(state.anticoagulado))
     .filter(sis => !sis.soloParkinson || pkActivo(state.parkinson))
+    .filter(sis => !sis.soloOncologico || onActivo(state.oncologico))
     .map(sis => [sis.preguntas, sis.banderasRojas || [], sis.banderasAmarillas || []].some(l => !l.every(enRegion))
       ? { ...sis, preguntas: sis.preguntas.filter(enRegion),
           banderasRojas: (sis.banderasRojas || []).filter(enRegion), banderasAmarillas: (sis.banderasAmarillas || []).filter(enRegion) }
@@ -3402,7 +3525,7 @@ function buildSistemaHTML(sis) {
   if (sis.soloHipermovilidad) {
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">
       <div class="hm-bloque" data-hm-bloque></div>`;
-  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson) {
+  } else if (sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson || sis.soloOncologico) {
     // El de disautonomía (docs/pots.md) tampoco: primero las preguntas del
     // síncope y, después de ellas, la sospecha y la prueba (data-ds-bloque)
     html += `<div class="sis-body embudo-si" data-sis-body="${sis.id}">`;
@@ -4224,7 +4347,7 @@ function _pintarEmbudo(sisId) {
   const sis = sistemasActivos().find(s => s.id === sisId);
   if (!sis) return;
   const v = state.sistemicoBreve[sisId];
-  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
+  const abierto = sis.soloHipermovilidad || sis.soloDisautonomia || sis.soloLupus || sis.soloMastocitos || sis.soloOsteoporosis || sis.soloEmbarazo || sis.soloAnticoagulado || sis.soloParkinson || sis.soloOncologico || v === 'SI' || sis.preguntas.some(q => !q.urgencia && state.sistemicoAnswers[q.id] === 'SI');
   document.querySelectorAll(`[data-embudo="${sisId}"] .sq-btn`).forEach(b => {
     b.classList.toggle('selected', !!v && b.classList.contains(v === 'SI' ? 'si' : 'no'));
   });
@@ -4656,6 +4779,9 @@ function buildResults() {
   // ── Implantes con electrodos (docs/implantes-electrodos.md): líneas rojas, nunca plegadas
   const ie = getIePayload();
   if (ie) container.innerHTML += _implantesResultadosHTML(ie);
+  // ── Antecedente de cáncer (docs/antecedente-oncologico.md): seguridad y dosis, nunca plegados
+  const onc = getOnPayload();
+  if (onc) container.innerHTML += _oncologicoResultadosHTML(onc);
   // ── Fármacos que toma (docs/farmacos-paciente.md, decisión 15): lista y
   // enlace a la guía, sin texto clínico; solo con alguna familia además de los
   // antitrombóticos, que ya tienen su recuadro
@@ -5542,6 +5668,7 @@ function buildPhysiQPayload() {
     ...(getAcPayload() ? { ac: getAcPayload() } : {}),
     ...(getPkPayload() ? { pk: getPkPayload() } : {}),
     ...(getIePayload() ? { ie: getIePayload() } : {}),
+    ...(getOnPayload() ? { on: getOnPayload() } : {}),
     ...(getFmPayload() ? { fm: getFmPayload() } : {}),
     cr: state.cronologia,
     rp: state.riesgoPsico,
@@ -6547,6 +6674,7 @@ function _hasAssessmentData() {
     || !!state.anticoagulado?.estado
     || !!state.parkinson?.estado
     || !!state.implantes?.estado
+    || !!state.oncologico?.estado
     || !!state.cronologia
     || !!state.riesgoPsico
     || !!state.psico_miedo
@@ -6660,6 +6788,7 @@ function _restoreSessionDOM() {
   state.embarazo = normalizarEmbarazo(state.embarazo);                      // sesiones anteriores al embarazo
   state.parkinson = normalizarParkinson(state.parkinson);                   // sesiones anteriores al Parkinson
   state.implantes = normalizarImplantes(state.implantes);                   // sesiones anteriores a los implantes con electrodos
+  state.oncologico = normalizarOncologico(state.oncologico);                // sesiones anteriores al antecedente de cáncer
   // Sesiones anteriores con el estimulador del Parkinson en «Sí»: el chip del
   // estimulador cerebral profundo (el mismo dato, docs/implantes-electrodos.md, decisión 11).
   state.implantes = sincronizarEstimulador({ ie: state.implantes, pk: state.parkinson, evento: 'restaurar' }).ie;
@@ -6676,6 +6805,7 @@ function _restoreSessionDOM() {
   _pintarACUI();
   _pintarPKUI();
   _pintarIEUI();
+  _pintarONUI();
   _pintarFarmacosUI();
   _pintarLado();
 
@@ -6806,6 +6936,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _pintarACUI();
   _pintarPKUI();
   _pintarIEUI();
+  _pintarONUI();
   _pintarFarmacosUI();
   // Silueta de la fase 2 (se repinta al restaurar sesión, desde _pintarLado)
   _pintarSilueta();
@@ -6955,7 +7086,7 @@ export { saveSession, showConfirmBanner, paintNav, buildPhysiQPayload, getUrgenc
 // scope, never a module's private scope.
 Object.assign(window, {
   abrirFormularioPrevio, abrirRazonamiento, abrirRazonBandera, toggleRazonBandera, cerrarRazonamiento, irACronologia, irAPreguntaCribado, appendQuickPhrase, buildResults, closePhaseSheet, closeSessionPanel, compartirNotas,
-  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, volverAHerramientas, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, selectPKEstado, selectPKFila, selectIEEstado, toggleIETipo, irATarjetaIE, pkTensionHacer, pkTensionQuitar, updatePKTension, pkRelojEmpezar, pkRelojParar, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
+  abrirMenuCompartir, cerrarMenuCompartir, abrirHerramientas, cerrarHerramientas, herramientaElegir, volverAHerramientas, abrirPreguntaIA, cerrarPreguntaIA, abrirTiemposTejido, cerrarTiemposTejido, abrirCondiciones, cerrarCondiciones, irACondicion, abrirFarmacos, cerrarFarmacos, abrirEjercicio, cerrarEjercicio, selectACEstado, toggleACToma, irATarjetaAC, selectPKEstado, selectPKFila, selectIEEstado, toggleIETipo, irATarjetaIE, selectONEstado, selectONFila, toggleONChip, irATarjetaOP, pkTensionHacer, pkTensionQuitar, updatePKTension, pkRelojEmpezar, pkRelojParar, toggleFarmaco, farmacosPreguntarIA, abrirCuestionarios, cerrarCuestionarios, compartirInformePaciente, compartirInformeIA, finalizarValoracion, goToPhase, goToPhase2Next, handleTranslateClick, hideTranslateBanner,
   navStepClick, promptClearSession, resetApp, saveSession, scrollToActiveSisHeader, scrollToFormularioPrevio, irAResumenIrritabilidad, selectIrritab,
   selectNRS, selectOption, selectPsico, selectRegion, selectSQ, selectSistQ,
   tocarZonaSilueta, elegirSexoSilueta,
