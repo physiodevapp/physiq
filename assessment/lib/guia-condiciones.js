@@ -106,7 +106,8 @@ export const RECOMENDACIONES = {
     { titulo: 'Tratamiento terminado', base: { es: 'terminado' }, variantes: [
       ['tiene metástasis óseas', { mo: 'si' }],
       ['no sabe si tiene metástasis óseas', { mo: 'ns' }],
-      ['recibió antraciclinas o trastuzumab, o radioterapia con el corazón en el campo', { tr: ['cardiotoxico'] }],
+      ['recibió antraciclinas o trastuzumab', { tr: ['cardiotoxico'] }],
+      ['recibió radioterapia con el corazón en el campo', { tr: ['rtCorazon'] }],
       ['tiene linfedema', { sc: ['linfedema'] }],
       ['tiene una ostomía', { sc: ['ostomia'] }],
       ['tiene neuropatía', { sc: ['neuropatia'] }],
