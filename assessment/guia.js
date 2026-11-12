@@ -378,7 +378,7 @@ function htmlIrritabilidad(region, { conTitulo = true } = {}) {
     <p class="guia-nota">La misma matriz y la misma regla que la fase 3 de la app (y la fase 6). Marca lo que refiere el paciente; un segundo toque desmarca. No se guarda nada: se borra al recargar.</p>
     <div id="guiaIrrRes">${resultadoIrritabHTML(region)}</div>
     <button type="button" class="guia-irr-banda" id="guiaIrrBanda" hidden><span class="guia-vh">Ir al resumen: </span><span data-b="emoji" aria-hidden="true"></span> <strong data-b="nivel"></strong> <span class="guia-irr-banda-det" data-b="detalle"></span><span class="guia-irr-banda-dir" aria-hidden="true">↑ volver</span></button>
-    <p class="guia-nota">${esc(TEXTOS_IRRITABILIDAD.decideConfirma)}</p>
+    <p class="guia-nota">${esc(TEXTOS_IRRITABILIDAD.decideConfirma)} ${esc(TEXTOS_IRRITABILIDAD.activoPasivo)}</p>
     <section class="guia-bloque">${gruposMatriz().map(g => `<h3 class="guia-irr-grupo">${esc(g.nombre)}</h3>${g.items.map(filaIrritabHTML).join('')}`).join('')}
       <div class="guia-irr-pie"><button type="button" class="guia-borrar" data-irr-borrar>Borrar respuestas</button></div></section>
     <details class="razon guia-irr-regla"><summary>ⓘ Cómo se calcula</summary><div class="razon-cuerpo">

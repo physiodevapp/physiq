@@ -78,6 +78,7 @@ export const TEXTOS_IRRITABILIDAD = {
   // Decisión 124: redacción propia
   decideConfirma: 'Decide con lo que cuenta el paciente; la exploración lo confirma o lo corrige. Si la exploración contradice el nivel, corrige la fila y anótalo.',
   pendienteExploracion: 'Falta el dolor con movimiento: pendiente de confirmar al explorar.',
+  activoPasivo: 'Que el activo esté más limitado que el pasivo no cuenta para la irritabilidad: es un hallazgo del diagnóstico diferencial (árbol de la región).',
   reposoPresente: 'Dolor en reposo presente: si no cambia con la postura ni con el movimiento, piensa en la naturaleza del cuadro (inflamatorio, no mecánico) y revisa el cribado de la fase 2.',
   noRegistrada: 'Irritabilidad no registrada. El dato clave es cuánto tarda el dolor en calmarse tras la actividad que lo provoca.',
   pistaBreve: 'Pregunta clave: cuánto tarda en calmarse tras la actividad que lo provoca (minutos → baja; horas → moderada; hasta el día siguiente → alta).',
