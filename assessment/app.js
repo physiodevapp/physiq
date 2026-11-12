@@ -50,7 +50,7 @@ import { IE, implantesVacio, normalizarImplantes, ieActivo, alternarTipo, claves
   estimuladorEnImplantes, pendientesIE, iePayload, lineaLleva, lineasRecomendacionIE, lineasPautaIE } from './lib/implantes.js';
 import { ON, LISTAS_ON, oncologicoVacio, normalizarOncologico, onActivo, revisionVisible, conSecuela, conHormonal,
   alternarChip, elementoONVisible, lineasTarjetaON, pendientesON, onPayload, datosON, lineasRecomendacionON } from './lib/oncologico.js';
-import { nivelMatriz, matrizVacia, NOMBRE_NIVEL, bandaIrritabilidad } from './lib/irritabilidad.js';
+import { nivelMatriz, matrizVacia, NOMBRE_NIVEL, bandaIrritabilidad, gruposMatriz, avisoReposo } from './lib/irritabilidad.js';
 import { ITEMS_IRRITABILIDAD, ITEM_IMPACTO, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
 import { BANDERAS_FASE1, TEXTOS_FASE1, PREGUNTAS_PSICO } from './data/fase1.js';
 import { sintomaVacio, normalizarSintomas, payloadSintomas, lineaP1, lineaSecundario } from './lib/sintomas.js';
@@ -4468,13 +4468,17 @@ function initNRS() {
 // tarjeta de severidad con los mismos botones.
 const _btnIrritab = (clave, o) =>
   `<button type="button" class="irritab-btn" data-key="${clave}" data-valor="${o.valor}" onclick="selectIrritab(this)">${o.corto}</button>`;
+// En dos grupos (decisión 124): lo que cuenta el paciente decide; el dolor con
+// movimiento sale de la exploración y lo confirma o lo corrige.
 function pintarMatrizIrritabilidad() {
+  const grupos = gruposMatriz();
+  const nota = `<p class="irritab-decide">${TEXTOS_IRRITABILIDAD.decideConfirma}</p>`;
   const tabla = document.getElementById('irritabTabla');
-  if (tabla) tabla.innerHTML = `<table class="irritab-table"><thead><tr><th>Criterio</th><th>Seleccione nivel</th></tr></thead><tbody>${
-    ITEMS_IRRITABILIDAD.map(it => `<tr><td>${it.nombre}${it.ayuda ? `<div class="irritab-ayuda">${it.ayuda}</div>` : ''}</td><td><div class="irritab-select">${it.opciones.map(o => _btnIrritab(it.clave, o)).join('')}</div></td></tr>`).join('')
+  if (tabla) tabla.innerHTML = `${nota}<table class="irritab-table"><thead><tr><th>Criterio</th><th>Seleccione nivel</th></tr></thead><tbody>${
+    grupos.map(g => `<tr class="irritab-grupo"><th colspan="2">${g.nombre}</th></tr>${g.items.map(it => `<tr><td>${it.nombre}${it.ayuda ? `<div class="irritab-ayuda">${it.ayuda}</div>` : ''}</td><td><div class="irritab-select">${it.opciones.map(o => _btnIrritab(it.clave, o)).join('')}</div></td></tr>`).join('')}`).join('')
   }</tbody></table>`;
   const tarjetas = document.getElementById('irritabTarjetas');
-  if (tarjetas) tarjetas.innerHTML = ITEMS_IRRITABILIDAD.map(it => `<div class="irritab-card"><div class="irritab-card-label">${it.nombre}</div>${it.ayuda ? `<div class="irritab-ayuda">${it.ayuda}</div>` : ''}<div class="irritab-card-btns">${it.opciones.map(o => _btnIrritab(it.clave, o)).join('')}</div></div>`).join('');
+  if (tarjetas) tarjetas.innerHTML = nota + grupos.map(g => `<div class="irritab-grupo-titulo">${g.nombre}</div>${g.items.map(it => `<div class="irritab-card"><div class="irritab-card-label">${it.nombre}</div>${it.ayuda ? `<div class="irritab-ayuda">${it.ayuda}</div>` : ''}<div class="irritab-card-btns">${it.opciones.map(o => _btnIrritab(it.clave, o)).join('')}</div></div>`).join('')}`).join('');
   const impacto = document.getElementById('impactoActividades');
   if (impacto) impacto.innerHTML = `<div class="irritab-card-label">${ITEM_IMPACTO.nombre}</div><div class="irritab-card-btns">${ITEM_IMPACTO.opciones.map(o => _btnIrritab(ITEM_IMPACTO.clave, o)).join('')}</div>`;
   const pista = document.getElementById('irritabPistaBreve');
@@ -4539,10 +4543,11 @@ function renderIrritabResumen(nivel, matriz = null) {
   const { color, emoji } = { Baja: { color: 'var(--green)', emoji: '🟢' }, Moderada: { color: 'var(--orange)', emoji: '🟠' }, Alta: { color: 'var(--red)', emoji: '🔴' } }[nivel] || { color: 'var(--green)', emoji: '🟢' };
   const textos = [nivel === 'Baja' ? T.hastaLimite : T.hastaDolor];
   if (nivel === 'Alta') textos.push(T.alta);
-  const falta = !state.irritabilidadDirecta && matriz?.incompleta ? (matriz.sinCalma ? T.sinCalma : T.incompleta) : '';
+  const falta = !state.irritabilidadDirecta && matriz?.incompleta ? (matriz.sinCalma ? T.sinCalma : matriz.soloExploracion ? T.pendienteExploracion : T.incompleta) : '';
+  const reposo = !state.irritabilidadDirecta && avisoReposo(state.irritabilidad) ? T.reposoPresente : '';
   div.innerHTML = `<div class="alert alert-info" style="border-color:${color}33; background:${color}11;">
     <span class="alert-icon">${emoji}</span>
-    <span ${atributosIA(ctxIrritabilidad(state.region, nivel))}><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — <span data-ia-parrafo>${citasEnTexto(textos.join(' '))}${iaParrafoHTML()}</span>${falta ? `<br><em>${citasEnTexto(falta)}</em>` : ''}<br><span class="irritab-ayuda" data-ia-parrafo>${citasEnTexto(T.margen)}${iaParrafoHTML()}</span></span>
+    <span ${atributosIA(ctxIrritabilidad(state.region, nivel))}><strong>Irritabilidad ${nivel}${state.irritabilidadDirecta ? ' (estimada, sin matriz)' : ''}</strong> — <span data-ia-parrafo>${citasEnTexto(textos.join(' '))}${iaParrafoHTML()}</span>${falta ? `<br><em>${citasEnTexto(falta)}</em>` : ''}${reposo ? `<br><em>${reposo}</em>` : ''}<br><span class="irritab-ayuda" data-ia-parrafo>${citasEnTexto(T.margen)}${iaParrafoHTML()}</span></span>
   </div>`;
   _programarBandas();
 }

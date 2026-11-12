@@ -13,17 +13,17 @@
 // state.irritabilidad[clave] y lo que lee el prompt de la IA; `corto`, la
 // etiqueta de los botones (tabla en escritorio, tarjetas en móvil; caben a 320 px).
 export const ITEMS_IRRITABILIDAD = [
-  { clave: 'reposo', nombre: 'Dolor en reposo', opciones: [
+  { clave: 'reposo', nombre: 'Dolor en reposo', grupo: 'entrevista', opciones: [
     { valor: 'Ausente', corto: 'Ausente' },
     { valor: 'Intermitente', corto: 'Intermitente' },
     { valor: 'Presente', corto: 'Presente' },
   ] },
-  { clave: 'movimiento', nombre: 'Dolor con movimiento', opciones: [
+  { clave: 'movimiento', nombre: 'Dolor con movimiento', grupo: 'exploracion', opciones: [
     { valor: 'Al final del rango con SP', corto: 'FR + SP' },
     { valor: 'Al final del rango', corto: 'Final rango' },
     { valor: 'Antes del final del rango', corto: 'Antes FR' },
   ] },
-  { clave: 'tolerancia', nombre: 'Tolerancia al estrés físico', opciones: [
+  { clave: 'tolerancia', nombre: 'Tolerancia al estrés físico', grupo: 'entrevista', opciones: [
     { valor: 'Alta', corto: 'Alta' },
     { valor: 'Moderada', corto: 'Moderada' },
     { valor: 'Baja', corto: 'Baja' },
@@ -33,13 +33,22 @@ export const ITEMS_IRRITABILIDAD = [
   // se puede seguir / no cede hasta tras una noche de sueño); el intermedio
   // («horas») es el nivel moderado de Petersen (razón 1:1 entre la actividad
   // que agrava y lo que tarda en aliviarse), no está en Maitland.
-  { clave: 'calma', nombre: 'Tiempo en calmarse',
+  { clave: 'calma', nombre: 'Tiempo en calmarse', grupo: 'entrevista',
     ayuda: 'Tras la actividad que lo provoca, hasta volver a su nivel previo. Si le despierta: vuelve a dormirse en menos de 30 min → horas; más de 30 min o con medicación → día siguiente (Petersen 2021).',
     opciones: [
       { valor: 'Cede en minutos', corto: 'Minutos' },
       { valor: 'Tarda horas', corto: 'Horas' },
       { valor: 'No cede hasta tras una noche', corto: 'Día siguiente' },
     ] },
+];
+
+// Decisión 124 (usuario, 2026-11): la matriz se pinta en dos grupos, lo que se
+// decide con lo que cuenta el paciente y lo que se confirma explorando (el dolor
+// con movimiento sale de la exploración). Solo presentación: el orden de
+// ITEMS_IRRITABILIDAD (el del prompt de la IA) y la regla no cambian.
+export const GRUPOS_IRRITABILIDAD = [
+  { id: 'entrevista', nombre: 'Lo que cuenta el paciente' },
+  { id: 'exploracion', nombre: 'Al explorar' },
 ];
 
 // Decisión 100: el impacto en las actividades es gravedad (Petersen 2021: la
@@ -66,6 +75,10 @@ export const TEXTOS_IRRITABILIDAD = {
   margen: 'Es un juicio con margen entre fisioterapeutas (acuerdo del 71 %, kappa 0,39–0,44; Barakatt 2009).',
   sinCalma: 'Falta el tiempo en calmarse, el dato central: el nivel puede quedarse corto.',
   incompleta: 'Matriz incompleta: el nivel puede quedarse corto.',
+  // Decisión 124: redacción propia
+  decideConfirma: 'Decide con lo que cuenta el paciente; la exploración lo confirma o lo corrige. Si la exploración contradice el nivel, corrige la fila y anótalo.',
+  pendienteExploracion: 'Falta el dolor con movimiento: pendiente de confirmar al explorar.',
+  reposoPresente: 'Dolor en reposo presente: si no cambia con la postura ni con el movimiento, piensa en la naturaleza del cuadro (inflamatorio, no mecánico) y revisa el cribado de la fase 2.',
   noRegistrada: 'Irritabilidad no registrada. El dato clave es cuánto tarda el dolor en calmarse tras la actividad que lo provoca.',
   pistaBreve: 'Pregunta clave: cuánto tarda en calmarse tras la actividad que lo provoca (minutos → baja; horas → moderada; hasta el día siguiente → alta).',
 };

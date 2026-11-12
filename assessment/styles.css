@@ -1787,6 +1787,11 @@
   .irritab-table td:last-child .irritab-select { flex-wrap: nowrap; }
   .irritab-table .irritab-btn { white-space: nowrap; }
   .irritab-card .irritab-ayuda { margin: -2px 0 8px; }
+  /* Dos grupos (decisión 105): lo que cuenta el paciente decide; la exploración confirma */
+  .irritab-decide { font-size: 0.8rem; color: var(--text2); line-height: 1.4; margin: 0 0 10px; }
+  .irritab-table tr.irritab-grupo th { color: var(--accent); padding-top: 14px; }
+  .irritab-table tr.irritab-grupo:first-child th { padding-top: 8px; }
+  .irritab-grupo-titulo { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin: 4px 0 -6px; }
   /* Impacto en las actividades, en la tarjeta de severidad (gravedad, decisión 100) */
   .irritab-impacto { margin-top: 14px; }
   .irritab-impacto .irritab-card-label { margin-bottom: 6px; }

@@ -8,7 +8,7 @@ import { citasHTML, citasEnTexto, registroReferencias, enlaceCita } from './lib/
 import { iaParrafoHTML, ctxCribado, ctxArbol, ctxTest, ctxIrritabilidad, ctxPauta, ctxPronostico, attrIA, atributosIA, initAmpliarIA } from './ampliar-ia.js';
 import { initRazonPlegable } from './razon-plegable.js';
 import { ITEMS_IRRITABILIDAD, CORTES_OTROS, TEXTOS_IRRITABILIDAD } from './data/irritabilidad.js';
-import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad, bandaIrritabilidad } from './lib/irritabilidad.js';
+import { nivelMatriz, NOMBRE_NIVEL, reglaIrritabilidad, bandaIrritabilidad, gruposMatriz, avisoReposo } from './lib/irritabilidad.js';
 import { lrEfectiva, pesoTest, anatomiaPanelHTML, citasTest, calcLRScore, etiquetaHipHTML, progresoTests, textoProgreso } from './lib/tests-4b.js';
 import { resolveOptionTargets } from './lib/arbol.js';
 import { cuestionariosEnTexto } from './lib/cuestionarios.js';
@@ -360,10 +360,11 @@ function resultadoIrritabHTML(region) {
   const nivel = NOMBRE_NIVEL[m.nivel];
   const emoji = { baja: '🟢', moderada: '🟠', alta: '🔴' }[m.nivel];
   const textos = [m.nivel === 'baja' ? T.hastaLimite : T.hastaDolor, ...(m.nivel === 'alta' ? [T.alta] : [])];
-  const falta = m.incompleta ? (m.sinCalma ? T.sinCalma : T.incompleta) : '';
+  const falta = m.incompleta ? (m.sinCalma ? T.sinCalma : m.soloExploracion ? T.pendienteExploracion : T.incompleta) : '';
+  const reposo = avisoReposo(IRRITABILIDAD) ? T.reposoPresente : '';
   return `<div class="guia-irr-res guia-irr-${m.nivel}"><span class="guia-irr-icono">${emoji}</span>
     <span ${atributosIA(ctxIrritabilidad(region, nivel))}><strong>Irritabilidad ${nivel}</strong> — <span data-ia-parrafo>${citasEnTexto(textos.join(' '))}${iaParrafoHTML()}</span>
-    ${falta ? `<br><em>${citasEnTexto(falta)}</em>` : ''}<br><span class="guia-irr-margen">${citasEnTexto(T.margen)}</span></span></div>`;
+    ${falta ? `<br><em>${citasEnTexto(falta)}</em>` : ''}${reposo ? `<br><em>${esc(reposo)}</em>` : ''}<br><span class="guia-irr-margen">${citasEnTexto(T.margen)}</span></span></div>`;
 }
 function filaIrritabHTML(it) {
   const v = IRRITABILIDAD[it.clave] || '';
@@ -377,7 +378,8 @@ function htmlIrritabilidad(region, { conTitulo = true } = {}) {
     <p class="guia-nota">La misma matriz y la misma regla que la fase 3 de la app (y la fase 6). Marca lo que refiere el paciente; un segundo toque desmarca. No se guarda nada: se borra al recargar.</p>
     <div id="guiaIrrRes">${resultadoIrritabHTML(region)}</div>
     <button type="button" class="guia-irr-banda" id="guiaIrrBanda" hidden><span class="guia-vh">Ir al resumen: </span><span data-b="emoji" aria-hidden="true"></span> <strong data-b="nivel"></strong> <span class="guia-irr-banda-det" data-b="detalle"></span><span class="guia-irr-banda-dir" aria-hidden="true">↑ volver</span></button>
-    <section class="guia-bloque">${ITEMS_IRRITABILIDAD.map(filaIrritabHTML).join('')}
+    <p class="guia-nota">${esc(TEXTOS_IRRITABILIDAD.decideConfirma)}</p>
+    <section class="guia-bloque">${gruposMatriz().map(g => `<h3 class="guia-irr-grupo">${esc(g.nombre)}</h3>${g.items.map(filaIrritabHTML).join('')}`).join('')}
       <div class="guia-irr-pie"><button type="button" class="guia-borrar" data-irr-borrar>Borrar respuestas</button></div></section>
     <details class="razon guia-irr-regla"><summary>ⓘ Cómo se calcula</summary><div class="razon-cuerpo">
       ${reglaIrritabilidad().map(p => `<p>${p}</p>`).join('')}

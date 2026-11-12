@@ -12,7 +12,7 @@
 //    null («no registrada»). `incompleta` = falta alguna fila (puede quedarse
 //    corto); `sinCalma` = falta justo el tiempo en calmarse.
 // El dolor y la discapacidad de las sesiones antiguas (gravedad) no cuentan.
-import { ITEMS_IRRITABILIDAD, CORTES_OTROS } from '../data/irritabilidad.js';
+import { ITEMS_IRRITABILIDAD, CORTES_OTROS, GRUPOS_IRRITABILIDAD } from '../data/irritabilidad.js';
 
 export const NIVELES = ['baja', 'moderada', 'alta'];
 export const NOMBRE_NIVEL = { baja: 'Baja', moderada: 'Moderada', alta: 'Alta' };
@@ -34,12 +34,24 @@ export function nivelMatriz(irr = {}) {
   if (calma < 0 && !otros.length) return { nivel: null, incompleta: true, sinCalma: true };
   const suma = otros.reduce((a, b) => a + b, 0);
   const porOtros = !otros.length ? -1 : suma <= CORTES_OTROS.bajaHasta ? 0 : suma <= CORTES_OTROS.moderadaHasta ? 1 : 2;
+  const faltan = ITEMS_IRRITABILIDAD.filter(i => indice(irr, i.clave) < 0);
   return {
     nivel: NIVELES[Math.max(calma, porOtros)],
     incompleta: calma < 0 || otros.length < 3,
     sinCalma: calma < 0,
+    // Decisión 124: solo faltan filas de la exploración (el dolor con movimiento)
+    soloExploracion: faltan.length > 0 && faltan.every(i => i.grupo === 'exploracion'),
   };
 }
+
+// Los ítems de la matriz agrupados para pintarlos (decisión 124): «Lo que cuenta
+// el paciente» y «Al explorar», cada grupo con sus ítems en el orden de siempre.
+export function gruposMatriz() {
+  return GRUPOS_IRRITABILIDAD.map(g => ({ ...g, items: ITEMS_IRRITABILIDAD.filter(i => i.grupo === g.id) }));
+}
+
+// Aviso del dolor en reposo presente (decisión 124): no cambia el nivel.
+export const avisoReposo = (irr = {}) => irr?.reposo === 'Presente';
 
 // La regla en tres frases (HTML con <b>), la misma en la guía de consulta (pestaña
 // Irritabilidad) y en su hoja impresa (docs/esquemas/hojas.mjs).
@@ -49,6 +61,7 @@ export function reglaIrritabilidad() {
     'El <b>tiempo en calmarse</b> marca el suelo: minutos → baja, horas → moderada, día siguiente → alta (Maitland 2005, cap. 6, p. 117; Petersen 2021).',
     `<b>Reposo + movimiento + tolerancia</b> (0–2 cada uno, el número de cada opción) solo pueden subirlo: 0–${c.bajaHasta} baja, ${c.bajaHasta + 1}–${c.moderadaHasta} moderada, ${c.moderadaHasta + 1}–6 alta (criterio propio de PhysiQ, inclinado a lo prudente; no hay cortes publicados).`,
     'El nivel es el más alto de los dos. Se calcula con lo contestado y avisa si falta alguna fila, porque quedarse corto es el error peligroso. El impacto en las actividades es gravedad y no cuenta aquí.',
+    'Se decide con lo que cuenta el paciente (reposo, tolerancia, tiempo en calmarse); el dolor con movimiento sale de la exploración y lo confirma o lo corrige. El dolor en reposo presente no sube el nivel por sí solo: si no cambia con la postura ni con el movimiento, mira la naturaleza del cuadro y el cribado.',
   ];
 }
 
@@ -57,10 +70,10 @@ export function reglaIrritabilidad() {
 // cambia con cada toque mientras el recuadro completo no está a la vista.
 export const EMOJI_NIVEL = { baja: '🟢', moderada: '🟠', alta: '🔴' };
 export function bandaIrritabilidad(irr = {}) {
-  const { nivel, sinCalma } = nivelMatriz(irr);
+  const { nivel, sinCalma, soloExploracion } = nivelMatriz(irr);
   const total = ITEMS_IRRITABILIDAD.length;
   const hechas = ITEMS_IRRITABILIDAD.filter(i => indice(irr, i.clave) >= 0).length;
   if (!nivel) return { emoji: '⚪', nivel: 'Irritabilidad sin registrar', detalle: `0 de ${total} filas` };
-  const detalle = hechas === total ? 'matriz completa' : sinCalma ? 'falta tiempo en calmarse' : `${hechas} de ${total} filas`;
+  const detalle = hechas === total ? 'matriz completa' : sinCalma ? 'falta tiempo en calmarse' : soloExploracion ? 'falta confirmar al explorar' : `${hechas} de ${total} filas`;
   return { emoji: EMOJI_NIVEL[nivel], nivel: `Irritabilidad ${nivel}`, detalle };
 }
