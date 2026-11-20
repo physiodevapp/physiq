@@ -7,7 +7,7 @@ const APP_SHELL = [
   './data.js',
   './manifest.json',
   './favicon.svg',
-  './apple-touch-icon.png',
+  './icons/icon-192.png',   // apple-touch-icon.png nunca existió: con un archivo que falta, la instalación del SW fallaba entera
 ];
 
 const NETWORK_ONLY_HOSTS = [

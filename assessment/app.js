@@ -5230,6 +5230,9 @@ function _showSessionState(st) {
            y el PDF de cada una (decisión del usuario, 2026-10: la app no enlazaba la guía) -->
       <div class="session-io"><a class="session-io-btn session-hojas" id="sessionHojas" href="./guia.html#hojas" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>Hojas para imprimir ↗</a></div>
       <div class="session-io-nota">Esquemas en papel de cada región y hojas de consulta, con su versión y su PDF; su QR abre la guía de consulta.</div>
+      <!-- Entrena (entrena.html): juegos para memorizar los árboles y los tests, en la región de la valoración (decisión del usuario, 2026-11) -->
+      <div class="session-io"><a class="session-io-btn session-hojas" id="sessionEntrena" href="./entrena.html${state.region ? '#' + state.region : ''}" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2.5"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M12 7.5v4.5M12 12l-5 5M12 12l5 5"/></svg>Entrena ↗</a></div>
+      <div class="session-io-nota">Juegos para memorizar los árboles de decisión y los tests de cada región; se puede instalar aparte.</div>
       <div class="session-version" id="sessionVersion">${_versionPanelHTML()}</div>`;
     panel.querySelector('#sessionReset').onclick = resetApp;
     panel.querySelector('#sessionExport').onclick = exportarValoracionArchivo;

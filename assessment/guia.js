@@ -220,6 +220,7 @@ function htmlArbol(region) {
   const tree = CIF_TREES[region], steps = tree.steps;
   const lab = id => { const i = steps.findIndex(s => s.id === id); return etiquetaPaso(steps[i], i); };
   return `<h2>${esc(tree.title || `Árbol de decisión · ${nombreRegion(region)}`)}</h2>
+    <p class="guia-nota"><a href="entrena.html#${region}">🎮 Entrenar este árbol →</a> Juegos para memorizarlo, con la misma numeración.</p>
     <p class="guia-nota">Cada respuesta puede sumar una hipótesis; se acumulan y se confirman con tests en la fase 4b. «📝 Formulario» = preguntas del formulario del paciente que tocan el paso (G = hoja general, R = hoja de la región); toca una para verla.${enlacesFormulario(region)}</p>
     <p class="guia-nota">En la hoja impresa, «Todas» sobre una flecha significa que cualquier respuesta de ese paso sigue al paso siguiente: las respuestas solo deciden qué hipótesis suman. Si la flecha lleva nombres de respuestas, solo esas siguen por ella.</p>
     ${steps.map((st, i) => {
@@ -278,6 +279,7 @@ function htmlConfirmacion(region) {
   };
   return `<h2>Confirmación de hipótesis · ${nombreRegion(region)}</h2>
     <p class="guia-nota">LR en verde: multiplica la puntuación (LR+ ≥ 2 o LR− ≤ 0,5). «≈» = calculada de S y E.</p>
+    <p class="guia-nota"><a href="entrena.html#${region}">🎮 Entrenar los tests →</a> «¿De quién es?», «Batería», «Positivo si…» y «¿Cuánto pesa?».</p>
     <div id="guiaResumenCalc">${resumenCalcHTML(region)}</div>
     ${tecnicaCondicionesHTML()}
     ${PLEGAR_TODO}
@@ -1100,7 +1102,7 @@ async function iniciar() {
   pintar();
   if (cuadernoPapel && leerRuta().hojas) abrirCuadernoPapel(cuadernoPapel);
   const v = textoVersion();
-  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. ${pieRegionesHTML()} · <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#neuro">Dermatomas, miotomas y reflejos</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
+  document.getElementById('guiaPie').innerHTML = `Contenido generado desde los datos de la app (versión ${esc(v)}). Si tu hoja impresa es más antigua, puede haber diferencias: manda lo que dice esta página. ${pieRegionesHTML()} · <a href="./">Abrir la app →</a> · <a href="#tejidos/blandos">Tiempos de recuperación de tejidos</a> · <a href="#fase1">Fase 1</a> · <a href="#condiciones">Condiciones especiales</a> · <a href="#farmacos">Fármacos</a> · <a href="#irritabilidad">Irritabilidad</a> · <a href="#sintomas">Síntomas</a> · <a href="#neuro">Dermatomas, miotomas y reflejos</a> · <a href="#plan">Plan de tratamiento</a> · <a href="#cuestionarios">Cuestionarios</a> · <a href="#ejercicio">Efectos del ejercicio</a> · <a href="#preguntar">Preguntar a la IA</a> · <a href="#hojas">Hojas para imprimir</a> · <a href="entrena.html">Entrena (juegos para memorizar los árboles)</a><br>«✨ IA» abre una búsqueda externa con el texto de la guía, nunca con datos del paciente; PhysiQ no revisa la respuesta.`;
   iniciarPieRegiones();
   initAmpliarIA();
   initRazonPlegable();
