@@ -462,9 +462,15 @@ function enunciadoHTML(q) {
   return `<p class="enunciado">¿Qué pregunta el paso <span class="mono">${s.num}</span>?</p>`;
 }
 function explicacionHTML(q) {
-  if (q.tipo === 'positivo') return explicacionBase(q);
+  if (q.tipo === 'positivo') return explicacionBase(q) + anatomiaHTML(q.t.x);
   const at = q.t.hid ? atributosIA(ctxTest(REG.id, q.t.x.n, HIP[q.t.hid].name)) : ctxPasoAttr(q.t.s);
-  return `<span ${at}>${explicacionBase(q)}</span>`;
+  return `<span ${at}>${explicacionBase(q)}</span>${q.t.x ? anatomiaHTML(q.t.x) : ''}`;
+}
+// «Anatomía» del test: los enlaces a Kenhub de la app (enlacesAnatomia, data/anatomia.js), en una
+// pestaña nueva; el artículo en español si lo hay, si no el inglés marcado «EN». Nunca un iframe.
+function anatomiaHTML(x) {
+  if (!x?.an?.length) return '';
+  return `<p class="anat ia-excluir"><span class="anat-etq">Anatomía</span> ${x.an.map(e => `<a href="${esc(e.url)}" target="_blank" rel="noopener noreferrer" title="Abrir en Kenhub${e.ingles ? ' (sin versión en español)' : ''}${e.nota ? ' · ' + esc(e.nota) : ''}">${esc(e.nombre)}${e.ingles ? ' <span class="anat-en">EN</span>' : ''} ↗</a>`).join('<span class="anat-sep"> · </span>')}</p>`;
 }
 function explicacionBase(q) {
   const s = q.t.s, o = q.t.o;
@@ -1370,7 +1376,7 @@ function hipHTML(id) {
     ${sale.length ? `<p class="sale-en">Sale en el ${sale.join(' y en el ')}</p>` : ''}
     ${cls.map(c => `<p class="sale-en"><b>${esc(c.n)}:</b> LR+ ${esc(c.lp)} con ${c.up} o más positivos; LR− ${esc(c.ln)} con ${c.un} o menos, solo si se hicieron todos.</p>`).join('')}
     <div>${h.tests.map((x, i) => `<details class="test-det" id="test-${id}-${i}" ${atributosIA(ctxTest(REG.id, x.n, h.name))}><summary><span>${esc(x.n)}</span><span class="cat ia-excluir ${x.c === 'hallazgo' || x.c === 'pronostico' ? '' : 'cat-puntua'}">${CATS[x.c]}</span>${x.lp || x.ln ? `<span class="mono progreso ia-excluir">${[x.lp && 'LR+ ' + x.lp, x.ln && 'LR− ' + x.ln].filter(Boolean).join(' · ')}</span>` : ''}</summary>
-      <p>${esc(x.crit)}${iaParrafoHTML()}</p><p class="progreso ia-excluir">${esc(x.p)}</p></details>`).join('')}</div></section>`;
+      <p>${esc(x.crit)}${iaParrafoHTML()}</p><p class="progreso ia-excluir">${esc(x.p)}</p>${anatomiaHTML(x)}</details>`).join('')}</div></section>`;
 }
 function pintarListaHoja() {
   const q = normal(HV.q.trim()), lista = document.getElementById('hojaLista'); if (!lista) return;

@@ -4,7 +4,7 @@
 // un árbol o un test, el juego cambia con él. Nunca toca datos del paciente.
 import { etiquetaPaso, numeroHipotesis } from './esquemas.js';
 import { resolveOptionTargets } from './arbol.js';
-import { pesoTest } from './tests-4b.js';
+import { pesoTest, enlacesAnatomia } from './tests-4b.js';
 import { nombreRegion, dolorInespecifico } from './region.js';
 
 // «Cuánto pesa» de un test, en una de seis categorías, a partir de la frase que genera
@@ -68,7 +68,7 @@ export function datosRegion(region, CIF_TREES, HYPOTHESES) {
       clusters: Object.fromEntries(Object.entries(h.clusters || {}).map(([k, c]) => [k, { n: c.nombre, up: c.umbralPos, lp: c.lr_pos, un: c.umbralNeg, ln: c.lr_neg }])),
       tests: (h.tests || []).map((t, i) => {
         const p = pesoTest(h, t, i);
-        const x = { n: t.name, c: categoriaPeso(p), p, lp: t.lr_pos ?? '', ln: t.lr_neg ?? '', cl: t.cluster || '', crit: t.criterio || '' };
+        const x = { n: t.name, c: categoriaPeso(p), p, lp: t.lr_pos ?? '', ln: t.lr_neg ?? '', cl: t.cluster || '', crit: t.criterio || '', an: enlacesAnatomia(t) };
         x.pz = !motivoFueraPositivo(x); x.cj = criterioSinNombre(x);
         return x;
       }),
