@@ -5,6 +5,7 @@
 // (physiq-entrena-*), como la guía guarda el tema. Diseño y decisiones: docs/entrena.md.
 import { CIF_TREES, HYPOTHESES } from './data.js';
 import { ORDEN_REGIONES } from './lib/esquemas.js';
+import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { datosRegion, columnasPasos, segundosLectura, mulberry32, semilla, codigoResultado as codigoRes, leerCodigo as leerCod } from './lib/entrena.js';
 import { DESTINOS_IA, destinoIA, guardarDestinoIA, promptPregunta, TIPOS_PREGUNTA, TIPO_PREGUNTA_DEFECTO, MAX_TEXTO_IA, urlIA, NOTA_CUENTAS,
   iaParrafoHTML, attrIA, atributosIA, ctxArbol, ctxTest, initAmpliarIA } from './ampliar-ia.js';
@@ -176,14 +177,14 @@ const altavoz = on => on
   ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>'
   : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m17 9 5 6M22 9l-5 6"/></svg>';
 let toastT = null;
-function avisar(txt) {
-  const t = document.getElementById('toast'); t.innerHTML = icono.trofeo + `<span>${esc(txt)}</span>`; t.hidden = false; animar(t, 'entra');
+function avisar(txt, { trofeo = true } = {}) {
+  const t = document.getElementById('toast'); t.innerHTML = (trofeo ? icono.trofeo : '') + `<span>${esc(txt)}</span>`; t.hidden = false; animar(t, 'entra');
   clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3500);
 }
 
 /* ---------- Utilidades ---------- */
 const $app = document.getElementById('app');
-const vista = html => { $app.innerHTML = html; if (!_pintandoInicio) entrarPantalla(); };
+const vista = html => { $app.innerHTML = html; if (!_pintandoInicio) { entrarPantalla(); quitarAvisoVersion(); } };
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const azar = a => a[Math.floor(RNG() * a.length)];
 const barajar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(RNG() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -295,6 +296,7 @@ function inicio({ desdeAtras = false } = {}) {
   _enPantalla = false;
   _pintandoInicio = true;
   try { pintarInicio(); } finally { _pintandoInicio = false; }
+  mostrarAvisoVersion();
 }
 function pintarInicio() {
   pararReloj(); RNG = Math.random; J = null;
@@ -358,6 +360,7 @@ function pintarInicio() {
     <footer class="pie">
       <p>Las preguntas salen de los mismos datos que la app, con la numeración de las hojas impresas. Cada región guarda su propio progreso, solo en este dispositivo. Mantén pulsada una ficha (o pasa el ratón) para ver de qué va.</p>
       <p><a class="enlace-ext" href="guia.html#${REG.id}/arbol">Guía de consulta</a> · <a class="enlace-ext" href="./">Abrir la app</a></p>
+      <p class="pie-version">Versión ${esc(textoVersion())} <button class="enlace" data-acc="${_versionNueva ? 'version-actualizar' : 'version-comprobar'}">${_versionNueva ? 'Actualizar' : 'Comprobar'}</button></p>
       ${confirmandoBorrar ? `<div class="confirmar"><p>¿Borrar todo el progreso, la racha, los récords y los logros?</p><button class="btn btn-der" data-acc="borrar-si">Borrar</button><button class="btn" data-acc="borrar-no">Cancelar</button></div>`
         : `<button class="enlace" data-acc="borrar">Borrar progreso</button>`}
     </footer>`);
@@ -1040,11 +1043,37 @@ function abrirHueco(k) {
       ...Object.keys(HIP).sort((a, b) => HIP[a].n - HIP[b].n).map(id => ({ v: id, html: `<span class="n">${HIP[id].n}</span><span>${esc(nombreCorto(id))}<br><small>${esc(nombreSub(id))}</small></span>` }))],
     alListo: v => { J.huecos[k] = v; }, alCerrar: volver });
 }
+// Asa de las hojas inferiores: arrastrar hacia abajo desde arriba de la hoja (72 px) la cierra, como
+// las hojas de la app (initSwipe, app.js): más de 80 px o un gesto rápido; si no, vuelve a su sitio.
+// Cerrar así es como cerrar con su botón: gasta su entrada del historial.
+const ASA = '<div class="asa" aria-hidden="true"></div>';
+function deslizarParaCerrar(velo, cerrar) {
+  const EASE = 'transform .3s cubic-bezier(.32,.72,0,1)';
+  let hoja = null, y0 = 0, t0 = 0, delta = 0;
+  velo.addEventListener('touchstart', e => {
+    hoja = e.touches.length === 1 ? velo.querySelector('.hoja-sel') : null;
+    if (!hoja || e.touches[0].clientY - hoja.getBoundingClientRect().top > 72) { hoja = null; return; }
+    y0 = e.touches[0].clientY; t0 = Date.now(); delta = 0; hoja.style.transition = 'none';
+  }, { passive: true });
+  velo.addEventListener('touchmove', e => {
+    if (!hoja) return;
+    delta = Math.max(0, e.touches[0].clientY - y0); hoja.style.transform = delta ? `translateY(${delta}px)` : '';
+  }, { passive: true });
+  const soltar = cancelar => {
+    if (!hoja) return; const h = hoja; hoja = null;
+    h.style.transition = EASE;
+    if (!cancelar && (delta > 80 || (delta > 20 && delta / Math.max(1, Date.now() - t0) > 0.3))) {
+      h.style.transform = 'translateY(110%)'; setTimeout(() => cerrar(), 300);
+    } else { h.style.transform = ''; setTimeout(() => { h.style.transition = ''; }, 310); }
+  };
+  velo.addEventListener('touchend', () => soltar(false), { passive: true });
+  velo.addEventListener('touchcancel', () => soltar(true), { passive: true });
+}
 // Hoja inferior para elegir: una opción (se cierra al tocar) o varias (con «Listo»).
 function selector({ cab, items, multi = false, exclusivo = null, valor = [], alListo, alCerrar }) {
   const sel = new Set(valor);
   const velo = document.createElement('div'); velo.className = 'velo';
-  velo.innerHTML = `<div class="hoja-sel" role="dialog" aria-modal="true" aria-label="Elegir">${cab}
+  velo.innerHTML = `<div class="hoja-sel" role="dialog" aria-modal="true" aria-label="Elegir">${ASA}${cab}
     <div class="lista">${items.map(it => `<button class="sel-op" data-sel="${esc(it.v)}">${it.html}</button>`).join('')}</div>
     <div class="fila-btn"><button class="btn" data-sel-acc="cerrar">Cancelar</button>${multi ? '<button class="btn btn-pri" data-sel-acc="listo">Listo</button>' : ''}</div></div>`;
   const marcar = () => velo.querySelectorAll('[data-sel]').forEach(b => b.setAttribute('aria-pressed', String(sel.has(b.dataset.sel))));
@@ -1063,7 +1092,7 @@ function selector({ cab, items, multi = false, exclusivo = null, valor = [], alL
     }
     if (a) { if (a.dataset.selAcc === 'listo' && sel.size) alListo([...sel]); cerrar(); }
   });
-  document.body.appendChild(velo); abrirCapa(cerrar);
+  document.body.appendChild(velo); abrirCapa(cerrar); deslizarParaCerrar(velo, cerrar);
   (velo.querySelector('[aria-pressed="true"]') || velo.querySelector('.sel-op')).focus();
 }
 
@@ -1361,19 +1390,19 @@ function abrirAyuda() {
   pausarReloj(); J.ayuda = true;
   const b0 = document.querySelector('.ayuda-btn'); if (b0) b0.classList.add('usada');
   const velo = document.createElement('div'); velo.className = 'velo';
-  velo.innerHTML = `<div class="hoja-sel" role="dialog" aria-modal="true" aria-label="Qué busca cada paso">
+  velo.innerHTML = `<div class="hoja-sel" role="dialog" aria-modal="true" aria-label="Qué busca cada paso">${ASA}
     <div class="sel-cab"><p class="etq">${esc(REG.nombre)} · ayuda</p><b>Qué busca cada paso</b><span>El tiempo está parado. Esta partida ya no cuenta para récords ni logros.</span></div>
     <div class="lista">${PASOS.map(s => `<div class="esencia-fila"><span class="num-paso">${s.num}</span><div><b>${esc(titPaso(s))}</b>${s.porque ? `<p ${ctxPasoAttr(s)}>${esc(primeraFrase(s.porque))}</p>` : ''}</div></div>`).join('')}</div>
     <button class="btn btn-pri" data-x="cerrar">Volver al juego</button></div>`;
   const tecla = e => { if (e.key === 'Escape') cerrar(); };
   const cerrar = (o = {}) => { if (!velo.isConnected) return; velo.remove(); soltarCapa(cerrar, o); document.removeEventListener('keydown', tecla); reanudarReloj(); const b = document.querySelector('.ayuda-btn'); if (b) b.focus(); };
   velo.addEventListener('click', e => { if (e.target === velo || e.target.closest('[data-x]')) cerrar(); });
-  document.addEventListener('keydown', tecla); document.body.appendChild(velo); abrirCapa(cerrar); velo.querySelector('[data-x]').focus();
+  document.addEventListener('keydown', tecla); document.body.appendChild(velo); abrirCapa(cerrar); deslizarParaCerrar(velo, cerrar); velo.querySelector('[data-x]').focus();
 }
 function verEsencia(id) {
   const s = PASOS.find(x => x.id === id); if (!s) return;
   const velo = document.createElement('div'); velo.className = 'velo';
-  velo.innerHTML = `<div class="hoja-sel" role="dialog" aria-modal="true" aria-label="Paso ${s.num}">
+  velo.innerHTML = `<div class="hoja-sel" role="dialog" aria-modal="true" aria-label="Paso ${s.num}">${ASA}
     <div class="esencia-cab"><span class="num-paso">${s.num}</span><b>${esc(titPaso(s))}</b></div>
     ${s.porque ? `<p class="porque" ${ctxPasoAttr(s)}>${esc(primeraFrase(s.porque))}</p>` : ''}
     <p class="progreso">Pregunta: «${esc(s.q)}»</p>
@@ -1385,7 +1414,7 @@ function verEsencia(id) {
     const b = e.target.closest('[data-x]'); if (!b) return;
     cerrar(); if (b.dataset.x === 'esencia') { HV.q = ''; window.scrollTo(0, 0); pintarHojas('esencia', 'esencia-' + id); }
   });
-  document.addEventListener('keydown', tecla); document.body.appendChild(velo); abrirCapa(cerrar); velo.querySelector('[data-x="esencia"]').focus();
+  document.addEventListener('keydown', tecla); document.body.appendChild(velo); abrirCapa(cerrar); deslizarParaCerrar(velo, cerrar); velo.querySelector('[data-x="esencia"]').focus();
 }
 // «✨ Preguntar a la IA»: los tres modos de la app (promptPregunta) con la región como único contexto.
 function preguntarIA() {
@@ -1393,7 +1422,7 @@ function preguntarIA() {
   const velo = document.createElement('div'); velo.className = 'velo';
   const pintar = () => {
     const d = destinoIA(), t = TIPOS_PREGUNTA[tipo], valido = texto.trim().length >= 3;
-    velo.innerHTML = `<div class="hoja-sel pregunta-ia" role="dialog" aria-modal="true" aria-label="Preguntar a la IA">
+    velo.innerHTML = `<div class="hoja-sel pregunta-ia" role="dialog" aria-modal="true" aria-label="Preguntar a la IA">${ASA}
       <div class="sel-cab"><p class="etq">Preguntar a la IA · ${esc(REG.min)}</p><b>Una duda que no está en las hojas</b></div>
       <div class="selector-fila" role="group" aria-label="Tipo de pregunta">${Object.entries(TIPOS_PREGUNTA).map(([k, v]) => `<button data-tp="${k}" aria-pressed="${k === tipo}">${esc(v.corto || v.nombre)}</button>`).join('')}</div>
       <textarea id="preguntaTexto" maxlength="${MAX_TEXTO_IA}" placeholder="${esc(t.placeholder)}" aria-label="Tu pregunta">${esc(texto)}</textarea>
@@ -1421,7 +1450,7 @@ function preguntarIA() {
     a.setAttribute('aria-disabled', String(!valido)); a.href = valido ? urlIA(destinoIA(), promptPregunta({ contexto: REG.min, pregunta: texto, tipo })) : '#';
   });
   velo.addEventListener('keydown', e => { if (e.target.id === 'preguntaTexto' && e.key === 'Enter' && !e.shiftKey && texto.trim().length >= 3) { e.preventDefault(); velo.querySelector('.btn-ir').click(); } });
-  pintar(); document.addEventListener('keydown', tecla); document.body.appendChild(velo); abrirCapa(cerrar);
+  pintar(); document.addEventListener('keydown', tecla); document.body.appendChild(velo); abrirCapa(cerrar); deslizarParaCerrar(velo, cerrar);
   const ta = velo.querySelector('textarea'); if (!matchMedia('(pointer: coarse)').matches) ta.focus(); else velo.querySelector('.hoja-sel').setAttribute('tabindex', '-1');
 }
 function abrirLupa(nombre) {
@@ -1444,6 +1473,60 @@ function verHoja(valor) {
   if (reg !== REG.id) { guardar(); usarRegion(reg); PREFS.region = reg; guardarPrefs(); }
   HV.q = ''; window.scrollTo(0, 0); pintarHojas(tipo, ancla);
 }
+
+/* ---------- Versión nueva: el mismo aviso que la app (app.js, comprobarVersion) ---------- */
+// lib/version.js lleva 'dev' en el repo y el commit en el despliegue; version.json es la versión
+// publicada, pedida sin caché. Si difieren, el inicio del juego (nunca una partida) avisa con
+// «Actualizar». Se comprueba al abrir y al volver a la app, como mucho una vez por minuto.
+let _versionNueva = null, _versionComprobada = 0, _versionCerrada = '';
+const CLAVE_RECARGA = 'physiq-entrena-recarga';   // sessionStorage: versión por la que ya se recargó
+const shaRecargado = () => { try { return sessionStorage.getItem(CLAVE_RECARGA) || ''; } catch (e) { return ''; } };
+const anotarRecarga = sha => { try { sha ? sessionStorage.setItem(CLAVE_RECARGA, sha) : sessionStorage.removeItem(CLAVE_RECARGA); } catch (e) {} };
+const versionPendiente = () => !!_versionNueva && shaRecargado() === _versionNueva.sha;
+async function comprobarVersion({ manual = false } = {}) {
+  if (VERSION_SHA === 'dev') { if (manual) avisar('Versión de desarrollo: no hay despliegue con el que comparar.', { trofeo: false }); return; }
+  if (!manual && Date.now() - _versionComprobada < 60000) return;
+  _versionComprobada = Date.now();
+  let publicada;
+  try { const r = await fetch('./version.json', { cache: 'no-store' }); if (!r.ok) throw new Error(String(r.status)); publicada = await r.json(); }
+  catch (e) { if (manual) avisar('No se ha podido comprobar la versión (¿sin conexión?).', { trofeo: false }); return; }
+  if (!esVersionNueva(publicada)) {
+    _versionNueva = null; anotarRecarga(''); quitarAvisoVersion();
+    if (manual) avisar(`Estás en la última versión (${textoVersion()})`, { trofeo: false });
+    return;
+  }
+  _versionNueva = publicada;
+  if (manual) _versionCerrada = '';
+  mostrarAvisoVersion();
+  const pie = document.querySelector('.pie-version .enlace'); if (pie) { pie.dataset.acc = 'version-actualizar'; pie.textContent = 'Actualizar'; }
+}
+function quitarAvisoVersion() { document.getElementById('versionAviso')?.remove(); }
+function mostrarAvisoVersion() {
+  if (!_versionNueva || _versionCerrada === _versionNueva.sha || J || document.getElementById('versionAviso')) return;
+  const aviso = document.createElement('div');
+  aviso.id = 'versionAviso'; aviso.className = 'version-aviso'; aviso.setAttribute('role', 'status');
+  aviso.innerHTML = `<span class="version-aviso-texto">${versionPendiente() ? 'La versión nueva aún se está publicando: prueba en unos minutos' : '<span class="version-aviso-largo">Hay una versión nueva</span><span class="version-aviso-corto">Versión nueva</span>'}</span>
+    <button type="button" class="version-aviso-btn" data-v="actualizar">Actualizar</button>
+    <button type="button" class="version-aviso-cerrar" data-v="cerrar" aria-label="Cerrar aviso" title="Ahora no">${icono.cerrar}</button>`;
+  aviso.addEventListener('click', e => {
+    const b = e.target.closest('[data-v]'); if (!b) return;
+    if (b.dataset.v === 'actualizar') return recargarVersionNueva();
+    _versionCerrada = _versionNueva?.sha || ''; aviso.remove();
+  });
+  document.body.appendChild(aviso);
+}
+// Antes de recargar se vuelven a pedir los archivos propios que ha cargado la página (cache:
+// 'reload'), para que la caché del navegador no sirva el código anterior; como mucho 4 s.
+async function recargarVersionNueva() {
+  guardar(); anotarRecarga(_versionNueva?.sha || '');
+  const aviso = document.getElementById('versionAviso');
+  if (aviso) { aviso.classList.add('version-aviso-actualizando'); aviso.setAttribute('aria-busy', 'true'); aviso.innerHTML = '<span class="version-aviso-giro" aria-hidden="true"></span><span class="version-aviso-texto">Actualizando…</span>'; }
+  const urls = [...new Set(performance.getEntriesByType('resource').map(e => e.name))].filter(u => { try { const x = new URL(u); return x.origin === location.origin && /\.(js|css)$/.test(x.pathname); } catch (e) { return false; } });
+  try { await navigator.serviceWorker?.getRegistration().then(r => r?.update()); } catch (e) {}
+  await Promise.race([Promise.allSettled(urls.map(u => fetch(u, { cache: 'reload' }))), new Promise(r => setTimeout(r, 4000))]);
+  location.reload();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') comprobarVersion(); });
 
 /* ---------- Atrás: botón del sistema, gesto de Android y deslizar desde el borde ---------- */
 // Cada pantalla que no es el inicio añade una entrada al historial, y cada ventana (selector,
@@ -1557,6 +1640,8 @@ $app.addEventListener('click', e => {
   if (acc === 'copiar') { const t = document.getElementById('txtDuelo');
     navigator.clipboard.writeText(t.value).then(() => avisar('Mensaje copiado'), () => { t.focus(); t.select(); avisar('Selecciona y copia el mensaje'); }).catch(() => {}); return; }
   if (acc === 'region') return menuRegion();
+  if (acc === 'version-comprobar') return comprobarVersion({ manual: true });
+  if (acc === 'version-actualizar') return recargarVersionNueva();
   if (acc === 'ayuda') return abrirAyuda();
   if (acc === 'preguntar-ia') return preguntarIA();
   if (acc === 'pesa-no') return avisar(el.title);
@@ -1584,3 +1669,4 @@ const m = location.hash.match(/^#reto-(\d{4})$/);
 if (m) pintarDuelo(m[1]); else inicio();
 // Instalable (entrena.webmanifest): el mismo service worker que la app, que también la deja sin conexión
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+comprobarVersion();
