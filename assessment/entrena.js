@@ -367,7 +367,8 @@ function pintarInicio() {
 }
 function menuRegion() {
   selector({ cab: '<div class="sel-cab"><p class="etq">Región</p><b>¿Qué árbol quieres entrenar?</b></div>',
-    items: Object.keys(DATOS).map(k => ({ v: k, html: `<span>${esc(DATOS[k].nombre)}</span><small style="margin-left:auto">${DATOS[k].steps.length} pasos</small>` })), valor: [REG.id],
+    columnas: 2, // 7 regiones en dos columnas: cabe sin scroll también con letra grande (decisión del usuario, 2026-11)
+    items: Object.keys(DATOS).map(k => ({ v: k, html: `<span>${esc(DATOS[k].nombre)}</span><small>${DATOS[k].steps.length} pasos</small>` })), valor: [REG.id],
     alListo: v => { if (v[0] !== REG.id) { guardar(); usarRegion(v[0]); PREFS.region = v[0]; guardarPrefs(); } }, alCerrar: () => { inicio(); const b = document.querySelector('.titulo-region'); if (b) b.focus(); } });
 }
 
@@ -1051,7 +1052,10 @@ function abrirHueco(k) {
 }
 // Asa de las hojas inferiores: arrastrar hacia abajo desde arriba de la hoja (72 px) la cierra, como
 // las hojas de la app (initSwipe, app.js): más de 80 px o un gesto rápido; si no, vuelve a su sitio.
-// Cerrar así es como cerrar con su botón: gasta su entrada del historial.
+// Cerrar así es como cerrar con su botón: gasta su entrada del historial. El touchmove no es pasivo:
+// mientras se arrastra la hoja hacia abajo cancela el gesto del navegador, porque la hoja no tiene
+// scroll propio y, con la página arriba del todo, Chrome lo tomaba como «tirar para recargar» y
+// mandaba touchcancel: la hoja volvía a su sitio sin cerrarse (visto en Android, 2026-11).
 const ASA = '<div class="asa" aria-hidden="true"></div>';
 function deslizarParaCerrar(velo, cerrar) {
   const EASE = 'transform .3s cubic-bezier(.32,.72,0,1)';
@@ -1064,7 +1068,8 @@ function deslizarParaCerrar(velo, cerrar) {
   velo.addEventListener('touchmove', e => {
     if (!hoja) return;
     delta = Math.max(0, e.touches[0].clientY - y0); hoja.style.transform = delta ? `translateY(${delta}px)` : '';
-  }, { passive: true });
+    if (delta && e.cancelable) e.preventDefault();
+  }, { passive: false });
   const soltar = cancelar => {
     if (!hoja) return; const h = hoja; hoja = null;
     h.style.transition = EASE;
@@ -1076,11 +1081,11 @@ function deslizarParaCerrar(velo, cerrar) {
   velo.addEventListener('touchcancel', () => soltar(true), { passive: true });
 }
 // Hoja inferior para elegir: una opción (se cierra al tocar) o varias (con «Listo»).
-function selector({ cab, items, multi = false, exclusivo = null, valor = [], alListo, alCerrar }) {
+function selector({ cab, items, multi = false, exclusivo = null, valor = [], alListo, alCerrar, columnas = 1 }) {
   const sel = new Set(valor);
   const velo = document.createElement('div'); velo.className = 'velo';
   velo.innerHTML = `<div class="hoja-sel" role="dialog" aria-modal="true" aria-label="Elegir">${ASA}${cab}
-    <div class="lista">${items.map(it => `<button class="sel-op" data-sel="${esc(it.v)}">${it.html}</button>`).join('')}</div>
+    <div class="lista${columnas === 2 ? ' lista-2col' : ''}">${items.map(it => `<button class="sel-op" data-sel="${esc(it.v)}">${it.html}</button>`).join('')}</div>
     <div class="fila-btn"><button class="btn" data-sel-acc="cerrar">Cancelar</button>${multi ? '<button class="btn btn-pri" data-sel-acc="listo">Listo</button>' : ''}</div></div>`;
   const marcar = () => velo.querySelectorAll('[data-sel]').forEach(b => b.setAttribute('aria-pressed', String(sel.has(b.dataset.sel))));
   marcar();
