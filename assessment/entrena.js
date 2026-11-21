@@ -327,14 +327,14 @@ function pintarInicio() {
       ${fichaHTML('diario', 'calendario', 'i-q', 'Reto del día', hecho !== undefined ? `hecho · ${hecho}` : 'pendiente', '5 preguntas iguales todo el día. Mantiene la racha de esta región.', { clase: hecho === undefined ? 'destacado' : 'hecho' })}
       ${fichaHTML('diariomix', 'calendario', 'i-ok', 'Reto: todas', hechoMix !== undefined ? `hecho · ${hechoMix}` : 'pendiente', '7 preguntas de regiones al azar, iguales todo el día. Su propia racha.', { clase: hechoMix === undefined ? 'destacado' : 'hecho' })}
     </div></section>
-    <section class="grupo"><h2>Rápidos</h2><div class="mosaico">
+    <section class="grupo"><h2>Árbol · rápidos</h2><div class="mosaico">
       ${fichaHTML('desliza', 'desliza', 'i-ok', 'Desliza', rec(P.mejor.desliza), 'Verdadero o falso en 60 segundos, con una mano.')}
       ${fichaHTML('flechas', 'rayo', 'i-q', 'Flechas', rec(P.mejor.flechas), '15 preguntas, 3 vidas. Saltarse una derivación cuesta dos.')}
       ${fichaHTML('enpaso', 'paso', 'i-der', '¿En qué paso?', rec(P.mejor.enpaso), 'Hipótesis, hallazgos y derivaciones: toca su paso en 60 s.')}
       ${fichaHTML('subita', 'subita', 'i-der', 'Muerte súbita', rec(P.mejor.subita), 'Una vida y cada vez menos tiempo.')}
-      ${fichaHTML('mezcla', 'rayo', 'i-ok', 'Mezcla de regiones', rec(M.mejor), 'Flechas con árboles y tests de las 7 regiones.')}
+      ${fichaHTML('mezcla', 'rayo', 'i-ok', 'Mezcla de regiones', `árbol y tests · ${rec(M.mejor)}`, 'Flechas con árboles y tests de las 7 regiones.')}
     </div></section>
-    <section class="grupo"><h2>Para pensar</h2><div class="mosaico">
+    <section class="grupo"><h2>Árbol · para pensar</h2><div class="mosaico">
       ${fichaHTML('error', 'lupa', 'i-hyp', 'Encuentra el error', P.mejor.error ? `${P.mejor.error} perfectas` : 'sin jugar', 'La hoja con 1 a 3 errores escondidos.')}
       ${fichaHTML('completa', 'completa', 'i-q', 'Completa el paso', P.mejor.completa ? `mejor ${P.mejor.completa}/${rondasCompleta()}` : 'sin jugar', 'Solo ves el número del paso: marca sus respuestas.')}
       ${fichaHTML('caso', 'caso', 'i-ok', 'Caso', P.mejor.casoPct ? `mejor ${P.mejor.casoPct}%` : 'sin jugar', 'Hallazgos de un paciente: recorre el árbol paso a paso.')}
@@ -343,7 +343,7 @@ function pintarInicio() {
       ${fichaHTML('hoja', 'hoja', 'i-hyp', 'Hoja fantasma', `nivel ${nivelMax}/4`, 'Rellena la hoja impresa. Cada nivel se abre con el anterior perfecto.')}
       ${fichaHTML('parejas', 'parejas', 'i-gris', 'Parejas', P.mejor.parejas ? `mejor ${P.mejor.parejas} intentos` : 'sin jugar', 'Une cada hallazgo con lo que abre en la hoja.')}
     </div></section>
-    <section class="grupo"><h2>Fase 4b · tests</h2><div class="mosaico">
+    <section class="grupo"><h2>Confirmación (4b) · tests</h2><div class="mosaico">
       ${fichaHTML('dequien', 'lupa', 'i-hyp', '¿De quién es?', rec(P.mejor.dequien), 'Sale un test: elige su hipótesis entre las vecinas del árbol.')}
       ${fichaHTML('bateria', 'completa', 'i-hyp', 'Batería', P.mejor.bateria ? `mejor ${P.mejor.bateria}/5` : 'sin jugar', 'Marca los tests de cada hipótesis.')}
       ${fichaHTML('positivo', 'caso', 'i-hyp', 'Positivo si…', rec(P.mejor.positivo), 'Cómo se hace cada test y cuándo es positivo.')}
