@@ -863,7 +863,7 @@ function pintarError() {
         <button class="pregunta-caja marcable ${eq}" data-err="${kq}" aria-pressed="${J.marcas.has(kq)}" ${J.corregida ? 'disabled' : ''}><span class="num-paso">${f.s.num}</span><p ${ctxPasoAttr(f.q)}>${esc(f.q.q)}</p></button>
         ${eq === 'falta' || eq === 'ok' ? `<p class="correcta">Aquí va: «${esc(f.s.q)}»</p>` : ''}
         ${f.ops.map((x, i) => { const k = 'o:' + f.s.id + ':' + i, e = est(k);
-          return `<div class="hoja-op">${respuestaHTML(x.o)}<span class="flecha">→</span>
+          return `<div class="hoja-op opcion">${respuestaHTML(x.o)}<span class="flecha">→</span>
             <button class="res-caja marcable ${e}" data-err="${k}" aria-pressed="${J.marcas.has(k)}" ${J.corregida ? 'disabled' : ''}>${resultadoHTML(x.muestra, true)}</button>
             ${e === 'falta' || e === 'ok' ? `<div class="correcta">Era: ${resultadoHTML(x.o)}</div>` : ''}${e === 'mal' ? '<div class="correcta">Esta estaba bien.</div>' : ''}</div>`; }).join('')}
       </section>`; }).join('')}
@@ -1369,7 +1369,7 @@ function pintarCuerpoHoja(ancla) {
 }
 function pasoHTML(s) {
   return `<section class="tarjeta hoja-paso" id="paso-${s.id}" data-ia-ctx="${attrIA(ctxArbol(REG.id, s.q))}">${preguntaHTML(s)}
-    ${s.opts.map(o => `<div class="hoja-op">${respuestaHTML(o)}<span class="flecha">→</span><div class="res-caja">${esRama(s) ? `<span class="chip-sin">${destinoTxt(o.next)}</span>` : resultadoHTML(o, false)}</div>
+    ${s.opts.map(o => `<div class="hoja-op opcion">${respuestaHTML(o)}<span class="flecha">→</span><div class="res-caja">${esRama(s) ? `<span class="chip-sin">${destinoTxt(o.next)}</span>` : resultadoHTML(o, false)}</div>
       ${o.deriv ? `<div class="correcta deriv-caja"><b>Derivación médica.</b> ${esc(o.deriv)}</div>` : ''}</div>`).join('')}
     ${s.porque ? `<details class="razon"><summary>¿Por qué esta pregunta?</summary><p>${esc(s.porque)}${iaParrafoHTML()}</p></details>` : ''}</section>`;
 }
