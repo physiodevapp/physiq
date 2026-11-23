@@ -192,8 +192,15 @@ p { margin: 0; }
 .camino-fila .tuya { color: var(--mal); font-size: .82rem; }
 
 /* Hoja (fantasma y encuentra el error) */
-.hoja-paso { display: flex; flex-direction: column; gap: 8px; }
-.hoja-op { display: grid; grid-template-columns: 1fr 18px 1fr; gap: 6px; align-items: center; }
+.hoja-paso { display: flex; flex-direction: column; gap: 10px; }
+.hoja-op { display: grid; grid-template-columns: 1fr 18px 1fr; gap: 10px 6px; align-items: center; }
+/* Espacio entre cajas con borde: nunca pegadas (decisión del usuario, 2026-11). Las listas de la hoja
+   llevan 12 px entre tarjetas, que deja sitio también al contorno dorado del paso destacado. */
+#hojaCuerpo { display: flex; flex-direction: column; gap: 12px; }
+#hojaCuenta:empty { display: none; }
+#hojaLista { gap: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+span.chips { display: inline-flex; vertical-align: middle; }
 .hoja-op .respuesta-caja { padding: 8px 10px; }
 .hoja-op .respuesta-caja b { font-size: .86rem; }
 .hoja-op .respuesta-caja span { font-size: .78rem; }
@@ -367,6 +374,15 @@ p { margin: 0; }
 .deriv-caja b { color: var(--der); }
 .razon summary, .test-det summary { cursor: pointer; color: var(--text2); font-size: .86rem; font-weight: 600; min-height: 32px; display: flex; align-items: center; }
 .razon p { font-size: .88rem; color: var(--text2); margin-top: 6px; }
+/* Desplegables «Más» y «¿Por qué esta pregunta?»: flecha ▾ cerrado y ▴ abierto, y «Más» pasa a «Menos»
+   (como «Ver pauta completa ▾ / Ocultar pauta ▴» de la app; decisión del usuario, 2026-11) */
+.razon summary { list-style: none; justify-content: flex-start; gap: 6px; }
+.razon summary::-webkit-details-marker { display: none; }
+.razon summary::after { content: '▾'; color: var(--text3); }
+.razon[open] summary::after { content: '▴'; }
+.razon:not([open]) .si-abierto, .razon[open] .si-cerrado { display: none; }
+/* Título de la región en las hojas: lo único que dice de qué región es la hoja */
+.titulo-hoja { font-size: 1.05rem; font-weight: 700; color: var(--text); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .test-det { border-top: 1px solid var(--border); padding-block: 4px; }
 .test-det summary { color: var(--text); font-weight: 500; flex-wrap: wrap; gap: 6px; list-style: none; }
 .test-det summary::-webkit-details-marker { display: none; }
@@ -382,7 +398,7 @@ p { margin: 0; }
 .anat a { color: var(--q); font-weight: 600; text-decoration: none; padding-block: 6px; }
 .anat-en { font-family: var(--f-mono); font-size: .62rem; border: 1px solid var(--border2); border-radius: 4px; padding: 0 3px; color: var(--text3); }
 .anat-sep { color: var(--text3); }
-.destacado-hoja { outline: 3px solid var(--oro); outline-offset: 3px; }
+.destacado-hoja { outline: 3px solid var(--oro); outline-offset: 3px; scroll-margin-top: 16px; }
 .ver-hoja { background: none; border: 0; padding: 4px 0; color: var(--q); font-weight: 600; font-size: .84rem; }
 .titulo-region { background: none; border: 0; padding: 0; text-align: left; display: flex; flex-direction: column; gap: 2px; min-height: 44px; }
 .titulo-region .h1 { font-size: 1.75rem; font-weight: 700; line-height: 1.1; text-wrap: balance; }
@@ -413,7 +429,8 @@ p { margin: 0; }
 .paso-tile small { font-size: .68rem; }
 .paso-tile { background: none; border: 0; padding: 4px 0; border-radius: 8px; }
 .paso-tile:hover .num-paso { box-shadow: 0 0 0 3px var(--q-bg); }
-.cadena { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: baseline; font-size: .86rem; line-height: 1.4; }
+/* Un paso por línea, con su flecha al final: nunca una flecha suelta al principio de una línea */
+.cadena { display: flex; flex-direction: column; gap: 4px; font-size: .86rem; line-height: 1.4; }
 .cadena .flecha { color: var(--text3); }
 .esencia { gap: 8px; }
 .esencia > p { font-size: .9rem; color: var(--text2); }

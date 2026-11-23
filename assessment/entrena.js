@@ -200,7 +200,7 @@ function resultadoHTML(o, corto = false) {
   if (o.deriv) partes.push('<span class="chip-der ia-excluir">Derivación médica</span>');
   o.h.forEach(id => partes.push(corto ? chipNum(id) : chipHip(id)));
   if (!partes.length) partes.push('<span class="chip-sin ia-excluir">sin hipótesis</span>');
-  return partes.join('');
+  return `<span class="chips">${partes.join('')}</span>`;
 }
 function selHTML(arr) {
   const p = [];
@@ -784,7 +784,7 @@ function finCaso() {
     <section class="tarjeta"><p class="etq">Recorrido en la hoja</p><div class="camino">${c.camino.map(({ s, o }, i) => `
       <div class="camino-fila ${c.mias[i].ok ? 'ok' : 'mal'}"><span class="num-paso">${s.num}</span><div><p><b>${esc(o.t)}</b> → ${esRama(s) ? destinoTxt(o.next) : resultadoHTML(o)}</p>${c.mias[i].ok ? '' : `<p class="tuya">Elegiste: ${c.mias[i].html}</p>${verHojaHTML({ t: { s } })}`}</div></div>`).join('')}</div></section>
     ${deriv ? `<div class="aviso aviso-mal"><p class="tit">Derivación médica</p><p>Este paciente necesita valoración médica; el recorrido sigue.</p></div>` : ''}
-    <section class="tarjeta"><p class="etq">A confirmar en la fase 4b</p><div>${hips.length ? hips.map(chipHip).join(' ') : `<span class="chip-sin">ninguna: ${DATOS[REG.id].inesp}</span>`}</div></section>` }));
+    <section class="tarjeta"><p class="etq">A confirmar en la fase 4b</p><div class="chips">${hips.length ? hips.map(chipHip).join(' ') : `<span class="chip-sin">ninguna: ${DATOS[REG.id].inesp}</span>`}</div></section>` }));
   aciertos === N ? celebrar() : SON.fin();
   cerrarPartida({ modo: 'caso', aciertos });
 }
@@ -801,7 +801,7 @@ function empezarDetective() { iniciar('detective', { seguidos: 0, casos: 0 }); J
 function pintarDetective() {
   const d = J.d, hips = [...new Set(d.pos.flatMap(o => o.h))], deriv = d.pos.some(o => o.deriv);
   vista(`${barra({ centro: `<span class="progreso">Caso ${J.casos + 1}</span>`, derecha: `${J.seguidos}<small>seguidos</small>` })}
-    <section class="tarjeta salta"><p class="etq">El árbol terminó así</p><div>${deriv ? '<span class="chip-der">Derivación médica</span> ' : ''}${hips.map(chipHip).join(' ')}</div>
+    <section class="tarjeta salta"><p class="etq">El árbol terminó así</p><div class="chips">${deriv ? '<span class="chip-der">Derivación médica</span> ' : ''}${hips.map(chipHip).join(' ')}</div>
       <p class="enunciado">¿Qué hallazgos tenía el paciente? Marca todos.</p></section>
     <div class="opciones">${d.opciones.map((o, i) => {
       let est = '', nota = '';
@@ -1335,7 +1335,7 @@ function pintarHojas(tipo = HV.tipo, ancla = null) {
   HV.tipo = tipo; HV.modo = ancla ? 'texto' : (PREFS.hojaModo || 'papel');
   const esEsencia = tipo === 'esencia';
   const ruta = `${URL_GUIA}#${REG.id}/${tipo === 'esencia' ? 'arbol' : tipo}`;
-  vista(`${barra({ salir: 'Inicio', centro: `<span class="progreso">${esc(REG.nombre)}</span>` })}
+  vista(`${barra({ salir: 'Inicio', centro: `<span class="titulo-hoja">${esc(REG.nombre)}</span>` })}
     <div class="pestanas" role="group" aria-label="Hoja">${[['esencia', 'Esencia'], ['arbol', 'Árbol'], ['confirmacion', 'Confirmación', '4b']].map(([k, t, c]) => `<button data-hv-tipo="${k}" aria-pressed="${k === tipo}" aria-label="${t}">${c ? `<span class="largo">${t}</span><span class="corto">${c}</span>` : t}</button>`).join('')}</div>
     ${esEsencia ? '' : `<div class="pestanas" role="group" aria-label="Formato">${[['papel', 'Papel'], ['texto', 'Texto']].map(([k, t]) => `<button data-hv-modo="${k}" aria-pressed="${k === HV.modo}">${t}</button>`).join('')}</div>`}
     <div id="hojaCuerpo"></div>
@@ -1349,9 +1349,9 @@ const urlPDFHoja = base => `./docs/esquemas/${base}.pdf${HUELLAS?.[base]?.huella
 function pintarCuerpoHoja(ancla) {
   const caja = document.getElementById('hojaCuerpo'), base = archivoHoja(HV.tipo);
   if (HV.tipo === 'esencia') {
-    caja.innerHTML = `<section class="tarjeta"><p class="etq">El árbol en una línea</p><p class="cadena">${PASOS.map(s => `<span><b class="mono">${s.num}</b> ${esc(titPaso(s))}</span>`).join('<span class="flecha" aria-hidden="true">→</span>')}</p></section>
+    caja.innerHTML = `<section class="tarjeta"><p class="etq">El árbol en una línea</p><p class="cadena">${PASOS.map((s, i) => `<span><b class="mono">${s.num}</b> ${esc(titPaso(s))}${i < PASOS.length - 1 ? ' <span class="flecha" aria-hidden="true">→</span>' : ''}</span>`).join('')}</p></section>
       ${PASOS.map(s => `<section class="tarjeta esencia" id="esencia-${s.id}" data-ia-ctx="${attrIA(ctxArbol(REG.id, s.q))}"><div class="esencia-cab"><span class="num-paso">${s.num}</span><b>${esc(titPaso(s))}</b></div>
-        ${s.porque ? `<p>${esc(primeraFrase(s.porque))}${iaParrafoHTML()}</p>${s.porque.length > primeraFrase(s.porque).length + 2 ? `<details class="razon"><summary>Más</summary><p>${esc(s.porque.slice(primeraFrase(s.porque).length).trim())}${iaParrafoHTML()}</p></details>` : ''}` : ''}
+        ${s.porque ? `<p>${esc(primeraFrase(s.porque))}${iaParrafoHTML()}</p>${s.porque.length > primeraFrase(s.porque).length + 2 ? `<details class="razon"><summary><span class="si-cerrado">Más</span><span class="si-abierto">Menos</span></summary><p>${esc(s.porque.slice(primeraFrase(s.porque).length).trim())}${iaParrafoHTML()}</p></details>` : ''}` : ''}
         <button class="ver-hoja ia-excluir" data-ver="${REG.id}|arbol|paso-${s.id}">Ver el paso en la hoja →</button></section>`).join('')}`;
     if (ancla) { const el = document.getElementById(ancla); if (el) { el.scrollIntoView({ block: 'start', behavior: movimiento() }); el.classList.add('destacado-hoja'); } }
     return;
