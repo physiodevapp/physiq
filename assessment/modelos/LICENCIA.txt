@@ -1,0 +1,40 @@
+# Licencia de los modelos 3D
+
+`rodilla.glb` y `rodilla-puntos.json` son una **obra derivada** y se distribuyen bajo la licencia
+**Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)**:
+https://creativecommons.org/licenses/by-sa/4.0/deed.es
+
+Esta licencia se aplica solo a los archivos de esta carpeta. El código de PhysiQ y las hojas impresas
+tienen la suya.
+
+## Atribución
+
+- **Z-Anatomy — The libre 3D atlas of anatomy — CC BY-SA 4.0.** Gauthier Kervyn (diseño, 3D,
+  anatomía), Marcin Zielinski (complemento de Blender) y colaboradores.
+  https://github.com/Z-Anatomy/Models-of-human-anatomy
+- **BodyParts3D — The Database Center for Life Science — CC BY-SA 2.1 Japón.** Modelo original de
+  Kousaku Okubo. https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html
+
+## Qué se ha cambiado
+
+Lo hace `tools/modelo-3d/exportar.py`, a partir de `Startup.blend` de Z-Anatomy (versión del
+2023-05-02, en `Z-Anatomy.zip`):
+
+1. Se toman solo 84 piezas de la rodilla derecha, de una lista cerrada. No se usa ninguna de las
+   piezas que Z-Anatomy marca con licencia no comercial (oído interno, riñón).
+2. Se aplican sus modificadores y los nervios y vasos (curvas) se convierten en malla.
+3. Se recorta todo entre el tercio distal del muslo y el tercio proximal de la pierna.
+4. Del recto femoral se separa como pieza propia la parte por debajo del vértice de la rótula: en
+   Z-Anatomy es el ligamento rotuliano, que no tiene pieza propia.
+5. Se reduce el número de triángulos de cada pieza y se centra el modelo en la rodilla.
+   Después se cierra cada pieza con tapas planas donde quedó abierta (los cortes de 3 y 4 y los
+   extremos de nervios y vasos), salvo la cápsula y las fascias, que son membranas.
+   La cara externa de los músculos y del ligamento rotuliano se mete 1,5 mm por dentro de la
+   fascia donde quedaba por fuera o pegada a ella (a través de la fascia se veían manchas).
+5b. La plica medial no está en Z-Anatomy: la dibuja PhysiQ, esquemática, con su recorrido calculado a
+   partir de la bolsa suprarrotuliana, la tróclea y la grasa de Hoffa. Es la única pieza dibujada y su
+   nombre lo dice: «Plica medial (esquemática, dibujada por PhysiQ)».
+6. Los nombres de las piezas son identificadores de PhysiQ; su nombre en español está en
+   `data/modelo3d.js`.
+7. `rodilla-puntos.json` guarda la posición de 15 etiquetas de Z-Anatomy (tuberosidad tibial,
+   epicóndilos…) y del centro de la inserción del ligamento rotuliano en la rótula.

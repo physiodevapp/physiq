@@ -757,6 +757,7 @@ export const hypotheses = {
   // ─── RODILLA ─────────────────────────────────────────────
   ro1: {
     id: 'ro1', region: 'rodilla', num: '①',
+    lugar: { piezas: [], zonas: ['condilo_femoral_medial', 'condilo_femoral_lateral', 'meseta_tibial'] },
     name: 'Artrosis de Rodilla',
     prom: 'KOOS (MCID: 7–9 pts distribución / 12–36 pts anchor según subescala)',
     dosis: 'Ejercicio terapéutico adaptado a la persona (por ejemplo, fortalecimiento local y forma física aeróbica general), para todos: recomendación firme (rec. 1.3.1). Valorar sesiones supervisadas (1.3.2) y combinarlo con educación o cambio de conducta en un paquete estructurado (1.3.4). Avisar de que el dolor puede aumentar al empezar y de que es la constancia a largo plazo la que reduce el dolor y mejora la función (1.3.3). Con sobrepeso, cualquier pérdida de peso ayuda, y el 10 % más que el 5 % (1.3.5). Terapia manual solo junto al ejercicio (1.3.6). No ofrecer acupuntura ni punción seca (1.3.8), ni TENS, ultrasonido, interferenciales, láser, onda corta pulsada o electroestimulación neuromuscular (1.3.9). Valorar ayudas para la marcha, como un bastón (1.3.10); plantillas, ortesis o vendajes solo si hay inestabilidad o carga anómala y el ejercicio solo no basta (1.3.11). La guía no fija series, repeticiones ni semanas: el volumen queda a criterio del clínico.',
@@ -779,6 +780,7 @@ export const hypotheses = {
   },
   ro2: {
     id: 'ro2', region: 'rodilla', num: '②',
+    lugar: { piezas: ['menisco_medial', 'menisco_lateral'], zonas: [] },
     name: 'Lesión Meniscal',
     prom: 'KOOS (MCID: 7–36 pts según subescala)',
     dosis: 'Sin cirugía. Lesión degenerativa con síntomas: el tratamiento no quirúrgico con fisioterapia es la primera opción, con resultados comparables a la meniscectomía parcial (A); el consenso quirúrgico previo pide 3 a 6 meses antes de plantear la cirugía. Terapia manual y movilización articular, ejercicios de movilidad, fuerza progresiva de rodilla y cadera y entrenamiento neuromuscular, con un programa en casa además del supervisado; puede añadirse electroestimulación neuromuscular (B). Rotura traumática: el ejercicio es una opción tan viable como la cirugía (A); en rodillas estables, un programa supervisado de 12 semanas de entrenamiento neuromuscular y de fuerza (miembro inferior, equilibrio, cadera y tronco) con educación dio resultados parecidos a la cirugía con la misma rehabilitación (un solo ensayo, B). Las roturas en asa de cubo, las radiales completas, las de la raíz y las lesiones en rampa extensas en jóvenes pueden necesitar cirugía temprana (D). En la rotura aguda aislada, la guía AAOS reserva la fisioterapia como primer tratamiento a la no desplazada que no se puede reparar, y propone cirugía precoz si está desplazada o limita el rango, o si es reparable y da síntomas (opciones de consenso, sin evidencia suficiente). Tras una meniscectomía parcial: ejercicio supervisado en consulta más un programa en casa cuya progresión supervisa el fisioterapeuta, con la educación necesaria (B), y electroestimulación neuromuscular para la fuerza del cuádriceps (B). Ninguna de las dos fuentes fija series ni repeticiones: el volumen queda a criterio del clínico.',
@@ -815,6 +817,7 @@ export const hypotheses = {
   },
   ro3: {
     id: 'ro3', region: 'rodilla', num: '③',
+    lugar: { piezas: ['rotula'], zonas: ['superficie_rotuliana_femur'] },
     name: 'Dolor Patelofemoral (Síndrome)',
     prom: 'Kujala / VISA-P',
     dosis: 'Ejercicio centrado en el cuádriceps y/o la cadera durante al menos 6 a 12 semanas, mejor con supervisión de fisioterapia al menos en parte, en un programa estructurado cuyo volumen e intensidad se ajustan al dolor (certeza baja); prioridad a la educación. Reevaluar dolor (EVA) y función (Kujala) a las 6 y a las 12 semanas. Vendaje, rodillera u ortesis plantar solo como añadido al ejercicio si a las 6–12 semanas no hay un cambio clínicamente relevante (certeza muy baja), informando al paciente de la falta de pruebas. Sin infiltraciones y con prudencia con los analgésicos. Si a las 12 semanas no mejora, reconsiderar el diagnóstico. La guía JOSPT de 2019 coincide en lo esencial: ejercicio combinado de cadera (musculatura posterolateral) y rodilla, en carga o sin carga, empezando si acaso por la cadera (A), y combinar intervenciones con el ejercicio como eje (A). Añade que no se usen punción seca ni terapia manual aislada (A), ni agentes físicos como ultrasonido, crioterapia, electroestimulación o láser (B), ni biofeedback (B); la reeducación de la carrera es opcional (C) y la educación sobre la carga, recomendable (F). Discrepan en los añadidos: la JOSPT admite vendaje rotuliano con el ejercicio a corto plazo (4 semanas, B) y ortesis plantares prefabricadas hasta 6 semanas si hay más pronación de lo normal (A), y desaconseja rodilleras y cintas (B); la holandesa, más reciente, los deja para cuando el ejercicio no basta tras 6–12 semanas, y es la que se sigue. Ninguna fija series ni repeticiones (la JOSPT dice que la dosis óptima no se conoce): el volumen queda a criterio del clínico.',
@@ -833,6 +836,7 @@ export const hypotheses = {
   },
   ro4: {
     id: 'ro4', region: 'rodilla', num: '④',
+    lugar: { piezas: ['lca'], zonas: [] },
     name: 'Lesión del Ligamento Cruzado Anterior (LCA)',
     prom: 'KOOS',
     dosis: 'En la lesión ligamentosa de rodilla, reeducación neuromuscular junto con el fortalecimiento (A); con insuficiencia del LCA puede usarse una ortesis funcional (C). Las demás recomendaciones son tras la reconstrucción: movilización inmediata, dentro de la primera semana (B); carga precoz según tolerancia (C); crioterapia en el posoperatorio inmediato (B); ejercicio supervisado en consulta más un programa en casa (B); ejercicios concéntricos y excéntricos, en carga y sin carga, desde las 4–6 semanas, 2 o 3 veces por semana durante 6 a 10 meses (A), y electroestimulación neuromuscular 6 a 8 semanas junto al fortalecimiento (A). Fuera del posoperatorio, la guía no fija volumen: queda a criterio del clínico.',
@@ -855,6 +859,7 @@ export const hypotheses = {
   },
   ro5: {
     id: 'ro5', region: 'rodilla', num: '⑤',
+    lugar: { piezas: ['ligamento_rotuliano'], zonas: ['polo_inferior_rotula'] },
     name: 'Tendinopatía Rotuliana',
     prom: 'VISA-P / KOOS',
     dosis: 'Plan en cuatro fases. 1) Control del dolor: educación y consejos de carga. 2) Progresión de fuerza: ejercicio de resistencia progresivo de cuádriceps durante al menos 12 semanas, ajustando la intensidad a cada paciente; de preferencia, resistencia pesada y lenta, aunque pueden usarse otras formas (por ejemplo, isométricos) para reducir la respuesta dolorosa del tendón. 3) Almacenamiento de energía: según el deporte, empezar con pliometría. 4) Mantenimiento de la fuerza. Si a las 12 semanas no hay un cambio clínicamente relevante, valorar una cinta infrarrotuliana. Sin infiltraciones y con prudencia con los analgésicos. Certeza muy baja en la guía; una revisión Cochrane posterior no puede asegurar que el ejercicio de fuerza alivie el dolor frente a no tratar (certeza muy baja; solo deportistas). Ninguna de las dos fija series ni repeticiones: el volumen queda a criterio del clínico.',
@@ -873,6 +878,7 @@ export const hypotheses = {
   },
   ro6: {
     id: 'ro6', region: 'rodilla', num: '⑥',
+    lugar: { piezas: ['cintilla_iliotibial'], zonas: ['epicondilo_femoral_lateral'] },
     name: 'Síndrome de la Banda Iliotibial',
     prom: 'KOOS / LEFS (MCID: 8.4–22.5 pts)',
     dosis: 'El fortalecimiento de los abductores de cadera es el elemento común de los tratamientos que funcionan, mejor junto a terapia manual u ondas de choque; en un ensayo pequeño, el fortalecimiento multiplanar superó al convencional y a los estiramientos. La revisión sugiere 4 a 8 semanas de progresión gradual. Los estiramientos tienen poco respaldo, y la reeducación de la carrera es prometedora pero sin ensayos sólidos. Evidencia baja (13 estudios pequeños, solo corredores, sin metaanálisis) y sin guía de práctica clínica. No fija series ni repeticiones: el volumen queda a criterio del clínico.',
@@ -892,6 +898,7 @@ export const hypotheses = {
   },
   ro7: {
     id: 'ro7', region: 'rodilla', num: '⑦',
+    lugar: { piezas: ['bursa_anserina', 'sartorio', 'gracil', 'semitendinoso'], zonas: [] },
     name: 'Bursitis de la Pata de Ganso',
     prom: 'KOOS / EVA (MCID: 22.6 pts en escala 0-100)',
     dosis: '',
@@ -907,6 +914,7 @@ export const hypotheses = {
   // salen de las guías JOSPT (ro8–ro10) y del consenso ESSKA (ro12).
   ro8: {
     id: 'ro8', region: 'rodilla', num: '⑧',
+    lugar: { piezas: ['lcm_superficial', 'lcm_profundo'], zonas: [] },
     name: 'Lesión del Ligamento Colateral Medial (LCM)',
     prom: 'KOOS',
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión grave del LCM puede usarse una ortesis adecuada (F). La guía no fija volumen: queda a criterio del clínico.',
@@ -923,6 +931,7 @@ export const hypotheses = {
   },
   ro9: {
     id: 'ro9', region: 'rodilla', num: '⑨',
+    lugar: { piezas: ['lcp'], zonas: [] },
     name: 'Lesión del Ligamento Cruzado Posterior (LCP)',
     prom: 'KOOS',
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión aguda del LCP puede usarse una ortesis adecuada (F). La guía no fija volumen: queda a criterio del clínico.',
@@ -940,6 +949,7 @@ export const hypotheses = {
   },
   ro10: {
     id: 'ro10', region: 'rodilla', num: '⑩',
+    lugar: { piezas: ['lle', 'popliteo', 'popliteo_arqueado', 'popliteofibular'], zonas: [] },
     name: 'Lesión del Ligamento Lateral Externo y Esquina Posterolateral (LLE y EPL)',
     prom: 'KOOS',
     dosis: 'Reeducación neuromuscular junto con el fortalecimiento (A). En la lesión de la esquina posterolateral puede usarse una ortesis adecuada (F). La guía no trata cuándo operar las lesiones de grado III o combinadas, ni fija volumen: el volumen queda a criterio del clínico.',
@@ -960,6 +970,7 @@ export const hypotheses = {
   },
   ro11: {
     id: 'ro11', region: 'rodilla', num: '⑪',
+    lugar: { piezas: ['rotula'], zonas: ['meseta_tibial', 'condilo_tibial_medial', 'condilo_tibial_lateral'] },
     name: 'Fracturas (Rótula o Meseta Tibial)',
     prom: 'KOOS',
     dosis: DOSIS_DERIVAR,
@@ -976,6 +987,7 @@ export const hypotheses = {
   },
   ro12: {
     id: 'ro12', region: 'rodilla', num: '⑫',
+    lugar: { piezas: ['rotula', 'retinaculo_medial'], zonas: ['superficie_rotuliana_femur'] },
     name: 'Inestabilidad Rotuliana',
     prom: 'KOOS',
     dosis: 'Primera luxación: tratamiento conservador solo si el riesgo de recidiva es bajo y no hay lesión condral u osteocondral (C); con el esqueleto inmaduro, hablar siempre de la cirugía con el paciente y la familia (C). Ninguna ortesis ha demostrado ser mejor que no llevarla; como mucho, una sin limitar el rango y muy poco tiempo en la fase aguda (B). Ejercicio guiado por fisioterapia como complemento necesario, con o sin cirugía (C): fuerza de cuádriceps y glúteos, movilidad, reeducación de la marcha, control neuromuscular funcional y entrenamiento específico del deporte. Tras el tratamiento conservador, al menos un 25 % vuelve a luxarse (hasta un 70 % en niños y adolescentes) (B). El consenso no fija volumen: queda a criterio del clínico.',
@@ -993,6 +1005,7 @@ export const hypotheses = {
   },
   ro13: {
     id: 'ro13', region: 'rodilla', num: '⑬',
+    lugar: { piezas: ['grasa_hoffa'], zonas: [] },
     name: 'Síndrome de la Grasa de Hoffa',
     prom: 'KOOS',
     dosis: '',
@@ -1008,6 +1021,7 @@ export const hypotheses = {
   },
   ro14: {
     id: 'ro14', region: 'rodilla', num: '⑭',
+    lugar: { piezas: ['bursa_prerrotuliana_subcutanea', 'bursa_prerrotuliana_subfascial', 'bursa_prerrotuliana_subtendinosa', 'bursa_infrarrotuliana_subcutanea', 'bursa_infrarrotuliana_profunda', 'bursa_tuberosidad'], zonas: [] },
     name: 'Bursitis Pre e Infrarrotuliana',
     prom: 'KOOS',
     dosis: '',
@@ -1023,6 +1037,7 @@ export const hypotheses = {
   },
   ro15: {
     id: 'ro15', region: 'rodilla', num: '⑮',
+    lugar: { piezas: [], zonas: ['tuberosidad_tibial', 'polo_inferior_rotula'] },
     name: 'Apofisitis del Adolescente (Osgood-Schlatter, Sinding-Larsen-Johansson)',
     prom: 'KOOS',
     dosis: 'Solo Osgood-Schlatter: el estudio excluyó el Sinding-Larsen-Johansson. Semanas 0–4: dejar el deporte y las actividades que reproducen el dolor; isométrico de cuádriceps contra la pared 10 × 30 s al día con cada pierna, y puente con los dos pies 3 × 10 cada 2 días. Desde la semana 5, cada 2 días: (1) sentadilla apoyado en la pared, 5 repeticiones manteniendo hasta 20 s, y una repetición más por sesión hasta 10; (2) sentadilla de 3 s bajando, 10 s mantenida y 3 s subiendo, añadiendo series hasta 4 × 10; (3) añadir zancadas. En paralelo, escalera de 11 escalones de actividad (caminar o bici suave → caminar rápido o bici media → carrera lenta → escaleras → carrera media → skipping → saltos → carrera rápida, giros y saltos → calentamiento + media sesión → calentamiento + sesión → partido): subir un escalón solo con dolor ≤2/10 durante la actividad y a la mañana siguiente, y bajar uno si empeora; la sentadilla (nivel 2) sin pasar de 2/10 antes del escalón 3; vuelta completa tras 2 semanas de entrenamiento completo sin dolor. 4 visitas en 12 semanas, con los padres. Resultados: 80 % con éxito a las 12 semanas y 90 % al año; vuelta al deporte del 16 % a las 12 semanas y del 69 % al año.',
@@ -1041,6 +1056,7 @@ export const hypotheses = {
   },
   ro16: {
     id: 'ro16', region: 'rodilla', num: '⑯',
+    lugar: { piezas: [], zonas: ['condilo_femoral_medial', 'condilo_femoral_lateral'] },
     name: 'Lesión Osteocondral',
     prom: 'KOOS',
     dosis: '',
@@ -1053,6 +1069,9 @@ export const hypotheses = {
   },
   ro17: {
     id: 'ro17', region: 'rodilla', num: '⑰',
+    // Lugar en el modelo 3D: la plica dibujada por PhysiQ, esquemática (Z-Anatomy no la trae; recorrido
+    // calculado desde la bolsa suprarrotuliana, la tróclea y la grasa de Hoffa; decisión del usuario, 2026-11)
+    lugar: { piezas: ['plica_medial'], zonas: [] },
     name: 'Plica Sinovial Medial',
     prom: 'KOOS',
     dosis: '',
@@ -1063,6 +1082,7 @@ export const hypotheses = {
   },
   ro18: {
     id: 'ro18', region: 'rodilla', num: '⑱',
+    lugar: { piezas: ['capsula_tibioperonea', 'lig_cabeza_perone_ant', 'lig_cabeza_perone_post'], zonas: ['cabeza_perone'] },
     name: 'Disfunción de la Articulación Tibioperonea Proximal',
     prom: 'KOOS',
     dosis: '',
@@ -1079,6 +1099,7 @@ export const hypotheses = {
   },
   ro19: {
     id: 'ro19', region: 'rodilla', num: '⑲',
+    lugar: { piezas: ['nervio_peroneo_comun'], zonas: ['cuello_perone'] },
     name: 'Neuropatía del Nervio Peroneo Común',
     prom: 'KOOS',
     dosis: '',
@@ -1098,6 +1119,7 @@ export const hypotheses = {
   },
   ro20: {
     id: 'ro20', region: 'rodilla', num: '⑳',
+    lugar: { piezas: ['bursa_semimembranoso', 'bursa_gemelo_medial'], zonas: [] },
     name: 'Quiste Poplíteo (Baker)',
     prom: 'KOOS',
     dosis: '',

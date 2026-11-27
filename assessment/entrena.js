@@ -7,6 +7,8 @@ import { CIF_TREES, HYPOTHESES } from './data.js';
 import { ORDEN_REGIONES } from './lib/esquemas.js';
 import { VERSION_SHA, textoVersion, esVersionNueva } from './lib/version.js';
 import { datosRegion, columnasPasos, segundosLectura, mulberry32, semilla, codigoResultado as codigoRes, leerCodigo as leerCod } from './lib/entrena.js';
+import { MODELOS_3D, COLORES_LUGARES } from './data/modelo3d.js';
+import { aciertaToque, zonaDetras, mismoLugar, lugarTexto, pieza as pieza3d } from './lib/modelo3d.js';
 import { DESTINOS_IA, destinoIA, guardarDestinoIA, promptPregunta, TIPOS_PREGUNTA, TIPO_PREGUNTA_DEFECTO, MAX_TEXTO_IA, urlIA, NOTA_CUENTAS,
   iaParrafoHTML, attrIA, atributosIA, ctxArbol, ctxTest, initAmpliarIA } from './ampliar-ia.js';
 
@@ -60,7 +62,7 @@ const pasoDe = o => PASOS.find(s => s.opts.includes(o));
 /* ---------- Progreso guardado ---------- */
 function base() {
   return { cajas: {}, partidas: 0, sinDerivSeguidas: 0, logros: {}, diarios: {}, duelos: {}, racha: { n: 0, ultimo: '', max: 0 },
-    mejor: { flechas: 0, caso: 0, casoPct: 0, bateria: 0, dequien: 0, positivo: 0, pesa: 0, hoja: { 1: 0, 2: 0, 3: 0, 4: 0 }, hojaSeg: 0, desliza: 0, deslizaAciertos: 0, enpaso: 0, completa: 0, error: 0, parejas: 0, detective: 0, semaforo: 0, subita: 0, ordena: 0 } };
+    mejor: { flechas: 0, caso: 0, casoPct: 0, bateria: 0, dequien: 0, positivo: 0, pesa: 0, hoja: { 1: 0, 2: 0, 3: 0, 4: 0 }, hojaSeg: 0, desliza: 0, deslizaAciertos: 0, enpaso: 0, completa: 0, error: 0, parejas: 0, detective: 0, semaforo: 0, subita: 0, ordena: 0, donde3d: 0, quesale3d: 0, arbol3d: 0 } };
 }
 function cargar() {
   const b = base();
@@ -241,6 +243,8 @@ const icono = {
   subita: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.3-8.8-8.6C2 8.2 4 5 7.2 5c1.9 0 3.2 1 4.8 2.6C13.6 6 14.9 5 16.8 5 20 5 22 8.2 20.8 11.4 19 15.7 12 20 12 20z"/><path d="M12 9v6"/></svg>',
   ordena: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 6h11M10 12h11M10 18h11M4 5l1-1v4M3.5 14.5a1.2 1.2 0 1 1 2 1L4 17h2"/></svg>',
   duelo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5M12 20c0-3 2.2-5 5-5s5 2 5 5"/></svg>',
+  diana: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>',
+  cubo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8l-9-5-9 5v8l9 5z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>',
   calendario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg>',
   trofeo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4a3 3 0 0 0 4 4M16 6h4a3 3 0 0 1-4 4M12 13v4M8 21h8M9 17h6v4H9z"/></svg>',
   paso: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10.5 8.5 12.5 7v10M10 17h5"/></svg>',
@@ -256,7 +260,7 @@ const icono = {
 let J = null, temporizador = null;
 function pararReloj() { if (temporizador) { clearInterval(temporizador); temporizador = null; } }
 function iniciar(modo, extra = {}) {
-  pararReloj(); RNG = Math.random; window.scrollTo(0, 0);
+  cerrar3d(); pararReloj(); RNG = Math.random; window.scrollTo(0, 0);
   J = { modo, derivFallo: false, t0: Date.now(), ...extra, mejorAntes: JSON.parse(JSON.stringify(P.mejor)) };
   P.partidas++; guardar();
 }
@@ -299,7 +303,7 @@ function inicio({ desdeAtras = false } = {}) {
   mostrarAvisoVersion();
 }
 function pintarInicio() {
-  pararReloj(); RNG = Math.random; J = null;
+  cerrar3d(); pararReloj(); RNG = Math.random; J = null;
   if (REG.id !== PREFS.region) { guardar(); usarRegion(PREFS.region); }
   const M = MEZCLA(), hechoMix = M.diarios[hoyStr()], rachaMix = [hoyStr(), ayerStr()].includes(M.racha.ultimo) ? M.racha.n : 0;
   const m = medalla(), r = rachaVigente(), hecho = P.diarios[hoyStr()];
@@ -308,6 +312,18 @@ function pintarInicio() {
   const puntuan = TESTS.filter(t => t.x.c !== 'hallazgo').length;
   const nivelMax = [1, 2, 3, 4].filter(n => n === 1 || P.mejor.hoja[n - 1] === 100).pop();
   const rec = (v, txt = 'récord') => v ? `${txt} ${v}` : 'sin jugar';
+  // Anatomía 3D: con modelo y WebGL, su propia sección justo después de «Hoy» (decisión del usuario,
+  // 2026-11: es otra forma de estudiar, no un modo más del árbol); en las demás regiones, su ficha
+  // bloqueada se queda abajo, para no ocupar arriba un botón que no se puede usar.
+  const con3d = !!MODELOS_3D[REG.id] && webgl();
+  const bloque3d = `<section class="grupo"><h2>Anatomía 3D · piloto</h2><div class="mosaico">
+      ${con3d ? fichaHTML('anat3d', 'cubo', 'i-q', 'Explorar en 3D', 'sin puntos', 'Gira la rodilla, quita capas y toca cada estructura para ver qué es.')
+        + fichaHTML('recorrer3d', 'paso', 'i-q', 'Recorre el árbol', 'paso a paso', 'Cada paso del árbol con el sitio de sus hipótesis en la rodilla, adelante y atrás.')
+        + fichaHTML('donde3d', 'diana', 'i-hyp', '¿Dónde está?', rec(P.mejor.donde3d), 'Sale una hipótesis: toca en la rodilla dónde está.')
+        + fichaHTML('quesale3d', 'lupa', 'i-hyp', '¿Qué sale aquí?', rec(P.mejor.quesale3d), 'Se resalta un sitio de la rodilla: elige su hipótesis entre las vecinas del árbol.')
+        + fichaHTML('arbol3d', 'paso', 'i-ok', 'Del árbol al cuerpo', rec(P.mejor.arbol3d), 'Un paso del árbol: ubica en la rodilla todas sus hipótesis.')
+        : fichaHTML('', 'candado', 'i-gris', 'Explorar en 3D', MODELOS_3D[REG.id] ? 'sin 3D aquí' : 'solo rodilla', MODELOS_3D[REG.id] ? 'Este dispositivo o navegador no puede mostrar gráficos 3D (WebGL).' : 'De momento solo hay modelo de la rodilla (piloto). Elige Rodilla en el título.', { acc: 'anat3d-no', clase: 'bloqueada' })}
+    </div></section>`;
   const conPesa = Object.keys(DATOS).filter(k => Object.values(DATOS[k].hyp).flatMap(h => h.tests).filter(t => t.c !== 'hallazgo').length >= 8).map(k => DATOS[k].nombre.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' o $1');
   vista(`
     <header class="cab">
@@ -327,6 +343,7 @@ function pintarInicio() {
       ${fichaHTML('diario', 'calendario', 'i-q', 'Reto del día', hecho !== undefined ? `hecho · ${hecho}` : 'pendiente', '5 preguntas iguales todo el día. Mantiene la racha de esta región.', { clase: hecho === undefined ? 'destacado' : 'hecho' })}
       ${fichaHTML('diariomix', 'calendario', 'i-ok', 'Reto: todas', hechoMix !== undefined ? `hecho · ${hechoMix}` : 'pendiente', '7 preguntas de regiones al azar, iguales todo el día. Su propia racha.', { clase: hechoMix === undefined ? 'destacado' : 'hecho' })}
     </div></section>
+    ${con3d ? bloque3d : ''}
     <section class="grupo"><h2>Árbol · rápidos</h2><div class="mosaico">
       ${fichaHTML('desliza', 'desliza', 'i-ok', 'Desliza', rec(P.mejor.desliza), 'Verdadero o falso en 60 segundos, con una mano.')}
       ${fichaHTML('flechas', 'rayo', 'i-q', 'Flechas', rec(P.mejor.flechas), '15 preguntas, 3 vidas. Saltarse una derivación cuesta dos.')}
@@ -350,6 +367,7 @@ function pintarInicio() {
       ${puntuan >= 8 ? fichaHTML('pesa', 'paso', 'i-hyp', '¿Cuánto pesa?', rec(P.mejor.pesa), 'Confirma, descarta, cluster o solo hallazgo.')
         : fichaHTML('', 'candado', 'i-gris', '¿Cuánto pesa?', 'aquí no', `En ${REG.min} solo ${puntuan} de ${TESTS.length} tests puntúan: juégalo en ${conPesa}.`, { acc: 'pesa-no', clase: 'bloqueada' })}
     </div></section>
+    ${con3d ? '' : bloque3d}
     <section class="grupo"><h2>Con un compañero</h2><div class="mosaico">
       ${fichaHTML('turnos', 'desliza', 'i-gris', 'Pasar el móvil', 'por turnos', 'Los dos en el mismo teléfono, la misma pregunta por turnos.')}
       ${fichaHTML('duelo', 'duelo', 'i-gris', 'Duelo', Object.keys(P.duelos).length ? `${Object.keys(P.duelos).length} retos` : 'con código', 'Cada uno en su móvil: mismas 10 preguntas y un código para comparar.')}
@@ -1576,7 +1594,7 @@ function initDeslizarAtras() {
   addEventListener('touchstart', e => {
     if (e.touches.length !== 1 || (!_enPantalla && !CAPAS.length)) return;
     const t = e.touches[0];
-    if (t.clientX > BORDE || e.target.closest?.('.carta-swipe, .lupa-velo, textarea, input')) return;
+    if (t.clientX > BORDE || e.target.closest?.('.carta-swipe, .lupa-velo, .visor-3d, textarea, input')) return;
     ini = { x: t.clientX, y: t.clientY };
   }, { passive: true });
   addEventListener('touchmove', e => {
@@ -1593,13 +1611,269 @@ function initDeslizarAtras() {
   addEventListener('touchcancel', () => fin(false), { passive: true });
 }
 
+/* ---------- Anatomía 3D (docs/entrena-3d.md) ---------- */
+// three.js y el modelo solo se descargan al entrar aquí (import() de entrena-3d.js).
+let _visor3d = null, _visor3dGen = 0;
+function cerrar3d() { _visor3dGen++; if (_visor3d) { try { _visor3d.destruir(); } catch (e) {} _visor3d = null; } }
+function webgl() {
+  try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; }
+}
+function empezarAnat3d() {
+  cerrar3d(); pararReloj(); J = null; window.scrollTo(0, 0);
+  const gen = _visor3dGen;
+  vista(`${barra({ salir: 'Inicio', centro: `<span class="progreso">Anatomía 3D · ${esc(REG.nombre)} derecha</span>` })}
+    <div id="anat3d"><div class="visor-3d"><p class="visor-cargando" role="status">Cargando el modelo…</p></div></div>`);
+  import('./entrena-3d.js').then(m => {
+    const raiz = document.getElementById('anat3d');
+    if (gen !== _visor3dGen || !raiz) return;
+    return m.montarVisor(raiz, REG.id, { ayuda: PREFS.ayuda3d !== false, alCambiarAyuda: v => { PREFS.ayuda3d = v; guardarPrefs(); } }).then(v => { if (gen !== _visor3dGen) v.destruir(); else _visor3d = v; });
+  }).catch(err => {
+    const raiz = document.getElementById('anat3d');
+    if (gen === _visor3dGen && raiz) raiz.innerHTML = `<section class="tarjeta"><p><b>No se ha podido cargar el modelo 3D.</b></p><p>${esc(err && err.message || err)}</p><div class="fila-btn"><button class="btn" data-acc="inicio">Inicio</button><button class="btn btn-pri" data-modo="anat3d">Reintentar</button></div></section>`;
+  });
+}
+
+/* ---------- Anatomía 3D: modos con puntos (docs/entrena-3d.md, paso 5) ---------- */
+// ¿Dónde está? (sale una hipótesis, se toca su lugar), ¿Qué sale aquí? (se resalta un lugar, se
+// elige la hipótesis entre las vecinas del árbol) y Del árbol al cuerpo (un paso: se ubican todas
+// sus hipótesis). El lugar es el `lugar` de cada hipótesis (data/rodilla.js); una sin lugar no
+// saldría (hoy todas lo tienen; la plica, por su recorrido). Cada pregunta empieza con el modelo como al entrar: se gira y se quitan
+// capas para llegar a lo profundo. El toque pone una marca y se comprueba con «Comprobar», para
+// que un dedo torpe en 3D no cueste una vida; acaba el tiempo con la marca puesta → se comprueba.
+const CONFIG3D = {
+  donde3d: { vidas: 3, seg: 45, etq: '¿Dónde está?' },
+  quesale3d: { vidas: 3, seg: 25, etq: '¿Qué sale aquí?' },
+  arbol3d: { vidas: Infinity, seg: 45, etq: 'Del árbol al cuerpo' },
+};
+const N_PREGUNTAS_3D = 10, N_PASOS_3D = 3;
+const hipConLugar = () => Object.keys(HIP).filter(id => HIP[id].lugar).map(hid => ({ clave: '3d:' + hid, hid }));
+const hipsPaso3d = s => [...new Set(s.opts.flatMap(o => o.h))].filter(id => HIP[id].lugar);
+// Pasos con dos o más hipótesis con lugar (con una sola sería ¿Dónde está?).
+const pasos3d = () => PASOS.filter(s => hipsPaso3d(s).length >= 2);
+const chip3d = id => (HIP[id].deriva ? '<span title="Derivación" aria-label="Derivación">🚑</span> ' : '') + chipHip(id);
+function listaPreguntas3d(modo) {
+  if (modo === 'arbol3d') return barajar(pasos3d()).slice(0, N_PASOS_3D).flatMap(s => { const hs = hipsPaso3d(s); return hs.map((hid, k) => ({ hid, clave: '3d:' + hid, paso: s, k: k + 1, de: hs.length })); });
+  const pool = hipConLugar(), out = [];
+  while (out.length < N_PREGUNTAS_3D && pool.length) { const t = elegirPonderado(pool); out.push({ ...t }); pool.splice(pool.indexOf(t), 1); }
+  return out;
+}
+// ¿Qué sale aquí?: la buena y tres vecinas del árbol con lugar distinto (dos hipótesis con el
+// mismo lugar no se pueden distinguir mirando).
+function opcionesQueSale(hid) {
+  const l = HIP[hid].lugar;
+  return barajar([hid, ...vecinas(hid).filter(x => HIP[x].lugar && !mismoLugar(HIP[x].lugar, l)).slice(0, 3)]);
+}
+const centro3d = () => (isFinite(J.c.vidas) ? vidasHTML(J.vidas, J.c.vidas) : '') + `<span class="progreso">${J.n}/${J.lista.length}</span>`;
+const marcador3d = () => `${J.puntos}<small>${J.combo > 1 ? 'combo ×' + J.combo : 'puntos'}</small>`;
+function error3d(err) {
+  const raiz = document.getElementById('anat3d');
+  if (raiz) raiz.innerHTML = `<section class="tarjeta"><p><b>No se ha podido cargar el modelo 3D.</b></p><p>${esc(err && err.message || err)}</p><div class="fila-btn"><button class="btn" data-acc="inicio">Inicio</button><button class="btn btn-pri" data-modo="${J ? J.modo : 'anat3d'}">Reintentar</button></div></section>`;
+}
+function empezar3d(modo) {
+  const c = CONFIG3D[modo];
+  iniciar(modo, { c, n: 0, vidas: c.vidas, puntos: 0, combo: 0, aciertos: 0, fallos: [], lista: listaPreguntas3d(modo) });
+  const partida = J, gen = _visor3dGen;
+  vista(`${barra({ centro: centro3d(), derecha: marcador3d(), reloj: true })}
+    <div class="j3-preg" id="j3Preg"><p class="progreso">Cargando el modelo…</p></div>
+    <div id="anat3d" class="j3${modo === 'quesale3d' ? ' j3-con-ops' : ''}"><div class="visor-3d"><p class="visor-cargando" role="status">Cargando el modelo…</p></div></div>
+    <div class="j3-panel" id="j3Panel" aria-live="polite"></div>
+    <div class="puntos-flotan" id="flota" aria-live="polite"></div>`);
+  import('./entrena-3d.js').then(m => {
+    const raiz = document.getElementById('anat3d');
+    if (gen !== _visor3dGen || J !== partida || !raiz) return;
+    return m.montarVisor(raiz, REG.id, { juego: { alTocar: tocado3d } }).then(v => {
+      if (gen !== _visor3dGen || J !== partida) return v.destruir();
+      _visor3d = v;
+      // El crédito del modelo, debajo del panel de la pregunta (no entre el visor y Comprobar).
+      const cr = raiz.querySelector('.v3-credito'); if (cr) document.getElementById('flota').after(cr);
+      pregunta3d();
+    });
+  }).catch(err => { if (gen === _visor3dGen) error3d(err); });
+}
+function enunciado3d(q) {
+  if (J.modo === 'quesale3d') return '<p class="j3-etq">¿Qué hipótesis está en el sitio resaltado?</p>';
+  const paso = q.paso ? `<p class="j3-etq"><span class="mono">Paso ${q.paso.num}</span> · ${esc(titPaso(q.paso))} <span class="j3-de">${q.k} de ${q.de}</span></p>` : '<p class="j3-etq">Toca dónde está</p>';
+  return paso + `<div>${chip3d(q.hid)}</div>`;
+}
+function pintarPanel3d() {
+  const el = document.getElementById('j3Panel'); if (!el) return;
+  if (J.modo === 'quesale3d') { el.innerHTML = `<div class="opciones j3-ops">${J.q.opciones.map((id, i) => `<button class="op" data-q3="${i}">${chip3d(id)}</button>`).join('')}</div>`; return; }
+  el.innerHTML = `<div class="j3-fila"><p class="j3-pista">${J.toque ? 'Marca puesta. Comprueba o toca otro sitio.' : 'Gira, quita capas si hace falta y toca su lugar.'}</p>
+    <button class="btn btn-pri" data-acc="comprobar-3d" ${J.toque ? '' : 'disabled'}>Comprobar</button></div>`;
+}
+function tocado3d(t) { if (!J || J.resp || !CONFIG3D[J.modo]) return; J.toque = t; pintarPanel3d(); }
+function pregunta3d() {
+  pararReloj();
+  if (!_visor3d) return;
+  if (J.vidas <= 0 || J.n >= J.lista.length) return fin3d();
+  const q = J.q = J.lista[J.n]; J.n++; J.resp = false; J.toque = null;
+  const fl = document.getElementById('flota'); if (fl) fl.innerHTML = ''; // el «+14» de la anterior no se queda
+  _visor3d.reiniciar();
+  if (J.modo === 'quesale3d') { q.opciones = opcionesQueSale(q.hid); _visor3d.lugar(HIP[q.hid].lugar, 'pregunta'); _visor3d.bloquear(true); }
+  document.querySelector('.barra-juego .centro').innerHTML = centro3d();
+  const pr = document.getElementById('j3Preg'); pr.innerHTML = enunciado3d(q); pr.dataset.hid = q.hid; // data-hid: para las pruebas
+  pintarPanel3d();
+  J.restante = J.segTotal = J.c.seg;
+  cuentaAtras(J.c.seg, () => responder3d(-1), quedan => { J.restante = quedan; });
+}
+function responder3d(i) {
+  if (!J || !CONFIG3D[J.modo] || J.resp || !_visor3d) return;
+  J.resp = true; pararReloj();
+  const q = J.q, h = HIP[q.hid], V = _visor3d, M3 = MODELOS_3D[REG.id], tiempo = i < 0;
+  const ok = J.modo === 'quesale3d' ? i >= 0 && q.opciones[i] === q.hid : aciertaToque(h.lugar, J.toque, V.puntos);
+  V.bloquear(true); V.lugar(h.lugar, 'correcto');
+  if (J.modo === 'quesale3d') document.querySelectorAll('[data-q3]').forEach((b, j) => { b.disabled = true; b.classList.add(q.opciones[j] === q.hid ? 'ok' : j === i ? 'mal' : 'atenuada'); });
+  else V.marca(J.toque ? (ok ? 'bien' : 'mal') : null);
+  const sitio = `${chip3d(q.hid)}: <b>${esc(lugarTexto(M3, h.lugar))}</b>`;
+  const panel = document.getElementById('j3Panel');
+  if (ok) {
+    J.combo++; J.aciertos++; const p = 10 + Math.ceil(J.restante / J.segTotal * 15) + (J.combo > 1 ? J.combo * 2 : 0); J.puntos += p; acierto(q.clave); guardar();
+    document.getElementById('flota').innerHTML = `<span class="sube">+${p}${J.combo > 1 ? ' · combo ×' + J.combo : ''}</span>`;
+    SON.acierto(J.combo); vibrar(15);
+    const mc = document.querySelector('.marcador'); if (mc) { mc.innerHTML = marcador3d(); animar(mc, 'sube'); }
+    if (J.modo === 'quesale3d') { panel.insertAdjacentHTML('beforeend', `<p class="j3-bien">${sitio}</p>`); }
+    else panel.innerHTML = `<p class="j3-bien">Eso es. ${sitio}</p>`;
+    const partida = J; setTimeout(() => { if (J === partida && J.resp) pregunta3d(); }, 1400);
+    return;
+  }
+  if (isFinite(J.vidas)) J.vidas = Math.max(0, J.vidas - 1);
+  J.combo = 0; fallo(q.clave); J.fallos.push(q); guardar();
+  const v = document.querySelector('.vidas'); if (v) { v.outerHTML = vidasHTML(J.vidas, J.c.vidas); const hs = document.querySelectorAll('.vidas > span'); if (hs[J.vidas]) animar(hs[J.vidas], 'pierde'); }
+  SON.fallo(); vibrar(90);
+  const tocado = J.modo === 'quesale3d' ? '' : J.toque ? (J.toque.ids.length ? `Tocaste: ${esc(pieza3d(M3, J.toque.ids[0])?.nombre || '')}. ` : 'Tocaste fuera de las estructuras a la vista. ')
+    + (zonaDetras(h.lugar, J.toque, V.puntos) ? 'Lo que buscas queda detrás del hueso que tocaste: gira la rodilla. ' : '') : '';
+  const sigue = J.vidas > 0 && J.n < J.lista.length;
+  panel.innerHTML = `<div class="aviso aviso-mal"><p class="tit">${tiempo && !J.toque ? 'Se acabó el tiempo' : 'No es ahí'}</p>
+    <p>${tocado}En verde, ${sitio}.</p>
+    <button class="btn btn-pri" data-acc="siguiente-3d">${sigue ? 'Siguiente' : 'Ver resultado'}</button></div>`;
+  panel.querySelector('[data-acc="siguiente-3d"]').focus({ preventScroll: true });
+  panel.scrollIntoView({ block: 'nearest', behavior: movimiento() });
+}
+function fin3d() {
+  pararReloj(); cerrar3d();
+  const modo = J.modo, M3 = MODELOS_3D[REG.id], rec = J.puntos > P.mejor[modo];
+  if (rec) P.mejor[modo] = J.puntos; J.celebra = rec && J.puntos > 0;
+  const texto = (rec ? 'Nuevo récord. ' : `Récord: ${P.mejor[modo]}. `) + `${J.aciertos} de ${J.n}.` + (J.vidas <= 0 ? ' Sin vidas.' : '');
+  const vistos = new Set();
+  REPASO3D = J.fallos.filter(q => !vistos.has(q.hid) && vistos.add(q.hid)).map(q => q.hid);
+  vista(finHTML({ etq: J.c.etq + ' · ' + REG.min, grande: J.puntos, texto, extra: repaso3dHTML(REPASO3D, M3), otra: modo }));
+  if (J.celebra) celebrar(); else SON.fin();
+  cerrarPartida({ modo, vidas: J.vidas, n: J.n, puntos: J.puntos });
+}
+
+// Repaso en 3D de los fallos (usuario, 2026-11): cada tarjeta del final abre el visor a pantalla completa
+// con el lugar correcto en verde, desde la vista que mejor lo deja ver; tocar una estructura verde da su
+// nombre y Kenhub, y ‹ › pasan de un fallo a otro. Atrás, Escape o «‹ Resultado» vuelven al resultado.
+let REPASO3D = [];
+function repaso3dHTML(hids, M3) {
+  if (!hids.length) return '';
+  return `<section class="tarjeta repaso"><p class="etq">Para repasar: toca uno para verlo en 3D</p><div class="repaso3d-lista">${hids.map((id, i) =>
+    `<button class="repaso3d-btn" data-repaso3d="${i}"><span class="repaso3d-txt"><span>${chip3d(id)}</span><small>${esc(lugarTexto(M3, HIP[id].lugar))}</small></span><span class="repaso3d-ver" aria-hidden="true">${icono.cubo}</span></button>`).join('')}</div></section>`;
+}
+function abrirRepaso3d(i0) {
+  const hids = REPASO3D, M3 = MODELOS_3D[REG.id]; if (!hids.length || !M3) return;
+  const origen = document.activeElement;
+  const capa = document.createElement('div');
+  capa.className = 'repaso3d'; capa.setAttribute('role', 'dialog'); capa.setAttribute('aria-modal', 'true'); capa.setAttribute('aria-label', 'Repaso en 3D');
+  capa.innerHTML = `<div class="repaso3d-cab"><button class="salir" data-r3="cerrar">‹ Resultado</button><span class="progreso" id="r3Num"></span>
+      <span class="repaso3d-nav"><button class="btn r3-flecha" data-r3="ant" aria-label="Fallo anterior">‹</button><button class="btn r3-flecha" data-r3="sig" aria-label="Fallo siguiente">›</button></span></div>
+    <div class="repaso3d-hip" id="r3Hip"></div>
+    <div class="repaso3d-visor" id="r3Visor"><div class="visor-3d"><p class="visor-cargando" role="status">Cargando el modelo…</p></div></div>`;
+  let k = i0, visor = null, vivo = true;
+  const pintar = () => {
+    const id = hids[k];
+    capa.querySelector('#r3Num').textContent = `${k + 1} de ${hids.length}`;
+    capa.querySelector('[data-r3="ant"]').disabled = k === 0; capa.querySelector('[data-r3="sig"]').disabled = k === hids.length - 1;
+    capa.querySelector('#r3Hip').innerHTML = `<div>${chip3d(id)}</div><p>En verde: <b>${esc(lugarTexto(M3, HIP[id].lugar))}</b>. Toca lo verde para ver su nombre.</p>`;
+    if (visor) visor.lugar(HIP[id].lugar, 'correcto', { vista: true, etiqueta: `${HIP[id].n} ${nombreCorto(id)}` });
+  };
+  const tecla = e => {
+    if (e.key === 'Escape') cerrar();
+    else if (e.key === 'ArrowLeft' && k > 0) { k--; pintar(); }
+    else if (e.key === 'ArrowRight' && k < hids.length - 1) { k++; pintar(); }
+  };
+  const cerrar = (o = {}) => {
+    if (!vivo) return; vivo = false;
+    try { visor?.destruir(); } catch (e) {}
+    capa.remove(); soltarCapa(cerrar, o); document.removeEventListener('keydown', tecla);
+    origen?.focus?.({ preventScroll: true });
+  };
+  capa.addEventListener('click', e => {
+    const b = e.target.closest('[data-r3]'); if (!b || b.disabled) return;
+    if (b.dataset.r3 === 'cerrar') return cerrar();
+    k = Math.max(0, Math.min(hids.length - 1, k + (b.dataset.r3 === 'sig' ? 1 : -1))); pintar();
+  });
+  document.body.appendChild(capa); abrirCapa(cerrar); document.addEventListener('keydown', tecla);
+  pintar(); capa.querySelector('[data-r3="cerrar"]').focus({ preventScroll: true });
+  import('./entrena-3d.js').then(m => m.montarVisor(capa.querySelector('#r3Visor'), REG.id, { ayuda: false }))
+    .then(v => { if (!vivo) return v.destruir(); visor = v; pintar(); })
+    .catch(err => { const r = capa.querySelector('#r3Visor'); if (vivo && r) r.innerHTML = `<p class="aviso aviso-mal">No se ha podido cargar el modelo 3D: ${esc(err && err.message || err)}</p>`; });
+}
+
+// Recorre el árbol en 3D (usuario, 2026-11): sin puntos. Paso a paso con ‹ ›, en el orden de la hoja; al
+// entrar en un paso se ven a la vez los lugares de todas sus hipótesis, cada una en su color; tocar una
+// respuesta deja solo los de lo que abre, y tocar una hipótesis, solo el suyo (otro toque vuelve a todo).
+// «Sigue en el paso X» salta al paso al que lleva esa respuesta. Una hipótesis sin lugar saldría «sin sitio».
+let R3 = null;
+function empezarRecorrer3d() {
+  cerrar3d(); pararReloj(); J = null; window.scrollTo(0, 0);
+  const gen = _visor3dGen;
+  R3 = { i: 0, sel: null };
+  vista(`${barra({ salir: 'Inicio', centro: `<span class="progreso">Recorre el árbol · ${esc(REG.min)}</span>` })}
+    <div class="r3-fijo"><div class="r3-nav" id="r3Nav"></div>
+      <div id="anat3d" class="j3 r3"><div class="visor-3d"><p class="visor-cargando" role="status">Cargando el modelo…</p></div></div></div>
+    <div class="r3-cuerpo" id="r3Cuerpo"></div>`);
+  const b = document.querySelector('.barra-juego'); if (b) document.documentElement.style.setProperty('--barra-alto', b.offsetHeight + 'px');
+  pintarRecorrer();
+  import('./entrena-3d.js').then(m => {
+    const raiz = document.getElementById('anat3d');
+    if (gen !== _visor3dGen || !raiz) return;
+    // Sin la línea de gestos (queda el ⓘ): con el visor más bajo, tapaba el último botón de la barra.
+    return m.montarVisor(raiz, REG.id, { ayuda: false }).then(v => {
+      if (gen !== _visor3dGen) return v.destruir();
+      _visor3d = v;
+      const cr = raiz.querySelector('.v3-credito'), cuerpo = document.getElementById('r3Cuerpo'); if (cr && cuerpo) cuerpo.after(cr);
+      pintarRecorrer({ vista: true });
+    });
+  }).catch(err => { if (gen === _visor3dGen) error3d(err); });
+}
+// Una respuesta que manda a valorar otra región («Tratar el origen: valorar en la región Cadera»): su región,
+// para enlazarla (usuario, 2026-11). Cuando esa región tenga modelo 3D, el enlace podrá ir a su Recorre el árbol.
+const otraRegion = o => { const m = `${o.t} ${o.d}`.match(/valorar en la región ([\p{L} ]+?)(?:[.,;]|$)/u); return m ? Object.keys(DATOS).find(k => DATOS[k].nombre.toLowerCase() === m[1].trim().toLowerCase()) || null : null; };
+function pintarRecorrer({ vista = false } = {}) {
+  const s = PASOS[R3.i], hs = hipsPaso3d(s), color = id => COLORES_LUGARES[hs.indexOf(id) % COLORES_LUGARES.length];
+  const sel = R3.sel, siguiente = PASOS[R3.i + 1]?.id || null;
+  document.getElementById('r3Nav').innerHTML = `<button class="btn r3-flecha" data-r3p="-1" ${R3.i === 0 ? 'disabled' : ''} aria-label="Paso anterior">‹</button>
+    <p class="r3-tit"><span class="num-paso">${s.num}</span><b>${esc(titPaso(s))}</b><small>${R3.i + 1} de ${PASOS.length}</small></p>
+    <button class="btn r3-flecha" data-r3p="1" ${R3.i === PASOS.length - 1 ? 'disabled' : ''} aria-label="Paso siguiente">›</button>`;
+  const chipR3 = id => HIP[id].lugar
+    ? `<button class="r3-hip" data-r3h="${id}" aria-pressed="${sel?.hip === id}"><span class="r3-punto" style="background:${color(id)}" aria-hidden="true"></span>${chip3d(id)}</button>`
+    : `<span class="r3-hip r3-sin">${chip3d(id)}<small>sin sitio en el modelo</small></span>`;
+  document.getElementById('r3Cuerpo').innerHTML = `<p class="r3-q" ${ctxPasoAttr(s)}>${esc(s.q)}</p>
+    ${hs.length ? '' : '<p class="progreso">Este paso no abre nada con sitio en la rodilla.</p>'}
+    ${s.opts.map((o, k) => `<div class="r3-op ${sel?.op === k ? 'activa' : ''}">
+      <button class="r3-op-btn" data-r3o="${k}" aria-pressed="${sel?.op === k}"><b>${esc(o.t)}</b>${o.d ? `<span>${esc(o.d)}</span>` : ''}</button>
+      <div class="r3-res">${o.h.map(chipR3).join('')}${o.deriv ? '<span class="chip-der">Derivar</span>' : ''}${!o.h.length && !o.deriv ? '<span class="chip-sin">Sin hipótesis</span>' : ''}
+        ${o.next && o.next !== siguiente ? `<button class="enlace" data-r3ir="${o.next}">${destinoTxt(o.next)} ›</button>` : ''}${otraRegion(o) ? `<button class="enlace" data-reg="${otraRegion(o)}">Ir a ${esc(DATOS[otraRegion(o)].nombre)} en Entrena ›</button>` : ''}</div></div>`).join('')}`;
+  if (!_visor3d) return;
+  const ids = sel?.hip ? [sel.hip] : sel?.op != null ? s.opts[sel.op].h.filter(id => HIP[id].lugar) : hs;
+  if (ids.length) _visor3d.lugares([...new Set(ids)].map(id => ({ ...HIP[id].lugar, color: color(id), etiqueta: `${HIP[id].n} ${nombreCorto(id)}` })), { vista });
+  else { _visor3d.sinLugar(); if (vista) _visor3d.reiniciar(); }
+}
+function irRecorrer(i) {
+  if (!R3 || i < 0 || i >= PASOS.length) return;
+  R3 = { i, sel: null }; pintarRecorrer({ vista: true });
+  window.scrollTo({ top: 0, behavior: movimiento() });
+}
+
 /* ---------- Eventos ---------- */
 const MODOS = {
   diario: () => empezarRapido('diario', { semilla: 'diario-' + REG.id + '-' + hoyStr() }),
   flechas: () => empezarRapido('flechas'), subita: () => empezarRapido('subita'),
   desliza: empezarDesliza, enpaso: empezarEnPaso, completa: empezarCompleta,
   dequien: () => empezarRapido('dequien'), mezcla: () => empezarRapido('mezcla'), diariomix: () => empezarRapido('diariomix', { semilla: 'diariomix-' + hoyStr() }), positivo: () => empezarRapido('positivo'), pesa: () => empezarRapido('pesa'), bateria: empezarBateria, caso: empezarCaso, detective: empezarDetective,
-  error: empezarError, ordena: empezarOrdena, parejas: empezarParejas, hoja: pintarNiveles, duelo: () => pintarDuelo(), turnos: pintarTurnosInicio
+  error: empezarError, ordena: empezarOrdena, parejas: empezarParejas, hoja: pintarNiveles, duelo: () => pintarDuelo(), turnos: pintarTurnosInicio, anat3d: empezarAnat3d,
+  recorrer3d: empezarRecorrer3d, donde3d: () => empezar3d('donde3d'), quesale3d: () => empezar3d('quesale3d'), arbol3d: () => empezar3d('arbol3d')
 };
 $app.addEventListener('click', e => {
   audio();
@@ -1628,10 +1902,18 @@ $app.addEventListener('click', e => {
   if (d.pool) { SON.carta(); J.orden.push(J.pool.splice(+d.pool, 1)[0]); return pintarOrdena(); }
   if (d.slot) { const s = J.orden.splice(+d.slot, 1)[0]; J.pool.push(s); return pintarOrdena(); }
   if (d.par) return tocarCarta(+d.par);
+  if (d.q3) return responder3d(+d.q3);
+  if (d.repaso3d) return abrirRepaso3d(+d.repaso3d);
+  if (d.r3p) return irRecorrer(R3.i + +d.r3p);
+  if (d.r3ir) return irRecorrer(PASOS.findIndex(x => x.id === d.r3ir));
+  if (d.r3o) { const k = +d.r3o; R3.sel = R3.sel?.op === k ? null : { op: k }; return pintarRecorrer(); }
+  if (d.r3h) { R3.sel = R3.sel?.hip === d.r3h ? null : { hip: d.r3h }; return pintarRecorrer(); }
   if (d.hueco) return abrirHueco(d.hueco);
   const acc = d.acc; if (!acc) return;
   if (acc === 'inicio') { window.scrollTo(0, 0); return inicio(); }
   if (acc === 'siguiente') return siguienteRapida();
+  if (acc === 'comprobar-3d') return responder3d(0);
+  if (acc === 'siguiente-3d') return pregunta3d();
   if (acc === 'paso-caso') { J.c.paso++; window.scrollTo(0, 0); return pintarCaso(); }
   if (acc === 'fin-caso') { window.scrollTo(0, 0); return finCaso(); }
   if (acc === 'corregir-detective') return corregirDetective();
@@ -1655,7 +1937,7 @@ $app.addEventListener('click', e => {
   if (acc === 'version-actualizar') return recargarVersionNueva();
   if (acc === 'ayuda') return abrirAyuda();
   if (acc === 'preguntar-ia') return preguntarIA();
-  if (acc === 'pesa-no') return avisar(el.title);
+  if (acc === 'pesa-no' || acc === 'anat3d-no') return avisar(el.title, { trofeo: false });
   if (acc === 'sonido') { PREFS.sonido = !PREFS.sonido; guardarPrefs(); if (PREFS.sonido) SON.acierto(1); return inicio(); }
   if (acc === 't-mix') { const t = leerNombres(); t.mix = !t.mix; guardarPrefs(); return pintarTurnosInicio(); }
   if (acc === 't-empezar') return empezarTurnos();

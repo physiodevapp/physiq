@@ -1,0 +1,77 @@
+{
+ "tuberosidad_tibial": [
+  -0.00377,
+  -0.10228,
+  -0.0029
+ ],
+ "epicondilo_femoral_lateral": [
+  -0.0312,
+  -0.04096,
+  -0.03676
+ ],
+ "epicondilo_femoral_medial": [
+  0.05074,
+  -0.04841,
+  -0.04215
+ ],
+ "condilo_femoral_lateral": [
+  -0.01579,
+  -0.06095,
+  -0.05459
+ ],
+ "condilo_femoral_medial": [
+  0.03297,
+  -0.0656,
+  -0.05451
+ ],
+ "condilo_tibial_lateral": [
+  -0.02884,
+  -0.07832,
+  -0.03596
+ ],
+ "condilo_tibial_medial": [
+  0.04429,
+  -0.08993,
+  -0.05016
+ ],
+ "meseta_tibial": [
+  0.04579,
+  -0.08561,
+  -0.03987
+ ],
+ "cabeza_perone": [
+  -0.04026,
+  -0.1014,
+  -0.0475
+ ],
+ "cuello_perone": [
+  -0.03107,
+  -0.11969,
+  -0.04799
+ ],
+ "tuberculo_iliotibial": [
+  -0.01301,
+  -0.10937,
+  -0.01976
+ ],
+ "tuberculo_aductor": [
+  0.04795,
+  -0.02495,
+  -0.04021
+ ],
+ "fosa_intercondilea": [
+  0.00916,
+  -0.04385,
+  -0.04334
+ ],
+ "superficie_rotuliana_femur": [
+  0.00342,
+  -0.05038,
+  -0.01141
+ ],
+ "polo_inferior_rotula": [
+  -0.00089,
+  -0.07374,
+  -0.00187
+ ]
+}

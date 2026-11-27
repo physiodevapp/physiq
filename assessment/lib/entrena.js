@@ -6,6 +6,7 @@ import { etiquetaPaso, numeroHipotesis } from './esquemas.js';
 import { resolveOptionTargets } from './arbol.js';
 import { pesoTest, enlacesAnatomia } from './tests-4b.js';
 import { nombreRegion, dolorInespecifico } from './region.js';
+import { DOSIS_DERIVAR } from '../data/comun.js';
 
 // «Cuánto pesa» de un test, en una de seis categorías, a partir de la frase que genera
 // pesoTest() (la misma que la app y la hoja de confirmación).
@@ -65,6 +66,8 @@ export function datosRegion(region, CIF_TREES, HYPOTHESES) {
     const h = HYPOTHESES[id]; if (!h) continue;
     hyp[id] = {
       n: numeroHipotesis(h.num) || id.replace(/\D/g, ''), name: h.name,
+      // Anatomía 3D: dónde está (data/<región>.js, solo con modelo) y si es de derivar (🚑, como en las hojas).
+      ...(h.lugar !== undefined ? { lugar: h.lugar } : {}), deriva: h.dosis === DOSIS_DERIVAR,
       clusters: Object.fromEntries(Object.entries(h.clusters || {}).map(([k, c]) => [k, { n: c.nombre, up: c.umbralPos, lp: c.lr_pos, un: c.umbralNeg, ln: c.lr_neg }])),
       tests: (h.tests || []).map((t, i) => {
         const p = pesoTest(h, t, i);
